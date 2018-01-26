@@ -6,25 +6,56 @@ using System.Threading.Tasks;
 using NativeUI;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using System.Dynamic;
 
 namespace vMenuClient
 {
     public class VMenuClient : BaseScript
     {
         #region variables
+        private static VehiclesList vehiclesList = new VehiclesList();
+        private bool firstTick = true;
         private MenuPool _menuPool;
         private UIMenu mainMenu;
-        private bool firstTick = true;
+        private UIMenu noclipMenu;
+        private Dictionary<string, bool> permissions = new Dictionary<string, bool>();
+        //private object permissions;
+        //private bool [] permissions = new bool[5] {false, false, false, false, false};
+        private bool permsSetup = false;
+
         private string lastVehicleSpawned = "Adder";
         private bool vehicleGodMode = false;
         private bool playerGodMode = false;
         private bool neverWanted = false;
         private bool superJump = false;
         private bool unlimitedStamina = true;
-        private static VehiclesList vehiclesList = new VehiclesList();
+
+        private int hour = 7;
+        private int minute = 0;
+        private string weather = "CLEAR";
+        private string previousWeather = "CLEAR";
+
         private string playerInvincibleText = GetLabelText("BLIP_6") + " " + GetLabelText("CHEAT_INVINCIBILITY_OFF"); // Player Invincibility
         private string playerOptionsText = GetLabelText("BLIP_6") + " " + GetLabelText("PM_MP_OPTIONS"); // Player Options
         private string vehicleOptionsText = GetLabelText("collision_w0oam1") + " " + GetLabelText("PM_MP_OPTIONS"); // Vehicle Options
+        private string weatherMenuTitle = GetLabelText("collision_7ydzakm") + " " + GetLabelText("PM_MP_OPTIONS"); // Weather Options
+        private string timeMenuTitle = GetLabelText("FM_HTUT_TME") + " " + GetLabelText("PM_MP_OPTIONS"); // Time Options
+        
+        private string extraSunnyWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_EXTRA_SUNNY"); // Extra sunny weather.
+        private string clearWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_CLEAR"); // Clear weather.
+        private string cloudsWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_CLOUDY"); // Cloudy weather.
+        private string overcastWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_OVERCAST"); // Overcast weather.
+        private string clearingWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_CLEARING"); // Clearing weather.
+        private string rainWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_RAIN"); // Rainy weather.
+        private string thunderWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_THUNDER"); // Thundery weather.
+        private string smogWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_SMOGGY"); // Smoggy weather.
+        private string foggyWeather = "Foggy " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Foggy weather.
+        private string snowWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_SNOW"); // Snowy weather.
+        private string snowLightWeather = "Light snowy " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Light snowy weather.
+        private string blizzardWeather = "Blizzard " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Blizzard weather.
+        private string xmasWeather = "Xmas " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Xmas weather.
+        private string halloweenWeather = "Halloween " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Halloween weather.
+        private string neutralWeather = "Neutral " + GetLabelText("collision_7ydzakm").ToLower() + "."; // Neutral weather.
         // Create a new banner with a dark red background.
         private UIResRectangle banner = new UIResRectangle
         {
@@ -38,10 +69,136 @@ namespace vMenuClient
         /// </summary>
         public VMenuClient()
         {
+            EventHandlers.Add("vMenu:NotifyPlayer", new Action<string, bool>(Notify));
+            EventHandlers.Add("vMenu:WeatherAndTimeSync", new Action<string, int, int>(SetWeatherAndTime));
+            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
+            //EventHandlers.Add("vMenu:test", new Action<dynamic>(SetPermissions));
+            //EventHandlers.Add("vMenu:test", new Action<dynamic>(Test));
+            //EventHandlers.Add("vMenu:SetPermissions", new Action<bool, bool, bool, bool, bool>(SetPermissions));
+
             Tick += OnTick;
+            Tick += SetTime;
+            Tick += SetWeather;
+        }
+
+        //private void Test(dynamic obj)
+        //{
+        //    Debug.WriteLine(obj.playerOptions.ToString());
+        //    Notify("Working?");
+        //}
+        //private void Test(ExpandoObject obj)
+        //{
+        //    //var dtest2 = new Dictionary<string, bool>(obj);
+        //    IDictionary<string, object> dtest = obj;
+        //    Debug.WriteLine(dtest.GetType().ToString());
+        //    //Debug.WriteLine(dtest2.GetType().ToString());
+        //    //Debug.WriteLine(nothing.GetType().ToString());
+        //    Debug.WriteLine(obj.GetType().ToString());
+        //    Notify("Working?");
+        //}
+
+        private void SetPermissions(dynamic permissions)
+        {
+            //Debug.WriteLine("Permissions are loaded.");
+            //permissions.Add("playerOptions", playerOptionsPerms);
+            //permissions.Add("onlinePlayers", onlinePlayersPerm);
+            //permissions.Add("vehicleOptions", vehicleOptionsPerms);
+            //permissions.Add("vehicleSpawn", spawnVehiclePerms);
+            //permissions.Add("weatherOptions", weatherOptionsPerms);
+            //permissions.Add("timeOptions", timeOptionsPerms);
+            //this.permissions = obj;
+            //permsSetup = true;
+            Notify(permissions.onlinePlayers.ToString());
+            Notify("Working2?");
+            //Notify(playerOptionsPerms.ToString() + " " + vehicleOptionsPerms.ToString() + " " + spawnVehiclePerms.ToString() + " " + weatherOptionsPerms.ToString() + " " + timeOptionsPerms.ToString());
         }
         #endregion
 
+        #region Handle weather and time loops and updates
+        /// <summary>
+        /// Set the new weather and time.
+        /// </summary>
+        /// <param name="weather"></param>
+        /// <param name="hour"></param>
+        /// <param name="minute"></param>
+        private void SetWeatherAndTime(string weather, int hour, int minute)
+        {
+            this.weather = weather;
+            this.hour = hour;
+            this.minute = minute;
+        }
+
+        /// <summary>
+        /// Loop every 100ms and set the weather to the correct type.
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetWeather()
+        {
+            await Delay(100);
+            if (previousWeather != weather)
+            {
+                ClearOverrideWeather();
+                ClearWeatherTypePersist();
+                SetWeatherTypeOverTime(weather, 15);
+                previousWeather = weather;
+                if (weather == "XMAS")
+                {
+                    // Load snow/ice audio
+                    RequestScriptAudioBank("ICE_FOOTSTEPS", false);
+                    RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
+                    // Load snow particle effects
+                    RequestNamedPtfxAsset("core_snow");
+                    // Enable footsteps and vehicle tire tracks.
+                    SetForcePedFootstepsTracks(true);
+                    SetForceVehicleTrails(true);
+                }
+                else
+                {
+                    // Unload snow/ice audio
+                    ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
+                    ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
+                    // Unload snow particle effects
+                    RemoveNamedPtfxAsset("core_snow");
+                    // Disable footsteps and vehicle tire tracks.
+                    SetForcePedFootstepsTracks(false);
+                    SetForceVehicleTrails(false);
+                }
+                await Delay(15000);
+            }
+            if (weather == "EXTRASUNNY")
+            {
+                // Remove all clouds, it's EXTRA sunny after all ;^)
+                ClearCloudHat();
+            }
+            else if(weather == "XMAS")
+            {
+                // Enable the snow particles.
+                UseParticleFxAssetNextCall("core_snow");
+            }
+            ClearOverrideWeather();
+            ClearWeatherTypePersist();
+            SetWeatherTypeNow(previousWeather);
+            SetWeatherTypeNowPersist(previousWeather);
+            SetWeatherTypePersist(previousWeather);
+        }
+
+        private async Task SetTime()
+        {
+            await Delay(2000);
+            minute++;
+            if (minute > 59)
+            {
+                minute = 0;
+                hour++;
+            }
+            if (hour > 23)
+            {
+                hour = 0;
+            }
+            NetworkOverrideClockTime(hour, minute, 0);
+        }
+        #endregion
+        
         #region OnTick
         /// <summary>
         /// Called every frame.
@@ -54,7 +211,9 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
+                TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
                 await CreateMainMenu();
+                await CreateNoclipMenu();
                 ClearBrief();
                 ShowHelp();
                 EventHandlers.Add("playerSpawned", new Action(ShowHelp));
@@ -88,11 +247,16 @@ namespace vMenuClient
                 mainMenu.Visible = !_menuPool.IsAnyMenuOpen();
                 PlaySoundFrontend(-1, mainMenu.AUDIO_SELECT, mainMenu.AUDIO_LIBRARY, false);
             }
+
+            if (IsControlJustPressed(0, (int)Control.ReplayStartStopRecordingSecondary) && IsInputDisabled(2))
+            {
+                noclipMenu.Visible = !noclipMenu.Visible;
+            }
             #endregion
 
             #region disable buttons when menu is open, also close all menu's if the game is paused.
             // If any menu is open, run the following.
-            if (_menuPool.IsAnyMenuOpen())
+            if (_menuPool.IsAnyMenuOpen() && !noclipMenu.Visible)
             {
                 // If keyboard/mouse imput > disable looking left/right because we don't want the camera to freak out.
                 if (IsInputDisabled(2))
@@ -168,6 +332,136 @@ namespace vMenuClient
             }
 
             #endregion
+
+            #region hanlde noclip menu
+            if (noclipMenu.Visible)
+            {
+                DisableControlAction(0, (int)Control.Cover, true);
+                DisableControlAction(0, (int)Control.MultiplayerInfo, true);
+                DisableControlAction(0, (int)Control.MoveUpDown, true);
+                DisableControlAction(0, (int)Control.MoveDown, true);
+                DisableControlAction(0, (int)Control.MoveRightOnly, true);
+                DisableControlAction(0, (int)Control.MoveLeftRight, true);
+                DisableControlAction(0, (int)Control.MoveRight, true);
+                DisableControlAction(0, (int)Control.MoveLeft, true);
+                DisableControlAction(0, (int)Control.MoveLeftOnly, true);
+                DisableControlAction(0, (int)Control.MoveDownOnly, true);
+                DisableControlAction(0, (int)Control.VehicleRadioWheel, true);
+                float noclipSpeedModifier = 3.5f;
+
+                if (IsDisabledControlPressed(0, (int)Control.Sprint) || IsControlPressed(0, (int)Control.Sprint))
+                {
+                    noclipSpeedModifier = 15.5f;
+                }
+                else if (IsDisabledControlPressed(0, (int)Control.Duck) || IsControlPressed(0, (int)Control.Duck))
+                {
+                    noclipSpeedModifier = 1.5f;
+                }
+
+                if (!IsPedInAnyVehicle(PlayerPedId(), false))
+                {
+                    
+                    FreezeEntityPosition(PlayerPedId(), true);
+                    FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), true), false);
+                    if (IsDisabledControlPressed(0, (int)Control.MoveUpOnly))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0f, 0.2f * noclipSpeedModifier, 0.0f);
+                        SetEntityCoordsNoOffset(PlayerPedId(), newPos.X, newPos.Y, newPos.Z, true, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveDownOnly))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0f, -0.2f * noclipSpeedModifier, 0.0f);
+                        SetEntityCoordsNoOffset(PlayerPedId(), newPos.X, newPos.Y, newPos.Z, true, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveLeftOnly))
+                    {
+                        var heading = GetEntityHeading(PlayerPedId());
+                        SetEntityHeading(PlayerPedId(), heading + 4f);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveRightOnly))
+                    {
+                        var heading = GetEntityHeading(PlayerPedId());
+                        SetEntityHeading(PlayerPedId(), heading - 4f);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MultiplayerInfo))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0f, 0.0f, -noclipSpeedModifier / 5f);
+                        SetEntityCoordsNoOffset(PlayerPedId(), newPos.X, newPos.Y, newPos.Z, true, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.Cover))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0f, 0.0f, noclipSpeedModifier / 5f);
+                        SetEntityCoordsNoOffset(PlayerPedId(), newPos.X, newPos.Y, newPos.Z, true, false, false);
+                    }
+                }
+                else
+                {
+                    var vehicle = GetVehiclePedIsIn(PlayerPedId(), false);
+                    FreezeEntityPosition(PlayerPedId(), false);
+                    FreezeEntityPosition(vehicle, true);
+                    if (IsDisabledControlPressed(0, (int)Control.MoveUpOnly))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0f, 0.2f * noclipSpeedModifier, 0.0f);
+                        SetEntityCoordsNoOffset(vehicle, newPos.X, newPos.Y, newPos.Z, false, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveDownOnly))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0f, -0.2f * noclipSpeedModifier, 0.0f);
+                        SetEntityCoordsNoOffset(vehicle, newPos.X, newPos.Y, newPos.Z, false, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveLeftOnly))
+                    {
+                        var heading = GetEntityHeading(vehicle);
+                        SetEntityHeading(PlayerPedId(), heading + 4f);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MoveRightOnly))
+                    {
+                        var heading = GetEntityHeading(vehicle);
+                        SetEntityHeading(PlayerPedId(), heading - 4f);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.MultiplayerInfo))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0f, 0.0f, -noclipSpeedModifier / 5f);
+                        SetEntityCoordsNoOffset(vehicle, newPos.X, newPos.Y, newPos.Z, false, false, false);
+                    }
+                    if (IsDisabledControlPressed(0, (int)Control.Cover))
+                    {
+                        var newPos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0f, 0.0f, noclipSpeedModifier / 5f);
+                        SetEntityCoordsNoOffset(vehicle, newPos.X, newPos.Y, newPos.Z, false, false, false);
+                    }
+                }
+
+                
+                //if (IsInputDisabled(2))
+                //{
+                    
+                //}
+            }
+            else
+            {
+                FreezeEntityPosition(PlayerPedId(), false);
+                FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), true), false);
+            }
+            #endregion
+        }
+        #endregion
+
+        #region NoClip Menu
+        /// <summary>
+        /// No clip menu
+        /// </summary>
+        /// <returns></returns>
+        private async Task CreateNoclipMenu()
+        {
+            await Delay(0);
+            noclipMenu = new UIMenu("Noclip", "NOCLIP");
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Left/Right"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveUpDown, "Go Forwards/Backwards"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Cover, "Go Up"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.ReplayStartStopRecordingSecondary, "Toggle Noclip"));
+            noclipMenu.ControlDisablingEnabled = false;
+            _menuPool.Add(noclipMenu);
         }
         #endregion
 
@@ -179,16 +473,16 @@ namespace vMenuClient
         {
             if (IsInputDisabled(2))
             {
-                CitizenFX.Core.UI.Screen.DisplayHelpTextThisFrame("Press ~INPUT_INTERACTION_MENU~ to open the interaction menu.");
+                Help("Press ~INPUT_INTERACTION_MENU~ to open the interaction menu.");
             }
             else
             {
-                CitizenFX.Core.UI.Screen.DisplayHelpTextThisFrame("Press and hold down ~INPUT_INTERACTION_MENU~ to open the interaction menu.");
+                Help("Press and hold down ~INPUT_INTERACTION_MENU~ to open the interaction menu.");
             }
         }
         #endregion
 
-        #region main menu
+        #region Main menu
         /// <summary>
         /// Create the main menu.
         /// </summary>
@@ -207,20 +501,44 @@ namespace vMenuClient
                 playerName = GetPlayerName(PlayerId());
                 await Delay(0);
             }
+
+
+            while (permsSetup == false)
+            {
+                await Delay(0);
+            }
+
             // When the username is valid, create the new menu.
             mainMenu = new UIMenu(playerName, "Main Menu");
-
             
-
             // Add the main menu to the _menuPool.
             _menuPool.Add(mainMenu);
 
-            // Add Player Options.
-            CreatePlayerOptions(mainMenu);
-            // Add vehicle options.
-            CreateVehicleOptions(mainMenu);
-            // Add car spawn menu.
-            CreateVehicleSpawn(mainMenu);
+            if (permissions["playerOptions"])
+            {
+                // Add Player Options.
+                CreatePlayerOptions(mainMenu);
+            }
+            if (permissions["vehicleOptions"])
+            {
+                // Add vehicle options.
+                CreateVehicleOptions(mainMenu);
+            }
+            if (permissions["spawnVehicle"])
+            {
+                // Add car spawn menu.
+                CreateVehicleSpawn(mainMenu);
+            }
+            if (permissions["weatherOptions"])
+            {
+                // Add Weather Options Menu.
+                CreateWeatherMenu();
+            }
+            if (permissions["timeOptions"])
+            {
+                // Add Time Options Menu.
+                CreateTimeMenu();
+            }
 
             // Apply the banner to the main menu.
             mainMenu.SetBannerType(banner);
@@ -501,7 +819,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        CitizenFX.Core.UI.Screen.ShowNotification("~r~Error: ~w~You did not provide a vehicle name.", true);
+                        Notify("~r~Error: ~w~You did not provide a vehicle name.", true);
                     }
                     submenu.Visible = true;
                 }
@@ -518,6 +836,7 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Vehicle Categories
         #region Boats menu
         private UIMenu CreateBoats()
         {
@@ -1332,55 +1651,6 @@ namespace vMenuClient
             return menu;
         }
         #endregion
-        
-        #region Spawn Vehicle function
-        /// <summary>
-        /// Spawn a vehicle in front of the player by passing the vehicle's model name as p0.
-        /// </summary>
-        /// <param name="vehicleName"></param>
-        private async void SpawnVehicleAsync(string vehicleName)
-        {
-            uint model = (uint)(int)GetHashKey(vehicleName);
-            if (IsModelInCdimage(model))
-            {
-                RequestModel(model);
-                while (!HasModelLoaded(model))
-                {
-                    await Delay(0);
-                }
-                //var pos = GetEntityCoords(PlayerPedId(), true);
-                var vehclass = GetVehicleClassFromName(model);
-                var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
-                var heading = GetEntityHeading(PlayerPedId());
-                var spawnInside = true;
-
-                // If the vehicle is utility class (possibly trailers) or a trains class then we don't want the player to be teleported
-                // Inside the vehicle, and we also rotate the vehicle 90 degrees so it doesn't kill the player by spawning on top of the player. 
-                // (in case it's a very long vehicle)
-                if (vehclass == (int)VehicleClass.Utility || vehclass == (int)VehicleClass.Trains)
-                {
-                    heading += 90f;
-                    spawnInside = false;
-                } 
-                var veh = CreateVehicle(model, pos.X, pos.Y, pos.Z, heading, true, false);
-                SetEntityAsMissionEntity(veh, true, true);
-                SetVehicleOnGroundProperly(veh);
-                SetVehicleNeedsToBeHotwired(veh, false);
-                if (IsThisModelAHeli(model))
-                {
-                    SetHeliBladesFullSpeed(veh);
-                }
-                // Should the player be spawned/teleported inside the vehicle?
-                if (spawnInside) 
-                {
-                    TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1);
-                }
-            }
-            else
-            {
-                CitizenFX.Core.UI.Screen.ShowNotification("~r~Error: ~w~This model (~r~" + vehicleName + "~w~) could not be found, are you sure it's valid?");
-            }
-        }
         #endregion
 
         #region Player Options
@@ -1492,35 +1762,141 @@ namespace vMenuClient
                 // Fix car
                 if (item == fixCar)
                 {
-                    // In vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
-                    {
-                        int veh = GetVehiclePedIsIn(PlayerPedId(), false);
-                        SetVehicleFixed(veh);
-                        CitizenFX.Core.UI.Screen.ShowSubtitle("Your ~r~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(veh))) + " ~w~has been repaired.");
-                    }
-                    // Not in vehicle
-                    else
-                    {
-                        CitizenFX.Core.UI.Screen.ShowNotification("~r~Error: ~w~You are not inside a vehicle.");
-                    }
+                    FixCar();
                 }
                 // Clean car
                 else if (item == cleanCar)
                 {
-                    // In vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
-                    {
-                        int veh = GetVehiclePedIsIn(PlayerPedId(), false);
-                        WashDecalsFromVehicle(veh, 10.0f);
-                        SetVehicleDirtLevel(veh, 0.0f);
-                        CitizenFX.Core.UI.Screen.ShowSubtitle("Your ~r~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(veh))) + " ~w~has been cleaned.");
-                    }
-                    // Not in vehicle
-                    else
-                    {
-                        CitizenFX.Core.UI.Screen.ShowNotification("~r~Error: ~w~You are not inside a vehicle.");
-                    }
+                    CleanCar();
+                }
+            };
+
+            submenu.OnMenuClose += (sender) =>
+            {
+                mainMenu.Visible = true;
+            };
+            
+            _menuPool.Add(submenu);
+            var vehOptionsBtn = new UIMenuItem(vehicleOptionsText, "Repair, clean, upgrade and pimp your vehicles here.");
+            mainMenu.AddItem(vehOptionsBtn);
+            mainmenu.BindMenuToItem(submenu, vehOptionsBtn);
+        }
+        #endregion
+
+        #region Weather Menu
+        private void CreateWeatherMenu()
+        {
+            UIMenu submenu = new UIMenu(weatherMenuTitle, "Weather Options");
+            submenu.SetBannerType(banner);
+            var extraSunny = new UIMenuItem(extraSunnyWeather, "Set the weather to extra sunny.");
+            UIMenuItem clear = new UIMenuItem(clearWeather, "Set the weather to clear.");
+            UIMenuItem clouds = new UIMenuItem(cloudsWeather, "Set the weather to clouds.");
+            UIMenuItem overcast = new UIMenuItem(overcastWeather, "Set the weather to overcast.");
+            UIMenuItem clearing = new UIMenuItem(clearingWeather, "Set the weather to clearing.");
+            UIMenuItem rain = new UIMenuItem(rainWeather, "Set the weather to rain.");
+            UIMenuItem thunder = new UIMenuItem(thunderWeather, "Set the weather to thunder.");
+            UIMenuItem smog = new UIMenuItem(smogWeather, "Set the weather to smog.");
+            UIMenuItem foggy = new UIMenuItem(foggyWeather, "Set the weather to foggy.");
+            UIMenuItem snow = new UIMenuItem(snowWeather, "Set the weather to snow.");
+            UIMenuItem snowlight = new UIMenuItem(snowLightWeather, "Set the weather to snowlight.");
+            UIMenuItem blizzard = new UIMenuItem(blizzardWeather, "Set the weather to blizzard.");
+            UIMenuItem xmas = new UIMenuItem(xmasWeather, "Set the weather to xmas.");
+            UIMenuItem halloween = new UIMenuItem(halloweenWeather, "Set the weather to halloween.");
+            UIMenuItem neutral = new UIMenuItem(neutralWeather, "Set the weather to neutral.");
+
+            submenu.AddItem(extraSunny);
+            submenu.AddItem(clear);
+            submenu.AddItem(clouds);
+            submenu.AddItem(overcast);
+            submenu.AddItem(clearing);
+            submenu.AddItem(rain);
+            submenu.AddItem(thunder);
+            submenu.AddItem(smog);
+            submenu.AddItem(foggy);
+            submenu.AddItem(snow);
+            submenu.AddItem(snowlight);
+            submenu.AddItem(blizzard);
+            submenu.AddItem(xmas);
+            submenu.AddItem(halloween);
+            submenu.AddItem(neutral);
+
+            submenu.RefreshIndex();
+            submenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == extraSunny)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "EXTRASUNNY");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + extraSunnyWeather);
+                }
+                else if (item == clear)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "CLEAR");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + clearWeather);
+                }
+                else if (item == clouds)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "CLOUDS");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + cloudsWeather);
+                }
+                else if (item == overcast)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "OVERCAST");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + overcastWeather);
+                }
+                else if (item == clearing)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "CLEARING");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + clearingWeather);
+                }
+                else if (item == rain)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "RAIN");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + rainWeather);
+                }
+                else if (item == thunder)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "THUNDER");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + thunderWeather);
+                }
+                else if (item == smog)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "SMOG");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + smogWeather);
+                }
+                else if (item == foggy)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "FOGGY");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + foggyWeather);
+                }
+                else if (item == snow)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "SNOW");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + snowWeather);
+                }
+                else if (item == snowlight)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "SNOWLIGHT");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + snowLightWeather);
+                }
+                else if (item == blizzard)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "BLIZZARD");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + blizzardWeather);
+                }
+                else if (item == xmas)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "XMAS");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + xmasWeather);
+                }
+                else if (item == halloween)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "HALLOWEEN");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + halloweenWeather);
+                }
+                else if (item == neutral)
+                {
+                    TriggerServerEvent("vMenu:UpdateWeather", "NEUTRAL");
+                    Notify("Please wait 15 seconds while the almighty ~g~Snail ~w~processes your request for ~y~" + neutralWeather);
                 }
             };
 
@@ -1529,13 +1905,284 @@ namespace vMenuClient
                 mainMenu.Visible = true;
             };
 
-
             _menuPool.Add(submenu);
-            var vehOptionsBtn = new UIMenuItem(vehicleOptionsText, "Repair, clean, upgrade and pimp your vehicles here.");
-            mainMenu.AddItem(vehOptionsBtn);
-            mainmenu.BindMenuToItem(submenu, vehOptionsBtn);
+            var weatherOptions = new UIMenuItem(weatherMenuTitle, "Change weather options.");
+            mainMenu.AddItem(weatherOptions);
+            mainMenu.BindMenuToItem(submenu, weatherOptions);
+            _menuPool.RefreshIndex();
+        }
+        #endregion
+        #region Time Menu
+        private void CreateTimeMenu()
+        {
+            UIMenu submenu = new UIMenu(timeMenuTitle, "Change The Time Of Day");
+
+            UIMenuItem earlyMorning = new UIMenuItem("Early Morning", "Set the time to 06:00 AM.");
+            UIMenuItem morning = new UIMenuItem("Morning", "Set the time to 09:00 AM.");
+            UIMenuItem noon = new UIMenuItem("Noon", "Set the time to 12:00 PM.");
+            UIMenuItem earlyAfternoon = new UIMenuItem("Early Afternoon", "Set the time to 3:00 PM.");
+            UIMenuItem afternoon = new UIMenuItem("Afternoon", "Set the time to 6:00 PM.");
+            UIMenuItem evening = new UIMenuItem("Evening", "Set the time to 9:00 PM.");
+            UIMenuItem midnight = new UIMenuItem("Midnight", "Set the time to 12:00 AM.");
+            UIMenuItem night = new UIMenuItem("Night", "Set the time to 3:00 AM.");
+
+            submenu.SetBannerType(banner);
+            submenu.AddItem(earlyMorning);
+            submenu.AddItem(morning);
+            submenu.AddItem(noon);
+            submenu.AddItem(earlyAfternoon);
+            submenu.AddItem(afternoon);
+            submenu.AddItem(evening);
+            submenu.AddItem(midnight);
+            submenu.AddItem(night);
+
+            submenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == earlyMorning)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 6, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~6:00 AM~w~.");
+                }
+                else if (item == morning)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 9, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~9:00 AM~w~.");
+                }
+                else if (item == noon)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 12, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~12:00 PM~w~.");
+                }
+                else if (item == earlyAfternoon)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 15, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~3:00 PM~w~.");
+                }
+                else if (item == afternoon)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 18, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~6:00 PM~w~.");
+                }
+                else if (item == evening)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 21, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~9:00 PM~w~.");
+                }
+                else if (item == midnight)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 0, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~12:00 AM~w~.");
+                }
+                else if (item == night)
+                {
+                    TriggerServerEvent("vMenu:UpdateTime", 3, 0);
+                    Notify("Begging the ~g~almighty Snail ~w~to change the time to ~r~3:00 AM~w~.");
+                }
+            };
+
+            submenu.OnMenuClose += (sender) =>
+            {
+                mainMenu.Visible = true;
+            };
+
+            var timeButton = new UIMenuItem(timeMenuTitle, "Change The Time Of Day.");
+            mainMenu.AddItem(timeButton);
+            submenu.RefreshIndex();
+            _menuPool.Add(submenu);
+            _menuPool.RefreshIndex();
+            mainMenu.BindMenuToItem(submenu, timeButton);
+
         }
         #endregion
 
+        #region common vehicle functions
+        #region Fix vehicle
+        /// <summary>
+        /// Fix the vehicle the player is in.
+        /// </summary>
+        private void FixCar()
+        {
+            // In vehicle
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                int veh = GetVehiclePedIsIn(PlayerPedId(), false);
+                if (DoesEntityExist(veh) && !IsEntityDead(veh))
+                {
+                    SetVehicleFixed(veh);
+                    Subtitle("Your ~g~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(veh))) + " ~w~has been repaired.");
+                }
+            }
+            // Not in vehicle
+            else
+            {
+                Notify("~r~Error: ~w~You are not inside a vehicle.", false);
+            }
+        }
+
+        /// <summary>
+        /// Fix the car specified by p0.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        private void FixCar(int vehicle)
+        {
+            if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle))
+            {
+                SetVehicleFixed(vehicle);
+                Subtitle("Your ~g~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(vehicle))) + " ~w~has been repaired.");
+            }
+        }
+        #endregion
+        #region Clean vehicle
+        /// <summary>
+        /// Clean the vehicle the player is in.
+        /// </summary>
+        private void CleanCar()
+        {
+            // In vehicle
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                int veh = GetVehiclePedIsIn(PlayerPedId(), false);
+                WashDecalsFromVehicle(veh, 10f);
+                SetVehicleDirtLevel(veh, 0f);
+                Subtitle("Your ~g~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(veh))) + " ~w~has been cleaned.");
+            }
+            // Not in vehicle
+            else
+            {
+                Notify("~r~Error: ~w~You are not inside a vehicle.");
+            }
+        }
+
+        /// <summary>
+        /// Clean the vehicle specified by p0.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        private void CleanCar(int vehicle)
+        {
+            if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle))
+            {
+                WashDecalsFromVehicle(vehicle, 10f);
+                SetVehicleDirtLevel(vehicle, 0f);
+                Subtitle("Your ~g~" + GetLabelText(GetDisplayNameFromVehicleModel(modelHash: (uint)GetEntityModel(vehicle))) + " ~w~has been cleaned.");
+            }
+        }
+        #endregion
+        #region Spawn Vehicle
+        /// <summary>
+        /// Spawn a vehicle in front of the player by passing the vehicle's model name as p0.
+        /// </summary>
+        /// <param name="vehicleName"></param>
+        private async void SpawnVehicleAsync(string vehicleName)
+        {
+            uint model = (uint)(int)GetHashKey(vehicleName);
+            if (IsModelInCdimage(model))
+            {
+                RequestModel(model);
+                while (!HasModelLoaded(model))
+                {
+                    await Delay(0);
+                }
+                //var pos = GetEntityCoords(PlayerPedId(), true);
+                var vehclass = GetVehicleClassFromName(model);
+                var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
+                var heading = GetEntityHeading(PlayerPedId());
+                var spawnInside = true;
+
+                // If the vehicle is utility class (possibly trailers) or a trains class then we don't want the player to be teleported
+                // Inside the vehicle, and we also rotate the vehicle 90 degrees so it doesn't kill the player by spawning on top of the player. 
+                // (in case it's a very long vehicle)
+                if (vehclass == (int)VehicleClass.Utility || vehclass == (int)VehicleClass.Trains)
+                {
+                    heading += 90f;
+                    spawnInside = false;
+                }
+                var veh = CreateVehicle(model, pos.X, pos.Y, pos.Z, heading, true, false);
+                SetEntityAsMissionEntity(veh, true, true);
+                SetVehicleOnGroundProperly(veh);
+                SetVehicleNeedsToBeHotwired(veh, false);
+                if (IsThisModelAHeli(model))
+                {
+                    SetHeliBladesFullSpeed(veh);
+                }
+                // Should the player be spawned/teleported inside the vehicle?
+                if (spawnInside)
+                {
+                    TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1);
+                }
+            }
+            else
+            {
+                Notify("~r~Error: ~w~This model (~r~" + vehicleName + "~w~) could not be found, are you sure it's valid?");
+            }
+        }
+        #endregion
+        #region Delete Vehicle
+        /// <summary>
+        /// Delete the vehicle the player's currently in.
+        /// </summary>
+        private void DeleteCar()
+        {
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                int veh = GetVehiclePedIsIn(PlayerPedId(), false);
+                if (GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                Notify("~r~Error: ~w~You're not inside a vehicle.");
+            }
+        }
+        /// <summary>
+        /// Delete the vehicle specified by p0.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        private void DeleteCar(int vehicle)
+        {
+
+        }
+        #endregion
+
+        #endregion
+
+        #region common general functions
+        /// <summary>
+        /// Show a notification above the minimap.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="blink"></param>
+        public void Notify(string message, bool blink = false)
+        {
+            CitizenFX.Core.UI.Screen.ShowNotification(message, blink);
+        }
+        /// <summary>
+        /// Show subtitle
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="duration"></param>
+        private void Subtitle(string message, int duration = 2500)
+        {
+            CitizenFX.Core.UI.Screen.ShowSubtitle(message, duration);
+        }
+
+        /// <summary>
+        /// Show help message.
+        /// </summary>
+        /// <param name="message">Message, max 299 characters long.</param>
+        /// <param name="sound">Play notification sound.</param>
+        /// <param name="duration">Help message duration (in ms).</param>
+        private void Help(string message, bool sound = false, int duration=5000)
+        {
+            BeginTextCommandDisplayHelp("THREESTRINGS");
+            AddTextComponentSubstringPlayerName(message);
+            EndTextCommandDisplayHelp(0, false, sound, duration);
+        }
+        #endregion
     }
 }
