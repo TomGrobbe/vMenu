@@ -72,45 +72,29 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:NotifyPlayer", new Action<string, bool>(Notify));
             EventHandlers.Add("vMenu:WeatherAndTimeSync", new Action<string, int, int>(SetWeatherAndTime));
             EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
-            //EventHandlers.Add("vMenu:test", new Action<dynamic>(SetPermissions));
-            //EventHandlers.Add("vMenu:test", new Action<dynamic>(Test));
-            //EventHandlers.Add("vMenu:SetPermissions", new Action<bool, bool, bool, bool, bool>(SetPermissions));
-
             Tick += OnTick;
             Tick += SetTime;
             Tick += SetWeather;
         }
-
-        //private void Test(dynamic obj)
-        //{
-        //    Debug.WriteLine(obj.playerOptions.ToString());
-        //    Notify("Working?");
-        //}
-        //private void Test(ExpandoObject obj)
-        //{
-        //    //var dtest2 = new Dictionary<string, bool>(obj);
-        //    IDictionary<string, object> dtest = obj;
-        //    Debug.WriteLine(dtest.GetType().ToString());
-        //    //Debug.WriteLine(dtest2.GetType().ToString());
-        //    //Debug.WriteLine(nothing.GetType().ToString());
-        //    Debug.WriteLine(obj.GetType().ToString());
-        //    Notify("Working?");
-        //}
-
+        
         private void SetPermissions(dynamic permissions)
         {
-            //Debug.WriteLine("Permissions are loaded.");
-            //permissions.Add("playerOptions", playerOptionsPerms);
-            //permissions.Add("onlinePlayers", onlinePlayersPerm);
-            //permissions.Add("vehicleOptions", vehicleOptionsPerms);
-            //permissions.Add("vehicleSpawn", spawnVehiclePerms);
-            //permissions.Add("weatherOptions", weatherOptionsPerms);
-            //permissions.Add("timeOptions", timeOptionsPerms);
-            //this.permissions = obj;
-            //permsSetup = true;
-            Notify(permissions.onlinePlayers.ToString());
-            Notify("Working2?");
-            //Notify(playerOptionsPerms.ToString() + " " + vehicleOptionsPerms.ToString() + " " + spawnVehiclePerms.ToString() + " " + weatherOptionsPerms.ToString() + " " + timeOptionsPerms.ToString());
+            this.permissions.Add("playerOptions", permissions.playerOptions);
+            this.permissions.Add("onlinePlayers", permissions.onlinePlayers);
+            this.permissions.Add("onlinePlayers_kick", permissions.onlinePlayers_kick);
+            this.permissions.Add("onlinePlayers_teleport", permissions.onlinePlayers_teleport);
+            this.permissions.Add("onlinePlayers_waypoint", permissions.onlinePlayers_waypoint);
+            this.permissions.Add("onlinePlayers_spectate", permissions.onlinePlayers_spectate);
+            this.permissions.Add("vehicleOptions", permissions.vehicleOptions);
+            this.permissions.Add("spawnVehicle", permissions.spawnVehicle);
+            this.permissions.Add("weatherOptions", permissions.weatherOptions);
+            this.permissions.Add("timeOptions", permissions.timeOptions);
+            this.permissions.Add("noclip", permissions.noclip);
+            permsSetup = true;
+            //foreach (KeyValuePair<string, bool> dict in this.permissions)
+            //{
+            //    Notify(dict.Key + " = " + dict.Value);
+            //}
         }
         #endregion
 
@@ -248,10 +232,17 @@ namespace vMenuClient
                 PlaySoundFrontend(-1, mainMenu.AUDIO_SELECT, mainMenu.AUDIO_LIBRARY, false);
             }
 
-            if (IsControlJustPressed(0, (int)Control.ReplayStartStopRecordingSecondary) && IsInputDisabled(2))
+            if (permsSetup)
             {
-                noclipMenu.Visible = !noclipMenu.Visible;
+                if (permissions["noclip"])
+                {
+                    if (IsControlJustPressed(0, (int)Control.ReplayStartStopRecordingSecondary) && IsInputDisabled(2))
+                    {
+                        noclipMenu.Visible = !noclipMenu.Visible;
+                    }
+                }
             }
+            
             #endregion
 
             #region disable buttons when menu is open, also close all menu's if the game is paused.
@@ -453,15 +444,22 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task CreateNoclipMenu()
         {
+            //// Wait until the permissions are loaded.
+            while (permsSetup == false)
+            {
+                await Delay(0);
+            }
             await Delay(0);
-            noclipMenu = new UIMenu("Noclip", "NOCLIP");
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Left/Right"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveUpDown, "Go Forwards/Backwards"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Cover, "Go Up"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.ReplayStartStopRecordingSecondary, "Toggle Noclip"));
-            noclipMenu.ControlDisablingEnabled = false;
-            _menuPool.Add(noclipMenu);
+            {
+                noclipMenu = new UIMenu("Noclip", "NOCLIP");
+                noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Left/Right"));
+                noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveUpDown, "Go Forwards/Backwards"));
+                noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Cover, "Go Up"));
+                noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
+                noclipMenu.AddInstructionalButton(new InstructionalButton(Control.ReplayStartStopRecordingSecondary, "Toggle Noclip"));
+                noclipMenu.ControlDisablingEnabled = false;
+                _menuPool.Add(noclipMenu);
+            }
         }
         #endregion
 
@@ -501,23 +499,27 @@ namespace vMenuClient
                 playerName = GetPlayerName(PlayerId());
                 await Delay(0);
             }
-
-
+            // Wait until the permissions are loaded.
             while (permsSetup == false)
             {
                 await Delay(0);
             }
-
             // When the username is valid, create the new menu.
             mainMenu = new UIMenu(playerName, "Main Menu");
             
             // Add the main menu to the _menuPool.
             _menuPool.Add(mainMenu);
 
+            // Create and add each menu only if the player has permission for it.
             if (permissions["playerOptions"])
             {
                 // Add Player Options.
                 CreatePlayerOptions(mainMenu);
+            }
+            if (permissions["onlinePlayers"])
+            {
+                //Add Online Players Menu.
+                CreateOnlinePlayers();
             }
             if (permissions["vehicleOptions"])
             {
@@ -835,7 +837,6 @@ namespace vMenuClient
             _menuPool.RefreshIndex();
         }
         #endregion
-
         #region Vehicle Categories
         #region Boats menu
         private UIMenu CreateBoats()
@@ -1726,7 +1727,12 @@ namespace vMenuClient
             submenu.RefreshIndex();
         }
         #endregion
+        #region Online Players Menu
+        private void CreateOnlinePlayers()
+        {
 
+        }
+        #endregion
         #region vehicle options
         private void CreateVehicleOptions(UIMenu mainmenu)
         {

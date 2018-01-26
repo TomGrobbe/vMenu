@@ -30,35 +30,22 @@ namespace vMenuServer
         }
 
         private void SendPermissions([FromSource] Player player)
-        {
-            bool playerOptions = IsPlayerAceAllowed(player.Handle, "vMenu.playerOptions");
-            bool onlinePlayers = IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers");
-            bool vehicleOptions = IsPlayerAceAllowed(player.Handle, "vMenu.vehicleOptions");
-            bool spawnVehicle = IsPlayerAceAllowed(player.Handle, "vMenu.spawnVehicle");
-            bool weatherOptions = IsPlayerAceAllowed(player.Handle, "vMenu.weatherOptions");
-            bool timeOptions = IsPlayerAceAllowed(player.Handle, "vMenu.timeOptions");
-
-            //TriggerClientEvent(player, "vMenu:SetPermissions", playerOptions, onlinePlayers, vehicleOptions, spawnVehicle, weatherOptions, timeOptions);
+        {   
             Dictionary<string, bool> permissions = new Dictionary<string, bool>
             {
                 {"playerOptions", IsPlayerAceAllowed(player.Handle, "vMenu.playerOptions") },
                 {"onlinePlayers", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers") },
+                {"onlinePlayers_kick", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers.kick") },
+                {"onlinePlayers_teleport", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers.teleport") },
+                {"onlinePlayers_waypoint", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers.waypoint") },
+                {"onlinePlayers_spectate", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers.spectate") },
                 {"vehicleOptions", IsPlayerAceAllowed(player.Handle, "vMenu.vehicleOptions") },
                 {"spawnVehicle", IsPlayerAceAllowed(player.Handle, "vMenu.spawnVehicle") },
                 {"weatherOptions", IsPlayerAceAllowed(player.Handle, "vMenu.weatherOptions") },
                 {"timeOptions", IsPlayerAceAllowed(player.Handle, "vMenu.timeOptions") },
+                {"noclip", IsPlayerAceAllowed(player.Handle, "vMenu.noclip") },
             };
-            //Debug.WriteLine(permissions["playerOptions"].ToString());
-            //Debug.WriteLine(permissions["onlinePlayers"].ToString());
-            //Debug.WriteLine(permissions["vehicleOptions"].ToString());
-            //Debug.WriteLine(permissions["spawnVehicle"].ToString());
-            //Debug.WriteLine(permissions["weatherOptions"].ToString());
-            //Debug.WriteLine(permissions["timeOptions"].ToString());
-            //dynamic permissions = new ExpandoObject();
-            //permissions.test = false;
-            //permissions.test2 = false;
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);
-            //TriggerClientEvent(player, "vMenu:test", permissions);
         }
 
         /// <summary>
