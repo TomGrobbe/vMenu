@@ -25,8 +25,14 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:UpdateWeather", new Action<string>(ChangeWeather));
             EventHandlers.Add("vMenu:UpdateTime", new Action<int, int>(ChangeTime));
             EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissions));
+            EventHandlers.Add("vMenu:KickPlayer", new Action<Player,int>(KickPlayer));
             Tick += OnTick;
             Tick += WeatherAndTimeSync;
+        }
+
+        private void KickPlayer([FromSource] Player player, int PlayerServerId)
+        {
+            DropPlayer(PlayerServerId.ToString(), "You have been kicked by " + GetPlayerName(player.Handle));
         }
 
         private void SendPermissions([FromSource] Player player)
@@ -44,6 +50,7 @@ namespace vMenuServer
                 {"weatherOptions", IsPlayerAceAllowed(player.Handle, "vMenu.weatherOptions") },
                 {"timeOptions", IsPlayerAceAllowed(player.Handle, "vMenu.timeOptions") },
                 {"noclip", IsPlayerAceAllowed(player.Handle, "vMenu.noclip") },
+                {"voiceChat", IsPlayerAceAllowed(player.Handle, "vMenu.voiceChat") },
             };
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);
         }

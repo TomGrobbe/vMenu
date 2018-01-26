@@ -210,6 +210,8 @@ namespace vMenuClient
 
             // Process all menus.
             _menuPool.ProcessMenus();
+            _menuPool.ProcessMouse();
+            //_menuPool.ProcessControl();
 
             #region opening/closing of menu's
             // Handle opening/closing of the menu for controller.
@@ -223,6 +225,7 @@ namespace vMenuClient
                     if (openDelay > 45)
                     {
                         mainMenu.Visible = true;
+                        SetCursorLocation(0.5f, 0.5f);
                         PlaySoundFrontend(-1, mainMenu.AUDIO_SELECT, mainMenu.AUDIO_LIBRARY, false);
                         break;
                     }
@@ -232,6 +235,7 @@ namespace vMenuClient
             if (IsControlJustPressed(0, (int)Control.InteractionMenu) && IsInputDisabled(2))
             {
                 mainMenu.Visible = !_menuPool.IsAnyMenuOpen();
+                SetCursorLocation(0.5f, 0.5f);
                 PlaySoundFrontend(-1, mainMenu.AUDIO_SELECT, mainMenu.AUDIO_LIBRARY, false);
             }
 
@@ -242,6 +246,7 @@ namespace vMenuClient
                     if (IsControlJustPressed(0, (int)Control.ReplayStartStopRecordingSecondary) && IsInputDisabled(2))
                     {
                         noclipMenu.Visible = !noclipMenu.Visible;
+                        SetCursorLocation(0.5f, 0.5f);
                     }
                 }
             }
@@ -261,8 +266,8 @@ namespace vMenuClient
                 // If keyboard/mouse imput > disable looking left/right because we don't want the camera to freak out.
                 if (IsInputDisabled(2))
                 {
-                    DisableControlAction(0, (int)Control.LookLeftRight, true);
-                    DisableControlAction(0, (int)Control.LookUpDown, true);
+                    //DisableControlAction(0, (int)Control.LookLeftRight, true);
+                    //DisableControlAction(0, (int)Control.LookUpDown, true);
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
                         DisableControlAction(0, (int)Control.VehicleSelectNextWeapon, true);
@@ -562,11 +567,16 @@ namespace vMenuClient
             // Allow all buttons to function when the user has the menu open.
             _menuPool.ControlDisablingEnabled = false;
 
-            // Broken setting?
-            _menuPool.ResetCursorOnOpen = true;
 
             // Refresh the index so the menu opens at the top.
             _menuPool.RefreshIndex();
+            
+            // Broken setting?
+            _menuPool.ResetCursorOnOpen = true;
+            _menuPool.MouseEdgeEnabled = false;
+            
+            mainMenu.ResetCursorOnOpen = true;
+            mainMenu.ScaleWithSafezone = true;
         }
         #endregion
 
@@ -584,7 +594,8 @@ namespace vMenuClient
 
             // Create mainMenu buttons
             //var carSpawnMenuBtn = new UIMenuItem("Spawn Vehicle", "Vehicle Spawn Menu.");
-            var carSpawnMenuBtn = new UIMenuItem(GetLabelText("BLIP_125") + " Menu", "Vehicle Spawn Menu."); // Localized Title: Spawn vehicle
+            var carSpawnMenuBtn = new UIMenuItem("Vehicle Spawner", "Select a vehicle from a specific category, or spawn one directly by entering it's name."); // Localized Title: Spawn vehicle
+            //var carSpawnMenuBtn = new UIMenuItem(GetLabelText("BLIP_125") + " Menu", "Vehicle Spawn."); // Localized Title: Spawn vehicle
 
             // Add items/buttons to the menu
             mainmenu.AddItem(carSpawnMenuBtn);
@@ -1972,11 +1983,14 @@ namespace vMenuClient
             // Create new buttons.
             UIMenuItem fixCar = new UIMenuItem("Fix vehicle", "Fix and clean your vehicle.");
             UIMenuItem cleanCar = new UIMenuItem("Clean Vehicle", "Wash your vehicle.");
+            UIMenuItem deleteCar = new UIMenuItem("Delete Vehicle", "Delete your vehicle.");
+            deleteCar.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
             // Add the buttons/checkboxes to the menu.
             submenu.AddItem(vehgod);
             submenu.AddItem(fixCar);
             submenu.AddItem(cleanCar);
+            submenu.AddItem(deleteCar);
 
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
             {
@@ -1999,6 +2013,11 @@ namespace vMenuClient
                 {
                     CleanCar();
                 }
+                // Delete car
+                else if (item == deleteCar)
+                {
+                    DeleteCar();
+                }
             };
 
             submenu.OnMenuClose += (sender) =>
@@ -2016,6 +2035,15 @@ namespace vMenuClient
         private void CreateVoiceChat()
         {
             UIMenu submenu = new UIMenu("Voice Chat", "Voice Chat Options");
+            submenu.OnMenuClose += (sender) =>
+            {
+                mainMenu.Visible = true;
+            };
+
+            UIMenuItem voicechat = new UIMenuItem("Voice Chat Options", "Here you can configure Voice Chat options, such as the channel you're in or the Voice Chat Proximity.");
+            mainMenu.AddItem(voicechat);
+            mainMenu.BindMenuToItem(submenu, voicechat);
+            _menuPool.Add(submenu);
         }
         #endregion
 
@@ -2363,16 +2391,18 @@ namespace vMenuClient
                 int veh = GetVehiclePedIsIn(PlayerPedId(), false);
                 if (GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                 {
-
+                    SetEntityAsMissionEntity(veh, false, false);
+                    DeleteVehicle(ref veh);
+                    Notify("The almighty ~g~Snail ~w~cleaned up your mess!");
                 }
                 else
                 {
-
+                    Notify("~r~Error: ~w~You need to be in the driver's seat to delete a vehicle!");
                 }
             }
             else
             {
-                Notify("~r~Error: ~w~You're not inside a vehicle.");
+                Notify("~r~Error: ~w~You're not inside a vehicle!");
             }
         }
         /// <summary>
