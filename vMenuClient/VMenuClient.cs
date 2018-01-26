@@ -22,6 +22,7 @@ namespace vMenuClient
         //private object permissions;
         //private bool [] permissions = new bool[5] {false, false, false, false, false};
         private bool permsSetup = false;
+        private int spectatingId = -1;
 
         private string lastVehicleSpawned = "Adder";
         private bool vehicleGodMode = false;
@@ -40,7 +41,7 @@ namespace vMenuClient
         private string vehicleOptionsText = GetLabelText("collision_w0oam1") + " " + GetLabelText("PM_MP_OPTIONS"); // Vehicle Options
         private string weatherMenuTitle = GetLabelText("collision_7ydzakm") + " " + GetLabelText("PM_MP_OPTIONS"); // Weather Options
         private string timeMenuTitle = GetLabelText("FM_HTUT_TME") + " " + GetLabelText("PM_MP_OPTIONS"); // Time Options
-        
+
         private string extraSunnyWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_EXTRA_SUNNY"); // Extra sunny weather.
         private string clearWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_CLEAR"); // Clear weather.
         private string cloudsWeather = GetLabelText("CHEAT_ADVANCE_WEATHER_CLOUDY"); // Cloudy weather.
@@ -76,25 +77,27 @@ namespace vMenuClient
             Tick += SetTime;
             Tick += SetWeather;
         }
-        
+
         private void SetPermissions(dynamic permissions)
         {
-            this.permissions.Add("playerOptions", permissions.playerOptions);
-            this.permissions.Add("onlinePlayers", permissions.onlinePlayers);
-            this.permissions.Add("onlinePlayers_kick", permissions.onlinePlayers_kick);
-            this.permissions.Add("onlinePlayers_teleport", permissions.onlinePlayers_teleport);
-            this.permissions.Add("onlinePlayers_waypoint", permissions.onlinePlayers_waypoint);
-            this.permissions.Add("onlinePlayers_spectate", permissions.onlinePlayers_spectate);
-            this.permissions.Add("vehicleOptions", permissions.vehicleOptions);
-            this.permissions.Add("spawnVehicle", permissions.spawnVehicle);
-            this.permissions.Add("weatherOptions", permissions.weatherOptions);
-            this.permissions.Add("timeOptions", permissions.timeOptions);
-            this.permissions.Add("noclip", permissions.noclip);
+            //this.permissions.Add("playerOptions", permissions.playerOptions);
+            //this.permissions.Add("onlinePlayers", permissions.onlinePlayers);
+            //this.permissions.Add("onlinePlayers_kick", permissions.onlinePlayers_kick);
+            //this.permissions.Add("onlinePlayers_teleport", permissions.onlinePlayers_teleport);
+            //this.permissions.Add("onlinePlayers_waypoint", permissions.onlinePlayers_waypoint);
+            //this.permissions.Add("onlinePlayers_spectate", permissions.onlinePlayers_spectate);
+            //this.permissions.Add("vehicleOptions", permissions.vehicleOptions);
+            //this.permissions.Add("spawnVehicle", permissions.spawnVehicle);
+            //this.permissions.Add("weatherOptions", permissions.weatherOptions);
+            //this.permissions.Add("timeOptions", permissions.timeOptions);
+            //this.permissions.Add("noclip", permissions.noclip);
+            foreach (dynamic dict in permissions)
+            {
+                //Notify(dict.Key.ToString() + " = " + dict.Value.ToString());
+                this.permissions.Add(dict.Key.ToString(), (bool)dict.Value);
+            }
+
             permsSetup = true;
-            //foreach (KeyValuePair<string, bool> dict in this.permissions)
-            //{
-            //    Notify(dict.Key + " = " + dict.Value);
-            //}
         }
         #endregion
 
@@ -154,7 +157,7 @@ namespace vMenuClient
                 // Remove all clouds, it's EXTRA sunny after all ;^)
                 ClearCloudHat();
             }
-            else if(weather == "XMAS")
+            else if (weather == "XMAS")
             {
                 // Enable the snow particles.
                 UseParticleFxAssetNextCall("core_snow");
@@ -182,7 +185,7 @@ namespace vMenuClient
             NetworkOverrideClockTime(hour, minute, 0);
         }
         #endregion
-        
+
         #region OnTick
         /// <summary>
         /// Called every frame.
@@ -242,7 +245,13 @@ namespace vMenuClient
                     }
                 }
             }
-            
+
+            if (spectatingId != -1 && IsPlayerDead(PlayerId()))
+            {
+                spectatingId = -1;
+                NetworkSetInSpectatorMode(false, PlayerPedId());
+            }
+
             #endregion
 
             #region disable buttons when menu is open, also close all menu's if the game is paused.
@@ -351,7 +360,7 @@ namespace vMenuClient
 
                 if (!IsPedInAnyVehicle(PlayerPedId(), false))
                 {
-                    
+
                     FreezeEntityPosition(PlayerPedId(), true);
                     FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), true), false);
                     if (IsDisabledControlPressed(0, (int)Control.MoveUpOnly))
@@ -422,10 +431,10 @@ namespace vMenuClient
                     }
                 }
 
-                
+
                 //if (IsInputDisabled(2))
                 //{
-                    
+
                 //}
             }
             else
@@ -506,20 +515,20 @@ namespace vMenuClient
             }
             // When the username is valid, create the new menu.
             mainMenu = new UIMenu(playerName, "Main Menu");
-            
+
             // Add the main menu to the _menuPool.
             _menuPool.Add(mainMenu);
 
             // Create and add each menu only if the player has permission for it.
-            if (permissions["playerOptions"])
-            {
-                // Add Player Options.
-                CreatePlayerOptions(mainMenu);
-            }
             if (permissions["onlinePlayers"])
             {
                 //Add Online Players Menu.
                 CreateOnlinePlayers();
+            }
+            if (permissions["playerOptions"])
+            {
+                // Add Player Options.
+                CreatePlayerOptions(mainMenu);
             }
             if (permissions["vehicleOptions"])
             {
@@ -531,15 +540,20 @@ namespace vMenuClient
                 // Add car spawn menu.
                 CreateVehicleSpawn(mainMenu);
             }
-            if (permissions["weatherOptions"])
+            if (permissions["voiceChat"])
             {
-                // Add Weather Options Menu.
-                CreateWeatherMenu();
+                // Add car spawn menu.
+                CreateVoiceChat();
             }
             if (permissions["timeOptions"])
             {
                 // Add Time Options Menu.
                 CreateTimeMenu();
+            }
+            if (permissions["weatherOptions"])
+            {
+                // Add Weather Options Menu.
+                CreateWeatherMenu();
             }
 
             // Apply the banner to the main menu.
@@ -556,7 +570,7 @@ namespace vMenuClient
         }
         #endregion
 
-        #region vehilce spawn menu
+        #region Vehilce Spawn Menu
         /// <summary>
         /// Create vehicle spawn menu
         /// </summary>
@@ -602,7 +616,7 @@ namespace vMenuClient
             var Utility = new UIMenuItem("Utility", "Spawn a utility vehicle.");
             var Vans = new UIMenuItem("Vans", "Spawn a van.");
             #endregion
-            
+
             #region add category buttons to the menu
             // Add the buttons to the menu.
             submenu.AddItem(spawnByNameBtn);
@@ -801,7 +815,7 @@ namespace vMenuClient
             {
                 if (item == spawnByNameBtn)
                 {
-                    
+
                     submenu.Visible = false;
                     //await Game.GetUserInput(WindowTitle.FMMC_KEY_TIP8, "Adder", 60); //Title: Enter message:
                     DisplayOnscreenKeyboard(6, "collision_9dkiwut", "", lastVehicleSpawned, "", "", "", 60); //Title: Enter a vehicle
@@ -828,7 +842,7 @@ namespace vMenuClient
             };
             #endregion
 
-            submenu.OnMenuClose += (sender) => 
+            submenu.OnMenuClose += (sender) =>
             {
                 mainMenu.Visible = true;
             };
@@ -1654,12 +1668,41 @@ namespace vMenuClient
         #endregion
         #endregion
 
-        #region Player Options
+        #region Player Options Menu
         private void CreatePlayerOptions(UIMenu menu)
         {
             // Create submenu.
             var submenu = new UIMenu(GetPlayerName(PlayerId()), playerOptionsText);
             submenu.SetBannerType(banner);
+
+            // Create buttons for main player options.
+            UIMenuItem heal = new UIMenuItem("Heal Player", "Heal the player to max health.");
+            UIMenuItem armor = new UIMenuItem("Max Armor", "Give the player max armor.");
+            UIMenuItem clean = new UIMenuItem("Clean Player", "Clean the player's clothes.");
+
+            // Add the buttons to the submenu.
+            submenu.AddItem(heal);
+            submenu.AddItem(armor);
+            submenu.AddItem(clean);
+
+            submenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == heal)
+                {
+                    SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
+                    Subtitle("Your player has been healed.");
+                }
+                else if (item == armor)
+                {
+                    SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
+                    Subtitle("Your player's armor has been restored to maximum capacity.");
+                }
+                else if (item == clean)
+                {
+                    ClearPedBloodDamage(PlayerPedId());
+                    Subtitle("Your player's clothes have been cleaned.");
+                }
+            };
 
             // Create checkboxes for the main player toggle options.
             var godmodebtn = new UIMenuCheckboxItem(playerInvincibleText, false, "Toggle Player Invincibility.");
@@ -1706,7 +1749,7 @@ namespace vMenuClient
                     unlimitedStamina = _checked;
                 }
             };
-            
+
             // If the menu closes, go back and re-open the main menu.
             submenu.OnMenuClose += (sender) =>
             {
@@ -1730,10 +1773,191 @@ namespace vMenuClient
         #region Online Players Menu
         private void CreateOnlinePlayers()
         {
+            // Create the submenu.
+            UIMenu submenu = new UIMenu("Online Players", "Currently connected players");
+            // Add the submenu to the menu pool.
+            _menuPool.Add(submenu);
+
+            // Set the sub menu banner type.
+            submenu.SetBannerType(banner);
+
+            #region If the submenu is opened, refresh the playerlist
+            mainMenu.OnMenuChange += (oldMenu, newMenu, forward) =>
+            {
+                if (newMenu == submenu)
+                {
+                    //Notify(submenu.MenuItems.Count().ToString());
+                    if (submenu.MenuItems.Count() > 0)
+                    {
+                        for (var i = submenu.MenuItems.Count(); i > 0; i--)
+                        {
+                            submenu.RemoveItemAt(i - 1);
+                        }
+                    }
+                    for (var i = 0; i < 32; i++)
+                    {
+                        if (NetworkIsPlayerActive(i))
+                        {
+                            var userMenu = new UIMenu(GetPlayerName(i), i + " - " + GetPlayerName(i));
+
+                            _menuPool.Add(userMenu);
+                            ///var userMenu = _menuPool.AddSubMenu(submenu, GetPlayerName(i));
+                            userMenu.SetBannerType(banner);
+                            var spectate = new UIMenuItem("Spectate Player", "Spectate this player.");
+                            var teleport = new UIMenuItem("Teleport To Player", "Teleport to this player.");
+                            var waypoint = new UIMenuItem("Set Waypoint", "Set a waypoint to this player on your map.");
+                            var kick = new UIMenuItem("~r~Kick Player", "Kick this player from the server.");
+                            kick.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+
+                            if (!permissions["onlinePlayers_spectate"])
+                            {
+                                spectate.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            if (!permissions["onlinePlayers_teleport"])
+                            {
+                                teleport.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            if (!permissions["onlinePlayers_waypoint"])
+                            {
+                                waypoint.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            if (!permissions["onlinePlayers_kick"])
+                            {
+                                kick.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            // Add the menu items
+                            userMenu.AddItem(spectate);
+                            userMenu.AddItem(teleport);
+                            userMenu.AddItem(waypoint);
+                            userMenu.AddItem(kick);
+
+                            // When an item is clicked...
+                            userMenu.OnItemSelect += async (sender, item, index) =>
+                            {
+                                //foreach (KeyValuePair<string, bool> test in permissions)
+                                //{
+                                //    Notify(test.Key);
+                                //}
+                                int playerId = int.Parse(userMenu.Subtitle.Caption.ToString().Substring(0, 1));
+                                if (item == spectate)
+                                {
+                                    if (this.permissions["onlinePlayers_spectate"])
+                                    {
+                                        if (playerId == PlayerId())
+                                        {
+                                            Notify("~r~That's a no, sorry. ~w~You can't spectate yourself!");
+                                        }
+                                        else
+                                        {
+                                            if (NetworkIsInSpectatorMode())
+                                            {
+                                                DoScreenFadeOut(200);
+                                                await Delay(200);
+                                                NetworkSetInSpectatorMode(false, GetPlayerPed(playerId));
+                                                DoScreenFadeIn(200);
+                                                await Delay(200);
+                                                spectatingId = -1;
+                                            }
+                                            else
+                                            {
+                                                DoScreenFadeOut(200);
+                                                await Delay(200);
+                                                NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
+                                                spectatingId = playerId;
+                                                DoScreenFadeIn(200);
+                                                await Delay(200);
+                                                Notify("Currently Spectating: ~b~" + GetPlayerName(spectatingId) + " [" + spectatingId + "]~w~.");
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        Notify("~r~Sorry! ~w~You are not allowed to spectate this player.");
+                                    }
+                                }
+                                if (item == teleport)
+                                {
+                                    if (this.permissions["onlinePlayers_teleport"])
+                                    {
+                                        if (playerId != PlayerId())
+                                        {
+                                            var pos = GetEntityCoords(GetPlayerPed(playerId), true);
+                                            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 1f);
+                                        }
+                                        else
+                                        {
+                                            Notify("~r~Error: ~w~You can't teleport to yourself!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Notify("~r~Sorry! ~w~You are not allowed to teleport to this player.");
+                                    }
+                                }
+                                if (item == waypoint)
+                                {
+
+                                    if (this.permissions["onlinePlayers_waypoint"])
+                                    {
+                                        if (playerId != PlayerId())
+                                        {
+                                            var pos = GetEntityCoords(GetPlayerPed(playerId), true);
+                                            SetNewWaypoint(pos.X, pos.Y);
+                                        }
+                                        else
+                                        {
+                                            Notify("~r~Error: ~w~You can't set a waypoint to yourself!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Notify("~r~Sorry! ~w~You are not allowed to set a waypoint to this player.");
+                                    }
+
+                                }
+                                if (item == kick)
+                                {
+                                    if (this.permissions["onlinePlayers_kick"])
+                                    {
+                                        TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerId));
+                                    }
+                                    else
+                                    {
+                                        Notify("~r~Sorry! ~w~You are not allowed to kick this player.");
+                                    }
+                                }
+                            };
+
+                            userMenu.OnMenuClose += (sender) =>
+                            {
+                                submenu.Visible = true;
+                            };
+
+                            var button = new UIMenuItem(GetPlayerName(i), "");
+                            submenu.AddItem(button);
+                            submenu.BindMenuToItem(userMenu, button);
+                        }
+                    }
+                }
+            };
+            #endregion
+
+            // If the submenu is closed, open the main menu.
+            submenu.OnMenuClose += (sender) =>
+            {
+                mainMenu.Visible = true;
+            };
+
+            // Create + Add the PlayerOptions button to the main menu.
+            var playerOptions = new UIMenuItem("Online Players", "All players currently playing on this server.");
+            mainMenu.AddItem(playerOptions);
+            // Bind the submenu to the playerOptions button.
+            mainMenu.BindMenuToItem(submenu, playerOptions);
 
         }
         #endregion
-        #region vehicle options
+        #region Vehicle Options Menu
         private void CreateVehicleOptions(UIMenu mainmenu)
         {
             // Make a new submenu for the vehicle options.
@@ -1781,11 +2005,17 @@ namespace vMenuClient
             {
                 mainMenu.Visible = true;
             };
-            
+
             _menuPool.Add(submenu);
             var vehOptionsBtn = new UIMenuItem(vehicleOptionsText, "Repair, clean, upgrade and pimp your vehicles here.");
             mainMenu.AddItem(vehOptionsBtn);
             mainmenu.BindMenuToItem(submenu, vehOptionsBtn);
+        }
+        #endregion
+        #region Voice Chat Menu
+        private void CreateVoiceChat()
+        {
+            UIMenu submenu = new UIMenu("Voice Chat", "Voice Chat Options");
         }
         #endregion
 
@@ -2156,7 +2386,6 @@ namespace vMenuClient
         #endregion
 
         #endregion
-
         #region common general functions
         /// <summary>
         /// Show a notification above the minimap.
@@ -2183,7 +2412,7 @@ namespace vMenuClient
         /// <param name="message">Message, max 299 characters long.</param>
         /// <param name="sound">Play notification sound.</param>
         /// <param name="duration">Help message duration (in ms).</param>
-        private void Help(string message, bool sound = false, int duration=5000)
+        private void Help(string message, bool sound = false, int duration = 5000)
         {
             BeginTextCommandDisplayHelp("THREESTRINGS");
             AddTextComponentSubstringPlayerName(message);
