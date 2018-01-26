@@ -25,14 +25,14 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:UpdateWeather", new Action<string>(ChangeWeather));
             EventHandlers.Add("vMenu:UpdateTime", new Action<int, int>(ChangeTime));
             EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissions));
-            EventHandlers.Add("vMenu:KickPlayer", new Action<Player,int>(KickPlayer));
+            EventHandlers.Add("vMenu:KickPlayer", new Action<Player,int,string>(KickPlayer));
             Tick += OnTick;
             Tick += WeatherAndTimeSync;
         }
 
-        private void KickPlayer([FromSource] Player player, int PlayerServerId)
+        private void KickPlayer([FromSource] Player player, int PlayerServerId, string kickMessage)
         {
-            DropPlayer(PlayerServerId.ToString(), "You have been kicked by " + GetPlayerName(player.Handle));
+            DropPlayer(PlayerServerId.ToString(), "You have been kicked by " + GetPlayerName(player.Handle) + ". Reason: " + kickMessage);
         }
 
         private void SendPermissions([FromSource] Player player)

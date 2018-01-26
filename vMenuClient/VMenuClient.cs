@@ -1931,7 +1931,15 @@ namespace vMenuClient
                                 {
                                     if (this.permissions["onlinePlayers_kick"])
                                     {
-                                        TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerId));
+                                        userMenu.Visible = false;
+                                        var kickMessage = await Game.GetUserInput(200);
+                                        if (kickMessage == "" || kickMessage == null)
+                                        {
+                                            kickMessage = "You have been kicked from this server.";
+                                        }
+                                        TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerId), kickMessage);
+                                        userMenu.Visible = true;
+                                        userMenu.GoBack();
                                     }
                                     else
                                     {
