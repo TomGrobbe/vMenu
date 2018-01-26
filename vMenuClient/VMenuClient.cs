@@ -1925,14 +1925,13 @@ namespace vMenuClient
                                     {
                                         Notify("~r~Sorry! ~w~You are not allowed to set a waypoint to this player.");
                                     }
-
                                 }
                                 if (item == kick)
                                 {
                                     if (this.permissions["onlinePlayers_kick"])
                                     {
                                         userMenu.Visible = false;
-                                        var kickMessage = await Game.GetUserInput(200);
+                                        var kickMessage = await Game.GetUserInput("You have been kicked from this server.", 200);
                                         if (kickMessage == "" || kickMessage == null)
                                         {
                                             kickMessage = "You have been kicked from this server.";
