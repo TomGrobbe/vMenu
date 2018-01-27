@@ -33,6 +33,7 @@ namespace vMenuServer
         private void KickPlayer([FromSource] Player player, int PlayerServerId, string kickMessage)
         {
             DropPlayer(PlayerServerId.ToString(), "You have been kicked by " + GetPlayerName(player.Handle) + ". Reason: " + kickMessage);
+            Debug.WriteLine("Player " + GetPlayerName(PlayerServerId.ToString()) + " was kicked by " + GetPlayerName(player.Handle) + ". Reason: " + kickMessage);
         }
 
         private void SendPermissions([FromSource] Player player)

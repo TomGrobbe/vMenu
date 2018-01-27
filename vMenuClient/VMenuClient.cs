@@ -1719,6 +1719,7 @@ namespace vMenuClient
             var godmodebtn = new UIMenuCheckboxItem(playerInvincibleText, false, "Toggle Player Invincibility.");
             var neverwantedbtn = new UIMenuCheckboxItem("Never Wanted", false, "Toggle Never Wanted.");
             var fastrunbtn = new UIMenuCheckboxItem("Fast Run", false, "Enable super walk/run speeds for your player.");
+            var fastswimbtn = new UIMenuCheckboxItem("Fast Swimming", false, "Enable super swimming speeds for your player.");
             var superjumpbtn = new UIMenuCheckboxItem("Super Jump", false, "Enable super jump for your player.");
             var unlimstaminabtn = new UIMenuCheckboxItem("Unlimited Stamina", true, "Enable/disable unlimited stamina for your player. It's recommended to leave this enabled.");
 
@@ -1726,35 +1727,58 @@ namespace vMenuClient
             submenu.AddItem(godmodebtn);
             submenu.AddItem(neverwantedbtn);
             submenu.AddItem(fastrunbtn);
+            submenu.AddItem(fastswimbtn);
             submenu.AddItem(superjumpbtn);
             submenu.AddItem(unlimstaminabtn);
 
             // Handle checkbox changes.
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
             {
+                // God Mode
                 if (checkbox == godmodebtn)
                 {
                     playerGodMode = _checked;
                 }
+                // Never Wanted
                 else if (checkbox == neverwantedbtn)
                 {
                     neverWanted = _checked;
                 }
+                // Fast Run
                 else if (checkbox == fastrunbtn)
                 {
+                    // Enabled
                     if (_checked)
                     {
                         SetRunSprintMultiplierForPlayer(PlayerId(), 1.49f);
                     }
+                    // Disabled
                     else
                     {
-                        SetRunSprintMultiplierForPlayer(PlayerId(), 1.0f);
+                        SetRunSprintMultiplierForPlayer(PlayerId(), 1f);
                     }
                 }
+                // Fast Swimming
+                else if (checkbox == fastswimbtn)
+                {
+                    // Enabled
+                    if (_checked)
+                    {
+                        SetSwimMultiplierForPlayer(PlayerId(), 1.49f);
+                    }
+                    // Disabled
+                    else
+                    {
+                        SetSwimMultiplierForPlayer(PlayerId(), 1f);
+                    }
+                    
+                }
+                // Super Jump
                 else if (checkbox == superjumpbtn)
                 {
                     superJump = _checked;
                 }
+                // Unlimited Stamina
                 else if (checkbox == unlimstaminabtn)
                 {
                     unlimitedStamina = _checked;
