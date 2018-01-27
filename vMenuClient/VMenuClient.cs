@@ -2348,13 +2348,15 @@ namespace vMenuClient
             // Create new buttons.
             UIMenuItem fixCar = new UIMenuItem("Fix vehicle", "Fix and clean your vehicle.");
             UIMenuItem cleanCar = new UIMenuItem("Clean Vehicle", "Wash your vehicle.");
-            UIMenuItem deleteCar = new UIMenuItem("Delete Vehicle", "Delete your vehicle.");
+            UIMenuItem vehicleDoors = new UIMenuItem("Vehicle Doors", "Open/Close certain, or all, vehicle doors.");
+            UIMenuItem deleteCar = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle.");
             deleteCar.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
             // Add the buttons/checkboxes to the menu.
             submenu.AddItem(vehgod);
             submenu.AddItem(fixCar);
             submenu.AddItem(cleanCar);
+            submenu.AddItem(vehicleDoors);
             submenu.AddItem(deleteCar);
 
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
@@ -2394,6 +2396,53 @@ namespace vMenuClient
             var vehOptionsBtn = new UIMenuItem(vehicleOptionsText, "Repair, clean, upgrade and pimp your vehicles here.");
             mainMenu.AddItem(vehOptionsBtn);
             mainmenu.BindMenuToItem(submenu, vehOptionsBtn);
+
+            // Create Vehicle Doors Submenu.
+            var doors = new UIMenu("", "Open/Close Vehicle Doors");
+            var doorsbanner = new Sprite("shopui_title_clubhousemod", "shopui_title_clubhousemod", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f));
+
+            var lfd = new UIMenuItem("Left Front Door", "Open/close the left front door.");
+            var rfd = new UIMenuItem("Right Front Door", "Open/close the right front door.");
+            var lrd = new UIMenuItem("Left Rear Door", "Open/close the left rear door.");
+            var rrd = new UIMenuItem("Right Rear Door", "Open/close the right rear door.");
+            var hod = new UIMenuItem("Hood", "Open/close the hood.");
+            var trk = new UIMenuItem("Trunk", "Open/close the trunk.");
+            var all = new UIMenuItem("All Doors", "Open/close all vehicle doors.");
+
+            doors.AddItem(lfd);
+            doors.AddItem(rfd);
+            doors.AddItem(lrd);
+            doors.AddItem(rrd);
+            doors.AddItem(hod);
+            doors.AddItem(trk);
+            doors.AddItem(all);
+
+            doors.OnItemSelect += (sender, item, index) =>
+            {
+                var veh = GetVehiclePedIsIn(PlayerPedId(), true);
+                // Left Front
+                if (item == lfd)
+                {
+                    if (GetVehicleDoorAngleRatio(veh, 0) > 0.1f)
+                    {
+                        SetVehicleDoorShut(veh, 0, false);
+                    }
+                    else
+                    {
+                        SetVehicleDoorOpen(veh, 0, false, false);
+                    }
+                }
+            };
+
+            submenu.BindMenuToItem(doors, vehicleDoors);
+
+            doors.SetBannerType(doorsbanner);
+            doors.OnMenuClose += (sender) =>
+            {
+                submenu.Visible = true;
+            };
+            _menuPool.Add(doors);
+            _menuPool.RefreshIndex();
         }
         #endregion
         #region Voice Chat Menu
