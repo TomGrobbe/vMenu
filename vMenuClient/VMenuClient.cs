@@ -30,6 +30,8 @@ namespace vMenuClient
         private bool neverWanted = false;
         private bool superJump = false;
         private bool unlimitedStamina = true;
+        private bool joinnotif = true;
+        private bool deathnotif = true;
 
         private int hour = 7;
         private int minute = 0;
@@ -74,29 +76,23 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:WeatherAndTimeSync", new Action<string, int, int>(SetWeatherAndTime));
             EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
             Tick += OnTick;
+            Tick += JoinQuitTick;
             Tick += SetTime;
             Tick += SetWeather;
         }
+        #endregion
 
+        #region Set Permissions
+        /// <summary>
+        /// Set the permissions when they are coming in from the "vMenu:SetPermissions" event.
+        /// </summary>
+        /// <param name="permissions"></param>
         private void SetPermissions(dynamic permissions)
         {
-            //this.permissions.Add("playerOptions", permissions.playerOptions);
-            //this.permissions.Add("onlinePlayers", permissions.onlinePlayers);
-            //this.permissions.Add("onlinePlayers_kick", permissions.onlinePlayers_kick);
-            //this.permissions.Add("onlinePlayers_teleport", permissions.onlinePlayers_teleport);
-            //this.permissions.Add("onlinePlayers_waypoint", permissions.onlinePlayers_waypoint);
-            //this.permissions.Add("onlinePlayers_spectate", permissions.onlinePlayers_spectate);
-            //this.permissions.Add("vehicleOptions", permissions.vehicleOptions);
-            //this.permissions.Add("spawnVehicle", permissions.spawnVehicle);
-            //this.permissions.Add("weatherOptions", permissions.weatherOptions);
-            //this.permissions.Add("timeOptions", permissions.timeOptions);
-            //this.permissions.Add("noclip", permissions.noclip);
             foreach (dynamic dict in permissions)
             {
-                //Notify(dict.Key.ToString() + " = " + dict.Value.ToString());
                 this.permissions.Add(dict.Key.ToString(), (bool)dict.Value);
             }
-
             permsSetup = true;
         }
         #endregion
@@ -185,7 +181,6 @@ namespace vMenuClient
             NetworkOverrideClockTime(hour, minute, 0);
         }
         #endregion
-
         #region OnTick
         /// <summary>
         /// Called every frame.
@@ -297,7 +292,6 @@ namespace vMenuClient
                 }
             }
             #endregion
-
             #region handle player options each tick
             // Handle player invincibility.
             SetPlayerInvincible(PlayerId(), playerGodMode);
@@ -317,7 +311,6 @@ namespace vMenuClient
                 SetSuperJumpThisFrame(PlayerId());
             }
             #endregion
-
             #region handle vehicle options each tick
             // Handle Vehicle stuff.
             var veh = GetVehiclePedIsIn(PlayerPedId(), false);
@@ -337,7 +330,6 @@ namespace vMenuClient
             }
 
             #endregion
-
             #region hanlde noclip menu
             if (noclipMenu.Visible)
             {
@@ -448,6 +440,16 @@ namespace vMenuClient
                 FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), true), false);
             }
             #endregion
+        }
+        #endregion
+        #region Join/Quit messages OnTick timed checks
+        /// <summary>
+        /// Runs once every second and checks for players who've joined/left.
+        /// </summary>
+        /// <returns></returns>
+        private async Task JoinQuitTick()
+        {
+            await Delay(1000);
         }
         #endregion
 
@@ -1722,6 +1724,8 @@ namespace vMenuClient
             var fastswimbtn = new UIMenuCheckboxItem("Fast Swimming", false, "Enable super swimming speeds for your player.");
             var superjumpbtn = new UIMenuCheckboxItem("Super Jump", false, "Enable super jump for your player.");
             var unlimstaminabtn = new UIMenuCheckboxItem("Unlimited Stamina", true, "Enable/disable unlimited stamina for your player. It's recommended to leave this enabled.");
+            var deathnotifications = new UIMenuCheckboxItem("Death Notifications", true, "Receive notifications when your or other players die.");
+            var joinleavenotifications = new UIMenuCheckboxItem("Join / Leave Notifications", true, "Receive notifications when other players join or leave the server.");
 
             // Add checkboxes to the submenu.
             submenu.AddItem(godmodebtn);
@@ -1730,6 +1734,8 @@ namespace vMenuClient
             submenu.AddItem(fastswimbtn);
             submenu.AddItem(superjumpbtn);
             submenu.AddItem(unlimstaminabtn);
+            submenu.AddItem(deathnotifications);
+            submenu.AddItem(joinleavenotifications);
 
             // Handle checkbox changes.
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
@@ -1771,7 +1777,6 @@ namespace vMenuClient
                     {
                         SetSwimMultiplierForPlayer(PlayerId(), 1f);
                     }
-                    
                 }
                 // Super Jump
                 else if (checkbox == superjumpbtn)
@@ -1782,6 +1787,16 @@ namespace vMenuClient
                 else if (checkbox == unlimstaminabtn)
                 {
                     unlimitedStamina = _checked;
+                }
+                // Join / Quit Notifications
+                else if (checkbox == joinleavenotifications)
+                {
+                    joinnotif = _checked;
+                }
+                // Death Notifications
+                else if (checkbox == deathnotifications)
+                {
+                    deathnotif = _checked;
                 }
             };
 
