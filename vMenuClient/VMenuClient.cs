@@ -1924,7 +1924,8 @@ namespace vMenuClient
             var superjumpbtn = new UIMenuCheckboxItem("Super Jump", false, "Enable super jump for your player.");
             var unlimstaminabtn = new UIMenuCheckboxItem("Unlimited Stamina", true, "Enable/disable unlimited stamina for your player. It's recommended to leave this enabled.");
             var unlimitedAir = new UIMenuCheckboxItem("Unlimited Air", false, "Allows you to stay under water for up to 1 hour without losing health.");
-            
+            var noragdoll = new UIMenuCheckboxItem("No Ragdoll", false, "Enable/Disable player ragdoll.");
+
 
             // Add checkboxes to the submenu.
             submenu.AddItem(godmodebtn);
@@ -1934,7 +1935,8 @@ namespace vMenuClient
             submenu.AddItem(superjumpbtn);
             submenu.AddItem(unlimstaminabtn);
             submenu.AddItem(unlimitedAir);
-            
+            submenu.AddItem(noragdoll);
+
 
             // Handle checkbox changes.
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
@@ -1998,6 +2000,11 @@ namespace vMenuClient
                     {
                         SetPedMaxTimeUnderwater(PlayerPedId(), -1f);
                     }
+                }
+                // No Ragdoll
+                else if (checkbox == noragdoll)
+                {
+                    SetPedCanRagdoll(PlayerPedId(), !_checked);
                 }
             };
 
