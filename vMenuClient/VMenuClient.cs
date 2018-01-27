@@ -19,8 +19,6 @@ namespace vMenuClient
         private UIMenu mainMenu;
         private UIMenu noclipMenu;
         private Dictionary<string, bool> permissions = new Dictionary<string, bool>();
-        //private object permissions;
-        //private bool [] permissions = new bool[5] {false, false, false, false, false};
         private bool permsSetup = false;
         private int spectatingId = -1;
 
@@ -30,7 +28,7 @@ namespace vMenuClient
         private bool neverWanted = false;
         private bool superJump = false;
         private bool unlimitedStamina = true;
-        private bool joinnotif = true;
+        private bool joinnotif = false;
         private bool deathnotif = true;
 
         private int hour = 7;
@@ -64,6 +62,9 @@ namespace vMenuClient
         {
             Color = System.Drawing.Color.FromArgb(255, 183, 28, 28)
         };
+
+        private List<string> playerlist;
+        private List<int> deadPlayers = new List<int>();
         #endregion
 
         #region constructor
@@ -72,11 +73,13 @@ namespace vMenuClient
         /// </summary>
         public VMenuClient()
         {
+            playerlist = new List<string>();
             EventHandlers.Add("vMenu:NotifyPlayer", new Action<string, bool>(Notify));
             EventHandlers.Add("vMenu:WeatherAndTimeSync", new Action<string, int, int>(SetWeatherAndTime));
             EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
-            Tick += OnTick;
             Tick += JoinQuitTick;
+            Tick += OnTick;
+            Tick += DeathTick;
             Tick += SetTime;
             Tick += SetWeather;
         }
@@ -206,7 +209,13 @@ namespace vMenuClient
             // Process all menus.
             _menuPool.ProcessMenus();
             _menuPool.ProcessMouse();
-            //_menuPool.ProcessControl();
+            _menuPool.ControlDisablingEnabled = false;
+            _menuPool.MouseEdgeEnabled = false;
+
+
+            #region Manage PVP
+            NetworkSetFriendlyFireOption(true);
+            #endregion
 
             #region opening/closing of menu's
             // Handle opening/closing of the menu for controller.
@@ -448,8 +457,140 @@ namespace vMenuClient
         /// </summary>
         /// <returns></returns>
         private async Task JoinQuitTick()
-        {
+        {   
+            // If there are less players online, then someone must have left the server.
+            if (NetworkGetNumConnectedPlayers() < playerlist.Count)
+            {
+                // Loop through all players in the player list.
+                for (var i = 0; i < playerlist.Count; i++)
+                {
+                    // We'll assume every player left, and change it when we find them still connected.
+                    var left = true;
+                    // Loop through all connected players.
+                    for (var x = 0; x < 32; x++)
+                    {
+                        // If the current ID (i) is a valid player, continue
+                        if (NetworkIsPlayerActive(x))
+                        {
+                            // If the name of the current player and the item from the playerlist match, then that means they haven't left the server.
+                            if (playerlist[i] == GetPlayerName(x))
+                            {
+                                left = false;
+                            }
+                        }
+                    }
+                    // If they haven't been found in the loop above, that means that they're no longer connected and they have left since the last check.
+                    // So we show a notification that the player has left, and we remove them from the list. Removing isn't really needed because the list gets
+                    // overridden once every second no matter what but we'll just do it anyway.
+                    if (left)
+                    {
+                        // If the user has the "show notifications" setting enabled (true by default) then notify them.
+                        if (joinnotif)
+                        {
+                            Notify("~o~" + playerlist[i] + " ~r~has left.");
+                        }
+                        playerlist.Remove(playerlist[i]);
+                        i--;
+                    }
+                }
+
+            }
+            // If there are more players online then someone must have joined the server.
+            else if (NetworkGetNumConnectedPlayers() > playerlist.Count)
+            {
+                // Loop through all online players.
+                for (var i = 0; i < 32; i++)
+                {
+                    // If they're valid players, then continue.
+                    if (NetworkIsPlayerActive(i))
+                    {
+                        // If their name is not in the playerlist yet, then they probably just joined.
+                        if (!playerlist.Contains(GetPlayerName(i)))
+                        {
+                            if (GetPlayerName(i) != "** Invalid **" && GetPlayerName(i) != "**Invalid**")
+                            {
+                                if (joinnotif)
+                                {
+                                    Notify("~o~" + GetPlayerName(i) + " ~g~has joined.");
+                                }
+                                playerlist.Add(GetPlayerName(i));
+                            }
+                        }
+                    }
+                }
+            }
+            // No need for an "else" because we don't want to do anything if the player count hasn't changed.
+
             await Delay(1000);
+        }
+        #endregion
+        #region Death messages OnTick timed checks
+        private async Task DeathTick()
+        {
+            // This doesn't have to be ran every tick, so waiting 100ms between checks is fine.
+            await Delay(100);
+
+            // If the notifications are enabled in the menu.
+            if (deathnotif)
+            {
+                // Loop through all players.
+                for(var i = 0; i < 32; i++)
+                {
+                    // If the player exists then continue
+                    if (NetworkIsPlayerActive(i))
+                    {
+                        // If they're dead...
+                        if (IsPlayerDead(i))
+                        {
+                            // If they are NOT in the "deathPlayers" list, then continue.
+                            if (!deadPlayers.Contains(i))
+                            {
+                                var killerEntity = GetPedSourceOfDeath(GetPlayerPed(i));
+                                if (DoesEntityExist(killerEntity))
+                                {
+                                    int killerPlayer = PlayerId();
+                                    for (var x = 0; x < 32; x++)
+                                    {
+                                        if (GetPlayerPed(x) == killerEntity)
+                                        {
+                                            killerPlayer = x;
+                                            break;
+                                        }
+                                    }
+                                    if (killerPlayer != i)
+                                    {
+                                        Notify("~o~" + GetPlayerName(i) + " ~w~was killed by ~y~" + GetPlayerName(killerPlayer) + "~w~.");
+                                    }
+                                    else
+                                    {
+                                        Notify("~o~" + GetPlayerName(i) + " ~w~commited suicide.");
+                                    }
+                                }
+                                else
+                                {
+                                    Notify("~o~" + GetPlayerName(i) + " ~w~commited suicide.");
+                                }
+                                deadPlayers.Add(i);
+                            }
+                        }
+                        // If they're not dead...
+                        else
+                        {
+                            // If they are in the "deadPlayers" list, remove them from it.
+                            if (deadPlayers.Count > 0)
+                            {
+                                //Notify("Count: " + deadPlayers.Count);
+                                //Notify("Player ID: " + i + " Dead Players[i] = " + deadPlayers[i]);
+                                if (deadPlayers.Contains(i))
+                                {
+                                    deadPlayers.Remove(i);
+                                    //i--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         #endregion
 
@@ -474,6 +615,7 @@ namespace vMenuClient
                 noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
                 noclipMenu.AddInstructionalButton(new InstructionalButton(Control.ReplayStartStopRecordingSecondary, "Toggle Noclip"));
                 noclipMenu.ControlDisablingEnabled = false;
+                noclipMenu.SetBannerType(banner);
                 _menuPool.Add(noclipMenu);
             }
         }
@@ -562,14 +704,15 @@ namespace vMenuClient
                 // Add Weather Options Menu.
                 CreateWeatherMenu();
             }
+            // Create Miscellaneous Options Menu.
+            CreateMiscMenu();
 
             // Apply the banner to the main menu.
             mainMenu.SetBannerType(banner);
 
             // Allow all buttons to function when the user has the menu open.
             _menuPool.ControlDisablingEnabled = false;
-
-
+            
             // Refresh the index so the menu opens at the top.
             _menuPool.RefreshIndex();
             
@@ -579,6 +722,7 @@ namespace vMenuClient
             
             mainMenu.ResetCursorOnOpen = true;
             mainMenu.ScaleWithSafezone = true;
+            joinnotif = true;
         }
         #endregion
 
@@ -1688,32 +1832,87 @@ namespace vMenuClient
             var submenu = new UIMenu(GetPlayerName(PlayerId()), playerOptionsText);
             submenu.SetBannerType(banner);
 
-            // Create buttons for main player options.
-            UIMenuItem heal = new UIMenuItem("Heal Player", "Heal the player to max health.");
-            UIMenuItem armor = new UIMenuItem("Max Armor", "Give the player max armor.");
-            UIMenuItem clean = new UIMenuItem("Clean Player", "Clean the player's clothes.");
-
-            // Add the buttons to the submenu.
-            submenu.AddItem(heal);
-            submenu.AddItem(armor);
-            submenu.AddItem(clean);
-
-            submenu.OnItemSelect += (sender, item, index) =>
+            // Create a list of player actions for main player options.
+            List<dynamic> actionsList = new List<dynamic>()
             {
-                if (item == heal)
+                "Heal Player",
+                "Apply Max Armor",
+                "Clean Clothes/Ped",
+                "Make Player Dry",
+                "Make Player Wet",
+            };
+            // Create the list item.
+            UIMenuListItem actions = new UIMenuListItem("Player Actions", actionsList, 0, "Select a player action and click it to perform the action.");
+
+            // Add the list item to the menu.
+            submenu.AddItem(actions);
+
+            // Handle the selected items when pressed.
+            submenu.OnListSelect += (sender, item, index) =>
+            {
+                if (item == actions)
                 {
-                    SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
-                    Subtitle("Your player has been healed.");
+                    switch (index)
+                    {
+                        case 0:
+                            // Heal the player
+                            SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
+                            Subtitle("Your player has been healed.");
+                            break;
+                        case 1:
+                            // Add Max Armor
+                            SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
+                            Subtitle("Your player's armor has been restored to maximum capacity.");
+                            break;
+                        case 2:
+                            // Clean Player & Clothes
+                            ClearPedBloodDamage(PlayerPedId());
+                            Subtitle("Your player's clothes have been cleaned.");
+                            break;
+                        case 3:
+                            // Make Ped Dry
+                            ClearPedWetness(PlayerPedId());
+                            Subtitle("Your player's clothes are now dry.");
+                            break;
+                        case 4:
+                            // Make Ped Wet
+                            SetPedWetnessEnabledThisFrame(PlayerPedId());
+                            SetPedWetnessHeight(PlayerPedId(), 2f);
+                            Subtitle("Your player's clothes are now soaked.");
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                else if (item == armor)
+            };
+
+            UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Set a waypoint on your map and use this to teleport to it.");
+            submenu.AddItem(tptowp);
+            submenu.OnItemSelect += async (sener, item, index) =>
+            {
+
+                // TP to waypoint
+                if (item == tptowp)
                 {
-                    SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
-                    Subtitle("Your player's armor has been restored to maximum capacity.");
-                }
-                else if (item == clean)
-                {
-                    ClearPedBloodDamage(PlayerPedId());
-                    Subtitle("Your player's clothes have been cleaned.");
+                    // If the waypoint is set, continue.
+                    if (Game.IsWaypointActive)
+                    {
+                        var pos = World.WaypointPosition;
+                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+                        float posz = 0f;
+                        // Wait until the ground z pos is found, then tp the player to the correct position.
+                        while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800.0f, ref posz, true))
+                        {
+                            await Delay(0);
+                        }
+                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, posz);
+                        Notify("~o~Poof!");
+                    }
+                    // If there's no waypoint set, yell at the player.
+                    else
+                    {
+                        Notify("~r~Error: ~w~You need to set a waypoint on your map first!");
+                    }
                 }
             };
 
@@ -1724,8 +1923,8 @@ namespace vMenuClient
             var fastswimbtn = new UIMenuCheckboxItem("Fast Swimming", false, "Enable super swimming speeds for your player.");
             var superjumpbtn = new UIMenuCheckboxItem("Super Jump", false, "Enable super jump for your player.");
             var unlimstaminabtn = new UIMenuCheckboxItem("Unlimited Stamina", true, "Enable/disable unlimited stamina for your player. It's recommended to leave this enabled.");
-            var deathnotifications = new UIMenuCheckboxItem("Death Notifications", true, "Receive notifications when your or other players die.");
-            var joinleavenotifications = new UIMenuCheckboxItem("Join / Leave Notifications", true, "Receive notifications when other players join or leave the server.");
+            var unlimitedAir = new UIMenuCheckboxItem("Unlimited Air", false, "Allows you to stay under water for up to 1 hour without losing health.");
+            
 
             // Add checkboxes to the submenu.
             submenu.AddItem(godmodebtn);
@@ -1734,8 +1933,8 @@ namespace vMenuClient
             submenu.AddItem(fastswimbtn);
             submenu.AddItem(superjumpbtn);
             submenu.AddItem(unlimstaminabtn);
-            submenu.AddItem(deathnotifications);
-            submenu.AddItem(joinleavenotifications);
+            submenu.AddItem(unlimitedAir);
+            
 
             // Handle checkbox changes.
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
@@ -1788,15 +1987,17 @@ namespace vMenuClient
                 {
                     unlimitedStamina = _checked;
                 }
-                // Join / Quit Notifications
-                else if (checkbox == joinleavenotifications)
+                // Unlimited Air
+                else if (checkbox == unlimitedAir)
                 {
-                    joinnotif = _checked;
-                }
-                // Death Notifications
-                else if (checkbox == deathnotifications)
-                {
-                    deathnotif = _checked;
+                    if (_checked)
+                    {
+                        SetPedMaxTimeUnderwater(PlayerPedId(), 60f * 60f);
+                    }
+                    else
+                    {
+                        SetPedMaxTimeUnderwater(PlayerPedId(), -1f);
+                    }
                 }
             };
 
@@ -1855,8 +2056,10 @@ namespace vMenuClient
                             userMenu.SetBannerType(banner);
                             var spectate = new UIMenuItem("Spectate Player", "Spectate this player.");
                             var teleport = new UIMenuItem("Teleport To Player", "Teleport to this player.");
+                            var teleportInVeh = new UIMenuItem("Teleport Into Vehicle", "Teleport into the vehicle of this player.");
                             var waypoint = new UIMenuItem("Set Waypoint", "Set a waypoint to this player on your map.");
                             var kick = new UIMenuItem("~r~Kick Player", "Kick this player from the server.");
+
                             kick.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
                             if (!permissions["onlinePlayers_spectate"])
@@ -1866,6 +2069,10 @@ namespace vMenuClient
                             if (!permissions["onlinePlayers_teleport"])
                             {
                                 teleport.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            if (!permissions["onlinePlayers_teleport"])
+                            {
+                                teleportInVeh.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                             }
                             if (!permissions["onlinePlayers_waypoint"])
                             {
@@ -1878,121 +2085,226 @@ namespace vMenuClient
                             // Add the menu items
                             userMenu.AddItem(spectate);
                             userMenu.AddItem(teleport);
+                            userMenu.AddItem(teleportInVeh);
                             userMenu.AddItem(waypoint);
                             userMenu.AddItem(kick);
 
                             // When an item is clicked...
                             userMenu.OnItemSelect += async (sender, item, index) =>
                             {
-                                //foreach (KeyValuePair<string, bool> test in permissions)
-                                //{
-                                //    Notify(test.Key);
-                                //}
+                                // The selected player id (used for the options below)
                                 int playerId = int.Parse(userMenu.Subtitle.Caption.ToString().Substring(0, 1));
+
+                                #region Spectating Player
+                                // Spectating
                                 if (item == spectate)
                                 {
-                                    if (this.permissions["onlinePlayers_spectate"])
+                                    // If the player is allowed to spectate, continue.
+                                    if (permissions["onlinePlayers_spectate"])
                                     {
+                                        // If it's the same player, then cancel.
                                         if (playerId == PlayerId())
                                         {
-                                            Notify("~r~That's a no, sorry. ~w~You can't spectate yourself!");
+                                            Notify("~r~No, sorry. ~w~You can't spectate yourself!");
                                         }
+                                        // if it's not the same player, continue.
                                         else
                                         {
+                                            // If the player is already spectating, cancel the current spectating.
                                             if (NetworkIsInSpectatorMode())
                                             {
+                                                // Fade screen out.
                                                 DoScreenFadeOut(200);
                                                 await Delay(200);
+                                                // Disable spectating.
                                                 NetworkSetInSpectatorMode(false, GetPlayerPed(playerId));
+                                                // Fade screen in.
                                                 DoScreenFadeIn(200);
                                                 await Delay(200);
+                                                // Reset the spectating ID.
                                                 spectatingId = -1;
                                             }
+                                            // Spectate the selected player.
                                             else
                                             {
+                                                // Fade the screen out
                                                 DoScreenFadeOut(200);
                                                 await Delay(200);
+                                                // Enable spectator mode.
                                                 NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
+                                                // Set the spectating ID.
                                                 spectatingId = playerId;
+                                                // Fade screen in.
                                                 DoScreenFadeIn(200);
                                                 await Delay(200);
+                                                // Notify the user of who they're currenlty spectating, in case they're stupid.
                                                 Notify("Currently Spectating: ~b~" + GetPlayerName(spectatingId) + " [" + spectatingId + "]~w~.");
                                             }
                                         }
 
                                     }
+                                    // If they don't have permissions to spectate, tease them.
                                     else
                                     {
                                         Notify("~r~Sorry! ~w~You are not allowed to spectate this player.");
                                     }
                                 }
+                                #endregion
+                                #region Teleporting To Player
+                                // Teleporting
                                 if (item == teleport)
                                 {
-                                    if (this.permissions["onlinePlayers_teleport"])
+                                    // If the player is allowed to teleport, continue.
+                                    if (permissions["onlinePlayers_teleport"])
                                     {
+                                        // If the player is trying to teleport to another player, continue.
                                         if (playerId != PlayerId())
                                         {
+                                            // Get the position of the selected player.
                                             var pos = GetEntityCoords(GetPlayerPed(playerId), true);
+                                            // Teleport to that position +1.0 meter above.
                                             SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 1f);
                                         }
+                                        // If the player is trying to telepor to themselves, cancel and flame them.
                                         else
                                         {
                                             Notify("~r~Error: ~w~You can't teleport to yourself!");
                                         }
                                     }
+                                    // If the player doesn't have permission to teleport, tease them.
                                     else
                                     {
                                         Notify("~r~Sorry! ~w~You are not allowed to teleport to this player.");
                                     }
                                 }
-                                if (item == waypoint)
+                                #endregion
+                                #region Teleporting Into Player's Vehicle
+                                // Teleporting Into vehicle
+                                if (item == teleportInVeh)
                                 {
-
-                                    if (this.permissions["onlinePlayers_waypoint"])
+                                    // If the player is allowed to teleport, continue.
+                                    if (permissions["onlinePlayers_teleport"])
                                     {
+                                        // If the player is trying to teleport to another player, continue.
                                         if (playerId != PlayerId())
                                         {
+                                            
+
+                                            // Get the vehicle of the other player.
+                                            var veh = GetVehiclePedIsIn(GetPlayerPed(playerId), false);
+                                            // If the entity is valid, continue.
+                                            if (DoesEntityExist(veh))
+                                            {
+                                                // If the vehicle has any free seats, continue.
+                                                if (AreAnyVehicleSeatsFree(veh))
+                                                {
+                                                    // Loop through all vehicle seats.
+                                                    for (int ii = -1; ii < GetVehicleModelNumberOfSeats((uint)GetEntityModel(veh))-1; ii++)
+                                                    {
+                                                        // If the vehicle seat is free, teleport the player to the other player first,
+                                                        // then teleport them into the other player's vehicle.
+                                                        // After that, stop the loop because we don't want to end up in the last seat.
+                                                        if (IsVehicleSeatFree(veh, ii))
+                                                        {
+                                                            var pos = GetEntityCoords(GetPlayerPed(playerId), true);
+                                                            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2.5f);
+
+                                                            TaskWarpPedIntoVehicle(PlayerPedId(), veh, ii);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                // If there are no more empty vehicle seats remaining, notify the player.
+                                                else
+                                                {
+                                                    Notify("~r~Error: ~w~There are not enough empty seats in that vehicle!");
+                                                }
+                                                
+                                                //TaskWarpPedIntoVehicle(PlayerPedId(), veh, )
+                                            }
+                                        }
+                                        // If the player is trying to telepor to themselves, cancel and flame them.
+                                        else
+                                        {
+                                            Notify("~r~Error: ~w~You can't teleport to yourself!");
+                                        }
+                                    }
+                                    // If the player doesn't have permission to teleport, tease them.
+                                    else
+                                    {
+                                        Notify("~r~Sorry! ~w~You are not allowed to teleport to this player.");
+                                    }
+                                }
+                                #endregion
+                                #region Setting Waypoint TO Player
+                                // Set Waypoint.
+                                if (item == waypoint)
+                                {
+                                    // If the player is allowed to set a waypoint to another player, continue. 
+                                    if (permissions["onlinePlayers_waypoint"])
+                                    {
+                                        // If the player is setting a waypoint to another player, continue.
+                                        if (playerId != PlayerId())
+                                        {
+                                            // Get the other player's position.
                                             var pos = GetEntityCoords(GetPlayerPed(playerId), true);
+                                            // Set the new waypoint.
                                             SetNewWaypoint(pos.X, pos.Y);
                                         }
+                                        // If the player is trying to set a waypoint to themselves, cancel and tell them.
                                         else
                                         {
                                             Notify("~r~Error: ~w~You can't set a waypoint to yourself!");
                                         }
                                     }
+                                    // If the player is not allowed to set a waypoint, tease them.
                                     else
                                     {
                                         Notify("~r~Sorry! ~w~You are not allowed to set a waypoint to this player.");
                                     }
                                 }
+                                #endregion
+                                #region Kicking Player
+                                // Kick player.
                                 if (item == kick)
                                 {
-                                    if (this.permissions["onlinePlayers_kick"])
+                                    // If the player is allowed to kick other players, continue.
+                                    if (permissions["onlinePlayers_kick"])
                                     {
+                                        // Disable the menu.
                                         userMenu.Visible = false;
+                                        // Get the kick message/reason from the player by requesting user input.
                                         var kickMessage = await Game.GetUserInput("You have been kicked from this server.", 200);
                                         if (kickMessage == "" || kickMessage == null)
                                         {
                                             kickMessage = "You have been kicked from this server.";
                                         }
+                                        // Trigger the server event to kick the specified player using the custom kick message/reason.
                                         TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerId), kickMessage);
+                                        // Re-enable the menu.
                                         userMenu.Visible = true;
+                                        // Because the player is kicked, we will return to the playerlist menu.
                                         userMenu.GoBack();
                                     }
+                                    // If the player is not allowed to kick other players, punish them.
                                     else
                                     {
                                         Notify("~r~Sorry! ~w~You are not allowed to kick this player.");
                                     }
                                 }
+                                #endregion
                             };
 
+                            // When the user menu is closed, open the playerlist menu.
                             userMenu.OnMenuClose += (sender) =>
                             {
                                 submenu.Visible = true;
                             };
 
+                            // Add a button to the playerlist menu for this specific player/menu.
                             var button = new UIMenuItem(GetPlayerName(i), "");
                             submenu.AddItem(button);
+                            // Bind this specific menu/player to the button created above.
                             submenu.BindMenuToItem(userMenu, button);
                         }
                     }
@@ -2302,6 +2614,51 @@ namespace vMenuClient
             _menuPool.RefreshIndex();
             mainMenu.BindMenuToItem(submenu, timeButton);
 
+        }
+        #endregion
+        #region Misc Menu
+        private void CreateMiscMenu()
+        {
+            // Create the new submenu.
+            var submenu = new UIMenu("Misc Options", "Miscellaneous Options");
+            submenu.SetBannerType(banner);
+
+            // Create the chekcboxes.
+            var deathnotifications = new UIMenuCheckboxItem("Death Notifications", true, "Receive notifications when your or other players die.");
+            var joinleavenotifications = new UIMenuCheckboxItem("Join / Leave Notifications", true, "Receive notifications when other players join or leave the server.");
+
+            // Add the checkboxes to the submenu.
+            submenu.AddItem(deathnotifications);
+            submenu.AddItem(joinleavenotifications);
+
+            // Handle checkbox changes.
+            submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
+            {
+                // Join / Quit Notifications
+                if (checkbox == joinleavenotifications)
+                {
+                    joinnotif = _checked;
+                }
+                // Death Notifications
+                else if (checkbox == deathnotifications)
+                {
+                    deathnotif = _checked;
+                }
+            };
+
+            // If the menu closes, go back to the main menu.
+            submenu.OnMenuClose += (sender) =>
+            {
+                mainMenu.Visible = true;
+            };
+
+            // Add the menu to the menu pool and add the buttons for it to the main menu.
+            _menuPool.Add(submenu);
+            var button = new UIMenuItem("Misc Options", "Configure all miscellaneous options in this submenu.");
+            mainMenu.AddItem(button);
+            mainMenu.BindMenuToItem(submenu, button);
+            // Refresh index.
+            _menuPool.RefreshIndex();
         }
         #endregion
 
