@@ -62,9 +62,11 @@ namespace vMenuClient
         {
             Color = System.Drawing.Color.FromArgb(255, 183, 28, 28)
         };
+        private Sprite lscustoms = new Sprite("shopui_title_carmod", "shopui_title_carmod", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f));
 
         private List<string> playerlist;
         private List<int> deadPlayers = new List<int>();
+        private bool doorsopen = false;
         #endregion
 
         #region constructor
@@ -2340,7 +2342,7 @@ namespace vMenuClient
             var submenu = new UIMenu("", vehicleOptionsText); // Localized Titles: Vehicle, Options
 
             // Set banner to the Los Santos Customs image.
-            submenu.SetBannerType(new Sprite("shopui_title_carmod", "shopui_title_carmod", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f)));
+            submenu.SetBannerType(lscustoms);
 
             // Create vehicle options checkboxes.
             UIMenuCheckboxItem vehgod = new UIMenuCheckboxItem("Vehicle Godmode", false, "If you enable vehicle god mode, your vehicle can't take any visual or physical damage.");
@@ -2349,6 +2351,8 @@ namespace vMenuClient
             UIMenuItem fixCar = new UIMenuItem("Fix vehicle", "Fix and clean your vehicle.");
             UIMenuItem cleanCar = new UIMenuItem("Clean Vehicle", "Wash your vehicle.");
             UIMenuItem vehicleDoors = new UIMenuItem("Vehicle Doors", "Open/Close certain, or all, vehicle doors.");
+            UIMenuItem performanceMods = new UIMenuItem("Performance Options", "Change performance options about your vehicle, such as Turbo, EMS, Transmission and more.");
+            UIMenuItem visualMods = new UIMenuItem("Visual Options", "Change visual options about your vehicle, such as vehicle color, liveries, spoilers and more.");
             UIMenuItem deleteCar = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle.");
             deleteCar.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
@@ -2357,6 +2361,8 @@ namespace vMenuClient
             submenu.AddItem(fixCar);
             submenu.AddItem(cleanCar);
             submenu.AddItem(vehicleDoors);
+            submenu.AddItem(performanceMods);
+            submenu.AddItem(visualMods);
             submenu.AddItem(deleteCar);
 
             submenu.OnCheckboxChange += (sender, checkbox, _checked) =>
@@ -2385,22 +2391,85 @@ namespace vMenuClient
                 {
                     DeleteCar();
                 }
+                else if (item == performanceMods)
+                {
+                    submenu.Visible = false;
+                    UIMenu performance = new UIMenu("", "Vehicle Performance Options");
+                    performance.SetBannerType(lscustoms);
+                    var veh = GetVehiclePedIsIn(PlayerPedId(), false);
+                    if (DoesEntityExist(veh))
+                    {
+                        SetVehicleModKit(veh, 0);
+
+                        var turbo = new UIMenuCheckboxItem("Turbo", false, "Enable/disable turbo for your vehicle.");
+
+                        var currentSuspensionlevel = GetVehicleSuspensionHeight(veh);
+                        var listIndex = 0;
+                        if (currentSuspensionlevel == 0.002f)
+                        {
+                            listIndex = 1;
+                        }
+                        else if (currentSuspensionlevel == 0.004f)
+                        {
+                            listIndex = 2;
+                        }
+                        else if (currentSuspensionlevel == 0.006f)
+                        {
+                            listIndex = 3;
+                        }
+                        else if (currentSuspensionlevel == 0.008f)
+                        {
+                            listIndex = 4;
+                        }
+
+                        var suspensionlist = new List<dynamic>() {
+                            GetModSlotName(veh, 15),
+                        };
+                        
+                        var suspension = new UIMenuListItem("Suspension", suspensionlist, listIndex);
+                        //performance.OnListChange += (sender2, listitem, listindex) =>
+                        //{
+                        //    //GetModTextLabel(veh, 15, listIndex);
+                        //    //GetVehicleSuspensionHeight
+                        //};
+                        performance.AddItem(turbo);
+                        performance.AddItem(suspension);
+                        
+                    }
+                    else
+                    {
+                        Notify("~r~Error: ~w~You're not inside a vehicle!");
+                        performance.GoBack();
+                    }
+
+                    performance.OnMenuClose += (_sender) =>
+                    {
+                        submenu.Visible = true;
+                    };
+                    _menuPool.Add(performance);
+                    performance.Visible = true;
+                }
             };
 
+            // When the submenu (vehicle options) closes, open the main menu.
             submenu.OnMenuClose += (sender) =>
             {
                 mainMenu.Visible = true;
             };
-
+            // Add the submenu (vehicle options) to the _menuPool.
             _menuPool.Add(submenu);
+            // Create a button for in the main menu, that'll take you to the vehicle options menu.
             var vehOptionsBtn = new UIMenuItem(vehicleOptionsText, "Repair, clean, upgrade and pimp your vehicles here.");
+            // Add the button to the main menu.
             mainMenu.AddItem(vehOptionsBtn);
+            // Bind the button to this submenu.
             mainmenu.BindMenuToItem(submenu, vehOptionsBtn);
-
+            #region Doors submenu.
             // Create Vehicle Doors Submenu.
             var doors = new UIMenu("", "Open/Close Vehicle Doors");
             var doorsbanner = new Sprite("shopui_title_clubhousemod", "shopui_title_clubhousemod", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f));
 
+            // Create all door buttons.
             var lfd = new UIMenuItem("Left Front Door", "Open/close the left front door.");
             var rfd = new UIMenuItem("Right Front Door", "Open/close the right front door.");
             var lrd = new UIMenuItem("Left Rear Door", "Open/close the left rear door.");
@@ -2409,6 +2478,7 @@ namespace vMenuClient
             var trk = new UIMenuItem("Trunk", "Open/close the trunk.");
             var all = new UIMenuItem("All Doors", "Open/close all vehicle doors.");
 
+            // Add all door button items to the doors menu.
             doors.AddItem(lfd);
             doors.AddItem(rfd);
             doors.AddItem(lrd);
@@ -2419,30 +2489,60 @@ namespace vMenuClient
 
             doors.OnItemSelect += (sender, item, index) =>
             {
+                // Get the player's vehicle.
                 var veh = GetVehiclePedIsIn(PlayerPedId(), true);
-                // Left Front
-                if (item == lfd)
+                // If the button pressed is "all" then close/open all doors.
+                if (item == all)
                 {
-                    if (GetVehicleDoorAngleRatio(veh, 0) > 0.1f)
+                    // Loop through all doors, and open/close them depending on the (bool) "doorsopen" variable.
+                    for (var x = 0; x < 6; x++)
                     {
-                        SetVehicleDoorShut(veh, 0, false);
+                        // Doors are open, so close them.
+                        if (doorsopen)
+                        {
+                            SetVehicleDoorShut(veh, x, false);
+                        }
+                        // Doors are closed so open them.
+                        else
+                        {
+                            SetVehicleDoorOpen(veh, x, false, false);
+                        }
                     }
+                    // Flip the doorsopen bool.
+                    doorsopen = !doorsopen;
+                }
+                // If the button is not the "all doors" button....
+                else
+                {
+                    // ...then get the door angle for the specific vehicle and use the menu button's index (0-5) to find
+                    // the right door to check/change. If the door angle is more than 0.1 (the door is open at least a tiny bit) then close the door.
+                    if (GetVehicleDoorAngleRatio(veh, index) > 0.1f)
+                    {
+                        SetVehicleDoorShut(veh, index, false);
+                    }
+                    // If the door is closed or open less than 10%, open the door completely.
                     else
                     {
-                        SetVehicleDoorOpen(veh, 0, false, false);
+                        SetVehicleDoorOpen(veh, index, false, false);
                     }
                 }
             };
 
+            // Bind the vehicle door menu to the doors menu item in the vehicle options.
             submenu.BindMenuToItem(doors, vehicleDoors);
 
+            // Set the banner for the doors menu to a new sprite.
             doors.SetBannerType(doorsbanner);
+            // When the doors menu closes, re-open the vehicle options menu.
             doors.OnMenuClose += (sender) =>
             {
                 submenu.Visible = true;
             };
+            // Add the doors menu to the _menuPool.
             _menuPool.Add(doors);
+            // Refresh the menuPool index.
             _menuPool.RefreshIndex();
+            #endregion
         }
         #endregion
         #region Voice Chat Menu
