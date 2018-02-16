@@ -54,7 +54,9 @@
     <Compile Include="CommonFunctions.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="menus\OnlinePlayersMenu.cs" />
+    <Compile Include="menus\PlayerOptionsMenu.cs" />
     <Compile Include="Notification.cs" />
+    <Compile Include="PedScenarios.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

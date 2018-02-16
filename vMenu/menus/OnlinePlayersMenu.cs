@@ -11,10 +11,12 @@ namespace vMenu.menus
 {
     class OnlinePlayersMenu : BaseScript
     {
+        // Variables
         private UIMenu menu;
         private CommonFunctions cf = new CommonFunctions();
         private Notification Notify = new Notification();
 
+        #region constructor
         /// <summary>
         /// Constructor.
         /// Creates the menu.
@@ -40,18 +42,22 @@ namespace vMenu.menus
 
             MainMenu._mp.Add(menu);
         }
+        #endregion
 
+        #region Public getter for the menu.
         /// <summary>
         /// Public getter for the menu.
         /// </summary>
-        public UIMenu Menu
-        {
-            get
-            {
-                return menu;
-            }
-        }
+        //public UIMenu Menu
+        //{
+        //    get
+        //    {
+        //        return menu;
+        //    }
+        //}
+        #endregion
 
+        #region Refresh / initialize the menu.
         /// <summary>
         /// Updates the menu (updated playerlist).
         /// </summary>
@@ -187,6 +193,7 @@ namespace vMenu.menus
                 }
             }
         }
+        #endregion
 
     }
 }

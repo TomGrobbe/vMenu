@@ -17,6 +17,8 @@ namespace vMenu.menus
         private Notification Notify = new Notification();
         private Subtitles Subtitle = new Subtitles();
 
+        private bool firstTick = true;
+
         private bool godMode = false;
         private bool invisible = false;
         private bool unlimitedStamina = true;
@@ -25,8 +27,7 @@ namespace vMenu.menus
         private bool neverWanted = false;
         private bool everyoneIgnoresPlayer = false;
         private bool playerFrozen = false;
-        private bool driving = false;
-
+        // will be implemented later: private bool driving = false;
         private int IsPlayingScenario = -1;
 
         /// <summary>
@@ -34,56 +35,71 @@ namespace vMenu.menus
         /// </summary>
         public PlayerOptionsMenu()
         {
-            menu = new UIMenu("Player Options", "Common player options.")
-            {
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = true
-            };
-
             CreateMenu();
 
             Tick += OnTick;
             Tick += ScenarioTick;
         }
 
+        #region Public getter for the menu.
+        /// <summary>
+        /// Public getter for the menu.
+        /// </summary>
+        //public UIMenu Menu
+        //{
+        //    get
+        //    {
+        //        return menu;
+        //    }
+        //}
+        #endregion
+
+        #region OnTick Tasks
         /// <summary>
         /// OnTick used for all basic options that need to be set every tick.
         /// </summary>
         /// <returns></returns>
         private async Task OnTick()
         {
+            // Just here to stop the annoying build warnings about no "Await in async task".
+            if (firstTick)
+            {
+                firstTick = false;
+                await Delay(0);
+            }
+
             // God mode
             SetEntityInvincible(PlayerPedId(), godMode);
 
             // Invisibility
             SetEntityVisible(PlayerPedId(), !invisible, false);
-            
+
             // Unlimited Stamina
             if (unlimitedStamina)
             {
                 ResetPlayerStamina(PlayerId());
             }
-            
+
             // Super Jump
             if (superJump)
             {
                 SetSuperJumpThisFrame(PlayerId());
             }
-            
+
             // No Ragdoll
             SetPedCanRagdoll(PlayerPedId(), !noRagdoll);
             SetPedCanRagdollFromPlayerImpact(PlayerPedId(), !noRagdoll);
-            
+
             // Never Wanted
             if (neverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
             {
                 ClearPlayerWantedLevel(PlayerId());
             }
-            
+
             // Everyone Ignores Player
             SetEveryoneIgnorePlayer(PlayerId(), everyoneIgnoresPlayer);
         }
-        
+
         /// <summary>
         /// OnTick used for playing/stopping scenarios.
         /// </summary>
@@ -119,7 +135,7 @@ namespace vMenu.menus
                             IsPlayingScenario = -1;
                             currentScenario = IsPlayingScenario;
                         }
-                        
+
                     }
                     // Keep looping until the scenario id = -1s
                 }
@@ -131,9 +147,21 @@ namespace vMenu.menus
                 // Then go back to the regular OnTick loop and wait for any new scenarios to be selected.
             }
         }
+        #endregion
 
+        #region Create the Main Menu.
+        /// <summary>
+        /// Create the Player Options menu.
+        /// </summary>
         private void CreateMenu()
         {
+            // Create the menu.
+            menu = new UIMenu("Player Options", "Common player options.")
+            {
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = true
+            };
+
             #region Create Menu Items
             // Checkboxes
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("God Mode", godMode, "If you turn this on, you won't take any damage.");
@@ -150,16 +178,16 @@ namespace vMenu.menus
             // Wanted level options
             List<dynamic> wantedLevelList = new List<dynamic> { "No Cops", 1, 2, 3, 4 };
             UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(PlayerId()), "Set the wanted level by selecting a value, and pressing enter.");
-            
+
             // Player options
             List<dynamic> playerOptionsList = new List<dynamic> { "Heal Player", "Apply Max Armor", "Clean Player", "Dry Player", "Soack Player" };
             UIMenuListItem playerOptions = new UIMenuListItem("Player Options", playerOptionsList, 0, "Select an option and press enter to execute it.");
-            
+
             // Actions
             List<dynamic> playerActionsList = new List<dynamic> { "Commit Suicide", "Drive To Waypoint", "Drive Wander" };
             UIMenuListItem playerActions = new UIMenuListItem("Player Actions", playerActionsList, 0, "Select an action and press enter to run it, use the cancel button below to stop the driving actions.");
             UIMenuItem cancelActions = new UIMenuItem("Cancel Player Actions", "Click this to cancel any of the driving player actions from the list above.");
-            
+
             // Scenarios (list can be found in the PedScenarios class)
             UIMenuListItem playerScenarios = new UIMenuListItem("Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Press it again to cancel it. Selecting another scenario and hitting enter will override the current scenario. Pressing enter again will then stop the scenario.");
             #endregion
@@ -249,11 +277,7 @@ namespace vMenu.menus
             };
             #endregion
 
-            //menu.OnListChange += (sender, listItem, newIndex) =>
-            //{
-            //    if (listItem == )
-            //};
-
+            #region When lists are selected, handle the functions here.
             menu.OnListSelect += (sender, listItem, index) =>
             {
                 // Set wanted Level
@@ -262,10 +286,12 @@ namespace vMenu.menus
                     SetPlayerWantedLevel(PlayerId(), index, false);
                     SetPlayerWantedLevelNow(PlayerId(), false);
                 }
+
                 // Player options (healing, cleaning, armor, dry/wet, etc)
                 else if (listItem == playerOptions)
                 {
-                    switch (index) {
+                    switch (index)
+                    {
                         case 0:
                             SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
                             Subtitle.Success("Player Healed Successfully.");
@@ -291,6 +317,7 @@ namespace vMenu.menus
                             break;
                     }
                 }
+
                 // Player actions (suicide, driving tasks, etc)
                 else if (listItem == playerActions)
                 {
@@ -305,11 +332,13 @@ namespace vMenu.menus
                             break;
                         case 2:
                             break;
-                            // Todo create drive wander task.
+                        // Todo create drive wander task.
                         default:
                             break;
                     }
                 }
+
+                // Player Scenarios 
                 else if (listItem == playerScenarios)
                 {
                     // If they are currently in a scenario, and they select the same scenario, then cancel it.
@@ -340,9 +369,35 @@ namespace vMenu.menus
                     }
                 }
             };
+            #endregion
+
+            // Open the main menu if this submenu closes.
+            menu.OnMenuClose += (sender) =>
+            {
+                menu.Visible = false;
+                MainMenu.menu.Visible = true;
+            };
+
+            // Add this menu to the menu pool.
+            MainMenu._mp.Add(menu);
+
+            // Create a button for this menu.
+            UIMenuItem PlayerOptionsButton = new UIMenuItem("Player Options", "Configure common player options in this submenu.");
+            // Add the button to the main menu.
+            MainMenu.menu.AddItem(PlayerOptionsButton);
+            // Bind the button from the main menu to this menu.
+            MainMenu.menu.BindMenuToItem(menu, PlayerOptionsButton);
+
+            // Refresh the index on this menu, the main menu and the menu pool.
+            menu.RefreshIndex();
+            MainMenu.menu.RefreshIndex();
+            MainMenu._mp.RefreshIndex();
 
         }
 
+        #endregion
+
+        #region Check if the player can start a new scenario
         /// <summary>
         /// Returns true if the player can start a scenario, false if they can't.
         /// </summary>
@@ -351,5 +406,7 @@ namespace vMenu.menus
         {
             return !(IsPedInAnyVehicle(PlayerPedId(), true) || IsPedDeadOrDying(PlayerPedId(), true) || IsPedRagdoll(PlayerPedId()) || IsPedStopped(PlayerPedId()));
         }
+        #endregion
+
     }
 }

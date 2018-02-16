@@ -17,7 +17,6 @@ namespace vMenu
         public static MenuPool _mp = new MenuPool();
 
         private bool firstTick = true;
-        private static UIMenu onlinePlayers = new OnlinePlayersMenu().Menu;
         private bool setupComplete = false;
         public static UIMenu menu;
 
@@ -49,14 +48,19 @@ namespace vMenu
                 }
 
                 // Create the main menu.
-                menu = new UIMenu(GetPlayerName(PlayerId()), "MAIN MENU")
+                menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu")
                 {
                     ControlDisablingEnabled = false
                 };
+
                 menu.RefreshIndex();
 
                 // Add the main menu to the menu pool.
                 _mp.Add(menu);
+
+                // Create all (sub)menus.
+                var onlinePlayersMenu = new OnlinePlayersMenu();
+                var playerOptionsMenu = new PlayerOptionsMenu();
             }
             // Todo: more stuff
 
