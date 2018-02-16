@@ -30,6 +30,14 @@ namespace vMenu.menus
             UIMenuItem onlinePlayersMenuBtn = new UIMenuItem("Online Players", "Online players in this server.");
             MainMenu.menu.AddItem(onlinePlayersMenuBtn);
             MainMenu.menu.BindMenuToItem(menu, onlinePlayersMenuBtn);
+
+            // If the online players menu closes, reopen the main menu.
+            menu.OnMenuClose += (sender2) =>
+            {
+                menu.Visible = false;
+                MainMenu.menu.Visible = true;
+            };
+
             MainMenu._mp.Add(menu);
         }
 
@@ -74,8 +82,14 @@ namespace vMenu.menus
                         if (item == playerItem)
                         {
                             var playerIndex = i;
+                            string playerName = GetPlayerName(playerIndex);
+                            if (playerIndex == PlayerId())
+                            {
+                                playerName += " (me)";
+                            }
+
                             // ...Create a new menu for that player.
-                            UIMenu playerMenu = new UIMenu(GetPlayerName(playerIndex), "Server ID: " + GetPlayerServerId(playerIndex));
+                            UIMenu playerMenu = new UIMenu("[" + GetPlayerServerId(playerIndex).ToString() + "] " + playerName, "Server ID: " + GetPlayerServerId(playerIndex));
                             // Create all player options buttons.
                             UIMenuItem teleportBtn = new UIMenuItem("Teleport to Player", "Teleport to this player.");
                             UIMenuItem teleportInVehBtn = new UIMenuItem("Teleport into Vehicle", "Telepor into the player's vehicle.");
@@ -118,7 +132,7 @@ namespace vMenu.menus
                                 else if (item2 == setWaypointBtn)
                                 {
                                     CitizenFX.Core.World.WaypointPosition = GetEntityCoords(GetPlayerPed(playerIndex), true);
-                                    Notify.Info("A new waypoint has been set to " + GetPlayerName(playerIndex), false, false);
+                                    Notify.Info("A new waypoint has been set to " + playerName, false, false);
                                 }
                                 // Spectate player button is pressed.
                                 else if (item2 == spectateBtn)
@@ -172,14 +186,7 @@ namespace vMenu.menus
                     menu.RefreshIndex();
                 }
             }
-
-            menu.OnMenuClose += (sender2) =>
-            {
-                menu.Visible = false;
-                MainMenu.menu.Visible = true;
-            };
-            
         }
-        
+
     }
 }

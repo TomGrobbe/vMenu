@@ -54,6 +54,7 @@
     <Compile Include="CommonFunctions.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="menus\OnlinePlayersMenu.cs" />
+    <Compile Include="Notification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -10,14 +10,20 @@ namespace vMenu
 {
     class CommonFunctions : BaseScript
     {
+        // Variables
         private Notification Notify = new Notification();
         private int spectatePlayer = -1;
         private bool spectating = false;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public CommonFunctions()
         {
             Tick += OnTick;
         }
 
+        #region OnTick for spectate handling
         /// <summary>
         /// OnTick runs every game tick.
         /// Used here for the spectating feature.
@@ -42,15 +48,14 @@ namespace vMenu
             {
                 await Delay(0);
             }
-
             DoScreenFadeOut(200);
             await Delay(200);
             NetworkSetInSpectatorMode(false, PlayerPedId());
             DoScreenFadeIn(200);
             await Delay(200);
-
         }
-
+        #endregion
+        #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
         /// <summary>
         /// Get the vehicle from the specified player. If no player specified, then return the vehicle of the current player.
         /// Optionally specify <see cref="=bool last"/> to return the last vehicle the player was in.
@@ -66,7 +71,8 @@ namespace vMenu
             }
             return GetVehiclePedIsIn(GetPlayerPed(player), last);
         }
-
+        #endregion
+        #region GetVehicleModel (uint)(hash) from Entity/Vehicle (int)
         /// <summary>
         /// Get the vehicle model hash (as uint) from the specified (int) entity/vehicle.
         /// </summary>
@@ -76,7 +82,8 @@ namespace vMenu
         {
             return (uint)GetHashKey(GetEntityModel(vehicle).ToString());
         }
-        
+        #endregion
+        #region Teleport to player (or teleport into the player's vehicle)
         /// <summary>
         /// Teleport to the specified player id. (Optionally teleport into their vehicle).
         /// </summary>
@@ -158,12 +165,13 @@ namespace vMenu
                 return;
             }
         }
-        
+        #endregion
+        #region Spectate function
         /// <summary>
         /// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
         /// </summary>
         /// <param name="playerId"></param>
-        public void Spectate(int playerId=-1)
+        public void Spectate(int playerId = -1)
         {
             if (spectating || playerId == -1)
             {
@@ -186,78 +194,9 @@ namespace vMenu
                 Notify.Info("Currently spectating " + GetPlayerName(playerId) + ".", false, false);
             }
         }
-
+        #endregion
     }
 
-    #region Notifications
-    /// <summary>
-    /// Notifications class to easilly show notifications using custom made templates,
-    /// or completely custom style if none of the templates are fitting for the current task.
-    /// </summary>
-    public class Notification : BaseScript
-    {
-        public Notification()
-        {
-        }
-
-        /// <summary>
-        /// Show a custom notification above the minimap.
-        /// </summary>
-        /// <param name="message">Message to display.</param>
-        /// <param name="blink">Should the notification blink 3 times?</param>
-        /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Custom(string message, bool blink = false, bool saveToBrief = true)
-        {
-            SetNotificationTextEntry("THREESTRINGS");
-            AddTextComponentSubstringPlayerName(message);
-            DrawNotification(blink, saveToBrief);
-        }
-
-        /// <summary>
-        /// Show a notification with "Alert: " prefixed to the message.
-        /// </summary>
-        /// <param name="message">The message to be displayed on the notification.</param>
-        /// <param name="blink">Should the notification blink 3 times?</param>
-        /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Alert(string message, bool blink = false, bool saveToBrief = true)
-        {
-            Custom("~y~~h~Alert~w~: " + message, blink, saveToBrief);
-        }
-
-        /// <summary>
-        /// Show a notification with "Error: " prefixed to the message.
-        /// </summary>
-        /// <param name="message">The message to be displayed on the notification.</param>
-        /// <param name="blink">Should the notification blink 3 times?</param>
-        /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Error(string message, bool blink = false, bool saveToBrief = true)
-        {
-            Custom("~r~~h~Error~w~: " + message, blink, saveToBrief);
-        }
-
-        /// <summary>
-        /// Show a notification with "Info: " prefixed to the message.
-        /// </summary>
-        /// <param name="message">The message to be displayed on the notification.</param>
-        /// <param name="blink">Should the notification blink 3 times?</param>
-        /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Info(string message, bool blink = false, bool saveToBrief = true)
-        {
-            Custom("~b~~h~Info~w~: " + message, blink, saveToBrief);
-        }
-
-        /// <summary>
-        /// Show a notification with "Success: " prefixed to the message.
-        /// </summary>
-        /// <param name="message">The message to be displayed on the notification.</param>
-        /// <param name="blink">Should the notification blink 3 times?</param>
-        /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Success(string message, bool blink = false, bool saveToBrief = true)
-        {
-            Custom("~g~~h~Success~w~: " + message, blink, saveToBrief);
-        }
-    }
-    #endregion
 
 
 }
