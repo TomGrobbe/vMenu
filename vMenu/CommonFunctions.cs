@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 
-namespace vMenu
+namespace vMenuClient
 {
     class CommonFunctions : BaseScript
     {

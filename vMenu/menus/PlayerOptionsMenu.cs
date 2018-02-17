@@ -7,7 +7,7 @@ using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
 
-namespace vMenu.menus
+namespace vMenuClient.menus
 {
     class PlayerOptionsMenu : BaseScript
     {

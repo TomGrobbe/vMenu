@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
-using vMenu.menus;
+using vMenuClient.menus;
 
-namespace vMenu
+namespace vMenuClient
 {
 
     public class MainMenu : BaseScript
