@@ -6,19 +6,18 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
-using vMenuClient.menus;
 
 namespace vMenuClient
 {
-
     public class MainMenu : BaseScript
     {
         // Variables
         public static MenuPool _mp = new MenuPool();
 
         private bool firstTick = true;
-        private bool setupComplete = false;
+        private bool setupComplete = true;
         public static UIMenu menu;
+        public static PlayerOptions _po;
 
         /// <summary>
         /// Constructor.
@@ -39,7 +38,7 @@ namespace vMenuClient
             {
                 firstTick = false;
                 // Request the data from the server.
-                TriggerServerEvent("vMenu:GetSettings");
+                //TriggerServerEvent("vMenu:GetSettings");
 
                 // Wait until the data is received.
                 while (!setupComplete)
@@ -53,17 +52,38 @@ namespace vMenuClient
                     ControlDisablingEnabled = false
                 };
 
-                menu.RefreshIndex();
+                var playerOptionsBtn = new UIMenuItem("Player Options", "Player Options");
+                menu.AddItem(playerOptionsBtn);
+                _po = new PlayerOptions();
+                var playerOptions = _po.GetMenu();
+                menu.BindMenuToItem(playerOptions, playerOptionsBtn);
+                _mp.Add(playerOptions);
+
 
                 // Add the main menu to the menu pool.
                 _mp.Add(menu);
 
                 // Create all (sub)menus.
-                var onlinePlayersMenu = new OnlinePlayersMenu();
-                var playerOptionsMenu = new PlayerOptionsMenu();
             }
-            // Todo: more stuff
+            else
+            {
+                _mp.ProcessMenus();
+                
+                if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && Game.IsControlJustPressed(0, Control.InteractionMenu))
+                {
+                    if (_mp.IsAnyMenuOpen())
+                    {
+                        _mp.CloseAllMenus();
+                    }
+                    else
+                    {
+                        menu.Visible = !_mp.IsAnyMenuOpen();
+                    }
+                    
+                }
+            }
 
+            
         }
     }
 

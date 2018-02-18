@@ -8,53 +8,54 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
-    class CommonFunctions : BaseScript
+    class CommonFunction
     {
         // Variables
         private Notification Notify = new Notification();
-        private int spectatePlayer = -1;
-        private bool spectating = false;
+        //private int spectatePlayer = -1;
+        //private bool spectating = false;
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public CommonFunctions()
-        {
-            Tick += OnTick;
-        }
+        //public CommonFunctions()
+        //{
+        //    Tick += OnTick;
+        //}
 
-        #region OnTick for spectate handling
-        /// <summary>
-        /// OnTick runs every game tick.
-        /// Used here for the spectating feature.
-        /// </summary>
-        /// <returns></returns>
-        private async Task OnTick()
-        {
-            // If the player is not spectating yet, but "spectating" is true, enable it.
-            if (spectatePlayer != -1 && spectating && NetworkIsPlayerActive(spectatePlayer))
-            {
-                DoScreenFadeOut(200);
-                await Delay(200);
-                NetworkSetInSpectatorMode(true, GetPlayerPed(spectatePlayer));
-                DoScreenFadeIn(200);
-                await Delay(200);
-                spectating = true;
-            }
+        //#region OnTick for spectate handling
+        ///// <summary>
+        ///// OnTick runs every game tick.
+        ///// Used here for the spectating feature.
+        ///// </summary>
+        ///// <returns></returns>
+        //private async Task OnTick()
+        //{
+        //    // If the player is not spectating yet, but "spectating" is true, enable it.
+        //    if (spectatePlayer != -1 && spectating && NetworkIsPlayerActive(spectatePlayer))
+        //    {
+        //        DoScreenFadeOut(200);
+        //        await Delay(200);
+        //        NetworkSetInSpectatorMode(true, GetPlayerPed(spectatePlayer));
+        //        DoScreenFadeIn(200);
+        //        await Delay(200);
+        //        spectating = true;
 
-            // Wait until spectating is cancelled.
-            // Either by the user itself, or if the other player disconencts, or if the current player dies.
-            while (spectating && spectatePlayer != -1 && NetworkIsPlayerActive(spectatePlayer) && !IsPlayerDead(PlayerId()))
-            {
-                await Delay(0);
-            }
-            DoScreenFadeOut(200);
-            await Delay(200);
-            NetworkSetInSpectatorMode(false, PlayerPedId());
-            DoScreenFadeIn(200);
-            await Delay(200);
-        }
-        #endregion
+
+        //        // Wait until spectating is cancelled.
+        //        // Either by the user itself, or if the other player disconencts, or if the current player dies.
+        //        while (spectating && spectatePlayer != -1 && NetworkIsPlayerActive(spectatePlayer) && !IsPlayerDead(PlayerId()))
+        //        {
+        //            await Delay(0);
+        //        }
+        //        DoScreenFadeOut(200);
+        //        await Delay(200);
+        //        NetworkSetInSpectatorMode(false, PlayerPedId());
+        //        DoScreenFadeIn(200);
+        //        await Delay(200);
+        //    }
+        //}
+        //#endregion
         #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
         /// <summary>
         /// Get the vehicle from the specified player. If no player specified, then return the vehicle of the current player.
@@ -110,7 +111,7 @@ namespace vMenuClient
                 if (inVehicle)
                 {
                     // Allow the world to load around the player first.
-                    await Delay(5);
+                    //await Delay(5);
 
                     // Is the other player inside a vehicle?
                     if (IsPedInAnyVehicle(playerPed, false))
@@ -166,35 +167,35 @@ namespace vMenuClient
             }
         }
         #endregion
-        #region Spectate function
-        /// <summary>
-        /// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
-        /// </summary>
-        /// <param name="playerId"></param>
-        public void Spectate(int playerId = -1)
-        {
-            if (spectating || playerId == -1)
-            {
-                spectating = false;
-                spectatePlayer = -1;
-                Notify.Info("Stopped spectating.", false, false);
-            }
-            else if (spectating && playerId != -1 && NetworkIsPlayerActive(playerId))
-            {
-                spectating = false;
-                spectatePlayer = -1;
-                Notify.Info("Switching to player " + GetPlayerName(playerId), false, false);
-                spectating = true;
-                spectatePlayer = playerId;
-            }
-            else
-            {
-                spectatePlayer = playerId;
-                spectating = true;
-                Notify.Info("Currently spectating " + GetPlayerName(playerId) + ".", false, false);
-            }
-        }
-        #endregion
+        //#region Spectate function
+        ///// <summary>
+        ///// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
+        ///// </summary>
+        ///// <param name="playerId"></param>
+        //public void Spectate(int playerId = -1)
+        //{
+        //    if (spectating || playerId == -1)
+        //    {
+        //        spectating = false;
+        //        spectatePlayer = -1;
+        //        Notify.Info("Stopped spectating.", false, false);
+        //    }
+        //    else if (spectating && playerId != -1 && NetworkIsPlayerActive(playerId))
+        //    {
+        //        spectating = false;
+        //        spectatePlayer = -1;
+        //        Notify.Info("Switching to player " + GetPlayerName(playerId), false, false);
+        //        spectating = true;
+        //        spectatePlayer = playerId;
+        //    }
+        //    else
+        //    {
+        //        spectatePlayer = playerId;
+        //        spectating = true;
+        //        Notify.Info("Currently spectating " + GetPlayerName(playerId) + ".", false, false);
+        //    }
+        //}
+        //#endregion
     }
 
 
