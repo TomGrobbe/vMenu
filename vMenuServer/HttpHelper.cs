@@ -64,7 +64,7 @@ namespace GHMatti.Http
 
     public class Request : BaseScript
     {
-        public Request() {}
+        public Request() { }
 
         public async Task<RequestResponse> Http(string url, string method = "GET", string data = "", Dictionary<string, string> headers = null)
         {
@@ -73,12 +73,12 @@ namespace GHMatti.Http
                     await Exports[API.GetCurrentResourceName()].HttpRequest(url, method, data, headers)
                 );
         }
-        
+
         private WebHeaderCollection ParseHeadersInternal(dynamic headerDyn)
         {
             WebHeaderCollection headers = new WebHeaderCollection();
-            IDictionary<string, object> headerDict = (IDictionary<string, object>) headerDyn;
-            foreach(KeyValuePair<string, object> entry in headerDict)
+            IDictionary<string, object> headerDict = (IDictionary<string, object>)headerDyn;
+            foreach (KeyValuePair<string, object> entry in headerDict)
             {
                 headers.Add(entry.Key, entry.Value.ToString());
             }
@@ -92,7 +92,7 @@ namespace GHMatti.Http
 
         private RequestResponse ParseRequestResponseInternal(IDictionary<string, dynamic> rr)
         {
-            RequestResponse result = new RequestResponse();          
+            RequestResponse result = new RequestResponse();
             result.status = ParseStatusInternal(rr["status"]);
             result.headers = ParseHeadersInternal(rr["headers"]);
             result.content = rr["content"];

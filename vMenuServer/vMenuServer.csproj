@@ -34,8 +34,8 @@
       <HintPath>.\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,12 +54,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="__resource.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="stream\menubanner.ytd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CustomToolNamespace>stream</CustomToolNamespace>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\*" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\stream\menubanner.ytd" "D:\FXserver\vMenu\resources\vMenu\stream\"
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

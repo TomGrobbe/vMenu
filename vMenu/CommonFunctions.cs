@@ -40,21 +40,23 @@ namespace vMenuClient
                 DoScreenFadeIn(200);
                 await Delay(200);
                 spectating = true;
-            }
 
-            // Wait until spectating is cancelled.
-            // Either by the user itself, or if the other player disconencts, or if the current player dies.
-            while (spectating && spectatePlayer != -1 && NetworkIsPlayerActive(spectatePlayer) && !IsPlayerDead(PlayerId()))
-            {
-                await Delay(0);
+
+                // Wait until spectating is cancelled.
+                // Either by the user itself, or if the other player disconencts, or if the current player dies.
+                while (spectating && spectatePlayer != -1 && NetworkIsPlayerActive(spectatePlayer) && !IsPlayerDead(PlayerId()))
+                {
+                    await Delay(0);
+                }
+                DoScreenFadeOut(200);
+                await Delay(200);
+                NetworkSetInSpectatorMode(false, PlayerPedId());
+                DoScreenFadeIn(200);
+                await Delay(200);
             }
-            DoScreenFadeOut(200);
-            await Delay(200);
-            NetworkSetInSpectatorMode(false, PlayerPedId());
-            DoScreenFadeIn(200);
-            await Delay(200);
         }
         #endregion
+
         #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
         /// <summary>
         /// Get the vehicle from the specified player. If no player specified, then return the vehicle of the current player.
@@ -165,7 +167,18 @@ namespace vMenuClient
                 return;
             }
         }
+
+        public void KillPlayer(Player player)
+        {
+            TriggerServerEvent("vMenu:KillPlayer", player.Handle);
+        }
+
+        public void SummonPlayer(Player player)
+        {
+            TriggerServerEvent("vMenu:SummonPlayer", player.Handle);
+        }
         #endregion
+
         #region Spectate function
         /// <summary>
         /// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.

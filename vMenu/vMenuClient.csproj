@@ -52,15 +52,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFunctions.cs" />
+    <Compile Include="EventManager.cs" />
+    <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />
-    <Compile Include="menus\OnlinePlayersMenu.cs" />
-    <Compile Include="menus\PlayerOptionsMenu.cs" />
+    <Compile Include="menus\OnlinePlayers.cs" />
+    <Compile Include="menus\VehicleOptions.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="PedScenarios.cs" />
+    <Compile Include="menus\PlayerOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
