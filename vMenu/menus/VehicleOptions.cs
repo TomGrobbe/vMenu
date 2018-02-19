@@ -15,6 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private static Notification Notify = new Notification();
         private static Subtitles Subtitle = new Subtitles();
+        private static CommonFunctions cf = new CommonFunctions();
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = false;
@@ -77,7 +78,6 @@ namespace vMenuClient
             UIMenu vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.");
             UIMenu vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors");
 
-
             // Add everything to the menu.
             menu.AddItem(vehicleGod); // GOD MODE
             menu.AddItem(fixVehicle); // REPAIR VEHICLE
@@ -103,6 +103,71 @@ namespace vMenuClient
             menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
             menu.AddItem(vehicleNoSiren); // DISABLE SIREN
             menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
+
+            // Manage button presses.
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                // If the player is actually in a vehicle, continue.
+                if (DoesEntityExist(cf.GetVehicle()))
+                {
+                    // Create a vehicle object.
+                    Vehicle vehicle = new Vehicle(cf.GetVehicle());
+
+                    // Check if the player is the driver of the vehicle, if so, continue.
+                    if (vehicle.GetPedOnSeat(VehicleSeat.Driver) == new Ped(PlayerPedId()))
+                    {
+                        // Repair vehicle.
+                        if (item == fixVehicle)
+                        {
+                            vehicle.Repair();
+                        }
+                        // Clean vehicle.
+                        else if (item == cleanVehicle)
+                        {
+                            vehicle.Wash();
+                        }
+                        // Delete vehicle.
+                        else if (item == deleteBtn)
+                        {
+                            vehicle.Delete();
+                            vehicle = null;
+                        }
+                        // Flip vehicle.
+                        else if (item == flipVehicle)
+                        {
+                            SetVehicleOnGroundProperly(vehicle.Handle);
+                        }
+                        // Toggle alarm.
+                        else if (item == vehicleAlarm)
+                        {
+                            if (vehicle.IsAlarmSounding)
+                            {
+                                vehicle.AlarmTimeLeft = 0;
+                            }
+                            else
+                            {
+                                vehicle.StartAlarm();
+                            }
+                        }
+                        // Cycle vehicle seats (to be implemented later)
+                        else if (item == cycleSeats)
+                        {
+                            Notify.Custom("not implemented yet");
+                        }
+                    }
+                    // If the player is not the driver, notify them.
+                    else
+                    {
+                        Notify.Error("You must be in the driver seat to access these options!", true, false);
+                    }
+                    
+                }
+                // If the player is not inside a vehicle, notify them.
+                else
+                {
+                    Notify.Error("You must be inside a vehicle to access these options!", true, false);
+                }
+            };
 
         }
 

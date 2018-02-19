@@ -65,7 +65,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\stream\menubanner.ytd" "D:\FXserver\vMenu\resources\vMenu\stream\"
