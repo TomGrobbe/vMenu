@@ -11,6 +11,7 @@ namespace vMenuClient
 {
     public class VehicleOptions
     {
+        #region Variables
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
         private static Notification Notify = new Notification();
@@ -25,7 +26,12 @@ namespace vMenuClient
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
+        #endregion
 
+        #region CreateMenu()
+        /// <summary>
+        /// Create menu creates the vehicle options menu.
+        /// </summary>
         private void CreateMenu()
         {
             // Create the menu.
@@ -35,6 +41,7 @@ namespace vMenuClient
                 MouseEdgeEnabled = false
             };
 
+            #region menu variables
             // Create Checkboxes.
             UIMenuCheckboxItem vehicleGod = new UIMenuCheckboxItem("God Mode", VehicleGodMode, "Disables any type of visual or physical damage to your vehicle.");
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
@@ -77,7 +84,9 @@ namespace vMenuClient
             UIMenu vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components");
             UIMenu vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.");
             UIMenu vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors");
+            #endregion
 
+            #region Add items to the menu.
             // Add everything to the menu.
             menu.AddItem(vehicleGod); // GOD MODE
             menu.AddItem(fixVehicle); // REPAIR VEHICLE
@@ -103,7 +112,9 @@ namespace vMenuClient
             menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
             menu.AddItem(vehicleNoSiren); // DISABLE SIREN
             menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
+            #endregion
 
+            #region Handle button presses
             // Manage button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
@@ -160,7 +171,7 @@ namespace vMenuClient
                     {
                         Notify.Error("You must be in the driver seat to access these options!", true, false);
                     }
-                    
+
                 }
                 // If the player is not inside a vehicle, notify them.
                 else
@@ -168,9 +179,58 @@ namespace vMenuClient
                     Notify.Error("You must be inside a vehicle to access these options!", true, false);
                 }
             };
+            #endregion
+
+            #region Handle checkbox changes.
+            menu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                // If the player is actually in a vehicle, continue.
+                if (DoesEntityExist(cf.GetVehicle()))
+                {
+                    // Create a vehicle object.
+                    Vehicle vehicle = new Vehicle(cf.GetVehicle());
+
+                    if (item == vehicleGod) // God Mode Toggled
+                    {
+                        VehicleGodMode = _checked;
+                    }
+                    else if (item == vehicleFreeze) // Freeze Vehicle Toggled
+                    {
+                        FreezeEntityPosition(vehicle.Handle, _checked);
+                    }
+                    else if (item == torqueEnabled) // Enable Torque Multiplier Toggled
+                    {
+                        VehicleTorqueMultiplier = _checked;
+                    }
+                    else if (item == powerEnabled) // Enable Power Multiplier Toggled
+                    {
+                        VehiclePowerMultiplier = _checked;
+                    }
+                    else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
+                    {
+                        VehicleEngineAlwaysOn = _checked;
+                    }
+                    else if (item == vehicleNoSiren) // Disable Siren Toggled
+                    {
+                        VehicleNoSiren = _checked;
+                    }
+                    else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
+                    {
+                        VehicleNoBikeHelemet = _checked;
+                    }
+                }
+            };
+
+
+            #endregion
 
         }
+        #endregion
 
+        /// <summary>
+        /// Public get method for the menu. Checks if the menu exists, if not create the menu first.
+        /// </summary>
+        /// <returns>Returns the Vehicle Options menu.</returns>
         public UIMenu GetMenu()
         {
             if (menu == null)
