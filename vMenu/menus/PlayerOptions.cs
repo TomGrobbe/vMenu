@@ -27,12 +27,12 @@ namespace vMenuClient
         public bool PlayerFrozen { get; private set; } = false;
 
         /// <summary>
-        /// Create the menu.
+        /// Creates the menu.
         /// </summary>
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options");
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options", MainMenu.MenuPosition);
 
             // Create all checkboxes.
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("God Mode", PlayerGodMode, "If you turn this on, you won't take any damage.");
@@ -229,6 +229,11 @@ namespace vMenuClient
 
         }
 
+        /// <summary>
+        /// Checks if the menu exists, if not then it creates it first.
+        /// Then returns the menu.
+        /// </summary>
+        /// <returns>The Player Options Menu</returns>
         public UIMenu GetMenu()
         {
             if (menu == null)

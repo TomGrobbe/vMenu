@@ -14,6 +14,18 @@ namespace vMenuServer
         public EventManager()
         {
             UpdateChecker uc = new UpdateChecker();
+            EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, Player>(SummonPlayer));
+            EventHandlers.Add("vMenu:KillPlayer", new Action<Player, Player>(KillPlayer));
+        }
+
+        private void KillPlayer([FromSource] Player source, [FromSource] Player target)
+        {
+            TriggerClientEvent(player: target, eventName: "vMenu:KillMe");
+        }
+
+        private void SummonPlayer([FromSource] Player source, [FromSource]Player target)
+        {
+            TriggerClientEvent(player: target, eventName: "vMenu:GoToPlayer", args: source.Handle);
         }
     }
 }
