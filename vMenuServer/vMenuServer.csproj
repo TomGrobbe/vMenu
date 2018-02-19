@@ -55,7 +55,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="stream\menubanner.ytd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CustomToolNamespace>stream</CustomToolNamespace>
     </None>
   </ItemGroup>

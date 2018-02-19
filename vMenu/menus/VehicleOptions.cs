@@ -21,6 +21,9 @@ namespace vMenuClient
         public bool VehicleEngineAlwaysOn { get; private set; } = false;
         public bool VehicleNoSiren { get; private set; } = false;
         public bool VehicleNoBikeHelemet { get; private set; } = false;
+        public bool VehicleFrozen { get; private set; } = false;
+        public bool VehicleTorqueMultiplier { get; private set; } = false;
+        public bool VehiclePowerMultiplier { get; private set; } = false;
 
         private void CreateMenu()
         {
@@ -36,19 +39,70 @@ namespace vMenuClient
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
             UIMenuCheckboxItem vehicleNoSiren = new UIMenuCheckboxItem("Disable Siren", VehicleNoSiren, "Disables your vehicle's siren. Only works if your vehicle actually has a siren.");
             UIMenuCheckboxItem vehicleNoBikeHelmet = new UIMenuCheckboxItem("No Bike Helmet", VehicleNoBikeHelemet, "No longer auto-equip a helmet when getting on a bike or quad.");
+            UIMenuCheckboxItem vehicleFreeze = new UIMenuCheckboxItem("Freeze Vehicle", VehicleFrozen, "No longer auto-equip a helmet when getting on a bike or quad.");
+            UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
+            UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
 
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
             UIMenuItem cleanVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
             UIMenuItem setLicensePlateText = new UIMenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
+            UIMenuItem modMenuBtn = new UIMenuItem("Mod Menu", "Tune and customize your vehicle here.");
+            UIMenuItem doorsMenuBtn = new UIMenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.");
+            UIMenuItem windowsMenuBtn = new UIMenuItem("Vehicle Windows", "Roll your windows up/down or remove/restore your vehicle windows here.");
+            UIMenuItem componentsMenuBtn = new UIMenuItem("Vehicle Extras", "Add/remove vehicle components/extras.");
+            UIMenuItem liveriesMenuBtn = new UIMenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!");
+            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
+            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
+            deleteBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+            UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
+            UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
+            UIMenuItem cycleSeats = new UIMenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
 
             // Create lists.
-            var dirtlevel = new List<dynamic> {"Clean", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            var dirtlevel = new List<dynamic> { "Clean", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
             UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle. This won't freeze the dirt level, it will only set it once.");
-            var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
+            var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
             UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Select a license plate type and press enter to apply it to your vehicle.");
+            var torqueMultiplierList = new List<dynamic> { 1 };
+            UIMenuListItem torqueMultiplier = new UIMenuListItem("Engine Torque Multiplier", torqueMultiplierList, 0, "Select the engine torque multiplier.");
+            var engineMultiplierList = new List<dynamic> { 1 };
+            UIMenuListItem powerMultiplier = new UIMenuListItem("Engine Power Multiplier", engineMultiplierList, 0, "Select the engine power multiplier.");
 
-            menu.AddItem(setLicensePlateType);
+            // Submenu's
+            UIMenu vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods");
+            UIMenu vehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management");
+            UIMenu vehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management");
+            UIMenu vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components");
+            UIMenu vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.");
+            UIMenu vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors");
+
+
+            // Add everything to the menu.
+            menu.AddItem(vehicleGod); // GOD MODE
+            menu.AddItem(fixVehicle); // REPAIR VEHICLE
+            menu.AddItem(cleanVehicle); // CLEAN VEHICLE
+            menu.AddItem(setDirtLevel); // SET DIRT LEVEL
+            menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
+            menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
+            menu.AddItem(modMenuBtn); // MOD MENU
+            menu.AddItem(colorsMenuBtn); // COLORS MENU
+            menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
+            menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
+            menu.AddItem(doorsMenuBtn); // DOORS MENU
+            menu.AddItem(windowsMenuBtn); // WINDOWS MENU
+            menu.AddItem(deleteBtn); // DELETE VEHICLE
+            menu.AddItem(vehicleFreeze); // FREEZE VEHICLE
+            menu.AddItem(torqueEnabled); // TORQUE ENABLED
+            menu.AddItem(torqueMultiplier); // TORQUE LIST
+            menu.AddItem(powerEnabled); // POWER ENABLED
+            menu.AddItem(powerMultiplier); // POWER LIST
+            menu.AddItem(flipVehicle); // FLIP VEHICLE
+            menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
+            menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
+            menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
+            menu.AddItem(vehicleNoSiren); // DISABLE SIREN
+            menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
 
         }
 
