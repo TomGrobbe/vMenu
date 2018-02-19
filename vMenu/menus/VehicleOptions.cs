@@ -14,7 +14,7 @@ namespace vMenuClient
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
         private static Notification Notify = new Notification();
-        private static Subtitles Subtitle = new Subtitles();
+        //private static Subtitles Subtitle = new Subtitles();
         private static CommonFunctions cf = new CommonFunctions();
 
         // Public variables (getters only), return the private variables.

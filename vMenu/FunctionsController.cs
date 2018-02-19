@@ -11,6 +11,7 @@ namespace vMenuClient
 {
     class FunctionsController : BaseScript
     {
+        
         CommonFunctions cf = new CommonFunctions();
         public FunctionsController()
         {
@@ -84,7 +85,10 @@ namespace vMenuClient
                 {
                     SetVehicleEngineOn(cf.GetVehicle(last: true), true, true, true);
                 }
-
+            }
+            if (cf == null)
+            {
+                await Delay(0);
             }
         }
     }

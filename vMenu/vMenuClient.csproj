@@ -38,8 +38,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\NativeUI.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,7 +67,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
   </PropertyGroup>

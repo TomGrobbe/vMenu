@@ -14,7 +14,7 @@ namespace vMenuClient
         // Variables
         public static MenuPool _mp = new MenuPool();
         public static System.Drawing.PointF MenuPosition = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 465f, 45f);
-        private static Notification Notify = new Notification();
+        //private static Notification Notify = new Notification();
         private static Subtitles Subtitle = new Subtitles();
 
         private bool firstTick = true;
