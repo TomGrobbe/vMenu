@@ -68,7 +68,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
-    <PostBuildEvent>copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
