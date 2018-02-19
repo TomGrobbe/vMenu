@@ -3,4 +3,4 @@ script:
     - xbuild /p:Configuration=Release vMenu.sln
 branches:
     only:
-        - master
+        - /.*/
