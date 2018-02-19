@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=master)](https://travis-ci.com/TomGrobbe/vMenu)
 # vMenu
 vMenu is a custom built server sided trainer, with basic permissions support, whenever possible using labels to automatically translate many menu options to the player's game language, and much more.
 
