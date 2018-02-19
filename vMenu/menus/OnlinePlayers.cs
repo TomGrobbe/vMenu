@@ -17,16 +17,6 @@ namespace vMenuClient
         private static Subtitles Subtitle = new Subtitles();
         private CommonFunctions cf = new CommonFunctions();
 
-        // Public variables (getters only), return the private variables.
-        //public bool PlayerGodMode { get; private set; } = false;
-        //public bool PlayerInvisible { get; private set; } = false;
-        //public bool PlayerStamina { get; private set; } = true;
-        //public bool PlayerSuperJump { get; private set; } = false;
-        //public bool PlayerNoRagdoll { get; private set; } = false;
-        //public bool PlayerNeverWanted { get; private set; } = false;
-        //public bool PlayerIsIgnored { get; private set; } = false;
-        //public bool PlayerFrozen { get; private set; } = false;
-
 
         /// <summary>
         /// Creates the menu.
@@ -34,13 +24,17 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Online Players", MainMenu.MenuPosition);
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Online Players", MainMenu.MenuPosition)
+            {
+                ScaleWithSafezone = false,
+                MouseEdgeEnabled = false
+            };
             UpdatePlayerlist();
         }
 
         public void UpdatePlayerlist()
         {
-            
+
             if (menu.MenuItems.Count > 0)
             {
                 menu.MenuItems.Clear();
@@ -66,7 +60,7 @@ namespace vMenuClient
                             ScaleWithSafezone = false
                         };
 
-                        PlayerMenu.SetBannerType(new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), System.Drawing.Color.FromArgb(38, 38, 38)));
+                        PlayerMenu.SetBannerType(MainMenu.BannerSprite);
                         PlayerMenu.ControlDisablingEnabled = false;
                         PlayerMenu.MouseEdgeEnabled = false;
 
@@ -88,7 +82,7 @@ namespace vMenuClient
                         PlayerMenu.AddItem(summonBtn);
                         PlayerMenu.AddItem(killBtn);
                         PlayerMenu.AddItem(kickPlayerBtn);
-                        
+
                         // Add the player menu to the menu pool.
                         MainMenu._mp.Add(PlayerMenu);
 
@@ -164,8 +158,8 @@ namespace vMenuClient
                     }
                 };
             };
-        
-        
+
+
             //MainMenu._mp.Add(menu);
 
         }

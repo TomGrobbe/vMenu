@@ -32,7 +32,11 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options", MainMenu.MenuPosition);
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options", MainMenu.MenuPosition)
+            {
+                ScaleWithSafezone = false,
+                MouseEdgeEnabled = false
+            };
 
             // Create all checkboxes.
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("God Mode", PlayerGodMode, "If you turn this on, you won't take any damage.");

@@ -26,6 +26,7 @@ namespace vMenuClient
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
+        public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f));
 
         /// <summary>
         /// Constructor.
@@ -62,8 +63,6 @@ namespace vMenuClient
 
                 menu.RefreshIndex();
                 menu.ScaleWithSafezone = false;
-                menu.UpdateScaleform();
-                menu.RefreshIndex();
 
 
                 // Create all (sub)menus.
@@ -73,32 +72,39 @@ namespace vMenuClient
                 menu.AddItem(onlinePlayersBtn);
                 _op = new OnlinePlayers();
                 UIMenu onlinePlayers = _op.GetMenu();
-
-                onlinePlayers.ScaleWithSafezone = false;
-                onlinePlayers.UpdateScaleform();
-
                 menu.BindMenuToItem(onlinePlayers, onlinePlayersBtn);
                 _mp.Add(onlinePlayers);
+                menu.UpdateScaleform();
 
                 // Add the player options menu.
                 UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
                 menu.AddItem(playerOptionsBtn);
                 _po = new PlayerOptions();
                 UIMenu playerOptions = _po.GetMenu();
-                playerOptions.ScaleWithSafezone = false;
-                playerOptions.UpdateScaleform();
-
                 menu.BindMenuToItem(playerOptions, playerOptionsBtn);
                 _mp.Add(playerOptions);
 
-                _mp.RefreshIndex();
+                // Add the vehicle options Menu.
+                UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
+                menu.AddItem(vehicleOptionsBtn);
+                _vo = new VehicleOptions();
+                UIMenu vehicleOptions = _vo.GetMenu();
+                menu.BindMenuToItem(vehicleOptions, vehicleOptionsBtn);
+                _mp.Add(vehicleOptions);
 
+
+
+                // Refresh everything.
+                _mp.RefreshIndex();
                 onlinePlayers.UpdateScaleform();
                 playerOptions.UpdateScaleform();
                 menu.UpdateScaleform();
 
-                _mp.SetBannerType(new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), System.Drawing.Color.FromArgb(38, 38, 38)));
+                // Set the banner globally.
+                _mp.SetBannerType(BannerSprite);
+                // Globally disable the native ui controls disabling.
                 _mp.ControlDisablingEnabled = false;
+                // Globally disable the "mouse edge" feature.
                 _mp.MouseEdgeEnabled = false;
             }
             else
@@ -129,7 +135,7 @@ namespace vMenuClient
                             bt.Percentage = percent;
                             Subtitle.Success(percent.ToString(), 0, true, "Progress:");
                         }
-                        
+
                         if (timer > 59)
                         {
                             menu.Visible = !_mp.IsAnyMenuOpen();

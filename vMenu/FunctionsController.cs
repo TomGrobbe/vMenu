@@ -62,18 +62,29 @@ namespace vMenuClient
             {
                 if (DoesEntityExist(cf.GetVehicle()))
                 {
+                    // Vehicle.
                     Vehicle vehicle = new Vehicle(cf.GetVehicle());
 
-                    if (MainMenu._vo.VehicleGodMode)
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
+                    // God mode
+                    var god = MainMenu._vo.VehicleGodMode;
+                    vehicle.CanBeVisiblyDamaged = !god;
+                    vehicle.CanEngineDegrade = !god;
+                    vehicle.CanTiresBurst = !god;
+                    vehicle.CanWheelsBreak = !god;
+                    vehicle.IsAxlesStrong = god;
+                    vehicle.IsBulletProof = god;
+                    vehicle.IsCollisionProof = god;
+                    vehicle.IsExplosionProof = god;
+                    vehicle.IsFireProof = god;
+                    vehicle.IsInvincible = god;
+                    vehicle.IsMeleeProof = god;
                 }
-                
+
+                if (MainMenu._vo.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(last: true)) && !DoesEntityExist(cf.GetVehicle(last: false)))
+                {
+                    SetVehicleEngineOn(cf.GetVehicle(last: true), true, true, true);
+                }
+
             }
         }
     }

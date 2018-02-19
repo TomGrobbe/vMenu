@@ -46,7 +46,7 @@ namespace vMenuServer
                             Debug.WriteLine("  | A new version is available, please update!  |");
                             Debug.WriteLine("  |  >> https://github.com/tomgrobbe/vMenu <<   |");
                         }
-                        
+
                         Debug.WriteLine("  +---------------------------------------------+\r\n");
                     }
                 }
