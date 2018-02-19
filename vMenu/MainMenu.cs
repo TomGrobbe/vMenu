@@ -22,6 +22,7 @@ namespace vMenuClient
         public static UIMenu menu;
         public static PlayerOptions _po;
         public static OnlinePlayers _op;
+        public static VehicleOptions _vo;
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;

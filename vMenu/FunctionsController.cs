@@ -11,7 +11,7 @@ namespace vMenuClient
 {
     class FunctionsController : BaseScript
     {
-
+        CommonFunctions cf = new CommonFunctions();
         public FunctionsController()
         {
             Tick += OnTick;
@@ -19,7 +19,7 @@ namespace vMenuClient
 
         private async Task OnTick()
         {
-            // Check if the menu actually exists... we don't want null pointer exceptions or illegal access errors!
+            // Player options. Only run player options if the player options menu has actually been created.
             if (MainMenu._po != null)
             {
                 // Manage Player God Mode
@@ -55,6 +55,25 @@ namespace vMenuClient
 
                 // Manage player frozen.
                 FreezeEntityPosition(PlayerPedId(), MainMenu._po.PlayerFrozen);
+            }
+
+            // Vehicle options. Only run vehicle options if the vehicle options menu has actually been created.
+            if (MainMenu._vo != null)
+            {
+                if (DoesEntityExist(cf.GetVehicle()))
+                {
+                    Vehicle vehicle = new Vehicle(cf.GetVehicle());
+
+                    if (MainMenu._vo.VehicleGodMode)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+                
             }
         }
     }
