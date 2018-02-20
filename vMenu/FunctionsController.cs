@@ -79,6 +79,8 @@ namespace vMenuClient
                     vehicle.IsFireProof = god;
                     vehicle.IsInvincible = god;
                     vehicle.IsMeleeProof = god;
+
+                    FreezeEntityPosition(vehicle.Handle, MainMenu._vo.VehicleFrozen);
                 }
 
                 if (MainMenu._vo.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(last: true)) && !DoesEntityExist(cf.GetVehicle(last: false)))
