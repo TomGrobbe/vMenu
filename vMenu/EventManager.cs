@@ -15,6 +15,12 @@ namespace vMenuClient
         {
             EventHandlers.Add("vMenu:GoToPlayer", new Action<int>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
+            EventHandlers.Add("vMenu:KickCallback", new Action<string>(KickCallback));
+        }
+
+        private void KickCallback(string reason)
+        {
+            MainMenu.Notify.Custom(reason, true, false);
         }
 
         private void KillMe()
