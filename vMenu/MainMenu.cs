@@ -13,6 +13,8 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         // Variables
+
+        public static CommonFunctions cf = new CommonFunctions();
         public static MenuPool _mp = new MenuPool();
         public static System.Drawing.PointF MenuPosition = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 465f, 45f);
         public static Notification Notify = new Notification();

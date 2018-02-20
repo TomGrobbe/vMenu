@@ -8,12 +8,12 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
-    class CommonFunctions : BaseScript
+    public class CommonFunctions : BaseScript
     {
         // Variables
         private Notification Notify = new Notification();
         //private int spectatePlayer = -1;
-        private bool spectating = false;
+        //private bool spectating = false;
 
         /// <summary>
         /// Constructor.
@@ -31,22 +31,18 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task OnTick()
         {
-            //NetworkSetOverrideSpectatorMode(false);
-            //if (spectating)
+            if (GetEntityHealth(PlayerPedId()) < 1)
             {
-                if (GetEntityHealth(PlayerPedId()) < 100)
+                DoScreenFadeOut(50);
+                await Delay(50);
+                NetworkSetInSpectatorMode(true, PlayerPedId());
+                NetworkSetInSpectatorMode(false, PlayerPedId());
+
+                await Delay(50);
+                DoScreenFadeIn(50);
+                while (GetEntityHealth(PlayerPedId()) < 1)
                 {
-                    DoScreenFadeOut(50);
-                    await Delay(50);
-                    NetworkSetInSpectatorMode(true, PlayerPedId());
-                    NetworkSetInSpectatorMode(false, PlayerPedId());
-
-                    
-                    Notify.Info($"Stopped spectating. {spectating.ToString()}", false, false);
-
-                    spectating = false;
-                    await Delay(50);
-                    DoScreenFadeIn(50);
+                    await Delay(0);
                 }
             }
         }
@@ -191,21 +187,10 @@ namespace vMenuClient
         /// <param name="playerId"></param>
         public async void SpectateAsync(int playerId = -1)
         {
-            // Switch spectating to another player.
-            if (spectating && playerId != -1 && NetworkIsPlayerActive(playerId))
-            {
-                spectating = true;
-                DoScreenFadeOut(100);
-                await Delay(100);
-                Notify.Info("Switching to player ~r~" + GetPlayerName(playerId), false, false);
-                NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
-                DoScreenFadeIn(100);
-                await Delay(100);
-            }
             // Stop spectating.
-            else if (spectating || playerId == -1)
+            if (NetworkIsInSpectatorMode() || playerId == -1)
             {
-                spectating = false;
+                //spectating = false;
                 DoScreenFadeOut(100);
                 await Delay(100);
                 Notify.Info("Stopped spectating.", false, false);
@@ -216,7 +201,7 @@ namespace vMenuClient
             // Start spectating for the first time.
             else
             {
-                spectating = true;
+                //spectating = true;
                 DoScreenFadeOut(100);
                 await Delay(100);
                 Notify.Info("Spectating ~r~" + GetPlayerName(playerId), false, false);

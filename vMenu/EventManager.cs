@@ -11,7 +11,8 @@ namespace vMenuClient
     public class EventManager : BaseScript
     {
         // common functions.
-        private static CommonFunctions cf = new CommonFunctions();
+        //private static CommonFunctions cf = new CommonFunctions();
+        private CommonFunctions cf = MainMenu.cf;
 
         /// <summary>
         /// Constructor.

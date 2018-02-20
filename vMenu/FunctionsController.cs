@@ -12,7 +12,8 @@ namespace vMenuClient
     class FunctionsController : BaseScript
     {
 
-        CommonFunctions cf = new CommonFunctions();
+        //CommonFunctions cf = new CommonFunctions();
+        private CommonFunctions cf = MainMenu.cf;
         public FunctionsController()
         {
             Tick += OnTick;

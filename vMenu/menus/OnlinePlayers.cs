@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private static Notification Notify = new Notification();
         //private static Subtitles Subtitle = new Subtitles();
-        private CommonFunctions cf = new CommonFunctions();
+        private CommonFunctions cf = MainMenu.cf;
 
 
         /// <summary>
