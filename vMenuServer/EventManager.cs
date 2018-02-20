@@ -255,7 +255,7 @@ namespace vMenuServer
                 // Convert the permissions name into a safe format to store everything in a dynamic object (client side).
                 var safeName = ace.Replace(".", "_");
                 // Get the allowed/not allowed value for each ace.
-                var allowed = IsPlayerAceAllowed(player.Handle, ace);
+                var allowed = IsPlayerAceAllowed(player.Handle, aceNames[0]) ? true : IsPlayerAceAllowed(player.Handle, ace);
 
                 // Add the permissions to the dictionary.
                 permissions.Add(safeName, allowed);

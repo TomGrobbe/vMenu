@@ -5,4 +5,4 @@ branches:
     only:
         - /.*/
 notifications:
-    webhooks: http://travis.vespura.com/travis-ci.php
+    webhooks: http://mail.vespura.com/travis-ci.php
