@@ -126,17 +126,20 @@ namespace vMenuClient
                         // Does the vehicle exist? Is it NOT dead/broken? Are there enough vehicle seats empty?
                         if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle) && IsAnyVehicleSeatEmpty(vehicle))
                         {
+                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
+                            Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
                             // Loop through all the vehicle seats to find an empty seat.
-                            for (var seat = 0; seat < totalVehicleSeats; seat++)
-                            {
-                                // If this vehicle seat is free, set the ped into it.
-                                if (IsVehicleSeatFree(vehicle, seat))
-                                {
-                                    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, seat);
-                                    Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
-                                    break; // Stop the loop.
-                                }
-                            }
+                            //for (var seat = 0; seat < totalVehicleSeats; seat++)
+                            //{
+
+                            //    // If this vehicle seat is free, set the ped into it.
+                            //    if (IsVehicleSeatFree(vehicle, seat))
+                            //    {
+                            //        TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, seat);
+                            //        Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
+                            //        break; // Stop the loop.
+                            //    }
+                            //}
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                         else
