@@ -146,7 +146,7 @@ namespace vMenuClient
                                 }
                                 else
                                 {
-                                    cf.Spectate(player.Handle);
+                                    cf.SpectateAsync(player.Handle);
                                 }
                             }
                             // Summon player button is pressed.

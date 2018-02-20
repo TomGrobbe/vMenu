@@ -12,7 +12,7 @@ namespace vMenuClient
     {
         // Variables
         private Notification Notify = new Notification();
-        private int spectatePlayer = -1;
+        //private int spectatePlayer = -1;
         private bool spectating = false;
 
         /// <summary>
@@ -31,28 +31,23 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task OnTick()
         {
-            // If the player is not spectating yet, but "spectating" is true, enable it.
-            if (spectatePlayer != -1 && spectating && NetworkIsPlayerActive(spectatePlayer))
+            //NetworkSetOverrideSpectatorMode(false);
+            //if (spectating)
             {
-                DoScreenFadeOut(200);
-                await Delay(200);
-                NetworkSetInSpectatorMode(true, GetPlayerPed(spectatePlayer));
-                DoScreenFadeIn(200);
-                await Delay(200);
-                spectating = true;
-
-
-                // Wait until spectating is cancelled.
-                // Either by the user itself, or if the other player disconencts, or if the current player dies.
-                while (spectating && spectatePlayer != -1 && NetworkIsPlayerActive(spectatePlayer) && !IsPlayerDead(PlayerId()))
+                if (GetEntityHealth(PlayerPedId()) < 100)
                 {
-                    await Delay(0);
+                    DoScreenFadeOut(50);
+                    await Delay(50);
+                    NetworkSetInSpectatorMode(true, PlayerPedId());
+                    NetworkSetInSpectatorMode(false, PlayerPedId());
+
+                    
+                    Notify.Info($"Stopped spectating. {spectating.ToString()}", false, false);
+
+                    spectating = false;
+                    await Delay(50);
+                    DoScreenFadeIn(50);
                 }
-                DoScreenFadeOut(200);
-                await Delay(200);
-                NetworkSetInSpectatorMode(false, PlayerPedId());
-                DoScreenFadeIn(200);
-                await Delay(200);
             }
         }
         #endregion
@@ -128,18 +123,6 @@ namespace vMenuClient
                         {
                             TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
                             Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
-                            // Loop through all the vehicle seats to find an empty seat.
-                            //for (var seat = 0; seat < totalVehicleSeats; seat++)
-                            //{
-
-                            //    // If this vehicle seat is free, set the ped into it.
-                            //    if (IsVehicleSeatFree(vehicle, seat))
-                            //    {
-                            //        TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, seat);
-                            //        Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
-                            //        break; // Stop the loop.
-                            //    }
-                            //}
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                         else
@@ -172,16 +155,29 @@ namespace vMenuClient
             }
         }
 
+        /// <summary>
+        /// Kick player
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="reason"></param>
         public void KickPlayer(Player player, string reason = "You have been kicked.")
         {
             TriggerServerEvent("vMenu:KickPlayer", player.ServerId, reason);
         }
 
+        /// <summary>
+        /// Kill player
+        /// </summary>
+        /// <param name="player"></param>
         public void KillPlayer(Player player)
         {
             TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
         }
 
+        /// <summary>
+        /// Summon player.
+        /// </summary>
+        /// <param name="player"></param>
         public void SummonPlayer(Player player)
         {
             TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
@@ -193,27 +189,40 @@ namespace vMenuClient
         /// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
         /// </summary>
         /// <param name="playerId"></param>
-        public void Spectate(int playerId = -1)
+        public async void SpectateAsync(int playerId = -1)
         {
-            if (spectating || playerId == -1)
+            // Switch spectating to another player.
+            if (spectating && playerId != -1 && NetworkIsPlayerActive(playerId))
             {
-                spectating = false;
-                spectatePlayer = -1;
-                Notify.Info("Stopped spectating.", false, false);
-            }
-            else if (spectating && playerId != -1 && NetworkIsPlayerActive(playerId))
-            {
-                spectating = false;
-                spectatePlayer = -1;
-                Notify.Info("Switching to player " + GetPlayerName(playerId), false, false);
                 spectating = true;
-                spectatePlayer = playerId;
+                DoScreenFadeOut(100);
+                await Delay(100);
+                Notify.Info("Switching to player ~r~" + GetPlayerName(playerId), false, false);
+                NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
+                DoScreenFadeIn(100);
+                await Delay(100);
             }
+            // Stop spectating.
+            else if (spectating || playerId == -1)
+            {
+                spectating = false;
+                DoScreenFadeOut(100);
+                await Delay(100);
+                Notify.Info("Stopped spectating.", false, false);
+                NetworkSetInSpectatorMode(false, PlayerPedId());
+                DoScreenFadeIn(100);
+                await Delay(100);
+            }
+            // Start spectating for the first time.
             else
             {
-                spectatePlayer = playerId;
                 spectating = true;
-                Notify.Info("Currently spectating " + GetPlayerName(playerId) + ".", false, false);
+                DoScreenFadeOut(100);
+                await Delay(100);
+                Notify.Info("Spectating ~r~" + GetPlayerName(playerId), false, false);
+                NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
+                DoScreenFadeIn(100);
+                await Delay(100);
             }
         }
         #endregion
