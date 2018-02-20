@@ -52,7 +52,8 @@ namespace vMenuClient
                     if (item == playerItem)
                     {
                         // Create the player object.
-                        Player player = new Player(int.Parse(item.Description.Substring(1, 1).ToString()));
+                        Player player = new Player(int.Parse(item.Description.Substring(1, 2).ToString()));
+                        Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
 
                         // Create the menu for the player.
                         UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")", MainMenu.MenuPosition)
