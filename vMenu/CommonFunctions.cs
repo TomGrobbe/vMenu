@@ -168,14 +168,19 @@ namespace vMenuClient
             }
         }
 
+        public void KickPlayer(Player player, string reason = "You have been kicked.")
+        {
+            TriggerServerEvent("vMenu:KickPlayer", player.ServerId, reason);
+        }
+
         public void KillPlayer(Player player)
         {
-            TriggerServerEvent("vMenu:KillPlayer", player.Handle);
+            TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
         }
 
         public void SummonPlayer(Player player)
         {
-            TriggerServerEvent("vMenu:SummonPlayer", player.Handle);
+            TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         }
         #endregion
 

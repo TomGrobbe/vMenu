@@ -140,7 +140,8 @@ namespace vMenuClient
                             {
                                 //TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerIndex));
 
-                                Notify.Error("Todo: trigger server event using another class.");
+                                //Notify.Error("Todo: trigger server event using another class.");
+                                cf.KickPlayer(player);
                                 PlayerMenu.Visible = false;
 
                                 UpdatePlayerlist();

@@ -19,7 +19,7 @@ namespace vMenuClient
         public EventManager()
         {
             // Add event handlers.
-            EventHandlers.Add("vMenu:GoToPlayer", new Action<int>(SummonPlayer));
+            EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
             EventHandlers.Add("vMenu:KickCallback", new Action<string>(KickCallback));
         }
@@ -46,9 +46,10 @@ namespace vMenuClient
         /// Teleport to the specified player.
         /// </summary>
         /// <param name="targetPlayer"></param>
-        private void SummonPlayer(int targetPlayer)
+        private void SummonPlayer(string targetPlayer)
         {
-            cf.TeleportToPlayerAsync(GetPlayerFromServerId(targetPlayer));
+            //MainMenu.Notify.Error(targetPlayer);
+            cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
         }
     }
 }
