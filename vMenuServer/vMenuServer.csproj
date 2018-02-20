@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -57,6 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="config\permissions.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CustomToolNamespace>config</CustomToolNamespace>
+    </None>
     <None Include="stream\menubanner.ytd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CustomToolNamespace>stream</CustomToolNamespace>
@@ -64,11 +68,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\stream\menubanner.ytd" "D:\FXserver\vMenu\resources\vMenu\stream\"
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
+if not exist "D:\FXserver\vMenu\resources\vMenu\stream\" md "D:\FXserver\vMenu\resources\vMenu\stream\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\stream\menubanner.ytd" "D:\FXserver\vMenu\resources\vMenu\stream\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

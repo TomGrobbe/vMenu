@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -69,7 +69,7 @@
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
-    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
