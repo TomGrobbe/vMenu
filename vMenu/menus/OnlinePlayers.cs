@@ -71,18 +71,43 @@ namespace vMenuClient
                         UIMenuItem setWaypointBtn = new UIMenuItem("Set waypoint", "Set a waypoint to this player.");
                         UIMenuItem spectateBtn = new UIMenuItem("Spectate Player", "Spectate this player.");
                         UIMenuItem summonBtn = new UIMenuItem("Summon Player", "Teleport the player in front of you.");
+                        summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Star);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the other player!");
+                        killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Gun);
                         UIMenuItem kickPlayerBtn = new UIMenuItem("Kick Player", "Kick the player from the server.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
                         // Add all buttons to the player options submenu.
-                        PlayerMenu.AddItem(teleportBtn);
-                        PlayerMenu.AddItem(teleportInVehBtn);
-                        PlayerMenu.AddItem(setWaypointBtn);
-                        PlayerMenu.AddItem(spectateBtn);
-                        PlayerMenu.AddItem(summonBtn);
-                        PlayerMenu.AddItem(killBtn);
-                        PlayerMenu.AddItem(kickPlayerBtn);
+                        var perms = MainMenu.Permissions;
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.teleport"])
+                        {
+                            PlayerMenu.AddItem(teleportBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.teleport"])
+                        {
+                            PlayerMenu.AddItem(teleportInVehBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.waypoint"])
+                        {
+                            PlayerMenu.AddItem(setWaypointBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.spectate"])
+                        {
+                            PlayerMenu.AddItem(spectateBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.summon"])
+                        {
+                            PlayerMenu.AddItem(summonBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.kill"])
+                        {
+                            PlayerMenu.AddItem(killBtn);
+                        }
+                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.kick"])
+                        {
+                            PlayerMenu.AddItem(kickPlayerBtn);
+                        }
+
 
                         // Add the player menu to the menu pool.
                         MainMenu._mp.Add(PlayerMenu);
