@@ -117,6 +117,7 @@ namespace vMenuClient
                     // Is the other player inside a vehicle?
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
+                        Notify.Custom("Triggered 1");
                         // Get the vehicle of the specified player.
                         int vehicle = GetVehicle(player: playerId);
 

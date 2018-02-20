@@ -4,3 +4,5 @@ script:
 branches:
     only:
         - /.*/
+notifications:
+    webhooks: http://travis.vespura.com/travis-ci.php

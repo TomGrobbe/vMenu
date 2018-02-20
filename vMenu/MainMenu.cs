@@ -28,7 +28,7 @@ namespace vMenuClient
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
-        public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), 0f, UnknownColors.DarkGray);
+        public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), 0f, UnknownColors.SlateGray);
 
         /// <summary>
         /// Constructor.
@@ -92,7 +92,7 @@ namespace vMenuClient
                 menu.RefreshIndex();
                 menu.ScaleWithSafezone = false;
 
-                //menu.UpdateScaleform();
+                menu.UpdateScaleform();
 
                 // Create all (sub)menus.
 

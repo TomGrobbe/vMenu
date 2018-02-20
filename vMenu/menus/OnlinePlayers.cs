@@ -53,7 +53,7 @@ namespace vMenuClient
                     {
                         // Create the player object.
                         Player player = new Player(int.Parse(item.Description.Substring(1, 2).ToString()));
-                        Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
+                        //Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
 
                         // Create the menu for the player.
                         UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")", MainMenu.MenuPosition)
@@ -79,31 +79,31 @@ namespace vMenuClient
 
                         // Add all buttons to the player options submenu.
                         var perms = MainMenu.Permissions;
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.teleport"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
                         {
                             PlayerMenu.AddItem(teleportBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.teleport"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
                         {
                             PlayerMenu.AddItem(teleportInVehBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.waypoint"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_waypoint"])
                         {
                             PlayerMenu.AddItem(setWaypointBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.spectate"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_spectate"])
                         {
                             PlayerMenu.AddItem(spectateBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.summon"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_summon"])
                         {
                             PlayerMenu.AddItem(summonBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.kill"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kill"])
                         {
                             PlayerMenu.AddItem(killBtn);
                         }
-                        if (perms["vMenu.oninePlayers.*"] || perms["vMenu.oninePlayers.kick"])
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kick"])
                         {
                             PlayerMenu.AddItem(kickPlayerBtn);
                         }
@@ -146,8 +146,7 @@ namespace vMenuClient
                                 }
                                 else
                                 {
-                                    //cf.Spectate(playerIndex);
-                                    Notify.Error("This feature is not implemented yet!", true, false);
+                                    cf.Spectate(player.Handle);
                                 }
                             }
                             // Summon player button is pressed.
