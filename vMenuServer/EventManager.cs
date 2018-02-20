@@ -11,8 +11,20 @@ namespace vMenuServer
 {
     public class EventManager : BaseScript
     {
+
+        // Debug shows more information when doing certain things. Leave it off to improve performance!
+        private bool debug = false;
+
+        #region List of all permissions
+        // List of all permissions.
         private List<string> aceNames = new List<string>() {
-            // Menu access
+            // Grants access to everything in the menu.
+            "vMenu.everything",
+            // Prevents this player from being kicked.
+            "vMenu.dontkick",
+
+            #region Menu Access
+            // Menu Access.
             "vMenu.menus.*",
             "vMenu.menus.onlinePlayers",
             "vMenu.menus.playerOptions",
@@ -25,8 +37,9 @@ namespace vMenuServer
             "vMenu.menus.weapons",
             "vMenu.menus.misc",
             "vMenu.menus.voicechat",
-
-            // Online Players
+            #endregion
+            #region Online Players
+            // Online Players.
             "vMenu.onlinePlayers.*",
             "vMenu.onlinePlayers.teleport",
             "vMenu.onlinePlayers.waypoint",
@@ -34,8 +47,9 @@ namespace vMenuServer
             "vMenu.onlinePlayers.summon",
             "vMenu.onlinePlayers.kill",
             "vMenu.onlinePlayers.kick",
-
-            // Player Options
+            #endregion
+            #region Player Options
+            // Player Options.
             "vMenu.playerOptions.*",
             "vMenu.playerOptions.god",
             "vMenu.playerOptions.invisible",
@@ -51,8 +65,9 @@ namespace vMenuServer
             "vMenu.playerOptions.actions",
             "vMenu.playerOptions.scenarios",
             "vMenu.playerOptions.freeze",
-
-            // Vehicle Options
+            #endregion
+            #region Vehicle Options
+            // Vehicle Options.
             "vMenu.vehicleOptions.*",
             "vMenu.vehicleOptions.god",
             "vMenu.vehicleOptions.fix",
@@ -75,8 +90,9 @@ namespace vMenuServer
             "vMenu.vehicleOptions.engine",
             "vMenu.vehicleOptions.nosiren",
             "vMenu.vehicleOptions.nohelmet",
-
-            // Vehicle Spawner
+            #endregion
+            #region Vehicle Spawner
+            // Vehicle Spawner.
             "vMenu.vehicleSpawner.*",
             "vMenu.vehicleSpawner.spawninside",
             "vMenu.vehicleSpawner.replace",
@@ -104,67 +120,153 @@ namespace vMenuServer
             "vMenu.vehicleSpawner.category.military",
             "vMenu.vehicleSpawner.category.commercial",
             "vMenu.vehicleSpawner.category.trains",
+            #endregion
+            #region Player Skin
+            // Player Skin (only one permission for now).
+            "vMenu.playerSkin.*",
+	        #endregion
+            #region Saved Vehicles
+            // Saved Vehicles (only one permission for now).
+            "vMenu.savedVehicles.*",
+	        #endregion
+            #region Time
+            // Time.
+            "vMenu.time.*",
+            "vMenu.time.freeze",
+            "vMenu.time.preset",
+            "vMenu.time.custom",
+	        #endregion
+            #region Weather
+            // Weather.
+            "vMenu.weather.*",
+            "vMenu.weather.dynamic",
+            "vMenu.weather.preset",
+            "vMenu.weather.noclouds",
+	        #endregion
+            #region Weapons
+            // Weapons.
+            "vMenu.weapons.*",
+            "vMenu.weapons.getall",
+            "vMenu.weapons.removeall",
+            "vMenu.weapons.modify",
+            "vMenu.weapons.unlimited",
+            "vMenu.weapons.noreload",
+	        #endregion
+            #region Misc
+            // Misc. (Only one permission, these are simple features nobody should be restricted to, unless you're a stupid server owner)
+            // Things like join/quit notifications, death notifications etc.
+            "vMenu.misc.*",
+	        #endregion
+            #region Voicechat
+            // Voicechat. 
+            "vMenu.voicechat.*",
+            // If the user is not allowed to toggle voice chat on/off, it will be enabled by default 
+            // (users can disable it in pause menu > settings > voice chat).
+            "vMenu.voicechat.enabled",
+            "vMenu.voicechat.channels.*",
+            "vMenu.voicechat.channels.default",
+            "vMenu.voicechat.channels.one",
+            "vMenu.voicechat.channels.two",
+            "vMenu.voicechat.channels.three",
+            // Staff chat is always global.
+            "vMenu.voicechat.channels.staff",
+            "vMenu.voicechat.proximity.*",
+            "vMenu.voicechat.proximity.veryclose",
+            "vMenu.voicechat.proximity.close",
+            "vMenu.voicechat.proximity.nearby",
+            "vMenu.voicechat.proximity.medium",
+            "vMenu.voicechat.proximity.far",
+            "vMenu.voicechat.proximity.veryfar",
+            "vMenu.voicechat.proximity.global",
+	        #endregion
         };
+        #endregion
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public EventManager()
         {
-            UpdateChecker uc = new UpdateChecker();
+            // Add event handlers.
             EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, Player>(SummonPlayer));
             EventHandlers.Add("vMenu:KillPlayer", new Action<Player, Player>(KillPlayer));
             EventHandlers.Add("vMenu:KickPlayer", new Action<Player, Player, string>(KickPlayer));
-            EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissions));
+            EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
         }
 
+        /// <summary>
+        /// Kick a specific player.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="kickReason"></param>
         private void KickPlayer([FromSource] Player source, [FromSource] Player target, string kickReason = "You have been kicked from the server.")
         {
+            // If the player is allowed to be kicked.
             if (!IsPlayerAceAllowed(target.Handle, "vMenu.dontkick"))
             {
+                // Kick the player from the server using the specified reason.
                 DropPlayer(target.Handle, kickReason);
             }
             else
             {
+                // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
             }
         }
 
+        /// <summary>
+        /// Kill a specific player.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
         private void KillPlayer([FromSource] Player source, [FromSource] Player target)
         {
+            // Trigger the client event on the target player to make them kill themselves. R.I.P.
             TriggerClientEvent(player: target, eventName: "vMenu:KillMe");
         }
 
+        /// <summary>
+        /// Teleport a specific player to another player.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
         private void SummonPlayer([FromSource] Player source, [FromSource]Player target)
         {
+            // Trigger the client event on the target player to make them teleport to the source player.
             TriggerClientEvent(player: target, eventName: "vMenu:GoToPlayer", args: source.Handle);
         }
 
-        private void SendPermissions([FromSource] Player player)
+        /// <summary>
+        /// Send the permissions to the client that requested it.
+        /// </summary>
+        /// <param name="player"></param>
+        private async void SendPermissionsAsync([FromSource] Player player)
         {
+            // Create a new dictionary to store the permissions + allowed/denied values.
             Dictionary<string, bool> permissions = new Dictionary<string, bool>();
-            //{
 
-            //    {"playerOptions", IsPlayerAceAllowed(player.Handle, "vMenu.playerOptions") },
-            //    {"onlinePlayers", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers") },
-            //    {"onlinePlayers_kick", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers_kick") },
-            //    {"onlinePlayers_teleport", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers_teleport") },
-            //    {"onlinePlayers_waypoint", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers_waypoint") },
-            //    {"onlinePlayers_spectate", IsPlayerAceAllowed(player.Handle, "vMenu.onlinePlayers_spectate") },
-            //    {"vehicleOptions", IsPlayerAceAllowed(player.Handle, "vMenu.vehicleOptions") },
-            //    {"spawnVehicle", IsPlayerAceAllowed(player.Handle, "vMenu.spawnVehicle") },
-            //    {"weatherOptions", IsPlayerAceAllowed(player.Handle, "vMenu.weatherOptions") },
-            //    {"timeOptions", IsPlayerAceAllowed(player.Handle, "vMenu.timeOptions") },
-            //    {"noclip", IsPlayerAceAllowed(player.Handle, "vMenu.noclip") },
-            //    {"voiceChat", IsPlayerAceAllowed(player.Handle, "vMenu.voiceChat") },
-            //};
+            // Loop through the permissions list.
             foreach (string ace in aceNames)
             {
+                // Convert the permissions name into a safe format to store everything in a dynamic object (client side).
                 var safeName = ace.Replace(".", "_");
-                permissions.Add(safeName, IsPlayerAceAllowed(player.Handle, ace));
+                // Get the allowed/not allowed value for each ace.
+                var allowed = IsPlayerAceAllowed(player.Handle, ace);
+
+                // Add the permissions to the dictionary.
+                permissions.Add(safeName, allowed);
+
+                // Only if debugging is enabled, print the values to the server console.
+                if (debug)
+                {
+                    Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
+                    await Delay(0);
+                }
+
             }
 
-            //foreach (KeyValuePair<string, bool> dict in permissions)
-            //{
-            //Debug.WriteLine($"Key: {dict.Key}\r\nValue: {dict.Value}");
-            //}
+            // Send the dictionary containing all permissions to the client.
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);
         }
     }
