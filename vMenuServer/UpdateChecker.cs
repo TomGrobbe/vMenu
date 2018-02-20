@@ -12,49 +12,70 @@ namespace vMenuServer
 {
     public class UpdateChecker : BaseScript
     {
-        private bool firstTick = true;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public UpdateChecker()
         {
-            Tick += CheckUpdates;
+            CheckUpdates();
         }
-        private async Task CheckUpdates()
-        {
-            if (firstTick)
-            {
-                firstTick = false;
-                Request r = new Request();
-                try
-                {
-                    RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
-                    if (result.status == System.Net.HttpStatusCode.OK)
-                    {
-                        var currentVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0);
-                        dynamic output = JsonConvert.DeserializeObject<dynamic>(result.content);
-                        string version = output.version.ToString();
-                        string date = output.date.ToString();
-                        Debug.WriteLine("\r\n  +----------------- [ vMenu ] -----------------+");
-                        Debug.WriteLine("  |       Current version: \t" + currentVersion + "        |");
-                        Debug.WriteLine("  |       Latest version: \t" + version + "        |");
-                        Debug.WriteLine("  |       Release date: \t" + date + "      |");
-                        Debug.WriteLine("  |                                             |");
-                        if (currentVersion == version)
-                        {
-                            Debug.WriteLine("  |       You are using the latest version!     |");
-                        }
-                        else
-                        {
-                            Debug.WriteLine("  | A new version is available, please update!  |");
-                            Debug.WriteLine("  |  >> https://github.com/tomgrobbe/vMenu <<   |");
-                        }
 
-                        Debug.WriteLine("  +---------------------------------------------+\r\n");
+        private async void CheckUpdates()
+        {
+            // Create a new request object.
+            Request r = new Request();
+
+            // Try to request a response.
+            try
+            {
+                await Delay(1000);
+                Debug.WriteLine("\r\n[vMenu] Checking for updates.");
+                // Get a response from the specified url.
+                RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
+
+                // If the result status = 200 (status code OK) then continue.
+                if (result.status == System.Net.HttpStatusCode.OK)
+                {
+                    // Get the results
+                    var currentVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0);
+                    dynamic output = JsonConvert.DeserializeObject<dynamic>(result.content);
+                    string version = output.version.ToString();
+                    string date = output.date.ToString();
+                    string changes = output.changes.ToString() ?? "N/A";
+
+                    // Output the info.
+                    Debug.WriteLine($"[vMenu] Current version: {currentVersion}");
+                    Debug.WriteLine($"[vMenu] Latest version: {version}");
+                    Debug.WriteLine($"[vMenu] Release Date: {date}");
+                    // If up to date :)
+                    if (currentVersion == version)
+                    {
+                        // yay up to date! :) Snail is happy.
+                        Debug.WriteLine("\r\n[vMenu] You are currently usng the latest version, good job!");
+                    }
+                    // If not up to date :(
+                    else
+                    {
+                        // Snail is sad :(
+                        Debug.WriteLine("\r\n[vMenu] You are NOT using the latest version. Please update to the latest version as soon as possible.");
+                        Debug.WriteLine("[vMenu] Download the latest version here: https://github.com/tomgrobbe/vMenu/releases/ !");
+                        Debug.WriteLine($"[vMenu] New in version {version}: \t{changes}\r\n");
                     }
                 }
-                catch (Exception e)
+                // An error occured, most likely: Vespura's VPS is down.
+                else
                 {
-                    Debug.WriteLine(e.Message);
+                    Debug.WriteLine("[vMenu] An error occurred while checking for the latest version. Please try again in a few hours.");
                 }
             }
+            // Awww an exception. RIP.
+            catch (Exception e)
+            {
+                Debug.WriteLine("\r\n\r\n[vMenu] An error occurred while checking for updates. If you require immediate assistance email: contact@vespura.com.");
+                Debug.WriteLine($"More information about this error: {e.Message.ToString()}\r\n\r\n");
+            }
         }
+
     }
 }

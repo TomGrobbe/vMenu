@@ -11,7 +11,7 @@ namespace vMenuClient
 {
     class FunctionsController : BaseScript
     {
-        
+
         CommonFunctions cf = new CommonFunctions();
         public FunctionsController()
         {

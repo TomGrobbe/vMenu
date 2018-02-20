@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using System.Dynamic;
 
 namespace vMenuClient
 {
@@ -14,15 +15,16 @@ namespace vMenuClient
         // Variables
         public static MenuPool _mp = new MenuPool();
         public static System.Drawing.PointF MenuPosition = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 465f, 45f);
-        //private static Notification Notify = new Notification();
-        private static Subtitles Subtitle = new Subtitles();
+        public static Notification Notify = new Notification();
+        public static Subtitles Subtitle = new Subtitles();
 
         private bool firstTick = true;
-        private bool setupComplete = true;
+        private bool setupComplete = false;
         public static UIMenu menu;
         public static PlayerOptions _po;
         public static OnlinePlayers _op;
         public static VehicleOptions _vo;
+        public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
@@ -33,8 +35,33 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
             Tick += OnTick;
         }
+
+        /// <summary>
+        /// Set the permissions for this client.
+        /// </summary>
+        /// <param name="dict"></param>
+        private void SetPermissions(dynamic dict)
+        {
+            //foreach (KeyValuePair<string, bool> perm in dict)
+            //{
+            //    Permissions.Add(perm.Key, perm.Value);
+            //}
+            foreach (dynamic permission in dict)
+            {
+                Permissions.Add(permission.Key.ToString(), permission.Value);
+                if (debug)
+                {
+                    Notify.Custom($"Key: {permission.Key.ToString()}\r\nValue: {permission.Value}");
+                }
+
+            }
+            setupComplete = true;
+        }
+
+
 
         /// <summary>
         /// OnTick runs every game tick.
@@ -46,8 +73,9 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
-                // Request the data from the server.
-                //TriggerServerEvent("vMenu:GetSettings");
+
+                // Request the permissions data from the server.
+                TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
 
                 // Wait until the data is received.
                 while (!setupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
@@ -91,7 +119,6 @@ namespace vMenuClient
                 UIMenu vehicleOptions = _vo.GetMenu();
                 menu.BindMenuToItem(vehicleOptions, vehicleOptionsBtn);
                 _mp.Add(vehicleOptions);
-
 
 
                 // Refresh everything.
