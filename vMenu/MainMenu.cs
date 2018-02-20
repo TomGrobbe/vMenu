@@ -50,7 +50,7 @@ namespace vMenuClient
                 //TriggerServerEvent("vMenu:GetSettings");
 
                 // Wait until the data is received.
-                while (!setupComplete && (GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **"))
+                while (!setupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
                 {
                     await Delay(0);
                 }
