@@ -12,8 +12,6 @@ namespace vMenuClient
     {
         // Variables
         private Notification Notify = new Notification();
-        //private int spectatePlayer = -1;
-        //private bool spectating = false;
 
         /// <summary>
         /// Constructor.
