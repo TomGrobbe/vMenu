@@ -112,12 +112,12 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 - ☑ Player Death Notifications
 - ☑ Join/Leave Notifications
 - 🔴 Teleport To Waypoint
-- [] Show Coordinates
+- ⬜ Show Coordinates
 - ☑ Show Current Location
-- [] Hide Radar
-- [] Hide Hud
-- [] Speedometer KM/h
-- [] Speedometer MPH
+- ⬜ Hide Radar
+- ⬜ Hide Hud
+- ⬜ Speedometer KM/h
+- ⬜ Speedometer MPH
 
 ### Voice Chat Options
 - TBA
