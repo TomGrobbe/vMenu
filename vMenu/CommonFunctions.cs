@@ -11,7 +11,8 @@ namespace vMenuClient
     public class CommonFunctions : BaseScript
     {
         // Variables
-        private Notification Notify = new Notification();
+        private Notification Notify = MainMenu.Notify;
+        private Subtitles Subtitle = MainMenu.Subtitle;
 
         /// <summary>
         /// Constructor.
@@ -63,6 +64,7 @@ namespace vMenuClient
             return GetVehiclePedIsIn(GetPlayerPed(player), last);
         }
         #endregion
+
         #region GetVehicleModel (uint)(hash) from Entity/Vehicle (int)
         /// <summary>
         /// Get the vehicle model hash (as uint) from the specified (int) entity/vehicle.
@@ -74,6 +76,7 @@ namespace vMenuClient
             return (uint)GetHashKey(GetEntityModel(vehicle).ToString());
         }
         #endregion
+
         #region Teleport to player (or teleport into the player's vehicle)
         /// <summary>
         /// Teleport to the specified player id. (Optionally teleport into their vehicle).
@@ -208,7 +211,9 @@ namespace vMenuClient
                 await Delay(100);
             }
         }
+        #endregion
 
+        #region Cycle Through Vehicle Seats
         /// <summary>
         /// Cycle to the next available seat.
         /// </summary>
@@ -217,15 +222,6 @@ namespace vMenuClient
 
             // Create a new vehicle.
             Vehicle vehicle = new Vehicle(GetVehicle());
-            if (IsVehicleSeatFree(vehicle.Handle, 2))
-            {
-                RequestModel((uint)PedHash.Abigail);
-                vehicle.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.Abigail));
-                var pos = GetEntityCoords(PlayerPedId(), true);
-                var ped = CreatePed(5, (uint)PedHash.Abigail, pos.X, pos.Y, pos.Z + 2f, 0f, true, false);
-                TaskWarpPedIntoVehicle(ped, vehicle.Handle, 2);
-            }
-
 
             // If there are enough empty seats, continue.
             if (AreAnyVehicleSeatsFree(vehicle.Handle))

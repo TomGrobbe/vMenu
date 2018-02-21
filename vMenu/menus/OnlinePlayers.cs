@@ -13,8 +13,8 @@ namespace vMenuClient
     {
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private static Notification Notify = new Notification();
-        //private static Subtitles Subtitle = new Subtitles();
+        private Notification Notify = MainMenu.Notify;
+        private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
 
@@ -32,9 +32,11 @@ namespace vMenuClient
             UpdatePlayerlist();
         }
 
+        /// <summary>
+        /// Updates the player items.
+        /// </summary>
         public void UpdatePlayerlist()
         {
-
             if (menu.MenuItems.Count > 0)
             {
                 menu.MenuItems.Clear();
@@ -60,6 +62,7 @@ namespace vMenuClient
                         {
                             ScaleWithSafezone = false
                         };
+                        PlayerMenu.MouseControlsEnabled = false;
 
                         PlayerMenu.SetBannerType(MainMenu.BannerSprite);
                         PlayerMenu.ControlDisablingEnabled = false;
@@ -110,7 +113,7 @@ namespace vMenuClient
 
 
                         // Add the player menu to the menu pool.
-                        MainMenu._mp.Add(PlayerMenu);
+                        MainMenu.Mp.Add(PlayerMenu);
 
                         // Set the menu invisible.
                         menu.Visible = false;

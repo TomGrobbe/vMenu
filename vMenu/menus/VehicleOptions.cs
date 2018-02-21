@@ -14,9 +14,9 @@ namespace vMenuClient
         #region Variables
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private static Notification Notify = new Notification();
-        //private static Subtitles Subtitle = new Subtitles();
-        private static CommonFunctions cf = new CommonFunctions();
+        private Notification Notify = MainMenu.Notify;
+        private Subtitles Subtitle = MainMenu.Subtitle;
+        private CommonFunctions cf = MainMenu.cf;
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = false;
@@ -155,11 +155,13 @@ namespace vMenuClient
                         {
                             if (vehicle.IsAlarmSounding)
                             {
+                                // Set the duration to 0;
                                 vehicle.AlarmTimeLeft = 0;
                                 vehicle.IsAlarmSet = false;
                             }
                             else
                             {
+                                // Randomize duration of the alarm and start the alarm.
                                 vehicle.IsAlarmSet = true;
                                 vehicle.AlarmTimeLeft = new Random().Next(8000, 45000);
                                 vehicle.StartAlarm();
@@ -241,6 +243,7 @@ namespace vMenuClient
             };
             #endregion
 
+            #region Handle List Changes.
             // Handle list changes.
             menu.OnListChange += (sender, item, index) =>
             {
@@ -299,6 +302,21 @@ namespace vMenuClient
                     }
                 }
             };
+            #endregion
+
+            #region Handle List Items Selected
+            menu.OnListSelect += (sender, item, index) =>
+            {
+                if (item == setDirtLevel)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        Vehicle veh = new Vehicle(cf.GetVehicle());
+                        veh.DirtLevel = float.Parse(index.ToString());
+                    }
+                }
+            };
+            #endregion
         }
         #endregion
 
