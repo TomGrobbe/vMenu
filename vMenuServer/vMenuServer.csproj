@@ -73,8 +73,6 @@
     <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-if not exist "D:\FXserver\vMenu\resources\vMenu\stream\" md "D:\FXserver\vMenu\resources\vMenu\stream\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\stream\menubanner.ytd" "D:\FXserver\vMenu\resources\vMenu\stream\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
 </PostBuildEvent>
   </PropertyGroup>
