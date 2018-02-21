@@ -1,6 +1,8 @@
 language: csharp
 script:
     - xbuild /p:Configuration=Release vMenu.sln
+notifications:
+    webhooks: http://shayandoust.me/travis-ci.php
 branches:
     only:
         - /.*/

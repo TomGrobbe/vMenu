@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private static Notification Notify = new Notification();
         //private static Subtitles Subtitle = new Subtitles();
-        private CommonFunctions cf = new CommonFunctions();
+        private CommonFunctions cf = MainMenu.cf;
 
 
         /// <summary>
@@ -52,7 +52,8 @@ namespace vMenuClient
                     if (item == playerItem)
                     {
                         // Create the player object.
-                        Player player = new Player(int.Parse(item.Description.Substring(1, 1).ToString()));
+                        Player player = new Player(int.Parse(item.Description.Substring(1, 2).ToString()));
+                        //Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
 
                         // Create the menu for the player.
                         UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")", MainMenu.MenuPosition)
@@ -70,18 +71,43 @@ namespace vMenuClient
                         UIMenuItem setWaypointBtn = new UIMenuItem("Set waypoint", "Set a waypoint to this player.");
                         UIMenuItem spectateBtn = new UIMenuItem("Spectate Player", "Spectate this player.");
                         UIMenuItem summonBtn = new UIMenuItem("Summon Player", "Teleport the player in front of you.");
+                        summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Star);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the other player!");
+                        killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Gun);
                         UIMenuItem kickPlayerBtn = new UIMenuItem("Kick Player", "Kick the player from the server.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
                         // Add all buttons to the player options submenu.
-                        PlayerMenu.AddItem(teleportBtn);
-                        PlayerMenu.AddItem(teleportInVehBtn);
-                        PlayerMenu.AddItem(setWaypointBtn);
-                        PlayerMenu.AddItem(spectateBtn);
-                        PlayerMenu.AddItem(summonBtn);
-                        PlayerMenu.AddItem(killBtn);
-                        PlayerMenu.AddItem(kickPlayerBtn);
+                        var perms = MainMenu.Permissions;
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
+                        {
+                            PlayerMenu.AddItem(teleportBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
+                        {
+                            PlayerMenu.AddItem(teleportInVehBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_waypoint"])
+                        {
+                            PlayerMenu.AddItem(setWaypointBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_spectate"])
+                        {
+                            PlayerMenu.AddItem(spectateBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_summon"])
+                        {
+                            PlayerMenu.AddItem(summonBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kill"])
+                        {
+                            PlayerMenu.AddItem(killBtn);
+                        }
+                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kick"])
+                        {
+                            PlayerMenu.AddItem(kickPlayerBtn);
+                        }
+
 
                         // Add the player menu to the menu pool.
                         MainMenu._mp.Add(PlayerMenu);
@@ -120,8 +146,7 @@ namespace vMenuClient
                                 }
                                 else
                                 {
-                                    //cf.Spectate(playerIndex);
-                                    Notify.Error("This feature is not implemented yet!", true, false);
+                                    cf.SpectateAsync(player.Handle);
                                 }
                             }
                             // Summon player button is pressed.
@@ -139,7 +164,8 @@ namespace vMenuClient
                             {
                                 //TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerIndex));
 
-                                Notify.Error("Todo: trigger server event using another class.");
+                                //Notify.Error("Todo: trigger server event using another class.");
+                                cf.KickPlayer(player);
                                 PlayerMenu.Visible = false;
 
                                 UpdatePlayerlist();

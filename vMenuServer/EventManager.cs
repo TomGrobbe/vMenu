@@ -188,9 +188,9 @@ namespace vMenuServer
         public EventManager()
         {
             // Add event handlers.
-            EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, Player>(SummonPlayer));
-            EventHandlers.Add("vMenu:KillPlayer", new Action<Player, Player>(KillPlayer));
-            EventHandlers.Add("vMenu:KickPlayer", new Action<Player, Player, string>(KickPlayer));
+            EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
+            EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
+            EventHandlers.Add("vMenu:KickPlayer", new Action<Player, int, string>(KickPlayer));
             EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
         }
 
@@ -200,13 +200,14 @@ namespace vMenuServer
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <param name="kickReason"></param>
-        private void KickPlayer([FromSource] Player source, [FromSource] Player target, string kickReason = "You have been kicked from the server.")
+        private void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
             // If the player is allowed to be kicked.
-            if (!IsPlayerAceAllowed(target.Handle, "vMenu.dontkick"))
+            var targetPlayer = new PlayerList()[target];
+            if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.dontkick"))
             {
                 // Kick the player from the server using the specified reason.
-                DropPlayer(target.Handle, kickReason);
+                DropPlayer(targetPlayer.Handle, kickReason);
             }
             else
             {
@@ -220,10 +221,11 @@ namespace vMenuServer
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        private void KillPlayer([FromSource] Player source, [FromSource] Player target)
+        private void KillPlayer([FromSource] Player source, int target)
         {
+            var targetPlayer = new PlayerList()[target];
             // Trigger the client event on the target player to make them kill themselves. R.I.P.
-            TriggerClientEvent(player: target, eventName: "vMenu:KillMe");
+            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
         }
 
         /// <summary>
@@ -231,10 +233,11 @@ namespace vMenuServer
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        private void SummonPlayer([FromSource] Player source, [FromSource]Player target)
+        private void SummonPlayer([FromSource] Player source, int target)
         {
             // Trigger the client event on the target player to make them teleport to the source player.
-            TriggerClientEvent(player: target, eventName: "vMenu:GoToPlayer", args: source.Handle);
+            var targetPlayer = new PlayerList()[target];
+            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
         }
 
         /// <summary>
@@ -252,7 +255,7 @@ namespace vMenuServer
                 // Convert the permissions name into a safe format to store everything in a dynamic object (client side).
                 var safeName = ace.Replace(".", "_");
                 // Get the allowed/not allowed value for each ace.
-                var allowed = IsPlayerAceAllowed(player.Handle, ace);
+                var allowed = IsPlayerAceAllowed(player.Handle, aceNames[0]) ? true : IsPlayerAceAllowed(player.Handle, ace);
 
                 // Add the permissions to the dictionary.
                 permissions.Add(safeName, allowed);

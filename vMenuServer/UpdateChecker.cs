@@ -29,10 +29,11 @@ namespace vMenuServer
             // Try to request a response.
             try
             {
-                await Delay(1000);
-                Debug.WriteLine("\r\n[vMenu] Checking for updates.");
+                await Delay(800);
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
+
+                Debug.WriteLine("\r\n[vMenu] Checking for updates.");
 
                 // If the result status = 200 (status code OK) then continue.
                 if (result.status == System.Net.HttpStatusCode.OK)
@@ -73,7 +74,7 @@ namespace vMenuServer
             catch (Exception e)
             {
                 Debug.WriteLine("\r\n\r\n[vMenu] An error occurred while checking for updates. If you require immediate assistance email: contact@vespura.com.");
-                Debug.WriteLine($"More information about this error: {e.Message.ToString()}\r\n\r\n");
+                Debug.WriteLine($"[vMenu] Error info: {e.Message.ToString()}\r\n\r\n");
             }
         }
 

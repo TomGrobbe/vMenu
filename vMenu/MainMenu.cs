@@ -13,6 +13,8 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         // Variables
+
+        public static CommonFunctions cf = new CommonFunctions();
         public static MenuPool _mp = new MenuPool();
         public static System.Drawing.PointF MenuPosition = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 465f, 45f);
         public static Notification Notify = new Notification();
@@ -28,7 +30,7 @@ namespace vMenuClient
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
-        public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), 0f, UnknownColors.DarkGray);
+        public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), 0f, UnknownColors.SlateGray);
 
         /// <summary>
         /// Constructor.
@@ -92,39 +94,56 @@ namespace vMenuClient
                 menu.RefreshIndex();
                 menu.ScaleWithSafezone = false;
 
+                menu.UpdateScaleform();
 
                 // Create all (sub)menus.
 
                 // Add the online players menu.
-                UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
-                menu.AddItem(onlinePlayersBtn);
-                _op = new OnlinePlayers();
-                UIMenu onlinePlayers = _op.GetMenu();
-                menu.BindMenuToItem(onlinePlayers, onlinePlayersBtn);
-                _mp.Add(onlinePlayers);
-                menu.UpdateScaleform();
-
+                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_onlinePlayers"])
+                {
+                    UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
+                    menu.AddItem(onlinePlayersBtn);
+                    _op = new OnlinePlayers();
+                    UIMenu onlinePlayers = _op.GetMenu();
+                    menu.BindMenuToItem(onlinePlayers, onlinePlayersBtn);
+                    _mp.Add(onlinePlayers);
+                    menu.OnItemSelect += (sender, item, index) =>
+                    {
+                        if (item == onlinePlayersBtn)
+                        {
+                            _op.UpdatePlayerlist();
+                            onlinePlayers.UpdateScaleform();
+                            onlinePlayers.RefreshIndex();
+                        }
+                    };
+                    onlinePlayers.UpdateScaleform();
+                }
+                
                 // Add the player options menu.
-                UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
-                menu.AddItem(playerOptionsBtn);
-                _po = new PlayerOptions();
-                UIMenu playerOptions = _po.GetMenu();
-                menu.BindMenuToItem(playerOptions, playerOptionsBtn);
-                _mp.Add(playerOptions);
-
+                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
+                {
+                    UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
+                    menu.AddItem(playerOptionsBtn);
+                    _po = new PlayerOptions();
+                    UIMenu playerOptions = _po.GetMenu();
+                    menu.BindMenuToItem(playerOptions, playerOptionsBtn);
+                    _mp.Add(playerOptions);
+                    //playerOptions.UpdateScaleform();
+                }
+                
                 // Add the vehicle options Menu.
-                UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
-                menu.AddItem(vehicleOptionsBtn);
-                _vo = new VehicleOptions();
-                UIMenu vehicleOptions = _vo.GetMenu();
-                menu.BindMenuToItem(vehicleOptions, vehicleOptionsBtn);
-                _mp.Add(vehicleOptions);
-
+                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
+                {
+                    UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
+                    menu.AddItem(vehicleOptionsBtn);
+                    _vo = new VehicleOptions();
+                    UIMenu vehicleOptions = _vo.GetMenu();
+                    menu.BindMenuToItem(vehicleOptions, vehicleOptionsBtn);
+                    _mp.Add(vehicleOptions);
+                }
 
                 // Refresh everything.
                 _mp.RefreshIndex();
-                onlinePlayers.UpdateScaleform();
-                playerOptions.UpdateScaleform();
                 menu.UpdateScaleform();
 
                 // Set the banner globally.
