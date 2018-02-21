@@ -214,7 +214,7 @@ namespace vMenuClient
         /// </summary>
         public void CycleThroughSeats()
         {
-            
+
             // Create a new vehicle.
             Vehicle vehicle = new Vehicle(GetVehicle());
             if (IsVehicleSeatFree(vehicle.Handle, 2))
@@ -225,19 +225,19 @@ namespace vMenuClient
                 var ped = CreatePed(5, (uint)PedHash.Abigail, pos.X, pos.Y, pos.Z + 2f, 0f, true, false);
                 TaskWarpPedIntoVehicle(ped, vehicle.Handle, 2);
             }
-            
+
 
             // If there are enough empty seats, continue.
             if (AreAnyVehicleSeatsFree(vehicle.Handle))
             {
                 // Get the total seats for this vehicle.
                 var maxSeats = GetVehicleModelNumberOfSeats((uint)GetEntityModel(vehicle.Handle));
-                
+
                 // If the player is currently in the "last" seat, start from the driver's position and loop through the seats.
-                if (GetPedInVehicleSeat(vehicle.Handle, maxSeats-2) == PlayerPedId())
+                if (GetPedInVehicleSeat(vehicle.Handle, maxSeats - 2) == PlayerPedId())
                 {
                     // Loop through all seats.
-                    for (var seat = -1; seat < maxSeats-2; seat++)
+                    for (var seat = -1; seat < maxSeats - 2; seat++)
                     {
                         // If the seat is free, get in it and stop the loop.
                         if (vehicle.IsSeatFree((VehicleSeat)seat))
@@ -253,7 +253,7 @@ namespace vMenuClient
                     var switchedPlace = false;
                     var passedCurrentSeat = false;
                     // Loop through all the seats.
-                    for (var seat = -1; seat < maxSeats-1; seat++)
+                    for (var seat = -1; seat < maxSeats - 1; seat++)
                     {
                         // If this seat is the one the player is sitting on, set passedCurrentSeat to true.
                         // This way we won't just keep placing the ped in the 1st available seat, but actually the first "next" available seat.
@@ -261,7 +261,7 @@ namespace vMenuClient
                         {
                             passedCurrentSeat = true;
                         }
-                        
+
                         // Only if the current seat has been passed, check if the seat is empty and if so teleport into it and stop the loop.
                         if (passedCurrentSeat && IsVehicleSeatFree(vehicle.Handle, seat))
                         {
@@ -278,7 +278,7 @@ namespace vMenuClient
                         for (var seat = -1; seat < maxSeats - 1; seat++)
                         {
                             // If the seat is free, take it and break the loop.
-                            if(IsVehicleSeatFree(vehicle.Handle, seat))
+                            if (IsVehicleSeatFree(vehicle.Handle, seat))
                             {
                                 TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
                                 break;
@@ -286,8 +286,8 @@ namespace vMenuClient
                         }
                     }
                 }
-                
-                
+
+
             }
             else
             {

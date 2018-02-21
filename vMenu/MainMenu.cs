@@ -119,7 +119,7 @@ namespace vMenuClient
                     };
                     onlinePlayers.UpdateScaleform();
                 }
-                
+
                 // Add the player options menu.
                 if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
                 {
@@ -131,7 +131,7 @@ namespace vMenuClient
                     _mp.Add(playerOptions);
                     //playerOptions.UpdateScaleform();
                 }
-                
+
                 // Add the vehicle options Menu.
                 if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
                 {
