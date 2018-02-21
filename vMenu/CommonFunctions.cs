@@ -208,6 +208,19 @@ namespace vMenuClient
                 await Delay(100);
             }
         }
+
+        public void CycleThroughSeats()
+        {
+            Vehicle vehicle = new Vehicle(GetVehicle());
+            if (vehicle.IsSeatFree(VehicleSeat.Any))
+            {
+                TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -2);
+            }
+            else
+            {
+                Notify.Alert("There are no more available seats to cycle through.");
+            }
+        }
         #endregion
     }
 
