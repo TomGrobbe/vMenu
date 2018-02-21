@@ -154,17 +154,21 @@ namespace vMenuClient
                             if (vehicle.IsAlarmSounding)
                             {
                                 vehicle.AlarmTimeLeft = 0;
+                                vehicle.IsAlarmSet = false;
                             }
                             else
                             {
+                                vehicle.IsAlarmSet = true;
+                                vehicle.AlarmTimeLeft = 8000;
                                 vehicle.StartAlarm();
                             }
                         }
                         // Cycle vehicle seats (to be implemented later)
                         else if (item == cycleSeats)
                         {
-                            Notify.Custom("not implemented yet");
+                            cf.CycleThroughSeats();
                         }
+                        
                     }
                     // If the player is not the driver, notify them.
                     else
