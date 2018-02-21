@@ -15,7 +15,11 @@ namespace vMenuClient
     /// </summary>
     class FunctionsController : BaseScript
     {
+        // Variables
+        private Notification Notify = MainMenu.Notify;
+        private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
+
         private int LastVehicle = 0;
         private bool SwitchedVehicle = false;
 
@@ -39,10 +43,10 @@ namespace vMenuClient
             {
                 await Delay(0);
             }
-            // Else, do all checks.
+
+            // Else if it does exist, do all checks.
             else
             {
-
                 #region Check for vehicle changes.
                 // Check if the player has switched to a new vehicle.
                 var tmpVehicle = GetVehiclePedIsIn(PlayerPedId(), false);
@@ -58,47 +62,47 @@ namespace vMenuClient
 
                 #region PlayerOptions functions.
                 // Player options. Only run player options if the player options menu has actually been created.
-                if (MainMenu._po != null)
+                if (MainMenu.PlayerOptionsMenu != null)
                 {
                     // Manage Player God Mode
-                    SetEntityInvincible(PlayerPedId(), MainMenu._po.PlayerGodMode);
+                    SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode);
 
                     // Manage invisibility.
-                    SetEntityVisible(PlayerPedId(), !MainMenu._po.PlayerInvisible, false);
+                    SetEntityVisible(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerInvisible, false);
 
                     // Manage Stamina
-                    if (MainMenu._po.PlayerStamina)
+                    if (MainMenu.PlayerOptionsMenu.PlayerStamina)
                     {
                         ResetPlayerStamina(PlayerId());
                     }
 
                     // Manage Super jump.
-                    if (MainMenu._po.PlayerSuperJump)
+                    if (MainMenu.PlayerOptionsMenu.PlayerSuperJump)
                     {
                         SetSuperJumpThisFrame(PlayerId());
                     }
 
                     // Manage PlayerNoRagdoll
-                    SetPedCanRagdoll(PlayerPedId(), MainMenu._po.PlayerNoRagdoll);
-                    SetPedCanRagdollFromPlayerImpact(PlayerPedId(), MainMenu._po.PlayerNoRagdoll);
+                    SetPedCanRagdoll(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                    SetPedCanRagdollFromPlayerImpact(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
 
                     // Manage never wanted.
-                    if (MainMenu._po.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
+                    if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
                     {
                         ClearPlayerWantedLevel(PlayerId());
                     }
 
                     // Manage player is ignored by everyone.
-                    SetEveryoneIgnorePlayer(PlayerId(), MainMenu._po.PlayerIsIgnored);
+                    SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
 
                     // Manage player frozen.
-                    FreezeEntityPosition(PlayerPedId(), MainMenu._po.PlayerFrozen);
+                    FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen);
                 }
                 #endregion
 
                 #region VehicleOptions functions
                 // Vehicle options. Only run vehicle options if the vehicle options menu has actually been created.
-                if (MainMenu._vo != null)
+                if (MainMenu.VehicleOptionsMenu != null)
                 {
                     // If the player is inside a vehicle...
                     if (DoesEntityExist(cf.GetVehicle()))
@@ -107,7 +111,7 @@ namespace vMenuClient
                         Vehicle vehicle = new Vehicle(cf.GetVehicle());
 
                         // God mode
-                        var god = MainMenu._vo.VehicleGodMode;
+                        var god = MainMenu.VehicleOptionsMenu.VehicleGodMode;
                         vehicle.CanBeVisiblyDamaged = !god;
                         vehicle.CanEngineDegrade = !god;
                         vehicle.CanTiresBurst = !god;
@@ -121,21 +125,21 @@ namespace vMenuClient
                         vehicle.IsMeleeProof = god;
 
                         // Freeze Vehicle Position (if enabled).
-                        FreezeEntityPosition(vehicle.Handle, MainMenu._vo.VehicleFrozen);
+                        FreezeEntityPosition(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleFrozen);
 
                         // If the torque multiplier is enabled.
-                        if (MainMenu._vo.VehicleTorqueMultiplier)
+                        if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier)
                         {
                             // Set the torque multiplier to the selected value by the player.
                             // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
-                            SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu._vo.VehicleTorqueMultiplierAmount);
+                            SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
                         }
                         // If the player has switched to a new vehicle, and the vehicle engine power multiplier is turned on. Set the new value.
-                        if (SwitchedVehicle && MainMenu._vo.VehiclePowerMultiplier)
+                        if (SwitchedVehicle && MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier)
                         {
                             SwitchedVehicle = false;
                             // Only needs to be set once.
-                            SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu._vo.VehiclePowerMultiplierAmount);
+                            SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
                         }
 
                         // Destroy the vehicle object.
@@ -143,7 +147,7 @@ namespace vMenuClient
                     }
 
                     // Manage vehicle engine always on.
-                    if (MainMenu._vo.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(last: true)) && !DoesEntityExist(cf.GetVehicle(last: false)))
+                    if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(last: true)) && !DoesEntityExist(cf.GetVehicle(last: false)))
                     {
                         SetVehicleEngineOn(cf.GetVehicle(last: true), true, true, true);
                     }

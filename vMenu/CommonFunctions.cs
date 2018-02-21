@@ -11,7 +11,8 @@ namespace vMenuClient
     public class CommonFunctions : BaseScript
     {
         // Variables
-        private Notification Notify = new Notification();
+        private Notification Notify = MainMenu.Notify;
+        private Subtitles Subtitle = MainMenu.Subtitle;
 
         /// <summary>
         /// Constructor.
