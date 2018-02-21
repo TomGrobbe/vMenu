@@ -292,6 +292,18 @@ namespace vMenuClient
 
         }
         #endregion
+
+        /// <summary>
+        /// Checks if the specified permission is granted for this user.
+        /// Also checks parent/inherited/wildcard permissions.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <returns>True = allowed. False = not allowed.</returns>
+        public bool IsAllowed(string permission)
+        {
+            // TODO: Write permissions check logic.
+            return true;
+        }
     }
 
 

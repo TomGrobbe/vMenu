@@ -29,12 +29,19 @@ namespace vMenuClient
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
+        public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
+        public static PlayerAppearance PlayerAppearanceMenu { get; private set; }
+        public static TimeOptions TimeOptionsMenu { get; private set; }
+        public static WeatherOptions WeatherOptionsMenu { get; private set; }
+        public static WeaponOptions WeaponOptionsMenu { get; private set; }
+        public static MiscSettings MiscSettingsMenu { get; private set; }
+        public static VoiceChat VoiceChatSettingsMenu { get; private set; }
+        public static About AboutMenu { get; private set; }
 
         public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
-        //public static Sprite BannerSprite { get; private set; } = new Sprite("menubanner", "menu_header", new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), 0f, UnknownColors.SlateGray);
 
 
         /// <summary>
@@ -68,7 +75,23 @@ namespace vMenuClient
             setupComplete = true;
         }
 
-
+        /// <summary>
+        /// Add the menu to the menu pool and set it up correctly.
+        /// Also add and bind the menu buttons.
+        /// </summary>
+        /// <param name="submenu"></param>
+        /// <param name="menuButton"></param>
+        private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
+        {
+            Menu.AddItem(menuButton);
+            submenu.MouseControlsEnabled = false;
+            submenu.MouseEdgeEnabled = false;
+            submenu.ControlDisablingEnabled = false;
+            Menu.BindMenuToItem(submenu, menuButton);
+            Mp.Add(submenu);
+            submenu.UpdateScaleform();
+            submenu.RefreshIndex();
+        }
 
         /// <summary>
         /// OnTick runs every game tick.
@@ -108,13 +131,11 @@ namespace vMenuClient
                 // Add the online players menu.
                 if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_onlinePlayers"])
                 {
-                    UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
-                    Menu.AddItem(onlinePlayersBtn);
+
                     OnlinePlayersMenu = new OnlinePlayers();
                     UIMenu onlinePlayers = OnlinePlayersMenu.GetMenu();
-                    onlinePlayers.MouseControlsEnabled = false;
-                    Menu.BindMenuToItem(onlinePlayers, onlinePlayersBtn);
-                    Mp.Add(onlinePlayers);
+                    UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
+                    AddMenu(onlinePlayers, onlinePlayersBtn);
                     Menu.OnItemSelect += (sender, item, index) =>
                     {
                         if (item == onlinePlayersBtn)
@@ -124,32 +145,85 @@ namespace vMenuClient
                             onlinePlayers.RefreshIndex();
                         }
                     };
-                    onlinePlayers.UpdateScaleform();
                 }
 
                 // Add the player options menu.
                 if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
                 {
-                    UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
-                    Menu.AddItem(playerOptionsBtn);
                     PlayerOptionsMenu = new PlayerOptions();
                     UIMenu playerOptions = PlayerOptionsMenu.GetMenu();
-                    Menu.BindMenuToItem(playerOptions, playerOptionsBtn);
-                    Mp.Add(playerOptions);
-                    playerOptions.MouseControlsEnabled = false;
+                    UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
+                    AddMenu(playerOptions, playerOptionsBtn);
                 }
 
                 // Add the vehicle options Menu.
                 if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
                 {
-                    UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
-                    Menu.AddItem(vehicleOptionsBtn);
                     VehicleOptionsMenu = new VehicleOptions();
                     UIMenu vehicleOptions = VehicleOptionsMenu.GetMenu();
-                    Menu.BindMenuToItem(vehicleOptions, vehicleOptionsBtn);
-                    Mp.Add(vehicleOptions);
-                    vehicleOptions.MouseControlsEnabled = false;
+                    UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
+                    AddMenu(vehicleOptions, vehicleOptionsBtn);
                 }
+
+                // Add the vehicle spawner menu.
+                if (cf.IsAllowed("vehicleSpawnMenu"))
+                {
+                    VehicleSpawnerMenu = new VehicleSpawner();
+                    UIMenu vehicleSpawner = VehicleSpawnerMenu.GetMenu();
+                    UIMenuItem vehicleSpawnerBtn = new UIMenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.");
+                    AddMenu(vehicleSpawner, vehicleSpawnerBtn);
+                }
+
+                // Add the player appearance menu.
+                if (cf.IsAllowed("playerAppearanceMenu"))
+                {
+                    PlayerAppearanceMenu = new PlayerAppearance();
+                    UIMenu menu = PlayerAppearanceMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.");
+                    AddMenu(menu, button);
+                }
+
+                // Add the time options menu.
+                if (cf.IsAllowed("TimeOptionsMenu"))
+                {
+                    TimeOptionsMenu = new TimeOptions();
+                    UIMenu menu = TimeOptionsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Time Options", "Change the time, and edit other time related options.");
+                    AddMenu(menu, button);
+                }
+
+                // Add the weather options menu.
+                if (cf.IsAllowed("WeatherOptionsMenu"))
+                {
+                    WeatherOptionsMenu = new WeatherOptions();
+                    UIMenu menu = WeatherOptionsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Weather Options", "Change all weather related options here.");
+                    AddMenu(menu, button);
+                }
+
+                // Add misc settings menu.
+                if (cf.IsAllowed("MiscSettingsMenu"))
+                {
+                    MiscSettingsMenu = new MiscSettings();
+                    UIMenu menu = MiscSettingsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Misc Settings", "Change general settings.");
+                    AddMenu(menu, button);
+                }
+
+                // Add Voice Chat Menu.
+                if (cf.IsAllowed("VoiceChatSettingsMenu"))
+                {
+                    VoiceChatSettingsMenu = new VoiceChat();
+                    UIMenu menu = VoiceChatSettingsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("VoiceChat Settings", "Change VoiceChat options here.");
+                    AddMenu(menu, button);
+                }
+
+                // Add About Menu.
+                AboutMenu = new About();
+                UIMenu sub = AboutMenu.GetMenu();
+                UIMenuItem btn = new UIMenuItem("About vMenu", "Information about this menu and it's creators.");
+                AddMenu(sub, btn);
 
                 // Refresh everything.
                 Mp.RefreshIndex();
