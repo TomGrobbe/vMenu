@@ -26,6 +26,8 @@ namespace vMenuClient
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
+        public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
+        public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
         #endregion
 
         #region CreateMenu()
@@ -72,10 +74,10 @@ namespace vMenuClient
             UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle. This won't freeze the dirt level, it will only set it once.");
             var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
             UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Select a license plate type and press enter to apply it to your vehicle.");
-            var torqueMultiplierList = new List<dynamic> { 1 };
+            var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Engine Torque Multiplier", torqueMultiplierList, 0, "Select the engine torque multiplier.");
-            var engineMultiplierList = new List<dynamic> { 1 };
-            UIMenuListItem powerMultiplier = new UIMenuListItem("Engine Power Multiplier", engineMultiplierList, 0, "Select the engine power multiplier.");
+            var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
+            UIMenuListItem powerMultiplier = new UIMenuListItem("Engine Power Multiplier", powerMultiplierList, 0, "Select the engine power multiplier.");
 
             // Submenu's
             UIMenu vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods");
@@ -164,13 +166,13 @@ namespace vMenuClient
                             }
                         }
                     }
-                    
+
                     // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
                     else if (item != cycleSeats)
                     {
                         Notify.Error("You must be in the driver seat to access these options!", true, false);
                     }
-                    
+
                     // Only this button can be used when you're not the driver of the car.
                     if (item == cycleSeats)
                     {
@@ -189,46 +191,114 @@ namespace vMenuClient
             #region Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
-                // If the player is actually in a vehicle, continue.
-                if (DoesEntityExist(cf.GetVehicle()))
-                {
-                    // Create a vehicle object.
-                    Vehicle vehicle = new Vehicle(cf.GetVehicle());
+                //### removed because we actually want to handle these changes even if the player is not in a vehicle. ###//
+                // ~~If the player is actually in a vehicle, continue.~~
+                //if (DoesEntityExist(cf.GetVehicle()))
+                //{
 
-                    if (item == vehicleGod) // God Mode Toggled
+                // Create a vehicle object.
+                Vehicle vehicle = new Vehicle(cf.GetVehicle());
+
+                if (item == vehicleGod) // God Mode Toggled
+                {
+                    VehicleGodMode = _checked;
+                }
+                else if (item == vehicleFreeze) // Freeze Vehicle Toggled
+                {
+                    VehicleFrozen = _checked;
+                }
+                else if (item == torqueEnabled) // Enable Torque Multiplier Toggled
+                {
+                    VehicleTorqueMultiplier = _checked;
+                }
+                else if (item == powerEnabled) // Enable Power Multiplier Toggled
+                {
+                    VehiclePowerMultiplier = _checked;
+                    if (_checked)
                     {
-                        VehicleGodMode = _checked;
+                        SetVehicleEnginePowerMultiplier(cf.GetVehicle(), VehiclePowerMultiplierAmount);
                     }
-                    else if (item == vehicleFreeze) // Freeze Vehicle Toggled
+                    else
                     {
-                        VehicleFrozen = _checked;
+                        SetVehicleEnginePowerMultiplier(cf.GetVehicle(), 1f);
                     }
-                    else if (item == torqueEnabled) // Enable Torque Multiplier Toggled
+
+                }
+                else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
+                {
+                    VehicleEngineAlwaysOn = _checked;
+                }
+                else if (item == vehicleNoSiren) // Disable Siren Toggled
+                {
+                    VehicleNoSiren = _checked;
+                }
+                else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
+                {
+                    VehicleNoBikeHelemet = _checked;
+                }
+
+                //}
+            };
+            #endregion
+
+            // Handle list changes.
+            menu.OnListChange += (sender, item, index) =>
+            {
+                // If the torque multiplier changed. Change the torque multiplier to the new value.
+                if (item == torqueMultiplier)
+                {
+                    // Get the selected value and remove the "x" in the string with nothing.
+                    var value = torqueMultiplierList[index].ToString().Replace("x", "");
+                    // Convert the value to a float and set it as a public variable.
+                    VehicleTorqueMultiplierAmount = float.Parse(value);
+                }
+                // If the power multiplier is changed. Change the power multiplier to the new value.
+                else if (item == powerMultiplier)
+                {
+                    // Get the selected value. Remove the "x" from the string.
+                    var value = powerMultiplierList[index].ToString().Replace("x", "");
+                    // Conver the string into a float and set it to be the value of the public variable.
+                    VehiclePowerMultiplierAmount = float.Parse(value);
+                    if (VehiclePowerMultiplier)
                     {
-                        VehicleTorqueMultiplier = _checked;
+                        SetVehicleEnginePowerMultiplier(cf.GetVehicle(), VehiclePowerMultiplierAmount);
                     }
-                    else if (item == powerEnabled) // Enable Power Multiplier Toggled
+                }
+                else if (item == setLicensePlateType)
+                {
+                    // Check if the player is actually in a vehicle.
+                    var veh = cf.GetVehicle();
+                    if (DoesEntityExist(veh))
                     {
-                        VehiclePowerMultiplier = _checked;
-                    }
-                    else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
-                    {
-                        VehicleEngineAlwaysOn = _checked;
-                    }
-                    else if (item == vehicleNoSiren) // Disable Siren Toggled
-                    {
-                        VehicleNoSiren = _checked;
-                    }
-                    else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
-                    {
-                        VehicleNoBikeHelemet = _checked;
+                        Vehicle vehicle = new Vehicle(veh);
+                        // Set the license plate style.
+                        switch (index)
+                        {
+                            case 0:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite1;
+                                break;
+                            case 1:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite2;
+                                break;
+                            case 2:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite3;
+                                break;
+                            case 3:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlue;
+                                break;
+                            case 4:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlack;
+                                break;
+                            case 5:
+                                vehicle.Mods.LicensePlateStyle = LicensePlateStyle.NorthYankton;
+                                break;
+                            default:
+                                break;
+                        }
+
                     }
                 }
             };
-
-
-            #endregion
-
         }
         #endregion
 
@@ -238,10 +308,12 @@ namespace vMenuClient
         /// <returns>Returns the Vehicle Options menu.</returns>
         public UIMenu GetMenu()
         {
+            // If menu doesn't exist. Create one.
             if (menu == null)
             {
                 CreateMenu();
             }
+            // Return the menu.
             return menu;
         }
     }
