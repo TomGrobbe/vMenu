@@ -2,7 +2,7 @@ language: csharp
 script:
     - xbuild /p:Configuration=Release vMenu.sln
 notifications:
-    webhooks: http://mail.vespura.com/travis-ci.php
+    webhooks: https://vespura.com/travis-ci.php
 branches:
     only:
         - /.*/
