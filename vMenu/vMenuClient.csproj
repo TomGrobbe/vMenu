@@ -55,8 +55,13 @@
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="menus\MiscSettings.cs" />
     <Compile Include="menus\OnlinePlayers.cs" />
+    <Compile Include="menus\PlayerAppearance.cs" />
+    <Compile Include="menus\TimeOptions.cs" />
     <Compile Include="menus\VehicleOptions.cs" />
+    <Compile Include="menus\VehicleSpawner.cs" />
+    <Compile Include="menus\WeatherOptions.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
