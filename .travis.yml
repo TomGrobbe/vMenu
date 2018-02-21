@@ -2,7 +2,16 @@ language: csharp
 script:
     - xbuild /p:Configuration=Release vMenu.sln
 notifications:
-    webhooks: http://shayandoust.me/travis-ci.php
+  webhooks:
+    urls:
+      - http://shayandoust.me/travis-ci.php
+      - http://vespura.com/travis-ci.php
+      - https://vespura.com/travis-ci.php
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: always   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always
 branches:
     only:
         - /.*/
