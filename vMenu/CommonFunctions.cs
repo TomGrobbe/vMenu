@@ -12,8 +12,6 @@ namespace vMenuClient
     {
         // Variables
         private Notification Notify = new Notification();
-        //private int spectatePlayer = -1;
-        //private bool spectating = false;
 
         /// <summary>
         /// Constructor.
@@ -209,6 +207,93 @@ namespace vMenuClient
                 DoScreenFadeIn(100);
                 await Delay(100);
             }
+        }
+
+        /// <summary>
+        /// Cycle to the next available seat.
+        /// </summary>
+        public void CycleThroughSeats()
+        {
+            
+            // Create a new vehicle.
+            Vehicle vehicle = new Vehicle(GetVehicle());
+            if (IsVehicleSeatFree(vehicle.Handle, 2))
+            {
+                RequestModel((uint)PedHash.Abigail);
+                vehicle.CreatePedOnSeat(VehicleSeat.RightRear, new Model(PedHash.Abigail));
+                var pos = GetEntityCoords(PlayerPedId(), true);
+                var ped = CreatePed(5, (uint)PedHash.Abigail, pos.X, pos.Y, pos.Z + 2f, 0f, true, false);
+                TaskWarpPedIntoVehicle(ped, vehicle.Handle, 2);
+            }
+            
+
+            // If there are enough empty seats, continue.
+            if (AreAnyVehicleSeatsFree(vehicle.Handle))
+            {
+                // Get the total seats for this vehicle.
+                var maxSeats = GetVehicleModelNumberOfSeats((uint)GetEntityModel(vehicle.Handle));
+                
+                // If the player is currently in the "last" seat, start from the driver's position and loop through the seats.
+                if (GetPedInVehicleSeat(vehicle.Handle, maxSeats-2) == PlayerPedId())
+                {
+                    // Loop through all seats.
+                    for (var seat = -1; seat < maxSeats-2; seat++)
+                    {
+                        // If the seat is free, get in it and stop the loop.
+                        if (vehicle.IsSeatFree((VehicleSeat)seat))
+                        {
+                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                            break;
+                        }
+                    }
+                }
+                // If the player is not in the "last" seat, loop through all the seats starrting from the driver's position.
+                else
+                {
+                    var switchedPlace = false;
+                    var passedCurrentSeat = false;
+                    // Loop through all the seats.
+                    for (var seat = -1; seat < maxSeats-1; seat++)
+                    {
+                        // If this seat is the one the player is sitting on, set passedCurrentSeat to true.
+                        // This way we won't just keep placing the ped in the 1st available seat, but actually the first "next" available seat.
+                        if (!passedCurrentSeat && GetPedInVehicleSeat(vehicle.Handle, seat) == PlayerPedId())
+                        {
+                            passedCurrentSeat = true;
+                        }
+                        
+                        // Only if the current seat has been passed, check if the seat is empty and if so teleport into it and stop the loop.
+                        if (passedCurrentSeat && IsVehicleSeatFree(vehicle.Handle, seat))
+                        {
+                            switchedPlace = true;
+                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                            break;
+                        }
+                    }
+                    // If the player was not switched, then that means there are not enough empty vehicle seats "after" the player, and the player was not sitting in the "last" seat.
+                    // To fix this, loop through the entire vehicle again and place them in the first available seat.
+                    if (!switchedPlace)
+                    {
+                        // Loop through all seats, starting at the drivers seat (-1), then moving up.
+                        for (var seat = -1; seat < maxSeats - 1; seat++)
+                        {
+                            // If the seat is free, take it and break the loop.
+                            if(IsVehicleSeatFree(vehicle.Handle, seat))
+                            {
+                                TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                
+            }
+            else
+            {
+                Notify.Alert("There are no more available seats to cycle through.");
+            }
+
         }
         #endregion
     }

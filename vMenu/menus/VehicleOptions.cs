@@ -154,24 +154,29 @@ namespace vMenuClient
                             if (vehicle.IsAlarmSounding)
                             {
                                 vehicle.AlarmTimeLeft = 0;
+                                vehicle.IsAlarmSet = false;
                             }
                             else
                             {
+                                vehicle.IsAlarmSet = true;
+                                vehicle.AlarmTimeLeft = new Random().Next(8000, 45000);
                                 vehicle.StartAlarm();
                             }
                         }
-                        // Cycle vehicle seats (to be implemented later)
-                        else if (item == cycleSeats)
-                        {
-                            Notify.Custom("not implemented yet");
-                        }
                     }
-                    // If the player is not the driver, notify them.
-                    else
+                    
+                    // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
+                    else if (item != cycleSeats)
                     {
                         Notify.Error("You must be in the driver seat to access these options!", true, false);
                     }
-
+                    
+                    // Only this button can be used when you're not the driver of the car.
+                    if (item == cycleSeats)
+                    {
+                        // Cycle vehicle seats
+                        cf.CycleThroughSeats();
+                    }
                 }
                 // If the player is not inside a vehicle, notify them.
                 else
