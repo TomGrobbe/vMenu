@@ -241,6 +241,7 @@ namespace vMenuClient
             };
             #endregion
 
+            #region Handle List Changes.
             // Handle list changes.
             menu.OnListChange += (sender, item, index) =>
             {
@@ -299,6 +300,21 @@ namespace vMenuClient
                     }
                 }
             };
+            #endregion
+
+            #region Handle List Items Selected
+            menu.OnListSelect += (sender, item, index) =>
+            {
+                if (item == setDirtLevel)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        Vehicle veh = new Vehicle(cf.GetVehicle());
+                        veh.DirtLevel = float.Parse(index.ToString());
+                    }
+                }
+            };
+            #endregion
         }
         #endregion
 
