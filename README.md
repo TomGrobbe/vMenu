@@ -32,23 +32,23 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 + 🔴 Kick player
 
 ### Player Options:
-+ [] God Mode
-+ [] Invisibility
-+ [x] Unlimited Stamina
-+ [] Fast run
-+ [] Fast swim
-+ [] Super jump
-+ [] No ragdoll
-+ [] Never wanted
++ ⬜ God Mode
++ ⬜ Invisibility
++ ☑ Unlimited Stamina
++ ⬜ Fast run
++ ⬜ Fast swim
++ ⬜ Super jump
++ ⬜ No ragdoll
++ ⬜ Never wanted
 + 📃 Set wanted level
-+ [] Everyone ignores player
++ ⬜ Everyone ignores player
 + 📃 Player Options: Clean/Heal/Max Armor
 + 📃 Player Actions: Commit Suicide/Drive To Waypoint/Drive Wander
 + 📃 Player Scenarios: play all (human ped) scenarios
-+ [] Freeze/unfreeze yourself
++ ⬜ Freeze/unfreeze yourself
 
 ### Vehicle Options
-+ [] Vehicle God Mode
++ ⬜ Vehicle God Mode
 + 🔴 Fix Vehicle
 + 🔴 Clean vehicle
 + 📃 Set dirt level of vehicle
@@ -59,20 +59,20 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 + ▶ Vehicle Components
 + ▶ Vehicle Liveries
 + 🔴 Delete vehicle
-+ [] Engine Torque Multiplier
++ ⬜ Engine Torque Multiplier
 + 📃 Select Engine Torque Multiplier Amount
-+ [] Engine Power Multiplier
++ ⬜ Engine Power Multiplier
 + 📃 Select Engine Power Multiplier Amount
 + 🔴 Toggle Vehicle Alarm
-+ [x] Leave Engine Running
-+ [] No Siren
++ ☑ Leave Engine Running
++ ⬜ No Siren
 + 🔴 Cycle through vehicle seats
-+ [] No bike helmet
++ ⬜ No bike helmet
 
 ### Vehicle Spawner
 + 🔴 Spawn By Name
-+ [x] Spawn Inside Vehicle
-+ [x] Replace Old Vehicle
++ ☑ Spawn Inside Vehicle
++ ☑ Replace Old Vehicle
 + ▶ (all vehicle categories are individual submenus)
 
 ### Saved Vehicles
@@ -87,14 +87,14 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 + ▶ Saved Peds/Skins
 
 ### Time Options
-+ [] Freeze Time
++ ⬜ Freeze Time
 + 📃 Set Time (choose from a list of preset times)
 + 🔴 Set Time (custom hour/minute selection)
 
 ### Weather Options
-+ [x] Dynamic Weather Changes
-+ [x] Blackouts Can Occur During Thunder 
-+ [] Blackout (manual toggle)
++ ☑ Dynamic Weather Changes
++ ☑ Blackouts Can Occur During Thunder 
++ ⬜ Blackout (manual toggle)
 + 📃 Select Weather Type
 
 ### Weapon Options
@@ -102,18 +102,18 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 + 🔴 Remove All Weapons
 + 🔴 Remove Current Weapon
 + 🔴 Get Max Ammo
-+ [] Unlimited Ammo
-+ [] No Reload
++ ⬜ Unlimited Ammo
++ ⬜ No Reload
 + 📃 Select Weapon From List
 + 🔴 Select Weapon By Name
 + ▶ Customize Weapon
 
 ### Misc Settings
-- [x] Player Death Notifications
-- [x] Join/Leave Notifications
+- ☑ Player Death Notifications
+- ☑ Join/Leave Notifications
 - 🔴 Teleport To Waypoint
 - [] Show Coordinates
-- [x] Show Current Location
+- ☑ Show Current Location
 - [] Hide Radar
 - [] Hide Hud
 - [] Speedometer KM/h
