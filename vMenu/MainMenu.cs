@@ -43,8 +43,10 @@ namespace vMenuClient
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
         private bool debug = false;
 
+        public static bool DontOpenMenus { get; set; } = false;
 
-        /// <summary>
+
+        /// <summary>f
         /// Constructor.
         /// </summary>
         public MainMenu()
@@ -242,52 +244,57 @@ namespace vMenuClient
             else
             {
                 #region Handle Opening/Closing of the menu.
-                // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
-                if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && Game.IsControlJustPressed(0, Control.InteractionMenu))
+
+                // If menus can be opened.
+                if (!DontOpenMenus)
                 {
-                    // If any menu is already open: close all menus.
-                    if (Mp.IsAnyMenuOpen())
+                    // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
+                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && Game.IsControlJustPressed(0, Control.InteractionMenu))
                     {
-                        Mp.CloseAllMenus();
-                    }
-                    // Otherwise: toggle the main menu (to be safe, only open it if no other menus are open.)
-                    else
-                    {
-                        Menu.Visible = !Mp.IsAnyMenuOpen();
-                    }
-                }
-
-                // If the player is using a controller, and no menus are currently open.
-                else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
-                {
-                    // Create a timer and set it to 0.
-                    float timer = 0f;
-
-                    // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
-                    while (Game.CurrentInputMode == InputMode.GamePad && Game.IsControlPressed(0, Control.InteractionMenu))
-                    {
-                        // Increment the timer.
-                        timer++;
-
-                        // If debugging is enabled, show the progress using a timerbar.
-                        if (debug)
+                        // If any menu is already open: close all menus.
+                        if (Mp.IsAnyMenuOpen())
                         {
-                            bt.Draw(0);
-                            float percent = (timer / 60f);
-                            bt.Percentage = percent;
-                            Subtitle.Success(percent.ToString(), 0, true, "Progress:");
+                            Mp.CloseAllMenus();
                         }
-
-                        // If the timer has reached 60, open the menu. (60 is +/- 1 second, so the player is holding down the button for at least 1 second).
-                        if (timer > 59)
+                        // Otherwise: toggle the main menu (to be safe, only open it if no other menus are open.)
+                        else
                         {
                             Menu.Visible = !Mp.IsAnyMenuOpen();
-                            // Break the loop (resetting the timer).
-                            break;
                         }
+                    }
 
-                        // Wait for the next game tick. This will make the timer only increment once per tick, so it'll take 60 game ticks for the menu to be open (60 frames is +/- 1 sec).
-                        await Delay(0);
+                    // If the player is using a controller, and no menus are currently open.
+                    else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
+                    {
+                        // Create a timer and set it to 0.
+                        float timer = 0f;
+
+                        // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
+                        while (Game.CurrentInputMode == InputMode.GamePad && Game.IsControlPressed(0, Control.InteractionMenu))
+                        {
+                            // Increment the timer.
+                            timer++;
+
+                            // If debugging is enabled, show the progress using a timerbar.
+                            if (debug)
+                            {
+                                bt.Draw(0);
+                                float percent = (timer / 60f);
+                                bt.Percentage = percent;
+                                Subtitle.Success(percent.ToString(), 0, true, "Progress:");
+                            }
+
+                            // If the timer has reached 60, open the menu. (60 is +/- 1 second, so the player is holding down the button for at least 1 second).
+                            if (timer > 59)
+                            {
+                                Menu.Visible = !Mp.IsAnyMenuOpen();
+                                // Break the loop (resetting the timer).
+                                break;
+                            }
+
+                            // Wait for the next game tick. This will make the timer only increment once per tick, so it'll take 60 game ticks for the menu to be open (60 frames is +/- 1 sec).
+                            await Delay(0);
+                        }
                     }
                 }
                 #endregion

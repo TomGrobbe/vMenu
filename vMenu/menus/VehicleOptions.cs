@@ -20,7 +20,7 @@ namespace vMenuClient
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = false;
-        public bool VehicleEngineAlwaysOn { get; private set; } = false;
+        public bool VehicleEngineAlwaysOn { get; private set; } = true;
         public bool VehicleNoSiren { get; private set; } = false;
         public bool VehicleNoBikeHelemet { get; private set; } = false;
         public bool VehicleFrozen { get; private set; } = false;
@@ -56,6 +56,7 @@ namespace vMenuClient
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
             UIMenuItem cleanVehicle = new UIMenuItem("Wash Vehicle", "Clean your vehicle.");
+            UIMenuItem toggleEngine = new UIMenuItem("Toggle Engine On/Off", "Turn your engine on/off.");
             UIMenuItem setLicensePlateText = new UIMenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
             UIMenuItem modMenuBtn = new UIMenuItem("Mod Menu", "Tune and customize your vehicle here.");
             UIMenuItem doorsMenuBtn = new UIMenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.");
@@ -94,6 +95,7 @@ namespace vMenuClient
             menu.AddItem(fixVehicle); // REPAIR VEHICLE
             menu.AddItem(cleanVehicle); // CLEAN VEHICLE
             menu.AddItem(setDirtLevel); // SET DIRT LEVEL
+            menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
             menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
             menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
             menu.AddItem(modMenuBtn); // MOD MENU
@@ -167,6 +169,10 @@ namespace vMenuClient
                                 vehicle.StartAlarm();
                             }
                         }
+                        else if (item == toggleEngine)
+                        {
+                            vehicle.IsEngineRunning = !vehicle.IsEngineRunning;
+                        }
                     }
 
                     // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
@@ -224,7 +230,6 @@ namespace vMenuClient
                     {
                         SetVehicleEnginePowerMultiplier(cf.GetVehicle(), 1f);
                     }
-
                 }
                 else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
                 {
@@ -233,6 +238,7 @@ namespace vMenuClient
                 else if (item == vehicleNoSiren) // Disable Siren Toggled
                 {
                     VehicleNoSiren = _checked;
+                    vehicle.IsSirenSilent = _checked;
                 }
                 else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
                 {

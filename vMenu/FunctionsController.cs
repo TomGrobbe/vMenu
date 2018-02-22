@@ -135,13 +135,23 @@ namespace vMenuClient
                             SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
                         }
                         // If the player has switched to a new vehicle, and the vehicle engine power multiplier is turned on. Set the new value.
-                        if (SwitchedVehicle && MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier)
+                        if (SwitchedVehicle)
                         {
-                            SwitchedVehicle = false;
                             // Only needs to be set once.
-                            SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
-                        }
+                            SwitchedVehicle = false;
 
+                            // Vehicle engine power multiplier.
+                            if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier)
+                            {
+                                SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
+                            }
+                            else
+                            {
+                                SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
+                            }
+                            // No Siren Toggle
+                            vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
+                        }
                         // Destroy the vehicle object.
                         vehicle = null;
                     }
@@ -151,6 +161,25 @@ namespace vMenuClient
                     {
                         SetVehicleEngineOn(cf.GetVehicle(last: true), true, true, true);
                     }
+
+                    // Manage "no helmet"
+                    var ped = new Ped(PlayerPedId());
+                    // If the no helmet feature is turned on, disalbe "ped can wear helmet"
+                    if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    {
+                        ped.CanWearHelmet = false;
+                    }
+                    // otherwise, allow helmets.
+                    else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    { 
+                        ped.CanWearHelmet = true;
+                    }
+                    // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.
+                    if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    {
+                        ped.RemoveHelmet(true);
+                    }
+
 
 
                 }

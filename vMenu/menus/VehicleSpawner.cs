@@ -17,6 +17,8 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
+        public bool SpawnInVehicle { get; private set; } = false;
+
         private void CreateMenu()
         {
             // Create the menu.
@@ -25,6 +27,12 @@ namespace vMenuClient
                 ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Name", "Enter a vehicle model name to spawn.");
+            menu.AddItem(spawnByName);
+            menu.OnItemSelect += (sender, item, index) =>
+           {
+               cf.SpawnVehicle("custom");
+           };
         }
 
         /// <summary>
