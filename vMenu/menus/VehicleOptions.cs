@@ -291,7 +291,8 @@ namespace vMenuClient
                 // If the player is not inside a vehicle, notify them.
                 else
                 {
-                    Notify.Error("You must be inside a vehicle to access these options!", true, false);
+                    // Don't notify them, as it doesn't matter anyway. Nothing happens, nothing crashes so it doesn't hurt.
+                    //Notify.Error("You must be inside a vehicle to access these options!", true, false);
                 }
             };
             #endregion
@@ -424,7 +425,7 @@ namespace vMenuClient
             };
             #endregion
 
-            #region Create Colors Menu Items
+            #region Vehicle Colors Submenu Stuff
 
             #region Create lists for each color.
             // Metallic Colors
@@ -654,7 +655,7 @@ namespace vMenuClient
 
             #endregion
 
-            #region Vehicle Doors Menu
+            #region Vehicle Doors Submenu Stuff
             UIMenuItem openAll = new UIMenuItem("Open All Doors", "Open all vehicle doors.");
             UIMenuItem closeAll = new UIMenuItem("Close All Doors", "Close all vehicle doors.");
             UIMenuItem LF = new UIMenuItem("Left Front Door", "Open/close the left front door.");
@@ -721,6 +722,97 @@ namespace vMenuClient
 
             };
 
+            #endregion
+
+            #region Vehicle Windows Submenu Stuff
+            UIMenuItem fwu = new UIMenuItem("↑ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem rwu = new UIMenuItem("↑ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem fwd = new UIMenuItem("↓ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwd = new UIMenuItem("↓ Roll Rear Windows Down", "Roll both rear windows down.");
+            vehicleWindowsMenu.AddItem(fwu);
+            vehicleWindowsMenu.AddItem(rwu);
+            vehicleWindowsMenu.AddItem(fwd);
+            vehicleWindowsMenu.AddItem(rwd);
+            vehicleWindowsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                var veh = cf.GetVehicle();
+                if (DoesEntityExist(veh) && !IsEntityDead(veh))
+                {
+                    if (item == fwu)
+                    {
+                        RollUpWindow(veh, 0);
+                        RollUpWindow(veh, 1);
+                    }
+                    else if (item == fwd)
+                    {
+                        RollDownWindow(veh, 0);
+                        RollDownWindow(veh, 1);
+                    }
+                    else if (item == rwu)
+                    {
+                        RollUpWindow(veh, 2);
+                        RollUpWindow(veh, 3);
+                    }
+                    else if (item == rwd)
+                    {
+                        RollDownWindow(veh, 2);
+                        RollDownWindow(veh, 3);
+                    }
+                }
+            };
+            #endregion
+
+            #region Vehicle Liveries Submenu Stuff
+            menu.OnItemSelect += (sender, item, idex) =>
+            {
+                var veh = cf.GetVehicle();
+                if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                {
+                    if (item == liveriesMenuBtn)
+                    {
+                        vehicleLiveries.Clear();
+                        SetVehicleModKit(veh, 0);
+                        var liveryCount = GetVehicleLiveryCount(veh);
+                        
+                        if (liveryCount > 0)
+                        {
+                            var liveryList = new List<dynamic>();
+                            for (var i = 0; i < liveryCount; i++)
+                            {
+                                var livery = GetLiveryName(veh, i);
+                                livery = GetLabelText(livery) ?? $"Livery #{i}";
+                                liveryList.Add(livery);
+                            }
+                            UIMenuListItem liveryListItem = new UIMenuListItem("Set Livery", liveryList, GetVehicleLivery(veh), "Choose a livery for this vehicle.");
+                            vehicleLiveries.AddItem(liveryListItem);
+                            vehicleLiveries.OnListChange += (sender2, item2, index2) =>
+                            {
+                                SetVehicleLivery(veh, index2);
+                            };
+                            vehicleLiveries.RefreshIndex();
+                            vehicleLiveries.UpdateScaleform();
+                        }
+                        else
+                        {
+                            Notify.Error("This vehicle does not have any liveries.");
+                            UIMenuItem backBtn = new UIMenuItem("No liveries for this vehicle :(", "Click me to go back.");
+                            backBtn.SetRightLabel("Go Back");
+                            vehicleLiveries.AddItem(backBtn);
+                            vehicleLiveries.OnItemSelect += (sender2, item2, index2) =>
+                            {
+                                if (item2 == backBtn)
+                                {
+                                    vehicleLiveries.GoBack();
+                                }
+                            };
+
+                            vehicleLiveries.RefreshIndex();
+                            vehicleLiveries.UpdateScaleform();
+                        }
+                    }
+                }
+                
+            };
             #endregion
         }
         #endregion
