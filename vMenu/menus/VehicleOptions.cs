@@ -67,6 +67,11 @@ namespace vMenuClient
             UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
             UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
             deleteBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+            UIMenuItem deleteNoBtn = new UIMenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
+            UIMenuItem deleteYesBtn = new UIMenuItem("~r~YES, DELETE", "Yes I'm sure, delete my vehicle please, I understand that this cannot be undone.");
+            deleteYesBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+            deleteYesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             UIMenuItem cycleSeats = new UIMenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
@@ -80,7 +85,9 @@ namespace vMenuClient
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Engine Torque Multiplier", torqueMultiplierList, 0, "Select the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem powerMultiplier = new UIMenuListItem("Engine Power Multiplier", powerMultiplierList, 0, "Select the engine power multiplier.");
+            #endregion
 
+            #region Vehicle Options Submenus
             // Submenu's
             UIMenu vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", MainMenu.MenuPosition)
             {
@@ -124,8 +131,22 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            MainMenu.Mp.Add(vehicleColors);
+            UIMenu deleteConfirm = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?", MainMenu.MenuPosition)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
             #endregion
+
+            MainMenu.Mp.Add(vehicleModMenu);
+            MainMenu.Mp.Add(vehicleDoorsMenu);
+            MainMenu.Mp.Add(vehicleWindowsMenu);
+            MainMenu.Mp.Add(vehicleComponents);
+            MainMenu.Mp.Add(vehicleLiveries);
+            MainMenu.Mp.Add(vehicleColors);
+            MainMenu.Mp.Add(deleteConfirm);
 
             #region Add items to the menu.
             // Add everything to the menu.
@@ -142,7 +163,6 @@ namespace vMenuClient
             menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
             menu.AddItem(doorsMenuBtn); // DOORS MENU
             menu.AddItem(windowsMenuBtn); // WINDOWS MENU
-            menu.AddItem(deleteBtn); // DELETE VEHICLE
             menu.AddItem(vehicleFreeze); // FREEZE VEHICLE
             menu.AddItem(torqueEnabled); // TORQUE ENABLED
             menu.AddItem(torqueMultiplier); // TORQUE LIST
@@ -154,12 +174,44 @@ namespace vMenuClient
             menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
             menu.AddItem(vehicleNoSiren); // DISABLE SIREN
             menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
+            menu.AddItem(deleteBtn); // DELETE VEHICLE
+
+            #region delete vehicle handle stuff
+            deleteConfirm.AddItem(deleteNoBtn);
+            deleteConfirm.AddItem(deleteYesBtn);
+            deleteConfirm.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == deleteNoBtn)
+                {
+                    deleteConfirm.GoBack();
+                }
+                else
+                {
+                    var veh = cf.GetVehicle();
+                    if (DoesEntityExist(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                    {
+                        SetEntityAsMissionEntity(veh, false, false);
+                        DeleteVehicle(ref veh);
+                    }
+                    else
+                    {
+                        Notify.Alert("You need to in the driver's seat if you want to delete a vehicle.");
+                    }
+                    deleteConfirm.GoBack();
+                    menu.GoBack();
+                }
+            };
+            #endregion
             #endregion
 
             #region Bind Submenus to their buttons.
-            menu.BindMenuToItem(vehicleColors, colorsMenuBtn);
+            menu.BindMenuToItem(vehicleModMenu, modMenuBtn);
             menu.BindMenuToItem(vehicleDoorsMenu, doorsMenuBtn);
             menu.BindMenuToItem(vehicleWindowsMenu, windowsMenuBtn);
+            menu.BindMenuToItem(vehicleComponents, componentsMenuBtn);
+            menu.BindMenuToItem(vehicleLiveries, liveriesMenuBtn);
+            menu.BindMenuToItem(vehicleColors, colorsMenuBtn);
+            menu.BindMenuToItem(deleteConfirm, deleteBtn);
             #endregion
 
             #region Handle button presses
@@ -185,12 +237,12 @@ namespace vMenuClient
                         {
                             vehicle.Wash();
                         }
-                        // Delete vehicle.
-                        else if (item == deleteBtn)
-                        {
-                            vehicle.Delete();
-                            vehicle = null;
-                        }
+                        //// Delete vehicle.
+                        //else if (item == deleteBtn)
+                        //{
+                        //    vehicle.Delete();
+                        //    vehicle = null;
+                        //}
                         // Flip vehicle.
                         else if (item == flipVehicle)
                         {
@@ -599,6 +651,75 @@ namespace vMenuClient
 
             };
             #endregion
+
+            #endregion
+
+            #region Vehicle Doors Menu
+            UIMenuItem openAll = new UIMenuItem("Open All Doors", "Open all vehicle doors.");
+            UIMenuItem closeAll = new UIMenuItem("Close All Doors", "Close all vehicle doors.");
+            UIMenuItem LF = new UIMenuItem("Left Front Door", "Open/close the left front door.");
+            UIMenuItem RF = new UIMenuItem("Right Front Door", "Open/close the right front door.");
+            UIMenuItem LR = new UIMenuItem("Left Rear Door", "Open/close the left rear door.");
+            UIMenuItem RR = new UIMenuItem("Right Rear Door", "Open/close the right rear door.");
+            UIMenuItem HD = new UIMenuItem("Hood", "Open/close the hood.");
+            UIMenuItem TR = new UIMenuItem("Trunk", "Open/close the trunk.");
+
+            vehicleDoorsMenu.AddItem(LF);
+            vehicleDoorsMenu.AddItem(RF);
+            vehicleDoorsMenu.AddItem(LR);
+            vehicleDoorsMenu.AddItem(RR);
+            vehicleDoorsMenu.AddItem(HD);
+            vehicleDoorsMenu.AddItem(TR);
+            vehicleDoorsMenu.AddItem(openAll);
+            vehicleDoorsMenu.AddItem(closeAll);
+
+            // Handle button presses.
+            vehicleDoorsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                // Get the vehicle.
+                var veh = cf.GetVehicle();
+                // If the player is in a vehicle, it's not dead and the player is the driver, continue.
+                if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                {
+                    // If button 0-5 are pressed, then open/close that specific index/door.
+                    if (index < 6)
+                    {
+                        // If the door is open.
+                        bool open = GetVehicleDoorAngleRatio(veh, index) > 0.1f ? true : false;
+
+                        if (open)
+                        {
+                            // Close the door.
+                            SetVehicleDoorShut(veh, index, false);
+                        }
+                        else
+                        {
+                            // Open the door.
+                            SetVehicleDoorOpen(veh, index, false, false);
+                        }
+                    }
+                    // If the index >= 6, and the button is "openAll": open all doors.
+                    else if (item == openAll)
+                    {
+                        // Loop through all doors and open them.
+                        for (var door = 0; door < 6; door++)
+                        {
+                            SetVehicleDoorOpen(veh, door, false, false);
+                        }
+                    }
+                    // If the index >= 6, and the button is "closeAll": close all doors.
+                    else if (item == closeAll)
+                    {
+                        // Close all doors.
+                        SetVehicleDoorsShut(veh, false);
+                    }
+                }
+                else
+                {
+                    Notify.Alert("You need to be inside a vehicle to toggle vehicle doors.");
+                }
+
+            };
 
             #endregion
         }
