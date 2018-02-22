@@ -765,28 +765,31 @@ namespace vMenuClient
             #region Vehicle Liveries Submenu Stuff
             menu.OnItemSelect += (sender, item, idex) =>
             {
-                var veh = cf.GetVehicle();
-                if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                if (item == liveriesMenuBtn)
                 {
-                    if (item == liveriesMenuBtn)
+                    var veh = cf.GetVehicle();
+                    if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
+                        //veh = cf.GetVehicle();
                         vehicleLiveries.Clear();
                         SetVehicleModKit(veh, 0);
                         var liveryCount = GetVehicleLiveryCount(veh);
-                        
+
                         if (liveryCount > 0)
                         {
+                            //veh = cf.GetVehicle();
                             var liveryList = new List<dynamic>();
                             for (var i = 0; i < liveryCount; i++)
                             {
                                 var livery = GetLiveryName(veh, i);
-                                livery = GetLabelText(livery) ?? $"Livery #{i}";
+                                livery = GetLabelText(livery) != "NULL" ? GetLabelText(livery) : $"Livery #{i}";
                                 liveryList.Add(livery);
                             }
                             UIMenuListItem liveryListItem = new UIMenuListItem("Set Livery", liveryList, GetVehicleLivery(veh), "Choose a livery for this vehicle.");
                             vehicleLiveries.AddItem(liveryListItem);
                             vehicleLiveries.OnListChange += (sender2, item2, index2) =>
                             {
+                                veh = cf.GetVehicle();
                                 SetVehicleLivery(veh, index2);
                             };
                             vehicleLiveries.RefreshIndex();
@@ -809,9 +812,10 @@ namespace vMenuClient
                             vehicleLiveries.RefreshIndex();
                             vehicleLiveries.UpdateScaleform();
                         }
+                        veh = cf.GetVehicle();
                     }
                 }
-                
+
             };
             #endregion
         }

@@ -25,6 +25,15 @@ namespace vMenuClient
                 ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
+            UIMenuItem tptowp = new UIMenuItem("Teleport To WayPoint", "Teleport to the waypoint on your map.");
+            menu.AddItem(tptowp);
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == tptowp)
+                {
+                    cf.TeleportToWp();
+                }
+            };
         }
 
         /// <summary>
