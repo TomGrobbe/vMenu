@@ -291,7 +291,8 @@ namespace vMenuClient
                 // If the player is not inside a vehicle, notify them.
                 else
                 {
-                    Notify.Error("You must be inside a vehicle to access these options!", true, false);
+                    // Don't notify them, as it doesn't matter anyway. Nothing happens, nothing crashes so it doesn't hurt.
+                    //Notify.Error("You must be inside a vehicle to access these options!", true, false);
                 }
             };
             #endregion
@@ -721,6 +722,44 @@ namespace vMenuClient
 
             };
 
+            #endregion
+
+            #region Vehicle Windows Menu
+            UIMenuItem fwu = new UIMenuItem("↑ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem rwu = new UIMenuItem("↑ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem fwd = new UIMenuItem("↓ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwd = new UIMenuItem("↓ Roll Rear Windows Down", "Roll both rear windows down.");
+            vehicleWindowsMenu.AddItem(fwu);
+            vehicleWindowsMenu.AddItem(rwu);
+            vehicleWindowsMenu.AddItem(fwd);
+            vehicleWindowsMenu.AddItem(rwd);
+            vehicleWindowsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                var veh = cf.GetVehicle();
+                if (DoesEntityExist(veh) && !IsEntityDead(veh))
+                {
+                    if (item == fwu)
+                    {
+                        RollUpWindow(veh, 0);
+                        RollUpWindow(veh, 1);
+                    }
+                    else if (item == fwd)
+                    {
+                        RollDownWindow(veh, 0);
+                        RollDownWindow(veh, 1);
+                    }
+                    else if (item == rwu)
+                    {
+                        RollUpWindow(veh, 2);
+                        RollUpWindow(veh, 3);
+                    }
+                    else if (item == rwd)
+                    {
+                        RollDownWindow(veh, 2);
+                        RollDownWindow(veh, 3);
+                    }
+                }
+            };
             #endregion
         }
         #endregion
