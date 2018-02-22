@@ -69,6 +69,7 @@
     <Compile Include="PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VehicleData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

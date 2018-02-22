@@ -171,7 +171,7 @@ namespace vMenuClient
                     }
                     // otherwise, allow helmets.
                     else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
-                    { 
+                    {
                         ped.CanWearHelmet = true;
                     }
                     // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.

@@ -349,7 +349,7 @@ namespace vMenuClient
 
             //var pos = GetEntityCoords(PlayerPedId(), true);
             var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 1f);
-            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, GetEntityHeading(PlayerPedId())+90f, true, true);
+            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, GetEntityHeading(PlayerPedId()) + 90f, true, true);
 
             Vehicle vehicle = new Vehicle(veh)
             {
@@ -365,11 +365,10 @@ namespace vMenuClient
                     SetHeliBladesFullSpeed(vehicle.Handle);
                 }
             }
-
         }
-
         #endregion
 
+        #region Load Model
         /// <summary>
         /// Check and load a model.
         /// </summary>
@@ -397,6 +396,7 @@ namespace vMenuClient
                 return false;
             }
         }
+        #endregion
 
         #region GetUserInput
         /// <summary>
@@ -423,7 +423,7 @@ namespace vMenuClient
                 {
                     openMenu = MainMenu.OnlinePlayersMenu.GetMenu();
                 }
-                else if (MainMenu.PlayerOptionsMenu.GetMenu().Visible) 
+                else if (MainMenu.PlayerOptionsMenu.GetMenu().Visible)
                 {
                     openMenu = MainMenu.PlayerOptionsMenu.GetMenu();
                 }
@@ -431,7 +431,7 @@ namespace vMenuClient
                 {
                     openMenu = MainMenu.VehicleSpawnerMenu.GetMenu();
                 }
-                
+
                 // Then close all menus.
                 MainMenu.Mp.CloseAllMenus();
             }
@@ -498,6 +498,29 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Set License Plate Text
+        public async void SetLicensePlateTextAsync()
+        {
+            var text = await GetUserInputAsync("Enter License Plate", maxInputLength: 8);
+            if (text != "NULL")
+            {
+                var veh = GetVehicle();
+                if (DoesEntityExist(veh))
+                {
+                    SetVehicleNumberPlateText(veh, text);
+                }
+                else
+                {
+                    Notify.Error("You're not inside a vehicle!");
+                }
+            }
+            else
+            {
+                Notify.Alert("You did not enter a valid license plate text!");
+            }
+
+        }
+        #endregion
 
         /// <summary>
         /// Checks if the specified permission is granted for this user.
