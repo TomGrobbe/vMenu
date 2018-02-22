@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using NativeUI;
 
 namespace vMenuClient
 {
@@ -30,7 +31,8 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task OnTick()
         {
-            if (GetEntityHealth(PlayerPedId()) < 1)
+            // When the player dies while spectating, cancel the spectating to prevent an infinite black loading screen.
+            if (GetEntityHealth(PlayerPedId()) < 1 && NetworkIsInSpectatorMode())
             {
                 DoScreenFadeOut(50);
                 await Delay(50);
@@ -292,6 +294,210 @@ namespace vMenuClient
 
         }
         #endregion
+
+        #region Spawn Vehicle
+        /// <summary>
+        /// Spawn a vehicle by providing a vehicle name.
+        /// If no name is specified or "custom" was passed, the user will be asked to input the vehicle name to spawn.
+        /// </summary>
+        /// <param name="vehicleName">The name of the vehicle to spawn.</param>
+        public async void SpawnVehicle(string vehicleName = "custom")
+        {
+            if (vehicleName == "custom")
+            {
+                // Get the result.
+                string result = await GetUserInputAsync("Enter Vehicle Name", "adder");
+                // If the result was not invalid.
+                if (result != "NULL")
+                {
+                    // Convert it into a model hash.
+                    uint model = (uint)GetHashKey(result);
+                    //await LoadModel(model);
+                    SpawnVehicle(model, false);
+
+                }
+                // Result was invalid.
+                else
+                {
+                    Notify.Alert("You cancelled the input or the input was invalid.");
+                }
+            }
+            // Spawn the specified vehicle.
+            else
+            {
+                SpawnVehicle((uint)GetHashKey(vehicleName), false);
+            }
+        }
+
+
+        /// <summary>
+        /// Spawn a vehicle by providing the vehicle hash.
+        /// </summary>
+        /// <param name="vehicleHash">Hash of the vehicle model to spawn.</param>
+        /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
+        public async void SpawnVehicle(uint vehicleHash, bool skipLoad = false)
+        {
+            if (!skipLoad)
+            {
+                bool successFull = await LoadModel(vehicleHash);
+                if (!successFull)
+                {
+                    // Vehicle model is invalid.
+                    return;
+                }
+            }
+
+            //var pos = GetEntityCoords(PlayerPedId(), true);
+            var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 1f);
+            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, GetEntityHeading(PlayerPedId())+90f, true, true);
+
+            Vehicle vehicle = new Vehicle(veh)
+            {
+                NeedsToBeHotwired = false,
+                IsEngineRunning = true
+            };
+
+            if (MainMenu.VehicleSpawnerMenu.SpawnInVehicle)
+            {
+                new Ped(PlayerPedId()).SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                if (vehicle.ClassType == VehicleClass.Helicopters)
+                {
+                    SetHeliBladesFullSpeed(vehicle.Handle);
+                }
+            }
+
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Check and load a model.
+        /// </summary>
+        /// <param name="modelHash"></param>
+        /// <returns>True if model is valid & loaded, false if model is invalid.</returns>
+        private async Task<bool> LoadModel(uint modelHash)
+        {
+            // Check if the model exists in the game.
+            if (IsModelInCdimage(modelHash))
+            {
+                // Load the model.
+                RequestModel(modelHash);
+                // Wait until it's loaded.
+                while (!HasModelLoaded(modelHash))
+                {
+                    await Delay(0);
+                }
+                // Model is loaded, return true.
+                return true;
+            }
+            // Model is not valid or is not loaded correctly.
+            else
+            {
+                // Return false.
+                return false;
+            }
+        }
+
+        #region GetUserInput
+        /// <summary>
+        /// Gets input from the user.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <param name="defaultText"></param>
+        /// <param name="maxInputLength"></param>
+        /// <returns>Reruns the input or "NULL" if cancelled.</returns>
+        public async Task<string> GetUserInputAsync(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
+        {
+
+            MainMenu.DontOpenMenus = true;
+            UIMenu openMenu = null;
+
+            // Check for any open menus, then go through all of them and save the state if they're open so we can reopen them later.
+            if (MainMenu.Mp.IsAnyMenuOpen())
+            {
+                if (MainMenu.VehicleOptionsMenu.GetMenu().Visible)
+                {
+                    openMenu = MainMenu.VehicleOptionsMenu.GetMenu();
+                }
+                else if (MainMenu.OnlinePlayersMenu.GetMenu().Visible)
+                {
+                    openMenu = MainMenu.OnlinePlayersMenu.GetMenu();
+                }
+                else if (MainMenu.PlayerOptionsMenu.GetMenu().Visible) 
+                {
+                    openMenu = MainMenu.PlayerOptionsMenu.GetMenu();
+                }
+                else if (MainMenu.VehicleSpawnerMenu.GetMenu().Visible)
+                {
+                    openMenu = MainMenu.VehicleSpawnerMenu.GetMenu();
+                }
+                
+                // Then close all menus.
+                MainMenu.Mp.CloseAllMenus();
+            }
+
+            // Create the window title string.
+            AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
+            // Display the input box.
+            DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
+            // Wait for a result.
+            while (true)
+            {
+                // Cancelled
+                if (UpdateOnscreenKeyboard() == 2)
+                {
+                    break;
+                }
+                // Finished
+                else if (UpdateOnscreenKeyboard() == 1)
+                {
+                    break;
+                }
+                // Not displaying keyboard
+                else if (UpdateOnscreenKeyboard() == 3)
+                {
+                    break;
+                }
+                // Still editing
+                else
+                {
+                    await Delay(0);
+                }
+                // Just in case something goes wrong, add wait to prevent crashing.
+                await Delay(0);
+            }
+            // Get the result
+            var status = UpdateOnscreenKeyboard();
+            var result = GetOnscreenKeyboardResult();
+
+            // If the result is not empty or null
+            if (result != "" && result != null)
+            {
+                // Reopen any menus if they were open.
+                if (openMenu != null)
+                {
+                    openMenu.Visible = true;
+                }
+                // Allow menus to be opened again.
+                MainMenu.DontOpenMenus = false;
+                // Return result.
+                return result.ToString();
+            }
+            else
+            {
+                // Reopen any menus if they were open.
+                if (openMenu != null)
+                {
+                    openMenu.Visible = true;
+                }
+                // Allow menus to be opened again.
+                MainMenu.DontOpenMenus = false;
+                // Return result.
+                return "NULL";
+            }
+        }
+        #endregion
+
 
         /// <summary>
         /// Checks if the specified permission is granted for this user.

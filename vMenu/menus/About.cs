@@ -25,6 +25,11 @@ namespace vMenuClient
                 ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
+
+            var currentVersion = ($"~m~v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)} (Pre-Alpha)");
+            UIMenuItem version = new UIMenuItem("Version", $"Current version of vMenu: {currentVersion}");
+            version.SetRightLabel($"{currentVersion}");
+            menu.AddItem(version);
         }
 
         /// <summary>
