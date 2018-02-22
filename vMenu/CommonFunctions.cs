@@ -99,8 +99,10 @@ namespace vMenuClient
 
                 // Get the coords of the other player.
                 Vector3 playerPos = GetEntityCoords(playerPed, true);
+
                 // Teleport to the other player (2.0 meters above the other player).
-                SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
+                //SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
+                await TeleportToCoords(playerPos);
 
                 // If the player should be teleported inside the other player's vehcile.
                 if (inVehicle)
@@ -153,6 +155,42 @@ namespace vMenuClient
                 return;
             }
         }
+        #endregion
+
+
+        #region Teleport To Coords
+        /// <summary>
+        /// Teleport the player to a specific location.
+        /// </summary>
+        /// <param name="targetCoords"></param>
+        public async Task TeleportToCoords(Vector3 targetCoords)
+        {
+            var pos = targetCoords;
+            pos.Z = 150.0f;
+            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+            await Delay(50);
+            GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true);
+            await Delay(50);
+            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async void TeleportToWp()
+        {
+            if (Game.IsWaypointActive)
+            {
+                var pos = World.WaypointPosition;
+                pos.Z = 150.0f;
+                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+                await Delay(50);
+                GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true);
+                await Delay(50);
+                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Kick player
@@ -181,7 +219,6 @@ namespace vMenuClient
         {
             TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         }
-        #endregion
 
         #region Spectate function
         /// <summary>
