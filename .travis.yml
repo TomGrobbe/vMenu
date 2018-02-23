@@ -5,15 +5,11 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
-    #on_success: always # default: always
-    #on_failure: always # default: always
-    #on_start: never   # default: never
-    #on_cancel: always # default: always
-    #on_error: always # default: always
 branches:
     only:
         - master
         #- development
+        - production
 before_deploy:
     - cd $TRAVIS_BUILD_DIR
     - zip -r vMenu-release.zip *
@@ -26,6 +22,6 @@ deploy:
     file: "vMenu-release.zip"
     skip_cleanup: true
     prerelease: true
-    body: "Pre-release version of vMenu."
+    draft: false
     on:
-        branch: master
+        branch: production
