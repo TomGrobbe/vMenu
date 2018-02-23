@@ -24,7 +24,7 @@ before_deploy:
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
-    file: "builds/vMenu-release.zip"
+    file: "/home/travis/build/TomGrobbe/vMenu/builds/vMenu-release.zip"
     skip_cleanup: true
     prerelease: true
     draft: false
