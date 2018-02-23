@@ -5,11 +5,11 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
-    on_success: always # default: always
-    on_failure: always # default: always
-    on_start: never   # default: never
-    on_cancel: always # default: always
-    on_error: always # default: always
+    #on_success: always # default: always
+    #on_failure: always # default: always
+    #on_start: never   # default: never
+    #on_cancel: always # default: always
+    #on_error: always # default: always
 branches:
     only:
         - master
@@ -19,7 +19,7 @@ before_deploy:
     - zip -r vMenu-release.zip *
     - git config --local user.name "TomGrobbe"
     - git config --local user.email "tom.grobbe@gmail.com"
-    - git tag "[Alpha] v0.01 - $(git log --format=%h -1)" 
+    - git tag "v0.0.1-$(git log --format=%h -1)" prerelease true
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
