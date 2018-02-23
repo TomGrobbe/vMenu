@@ -934,6 +934,39 @@ namespace vMenuClient
                         UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~w~ for your vehicle. ~h~~r~Important:~w~ When disabling tire smoke, you'll need to drive around before it takes affect.");
                         vehicleModMenu.AddItem(tireSmokeEnabled);
 
+                        // Create list for window tint
+                        List<dynamic> windowTints = new List<dynamic>() { "Stock [1/7]", "None [2/7]", "Limo [3/7]", "Light Smoke [4/7]", "Dark Smoke [5/7]", "Pure Black [6/7]", "Green [7/7]" };
+                        var currentTint = GetVehicleWindowTint(veh);
+                        // Convert window tint to the correct index of the list above.
+                        switch (currentTint)
+                        {
+                            case 0:
+                                currentTint = 1; // None
+                                break;
+                            case 1:
+                                currentTint = 5; // Pure Black
+                                break;
+                            case 2:
+                                currentTint = 4; // Dark Smoke
+                                break;
+                            case 3:
+                                currentTint = 3; // Light Smoke
+                                break;
+                            case 4:
+                                currentTint = 0; // Stock
+                                break;
+                            case 5:
+                                currentTint = 2; // Limo
+                                break;
+                            case 6:
+                                currentTint = 6; // Green
+                                break;
+                            default:
+                                break;
+                        }
+                        UIMenuListItem windowTint = new UIMenuListItem("Window Tint", windowTints, currentTint, "Apply tint to your windows.");
+                        vehicleModMenu.AddItem(windowTint);
+
                         // Handle checkbox changes.
                         vehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                         {
@@ -1000,7 +1033,7 @@ namespace vMenuClient
                         {
                             veh = cf.GetVehicle();
                             // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
-                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 7)
+                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 9)
                             {
                                 SetVehicleModKit(veh, 0);
 
@@ -1043,6 +1076,43 @@ namespace vMenuClient
 
                                 // Set the color.
                                 SetVehicleTyreSmokeColor(veh, r, g, b);
+                            }
+                            // Window Tint
+                            else if (item2 == windowTint)
+                            {
+                                // Stock = 4,
+                                // None = 0,
+                                // Limo = 5,
+                                // LightSmoke = 3,
+                                // DarkSmoke = 2,
+                                // PureBlack = 1,
+                                // Green = 6,
+
+                                switch (index2)
+                                {
+                                    case 1:
+                                        SetVehicleWindowTint(veh, 0); // None
+                                        break;
+                                    case 2:
+                                        SetVehicleWindowTint(veh, 5); // Limo
+                                        break;
+                                    case 3:
+                                        SetVehicleWindowTint(veh, 3); // Light Smoke
+                                        break;
+                                    case 4:
+                                        SetVehicleWindowTint(veh, 2); // Dark Smoke
+                                        break;
+                                    case 5:
+                                        SetVehicleWindowTint(veh, 1); // Pure Black
+                                        break;
+                                    case 6:
+                                        SetVehicleWindowTint(veh, 6); // Green
+                                        break;
+                                    case 0:
+                                    default:
+                                        SetVehicleWindowTint(veh, 4); // Stock
+                                        break;
+                                }
                             }
                         };
                     }
