@@ -19,7 +19,7 @@ before_deploy:
     - zip -r vMenu-release.zip *
     - git config --local user.name "TomGrobbe"
     - git config --local user.email "tom.grobbe@gmail.com"
-    - git tag "v0.0.1-$(git log --format=%h -1)" prerelease true
+    - git tag "vMenu-v0.0.1-(git log --format=%h -1)"
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
