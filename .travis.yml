@@ -25,5 +25,7 @@ deploy:
     api_key: $GITHUB_API_KEY
     file: "vMenu-release.zip"
     skip_cleanup: true
+    prerelease: true
+    body: "Pre-release version of vMenu."
     on:
         branch: master
