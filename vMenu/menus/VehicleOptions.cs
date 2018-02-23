@@ -524,6 +524,8 @@ namespace vMenuClient
             // Pearlescent == Classic + Classic on top of secondary color.
             UIMenuListItem pearlescentColors = new UIMenuListItem("Pearlescent", Metallic, 0, "Select a pearlescent color.");
             UIMenuListItem wheelColors = new UIMenuListItem("Wheels Color", Wheels, 0, "Select a color for your wheels.");
+            // Chrome Button
+            UIMenuItem chromeBtn = new UIMenuItem("Chrome", "Make your vehicle chrome!");
             #endregion
 
             #region Add the items to the colors menu.
@@ -549,6 +551,7 @@ namespace vMenuClient
             vehicleColors.AddItem(otherColorsHeader); // header
             vehicleColors.AddItem(pearlescentColors);
             vehicleColors.AddItem(wheelColors);
+            vehicleColors.AddItem(chromeBtn);
             #endregion
 
             #region Handle Vehicle Color Changes
@@ -658,7 +661,15 @@ namespace vMenuClient
                     SetVehicleColours(cf.GetVehicle(), primary, secondary);
                     SetVehicleExtraColours(veh, pearlescent, wheels);
                 }
+            };
+            #endregion
 
+            #region Handle Chrome Button Pressed
+            // Handle chrome button press.
+            vehicleColors.OnItemSelect += (sender, item, index) =>
+            {
+                // Set primary and secondary color to chrome.
+                SetVehicleColours(cf.GetVehicle(), (int)VehicleColor.Chrome, (int)VehicleColor.Chrome);
             };
             #endregion
 
