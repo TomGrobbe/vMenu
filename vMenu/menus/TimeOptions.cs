@@ -20,9 +20,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Time Options", MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Time Options")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
         }

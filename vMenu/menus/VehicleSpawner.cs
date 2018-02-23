@@ -22,9 +22,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner", MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
             UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Name", "Enter a vehicle model name to spawn.");

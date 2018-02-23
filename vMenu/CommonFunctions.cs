@@ -21,6 +21,59 @@ namespace vMenuClient
         public CommonFunctions()
         {
             Tick += OnTick;
+            Tick += ManageVehicleOptionsMenu;
+        }
+
+        private async Task ManageVehicleOptionsMenu()
+        {
+            if (MainMenu.VehicleOptionsMenu == null)
+            {
+                await Delay(0);
+            }
+            else
+            {
+                // check to see if the vehicle options menu exists but the player is not inside a vehicle.
+                if (MainMenu.VehicleOptionsMenu.vehicleModMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
+                {
+                    // If the vehicle mod submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleModMenu.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleModMenu.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+                    // If the vehicle liveries submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleLiveries.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleLiveries.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+                    // If the vehicle colors submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleColors.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleColors.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+                    // If the vehicle doors submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleDoorsMenu.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleDoorsMenu.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+                    // If the vehicle windows submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleWindowsMenu.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleWindowsMenu.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+                    // If the vehicle extras submenu is open, close it.
+                    if (MainMenu.VehicleOptionsMenu.vehicleComponents.Visible)
+                    {
+                        MainMenu.VehicleOptionsMenu.vehicleComponents.GoBack();
+                        Notify.Error("You must be inside a vehicle to use this menu.");
+                    }
+
+                }
+            }
         }
 
         #region OnTick for spectate handling
@@ -557,6 +610,45 @@ namespace vMenuClient
             }
 
         }
+        #endregion
+
+        #region ToProperString()
+        /// <summary>
+        /// Converts a PascalCaseString to a Propper Case String.
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns></returns>
+        public string ToProperString(string inputString)
+        {
+            var outputString = "";
+            var prevUpper = true;
+            foreach (char c in inputString)
+            {
+                if (char.IsLetter(c) && c != ' ' && c == char.Parse(c.ToString().ToUpper()))
+                {
+                    if (prevUpper)
+                    {
+                        outputString += $"{c.ToString()}";
+                    }
+                    else
+                    {
+                        outputString += $" {c.ToString()}";
+                    }
+                    prevUpper = true;
+                }
+                else
+                {
+                    prevUpper = false;
+                    outputString += c.ToString();
+                }
+            }
+            while (outputString.IndexOf("  ") != -1)
+            {
+                outputString = outputString.Replace("  ", " ");
+            }
+            return outputString;
+        }
+
         #endregion
 
         /// <summary>
