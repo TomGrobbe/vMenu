@@ -841,7 +841,8 @@ namespace vMenuClient
                     }
 
                     // Get the vehicle.
-                    var veh = cf.GetVehicle();
+                    int veh = -1;
+                    veh = cf.GetVehicle();
 
                     // Check if the vehicle exists, is still drivable/alive and it's actually a vehicle.
                     if (DoesEntityExist(veh) && IsEntityAVehicle(veh) && !IsEntityDead(veh))
@@ -853,11 +854,13 @@ namespace vMenuClient
                         Vehicle vehicle = new Vehicle(veh);
 
                         // Get all mods available on this vehicle.
-                        var mods = vehicle.Mods.GetAllMods();
+                        VehicleMod[] mods = vehicle.Mods.GetAllMods();
 
                         // Loop through all the mods.
                         foreach (var mod in mods)
                         {
+                            veh = cf.GetVehicle();
+
                             // Get the mod type (suspension, armor, etc) name (convert the PascalCase to the Proper Case string values).
                             var typeName = cf.ToProperString(mod.ModType.ToString());
 
@@ -881,12 +884,16 @@ namespace vMenuClient
                                 name = mod.GetLocalizedModName(x) != "" ? $"{cf.ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x.ToString()} {currentItem}";
                                 modlist.Add(name);
                             }
+
                             // Create the UIMenuListItem for this mod type.
-                            UIMenuListItem modTypeListItem = new UIMenuListItem(typeName, modlist, GetVehicleMod(veh, mod.Index + 1) + 2, $"Choose a ~y~{typeName}~w~ upgrade, it will be automatically applied to your vehicle.");
+                            var currIndex = GetVehicleMod(veh, (int)mod.ModType) + 1;
+                            UIMenuListItem modTypeListItem = new UIMenuListItem(typeName, modlist, currIndex, $"Choose a ~y~{typeName}~w~ upgrade, it will be automatically applied to your vehicle.");
+
                             // Add the list item to the menu.
                             vehicleModMenu.AddItem(modTypeListItem);
                         }
 
+                        veh = cf.GetVehicle();
                         // Create the wheel types list & listitem and add it to the menu.
                         List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
                         UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
@@ -920,16 +927,18 @@ namespace vMenuClient
                             ["Pink"] = new int[] { 192, 24, 172 },
                             ["Black"] = new int[] { 1, 1, 1 }
                         };
-                        UIMenuListItem tireSmoke = new UIMenuListItem("Tire Smoke Color", tireSmokes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
+                        UIMenuListItem tireSmoke = new UIMenuListItem("Tire Smoke Color", tireSmokes, 0, $"Choose a ~y~wheel type~w~ for your vehicle.");
                         vehicleModMenu.AddItem(tireSmoke);
 
                         // Create the checkbox to enable/disable the tiresmoke.
-                        UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~w~.");
+                        UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~w~ for your vehicle. ~h~~r~Important:~w~ When disabling tire smoke, you'll need to drive around before it takes affect.");
                         vehicleModMenu.AddItem(tireSmokeEnabled);
 
                         // Handle checkbox changes.
                         vehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                         {
+                            veh = cf.GetVehicle();
+
                             // Xenon Headlights
                             if (item2 == xenonHeadlights)
                             {
@@ -948,7 +957,6 @@ namespace vMenuClient
                             // Custom Wheels
                             else if (item2 == toggleCustomWheels)
                             {
-                                veh = cf.GetVehicle();
                                 SetVehicleMod(veh, 23, GetVehicleMod(veh, 23), !GetVehicleModVariation(veh, 23));
 
                                 // If the player is on a motorcycle, also change the back wheels.
@@ -975,44 +983,48 @@ namespace vMenuClient
                                 // If it should be disabled:
                                 else
                                 {
+                                    // Set the smoke to white.
+                                    SetVehicleTyreSmokeColor(veh, 255, 255, 255);
                                     // Disable it.
                                     ToggleVehicleMod(veh, 20, false);
                                     // Remove the mod.
                                     RemoveVehicleMod(veh, 20);
-
-                                    // Get the current vehicle colors. Changing vehicle colors makes the tire smoke actually reset, 
-                                    // without this it would remain the previous color (even if you disable tire smoke).
-                                    var prim = 0;
-                                    var secn = 0;
-                                    GetVehicleColours(veh, ref prim, ref secn);
-                                    // Set the vehicle colors.
-                                    SetVehicleColours(veh, prim, secn);
                                 }
                             }
                         };
 
+                        veh = cf.GetVehicle();
+
                         // Handle list selections
                         vehicleModMenu.OnListChange += (sender2, item2, index2) =>
                         {
-                            // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, don't.
+                            veh = cf.GetVehicle();
+                            // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
                             if (sender2.CurrentSelection < sender2.MenuItems.Count - 7)
                             {
-                                veh = cf.GetVehicle();
                                 SetVehicleModKit(veh, 0);
+
+                                // Get all mods available on this vehicle.
+                                vehicle = new Vehicle(cf.GetVehicle());
+                                mods = vehicle.Mods.GetAllMods();
+
                                 var dict = new Dictionary<int, int>();
                                 var x = 0;
+
                                 foreach (var mod in mods)
                                 {
                                     dict.Add(x, (int)mod.ModType);
                                     x++;
                                 }
-                                var modType = dict[sender2.CurrentSelection];
-                                var selectedUpgrade = item2.Index - 1;
-                                var wheels = GetVehicleModVariation(veh, 23);
 
-                                SetVehicleMod(veh, modType, selectedUpgrade, wheels);
+                                int modType = dict[sender2.CurrentSelection];
+                                int selectedUpgrade = item2.Index - 1;
+                                bool customWheels = GetVehicleModVariation(veh, 23);
+
+                                SetVehicleMod(veh, modType, selectedUpgrade, customWheels);
                             }
-                            // It was one of the manual lists/options selected, either vehicle Wheel Type, tire smoke color or window tint:
+                            // If it was not one of the lists above, then it was one of the manual lists/options selected, 
+                            // either: vehicle Wheel Type, tire smoke color, or window tint:
 
                             // Wheel types
                             else if (item2 == vehicleWheelType)
@@ -1028,6 +1040,7 @@ namespace vMenuClient
                                 var r = tireSmokeColors[tireSmokes[index2]][0];
                                 var g = tireSmokeColors[tireSmokes[index2]][1];
                                 var b = tireSmokeColors[tireSmokes[index2]][2];
+
                                 // Set the color.
                                 SetVehicleTyreSmokeColor(veh, r, g, b);
                             }
