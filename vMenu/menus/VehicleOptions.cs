@@ -19,6 +19,15 @@ namespace vMenuClient
         private CommonFunctions cf = MainMenu.cf;
         private static VehicleData vd = new VehicleData();
 
+        // Submenus
+        public UIMenu vehicleModMenu { get; private set; }
+        public UIMenu vehicleDoorsMenu { get; private set; }
+        public UIMenu vehicleWindowsMenu { get; private set; }
+        public UIMenu vehicleComponents { get; private set; }
+        public UIMenu vehicleLiveries { get; private set; }
+        public UIMenu vehicleColors { get; private set; }
+        public UIMenu deleteConfirm { get; private set; }
+
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = false;
         public bool VehicleEngineAlwaysOn { get; private set; } = true;
@@ -38,9 +47,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options", MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
 
@@ -89,51 +98,51 @@ namespace vMenuClient
 
             #region Vehicle Options Submenus
             // Submenu's
-            UIMenu vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", MainMenu.MenuPosition)
+            vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+            };
+            vehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management")//, MainMenu.MenuPosition)
+            {
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu vehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", MainMenu.MenuPosition)
+            vehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu vehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", MainMenu.MenuPosition)
+            vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", MainMenu.MenuPosition)
+            vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.", MainMenu.MenuPosition)
+            vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors", MainMenu.MenuPosition)
+            deleteConfirm = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            UIMenu deleteConfirm = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?", MainMenu.MenuPosition)
-            {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
@@ -639,7 +648,7 @@ namespace vMenuClient
                         }
                         else
                         {
-                            wheels = vd.MetallicColors[Metallic[index + 1]];
+                            wheels = vd.MetallicColors[Metallic[index - 1]];
                         }
                     }
                     // Set the mod kit so we can modify things.
@@ -816,6 +825,218 @@ namespace vMenuClient
                     }
                 }
 
+            };
+            #endregion
+
+            #region Vehicle Mod Submenu Stuff
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                // When the mod submenu is openend, reset all items in there.
+                if (item == modMenuBtn)
+                {
+                    // If there are items, remove all of them.
+                    if (vehicleModMenu.MenuItems.Count > 0)
+                    {
+                        vehicleModMenu.Clear();
+                    }
+
+                    // Get the vehicle.
+                    var veh = cf.GetVehicle();
+
+                    // Check if the vehicle exists, is still drivable/alive and it's actually a vehicle.
+                    if (DoesEntityExist(veh) && IsEntityAVehicle(veh) && !IsEntityDead(veh))
+                    {
+                        // Set the modkit so we can modify the car.
+                        SetVehicleModKit(veh, 0);
+
+                        // Create a Vehicle object for it, this is used to get some of the vehicle mods.
+                        Vehicle vehicle = new Vehicle(veh);
+
+                        // Get all mods available on this vehicle.
+                        var mods = vehicle.Mods.GetAllMods();
+
+                        // Loop through all the mods.
+                        foreach (var mod in mods)
+                        {
+                            // Get the mod type (suspension, armor, etc) name (convert the PascalCase to the Proper Case string values).
+                            var typeName = cf.ToProperString(mod.ModType.ToString());
+
+                            // Create a list to all available upgrades for this modtype.
+                            var modlist = new List<dynamic>();
+
+                            // Get the current item index ({current}/{max upgrades})
+                            var currentItem = $"[1/{ mod.ModCount + 1}]";
+
+                            // Add the stock value for this mod.
+                            var name = $"Stock {typeName} {currentItem}";
+                            modlist.Add(name);
+
+                            // Loop through all available upgrades for this specific mod type.
+                            for (var x = 0; x < mod.ModCount; x++)
+                            {
+                                // Create the item index.
+                                currentItem = $"[{2 + x}/{ mod.ModCount + 1}]";
+
+                                // Create the name (again, converting to proper case), then add the name.
+                                name = mod.GetLocalizedModName(x) != "" ? $"{cf.ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x.ToString()} {currentItem}";
+                                modlist.Add(name);
+                            }
+                            // Create the UIMenuListItem for this mod type.
+                            UIMenuListItem modTypeListItem = new UIMenuListItem(typeName, modlist, GetVehicleMod(veh, mod.Index + 1) + 2, $"Choose a ~y~{typeName}~w~ upgrade, it will be automatically applied to your vehicle.");
+                            // Add the list item to the menu.
+                            vehicleModMenu.AddItem(modTypeListItem);
+                        }
+
+                        // Create the wheel types list & listitem and add it to the menu.
+                        List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
+                        UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
+                        vehicleModMenu.AddItem(vehicleWheelType);
+
+                        // Create the checkboxes for some options.
+                        UIMenuCheckboxItem toggleCustomWheels = new UIMenuCheckboxItem("Toggle Custom Wheels", GetVehicleModVariation(veh, 23), "Press this to add or remove ~y~custom~w~ wheels.");
+                        UIMenuCheckboxItem xenonHeadlights = new UIMenuCheckboxItem("Xenon Headlights", IsToggleModOn(veh, 22), "Enable or disable ~b~xenon ~w~headlights.");
+                        UIMenuCheckboxItem turbo = new UIMenuCheckboxItem("Turbo", IsToggleModOn(veh, 18), "Enable or disable the ~y~turbo~w~ for this vehicle.");
+                        UIMenuCheckboxItem bulletProofTires = new UIMenuCheckboxItem("Bullet Proof Tires", !GetVehicleTyresCanBurst(veh), "Enable or disable ~y~bullet proof tires~w~ for this vehicle.");
+
+                        // Add the checkboxes to the menu.
+                        vehicleModMenu.AddItem(toggleCustomWheels);
+                        vehicleModMenu.AddItem(xenonHeadlights);
+                        vehicleModMenu.AddItem(turbo);
+                        vehicleModMenu.AddItem(bulletProofTires);
+
+                        // Create a list of tire smoke options.
+                        List<dynamic> tireSmokes = new List<dynamic>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
+                        Dictionary<String, int[]> tireSmokeColors = new Dictionary<string, int[]>()
+                        {
+                            ["Red"] = new int[] { 244, 65, 65 },
+                            ["Orange"] = new int[] { 244, 167, 66 },
+                            ["Yellow"] = new int[] { 244, 217, 65 },
+                            ["Gold"] = new int[] { 181, 120, 0 },
+                            ["Light Green"] = new int[] { 158, 255, 84 },
+                            ["Dark Green"] = new int[] { 44, 94, 5 },
+                            ["Light Blue"] = new int[] { 65, 211, 244 },
+                            ["Dark Blue"] = new int[] { 24, 54, 163 },
+                            ["Purple"] = new int[] { 108, 24, 192 },
+                            ["Pink"] = new int[] { 192, 24, 172 },
+                            ["Black"] = new int[] { 1, 1, 1 }
+                        };
+                        UIMenuListItem tireSmoke = new UIMenuListItem("Tire Smoke Color", tireSmokes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
+                        vehicleModMenu.AddItem(tireSmoke);
+
+                        // Create the checkbox to enable/disable the tiresmoke.
+                        UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~w~.");
+                        vehicleModMenu.AddItem(tireSmokeEnabled);
+
+                        // Handle checkbox changes.
+                        vehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
+                        {
+                            // Xenon Headlights
+                            if (item2 == xenonHeadlights)
+                            {
+                                ToggleVehicleMod(veh, 22, _checked);
+                            }
+                            // Turbo
+                            else if (item2 == turbo)
+                            {
+                                ToggleVehicleMod(veh, 18, _checked);
+                            }
+                            // Bullet Proof Tires
+                            else if (item2 == bulletProofTires)
+                            {
+                                SetVehicleTyresCanBurst(veh, _checked);
+                            }
+                            // Custom Wheels
+                            else if (item2 == toggleCustomWheels)
+                            {
+                                veh = cf.GetVehicle();
+                                SetVehicleMod(veh, 23, GetVehicleMod(veh, 23), !GetVehicleModVariation(veh, 23));
+
+                                // If the player is on a motorcycle, also change the back wheels.
+                                if (IsThisModelABike((uint)GetEntityModel(veh)))
+                                {
+                                    SetVehicleMod(veh, 24, GetVehicleMod(veh, 24), !GetVehicleModVariation(veh, 23));
+                                }
+                            }
+                            // Toggle Tire Smoke
+                            else if (item2 == tireSmokeEnabled)
+                            {
+                                // If it should be enabled:
+                                if (_checked)
+                                {
+                                    // Enable it.
+                                    ToggleVehicleMod(veh, 20, true);
+                                    // Get the selected color values.
+                                    var r = tireSmokeColors[tireSmokes[tireSmoke.Index]][0];
+                                    var g = tireSmokeColors[tireSmokes[tireSmoke.Index]][1];
+                                    var b = tireSmokeColors[tireSmokes[tireSmoke.Index]][2];
+                                    // Set the color.
+                                    SetVehicleTyreSmokeColor(veh, r, g, b);
+                                }
+                                // If it should be disabled:
+                                else
+                                {
+                                    // Disable it.
+                                    ToggleVehicleMod(veh, 20, false);
+                                    // Remove the mod.
+                                    RemoveVehicleMod(veh, 20);
+
+                                    // Get the current vehicle colors. Changing vehicle colors makes the tire smoke actually reset, 
+                                    // without this it would remain the previous color (even if you disable tire smoke).
+                                    var prim = 0;
+                                    var secn = 0;
+                                    GetVehicleColours(veh, ref prim, ref secn);
+                                    // Set the vehicle colors.
+                                    SetVehicleColours(veh, prim, secn);
+                                }
+                            }
+                        };
+
+                        // Handle list selections
+                        vehicleModMenu.OnListChange += (sender2, item2, index2) =>
+                        {
+                            // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, don't.
+                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 7)
+                            {
+                                veh = cf.GetVehicle();
+                                SetVehicleModKit(veh, 0);
+                                var dict = new Dictionary<int, int>();
+                                var x = 0;
+                                foreach (var mod in mods)
+                                {
+                                    dict.Add(x, (int)mod.ModType);
+                                    x++;
+                                }
+                                var modType = dict[sender2.CurrentSelection];
+                                var selectedUpgrade = item2.Index - 1;
+                                var wheels = GetVehicleModVariation(veh, 23);
+
+                                SetVehicleMod(veh, modType, selectedUpgrade, wheels);
+                            }
+                            // It was one of the manual lists/options selected, either vehicle Wheel Type, tire smoke color or window tint:
+
+                            // Wheel types
+                            else if (item2 == vehicleWheelType)
+                            {
+                                // Set the wheel type.
+                                veh = cf.GetVehicle();
+                                SetVehicleWheelType(veh, index2);
+                            }
+                            // Tire smoke
+                            else if (item2 == tireSmoke)
+                            {
+                                // Get the selected color values.
+                                var r = tireSmokeColors[tireSmokes[index2]][0];
+                                var g = tireSmokeColors[tireSmokes[index2]][1];
+                                var b = tireSmokeColors[tireSmokes[index2]][2];
+                                // Set the color.
+                                SetVehicleTyreSmokeColor(veh, r, g, b);
+                            }
+                        };
+                    }
+                    // Refresh Index and update the scaleform to prevent weird broken menus.
+                    vehicleModMenu.RefreshIndex();
+                    vehicleModMenu.UpdateScaleform();
+                }
             };
             #endregion
         }

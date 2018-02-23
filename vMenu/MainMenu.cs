@@ -18,8 +18,9 @@ namespace vMenuClient
         public static Subtitles Subtitle { get; } = new Subtitles();
 
         public static MenuPool Mp { get; } = new MenuPool();
-        public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 465f, 45f);
-        public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(0f, 0f), UnknownColors.SlateGray);
+        public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 800f, 45f);
+        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(0f, 0f);
+        public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(1920f, 1080f), UnknownColors.SlateGray);
 
         private bool firstTick = true;
         private bool setupComplete = false;
@@ -117,13 +118,13 @@ namespace vMenuClient
                 }
 
                 // Create the main menu.
-                Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", MenuPosition);
+                Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu");
 
                 // Add the main menu to the menu pool.
                 Mp.Add(Menu);
 
                 Menu.RefreshIndex();
-                Menu.ScaleWithSafezone = false;
+                Menu.ScaleWithSafezone = true;
 
                 Menu.UpdateScaleform();
                 Menu.MouseControlsEnabled = false;
@@ -232,11 +233,12 @@ namespace vMenuClient
                 Menu.UpdateScaleform();
 
                 // Set the banner globally.
-                Mp.SetBannerType(BannerSprite);
+                //Mp.SetBannerType(BannerSprite);
                 // Globally disable the native ui controls disabling.
                 Mp.ControlDisablingEnabled = false;
                 // Globally disable the "mouse edge" feature.
                 Mp.MouseEdgeEnabled = false;
+                //Mp.WidthOffset = 50;
             }
             #endregion
 
@@ -353,6 +355,7 @@ namespace vMenuClient
 
                 // Process all menus in the menu pool (displays them when they're active).
                 Mp.ProcessMenus();
+                Mp.WidthOffset = 50;
 
             }
 

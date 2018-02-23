@@ -24,9 +24,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Online Players", MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Online Players")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
             UpdatePlayerlist();
@@ -58,13 +58,11 @@ namespace vMenuClient
                         //Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
 
                         // Create the menu for the player.
-                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")", MainMenu.MenuPosition)
-                        {
-                            ScaleWithSafezone = false
-                        };
+                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")");
                         PlayerMenu.MouseControlsEnabled = false;
+                        PlayerMenu.SetMenuWidthOffset(50);
 
-                        PlayerMenu.SetBannerType(MainMenu.BannerSprite);
+                        //PlayerMenu.SetBannerType(MainMenu.BannerSprite);
                         PlayerMenu.ControlDisablingEnabled = false;
                         PlayerMenu.MouseEdgeEnabled = false;
 

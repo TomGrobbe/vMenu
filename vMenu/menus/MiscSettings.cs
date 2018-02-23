@@ -20,9 +20,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings")//, MainMenu.MenuPosition)
             {
-                ScaleWithSafezone = false,
+                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
             UIMenuItem tptowp = new UIMenuItem("Teleport To WayPoint", "Teleport to the waypoint on your map.");
