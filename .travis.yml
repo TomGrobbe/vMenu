@@ -22,5 +22,3 @@ deploy:
     api_key: $GITHUB_API_KEY
     file: "vMenu-release.zip"
     skip_cleanup: true
-    on:
-        tags: true
