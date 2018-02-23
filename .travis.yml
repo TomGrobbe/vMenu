@@ -15,9 +15,10 @@ before_deploy:
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds/config
     - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cd /home/travis/build/TomGrobbe/vMenu/builds && zip -r vMenu-release.zip *
+    - cd /home/travis/build/TomGrobbe/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-release.zip *
     - git config --local user.name "TomGrobbe"
     - git config --local user.email "tom.grobbe@gmail.com"
     - git tag "vMenu-$(git log --format=%h -1)"
