@@ -105,18 +105,18 @@ namespace vMenuClient
         #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
         /// <summary>
         /// Get the vehicle from the specified player. If no player specified, then return the vehicle of the current player.
-        /// Optionally specify <see cref="=bool last"/> to return the last vehicle the player was in.
+        /// Optionally specify the 'lastVehicle' (bool) parameter to return the last vehicle the player was in.
         /// </summary>
         /// <param name="ped">Get the vehicle for this player.</param>
-        /// <param name="last">If true, return the last vehicle, if false (default) return the current vehicle.</param>
+        /// <param name="lastVehicle">If true, return the last vehicle, if false (default) return the current vehicle.</param>
         /// <returns>Returns a vehicle (int).</returns>
-        public int GetVehicle(int player = -1, bool last = false)
+        public int GetVehicle(int player = -1, bool lastVehicle = false)
         {
             if (player == -1)
             {
-                return GetVehiclePedIsIn(PlayerPedId(), last);
+                return GetVehiclePedIsIn(PlayerPedId(), lastVehicle);
             }
-            return GetVehiclePedIsIn(GetPlayerPed(player), last);
+            return GetVehiclePedIsIn(GetPlayerPed(player), lastVehicle);
         }
         #endregion
 
