@@ -49,7 +49,7 @@ namespace vMenuClient
             {
                 #region Check for vehicle changes.
                 // Check if the player has switched to a new vehicle.
-                var tmpVehicle = GetVehiclePedIsIn(PlayerPedId(), false);
+                var tmpVehicle = cf.GetVehicle();
                 if (DoesEntityExist(tmpVehicle) && tmpVehicle != LastVehicle)
                 {
                     // Set the last vehicle to the new vehicle entity.
@@ -157,9 +157,9 @@ namespace vMenuClient
                     }
 
                     // Manage vehicle engine always on.
-                    if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(last: true)) && !DoesEntityExist(cf.GetVehicle(last: false)))
+                    if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !DoesEntityExist(cf.GetVehicle(lastVehicle: false)))
                     {
-                        SetVehicleEngineOn(cf.GetVehicle(last: true), true, true, true);
+                        SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
                     }
 
                     // Manage "no helmet"
