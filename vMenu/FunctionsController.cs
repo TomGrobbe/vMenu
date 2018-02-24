@@ -83,8 +83,8 @@ namespace vMenuClient
                     }
 
                     // Manage PlayerNoRagdoll
-                    SetPedCanRagdoll(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
-                    SetPedCanRagdollFromPlayerImpact(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                    SetPedCanRagdoll(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                    SetPedCanRagdollFromPlayerImpact(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
 
                     // Manage never wanted.
                     if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
