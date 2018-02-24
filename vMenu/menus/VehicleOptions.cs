@@ -147,8 +147,6 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            #endregion
-
             MainMenu.Mp.Add(vehicleModMenu);
             MainMenu.Mp.Add(vehicleDoorsMenu);
             MainMenu.Mp.Add(vehicleWindowsMenu);
@@ -156,6 +154,7 @@ namespace vMenuClient
             MainMenu.Mp.Add(vehicleLiveries);
             MainMenu.Mp.Add(vehicleColors);
             MainMenu.Mp.Add(deleteConfirm);
+            #endregion
 
             #region Add items to the menu.
             // Add everything to the menu.
@@ -1139,6 +1138,80 @@ namespace vMenuClient
                     // Refresh Index and update the scaleform to prevent weird broken menus.
                     vehicleModMenu.RefreshIndex();
                     vehicleModMenu.UpdateScaleform();
+                }
+            };
+            #endregion
+
+            #region Vehicle Components Submenu
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                // If the components menu is opened.
+                if (item == componentsMenuBtn)
+                {
+                    // Empty the menu in case there were leftover buttons from another vehicle.
+                    if (vehicleComponents.MenuItems.Count > 0)
+                    {
+                        vehicleComponents.MenuItems.Clear();
+                        vehicleComponents.RefreshIndex();
+                        vehicleComponents.UpdateScaleform();
+                    }
+
+                    // Get the vehicle.
+                    int veh = cf.GetVehicle();
+                    // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
+                    if (DoesEntityExist(veh) && !IsEntityDead(veh) && IsEntityAVehicle(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                    {
+
+                        // Create a vehicle.
+                        Vehicle vehicle = new Vehicle(veh);
+
+                        List<int> extraIds = new List<int>();
+                        // Loop through all possible extra ID's (AFAIK: 0-14).
+                        for (var extra = 0; extra < 14; extra++)
+                        {
+                            // If this extra exists...
+                            if (vehicle.ExtraExists(extra))
+                            {
+                                // Add it's ID to the list.
+                                extraIds.Add(extra);
+                                // Create a checkbox for it.
+                                UIMenuCheckboxItem extraCheckbox = new UIMenuCheckboxItem($"Extra #{extra.ToString()}", vehicle.IsExtraOn(extra), extra.ToString());
+                                // Add the checkbox to the menu.
+                                vehicleComponents.AddItem(extraCheckbox);
+                            }
+                        }
+
+                        // When a checkbox is checked/unchecked, get the selected checkbox item index and use that to get the component ID from the list.
+                        vehicleComponents.OnCheckboxChange += (sender2, item2, _checked) =>
+                        {
+                            // Then toggle that extra.
+                            vehicle.ToggleExtra(extraIds[sender2.CurrentSelection], _checked);
+                        };
+
+                        if (extraIds.Count > 0)
+                        {
+                            UIMenuItem backBtn = new UIMenuItem("Go Back", "Go back to the Vehicle Options menu.");
+                            vehicleComponents.AddItem(backBtn);
+                            vehicleComponents.OnItemSelect += (sender3, item3, index3) =>
+                            {
+                                vehicleComponents.GoBack();
+                            };
+                        }
+                        else
+                        {
+                            UIMenuItem backBtn = new UIMenuItem("No extras available :(", "Go back to the Vehicle Options menu.");
+                            backBtn.SetRightLabel("Go Back");
+                            vehicleComponents.AddItem(backBtn);
+                            vehicleComponents.OnItemSelect += (sender3, item3, index3) =>
+                            {
+                                vehicleComponents.GoBack();
+                            };
+                        }
+                        // And update the submenu to prevent weird glitches.
+                        vehicleComponents.RefreshIndex();
+                        vehicleComponents.UpdateScaleform();
+
+                    }
                 }
             };
             #endregion
