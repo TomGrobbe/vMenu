@@ -246,13 +246,45 @@ namespace vMenuClient
         #endregion
 
         /// <summary>
-        /// Kick player
+        /// Kick a user with the provided kick reason. Or ask the current player to provide a reason.
         /// </summary>
         /// <param name="player"></param>
+        /// <param name="askUserForReason"></param>
         /// <param name="reason"></param>
-        public void KickPlayer(Player player, string reason = "You have been kicked.")
+        public async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
         {
-            TriggerServerEvent("vMenu:KickPlayer", player.ServerId, reason);
+            // Default kick reason.
+            var defaultReason = "You have been kicked.";
+            var cancel = false;
+            // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
+            if (askUserForReason && providedReason == defaultReason)
+            {
+                var userInput = await GetUserInputAsync("Enter Kick Message", "", 100);
+                // If the input is not invalid, set the kick reason to the user's custom message.
+                if (userInput != "NULL")
+                {
+                    defaultReason += $" Reason: {userInput}";
+                }
+                else
+                {
+                    cancel = true;
+                    return;
+                }
+            }
+            // If the provided reason is not the same as the default reason, set the kick reason to the provided reason.
+            else if (providedReason != defaultReason)
+            {
+                defaultReason = providedReason;
+            }
+            // Otherwise, don't change anything.
+
+
+            // Kick the player using the specified reason.
+            if (!cancel)
+            {
+                TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
+            }
+            
         }
 
         /// <summary>
@@ -557,11 +589,11 @@ namespace vMenuClient
                 await Delay(0);
             }
             // Get the result
-            var status = UpdateOnscreenKeyboard();
-            var result = GetOnscreenKeyboardResult();
+            int status = UpdateOnscreenKeyboard();
+            string result = GetOnscreenKeyboardResult();
 
             // If the result is not empty or null
-            if (result != "" && result != null)
+            if (result != "" && result != null && status == 1)
             {
                 // Reopen any menus if they were open.
                 if (openMenu != null)
