@@ -909,7 +909,7 @@ namespace vMenuClient
                         veh = cf.GetVehicle();
                         // Create the wheel types list & listitem and add it to the menu.
                         List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
-                        UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
+                        UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle. ~r~Important:~w~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
                         vehicleModMenu.AddItem(vehicleWheelType);
 
                         // Create the checkboxes for some options.
@@ -1047,7 +1047,7 @@ namespace vMenuClient
                             #region handle the dynamic (vehicle-specific) mods
                             veh = cf.GetVehicle();
                             // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
-                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 9)
+                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 8)
                             {
                                 SetVehicleModKit(veh, 0);
 
