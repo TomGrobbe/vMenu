@@ -858,6 +858,7 @@ namespace vMenuClient
                     // Check if the vehicle exists, is still drivable/alive and it's actually a vehicle.
                     if (DoesEntityExist(veh) && IsEntityAVehicle(veh) && !IsEntityDead(veh))
                     {
+                        #region initial setup
                         // Set the modkit so we can modify the car.
                         SetVehicleModKit(veh, 0);
 
@@ -903,7 +904,9 @@ namespace vMenuClient
                             // Add the list item to the menu.
                             vehicleModMenu.AddItem(modTypeListItem);
                         }
+                        #endregion
 
+                        #region more variables and setup
                         veh = cf.GetVehicle();
                         // Create the wheel types list & listitem and add it to the menu.
                         List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
@@ -921,7 +924,6 @@ namespace vMenuClient
                         vehicleModMenu.AddItem(xenonHeadlights);
                         vehicleModMenu.AddItem(turbo);
                         vehicleModMenu.AddItem(bulletProofTires);
-
                         // Create a list of tire smoke options.
                         List<dynamic> tireSmokes = new List<dynamic>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                         Dictionary<String, int[]> tireSmokeColors = new Dictionary<string, int[]>()
@@ -977,7 +979,8 @@ namespace vMenuClient
                         }
                         UIMenuListItem windowTint = new UIMenuListItem("Window Tint", windowTints, currentTint, "Apply tint to your windows.");
                         vehicleModMenu.AddItem(windowTint);
-
+                        #endregion
+                        #region Checkbox Changes
                         // Handle checkbox changes.
                         vehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                         {
@@ -1036,12 +1039,13 @@ namespace vMenuClient
                                 }
                             }
                         };
-
+                        #endregion
                         veh = cf.GetVehicle();
-
+                        #region List Changes
                         // Handle list selections
                         vehicleModMenu.OnListChange += (sender2, item2, index2) =>
                         {
+                            #region handle the dynamic (vehicle-specific) mods
                             veh = cf.GetVehicle();
                             // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
                             if (sender2.CurrentSelection < sender2.MenuItems.Count - 9)
@@ -1067,9 +1071,11 @@ namespace vMenuClient
 
                                 SetVehicleMod(veh, modType, selectedUpgrade, customWheels);
                             }
+
+                            #endregion
                             // If it was not one of the lists above, then it was one of the manual lists/options selected, 
                             // either: vehicle Wheel Type, tire smoke color, or window tint:
-
+                            #region Handle the items available on all vehicles.
                             // Wheel types
                             else if (item2 == vehicleWheelType)
                             {
@@ -1125,7 +1131,10 @@ namespace vMenuClient
                                         break;
                                 }
                             }
+                            #endregion
                         };
+
+                        #endregion
                     }
                     // Refresh Index and update the scaleform to prevent weird broken menus.
                     vehicleModMenu.RefreshIndex();
