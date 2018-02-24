@@ -51,7 +51,7 @@ namespace vMenuClient
             UIMenuCheckboxItem playerFrozenCheckbox = new UIMenuCheckboxItem("Freeze Yourself", PlayerFrozen, "Why would you do this...?");
 
             // Wanted level options
-            List<dynamic> wantedLevelList = new List<dynamic> { "No Cops", 1, 2, 3, 4 };
+            List<dynamic> wantedLevelList = new List<dynamic> { "No Cops", 1, 2, 3, 4, 5 };
             UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(PlayerId()), "Set the wanted level by selecting a value, and pressing enter.");
 
             // Player options
