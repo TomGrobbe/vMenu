@@ -65,6 +65,8 @@ namespace vMenuClient
 
             // Scenarios (list can be found in the PedScenarios class)
             UIMenuListItem playerScenarios = new UIMenuListItem("Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Press it again to cancel it. Selecting another scenario and hitting enter will override the current scenario. Pressing enter again will then stop the scenario.");
+            UIMenuItem stopScenario = new UIMenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
+
 
             // Add all checkboxes to the menu.
             menu.AddItem(playerGodModeCheckbox);
@@ -81,6 +83,7 @@ namespace vMenuClient
             menu.AddItem(playerActions);
             menu.AddItem(playerFrozenCheckbox);
             menu.AddItem(playerScenarios);
+            menu.AddItem(stopScenario);
 
             // Handle all checkbox change events.
             menu.OnCheckboxChange += (sender, item, _checked) =>
@@ -146,7 +149,6 @@ namespace vMenuClient
                     SetPlayerWantedLevel(PlayerId(), index, false);
                     SetPlayerWantedLevelNow(PlayerId(), false);
                 }
-
                 // Player options (healing, cleaning, armor, dry/wet, etc)
                 else if (listItem == playerOptions)
                 {
@@ -177,7 +179,6 @@ namespace vMenuClient
                             break;
                     }
                 }
-
                 // Player actions (suicide, driving tasks, etc)
                 else if (listItem == playerActions)
                 {
@@ -197,37 +198,24 @@ namespace vMenuClient
                             break;
                     }
                 }
+                // Player Scenarios 
+                else if (listItem == playerScenarios)
+                {
+                    MainMenu.cf.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
+                }
+            };
+            #endregion
 
-                //// Player Scenarios 
-                //else if (listItem == playerScenarios)
-                //{
-                //    // If they are currently in a scenario, and they select the same scenario, then cancel it.
-                //    if (IsPlayingScenario == index)
-                //    {
-                //        IsPlayingScenario = -1;
-                //    }
-                //    // Otherwise, start a new scenario.
-                //    else
-                //    {
-                //        // If the player can start a scenario.
-                //        if (CanPlayScenarios())
-                //        {
-                //            // check if they are starting a new scenario for the first time.
-                //            if (IsPlayingScenario == -1)
-                //            {
-                //                // Clear the tasks (any scenarios).
-                //                ClearPedTasks(PlayerPedId());
-                //                // Start the new scenario.
-                //                TaskStartScenarioInPlace(PlayerPedId(), PedScenarios.ScenarioNames[PedScenarios.Scenarios[IsPlayingScenario]], 0, true);
-                //            }
-                //            IsPlayingScenario = index;
-                //        }
-                //        else
-                //        {
-                //            Notify.Alert("You can only start a scenario if you're standing still, and you're not inside any vehicle.");
-                //        }
-                //    }
-                //}
+            #region On Menu Button Press
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                // Force Stop Scenario button
+                if (item == stopScenario)
+                {
+                    // Play a new scenario named "forcestop" (this scenario doesn't exist, but the "Play" function checks
+                    // for the string "forcestop", if that's provided as th scenario name then it will forcefully clear the player task.
+                    MainMenu.cf.PlayScenario("forcestop");
+                }
             };
             #endregion
 
