@@ -18,9 +18,9 @@ namespace vMenuClient
         public static Subtitles Subtitle { get; } = new Subtitles();
 
         public static MenuPool Mp { get; } = new MenuPool();
-        public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 800f, 45f);
+        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 800f, 45f);
         //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(0f, 0f);
-        public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(1920f, 1080f), UnknownColors.SlateGray);
+        //public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(1920f, 1080f), UnknownColors.SlateGray);
 
         private bool firstTick = true;
         private bool setupComplete = false;
