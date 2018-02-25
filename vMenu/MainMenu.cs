@@ -63,19 +63,54 @@ namespace vMenuClient
         /// <param name="dict"></param>
         private void SetPermissions(dynamic dict)
         {
-            //foreach (KeyValuePair<string, bool> perm in dict)
-            //{
-            //    Permissions.Add(perm.Key, perm.Value);
-            //}
+            // Convert the dynamic object into a dictionary<string, bool>
             foreach (dynamic permission in dict)
             {
+                // Add the new permission to the dictionary.
                 Permissions.Add(permission.Key.ToString(), permission.Value);
+
+                // Only if debugging is set to true, notify the client of the values.
                 if (debug)
                 {
                     Notify.Custom($"Key: {permission.Key.ToString()}\r\nValue: {permission.Value}");
                 }
 
             }
+
+            // Loop through the new permissions list.
+            // Check for wildcards and if they are true, set all "child" permissions to true (allowed)
+            foreach (KeyValuePair<string, bool> perm in Permissions)
+            {
+                // If the permission is currently not allowed.
+                if (!perm.Value)
+                {
+                    // Check the wildcard for this permission.
+                    var wildCardVersion = perm.Key.ToString().Split('_')[0].ToString() + perm.Key.ToString().Split('_')[1].ToString() + "_*";
+                    if (Permissions.ContainsKey(wildCardVersion))
+                    {
+                        // If that wildcard is set to true (allowed) then allow the current permission as well.
+                        if (Permissions[wildCardVersion])
+                        {
+                            // Update the current permission in the dictionary to be set to true instead of false.
+                            Permissions[perm.Key] = true;
+                        }
+                    }
+                }
+            }
+
+            #region if debug
+            if (debug)
+            {
+                foreach (KeyValuePair<string, bool> perm in Permissions)
+                {
+                    if (perm.Value)
+                    {
+                        TriggerEvent("chatMessage", perm.Key.ToString());
+                    }
+                }
+            }
+            #endregion
+
             setupComplete = true;
         }
 
@@ -133,9 +168,9 @@ namespace vMenuClient
                 // Create all (sub)menus.
 
                 // Add the online players menu.
-                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_onlinePlayers"])
+                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_onlinePlayers"])
+                if (cf.IsAllowed("vMenu_menus_onlinePlayers"))
                 {
-
                     OnlinePlayersMenu = new OnlinePlayers();
                     UIMenu onlinePlayers = OnlinePlayersMenu.GetMenu();
                     UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
@@ -152,7 +187,8 @@ namespace vMenuClient
                 }
 
                 // Add the player options menu.
-                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
+                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
+                if (cf.IsAllowed("vMenu_menus_playerOptions"))
                 {
                     PlayerOptionsMenu = new PlayerOptions();
                     UIMenu playerOptions = PlayerOptionsMenu.GetMenu();
@@ -161,7 +197,8 @@ namespace vMenuClient
                 }
 
                 // Add the vehicle options Menu.
-                if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
+                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
+                if (cf.IsAllowed("vMenu_menus_vehicleOptions"))
                 {
                     VehicleOptionsMenu = new VehicleOptions();
                     UIMenu vehicleOptions = VehicleOptionsMenu.GetMenu();
@@ -170,7 +207,8 @@ namespace vMenuClient
                 }
 
                 // Add the vehicle spawner menu.
-                if (cf.IsAllowed("vehicleSpawnMenu"))
+                //if (cf.IsAllowed("vehicleSpawnMenu"))
+                if (cf.IsAllowed("vMenu_menus_vehicleSpawner"))
                 {
                     VehicleSpawnerMenu = new VehicleSpawner();
                     UIMenu vehicleSpawner = VehicleSpawnerMenu.GetMenu();
@@ -186,8 +224,10 @@ namespace vMenuClient
                     UIMenuItem savedVehiclesBtn = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
                     AddMenu(savedVehicles, savedVehiclesBtn);
                 }
+
                 // Add the player appearance menu.
-                if (cf.IsAllowed("playerAppearanceMenu"))
+                //if (cf.IsAllowed("playerAppearanceMenu"))
+                if (cf.IsAllowed("vMenu_menus_playerAppearance"))
                 {
                     PlayerAppearanceMenu = new PlayerAppearance();
                     UIMenu menu = PlayerAppearanceMenu.GetMenu();
@@ -196,7 +236,8 @@ namespace vMenuClient
                 }
 
                 // Add the time options menu.
-                if (cf.IsAllowed("TimeOptionsMenu"))
+                //if (cf.IsAllowed("TimeOptionsMenu"))
+                if (cf.IsAllowed("vMenu_menus_timeOptions"))
                 {
                     TimeOptionsMenu = new TimeOptions();
                     UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -205,7 +246,8 @@ namespace vMenuClient
                 }
 
                 // Add the weather options menu.
-                if (cf.IsAllowed("WeatherOptionsMenu"))
+                //if (cf.IsAllowed("WeatherOptionsMenu"))
+                if (cf.IsAllowed("vMenu_menus_weatherOptions"))
                 {
                     WeatherOptionsMenu = new WeatherOptions();
                     UIMenu menu = WeatherOptionsMenu.GetMenu();
@@ -221,8 +263,10 @@ namespace vMenuClient
                     UIMenuItem button = new UIMenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.");
                     AddMenu(menu, button);
                 }
+
                 // Add misc settings menu.
-                if (cf.IsAllowed("MiscSettingsMenu"))
+                //if (cf.IsAllowed("MiscSettingsMenu"))
+                if (cf.IsAllowed("vMenu_menus_miscSettings"))
                 {
                     MiscSettingsMenu = new MiscSettings();
                     UIMenu menu = MiscSettingsMenu.GetMenu();
@@ -231,7 +275,8 @@ namespace vMenuClient
                 }
 
                 // Add Voice Chat Menu.
-                if (cf.IsAllowed("VoiceChatSettingsMenu"))
+                //if (cf.IsAllowed("VoiceChatSettingsMenu"))
+                if (cf.IsAllowed("vMenu_menus_voiceChat"))
                 {
                     VoiceChatSettingsMenu = new VoiceChat();
                     UIMenu menu = VoiceChatSettingsMenu.GetMenu();
