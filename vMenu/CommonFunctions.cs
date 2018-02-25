@@ -14,6 +14,7 @@ namespace vMenuClient
         // Variables
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
+        private string currentScenario = "";
 
         /// <summary>
         /// Constructor.
@@ -24,6 +25,7 @@ namespace vMenuClient
             Tick += ManageVehicleOptionsMenu;
         }
 
+        #region OnTick Vehicle Options
         private async Task ManageVehicleOptionsMenu()
         {
             if (MainMenu.VehicleOptionsMenu == null)
@@ -71,10 +73,10 @@ namespace vMenuClient
                         MainMenu.VehicleOptionsMenu.vehicleComponents.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
-
                 }
             }
         }
+        #endregion
 
         #region OnTick for spectate handling
         /// <summary>
@@ -210,7 +212,6 @@ namespace vMenuClient
         }
         #endregion
 
-
         #region Teleport To Coords
         /// <summary>
         /// Teleport the player to a specific location.
@@ -245,6 +246,7 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Kick Player
         /// <summary>
         /// Kick a user with the provided kick reason. Or ask the current player to provide a reason.
         /// </summary>
@@ -284,9 +286,11 @@ namespace vMenuClient
             {
                 TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
             }
-            
-        }
 
+        }
+        #endregion
+
+        #region Kill Player
         /// <summary>
         /// Kill player
         /// </summary>
@@ -295,7 +299,9 @@ namespace vMenuClient
         {
             TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
         }
+        #endregion
 
+        #region Summon Player
         /// <summary>
         /// Summon player.
         /// </summary>
@@ -304,6 +310,7 @@ namespace vMenuClient
         {
             TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         }
+        #endregion
 
         #region Spectate function
         /// <summary>
@@ -683,6 +690,7 @@ namespace vMenuClient
 
         #endregion
 
+        #region Permissions
         /// <summary>
         /// Checks if the specified permission is granted for this user.
         /// Also checks parent/inherited/wildcard permissions.
@@ -694,6 +702,109 @@ namespace vMenuClient
             // TODO: Write permissions check logic.
             return true;
         }
+        #endregion
+
+        #region Play Scenarios
+        /// <summary>
+        /// Play the specified scenario name.
+        /// If "forcestop" is specified, any currrently playing scenarios will be forcefully stopped.
+        /// </summary>
+        /// <param name="scenarioName"></param>
+        public void PlayScenario(string scenarioName)
+        {
+            // If there's currently no scenario playing, or the current scenario is not the same as the new scenario, then..
+            if (currentScenario == "" || currentScenario != scenarioName)
+            {
+                // Set the current scenario.
+                currentScenario = scenarioName;
+                // Clear all tasks to make sure the player is ready to play the scenario.
+                ClearPedTasks(PlayerPedId());
+
+                var canPlay = true;
+                // Check if the player CAN play a scenario... 
+                if (IsPedInAnyVehicle(PlayerPedId(), true))
+                {
+                    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
+                    canPlay = false;
+                }
+                if (IsPedRunning(PlayerPedId()))
+                {
+                    Notify.Alert("You can't start a scenario when you are running.", true, false);
+                    canPlay = false;
+                }
+                if (IsEntityDead(PlayerPedId()))
+                {
+                    Notify.Alert("You can't start a scenario when you are dead.", true, false);
+                    canPlay = false;
+                }
+                if (IsPlayerInCutscene(PlayerPedId()))
+                {
+                    Notify.Alert("You can't start a scenario when you are in a cutscene.", true, false);
+                    canPlay = false;
+                }
+                if (IsPedFalling(PlayerPedId()))
+                {
+                    Notify.Alert("You can't start a scenario when you are falling.", true, false);
+                    canPlay = false;
+                }
+                if (IsPedRagdoll(PlayerPedId()))
+                {
+                    Notify.Alert("You can't start a scenario when you are currently in a ragdoll state.", true, false);
+                    canPlay = false;
+                }
+                if (!IsPedOnFoot(PlayerPedId()))
+                {
+                    Notify.Alert("You must be on foot to start a scenario.", true, false);
+                    canPlay = false;
+                }
+                if (NetworkIsInSpectatorMode())
+                {
+                    Notify.Alert("You can't start a scenario when you are currently spectating.", true, false);
+                    canPlay = false;
+                }
+                if (GetEntitySpeed(PlayerPedId()) > 5.0f)
+                {
+                    Notify.Alert("You can't start a scenario when you are moving too fast.", true, false);
+                    canPlay = false;
+                }
+
+                if (canPlay)
+                {
+                    // If the scenario is a "sit" scenario, then the scenario needs to be played at a specific location.
+                    if (PedScenarios.PositionBasedScenarios.Contains(scenarioName))
+                    {
+                        // Get the offset-position from the player. (0.5m behind the player, and 0.5m below the player seems fine for most scenarios)
+                        var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, -0.5f, -0.5f);
+                        var heading = GetEntityHeading(PlayerPedId());
+                        // Play the scenario at the specified location.
+                        TaskStartScenarioAtPosition(PlayerPedId(), scenarioName, pos.X, pos.Y, pos.Z, heading, -1, true, false);
+                    }
+                    // If it's not a sit scenario (or maybe it is, but using the above native causes other
+                    // issues for some sit scenarios so those are not registered as "sit" scenarios), then play it at the current player's position.
+                    else
+                    {
+                        TaskStartScenarioInPlace(PlayerPedId(), scenarioName, 0, true);
+                    }
+                }
+            }
+            // If the new scenario is the same as the currently playing one, cancel the current scenario.
+            else
+            {
+                currentScenario = "";
+                ClearPedTasks(PlayerPedId());
+                ClearPedSecondaryTask(PlayerPedId());
+            }
+
+            // If the scenario name to play is called "forcestop" then clear the current scenario and force any tasks to be cleared.
+            if (scenarioName == "forcestop")
+            {
+                currentScenario = "";
+                ClearPedTasks(PlayerPedId());
+                ClearPedTasksImmediately(PlayerPedId());
+            }
+
+        }
+        #endregion
     }
 
 
