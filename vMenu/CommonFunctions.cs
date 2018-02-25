@@ -699,8 +699,28 @@ namespace vMenuClient
         /// <returns>True = allowed. False = not allowed.</returns>
         public bool IsAllowed(string permission)
         {
-            // TODO: Write permissions check logic.
-            return true;
+            // Get the permissions.
+            var permissions = MainMenu.Permissions;
+
+            // If the player has ALL permissions, then return true.
+            if (permissions.ContainsKey("vMenu_everything"))
+            {
+                if (permissions["vMenu_everything"])
+                {
+                    return true;
+                }
+            }
+
+            // If the requested permission exists, then return true/false depending on the value of the permission.
+            if (permissions.ContainsKey(permission))
+            {
+                return permissions[permission];
+            }
+            // If the permission does not exist, then return false.
+            else
+            {
+                return false;
+            }
         }
         #endregion
 

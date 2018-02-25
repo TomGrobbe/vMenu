@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using Newtonsoft.Json;
 
 namespace vMenuClient
 {
-    public class PlayerAppearance
+    public class SavedVehicles
     {
         // Variables
         private UIMenu menu;
@@ -20,9 +21,10 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Appearance")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Saved Vehicles")
             {
                 MouseEdgeEnabled = false
+
             };
             menu.MouseControlsEnabled = false;
         }
