@@ -29,6 +29,7 @@ namespace vMenuClient
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
+        public static SavedVehicles SavedVehiclesMenu { get; private set; }
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
         public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
         public static PlayerAppearance PlayerAppearanceMenu { get; private set; }
@@ -177,6 +178,14 @@ namespace vMenuClient
                     AddMenu(vehicleSpawner, vehicleSpawnerBtn);
                 }
 
+                // Add Saved Vehicles menu.
+                if (cf.IsAllowed("vMenu_menus_savedVehicles"))
+                {
+                    SavedVehiclesMenu = new SavedVehicles();
+                    UIMenu savedVehicles = SavedVehiclesMenu.GetMenu();
+                    UIMenuItem savedVehiclesBtn = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
+                    AddMenu(savedVehicles, savedVehiclesBtn);
+                }
                 // Add the player appearance menu.
                 if (cf.IsAllowed("playerAppearanceMenu"))
                 {
@@ -204,6 +213,14 @@ namespace vMenuClient
                     AddMenu(menu, button);
                 }
 
+                // Add the weapons menu.
+                if (cf.IsAllowed("vMenu_menus_weaponOptions"))
+                {
+                    WeaponOptionsMenu = new WeaponOptions();
+                    UIMenu menu = WeaponOptionsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.");
+                    AddMenu(menu, button);
+                }
                 // Add misc settings menu.
                 if (cf.IsAllowed("MiscSettingsMenu"))
                 {
