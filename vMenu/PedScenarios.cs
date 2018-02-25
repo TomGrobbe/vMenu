@@ -8,6 +8,27 @@ namespace vMenuClient
 {
     class PedScenarios
     {
+        public static List<string> PositionBasedScenarios = new List<string>()
+        {
+            "PROP_HUMAN_SEAT_ARMCHAIR",
+            "PROP_HUMAN_SEAT_BAR",
+            "PROP_HUMAN_SEAT_BENCH",
+            "PROP_HUMAN_SEAT_BUS_STOP_WAIT",
+            "PROP_HUMAN_SEAT_CHAIR",
+            "PROP_HUMAN_SEAT_CHAIR_UPRIGHT",
+            "PROP_HUMAN_SEAT_CHAIR_MP_PLAYER",
+            "PROP_HUMAN_SEAT_COMPUTER",
+            "PROP_HUMAN_SEAT_DECKCHAIR",
+            //"PROP_HUMAN_SEAT_DECKCHAIR_DRINK",
+            //"PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS",
+            //"PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS_PRISON",
+            "PROP_HUMAN_SEAT_STRIP_WATCH",
+            "PROP_HUMAN_SEAT_SUNLOUNGER",
+            "WORLD_HUMAN_SEAT_LEDGE",
+            "WORLD_HUMAN_SEAT_STEPS",
+            "WORLD_HUMAN_SEAT_WALL",
+        };
+
         /// <summary>
         /// All scenario names (readable version) linked to the actual scenario strings (code names).
         /// </summary>
@@ -34,7 +55,6 @@ namespace vMenuClient
             ["Golf Player"] = "WORLD_HUMAN_GOLF_PLAYER",
             ["Guard Patrol"] = "WORLD_HUMAN_GUARD_PATROL",
             ["Guard Stand"] = "WORLD_HUMAN_GUARD_STAND",
-            ["Guard Stand Army"] = "WORLD_HUMAN_GUARD_STAND_ARMY",
             ["Hamering"] = "WORLD_HUMAN_HAMMERING",
             ["Hang Out Street"] = "WORLD_HUMAN_HANG_OUT_STREET",
             ["Hiker Standing"] = "WORLD_HUMAN_HIKER_STANDING",
@@ -52,12 +72,9 @@ namespace vMenuClient
             ["Prostitue High Class"] = "WORLD_HUMAN_PROSTITUTE_HIGH_CLASS",
             ["Prostitue Low Class"] = "WORLD_HUMAN_PROSTITUTE_LOW_CLASS",
             ["Pushups"] = "WORLD_HUMAN_PUSH_UPS",
-            ["Seat Ledge"] = "WORLD_HUMAN_SEAT_LEDGE",
-            ["Seat Ledge Eating"] = "WORLD_HUMAN_SEAT_LEDGE_EATING",
-            ["Seat Steps"] = "WORLD_HUMAN_SEAT_STEPS",
-            ["Seat Wall"] = "WORLD_HUMAN_SEAT_WALL",
-            ["Seat Wall Eating"] = "WORLD_HUMAN_SEAT_WALL_EATING",
-            ["Seat Wall Tablet"] = "WORLD_HUMAN_SEAT_WALL_TABLET",
+            ["Seat Ledge"] = "WORLD_HUMAN_SEAT_LEDGE", //
+            ["Seat Steps"] = "WORLD_HUMAN_SEAT_STEPS", //
+            ["Seat Wall"] = "WORLD_HUMAN_SEAT_WALL", // 
             ["Security Shine Torch"] = "WORLD_HUMAN_SECURITY_SHINE_TORCH",
             ["Situps"] = "WORLD_HUMAN_SIT_UPS",
             ["Smoking"] = "WORLD_HUMAN_SMOKING",
@@ -72,8 +89,6 @@ namespace vMenuClient
             ["Stupor"] = "WORLD_HUMAN_STUPOR",
             ["Sunbathe"] = "WORLD_HUMAN_SUNBATHE",
             ["Sunbathe Back"] = "WORLD_HUMAN_SUNBATHE_BACK",
-            ["Superhero"] = "WORLD_HUMAN_SUPERHERO",
-            ["Swimming"] = "WORLD_HUMAN_SWIMMING",
             ["Tennis Player"] = "WORLD_HUMAN_TENNIS_PLAYER",
             ["Tourist Map"] = "WORLD_HUMAN_TOURIST_MAP",
             ["Tourist Mobile"] = "WORLD_HUMAN_TOURIST_MOBILE",
@@ -89,39 +104,27 @@ namespace vMenuClient
             ["Muscle Chin Ups Army"] = "PROP_HUMAN_MUSCLE_CHIN_UPS_ARMY",
             ["Muscle Chin Ups Prison"] = "PROP_HUMAN_MUSCLE_CHIN_UPS_PRISON",
             ["Parking Meter"] = "PROP_HUMAN_PARKING_METER",
-            ["Seat Armchair"] = "PROP_HUMAN_SEAT_ARMCHAIR",
-            ["Seat Bar"] = "PROP_HUMAN_SEAT_BAR",
-            ["Seat Bench"] = "PROP_HUMAN_SEAT_BENCH",
-            ["Seat Bench Drink"] = "PROP_HUMAN_SEAT_BENCH_DRINK",
-            ["Seat Bench Drink Beer"] = "PROP_HUMAN_SEAT_BENCH_DRINK_BEER",
-            ["Seat Bench Food"] = "PROP_HUMAN_SEAT_BENCH_FOOD",
-            ["Seat Bus Stop Wait"] = "PROP_HUMAN_SEAT_BUS_STOP_WAIT",
-            ["Seat Chair"] = "PROP_HUMAN_SEAT_CHAIR",
-            ["Seat Chair Drink"] = "PROP_HUMAN_SEAT_CHAIR_DRINK",
-            ["Seat Chair Drink Beer"] = "PROP_HUMAN_SEAT_CHAIR_DRINK_BEER",
-            ["Seat Chair Food"] = "PROP_HUMAN_SEAT_CHAIR_FOOD",
-            ["Seat Chair Upright"] = "PROP_HUMAN_SEAT_CHAIR_UPRIGHT",
-            ["Seat MP Player"] = "PROP_HUMAN_SEAT_CHAIR_MP_PLAYER",
-            ["Seat Computer"] = "PROP_HUMAN_SEAT_COMPUTER",
-            ["Seat Deckchair"] = "PROP_HUMAN_SEAT_DECKCHAIR",
-            ["Seat Deckchair Drink"] = "PROP_HUMAN_SEAT_DECKCHAIR_DRINK",
-            ["Seat Muscle Bench Press"] = "PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS",
-            ["Seat Muscle Bench Press Prison"] = "PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS_PRISON",
-            ["Seat Sewing"] = "PROP_HUMAN_SEAT_SEWING",
-            ["Seat Stripclub Watch"] = "PROP_HUMAN_SEAT_STRIP_WATCH",
-            ["Seat Sunlounger"] = "PROP_HUMAN_SEAT_SUNLOUNGER",
+            ["Seat Armchair"] = "PROP_HUMAN_SEAT_ARMCHAIR", //
+            ["Seat Bar"] = "PROP_HUMAN_SEAT_BAR", //
+            ["Seat Bench"] = "PROP_HUMAN_SEAT_BENCH", //
+            ["Seat Bus Stop Wait"] = "PROP_HUMAN_SEAT_BUS_STOP_WAIT", //
+            ["Seat Chair"] = "PROP_HUMAN_SEAT_CHAIR", //
+            ["Seat Chair Upright"] = "PROP_HUMAN_SEAT_CHAIR_UPRIGHT", //
+            ["Seat MP Player"] = "PROP_HUMAN_SEAT_CHAIR_MP_PLAYER", //
+            ["Seat Computer"] = "PROP_HUMAN_SEAT_COMPUTER", //
+            ["Seat Deckchair"] = "PROP_HUMAN_SEAT_DECKCHAIR", // 
+            ["Seat Deckchair Drink"] = "PROP_HUMAN_SEAT_DECKCHAIR_DRINK", // 
+            ["Seat Muscle Bench Press"] = "PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS", // 
+            ["Seat Muscle Bench Press Prison"] = "PROP_HUMAN_SEAT_MUSCLE_BENCH_PRESS_PRISON", //
+            ["Seat Stripclub Watch"] = "PROP_HUMAN_SEAT_STRIP_WATCH", //
+            ["Seat Sunlounger"] = "PROP_HUMAN_SEAT_SUNLOUNGER", //
             ["Stand Impatient"] = "PROP_HUMAN_STAND_IMPATIENT",
-            ["Cower"] = "CODE_HUMAN_COWER",
             ["Cross Road Wait"] = "CODE_HUMAN_CROSS_ROAD_WAIT",
-            ["Park Car"] = "CODE_HUMAN_PARK_CAR",
             ["Medic Kneel"] = "CODE_HUMAN_MEDIC_KNEEL",
             ["Medic Tend To Dead"] = "CODE_HUMAN_MEDIC_TEND_TO_DEAD",
             ["Medic Time Of Death"] = "CODE_HUMAN_MEDIC_TIME_OF_DEATH",
             ["Police Crowd Control"] = "CODE_HUMAN_POLICE_CROWD_CONTROL",
             ["Police Investigate"] = "CODE_HUMAN_POLICE_INVESTIGATE",
-            ["Stand Cower"] = "CODE_HUMAN_STAND_COWER",
-            ["Ear To Text"] = "EAR_TO_TEXT",
-            ["Ear To Text Flat"] = "EAR_TO_TEXT_FAT",
         };
 
         /// <summary>
@@ -150,7 +153,6 @@ namespace vMenuClient
             "Golf Player",
             "Guard Patrol",
             "Guard Stand",
-            "Guard Stand Army",
             "Hamering",
             "Hang Out Street",
             "Hiker Standing",
@@ -169,11 +171,8 @@ namespace vMenuClient
             "Prostitue Low Class",
             "Pushups",
             "Seat Ledge",
-            "Seat Ledge Eating",
             "Seat Steps",
             "Seat Wall",
-            "Seat Wall Eating",
-            "Seat Wall Tablet",
             "Security Shine Torch",
             "Situps",
             "Smoking",
@@ -188,8 +187,6 @@ namespace vMenuClient
             "Stupor",
             "Sunbathe",
             "Sunbathe Back",
-            "Superhero",
-            "Swimming",
             "Tennis Player",
             "Tourist Map",
             "Tourist Mobile",
@@ -208,14 +205,8 @@ namespace vMenuClient
             "Seat Armchair",
             "Seat Bar",
             "Seat Bench",
-            "Seat Bench Drink",
-            "Seat Bench Drink Beer",
-            "Seat Bench Food",
             "Seat Bus Stop Wait",
             "Seat Chair",
-            "Seat Chair Drink",
-            "Seat Chair Drink Beer",
-            "Seat Chair Food",
             "Seat Chair Upright",
             "Seat MP Player",
             "Seat Computer",
@@ -223,21 +214,15 @@ namespace vMenuClient
             "Seat Deckchair Drink",
             "Seat Muscle Bench Press",
             "Seat Muscle Bench Press Prison",
-            "Seat Sewing",
             "Seat Stripclub Watch",
             "Seat Sunlounger",
             "Stand Impatient",
-            "Cower",
             "Cross Road Wait",
-            "Park Car",
             "Medic Kneel",
             "Medic Tend To Dead",
             "Medic Time Of Death",
             "Police Crowd Control",
             "Police Investigate",
-            "Stand Cower",
-            "Ear To Text",
-            "Ear To Text Flat",
         };
     }
 }

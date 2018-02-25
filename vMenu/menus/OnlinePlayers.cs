@@ -55,16 +55,16 @@ namespace vMenuClient
                     {
                         // Create the player object.
                         Player player = new Player(int.Parse(item.Description.Substring(1, 2).ToString()));
-                        //Notify.Custom(int.Parse(item.Description.Substring(1, 2).ToString()).ToString());
 
                         // Create the menu for the player.
-                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")");
-                        PlayerMenu.MouseControlsEnabled = false;
+                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")")
+                        {
+                            MouseControlsEnabled = false,
+                            ControlDisablingEnabled = false,
+                            MouseEdgeEnabled = false,
+                        };
                         PlayerMenu.SetMenuWidthOffset(50);
 
-                        //PlayerMenu.SetBannerType(MainMenu.BannerSprite);
-                        PlayerMenu.ControlDisablingEnabled = false;
-                        PlayerMenu.MouseEdgeEnabled = false;
 
                         // Create all player options buttons.
                         UIMenuItem teleportBtn = new UIMenuItem("Teleport to Player", "Teleport to this player.");
@@ -163,31 +163,27 @@ namespace vMenuClient
                             // Kick player button is pressed.
                             else if (item2 == kickPlayerBtn)
                             {
-                                //TriggerServerEvent("vMenu:KickPlayer", GetPlayerServerId(playerIndex));
+                                // Close the menu.
+                                PlayerMenu.GoBack();
+                                // Kick the player.
+                                cf.KickPlayer(player, true);
 
-                                //Notify.Error("Todo: trigger server event using another class.");
-                                cf.KickPlayer(player);
-                                PlayerMenu.Visible = false;
-
+                                // Update the player list.
                                 UpdatePlayerlist();
 
+                                // Refresh the index & update scaleform.
                                 menu.RefreshIndex();
-
-                                menu.Visible = true;
+                                menu.UpdateScaleform();
                             }
                         };
-
-                        PlayerMenu.OnMenuClose += (sender3) =>
+                        // Reopen the playerlist menu when a player specific menu is closed.
+                        PlayerMenu.OnMenuClose += (sender2) =>
                         {
-                            PlayerMenu.Visible = false;
                             menu.Visible = true;
                         };
                     }
                 };
             };
-
-
-            //MainMenu._mp.Add(menu);
 
         }
 

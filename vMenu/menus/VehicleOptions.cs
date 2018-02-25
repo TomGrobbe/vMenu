@@ -147,8 +147,6 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            #endregion
-
             MainMenu.Mp.Add(vehicleModMenu);
             MainMenu.Mp.Add(vehicleDoorsMenu);
             MainMenu.Mp.Add(vehicleWindowsMenu);
@@ -156,6 +154,7 @@ namespace vMenuClient
             MainMenu.Mp.Add(vehicleLiveries);
             MainMenu.Mp.Add(vehicleColors);
             MainMenu.Mp.Add(deleteConfirm);
+            #endregion
 
             #region Add items to the menu.
             // Add everything to the menu.
@@ -858,6 +857,7 @@ namespace vMenuClient
                     // Check if the vehicle exists, is still drivable/alive and it's actually a vehicle.
                     if (DoesEntityExist(veh) && IsEntityAVehicle(veh) && !IsEntityDead(veh))
                     {
+                        #region initial setup
                         // Set the modkit so we can modify the car.
                         SetVehicleModKit(veh, 0);
 
@@ -903,11 +903,13 @@ namespace vMenuClient
                             // Add the list item to the menu.
                             vehicleModMenu.AddItem(modTypeListItem);
                         }
+                        #endregion
 
+                        #region more variables and setup
                         veh = cf.GetVehicle();
                         // Create the wheel types list & listitem and add it to the menu.
                         List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
-                        UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle.");
+                        UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle. ~r~Important:~w~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
                         vehicleModMenu.AddItem(vehicleWheelType);
 
                         // Create the checkboxes for some options.
@@ -921,7 +923,6 @@ namespace vMenuClient
                         vehicleModMenu.AddItem(xenonHeadlights);
                         vehicleModMenu.AddItem(turbo);
                         vehicleModMenu.AddItem(bulletProofTires);
-
                         // Create a list of tire smoke options.
                         List<dynamic> tireSmokes = new List<dynamic>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                         Dictionary<String, int[]> tireSmokeColors = new Dictionary<string, int[]>()
@@ -977,7 +978,8 @@ namespace vMenuClient
                         }
                         UIMenuListItem windowTint = new UIMenuListItem("Window Tint", windowTints, currentTint, "Apply tint to your windows.");
                         vehicleModMenu.AddItem(windowTint);
-
+                        #endregion
+                        #region Checkbox Changes
                         // Handle checkbox changes.
                         vehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                         {
@@ -1036,15 +1038,16 @@ namespace vMenuClient
                                 }
                             }
                         };
-
+                        #endregion
                         veh = cf.GetVehicle();
-
+                        #region List Changes
                         // Handle list selections
                         vehicleModMenu.OnListChange += (sender2, item2, index2) =>
                         {
+                            #region handle the dynamic (vehicle-specific) mods
                             veh = cf.GetVehicle();
                             // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
-                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 9)
+                            if (sender2.CurrentSelection < sender2.MenuItems.Count - 8)
                             {
                                 SetVehicleModKit(veh, 0);
 
@@ -1067,9 +1070,11 @@ namespace vMenuClient
 
                                 SetVehicleMod(veh, modType, selectedUpgrade, customWheels);
                             }
+
+                            #endregion
                             // If it was not one of the lists above, then it was one of the manual lists/options selected, 
                             // either: vehicle Wheel Type, tire smoke color, or window tint:
-
+                            #region Handle the items available on all vehicles.
                             // Wheel types
                             else if (item2 == vehicleWheelType)
                             {
@@ -1125,11 +1130,88 @@ namespace vMenuClient
                                         break;
                                 }
                             }
+                            #endregion
                         };
+
+                        #endregion
                     }
                     // Refresh Index and update the scaleform to prevent weird broken menus.
                     vehicleModMenu.RefreshIndex();
                     vehicleModMenu.UpdateScaleform();
+                }
+            };
+            #endregion
+
+            #region Vehicle Components Submenu
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                // If the components menu is opened.
+                if (item == componentsMenuBtn)
+                {
+                    // Empty the menu in case there were leftover buttons from another vehicle.
+                    if (vehicleComponents.MenuItems.Count > 0)
+                    {
+                        vehicleComponents.MenuItems.Clear();
+                        vehicleComponents.RefreshIndex();
+                        vehicleComponents.UpdateScaleform();
+                    }
+
+                    // Get the vehicle.
+                    int veh = cf.GetVehicle();
+                    // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
+                    if (DoesEntityExist(veh) && !IsEntityDead(veh) && IsEntityAVehicle(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                    {
+
+                        // Create a vehicle.
+                        Vehicle vehicle = new Vehicle(veh);
+
+                        List<int> extraIds = new List<int>();
+                        // Loop through all possible extra ID's (AFAIK: 0-14).
+                        for (var extra = 0; extra < 14; extra++)
+                        {
+                            // If this extra exists...
+                            if (vehicle.ExtraExists(extra))
+                            {
+                                // Add it's ID to the list.
+                                extraIds.Add(extra);
+                                // Create a checkbox for it.
+                                UIMenuCheckboxItem extraCheckbox = new UIMenuCheckboxItem($"Extra #{extra.ToString()}", vehicle.IsExtraOn(extra), extra.ToString());
+                                // Add the checkbox to the menu.
+                                vehicleComponents.AddItem(extraCheckbox);
+                            }
+                        }
+
+                        // When a checkbox is checked/unchecked, get the selected checkbox item index and use that to get the component ID from the list.
+                        vehicleComponents.OnCheckboxChange += (sender2, item2, _checked) =>
+                        {
+                            // Then toggle that extra.
+                            vehicle.ToggleExtra(extraIds[sender2.CurrentSelection], _checked);
+                        };
+
+                        if (extraIds.Count > 0)
+                        {
+                            UIMenuItem backBtn = new UIMenuItem("Go Back", "Go back to the Vehicle Options menu.");
+                            vehicleComponents.AddItem(backBtn);
+                            vehicleComponents.OnItemSelect += (sender3, item3, index3) =>
+                            {
+                                vehicleComponents.GoBack();
+                            };
+                        }
+                        else
+                        {
+                            UIMenuItem backBtn = new UIMenuItem("No extras available :(", "Go back to the Vehicle Options menu.");
+                            backBtn.SetRightLabel("Go Back");
+                            vehicleComponents.AddItem(backBtn);
+                            vehicleComponents.OnItemSelect += (sender3, item3, index3) =>
+                            {
+                                vehicleComponents.GoBack();
+                            };
+                        }
+                        // And update the submenu to prevent weird glitches.
+                        vehicleComponents.RefreshIndex();
+                        vehicleComponents.UpdateScaleform();
+
+                    }
                 }
             };
             #endregion

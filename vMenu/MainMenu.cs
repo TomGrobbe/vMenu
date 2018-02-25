@@ -307,6 +307,7 @@ namespace vMenuClient
                     // Disable Gamepad/Controller Specific controls:
                     if (Game.CurrentInputMode == InputMode.GamePad)
                     {
+                        Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
                         // when in a vehicle.
                         if (IsPedInAnyVehicle(PlayerPedId(), false))
                         {
