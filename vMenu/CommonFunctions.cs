@@ -17,6 +17,8 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
         private int previousVehicle = -1;
+        private StorageManager sm = new StorageManager();
+
         #endregion
 
         #region Constructor
@@ -601,6 +603,87 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Save Vehicle
+        public async void SaveVehicle()
+        {
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                var veh = GetVehicle();
+                if (DoesEntityExist(veh) && (IsEntityAVehicle(veh)))
+                {
+                    //var model = GetVehicleModel(veh);
+                    var model = (uint)GetEntityModel(veh);
+                    var name = GetLabelText(GetDisplayNameFromVehicleModel(model));
+                    Dictionary<string, string> dict = new Dictionary<string, string>();
+                    dict.Add("name", name);
+                    dict.Add("model", model.ToString() ?? "");
+
+                    var saveName = await GetUserInputAsync("Enter a save name", "", 15);
+                    if (saveName != "NULL")
+                    {
+                        if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                        {
+                            Notify.Success($"Vehicle {saveName} saved.");
+                        }
+                        else
+                        {
+                            Notify.Error("Saving failed because this save name is already in use.");
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error("Saving failed because you did not enter a valid save name.");
+                    }
+                }
+                else
+                {
+                    Notify.Error("You need to be in a vehicle.");
+                }
+            }
+            else
+            {
+                Notify.Error("You need to be in a vehicle.");
+            }
+        }
+        #endregion
+
+        #region Loading Saved Vehicle
+        public Dictionary<string, string> GetSavedVehicleData(string saveName)
+        {
+            var dict = sm.GetSavedDictionary(saveName);
+            return dict;
+        }
+
+        public Dictionary<string, Dictionary<string, string>> GetSavedVehicleList()
+        {
+            var savedVehicleNames = new List<string>();
+            var findHandle = StartFindKvp("veh_");
+            while (true)
+            {
+                var vehString = FindKvp(findHandle);
+                if (vehString != "" && vehString != null && vehString != "NULL")
+                {
+                    savedVehicleNames.Add(vehString);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
+            foreach (var saveName in savedVehicleNames)
+            {
+                vehiclesList.Add(saveName, sm.GetSavedDictionary(saveName));
+            }
+            return vehiclesList;
+
+        }
+
+        #endregion
+
+
+
         #region Load Model
         /// <summary>
         /// Check and load a model.
@@ -663,6 +746,10 @@ namespace vMenuClient
                 else if (MainMenu.VehicleSpawnerMenu.GetMenu().Visible)
                 {
                     openMenu = MainMenu.VehicleSpawnerMenu.GetMenu();
+                }
+                else if (MainMenu.SavedVehiclesMenu.GetMenu().Visible)
+                {
+                    openMenu = MainMenu.SavedVehiclesMenu.GetMenu();
                 }
 
                 // Then close all menus.
@@ -927,6 +1014,59 @@ namespace vMenuClient
                 ClearPedTasksImmediately(PlayerPedId());
             }
 
+        }
+        #endregion
+
+        #region Data parsing functions
+        /// <summary>
+        /// Converts a dictionary (string, string) into a json string.
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
+        public string DictionaryToJson(Dictionary<string, string> dict)
+        {
+            var entries = dict.Select(d =>
+                string.Format("\"{0}\": \"{1}\"", d.Key, string.Join(",", d.Value)));
+            return "{" + string.Join(",", entries) + "}";
+        }
+
+        /// <summary>
+        /// Converts a simple json string (only containing (string) key : (string) value).
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> JsonToDictionary(string json)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            var entries = json.Split(',');
+            foreach (var entry in entries)
+            {
+                //Notify.Custom(entry.ToString());
+                var items = entry.Split(':');
+                var key = "";
+                var counter = 1;
+                foreach (var item in items)
+                {
+                    counter++;
+                    if (counter % 2 == 0)
+                    {
+                        key = item.Split('"')[1].ToString();
+                    }
+                    else
+                    {
+                        var val = item.Split('"')[1].ToString();
+                        dict.Add(key, item.Split('"')[1].ToString());
+                        counter = 1;
+                    }
+                }
+                //foreach (KeyValuePair<string, string> t in dict)
+                //{
+                //    Notify.Custom($"Key: ~r~{t.Key}");
+                //    Notify.Custom($"value: ~g~{t.Value}");
+                //}
+            }
+
+            return dict;
         }
         #endregion
     }

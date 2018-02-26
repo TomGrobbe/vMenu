@@ -39,6 +39,7 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
+        //public StorageManager Sm { get; } = new StorageManager();
 
         public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
@@ -110,6 +111,9 @@ namespace vMenuClient
                 }
             }
             #endregion
+
+
+            //Sm.SaveDictionary("testpermissions", Permissions);
 
             setupComplete = true;
         }
