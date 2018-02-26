@@ -11,11 +11,15 @@ namespace vMenuClient
 {
     public class CommonFunctions : BaseScript
     {
+        #region Variables
         // Variables
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
+        private int previousVehicle = -1;
+        #endregion
 
+        #region Constructor
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -24,6 +28,7 @@ namespace vMenuClient
             Tick += OnTick;
             Tick += ManageVehicleOptionsMenu;
         }
+        #endregion
 
         #region OnTick Vehicle Options
         private async Task ManageVehicleOptionsMenu()
@@ -101,6 +106,64 @@ namespace vMenuClient
                     await Delay(0);
                 }
             }
+        }
+        #endregion
+
+        #region Get Localized Label Text
+        /// <summary>
+        /// Get the localized name from a text label (for classes that don't have BaseScript)
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        public string GetLocalizedName(string label)
+        {
+            return GetLabelText(label);
+        }
+        #endregion
+
+        #region Get Localized Vehicle Display Name
+        /// <summary>
+        /// Get the localized model name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string GetVehDisplayNameFromModel(string name)
+        {
+            return GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
+        }
+        #endregion
+
+        #region GetHashKey for other classes
+        /// <summary>
+        /// Get the hash key for the specified string.
+        /// </summary>
+        /// <param name="input">String to convert into a hash.</param>
+        /// <returns>The has value of the input string.</returns>
+        public uint GetHash(string input)
+        {
+            return (uint)GetHashKey(input);
+        }
+        #endregion
+
+        #region DoesModelExist
+        /// <summary>
+        /// Does this model exist?
+        /// </summary>
+        /// <param name="modelName">The model name</param>
+        /// <returns></returns>
+        public bool DoesModelExist(string modelName)
+        {
+            return IsModelInCdimage((uint)GetHashKey(modelName));
+        }
+
+        /// <summary>
+        /// Does this model exist?
+        /// </summary>
+        /// <param name="modelHash">The model hash</param>
+        /// <returns></returns>
+        public bool DoesModelExist(uint modelHash)
+        {
+            return IsModelInCdimage(modelHash);
         }
         #endregion
 
@@ -430,7 +493,7 @@ namespace vMenuClient
         /// If no name is specified or "custom" was passed, the user will be asked to input the vehicle name to spawn.
         /// </summary>
         /// <param name="vehicleName">The name of the vehicle to spawn.</param>
-        public async void SpawnVehicle(string vehicleName = "custom")
+        public async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
         {
             if (vehicleName == "custom")
             {
@@ -442,7 +505,7 @@ namespace vMenuClient
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
                     //await LoadModel(model);
-                    SpawnVehicle(model, false);
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
 
                 }
                 // Result was invalid.
@@ -454,9 +517,10 @@ namespace vMenuClient
             // Spawn the specified vehicle.
             else
             {
-                SpawnVehicle((uint)GetHashKey(vehicleName), false);
+                SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
             }
         }
+
 
 
         /// <summary>
@@ -464,7 +528,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="vehicleHash">Hash of the vehicle model to spawn.</param>
         /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
-        public async void SpawnVehicle(uint vehicleHash, bool skipLoad = false)
+        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false)
         {
             if (!skipLoad)
             {
@@ -472,28 +536,68 @@ namespace vMenuClient
                 if (!successFull)
                 {
                     // Vehicle model is invalid.
+                    Notify.Error("This is not a valid model.");
                     return;
                 }
             }
 
-            //var pos = GetEntityCoords(PlayerPedId(), true);
-            var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 1f);
-            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z, GetEntityHeading(PlayerPedId()) + 90f, true, true);
+            // Get the heading & position for where the vehicle should be spawned.
+            Vector3 pos = (spawnInside) ? GetEntityCoords(PlayerPedId(), true) : GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
+            var heading = GetEntityHeading(PlayerPedId()) + (spawnInside ? 0f : 90f);
 
+            // Create the vehicle.
+            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z + 1f, heading, true, true);
+
+            // Create a new vehicle object for this vehicle and remove the need to hotwire the car.
             Vehicle vehicle = new Vehicle(veh)
             {
-                NeedsToBeHotwired = false,
-                IsEngineRunning = true
+                NeedsToBeHotwired = false
             };
 
-            if (MainMenu.VehicleSpawnerMenu.SpawnInVehicle)
+            // If spawnInside is true
+            if (spawnInside)
             {
+                // Set the vehicle's engine to be running.
+                vehicle.IsEngineRunning = true;
+                // Set the ped into the vehicle.
                 new Ped(PlayerPedId()).SetIntoVehicle(vehicle, VehicleSeat.Driver);
-                if (vehicle.ClassType == VehicleClass.Helicopters)
+                // If the vehicle is a helicopter and the player is in the air, set the blades to be full speed.
+                if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(PlayerPedId()) > 10.0f)
                 {
                     SetHeliBladesFullSpeed(vehicle.Handle);
                 }
+                // If it's not a helicopter or the player is not in the air, set the vehicle on the ground properly.
+                else
+                {
+                    SetVehicleOnGroundProperly(vehicle.Handle);
+                }
             }
+
+            // If the previous vehicle exists...
+            if (DoesEntityExist(previousVehicle))
+            {
+                // And it's actually a vehicle (rather than another random entity type)
+                if (IsEntityAVehicle(previousVehicle))
+                {
+                    // If the previous vehicle should be deleted:
+                    if (replacePrevious)
+                    {
+                        // Delete it.
+                        SetEntityAsMissionEntity(previousVehicle, false, false);
+                        DeleteVehicle(ref previousVehicle);
+                    }
+                    // Otherwise
+                    else
+                    {
+                        // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
+                        SetEntityAsMissionEntity(previousVehicle, false, false);
+                        SetVehicleAsNoLongerNeeded(ref previousVehicle);
+                    }
+                }
+            }
+
+            // Set the previous vehicle to the new vehicle.
+            previousVehicle = vehicle.Handle;
         }
         #endregion
 
@@ -826,7 +930,5 @@ namespace vMenuClient
         }
         #endregion
     }
-
-
 
 }

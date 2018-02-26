@@ -79,7 +79,7 @@ namespace vMenuClient
                     // Manage Super jump.
                     if (MainMenu.PlayerOptionsMenu.PlayerSuperJump)
                     {
-                        SetSuperJumpThisFrame(PlayerId());
+                        //SetSuperJumpThisFrame(PlayerId());
                     }
 
                     // Manage PlayerNoRagdoll
