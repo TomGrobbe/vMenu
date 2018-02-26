@@ -168,7 +168,6 @@ namespace vMenuClient
                 // Create all (sub)menus.
 
                 // Add the online players menu.
-                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_onlinePlayers"])
                 if (cf.IsAllowed("vMenu_menus_onlinePlayers"))
                 {
                     OnlinePlayersMenu = new OnlinePlayers();
@@ -187,7 +186,6 @@ namespace vMenuClient
                 }
 
                 // Add the player options menu.
-                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_playerOptions"])
                 if (cf.IsAllowed("vMenu_menus_playerOptions"))
                 {
                     PlayerOptionsMenu = new PlayerOptions();
@@ -197,7 +195,6 @@ namespace vMenuClient
                 }
 
                 // Add the vehicle options Menu.
-                //if (Permissions["vMenu_menus_*"] || Permissions["vMenu_menus_vehicleOptions"])
                 if (cf.IsAllowed("vMenu_menus_vehicleOptions"))
                 {
                     VehicleOptionsMenu = new VehicleOptions();
@@ -206,8 +203,10 @@ namespace vMenuClient
                     AddMenu(vehicleOptions, vehicleOptionsBtn);
                 }
 
+
+
+                var vl = new Vehicles().VehicleClasses;
                 // Add the vehicle spawner menu.
-                //if (cf.IsAllowed("vehicleSpawnMenu"))
                 if (cf.IsAllowed("vMenu_menus_vehicleSpawner"))
                 {
                     VehicleSpawnerMenu = new VehicleSpawner();
@@ -226,7 +225,6 @@ namespace vMenuClient
                 }
 
                 // Add the player appearance menu.
-                //if (cf.IsAllowed("playerAppearanceMenu"))
                 if (cf.IsAllowed("vMenu_menus_playerAppearance"))
                 {
                     PlayerAppearanceMenu = new PlayerAppearance();
@@ -236,7 +234,6 @@ namespace vMenuClient
                 }
 
                 // Add the time options menu.
-                //if (cf.IsAllowed("TimeOptionsMenu"))
                 if (cf.IsAllowed("vMenu_menus_timeOptions"))
                 {
                     TimeOptionsMenu = new TimeOptions();
@@ -246,7 +243,6 @@ namespace vMenuClient
                 }
 
                 // Add the weather options menu.
-                //if (cf.IsAllowed("WeatherOptionsMenu"))
                 if (cf.IsAllowed("vMenu_menus_weatherOptions"))
                 {
                     WeatherOptionsMenu = new WeatherOptions();
@@ -265,7 +261,6 @@ namespace vMenuClient
                 }
 
                 // Add misc settings menu.
-                //if (cf.IsAllowed("MiscSettingsMenu"))
                 if (cf.IsAllowed("vMenu_menus_miscSettings"))
                 {
                     MiscSettingsMenu = new MiscSettings();
@@ -275,7 +270,6 @@ namespace vMenuClient
                 }
 
                 // Add Voice Chat Menu.
-                //if (cf.IsAllowed("VoiceChatSettingsMenu"))
                 if (cf.IsAllowed("vMenu_menus_voiceChat"))
                 {
                     VoiceChatSettingsMenu = new VoiceChat();
@@ -294,13 +288,10 @@ namespace vMenuClient
                 Mp.RefreshIndex();
                 Menu.UpdateScaleform();
 
-                // Set the banner globally.
-                //Mp.SetBannerType(BannerSprite);
                 // Globally disable the native ui controls disabling.
                 Mp.ControlDisablingEnabled = false;
                 // Globally disable the "mouse edge" feature.
                 Mp.MouseEdgeEnabled = false;
-                //Mp.WidthOffset = 50;
             }
             #endregion
 
@@ -313,7 +304,7 @@ namespace vMenuClient
                 if (!DontOpenMenus)
                 {
                     // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
-                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && Game.IsControlJustPressed(0, Control.InteractionMenu))
+                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && (Game.IsControlJustPressed(0, Control.InteractionMenu) || Game.IsDisabledControlJustPressed(0, Control.InteractionMenu)))
                     {
                         // If any menu is already open: close all menus.
                         if (Mp.IsAnyMenuOpen())
@@ -405,6 +396,9 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, Control.VehicleFlyAttack);
                     Game.DisableControlThisFrame(0, Control.VehiclePassengerAttack);
                     Game.DisableControlThisFrame(0, Control.Aim);
+
+                    // Menu toggle button.
+                    Game.DisableControlThisFrame(0, Control.InteractionMenu);
 
                     // When in a vehicle
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
