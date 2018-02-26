@@ -47,9 +47,8 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options")//, MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options")
             {
-                //ScaleWithSafezone = false,
                 MouseEdgeEnabled = false
             };
 
