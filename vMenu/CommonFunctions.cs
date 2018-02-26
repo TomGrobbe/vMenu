@@ -11,11 +11,14 @@ namespace vMenuClient
 {
     public class CommonFunctions : BaseScript
     {
+        #region Variables
         // Variables
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
+        #endregion
 
+        #region Constructor
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -24,6 +27,7 @@ namespace vMenuClient
             Tick += OnTick;
             Tick += ManageVehicleOptionsMenu;
         }
+        #endregion
 
         #region OnTick Vehicle Options
         private async Task ManageVehicleOptionsMenu()
@@ -101,6 +105,64 @@ namespace vMenuClient
                     await Delay(0);
                 }
             }
+        }
+        #endregion
+
+        #region Get Localized Label Text
+        /// <summary>
+        /// Get the localized name from a text label (for classes that don't have BaseScript)
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        public string GetLocalizedName(string label)
+        {
+            return GetLabelText(label);
+        }
+        #endregion
+
+        #region Get Localized Vehicle Display Name
+        /// <summary>
+        /// Get the localized model name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string GetVehDisplayNameFromModel(string name)
+        {
+            return GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
+        }
+        #endregion
+
+        #region GetHashKey for other classes
+        /// <summary>
+        /// Get the hash key for the specified string.
+        /// </summary>
+        /// <param name="input">String to convert into a hash.</param>
+        /// <returns>The has value of the input string.</returns>
+        public uint GetHash(string input)
+        {
+            return (uint)GetHashKey(input);
+        }
+        #endregion
+
+        #region DoesModelExist
+        /// <summary>
+        /// Does this model exist?
+        /// </summary>
+        /// <param name="modelName">The model name</param>
+        /// <returns></returns>
+        public bool DoesModelExist(string modelName)
+        {
+            return IsModelInCdimage((uint)GetHashKey(modelName));
+        }
+
+        /// <summary>
+        /// Does this model exist?
+        /// </summary>
+        /// <param name="modelHash">The model hash</param>
+        /// <returns></returns>
+        public bool DoesModelExist(uint modelHash)
+        {
+            return IsModelInCdimage(modelHash);
         }
         #endregion
 
@@ -826,7 +888,5 @@ namespace vMenuClient
         }
         #endregion
     }
-
-
 
 }
