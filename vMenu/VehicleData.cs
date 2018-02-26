@@ -8,8 +8,11 @@ namespace vMenuClient
 {
     public class VehicleData
     {
+
+        #region Vehicle Colors
+        #region Metallic and classic colors
         /// <summary>
-        /// All Metallic vehicle colors.
+        /// All Metallic vehicle colors (and classic, because those are the same).
         /// </summary>
         public Dictionary<string, int> MetallicColors = new Dictionary<string, int>()
         {
@@ -85,7 +88,8 @@ namespace vMenuClient
             ["Purple"] = 145,
             ["Lava Red"] = 150,
         };
-
+        #endregion
+        #region Worn colors
         /// <summary>
         /// All Worn vehicle colors.
         /// </summary>
@@ -117,7 +121,8 @@ namespace vMenuClient
             ["White"] = 132,
             ["Olive Army Green"] = 133,
         };
-
+        #endregion
+        #region Chrome
         /// <summary>
         /// Chrome color.
         /// </summary>
@@ -125,8 +130,8 @@ namespace vMenuClient
         {
             ["Chrome"] = 120
         };
-
-
+        #endregion
+        #region Matte colors
         /// <summary>
         /// All Matte vehicle colors.
         /// </summary>
@@ -154,7 +159,8 @@ namespace vMenuClient
             ["Matte Desert Tan"] = 154,
             ["Matte Foliage Green"] = 155,
         };
-
+        #endregion
+        #region Util Colors
         /// <summary>
         /// All Util vehicle colors.
         /// </summary>
@@ -183,7 +189,8 @@ namespace vMenuClient
             ["Light Brown"] = 110,
             ["Off White"] = 122,
         };
-
+        #endregion
+        #region Metals
         /// <summary>
         /// All Metal vehicle colors.
         /// </summary>
@@ -195,7 +202,8 @@ namespace vMenuClient
             ["Pure Gold"] = 158,
             ["Brushed Gold"] = 159,
         };
-
+        #endregion
+        #region Unknown Colors
         /// <summary>
         /// Not sure in which category these are supposed to go...
         /// </summary>
@@ -213,5 +221,7 @@ namespace vMenuClient
             ["Default Alloy Color"] = 156,
             ["Epsilon Blue"] = 157,
         };
+        #endregion
+        #endregion
     }
 }
