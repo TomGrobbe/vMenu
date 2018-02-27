@@ -530,8 +530,9 @@ namespace vMenuClient
         /// </summary>
         /// <param name="vehicleHash">Hash of the vehicle model to spawn.</param>
         /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
-        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false)
+        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null)
         {
+
             if (!skipLoad)
             {
                 bool successFull = await LoadModel(vehicleHash);
@@ -539,7 +540,6 @@ namespace vMenuClient
                 {
                     // Vehicle model is invalid.
                     Notify.Error("This is not a valid model.");
-                    return;
                 }
             }
 
@@ -600,6 +600,41 @@ namespace vMenuClient
 
             // Set the previous vehicle to the new vehicle.
             previousVehicle = vehicle.Handle;
+
+            if (vehicleInfo != null)
+            {
+                int primaryColor = int.Parse(vehicleInfo["primaryColor"].ToString());
+                int secondaryColor = int.Parse(vehicleInfo["secondaryColor"].ToString());
+                int pearlescentColor = int.Parse(vehicleInfo["pearlescentColor"].ToString());
+                int wheelColor = int.Parse(vehicleInfo["wheelsColor"].ToString());
+
+                SetVehicleModKit(vehicle.Handle, 0);
+
+                SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
+                SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
+
+
+                var skip = 8;
+                foreach (var mod in vehicleInfo)
+                {
+                    skip--;
+                    if (skip < 0)
+                    {
+                        var key = int.Parse(mod.Key);
+                        var val = int.Parse(mod.Value);
+                        SetVehicleMod(vehicle.Handle, key, val, false);
+                        //TriggerEvent("chatMessage", $"^1Key: ^4{key.ToString()} ^1Value: ^4{val.ToString()}");
+                    }
+                }
+
+                SetVehicleModKit(vehicle.Handle, 0);
+                SetVehicleColours(vehicle.Handle, primaryColor, secondaryColor);
+                vehicle.Mods.PrimaryColor = (VehicleColor)primaryColor;
+                vehicle.Mods.SecondaryColor = (VehicleColor)secondaryColor;
+                vehicle.Mods.PearlescentColor = (VehicleColor)pearlescentColor;
+                vehicle.Mods.RimColor = (VehicleColor)wheelColor;
+
+            }
         }
         #endregion
 
@@ -614,9 +649,28 @@ namespace vMenuClient
                     //var model = GetVehicleModel(veh);
                     var model = (uint)GetEntityModel(veh);
                     var name = GetLabelText(GetDisplayNameFromVehicleModel(model));
+                    int primaryColor = 0;
+                    int secondaryColor = 0;
+                    int pearlescentColor = 0;
+                    int wheelColor = 0;
+                    GetVehicleExtraColours(veh, ref pearlescentColor, ref wheelColor);
+                    GetVehicleColours(veh, ref primaryColor, ref secondaryColor);
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     dict.Add("name", name);
                     dict.Add("model", model.ToString() ?? "");
+                    dict.Add("primaryColor", primaryColor.ToString());
+                    dict.Add("secondaryColor", secondaryColor.ToString());
+                    dict.Add("wheelsColor", wheelColor.ToString());
+                    dict.Add("pearlescentColor", pearlescentColor.ToString());
+                    dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
+                    dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
+                    Vehicle vehicle = new Vehicle(veh);
+                    foreach (var mod in vehicle.Mods.GetAllMods())
+                    {
+                        var modType = ((int)mod.ModType).ToString();
+                        var modValue = mod.Index;
+                        dict.Add(modType.ToString(), modValue.ToString());
+                    }
 
                     var saveName = await GetUserInputAsync("Enter a save name", "", 15);
                     if (saveName != "NULL")
@@ -648,12 +702,21 @@ namespace vMenuClient
         #endregion
 
         #region Loading Saved Vehicle
+        /// <summary>
+        /// Get the data for a specific saved vehicle.
+        /// </summary>
+        /// <param name="saveName">Name is the key (vehicle name) to load the info for.</param>
+        /// <returns></returns>
         public Dictionary<string, string> GetSavedVehicleData(string saveName)
         {
             var dict = sm.GetSavedDictionary(saveName);
             return dict;
         }
 
+        /// <summary>
+        /// Get a list of all saved vehicles.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, Dictionary<string, string>> GetSavedVehicleList()
         {
             var savedVehicleNames = new List<string>();
@@ -670,15 +733,47 @@ namespace vMenuClient
                     break;
                 }
             }
-
             var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
             foreach (var saveName in savedVehicleNames)
             {
                 vehiclesList.Add(saveName, sm.GetSavedDictionary(saveName));
             }
             return vehiclesList;
-
         }
+
+        ///// <summary>
+        ///// Set an upgrade/mod for the specified vehicle.
+        ///// </summary>
+        ///// <param name="vehicle">The vehicle handle.</param>
+        ///// <param name="modType">The mod type.</param>
+        ///// <param name="modValue">The mod value.</param>
+        ///// <param name="customWheels">Apply custom wheels?</param>
+        //public void ApplyVehicleMod(int vehicle, int modType, int modValue, bool customWheels = false)
+        //{
+        //    if (DoesEntityExist(vehicle) && IsEntityAVehicle(vehicle))
+        //    {
+        //        SetVehicleModKit(vehicle, 0);
+        //        SetVehicleMod(vehicle, modType, modValue, customWheels);
+        //    }
+        //    else
+        //    {
+        //        Notify.Error("Could not apply vehicle upgrades because the specified vehicle does not exist.");
+        //    }
+        //}
+
+        //public void ApplyVehicleColors(int vehicle, int primaryColor, int secondaryColor, int pearlescentColor, int wheelColor)
+        //{
+        //    if (DoesEntityExist(vehicle) && IsEntityAVehicle(vehicle))
+        //    {
+        //        SetVehicleColours(vehicle, primaryColor, secondaryColor);
+        //        SetVehicleExtraColours(vehicle, pearlescentColor, wheelColor);
+        //    }
+        //    else
+        //    {
+        //        Notify.Error("Could not apply vehicle color changes because the specified vehicle does not exist.");
+        //    }
+        //}
+
 
         #endregion
 
@@ -1061,8 +1156,7 @@ namespace vMenuClient
                 }
                 //foreach (KeyValuePair<string, string> t in dict)
                 //{
-                //    Notify.Custom($"Key: ~r~{t.Key}");
-                //    Notify.Custom($"value: ~g~{t.Value}");
+                //    Notify.Custom($"Key: ~r~{t.Key} ~w~value: ~g~{t.Value}");
                 //}
             }
 

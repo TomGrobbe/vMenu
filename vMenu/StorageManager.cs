@@ -12,14 +12,6 @@ namespace vMenuClient
 
     public class StorageManager : BaseScript
     {
-        //public StorageManager()
-        //{
-        //    //TriggerEvent("chatMessage", SaveDictionary("vehicle1", new Dictionary<string, string>() { ["engine"] = "4"}, true).ToString());
-        //    //DeleteResourceKvp("vehicle1");
-
-        //}
-
-
         /// <summary>
         /// Save a dictionary to the client's storage.
         /// </summary>
@@ -60,6 +52,10 @@ namespace vMenuClient
             return dict ?? new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Delete the specified dictionary from local storage.
+        /// </summary>
+        /// <param name="saveName"></param>
         public void DeleteSavedDictionary(string saveName)
         {
             DeleteResourceKvp(saveName);

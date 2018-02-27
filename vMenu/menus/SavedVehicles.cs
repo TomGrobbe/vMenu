@@ -62,8 +62,12 @@ namespace vMenuClient
                     {
                         var vehInfo = SavedVehiclesDict["veh_" + item2.Text];
                         var model = vehInfo["model"];
-                        cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle);
+                        
+                        cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo);
+
                     };
+                    savedVehicles.RefreshIndex();
+                    savedVehicles.UpdateScaleform();
                 }
             };
 
