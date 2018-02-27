@@ -15,6 +15,14 @@ namespace vMenuServer
         // Debug shows more information when doing certain things. Leave it off to improve performance!
         private bool debug = false;
 
+        private int currentHours = 9;
+        private int currentMinutes = 0;
+        private string currentWeather = "CLEAR";
+        private bool dynamicWeather = true;
+        private bool blackout = false;
+        private bool freezeTime = false;
+        private int dynamicWeatherTimeLeft = 10 * 12; // 10 minutes * 12 (because the loop checks 12 times a minute)
+
         #region List of all permissions
         // List of all permissions.
         private List<string> aceNames = new List<string>() {
@@ -192,6 +200,80 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
             EventHandlers.Add("vMenu:KickPlayer", new Action<Player, int, string>(KickPlayer));
             EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
+            EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
+            EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
+            EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
+
+            Tick += WeatherLoop;
+            Tick += TimeLoop;
+        }
+
+        private async Task TimeLoop()
+        {
+            await Delay(4000);
+            if (freezeTime)
+            {
+                TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
+            }
+            else
+            {
+                currentMinutes++;
+                if (currentMinutes > 59)
+                {
+                    currentMinutes = 0;
+                    currentHours++;
+                }
+                if (currentHours > 23)
+                {
+                    currentHours = 0;
+                }
+                TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
+            }
+        }
+
+        private async Task WeatherLoop()
+        {
+            await Delay(5000);
+            if (dynamicWeather)
+            {
+                dynamicWeatherTimeLeft -= 10;
+                if (dynamicWeatherTimeLeft < 10)
+                {
+                    dynamicWeatherTimeLeft = 10 * 12;
+                    RefreshWeather();
+                }
+            }
+            else
+            {
+                dynamicWeatherTimeLeft = 10 * 12;
+            }
+            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout);
+        }
+
+        private void RefreshWeather()
+        {
+            // soon
+        }
+
+        private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew)
+        {
+            currentWeather = newWeather;
+            blackout = blackoutNew;
+            dynamicWeather = dynamicWeatherNew;
+            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout);
+        }
+
+        private void UpdateWeatherCloudsType(bool removeClouds)
+        {
+
+        }
+
+        private void UpdateTime(int newHours, int newMinutes, bool freezeTimeNew)
+        {
+            currentHours = newHours;
+            currentMinutes = newMinutes;
+            freezeTime = freezeTimeNew;
+            TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
         }
 
         /// <summary>
