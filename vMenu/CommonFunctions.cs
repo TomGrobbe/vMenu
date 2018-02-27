@@ -304,7 +304,17 @@ namespace vMenuClient
                 pos.Z = 150.0f;
                 SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
                 await Delay(50);
-                GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true);
+                var timer = 0;
+                while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
+                {
+                    await Delay(0);
+                    timer++;
+                    if (timer > 6000)
+                    {
+                        Notify.Alert("An error occurred while teleporting :(");
+                        break;
+                    }
+                }
                 await Delay(50);
                 SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
             }
