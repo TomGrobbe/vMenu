@@ -22,6 +22,29 @@ namespace vMenuServer
         private bool blackout = false;
         private bool freezeTime = false;
         private int dynamicWeatherTimeLeft = 10 * 12; // 10 minutes * 12 (because the loop checks 12 times a minute)
+        private List<string> CloudTypes = new List<string>()
+        {
+            "Cloudy 01",
+            "RAIN",
+            "horizonband1",
+            "horizonband2",
+            "Puffs",
+            "Wispy",
+            "Horizon",
+            "Stormy 01",
+            "Clear 01",
+            "Snowy 01",
+            "Contrails",
+            "altostratus",
+            "Nimbus",
+            "Cirrus",
+            "cirrocumulus",
+            "stratoscumulus",
+            "horizonband3",
+            "Stripey",
+            "horsey",
+            "shower",
+        };
 
         #region List of all permissions
         // List of all permissions.
@@ -190,6 +213,7 @@ namespace vMenuServer
         };
         #endregion
 
+        #region Constructor
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -207,7 +231,13 @@ namespace vMenuServer
             Tick += WeatherLoop;
             Tick += TimeLoop;
         }
+        #endregion
 
+        #region Manage weather and time changes.
+        /// <summary>
+        /// Loop used for syncing and keeping track of the time in-game.
+        /// </summary>
+        /// <returns></returns>
         private async Task TimeLoop()
         {
             await Delay(4000);
@@ -217,7 +247,7 @@ namespace vMenuServer
             }
             else
             {
-                currentMinutes++;
+                currentMinutes += 2;
                 if (currentMinutes > 59)
                 {
                     currentMinutes = 0;
@@ -231,6 +261,10 @@ namespace vMenuServer
             }
         }
 
+        /// <summary>
+        /// Task used for syncing and changing weather dynamically.
+        /// </summary>
+        /// <returns></returns>
         private async Task WeatherLoop()
         {
             await Delay(5000);
@@ -247,27 +281,95 @@ namespace vMenuServer
             {
                 dynamicWeatherTimeLeft = 10 * 12;
             }
-            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout);
+            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
 
+        /// <summary>
+        /// Select a new random weather type, based on the current weather and some patterns.
+        /// </summary>
         private void RefreshWeather()
         {
-            // soon
-        }
+            var random = new Random().Next(10);
+            if (currentWeather == "RAIN" || currentWeather == "THUNDER")
+            {
+                currentWeather = "CLEARING";
+            }
+            else if (currentWeather == "CLEARING")
+            {
+                currentWeather = "CLOUDS";
+            }
+            else
+            {
+                switch (random)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                        currentWeather = (currentWeather == "EXTRASUNNY" ? "CLEAR" : "EXTRASUNNY");
+                        break;
+                    case 3:
+                        currentWeather = (currentWeather == "SMOG" ? "FOGGY" : "SMOG");
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
+                        break;
+                    case 7:
+                        currentWeather = (currentWeather == "CLOUDS" ? "EXTRASUNNY" : "RAIN");
+                        break;
+                    case 8:
+                        currentWeather = (currentWeather == "OVERCAST" ? "THUNDER" : "OVERCAST");
+                        break;
+                    case 9:
+                    default:
+                        currentWeather = (currentWeather == "FOGGY" ? "SMOG" : "FOGGY");
+                        break;
+                }
+            }
 
+        }
+        #endregion
+
+        #region Sync weather & time with clients
+        /// <summary>
+        /// Update the weather for all clients.
+        /// </summary>
+        /// <param name="newWeather"></param>
+        /// <param name="blackoutNew"></param>
+        /// <param name="dynamicWeatherNew"></param>
         private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew)
         {
             currentWeather = newWeather;
             blackout = blackoutNew;
             dynamicWeather = dynamicWeatherNew;
-            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout);
+            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
 
+        /// <summary>
+        /// Set a new random clouds type and opacity for all clients.
+        /// </summary>
+        /// <param name="removeClouds"></param>
         private void UpdateWeatherCloudsType(bool removeClouds)
         {
-
+            if (removeClouds)
+            {
+                TriggerClientEvent("vMenu:SetClouds", 0f, "removed");
+            }
+            else
+            {
+                float opacity = float.Parse(new Random().NextDouble().ToString());
+                string type = CloudTypes[new Random().Next(0, CloudTypes.Count)];
+                TriggerClientEvent("vMenu:SetClouds", opacity, type);
+            }
         }
 
+        /// <summary>
+        /// Set and sync the time to all clients.
+        /// </summary>
+        /// <param name="newHours"></param>
+        /// <param name="newMinutes"></param>
+        /// <param name="freezeTimeNew"></param>
         private void UpdateTime(int newHours, int newMinutes, bool freezeTimeNew)
         {
             currentHours = newHours;
@@ -275,7 +377,9 @@ namespace vMenuServer
             freezeTime = freezeTimeNew;
             TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
         }
+        #endregion
 
+        #region Online Players Menu Actions
         /// <summary>
         /// Kick a specific player.
         /// </summary>
@@ -321,7 +425,9 @@ namespace vMenuServer
             var targetPlayer = new PlayerList()[target];
             TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
         }
+        #endregion
 
+        #region SendPermissions to all clients
         /// <summary>
         /// Send the permissions to the client that requested it.
         /// </summary>
@@ -348,11 +454,10 @@ namespace vMenuServer
                     Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
                     await Delay(0);
                 }
-
             }
-
             // Send the dictionary containing all permissions to the client.
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);
         }
+        #endregion
     }
 }

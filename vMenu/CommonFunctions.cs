@@ -287,9 +287,9 @@ namespace vMenuClient
             var pos = targetCoords;
             pos.Z = 150.0f;
             SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
-            await Delay(50);
+            await Delay(150);
             GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true);
-            await Delay(50);
+            await Delay(150);
             SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
         }
 

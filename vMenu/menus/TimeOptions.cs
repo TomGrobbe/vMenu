@@ -16,7 +16,7 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
-        
+
 
         private void CreateMenu()
         {
@@ -64,8 +64,14 @@ namespace vMenuClient
                 }
                 else
                 {
-                    if ((index * 3) < 23)
-                    cf.UpdateServerTime((index * 3) + , 0, EventManager.freezeTime);
+                    if (((index * 3) + 3) < 23)
+                    {
+                        cf.UpdateServerTime((index * 3) + 3, 0, EventManager.freezeTime);
+                    }
+                    else
+                    {
+                        cf.UpdateServerTime((index * 3) + 3 - 24, 0, EventManager.freezeTime);
+                    }
                 }
 
             };

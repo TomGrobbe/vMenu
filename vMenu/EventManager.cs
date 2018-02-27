@@ -29,7 +29,8 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
             EventHandlers.Add("vMenu:KickCallback", new Action<string>(KickCallback));
-            EventHandlers.Add("vMenu:SetWeather", new Action<string, bool>(SetWeather));
+            EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
+            EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
 
             Tick += WeatherSync;
@@ -119,15 +120,29 @@ namespace vMenuClient
 
         }
 
+        private void SetClouds(float opacity, string cloudsType)
+        {
+            if (opacity == 0f && cloudsType == "removed")
+            {
+                ClearCloudHat();
+            }
+            else
+            {
+                SetCloudHatOpacity(opacity);
+                SetCloudHatTransition(cloudsType, 4f);
+            }
+        }
+
         /// <summary>
         /// Update the current weather.
         /// </summary>
         /// <param name="newWeather"></param>
         /// <param name="blackoutEnabled"></param>
-        private void SetWeather(string newWeather, bool blackoutEnabled)
+        private void SetWeather(string newWeather, bool blackoutEnabled, bool dynamicChanges)
         {
             EventManager.currentWeatherType = newWeather;
             EventManager.blackoutMode = blackoutEnabled;
+            EventManager.dynamicWeather = dynamicChanges;
         }
 
         /// <summary>

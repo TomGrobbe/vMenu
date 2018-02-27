@@ -93,21 +93,21 @@ namespace vMenuClient
                 // A weather type is selected.
                 if (index >= 2 && index <= 16)
                 {
+                    Notify.Custom($"The almighty ~g~Snail~w~ will change the weather to ~y~{weatherTypes[index - 2]}~w~.");
                     cf.UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
-                    Notify.Custom($"The almighty ~g~Snail~w~ will consider your request, please be patient while weather changes to ~y~{weatherTypes[index - 2]}~w~.");
                 }
                 // Another button was pressed.
                 else
                 {
                     if (item == blackout)
                     {
+                        Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.blackoutMode ? "enable" : "disable")}~w~ blackout mode.");
                         cf.UpdateServerWeather(EventManager.currentWeatherType, !EventManager.blackoutMode, EventManager.dynamicWeather);
-                        Notify.Custom($"The almighty ~g~Snail~w~ will consider your request, please be patient while blackout mode is being ~y~{(!EventManager.blackoutMode ? "enabled" : "disabled")}~w~.");
                     }
                     else if (item == dynamicWeatherEnabled)
                     {
+                        Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.dynamicWeather ? "enable" : "disable")}~w~ dynamic weather changes.");
                         cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, !EventManager.dynamicWeather);
-                        Notify.Custom($"The almighty ~g~Snail~w~ will consider your request, please be patient while dynamic weather changes are being ~y~{(EventManager.dynamicWeather ? "enabled" : "disabled")}~w~.");
                     }
                     else if (item == removeclouds)
                     {
