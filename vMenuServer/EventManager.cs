@@ -13,7 +13,7 @@ namespace vMenuServer
     {
 
         // Debug shows more information when doing certain things. Leave it off to improve performance!
-        private bool debug = false;
+        private bool debug = true;
 
         private int currentHours = 9;
         private int currentMinutes = 0;
@@ -21,7 +21,8 @@ namespace vMenuServer
         private bool dynamicWeather = true;
         private bool blackout = false;
         private bool freezeTime = false;
-        private int dynamicWeatherTimeLeft = 10 * 12; // 10 minutes * 12 (because the loop checks 12 times a minute)
+        private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
+        private long gameTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
         {
             "Cloudy 01",
@@ -273,13 +274,19 @@ namespace vMenuServer
                 dynamicWeatherTimeLeft -= 10;
                 if (dynamicWeatherTimeLeft < 10)
                 {
-                    dynamicWeatherTimeLeft = 10 * 12;
+                    dynamicWeatherTimeLeft = 5 * 12 * 10;
                     RefreshWeather();
+                    if (debug)
+                    {
+                        long gameTimer2 = GetGameTimer();
+                        Debug.WriteLine($"Duration: {(gameTimer2 - gameTimer).ToString()}. New Weather Type: {currentWeather}");
+                        gameTimer = gameTimer2;
+                    }
                 }
             }
             else
             {
-                dynamicWeatherTimeLeft = 10 * 12;
+                dynamicWeatherTimeLeft = 5 * 12 * 10;
             }
             TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
@@ -449,14 +456,15 @@ namespace vMenuServer
                 permissions.Add(safeName, allowed);
 
                 // Only if debugging is enabled, print the values to the server console.
-                if (debug)
-                {
-                    Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
-                    await Delay(0);
-                }
+                //if (debug)
+                //{
+                //    Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
+                //    await Delay(0);
+                //}
             }
             // Send the dictionary containing all permissions to the client.
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);
+            await Delay(0);
         }
         #endregion
     }
