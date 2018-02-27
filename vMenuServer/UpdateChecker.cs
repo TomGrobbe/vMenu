@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
+using System.Numerics;
 
 namespace vMenuServer
 {
@@ -18,7 +19,7 @@ namespace vMenuServer
         /// </summary>
         public UpdateChecker()
         {
-            CheckUpdates();
+            //CheckUpdates();
         }
 
         private async void CheckUpdates()
