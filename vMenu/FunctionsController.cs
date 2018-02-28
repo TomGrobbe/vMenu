@@ -79,12 +79,26 @@ namespace vMenuClient
                     // Manage Super jump.
                     if (MainMenu.PlayerOptionsMenu.PlayerSuperJump)
                     {
-                        //SetSuperJumpThisFrame(PlayerId());
+                        SetSuperJumpThisFrame(PlayerId());
                     }
 
                     // Manage PlayerNoRagdoll
                     SetPedCanRagdoll(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
-                    SetPedCanRagdollFromPlayerImpact(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+
+
+                    // Fall off bike / dragged out of car.
+                    if (MainMenu.VehicleOptionsMenu != null)
+                    {
+                        SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll || MainMenu.VehicleOptionsMenu.VehicleGodMode) ? 1 : 0));
+                        SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored || MainMenu.VehicleOptionsMenu.VehicleGodMode || MainMenu.PlayerOptionsMenu.PlayerGodMode));
+                        SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode || MainMenu.VehicleOptionsMenu.VehicleGodMode));
+                    }
+                    else
+                    {
+                        SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll) ? 1 : 0));
+                        SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored));
+                        SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode));
+                    }
 
                     // Manage never wanted.
                     if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
@@ -94,6 +108,8 @@ namespace vMenuClient
 
                     // Manage player is ignored by everyone.
                     SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
+                    SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
+                    SetPlayerCanBeHassledByGangs(PlayerId(), !(MainMenu.PlayerOptionsMenu.PlayerIsIgnored || MainMenu.PlayerOptionsMenu.PlayerGodMode));
 
                     // Manage player frozen.
                     FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen);
