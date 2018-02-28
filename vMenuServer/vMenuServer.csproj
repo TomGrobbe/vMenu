@@ -42,6 +42,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,9 +70,9 @@
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
     <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.xml" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\System.Numerics.dll" "D:\FXserver\vMenu\"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
