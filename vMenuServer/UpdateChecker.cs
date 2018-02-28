@@ -19,7 +19,7 @@ namespace vMenuServer
         /// </summary>
         public UpdateChecker()
         {
-            //CheckUpdates();
+            CheckUpdates();
         }
 
         private async void CheckUpdates()
@@ -27,11 +27,10 @@ namespace vMenuServer
             // Create a new request object.
             Request r = new Request();
 
-            
             // Try to request a response.
             try
             {
-                await Delay(2000);
+                await Delay(500);
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
 
@@ -78,8 +77,6 @@ namespace vMenuServer
                 Debug.WriteLine("\r\n\r\n[vMenu] An error occurred while checking for updates. If you require immediate assistance email: contact@vespura.com.");
                 Debug.WriteLine($"[vMenu] Error info: {e.Message.ToString()}\r\n\r\n");
             }
-            
         }
-
     }
 }
