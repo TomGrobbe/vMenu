@@ -13,7 +13,7 @@ namespace vMenuServer
     {
 
         // Debug shows more information when doing certain things. Leave it off to improve performance!
-        private bool debug = true;
+        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
         private int currentHours = 9;
         private int currentMinutes = 0;
@@ -279,7 +279,7 @@ namespace vMenuServer
                     if (debug)
                     {
                         long gameTimer2 = GetGameTimer();
-                        Debug.WriteLine($"Duration: {(gameTimer2 - gameTimer).ToString()}. New Weather Type: {currentWeather}");
+                        Debug.WriteLine($"Duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
                         gameTimer = gameTimer2;
                     }
                 }
@@ -456,11 +456,11 @@ namespace vMenuServer
                 permissions.Add(safeName, allowed);
 
                 // Only if debugging is enabled, print the values to the server console.
-                //if (debug)
-                //{
-                //    Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
-                //    await Delay(0);
-                //}
+                if (debug)
+                {
+                    Debug.WriteLine($"Permission:\t{ace}\r\nAllowed:\t{(allowed ? "yes" : "no")}");
+                    await Delay(0);
+                }
             }
             // Send the dictionary containing all permissions to the client.
             TriggerClientEvent(player, "vMenu:SetPermissions", permissions);

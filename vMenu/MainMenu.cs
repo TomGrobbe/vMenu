@@ -44,7 +44,7 @@ namespace vMenuClient
         public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
-        private bool debug = false;
+        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
 
         public static bool DontOpenMenus { get; set; } = false;
 
@@ -55,6 +55,7 @@ namespace vMenuClient
         public MainMenu()
         {
             EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
+            //InvokeFunctionReference("0x7bdcbd45", $"Enjoying vMenu {GetResourceMetadata(GetCurrentResourceName(), "version", 0)} (Pre-Release)", 0, ref unused);
             Tick += OnTick;
         }
 
@@ -111,10 +112,7 @@ namespace vMenuClient
                 }
             }
             #endregion
-
-
-            //Sm.SaveDictionary("testpermissions", Permissions);
-
+            
             setupComplete = true;
         }
 
@@ -147,6 +145,8 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
+                
+                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x7bdcbd45, (debug ? $"Alpha Testing vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}" : $"Enjoying vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}."));
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
@@ -419,7 +419,6 @@ namespace vMenuClient
                 Mp.WidthOffset = 50;
 
             }
-
 
         }
     }
