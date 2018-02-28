@@ -227,13 +227,9 @@ namespace vMenuClient
                 // If the player should be teleported inside the other player's vehcile.
                 if (inVehicle)
                 {
-                    // Allow the world to load around the player first.
-                    await Delay(5);
-
                     // Is the other player inside a vehicle?
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
-                        Notify.Custom("Triggered 1");
                         // Get the vehicle of the specified player.
                         int vehicle = GetVehicle(player: playerId);
 
@@ -277,20 +273,51 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Teleport To Coords
+        #region Teleport To Player / Coords
         /// <summary>
         /// Teleport the player to a specific location.
         /// </summary>
-        /// <param name="targetCoords"></param>
-        public async Task TeleportToCoords(Vector3 targetCoords)
+        /// <param name="pos">These are the target coordinates to teleport to.</param>
+        public async Task TeleportToCoords(Vector3 pos)
         {
-            var pos = targetCoords;
-            pos.Z = 150.0f;
             SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
-            await Delay(150);
-            GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true);
-            await Delay(150);
-            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+            var timer = 0;
+            var failed = false;
+            while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
+            {
+                await Delay(0);
+                timer++;
+                if (timer > 60)
+                {
+                    failed = true;
+                    break;
+                }
+            }
+            if (IsEntityInWater(PlayerPedId()) || IsEntityInAir(PlayerPedId()))
+            {
+                failed = true;
+            }
+            if (failed)
+            {
+                GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                var safePos = pos;
+                safePos.Z = 810f;
+                var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
+                if (foundSafeSpot)
+                {
+                    Notify.Alert("No safe location near waypoint :( going to closest safe location instead.");
+                    SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                }
+                else
+                {
+                    Notify.Alert("No safe location near you :( open your parachute!");
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                }
+            }
+            else
+            {
+                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+            }
         }
 
         /// <summary>
@@ -301,22 +328,8 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = 150.0f;
-                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
-                await Delay(50);
-                var timer = 0;
-                while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
-                {
-                    await Delay(0);
-                    timer++;
-                    if (timer > 6000)
-                    {
-                        Notify.Alert("An error occurred while teleporting :(");
-                        break;
-                    }
-                }
-                await Delay(50);
-                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+                pos.Z = 800f;
+                await TeleportToCoords(pos);
             }
         }
         #endregion
