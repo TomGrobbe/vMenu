@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
-using System.Numerics;
 
 namespace vMenuServer
 {

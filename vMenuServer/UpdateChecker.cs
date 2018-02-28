@@ -1,4 +1,5 @@
 ﻿using GHMatti.Http;
+using vMenuServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
-using System.Numerics;
 
 namespace vMenuServer
 {
@@ -27,10 +27,11 @@ namespace vMenuServer
             // Create a new request object.
             Request r = new Request();
 
+            
             // Try to request a response.
             try
             {
-                await Delay(800);
+                await Delay(2000);
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
 
@@ -77,6 +78,7 @@ namespace vMenuServer
                 Debug.WriteLine("\r\n\r\n[vMenu] An error occurred while checking for updates. If you require immediate assistance email: contact@vespura.com.");
                 Debug.WriteLine($"[vMenu] Error info: {e.Message.ToString()}\r\n\r\n");
             }
+            
         }
 
     }
