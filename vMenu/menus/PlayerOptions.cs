@@ -39,32 +39,27 @@ namespace vMenuClient
             };
 
             // Create all checkboxes.
-            UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("God Mode", PlayerGodMode, "If you turn this on, you won't take any damage.");
-            UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisibility", PlayerInvisible, "If you turn this on, you will become invisible.");
-            UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "If you disable this then you won't be able to run for more than 5 seconds. So it's recommended to keep this on at all times.");
-            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Running", false, "Super Snail! I'm fast as f*ck boi!!!");
-            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swimming", false, "Super Sail 2.0! Swim like a real snail!");
-            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Super Snail 3.0! You can't beat a snail's jumping skills!");
-            UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Don't fall over.");
-            UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Nobody has time for annoying cops! Bribe them or deal with it.");
-            UIMenuCheckboxItem everyoneIgnoresPlayerCheckbox = new UIMenuCheckboxItem("Everyone Ignores You", PlayerIsIgnored, "Annoying hillbillies trying to kill you? Turn this off and the Snail will make them shit their pants!");
-            UIMenuCheckboxItem playerFrozenCheckbox = new UIMenuCheckboxItem("Freeze Yourself", PlayerFrozen, "Why would you do this...?");
+            UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("Godmode", PlayerGodMode, "Makes you invincible.");
+            UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
+            UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
+            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", false, "Get ~g~Snail~s~ powers and run very fast!");
+            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", false, "Get ~g~Sail 2.0~s~ powers and swim super fast!");
+            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
+            UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
+            UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
+            UIMenuCheckboxItem everyoneIgnoresPlayerCheckbox = new UIMenuCheckboxItem("Everyone Ignore Player", PlayerIsIgnored, "Everyone will leave you alone.");
+            UIMenuCheckboxItem playerFrozenCheckbox = new UIMenuCheckboxItem("Freeze Player", PlayerFrozen, "Freezes your current location, why would you do this...?");
 
             // Wanted level options
-            List<dynamic> wantedLevelList = new List<dynamic> { "No Cops", 1, 2, 3, 4, 5 };
-            UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(PlayerId()), "Set the wanted level by selecting a value, and pressing enter.");
+            List<dynamic> wantedLevelList = new List<dynamic> { "No Wanted Level", 1, 2, 3, 4, 5 };
+            UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(PlayerId()), "Set your wanted level by selecting a value, and pressing enter.");
 
             // Player options
-            List<dynamic> playerOptionsList = new List<dynamic> { "Heal Player", "Apply Max Armor", "Clean Player", "Dry Player", "Soack Player" };
-            UIMenuListItem playerOptions = new UIMenuListItem("Player Options", playerOptionsList, 0, "Select an option and press enter to execute it.");
-
-            // Actions
-            List<dynamic> playerActionsList = new List<dynamic> { "Commit Suicide", "Drive To Waypoint", "Drive Wander" };
-            UIMenuListItem playerActions = new UIMenuListItem("Player Actions", playerActionsList, 0, "Select an action and press enter to run it, use the cancel button below to stop the driving actions.");
-            UIMenuItem cancelActions = new UIMenuItem("Cancel Player Actions", "Click this to cancel any of the driving player actions from the list above.");
+            List<dynamic> playerOptionsList = new List<dynamic> { "Max Health", "Max Armor", "Clean Player Clothes", "Player Dry", "Player Wet", "~r~Commit Suicide", "Drive To Waypoint", "Drive Around Randomly" };
+            UIMenuListItem playerOptions = new UIMenuListItem("Player Functions", playerOptionsList, 0, "Select an option and press enter to run/stop it.");
 
             // Scenarios (list can be found in the PedScenarios class)
-            UIMenuListItem playerScenarios = new UIMenuListItem("Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Press it again to cancel it. Selecting another scenario and hitting enter will override the current scenario. Pressing enter again will then stop the scenario.");
+            UIMenuListItem playerScenarios = new UIMenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
             UIMenuItem stopScenario = new UIMenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
 
 
@@ -80,7 +75,6 @@ namespace vMenuClient
             menu.AddItem(setWantedLevel);
             menu.AddItem(everyoneIgnoresPlayerCheckbox);
             menu.AddItem(playerOptions);
-            menu.AddItem(playerActions);
             menu.AddItem(playerFrozenCheckbox);
             menu.AddItem(playerScenarios);
             menu.AddItem(stopScenario);
@@ -154,46 +148,63 @@ namespace vMenuClient
                 {
                     switch (index)
                     {
+                        // Max Health
                         case 0:
                             SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
-                            Subtitle.Success("Player Healed Successfully.");
+                            Subtitle.Info("Max ~g~health ~s~applied.", prefix: "Info:");
                             break;
+                        // Max Armor
                         case 1:
                             SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
-                            Subtitle.Success("Max Armor Applied Successfully.");
+                            Subtitle.Info("Max ~b~armor ~s~applied.", prefix: "Info:");
                             break;
+                        // Clean Player Clothes
                         case 2:
                             ClearPedBloodDamage(PlayerPedId());
-                            Subtitle.Success("Player Successfully Cleaned.");
+                            Subtitle.Info("Cleaned player clothes.", prefix: "Info:");
                             break;
+                        // Make Player Dry
                         case 3:
                             ClearPedWetness(PlayerPedId());
-                            Subtitle.Success("Player Successfully Dried.");
+                            Subtitle.Info("Player clothes are now ~c~dry~s~.", prefix: "Info:");
                             break;
+                        // Make Player Wet
                         case 4:
                             SetPedWetnessHeight(PlayerPedId(), 2f);
                             SetPedWetnessEnabledThisFrame(PlayerPedId());
-                            Subtitle.Success("Player Successfully Soacked.");
+                            Subtitle.Info("Player clothes are now ~b~wet~s~.", prefix: "Info:");
                             break;
-                        default:
-                            break;
-                    }
-                }
-                // Player actions (suicide, driving tasks, etc)
-                else if (listItem == playerActions)
-                {
-                    switch (index)
-                    {
-                        case 0:
+                        // Kill Player
+                        case 5:
                             SetEntityHealth(PlayerPedId(), 0);
-                            Notify.Success("You killed yourself!");
+                            Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
                             break;
-                        case 1:
-                            // Todo create drive to wp task.
+                        // Drive To Waypoint
+                        case 6:
+                            if (!Game.IsWaypointActive)
+                            {
+                                Subtitle.Error("You need to set a ~p~waypoint ~s~first!", prefix: "Error:");
+                            }
+                            else if (IsPedInAnyVehicle(PlayerPedId(), false))
+                            {
+                                MainMenu.cf.DriveToWp();
+                            }
+                            else
+                            {
+                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                            }
                             break;
-                        case 2:
+                        // Drive Around Randomly (wander)
+                        case 7:
+                            if (IsPedInAnyVehicle(PlayerPedId(), false))
+                            {
+                                MainMenu.cf.DriveWander();
+                            }
+                            else
+                            {
+                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                            }
                             break;
-                        // Todo create drive wander task.
                         default:
                             break;
                     }
