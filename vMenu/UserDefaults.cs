@@ -164,12 +164,13 @@ namespace vMenuClient
             // If not, create it and save the new default value of false.
             if (!exists)
             {
-                // If the option is unlimitedStamina, then set that to true because we want this to be enabled by default.
-                if (kvpString == "unlimitedStamina")
+                // Some options should be enabled by default:
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
+                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted")
                 {
                     SetSavedSettingsBool(kvpString, true);
                 }
-                // If it's not the unlimited stamina option, then just disable it by default.
+                // All other options should be disabled by default:
                 else
                 {
                     SetSavedSettingsBool(kvpString, false);
