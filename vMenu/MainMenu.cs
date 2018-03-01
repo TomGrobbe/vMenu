@@ -112,7 +112,7 @@ namespace vMenuClient
                 }
             }
             #endregion
-            
+
             setupComplete = true;
         }
 
@@ -125,13 +125,10 @@ namespace vMenuClient
         private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
         {
             Menu.AddItem(menuButton);
-            submenu.MouseControlsEnabled = false;
-            submenu.MouseEdgeEnabled = false;
-            submenu.ControlDisablingEnabled = false;
             Menu.BindMenuToItem(submenu, menuButton);
             Mp.Add(submenu);
-            submenu.UpdateScaleform();
             submenu.RefreshIndex();
+            submenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -145,8 +142,11 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
-                
-                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x7bdcbd45, (debug ? $"Alpha Testing vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}" : $"Enjoying vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}."));
+                // Clear all previous pause menu info/brief messages on resource start.
+                ClearBrief();
+
+                // Temporarily set the Discord Rich Presence status.
+                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x7bdcbd45, (true ? $"Alpha Testing vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}" : $"Enjoying vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}."));
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
@@ -158,16 +158,19 @@ namespace vMenuClient
                 }
 
                 // Create the main menu.
-                Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu");
+                Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
+                {
+                    ScaleWithSafezone = false,
+                    MouseControlsEnabled = false,
+                    MouseEdgeEnabled = false,
+                    ControlDisablingEnabled = false
+                };
 
                 // Add the main menu to the menu pool.
                 Mp.Add(Menu);
 
                 Menu.RefreshIndex();
-                Menu.ScaleWithSafezone = true;
-
                 Menu.UpdateScaleform();
-                Menu.MouseControlsEnabled = false;
 
                 // Create all (sub)menus.
 
@@ -183,8 +186,10 @@ namespace vMenuClient
                         if (item == onlinePlayersBtn)
                         {
                             OnlinePlayersMenu.UpdatePlayerlist();
+                            //onlinePlayers.RefreshIndex();
                             onlinePlayers.UpdateScaleform();
-                            onlinePlayers.RefreshIndex();
+                            //onlinePlayers.RefreshIndex();
+                            //onlinePlayers.UpdateScaleform();
                         }
                     };
                 }
@@ -206,8 +211,6 @@ namespace vMenuClient
                     UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
                     AddMenu(vehicleOptions, vehicleOptionsBtn);
                 }
-
-
 
                 var vl = new Vehicles().VehicleClasses;
                 // Add the vehicle spawner menu.
@@ -305,7 +308,7 @@ namespace vMenuClient
                 #region Handle Opening/Closing of the menu.
 
                 // If menus can be opened.
-                if (!DontOpenMenus)
+                if (!DontOpenMenus && !IsPauseMenuActive())
                 {
                     // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
                     if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && (Game.IsControlJustPressed(0, Control.InteractionMenu) || Game.IsDisabledControlJustPressed(0, Control.InteractionMenu)))
@@ -355,6 +358,12 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
+                }
+                // If the pause menu is active or all menus should be closed, close all menus.
+                else
+                {
+                    await Delay(5);
+                    Mp.CloseAllMenus();
                 }
                 #endregion
 

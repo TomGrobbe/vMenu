@@ -21,10 +21,11 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Time Options")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Time Options", true)
             {
-                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
 

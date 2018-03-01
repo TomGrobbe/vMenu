@@ -20,11 +20,13 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Appearance")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Appearance", true)
             {
-                MouseEdgeEnabled = false
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
             };
-            menu.MouseControlsEnabled = false;
         }
 
         /// <summary>

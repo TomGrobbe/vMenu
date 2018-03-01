@@ -20,10 +20,12 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Voice Chat Settings")//, MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Voice Chat Settings", true)
             {
-                //ScaleWithSafezone = false,
-                MouseEdgeEnabled = false
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
             };
         }
 

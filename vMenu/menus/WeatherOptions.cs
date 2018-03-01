@@ -22,8 +22,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Weather Options")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Weather Options", true)
             {
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false

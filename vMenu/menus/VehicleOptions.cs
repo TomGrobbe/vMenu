@@ -47,9 +47,12 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options", true)
             {
-                MouseEdgeEnabled = false
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
             };
 
             #region menu variables
@@ -97,51 +100,51 @@ namespace vMenuClient
 
             #region Vehicle Options Submenus
             // Submenu's
-            vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods")//, MainMenu.MenuPosition)
+            vehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", true)
             {
-                //ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-            };
-            vehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management")//, MainMenu.MenuPosition)
-            {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            vehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management")//, MainMenu.MenuPosition)
+            vehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", true)
             {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components")//, MainMenu.MenuPosition)
+            vehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", true)
             {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.")//, MainMenu.MenuPosition)
+            vehicleComponents = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", true)
             {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors")//, MainMenu.MenuPosition)
+            vehicleLiveries = new UIMenu("Vehicle Liveries", "Vehicle Liveries.", true)
             {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            deleteConfirm = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?")//, MainMenu.MenuPosition)
+            vehicleColors = new UIMenu("Vehicle Colors", "Vehicle Colors", true)
             {
-                //ScaleWithSafezone = false,
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+            deleteConfirm = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?", true)
+            {
+                ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false

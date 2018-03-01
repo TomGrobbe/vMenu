@@ -25,9 +25,12 @@ namespace vMenuClient
             VehicleData vd = new VehicleData();
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner")
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner", true)
             {
-                MouseEdgeEnabled = false
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
             };
 
             // Create the buttons and checkboxes.
@@ -53,7 +56,13 @@ namespace vMenuClient
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 UIMenuItem btn = new UIMenuItem(className, $"Select a vehicle from the {className} class.");
-                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className);
+                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
+                {
+                    ScaleWithSafezone = false,
+                    MouseControlsEnabled = false,
+                    MouseEdgeEnabled = false,
+                    ControlDisablingEnabled = false
+                };
                 MainMenu.Mp.Add(vehicleClassMenu);
                 menu.AddItem(btn);
                 menu.BindMenuToItem(vehicleClassMenu, btn);
