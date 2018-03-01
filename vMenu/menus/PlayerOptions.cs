@@ -13,8 +13,8 @@ namespace vMenuClient
     {
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private static Notification Notify = new Notification();
-        private static Subtitles Subtitle = new Subtitles();
+        private static Notification Notify = MainMenu.Notify;
+        private static Subtitles Subtitle = MainMenu.Subtitle;
 
         // Public variables (getters only), return the private variables.
         public bool PlayerGodMode { get; private set; } = false;
