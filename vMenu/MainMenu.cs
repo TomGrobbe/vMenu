@@ -186,10 +186,8 @@ namespace vMenuClient
                         if (item == onlinePlayersBtn)
                         {
                             OnlinePlayersMenu.UpdatePlayerlist();
-                            //onlinePlayers.RefreshIndex();
+                            onlinePlayers.RefreshIndex();
                             onlinePlayers.UpdateScaleform();
-                            //onlinePlayers.RefreshIndex();
-                            //onlinePlayers.UpdateScaleform();
                         }
                     };
                 }
