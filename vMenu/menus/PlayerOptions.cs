@@ -15,6 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private static Notification Notify = MainMenu.Notify;
         private static Subtitles Subtitle = MainMenu.Subtitle;
+        private static CommonFunctions cf = MainMenu.cf;
 
         // Public variables (getters only), return the private variables.
         public bool PlayerGodMode { get; private set; } = false;
@@ -22,7 +23,7 @@ namespace vMenuClient
         public bool PlayerStamina { get; private set; } = true;
         public bool PlayerSuperJump { get; private set; } = false;
         public bool PlayerNoRagdoll { get; private set; } = false;
-        public bool PlayerNeverWanted { get; private set; } = false;
+        public bool PlayerNeverWanted { get; private set; } = true;
         public bool PlayerIsIgnored { get; private set; } = false;
         public bool PlayerFrozen { get; private set; } = false;
 
@@ -189,7 +190,7 @@ namespace vMenuClient
                             }
                             else if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                MainMenu.cf.DriveToWp();
+                                cf.DriveToWp();
                             }
                             else
                             {
@@ -200,7 +201,7 @@ namespace vMenuClient
                         case 7:
                             if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                MainMenu.cf.DriveWander();
+                                cf.DriveWander();
                             }
                             else
                             {
@@ -214,7 +215,7 @@ namespace vMenuClient
                 // Player Scenarios 
                 else if (listItem == playerScenarios)
                 {
-                    MainMenu.cf.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
+                    cf.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
                 }
             };
             #endregion
@@ -227,7 +228,7 @@ namespace vMenuClient
                 {
                     // Play a new scenario named "forcestop" (this scenario doesn't exist, but the "Play" function checks
                     // for the string "forcestop", if that's provided as th scenario name then it will forcefully clear the player task.
-                    MainMenu.cf.PlayScenario("forcestop");
+                    cf.PlayScenario("forcestop");
                 }
             };
             #endregion
