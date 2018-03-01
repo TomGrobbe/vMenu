@@ -8,7 +8,6 @@ namespace vMenuClient
 {
     public class VehicleData
     {
-
         #region Vehicle Colors
         #region Metallic and classic colors
         /// <summary>

@@ -67,6 +67,7 @@
     <Compile Include="menus\PlayerOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageManager.cs" />
+    <Compile Include="UserDefaults.cs" />
     <Compile Include="VehicleData.cs" />
     <Compile Include="Vehicles.cs" />
   </ItemGroup>
