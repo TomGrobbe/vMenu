@@ -18,13 +18,13 @@ namespace vMenuClient
         private static CommonFunctions cf = MainMenu.cf;
 
         // Public variables (getters only), return the private variables.
-        public bool PlayerGodMode { get; private set; } = false;
+        public bool PlayerGodMode { get; private set; } = UserDefaults.PlayerGodMode;
         public bool PlayerInvisible { get; private set; } = false;
-        public bool PlayerStamina { get; private set; } = true;
-        public bool PlayerSuperJump { get; private set; } = false;
-        public bool PlayerNoRagdoll { get; private set; } = false;
-        public bool PlayerNeverWanted { get; private set; } = true;
-        public bool PlayerIsIgnored { get; private set; } = false;
+        public bool PlayerStamina { get; private set; } = UserDefaults.UnlimitedStamina;
+        public bool PlayerSuperJump { get; private set; } = UserDefaults.SuperJump;
+        public bool PlayerNoRagdoll { get; private set; } = UserDefaults.NoRagdoll;
+        public bool PlayerNeverWanted { get; private set; } = UserDefaults.NeverWanted;
+        public bool PlayerIsIgnored { get; private set; } = UserDefaults.EveryoneIgnorePlayer;
         public bool PlayerFrozen { get; private set; } = false;
 
         /// <summary>
