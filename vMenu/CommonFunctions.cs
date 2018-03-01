@@ -42,42 +42,42 @@ namespace vMenuClient
             else
             {
                 // check to see if the vehicle options menu exists but the player is not inside a vehicle.
-                if (MainMenu.VehicleOptionsMenu.vehicleModMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
+                if (MainMenu.VehicleOptionsMenu.VehicleModMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
                 {
                     // If the vehicle mod submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleModMenu.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleModMenu.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleModMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                     // If the vehicle liveries submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleLiveries.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleLiveries.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                     // If the vehicle colors submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleColors.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleColors.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                     // If the vehicle doors submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleDoorsMenu.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleDoorsMenu.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                     // If the vehicle windows submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleWindowsMenu.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleWindowsMenu.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                     // If the vehicle extras submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.vehicleComponents.Visible)
+                    if (MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.vehicleComponents.GoBack();
+                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.GoBack();
                         Notify.Error("You must be inside a vehicle to use this menu.");
                     }
                 }
@@ -529,6 +529,7 @@ namespace vMenuClient
         #endregion
 
         #region Spawn Vehicle
+        #region Overload Spawn Vehicle Function
         /// <summary>
         /// Spawn a vehicle by providing a vehicle name.
         /// If no name is specified or "custom" was passed, the user will be asked to input the vehicle name to spawn.
@@ -561,9 +562,9 @@ namespace vMenuClient
                 SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
             }
         }
+        #endregion
 
-
-
+        #region Main Spawn Vehicle Function
         /// <summary>
         /// Spawn a vehicle by providing the vehicle hash.
         /// </summary>
@@ -640,20 +641,56 @@ namespace vMenuClient
             // Set the previous vehicle to the new vehicle.
             previousVehicle = vehicle.Handle;
 
+            // If mod info about the vehicle was specified, check if it's not null.
             if (vehicleInfo != null)
             {
+                // Set the modkit so we can modify the car.
+                SetVehicleModKit(vehicle.Handle, 0);
+
+                // Loop through all extra ID's and set it if it was specified in the dictionary mods.
+                for (var extraId = 0; extraId < 15; extraId++)
+                {
+                    if (DoesExtraExist(vehicle.Handle, extraId))
+                    {
+                        vehicle.ToggleExtra(extraId, (vehicleInfo[$"extra{extraId.ToString()}"] == "true"));
+                    }
+                }
+
+                // Set all other Toggles.
+                int wheelType = int.Parse(vehicleInfo["wheelType"]);
+                SetVehicleWheelType(vehicle.Handle, wheelType);
+                bool customWheels = vehicleInfo["customWheels"] == "true";
+                SetVehicleMod(vehicle.Handle, 23, 0, customWheels);
+                if (vehicle.Model.IsBike)
+                {
+                    SetVehicleMod(vehicle.Handle, 24, 0, customWheels);
+                }
+                bool turbo = vehicleInfo["turbo"] == "true";
+                ToggleVehicleMod(vehicle.Handle, 18, turbo);
+
+                bool tireSmokeEnabled = vehicleInfo["tireSmoke"] == "true";
+                int tireR = int.Parse(vehicleInfo["tireSmokeR"]);
+                int tireG = int.Parse(vehicleInfo["tireSmokeG"]);
+                int tireB = int.Parse(vehicleInfo["tireSmokeB"]);
+                SetVehicleTyreSmokeColor(vehicle.Handle, tireR, tireG, tireB);
+                ToggleVehicleMod(vehicle.Handle, 20, tireSmokeEnabled);
+
+                bool xenonHeadlights = vehicleInfo["xenonHeadlights"] == "true";
+                ToggleVehicleMod(vehicle.Handle, 22, xenonHeadlights);
+
+                int oldLivery = int.Parse(vehicleInfo["oldLivery"]);
+                SetVehicleLivery(vehicle.Handle, oldLivery);
+
                 int primaryColor = int.Parse(vehicleInfo["primaryColor"].ToString());
                 int secondaryColor = int.Parse(vehicleInfo["secondaryColor"].ToString());
                 int pearlescentColor = int.Parse(vehicleInfo["pearlescentColor"].ToString());
                 int wheelColor = int.Parse(vehicleInfo["wheelsColor"].ToString());
 
-                SetVehicleModKit(vehicle.Handle, 0);
-
                 SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
                 SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
 
-
-                var skip = 8;
+                // Skip all non-vehicle "mod" options and loop through the remaining mods and apply them to the vehicle.
+                var skip = 8 + 24;
                 foreach (var mod in vehicleInfo)
                 {
                     skip--;
@@ -661,78 +698,134 @@ namespace vMenuClient
                     {
                         var key = int.Parse(mod.Key);
                         var val = int.Parse(mod.Value);
-                        SetVehicleMod(vehicle.Handle, key, val, false);
-                        //TriggerEvent("chatMessage", $"^1Key: ^4{key.ToString()} ^1Value: ^4{val.ToString()}");
+                        SetVehicleMod(vehicle.Handle, key, val, customWheels);
                     }
                 }
 
-                SetVehicleModKit(vehicle.Handle, 0);
+                // Set the vehicle colours last to make sure they don't get overridden by applying vehicle mods.
                 SetVehicleColours(vehicle.Handle, primaryColor, secondaryColor);
-                vehicle.Mods.PrimaryColor = (VehicleColor)primaryColor;
-                vehicle.Mods.SecondaryColor = (VehicleColor)secondaryColor;
-                vehicle.Mods.PearlescentColor = (VehicleColor)pearlescentColor;
-                vehicle.Mods.RimColor = (VehicleColor)wheelColor;
+                SetVehicleExtraColours(vehicle.Handle, pearlescentColor, wheelColor);
 
             }
         }
         #endregion
+        #endregion
 
         #region Save Vehicle
+        /// <summary>
+        /// Saves the vehicle the player is currently in to the client's kvp storage.
+        /// </summary>
         public async void SaveVehicle()
         {
+            // Only continue if the player is in a vehicle.
             if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
+                // Get the vehicle.
                 var veh = GetVehicle();
-                if (DoesEntityExist(veh) && (IsEntityAVehicle(veh)))
+                // Make sure the entity is actually a vehicle and it still exists, and it's not dead.
+                if (DoesEntityExist(veh) && (IsEntityAVehicle(veh)) && !IsEntityDead(veh))
                 {
-                    //var model = GetVehicleModel(veh);
+                    // Get some info about the car.
                     var model = (uint)GetEntityModel(veh);
                     var name = GetLabelText(GetDisplayNameFromVehicleModel(model));
+
                     int primaryColor = 0;
                     int secondaryColor = 0;
                     int pearlescentColor = 0;
                     int wheelColor = 0;
                     GetVehicleExtraColours(veh, ref pearlescentColor, ref wheelColor);
                     GetVehicleColours(veh, ref primaryColor, ref secondaryColor);
+
+                    // Store all info into a Dictionary.
                     Dictionary<string, string> dict = new Dictionary<string, string>();
-                    dict.Add("name", name);
+                    dict.Add("name", name != "NULL" ? name : "N/A");
                     dict.Add("model", model.ToString() ?? "");
+
+                    // Add all vehicle extras.
+                    for (var extraId = 0; extraId < 15; extraId++)
+                    {
+                        if (DoesExtraExist(veh, extraId))
+                        {
+                            if (IsVehicleExtraTurnedOn(veh, extraId))
+                            {
+                                dict.Add($"extra{extraId.ToString()}", "true");
+                            }
+                            else
+                            {
+                                dict.Add($"extra{extraId.ToString()}", "false");
+                            }
+                        }
+                        else
+                        {
+                            dict.Add($"extra{extraId.ToString()}", "false");
+                        }
+                    }
+
+                    // Add more stuff to the db.
+                    dict.Add("customWheels", GetVehicleModVariation(veh, 23) ? "true" : "false");
+                    dict.Add("wheelType", GetVehicleWheelType(veh).ToString());
+                    dict.Add("turbo", IsToggleModOn(veh, 18) ? "true" : "false");
+
+                    dict.Add("tireSmoke", IsToggleModOn(veh, 20) ? "true" : "false");
+                    var tireR = 255;
+                    var tireG = 255;
+                    var tireB = 255;
+                    GetVehicleTyreSmokeColor(veh, ref tireR, ref tireG, ref tireB);
+
+                    dict.Add("tireSmokeR", tireR.ToString());
+                    dict.Add("tireSmokeG", tireG.ToString());
+                    dict.Add("tireSmokeB", tireB.ToString());
+
+                    dict.Add("xenonHeadlights", IsToggleModOn(veh, 22) ? "true" : "false");
+                    dict.Add("oldLivery", GetVehicleLivery(veh).ToString());
+
                     dict.Add("primaryColor", primaryColor.ToString());
                     dict.Add("secondaryColor", secondaryColor.ToString());
                     dict.Add("wheelsColor", wheelColor.ToString());
                     dict.Add("pearlescentColor", pearlescentColor.ToString());
+
                     dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
                     dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
+
+                    // Now add all vehicle mods that are dynamic (different per vehicle model).
                     Vehicle vehicle = new Vehicle(veh);
-                    foreach (var mod in vehicle.Mods.GetAllMods())
+                    foreach (VehicleMod mod in vehicle.Mods.GetAllMods())
                     {
                         var modType = ((int)mod.ModType).ToString();
                         var modValue = mod.Index;
                         dict.Add(modType.ToString(), modValue.ToString());
                     }
 
+                    // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
                     var saveName = await GetUserInputAsync("Enter a save name", "", 15);
+                    // If the name is not invalid.
                     if (saveName != "NULL")
                     {
+                        // Save everything from the dictionary into the client's kvp storage.
+                        // If the save was successfull:
                         if (sm.SaveDictionary("veh_" + saveName, dict, false))
                         {
                             Notify.Success($"Vehicle {saveName} saved.");
                         }
+                        // If the save was not successfull:
                         else
                         {
                             Notify.Error("Saving failed because this save name is already in use.");
                         }
                     }
+                    // The user did not enter a valid name to use as a save name for this vehicle.
                     else
                     {
                         Notify.Error("Saving failed because you did not enter a valid save name.");
                     }
                 }
+                // The player is not inside a vehicle, or the vehicle is dead/not existing so we won't do anything. Only alert the user.
                 else
                 {
                     Notify.Error("You need to be in a vehicle.");
                 }
             }
+            // The player is not inside a vehicle.
             else
             {
                 Notify.Error("You need to be in a vehicle.");
@@ -751,69 +844,49 @@ namespace vMenuClient
             var dict = sm.GetSavedDictionary(saveName);
             return dict;
         }
+        #endregion
 
+        #region Get Saved Vehicles Dictionary
         /// <summary>
-        /// Get a list of all saved vehicles.
+        /// Get a dictionary containing all saved vehicle names (keys) and a nested dictionary for all the vehicle modifications
+        /// and customization for each specific vehicle.
         /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, Dictionary<string, string>> GetSavedVehicleList()
+        /// <returns>A dictionary containing all saved vehicle names (keys) and the vehicle info for each vehicle.</returns>
+        public Dictionary<string, Dictionary<string, string>> GetSavedVehiclesDictionary()
         {
+            // Create a list to store all saved vehicle names in.
             var savedVehicleNames = new List<string>();
+            // Start looking for kvps starting with veh_
             var findHandle = StartFindKvp("veh_");
+            // Keep looking...
             while (true)
             {
+                // Get the kvp string key.
                 var vehString = FindKvp(findHandle);
+
+                // If it exists then the key to the list.
                 if (vehString != "" && vehString != null && vehString != "NULL")
                 {
                     savedVehicleNames.Add(vehString);
                 }
+                // Otherwise stop.
                 else
                 {
                     break;
                 }
             }
+            // Create a Dictionary to store all vehicle information in.
             var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
+            // Loop through all save names (keys) from the list above, convert the string into a dictionary 
+            // and add it to the dictionary above, with the vehicle save name as the key.
             foreach (var saveName in savedVehicleNames)
             {
                 vehiclesList.Add(saveName, sm.GetSavedDictionary(saveName));
             }
+            // Return the vehicle dictionary containing all vehicle save names (keys) linked to the correct vehicle
+            // including all vehicle mods/customization parts.
             return vehiclesList;
         }
-
-        ///// <summary>
-        ///// Set an upgrade/mod for the specified vehicle.
-        ///// </summary>
-        ///// <param name="vehicle">The vehicle handle.</param>
-        ///// <param name="modType">The mod type.</param>
-        ///// <param name="modValue">The mod value.</param>
-        ///// <param name="customWheels">Apply custom wheels?</param>
-        //public void ApplyVehicleMod(int vehicle, int modType, int modValue, bool customWheels = false)
-        //{
-        //    if (DoesEntityExist(vehicle) && IsEntityAVehicle(vehicle))
-        //    {
-        //        SetVehicleModKit(vehicle, 0);
-        //        SetVehicleMod(vehicle, modType, modValue, customWheels);
-        //    }
-        //    else
-        //    {
-        //        Notify.Error("Could not apply vehicle upgrades because the specified vehicle does not exist.");
-        //    }
-        //}
-
-        //public void ApplyVehicleColors(int vehicle, int primaryColor, int secondaryColor, int pearlescentColor, int wheelColor)
-        //{
-        //    if (DoesEntityExist(vehicle) && IsEntityAVehicle(vehicle))
-        //    {
-        //        SetVehicleColours(vehicle, primaryColor, secondaryColor);
-        //        SetVehicleExtraColours(vehicle, pearlescentColor, wheelColor);
-        //    }
-        //    else
-        //    {
-        //        Notify.Error("Could not apply vehicle color changes because the specified vehicle does not exist.");
-        //    }
-        //}
-
-
         #endregion
 
         #region Load Model
@@ -951,21 +1024,31 @@ namespace vMenuClient
         #endregion
 
         #region Set License Plate Text
+        /// <summary>
+        /// Set the license plate text using the player's custom input.
+        /// </summary>
         public async void SetLicensePlateTextAsync()
         {
+            // Get the input.
             var text = await GetUserInputAsync("Enter License Plate", maxInputLength: 8);
+            // If the input is valid.
             if (text != "NULL")
             {
+                // Get the vehicle.
                 var veh = GetVehicle();
+                // If it exists.
                 if (DoesEntityExist(veh))
                 {
+                    // Set the license plate.
                     SetVehicleNumberPlateText(veh, text);
                 }
+                // If it doesn't exist, notify the user.
                 else
                 {
                     Notify.Error("You're not inside a vehicle!");
                 }
             }
+            // No valid text was given.
             else
             {
                 Notify.Alert("You did not enter a valid license plate text!");
@@ -979,7 +1062,7 @@ namespace vMenuClient
         /// Converts a PascalCaseString to a Propper Case String.
         /// </summary>
         /// <param name="inputString"></param>
-        /// <returns></returns>
+        /// <returns>Input string converted to a normal sentence.</returns>
         public string ToProperString(string inputString)
         {
             var outputString = "";
@@ -1249,6 +1332,12 @@ namespace vMenuClient
         #endregion
 
         #region StringToStringArray
+        /// <summary>
+        /// Converts the inputString into 1, 2 or 3 strings in a string[] (array).
+        /// Each string in the array is up to 99 characters long at max.
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <returns>String[] containing 1, 2 or 3 strings.</returns>
         public string[] StringToArray(string inputString)
         {
             var size = (inputString.Length > 99 ? (inputString.Length > 198 ? 3 : 2) : 1);
