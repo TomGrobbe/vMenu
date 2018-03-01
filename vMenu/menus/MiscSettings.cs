@@ -32,7 +32,7 @@ namespace vMenuClient
             };
 
             // Create the menu items.
-            UIMenuItem tptowp = new UIMenuItem("Teleport To WayPoint", "Teleport to the waypoint on your map.");
+            UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
 
             // Add menu items to the menu.
             menu.AddItem(tptowp);
