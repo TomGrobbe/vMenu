@@ -29,10 +29,10 @@ namespace vMenuClient
         public UIMenu DeleteConfirmMenu { get; private set; }
 
         // Public variables (getters only), return the private variables.
-        public bool VehicleGodMode { get; private set; } = false;
-        public bool VehicleEngineAlwaysOn { get; private set; } = true;
-        public bool VehicleNoSiren { get; private set; } = false;
-        public bool VehicleNoBikeHelemet { get; private set; } = false;
+        public bool VehicleGodMode { get; private set; } = UserDefaults.VehicleGodMode;
+        public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
+        public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
+        public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
