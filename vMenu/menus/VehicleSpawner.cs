@@ -17,8 +17,8 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
-        public bool SpawnInVehicle { get; private set; } = true;
-        public bool ReplaceVehicle { get; private set; } = true;
+        public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
+        public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
 
         private void CreateMenu()
         {
