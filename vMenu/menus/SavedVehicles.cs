@@ -19,12 +19,15 @@ namespace vMenuClient
         private Dictionary<string, Dictionary<string, string>> SavedVehiclesDict;
 
 
-
+        /// <summary>
+        /// Creates the menu.
+        /// </summary>
         private void CreateMenu()
         {
+            string menuTitle = "Saved Vehicles";
             #region Create menus and submenus
             // Create the menu.
-            menu = new UIMenu("Saved Vehicles", "Select an option", true)
+            menu = new UIMenu(menuTitle, "Select an option", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -32,14 +35,14 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
             // Create submenus.
-            UIMenu savedVehicles = new UIMenu("Saved Vehicles", "Spawn Saved Vehicle", true)
+            UIMenu savedVehicles = new UIMenu(menuTitle, "Spawn Saved Vehicle", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UIMenu deleteSavedVehicles = new UIMenu("Saved Vehicles", "~r~Delete Saved Vehicle", true)
+            UIMenu deleteSavedVehicles = new UIMenu(menuTitle, "~r~Delete Saved Vehicle", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -50,7 +53,8 @@ namespace vMenuClient
 
             #region Create, add and bind buttons to the menus.
             // Create menu buttons.
-            UIMenuItem saveVeh = new UIMenuItem("~g~Save Vehicle", "Save your current vehicle.");
+            UIMenuItem saveVeh = new UIMenuItem("Save Vehicle", "Save your current vehicle.");
+            saveVeh.SetLeftBadge(UIMenuItem.BadgeStyle.Star);
             UIMenuItem savedVehiclesBtn = new UIMenuItem("Spawn Vehicle", "Spawn a saved vehicle from the list.");
             savedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Car);
             UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Vehicle", "~r~Delete a saved vehicle.");
@@ -83,7 +87,7 @@ namespace vMenuClient
                     savedVehicles.MenuItems.Clear();
 
                     // Get all saved vehicles.
-                    SavedVehiclesDict = cf.GetSavedVehicleList();
+                    SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
 
                     // Loop through all saved vehicles and create a button for it, then add that button to the submenu.
                     foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
@@ -116,7 +120,7 @@ namespace vMenuClient
                 {
                     deleteSavedVehicles.MenuItems.Clear();
 
-                    SavedVehiclesDict = cf.GetSavedVehicleList();
+                    SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
 
                     foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
                     {
