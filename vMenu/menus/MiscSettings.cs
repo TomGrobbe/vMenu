@@ -17,18 +17,30 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
+        /// <summary>
+        /// Creates the menu.
+        /// </summary>
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings")//, MainMenu.MenuPosition)
+            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", true)
             {
-                //ScaleWithSafezone = false,
-                MouseEdgeEnabled = false
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
             };
+
+            // Create the menu items.
             UIMenuItem tptowp = new UIMenuItem("Teleport To WayPoint", "Teleport to the waypoint on your map.");
+
+            // Add menu items to the menu.
             menu.AddItem(tptowp);
+
+            // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
+                // Teleport to waypoint.
                 if (item == tptowp)
                 {
                     cf.TeleportToWp();

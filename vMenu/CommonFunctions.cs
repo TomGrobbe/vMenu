@@ -271,6 +271,22 @@ namespace vMenuClient
                 return;
             }
         }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveToWp()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveWander()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Teleport To Player / Coords
@@ -1230,6 +1246,25 @@ namespace vMenuClient
         }
 
 
+        #endregion
+
+        #region StringToStringArray
+        public string[] StringToArray(string inputString)
+        {
+            var size = (inputString.Length > 99 ? (inputString.Length > 198 ? 3 : 2) : 1);
+            string[] outputString = new string[size];
+            int length = inputString.Length;
+            for (var x = 0; x < size; x++)
+            {
+                var tmplength = (length >= 99 ? 99 : length);
+
+                var tmpstring = inputString.Substring(99 * x, tmplength);
+                outputString[x] = tmpstring;
+
+                length -= tmplength;
+            }
+            return outputString;
+        }
         #endregion
     }
 
