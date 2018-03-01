@@ -131,6 +131,24 @@ namespace vMenuClient
             get { return GetSettingsBool("miscDeathNotifications"); }
             set { SetSavedSettingsBool("miscDeathNotifications", value); }
         }
+
+        public static bool SpeedKmh
+        {
+            get { return GetSettingsBool("miscSpeedoKmh"); }
+            set { SetSavedSettingsBool("miscSpeedoKmh", value); }
+        }
+
+        public static bool SpeedMph
+        {
+            get { return GetSettingsBool("miscSpeedoMph"); }
+            set { SetSavedSettingsBool("miscSpeedoMph", value); }
+        }
+
+        public static bool ShowLocation
+        {
+            get { return GetSettingsBool("miscShowLocation"); }
+            set { SetSavedSettingsBool("miscShowLocation", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -163,7 +181,7 @@ namespace vMenuClient
             {
                 // Some options should be enabled by default:
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
-                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted")
+                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "miscShowLocation")
                 {
                     SetSavedSettingsBool(SETTINGS_PREFIX + kvpString, true);
                     return true;

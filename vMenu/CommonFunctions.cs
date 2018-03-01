@@ -1355,6 +1355,84 @@ namespace vMenuClient
             return outputString;
         }
         #endregion
+
+        #region Hud Functions
+
+        /// <summary>
+        /// Draw text on the screen at the provided x and y locations.
+        /// </summary>
+        /// <param name="text">The text to display.</param>
+        /// <param name="xPosition">The x position for the text draw origin.</param>
+        /// <param name="yPosition">The y position for the text draw origin.</param>
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition)
+        {
+            DrawTextOnScreen(text, xPosition, yPosition, size: 0.48f);
+        }
+
+        /// <summary>
+        /// Draw text on the screen at the provided x and y locations.
+        /// </summary>
+        /// <param name="text">The text to display.</param>
+        /// <param name="xPosition">The x position for the text draw origin.</param>
+        /// <param name="yPosition">The y position for the text draw origin.</param>
+        /// <param name="size">The size of the text.</param>
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size)
+        {
+            DrawTextOnScreen(text, xPosition, yPosition, size, CitizenFX.Core.UI.Alignment.Left);
+        }
+
+        /// <summary>
+        /// Draw text on the screen at the provided x and y locations.
+        /// </summary>
+        /// <param name="text">The text to display.</param>
+        /// <param name="xPosition">The x position for the text draw origin.</param>
+        /// <param name="yPosition">The y position for the text draw origin.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification)
+        {
+            DrawTextOnScreen(text, xPosition, yPosition, size, justification, 6);
+        }
+
+        /// <summary>
+        /// Draw text on the screen at the provided x and y locations.
+        /// </summary>
+        /// <param name="text">The text to display.</param>
+        /// <param name="xPosition">The x position for the text draw origin.</param>
+        /// <param name="yPosition">The y position for the text draw origin.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
+        /// <param name="font">Specify the font to use (0-8).</param>
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font)
+        {
+            DrawTextOnScreen(text, xPosition, yPosition, size, justification, font, false);
+        }
+
+        /// <summary>
+        /// Draw text on the screen at the provided x and y locations.
+        /// </summary>
+        /// <param name="text">The text to display.</param>
+        /// <param name="xPosition">The x position for the text draw origin.</param>
+        /// <param name="yPosition">The y position for the text draw origin.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
+        /// <param name="font">Specify the font to use (0-8).</param>
+        /// <param name="disableTextOutline">Disables the default text outline.</param>
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
+        {
+            SetTextFont(font);
+            SetTextScale(1.0f, size);
+            if (justification == CitizenFX.Core.UI.Alignment.Right)
+            {
+                SetTextWrap(0f, xPosition);
+            }
+            SetTextJustification((int)justification);
+            if (!disableTextOutline) { SetTextOutline(); }
+            BeginTextCommandDisplayText("STRING");
+            AddTextComponentSubstringPlayerName(text);
+            EndTextCommandDisplayText(xPosition, yPosition);
+        }
+        #endregion
     }
 
 }
