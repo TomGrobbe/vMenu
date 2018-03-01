@@ -8,14 +8,11 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
-    public class UserDefaults : BaseScript
+    public static class UserDefaults
     {
 
         // Constants.
         private const string SETTINGS_PREFIX = "settings_";
-
-        // Constructor
-        public UserDefaults() { }
 
         #region Public variables.
         #region PlayerOptions
@@ -158,7 +155,7 @@ namespace vMenuClient
         private static bool GetSettingsBool(string kvpString)
         {
             // Get the current value.
-            var savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
+            string savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
             // Check if it exists.
             bool exists = savedValue != "" && savedValue != null;
             // If not, create it and save the new default value of false.
@@ -168,16 +165,22 @@ namespace vMenuClient
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
                     || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted")
                 {
-                    SetSavedSettingsBool(kvpString, true);
+                    SetSavedSettingsBool(SETTINGS_PREFIX + kvpString, true);
+                    return true;
                 }
                 // All other options should be disabled by default:
                 else
                 {
-                    SetSavedSettingsBool(kvpString, false);
+                    SetSavedSettingsBool(SETTINGS_PREFIX + kvpString, false);
+                    return false;
                 }
             }
-            // Return the (new) value.
-            return (GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}").ToLower() == "true");
+            else
+            {
+                // Return the (new) value.
+                return (GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}").ToLower() == "true");
+            }
+
         }
 
         /// <summary>
