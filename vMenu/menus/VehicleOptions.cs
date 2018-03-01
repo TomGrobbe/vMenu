@@ -1117,7 +1117,7 @@ namespace vMenuClient
                         // If the player is on a motorcycle, also change the back wheels.
                         if (IsThisModelABike((uint)GetEntityModel(veh)))
                         {
-                            SetVehicleMod(veh, 24, GetVehicleMod(veh, 24), !GetVehicleModVariation(veh, 23));
+                            SetVehicleMod(veh, 24, GetVehicleMod(veh, 24), GetVehicleModVariation(veh, 23));
                         }
                     }
                     // Toggle Tire Smoke
