@@ -61,9 +61,9 @@ namespace vMenuClient
             menu.AddItem(hideRadar);
             menu.AddItem(hideHud);
             menu.AddItem(showLocation);
-            menu.AddItem(saveSettings);
             menu.AddItem(joinQuitNotifs);
             menu.AddItem(deathNotifs);
+            menu.AddItem(saveSettings);
 
             // Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
