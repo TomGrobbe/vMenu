@@ -1,7 +1,7 @@
 #### Latest Builds
-|Master (Stable)|Development (Beta)|
-|:-|:-|
-|[![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=master)](https://travis-ci.com/TomGrobbe/vMenu) | [![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=development)](https://travis-ci.com/TomGrobbe/vMenu)|
+|Master (Beta)|Development (Alpha/Latest)|Production (Stable)|
+|:-:|:-:|:-:|
+|[![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=master)](https://travis-ci.com/TomGrobbe/vMenu) | [![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=development)](https://travis-ci.com/TomGrobbe/vMenu)|[![Build Status](https://travis-ci.com/TomGrobbe/vMenu.svg?token=ssVStPpK5ekxFpbVzc3k&branch=production)](https://travis-ci.com/TomGrobbe/vMenu)|
 
 --------
 
