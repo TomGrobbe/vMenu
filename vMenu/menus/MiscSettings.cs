@@ -50,7 +50,8 @@ namespace vMenuClient
             UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
             UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
             saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
-
+            UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
+            UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
 
             // Add menu items to the menu.
             menu.AddItem(tptowp);
@@ -61,6 +62,8 @@ namespace vMenuClient
             menu.AddItem(hideHud);
             menu.AddItem(showLocation);
             menu.AddItem(saveSettings);
+            menu.AddItem(joinQuitNotifs);
+            menu.AddItem(deathNotifs);
 
             // Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
@@ -88,6 +91,14 @@ namespace vMenuClient
                 else if (item == showLocation)
                 {
                     ShowLocation = _checked;
+                }
+                else if (item == deathNotifs)
+                {
+                    DeathNotifications = _checked;
+                }
+                else if (item == joinQuitNotifs)
+                {
+                    JoinQuitNotifications = _checked;
                 }
             };
 

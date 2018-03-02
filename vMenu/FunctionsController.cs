@@ -23,12 +23,19 @@ namespace vMenuClient
 
         private int LastVehicle = 0;
         private bool SwitchedVehicle = false;
+        //private PlayerList playerList = new PlayerList();
+        private Dictionary<int, string> playerList = new Dictionary<int, string>();
+        private List<int> deadPlayers = new List<int>();
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public FunctionsController()
         {
+            foreach (Player p in new PlayerList())
+            {
+                playerList.Add(p.Handle, p.Name);
+            }
             Tick += OnTick;
         }
 
@@ -321,6 +328,95 @@ namespace vMenuClient
                         var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
                         cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
                     }
+
+                    #region Join / Quit notifications
+                    // Join/Quit notifications
+                    if (MainMenu.MiscSettingsMenu.JoinQuitNotifications)
+                    {
+                        PlayerList plist = new PlayerList();
+                        Dictionary<int, string> pl = new Dictionary<int, string>();
+                        foreach (Player p in plist)
+                        {
+                            pl.Add(p.Handle, p.Name);
+                        }
+                        // new player joined.
+                        if (pl.Count > playerList.Count)
+                        {
+                            foreach (KeyValuePair<int, string> player in pl)
+                            {
+                                if (!playerList.Contains(player))
+                                {
+                                    Notify.Custom($"~g~{player.Value}~s~ joined the server.");
+                                }
+                            }
+                        }
+                        // player left.
+                        else if (pl.Count < playerList.Count)
+                        {
+                            foreach (KeyValuePair<int, string> player in playerList)
+                            {
+                                if (!pl.Contains(player))
+                                {
+                                    Notify.Custom($"~r~{player.Value}~s~ left the server.");
+                                }
+                            }
+                        }
+                        playerList = pl;
+                    }
+                    #endregion
+
+                    #region Death Notifications
+                    // Death notifications
+                    if (MainMenu.MiscSettingsMenu.DeathNotifications)
+                    {
+                        PlayerList pl = new PlayerList();
+                        foreach (Player p in pl)
+                        {
+                            if (p.IsDead)
+                            {
+                                if (deadPlayers.Contains(p.Handle)) { return; }
+                                var killer = p.Character.GetKiller();
+                                if (killer != null)
+                                {
+                                    if (killer.Handle != p.Character.Handle)
+                                    {
+                                        if (killer.Exists())
+                                        {
+                                            foreach (Player playerKiller in pl)
+                                            {
+                                                if (playerKiller.Character.Handle == killer.Handle)
+                                                {
+                                                    Notify.Custom($"~o~{p.Name} ~s~has been murdered by ~y~{playerKiller.Name}~s~.");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Notify.Custom($"~o~{p.Name} ~s~has been murdered.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Notify.Custom($"~o~{p.Name} ~s~committed suicide.");
+                                    }
+                                }
+                                else
+                                {
+                                    Notify.Custom($"~o~{p.Name} ~s~died.");
+                                }
+                                deadPlayers.Add(p.Handle);
+                            }
+                            else
+                            {
+                                if (deadPlayers.Contains(p.Handle))
+                                {
+                                    deadPlayers.Remove(p.Handle);
+                                }
+                            }
+                        }
+                    }
+                    #endregion
                 }
                 #endregion
             }
