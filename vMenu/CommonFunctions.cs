@@ -1433,6 +1433,35 @@ namespace vMenuClient
             EndTextCommandDisplayText(xPosition, yPosition);
         }
         #endregion
+
+        #region Set Player Skin
+        public async void SetPlayerSkin(string modelName)
+        {
+            var model = (uint)GetHashKey(modelName);
+            if (IsModelInCdimage(model))
+            {
+                RequestModel(model);
+                while (!HasModelLoaded(model))
+                {
+                    await Delay(0);
+                }
+                var m = new Model(int.Parse(model.ToString()));
+                var successfull = await Game.Player.ChangeModel(m);
+                if (successfull)
+                {
+                    Notify.Custom("yes");
+                }
+                else
+                {
+                    Notify.Error("no");
+                }
+            }
+            else
+            {
+                Notify.Custom("Sorry, this model is unavailable.");
+            }
+        }
+        #endregion
     }
 
 }
