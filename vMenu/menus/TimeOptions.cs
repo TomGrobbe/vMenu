@@ -17,7 +17,9 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
-
+        /// <summary>
+        /// Creates the menu.
+        /// </summary>
         private void CreateMenu()
         {
             // Create the menu.
@@ -29,7 +31,8 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            UIMenuItem freezeTimeToggle = new UIMenuItem("Toggle Freeze Time", "Enable or disable time freezing.");
+            // Create all menu items.
+            UIMenuItem freezeTimeToggle = new UIMenuItem("~h~Freeze Time", "Enable or disable time freezing.");
             UIMenuItem earlymorning = new UIMenuItem("Early Morning", "Set the time to 06:00.");
             earlymorning.SetRightLabel("06:00");
             UIMenuItem morning = new UIMenuItem("Morning", "Set the time to 09:00.");
@@ -47,6 +50,7 @@ namespace vMenuClient
             UIMenuItem night = new UIMenuItem("Night", "Set the time to 03:00.");
             night.SetRightLabel("03:00");
 
+            // Add all menu items to the menu.
             menu.AddItem(freezeTimeToggle);
             menu.AddItem(earlymorning);
             menu.AddItem(morning);
@@ -57,24 +61,26 @@ namespace vMenuClient
             menu.AddItem(midnight);
             menu.AddItem(night);
 
+            // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
+                // If it's the freeze time button.
                 if (item == freezeTimeToggle)
                 {
+                    Subtitle.Info($"Time will now {(EventManager.freezeTime ? "~y~continue" : "~o~freeze")}~s~.", prefix: "Info:");
                     cf.UpdateServerTime(EventManager.currentHours, EventManager.currentMinutes, !EventManager.freezeTime);
                 }
                 else
                 {
-                    if (((index * 3) + 3) < 23)
-                    {
-                        cf.UpdateServerTime((index * 3) + 3, 0, EventManager.freezeTime);
-                    }
-                    else
-                    {
-                        cf.UpdateServerTime((index * 3) + 3 - 24, 0, EventManager.freezeTime);
-                    }
+                    // Set the time using the index and some math :)
+                    // eg: index = 3 (12:00) ---> 3 * 3 (=9) + 3 [= 12] ---> 12:00
+                    // eg: index = 8 (03:00) ---> 8 * 3 (=24) + 3 (=27, >23 so 27-24) [=3] ---> 03:00
+                    var newHour = (((index * 3) + 3 < 23) ? (index * 3) + 3 : ((index * 3) + 3) - 24);
+                    var newMinute = 0;
+                    Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~s~:~y~" +
+                        $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~s~.", prefix: "Info:");
+                    cf.UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
                 }
-
             };
         }
 
