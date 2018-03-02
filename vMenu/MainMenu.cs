@@ -40,6 +40,7 @@ namespace vMenuClient
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
         //public StorageManager Sm { get; } = new StorageManager();
+        
 
         public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
@@ -376,6 +377,7 @@ namespace vMenuClient
                         if (IsPedInAnyVehicle(PlayerPedId(), false))
                         {
                             Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
+                            Game.DisableControlThisFrame(0, Control.VehicleDuck);
                         }
                     }
                     // Disable Shared Controls
