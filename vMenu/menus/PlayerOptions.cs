@@ -21,6 +21,8 @@ namespace vMenuClient
         public bool PlayerGodMode { get; private set; } = UserDefaults.PlayerGodMode;
         public bool PlayerInvisible { get; private set; } = false;
         public bool PlayerStamina { get; private set; } = UserDefaults.UnlimitedStamina;
+        public bool PlayerFastRun { get; private set; } = UserDefaults.FastRun;
+        public bool PlayerFastSwim { get; private set; } = UserDefaults.FastSwim;
         public bool PlayerSuperJump { get; private set; } = UserDefaults.SuperJump;
         public bool PlayerNoRagdoll { get; private set; } = UserDefaults.NoRagdoll;
         public bool PlayerNeverWanted { get; private set; } = UserDefaults.NeverWanted;
@@ -103,11 +105,13 @@ namespace vMenuClient
                 // Fast run toggled.
                 else if (item == fastRunCheckbox)
                 {
+                    PlayerFastRun = _checked;
                     SetRunSprintMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
                 }
                 // Fast swim toggled.
                 else if (item == fastSwimCheckbox)
                 {
+                    PlayerFastSwim = _checked;
                     SetSwimMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
                 }
                 // Super jump toggled.

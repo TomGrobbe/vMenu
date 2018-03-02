@@ -132,19 +132,19 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscDeathNotifications", value); }
         }
 
-        public static bool SpeedKmh
+        public static bool MiscSpeedKmh
         {
             get { return GetSettingsBool("miscSpeedoKmh"); }
             set { SetSavedSettingsBool("miscSpeedoKmh", value); }
         }
 
-        public static bool SpeedMph
+        public static bool MiscSpeedMph
         {
             get { return GetSettingsBool("miscSpeedoMph"); }
             set { SetSavedSettingsBool("miscSpeedoMph", value); }
         }
 
-        public static bool ShowLocation
+        public static bool MiscShowLocation
         {
             get { return GetSettingsBool("miscShowLocation"); }
             set { SetSavedSettingsBool("miscShowLocation", value); }
@@ -181,15 +181,15 @@ namespace vMenuClient
             {
                 // Some options should be enabled by default:
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
-                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "miscShowLocation")
+                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted")
                 {
-                    SetSavedSettingsBool(SETTINGS_PREFIX + kvpString, true);
+                    SetSavedSettingsBool(kvpString, true);
                     return true;
                 }
                 // All other options should be disabled by default:
                 else
                 {
-                    SetSavedSettingsBool(SETTINGS_PREFIX + kvpString, false);
+                    SetSavedSettingsBool(kvpString, false);
                     return false;
                 }
             }
@@ -208,12 +208,61 @@ namespace vMenuClient
         /// <param name="newValue">The new value for this setting.</param>
         private static void SetSavedSettingsBool(string kvpString, bool newValue)
         {
-            SetResourceKvp(kvpString, newValue.ToString());
+            SetResourceKvp(SETTINGS_PREFIX + kvpString, newValue.ToString());
         }
+        #endregion
+
+        #region Public Functions
+
+        /// <summary>
+        /// Saves all personal settings to the client storage.
+        /// </summary>
+        public static void SaveSettingsAsync()
+        {
+            if (MainMenu.PlayerOptionsMenu != null)
+            {
+                EveryoneIgnorePlayer = MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
+                FastRun = MainMenu.PlayerOptionsMenu.PlayerFastRun;
+                FastSwim = MainMenu.PlayerOptionsMenu.PlayerFastSwim;
+                NeverWanted = MainMenu.PlayerOptionsMenu.PlayerNeverWanted;
+                NoRagdoll = MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
+                PlayerGodMode = MainMenu.PlayerOptionsMenu.PlayerGodMode;
+                SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
+                UnlimitedStamina = MainMenu.PlayerOptionsMenu.PlayerStamina;
+            }
+
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                MiscDeathNotifications = MainMenu.MiscSettingsMenu.DeathNotifications;
+                MiscJoinQuitNotifications = MainMenu.MiscSettingsMenu.JoinQuitNotifications;
+                MiscSpeedKmh = MainMenu.MiscSettingsMenu.ShowSpeedoKmh;
+                MiscSpeedMph = MainMenu.MiscSettingsMenu.ShowSpeedoMph;
+                MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
+            }
+
+            if (MainMenu.VehicleOptionsMenu != null)
+            {
+                VehicleEngineAlwaysOn = MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn;
+                VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
+                VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
+                VehicleNoSiren = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
+            }
+
+            if (MainMenu.VehicleSpawnerMenu != null)
+            {
+                VehicleSpawnerReplacePrevious = MainMenu.VehicleSpawnerMenu.ReplaceVehicle;
+                VehicleSpawnerSpawnInside = MainMenu.VehicleSpawnerMenu.SpawnInVehicle;
+            }
+
+            // Todo:
+            //VoiceChatEnabled
+            //WeaponsNoReload
+            //WeaponsUnlimitedAmmo
 
 
+            MainMenu.Notify.Success("Your settings have been saved.");
 
-
+        }
 
         #endregion
     }

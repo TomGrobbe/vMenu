@@ -17,12 +17,14 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
 
-        public bool ShowSpeedoKmh { get; private set; } = UserDefaults.SpeedKmh;
-        public bool ShowSpeedoMph { get; private set; } = UserDefaults.SpeedMph;
+        public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
+        public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
         public bool ShowCoordinates { get; private set; } = false;
         public bool HideHud { get; private set; } = false;
         public bool HideRadar { get; private set; } = false;
-        public bool ShowLocation { get; private set; } = UserDefaults.ShowLocation;
+        public bool ShowLocation { get; private set; } = UserDefaults.MiscShowLocation;
+        public bool DeathNotifications { get; private set; } = UserDefaults.MiscDeathNotifications;
+        public bool JoinQuitNotifications { get; private set; } = UserDefaults.MiscJoinQuitNotifications;
 
         /// <summary>
         /// Creates the menu.
@@ -46,6 +48,9 @@ namespace vMenuClient
             UIMenuCheckboxItem hideRadar = new UIMenuCheckboxItem("Hide Radar", HideRadar, "Hide the radar/minimap.");
             UIMenuCheckboxItem hideHud = new UIMenuCheckboxItem("Hide Hud", HideHud, "Hide all hud elements.");
             UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
+            UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
+            saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+
 
             // Add menu items to the menu.
             menu.AddItem(tptowp);
@@ -55,6 +60,7 @@ namespace vMenuClient
             menu.AddItem(hideRadar);
             menu.AddItem(hideHud);
             menu.AddItem(showLocation);
+            menu.AddItem(saveSettings);
 
             // Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
@@ -92,6 +98,10 @@ namespace vMenuClient
                 if (item == tptowp)
                 {
                     cf.TeleportToWp();
+                }
+                else if (item == saveSettings)
+                {
+                    UserDefaults.SaveSettingsAsync();
                 }
             };
         }
