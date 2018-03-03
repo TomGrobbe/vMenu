@@ -157,7 +157,7 @@ namespace vMenuClient
                 if (item == spawnByName)
                 {
                     // Passing "custom" as the vehicle name, will ask the user for input.
-                    cf.SpawnVehicle("custom");
+                    cf.SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
                 }
             };
 
