@@ -12,11 +12,20 @@ namespace vMenuClient
     public class PlayerAppearance
     {
         // Variables
-        private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
+        private StorageManager sm = new StorageManager();
 
+        private UIMenu menu;
+
+        private UIMenu pedTextures;
+        private UIMenu spawnSavedPedMenu;
+        private UIMenu deleteSavedPedMenu;
+
+        /// <summary>
+        /// Creates the menu(s).
+        /// </summary>
         private void CreateMenu()
         {
             // Create the menu.
@@ -28,12 +37,83 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            for (var i = 0; i < (modelNames.Count / 50) + 1; i++)
+            //Create the submenus.
+            spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn a saved ped", true)
             {
-                var pedList = new List<dynamic>();
-                for (var ii = 0; ii < 50; ii++)
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+            deleteSavedPedMenu = new UIMenu("Saved Peds", "Delete a saved ped", true)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+            pedTextures = new UIMenu("Ped Customization", "Customize your ped", true)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+
+            // Add the (submenus) to the menu pool.
+            MainMenu.Mp.Add(pedTextures);
+            MainMenu.Mp.Add(spawnSavedPedMenu);
+            MainMenu.Mp.Add(deleteSavedPedMenu);
+
+            // Create the menu items.
+            UIMenuItem pedCustomization = new UIMenuItem("Ped Customization", "Modify your ped's appearance.");
+            UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your ped and your ped's clothes.");
+            UIMenuItem spawnSavedPed = new UIMenuItem("Spawn Saved Ped", "Spawn one of your saved peds.");
+            UIMenuItem deleteSavedPed = new UIMenuItem("Delete Saved Ped", "Delete one of your saved peds.");
+
+            // Add items to the mneu.
+            menu.AddItem(pedCustomization);
+            menu.AddItem(savePed);
+            menu.AddItem(spawnSavedPed);
+            menu.AddItem(deleteSavedPed);
+
+            // Bind items to the submenus.
+            menu.BindMenuToItem(pedTextures, pedCustomization);
+            menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
+            menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
+
+            // Handle button presses.
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == pedCustomization)
                 {
-                    var index = ((i * 50) + ii);
+                    RefreshCustomizationMenu();
+                }
+                else if (item == spawnSavedPed)
+                {
+                    RefreshSpawnSavedPedMenu();
+                }
+                else if (item == deleteSavedPed)
+                {
+                    RefreshDeleteSavedPedMenu();
+                }
+                else if (item == savePed)
+                {
+                    /* TODO
+                     * Create dictionary of current ped and save it using `ped_<pedname>`
+                     */
+
+                    //sm.SaveDictionary();
+                }
+            };
+
+            // Loop through all the modelNames and create lists of max 50 ped names each.
+            for (int i = 0; i < (modelNames.Count / 50) + 1; i++)
+            {
+                List<dynamic> pedList = new List<dynamic>();
+                for (int ii = 0; ii < 50; ii++)
+                {
+                    int index = ((i * 50) + ii);
                     if (index >= modelNames.Count)
                     {
                         break;
@@ -45,11 +125,11 @@ namespace vMenuClient
                 menu.AddItem(pedl);
             }
 
+            // Handle list selections.
             menu.OnListSelect += (sender, item, index) =>
             {
-                var i = (sender.CurrentSelection * 50) + index;
-                var modelName = modelNames[i];
-                //Subtitle.Custom(i.ToString() + " " + modelName);
+                int i = ((sender.CurrentSelection - 4) * 50) + index;
+                string modelName = modelNames[i];
                 cf.SetPlayerSkin(modelName);
             };
 
@@ -68,8 +148,198 @@ namespace vMenuClient
             return menu;
         }
 
+        #region Ped Customization Menu
+        /// <summary>
+        /// Refresh/create the ped customization menu.
+        /// </summary>
+        private void RefreshCustomizationMenu()
+        {
+            // Remove any old items.
+            pedTextures.MenuItems.Clear();
+
+            #region Loop through all ped drawable variations and all ped props.
+            for (var i = 0; i < 20; i++)
+            {
+                #region Ped Drawable Variations
+                if (i < 12)
+                {
+                    // Get the drawable information.
+                    var currentDrawable = GetPedDrawableVariation(PlayerPedId(), i);
+                    var variations = GetNumberOfPedDrawableVariations(PlayerPedId(), i);
+                    var textures = GetNumberOfPedTextureVariations(PlayerPedId(), i, currentDrawable);
+                    // If there are any variations.
+                    if (variations > 0)
+                    {
+                        // Loop through all of them and add them to the list.
+                        var textureList = new List<dynamic>();
+                        for (var x = 0; x < variations; x++)
+                        {
+                            textureList.Add("Item #" + x.ToString());
+                        }
+                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable, "Cycle through all available drawables, and press enter to cycle through the different textures/colors available for this drawable.");
+                        pedTextures.AddItem(listItem);
+
+                        // Manage list changes.
+                        pedTextures.OnListChange += (sender2, item2, index2) =>
+                        {
+                            if (item2 == listItem)
+                            {
+                                SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, 0, 0);
+                            }
+                        };
+
+                        // Manage list selections.
+                        pedTextures.OnListSelect += (sender2, item2, index2) =>
+                        {
+                            if (item2 == listItem)
+                            {
+                                var currentTexture = GetPedTextureVariation(PlayerPedId(), sender2.CurrentSelection);
+                                currentTexture = currentTexture == -1 ? 0 : currentTexture;
+                                var totalTextures = GetNumberOfPedTextureVariations(PlayerPedId(), sender2.CurrentSelection, index2) - 1;
+
+                                SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, (currentTexture < totalTextures ? currentTexture + 1 : 0), 0);
+                            }
+                        };
+                    }
+                    else
+                    {
+                        UIMenuItem placeholder = new UIMenuItem($"{textureNames[i]}");
+                        placeholder.SetRightLabel("None");
+                        placeholder.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        placeholder.Enabled = false;
+                        pedTextures.AddItem(placeholder);
+                    }
+                }
+                #endregion
+                #region Ped Props
+                else
+                {
+                    // Variables setup.
+                    var ii = i - 12;
+                    var currentProp = GetPedPropIndex(PlayerPedId(), ii);
+                    var props = GetNumberOfPedPropDrawableVariations(PlayerPedId(), ii);
+                    // If there are any props.
+                    if (props > 0)
+                    {
+                        // Loop through all of them and add them to lists.
+                        var propsList = new List<dynamic>();
+                        for (var x = 0; x < props; x++)
+                        {
+                            propsList.Add("Item #" + x.ToString());
+                        }
+
+                        // Add an "off" item to the list to allow the prop to be turned off.
+                        propsList.Add("Off");
+
+                        // Create and add the list item to the menu.
+                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp, "Cycle through all available props, and press enter to cycle through the different textures/colors available for this prop.");
+                        pedTextures.AddItem(listItem);
+
+                        // Handle list changes.
+                        pedTextures.OnListChange += (sender2, item2, index2) =>
+                        {
+                            if (item2 == listItem)
+                            {
+                                if (index2 == propsList.Count - 1)
+                                {
+                                    ClearPedProp(PlayerPedId(), sender2.CurrentSelection - 12);
+                                }
+                                else
+                                {
+                                    SetPedPropIndex(PlayerPedId(), sender2.CurrentSelection - 12, index2, 0, true);
+                                }
+                            }
+                        };
+
+                        // Handle list selections.
+                        pedTextures.OnListSelect += (sender2, item2, index2) =>
+                        {
+                            if (item2 == listItem)
+                            {
+                                if (index2 != propsList.Count - 1)
+                                {
+                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(), sender2.CurrentSelection - 12, index2);
+                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(), sender2.CurrentSelection - 12);
+                                    SetPedPropIndex(PlayerPedId(), sender2.CurrentSelection - 12, index2, (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
+                                }
+                            }
+                        };
+                    }
+                    // If there's not enough variations available (none at all) then add a placeholder to let them know this option is unavailable.
+                    else
+                    {
+                        UIMenuItem placeholder = new UIMenuItem($"{propNames[ii]}");
+                        placeholder.SetRightLabel("None");
+                        placeholder.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        placeholder.Enabled = false;
+                        pedTextures.AddItem(placeholder);
+                    }
+                }
+                #endregion
+            }
+            #endregion
+
+            // Refresh index and update scaleform to make everything pretty.
+            pedTextures.RefreshIndex();
+            pedTextures.UpdateScaleform();
+
+        }
+
+        #region Textures & Props
+        private List<string> textureNames = new List<string>()
+        {
+            "Head / Face",
+            "Beard / Mask",
+            "Hair / Hat",
+            "Top",
+            "Legs",
+            "Accessory / Gloves",
+            "Accessory / Shoes",
+            "Neck",
+            "Shirt",
+            "Accessory",
+            "Badges",
+            "Shirt / Jacket",
+        };
+
+        private List<string> propNames = new List<string>()
+        {
+            "Hats / Helmets",
+            "Glasses",
+            "Earrings",
+            "Unknown 3",
+            "Unknown 4",
+            "Unknown 5",
+            "Watches",
+            "Bracelets",
+        };
+        #endregion
+        #endregion
+
+        /// <summary>
+        /// Refresh the spawn saved peds menu.
+        /// </summary>
+        private void RefreshSpawnSavedPedMenu()
+        {
+            spawnSavedPedMenu.MenuItems.Clear();
+            // todo load items
+        }
+
+        /// <summary>
+        /// Refresh the delete saved peds menu.
+        /// </summary>
+        private void RefreshDeleteSavedPedMenu()
+        {
+            deleteSavedPedMenu.MenuItems.Clear();
+            // todo load items
+        }
+
+
+        #region Model Names
         private List<string> modelNames = new List<string>()
         {
+            "mp_f_freemode_01",
+            "mp_m_freemode_01",
             "a_f_m_beach_01",
             "a_f_m_bevhills_01",
             "a_f_m_bevhills_02",
@@ -634,6 +904,6 @@ namespace vMenuClient
             "u_m_y_tattoo_01",
             "u_m_y_zombie_01"
         };
-        
+        #endregion
     }
 }
