@@ -23,7 +23,6 @@ namespace vMenuClient
 
         private int LastVehicle = 0;
         private bool SwitchedVehicle = false;
-        //private PlayerList playerList = new PlayerList();
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
 
@@ -417,6 +416,20 @@ namespace vMenuClient
                         }
                     }
                     #endregion
+                }
+                #endregion
+
+                #region Update Time Options Menu
+                if (MainMenu.TimeOptionsMenu != null)
+                {
+                    if (MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible && !EventManager.freezeTime)
+                    {
+                        var hours = GetClockHours();
+                        var minutes = GetClockMinutes();
+                        var hoursString = hours < 10 ? "0" + hours.ToString() : hours.ToString();
+                        var minutesString = minutes < 10 ? "0" + minutes.ToString() : minutes.ToString();
+                        MainMenu.TimeOptionsMenu.freezeTimeToggle.SetRightLabel($"(Current Time {hoursString}:{minutesString})");
+                    }
                 }
                 #endregion
             }
