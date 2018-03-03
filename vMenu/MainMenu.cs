@@ -39,8 +39,7 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
-        //public StorageManager Sm { get; } = new StorageManager();
-        
+
 
         public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
@@ -145,9 +144,6 @@ namespace vMenuClient
                 firstTick = false;
                 // Clear all previous pause menu info/brief messages on resource start.
                 ClearBrief();
-
-                // Temporarily set the Discord Rich Presence status.
-                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x7bdcbd45, (true ? $"Alpha Testing vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}" : $"Enjoying vMenu v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}."));
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());

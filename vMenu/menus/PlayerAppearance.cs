@@ -104,11 +104,6 @@ namespace vMenuClient
                 }
                 else if (item == savePed)
                 {
-                    /* TODO
-                     * Create dictionary of current ped and save it using `ped_<pedname>`
-                     */
-
-                    //sm.SaveDictionary();
                 }
             };
 
@@ -327,7 +322,6 @@ namespace vMenuClient
         private void RefreshSpawnSavedPedMenu()
         {
             spawnSavedPedMenu.MenuItems.Clear();
-            // todo load items
         }
 
         /// <summary>
@@ -336,7 +330,6 @@ namespace vMenuClient
         private void RefreshDeleteSavedPedMenu()
         {
             deleteSavedPedMenu.MenuItems.Clear();
-            // todo load items
         }
 
 

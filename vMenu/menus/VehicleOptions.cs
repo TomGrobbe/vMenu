@@ -253,12 +253,6 @@ namespace vMenuClient
                         {
                             vehicle.Wash();
                         }
-                        //// Delete vehicle.
-                        //else if (item == deleteBtn)
-                        //{
-                        //    vehicle.Delete();
-                        //    vehicle = null;
-                        //}
                         // Flip vehicle.
                         else if (item == flipVehicle)
                         {
@@ -304,23 +298,12 @@ namespace vMenuClient
                         cf.CycleThroughSeats();
                     }
                 }
-                // If the player is not inside a vehicle, notify them.
-                else
-                {
-                    // Don't notify them, as it doesn't matter anyway. Nothing happens, nothing crashes so it doesn't hurt.
-                    //Notify.Error("You must be inside a vehicle to access these options!", true, false);
-                }
             };
             #endregion
 
             #region Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
-                //### removed because we actually want to handle these changes even if the player is not in a vehicle. ###//
-                // ~~If the player is actually in a vehicle, continue.~~
-                //if (DoesEntityExist(cf.GetVehicle()))
-                //{
-
                 // Create a vehicle object.
                 Vehicle vehicle = new Vehicle(cf.GetVehicle());
 
@@ -361,8 +344,6 @@ namespace vMenuClient
                 {
                     VehicleNoBikeHelemet = _checked;
                 }
-
-                //}
             };
             #endregion
 
@@ -797,14 +778,12 @@ namespace vMenuClient
                     var veh = cf.GetVehicle();
                     if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
-                        //veh = cf.GetVehicle();
                         VehicleLiveriesMenu.Clear();
                         SetVehicleModKit(veh, 0);
                         var liveryCount = GetVehicleLiveryCount(veh);
 
                         if (liveryCount > 0)
                         {
-                            //veh = cf.GetVehicle();
                             var liveryList = new List<dynamic>();
                             for (var i = 0; i < liveryCount; i++)
                             {
