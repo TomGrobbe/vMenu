@@ -57,7 +57,7 @@ namespace vMenuClient
 
             #region menu variables
             // Create Checkboxes.
-            UIMenuCheckboxItem vehicleGod = new UIMenuCheckboxItem("God Mode", VehicleGodMode, "Disables any type of visual or physical damage to your vehicle.");
+            UIMenuCheckboxItem vehicleGod = new UIMenuCheckboxItem("Vehicle God Mode", VehicleGodMode, "Your vehicle will not be able to take visual or physical damage.");
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
             UIMenuCheckboxItem vehicleNoSiren = new UIMenuCheckboxItem("Disable Siren", VehicleNoSiren, "Disables your vehicle's siren. Only works if your vehicle actually has a siren.");
             UIMenuCheckboxItem vehicleNoBikeHelmet = new UIMenuCheckboxItem("No Bike Helmet", VehicleNoBikeHelemet, "No longer auto-equip a helmet when getting on a bike or quad.");
@@ -94,17 +94,17 @@ namespace vMenuClient
             deleteYesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
 
             // Create lists.
-            var dirtlevel = new List<dynamic> { "Clean", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle. This won't freeze the dirt level, it will only set it once.");
+            var dirtlevel = new List<dynamic> { "No Dirt", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ to apply the selected level.");
             var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
-            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Select a license plate type and press enter to apply it to your vehicle.");
+            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply it to your vehicle.");
             var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
-            UIMenuListItem torqueMultiplier = new UIMenuListItem("Engine Torque Multiplier", torqueMultiplierList, 0, "Select the engine torque multiplier.");
+            UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
-            UIMenuListItem powerMultiplier = new UIMenuListItem("Engine Power Multiplier", powerMultiplierList, 0, "Select the engine power multiplier.");
+            UIMenuListItem powerMultiplier = new UIMenuListItem("Set Engine Power Multiplier", powerMultiplierList, 0, "Set the engine power multiplier.");
             #endregion
 
-            #region Vehicle Options Submenus
+            #region Submenus
             // Submenu's
             VehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", true)
             {
@@ -134,7 +134,7 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries.", true)
+            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -148,13 +148,14 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            DeleteConfirmMenu = new UIMenu("Confirm Action", "DELETE VEHICLE, ARE YOU SURE?", true)
+            DeleteConfirmMenu = new UIMenu("Confirm Action", "Delete Vehicle, Are You Sure?", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
+
             MainMenu.Mp.Add(VehicleModMenu);
             MainMenu.Mp.Add(VehicleDoorsMenu);
             MainMenu.Mp.Add(VehicleWindowsMenu);
@@ -191,6 +192,7 @@ namespace vMenuClient
             menu.AddItem(vehicleNoSiren); // DISABLE SIREN
             menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
             menu.AddItem(deleteBtn); // DELETE VEHICLE
+            #endregion
 
             #region delete vehicle handle stuff
             DeleteConfirmMenu.AddItem(deleteNoBtn);
@@ -217,7 +219,6 @@ namespace vMenuClient
                     menu.GoBack();
                 }
             };
-            #endregion
             #endregion
 
             #region Bind Submenus to their buttons.
@@ -275,10 +276,12 @@ namespace vMenuClient
                                 vehicle.StartAlarm();
                             }
                         }
+                        // Toggle engine
                         else if (item == toggleEngine)
                         {
                             vehicle.IsEngineRunning = !vehicle.IsEngineRunning;
                         }
+                        // Set license plate text
                         else if (item == setLicensePlateText)
                         {
                             cf.SetLicensePlateTextAsync();
@@ -288,13 +291,12 @@ namespace vMenuClient
                     // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
                     else if (item != cycleSeats)
                     {
-                        Notify.Error("You must be in the driver seat to access these options!", true, false);
+                        Notify.Error("You have to be the driver of a vehicle to access this menu!", true, false);
                     }
 
-                    // Only this button can be used when you're not the driver of the car.
+                    // Cycle vehicle seats
                     if (item == cycleSeats)
                     {
-                        // Cycle vehicle seats
                         cf.CycleThroughSeats();
                     }
                 }
@@ -733,13 +735,13 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Windows Submenu Stuff
-            UIMenuItem fwu = new UIMenuItem("↑ Roll Front Windows Up", "Roll both front windows up.");
-            UIMenuItem rwu = new UIMenuItem("↑ Roll Rear Windows Up", "Roll both rear windows up.");
-            UIMenuItem fwd = new UIMenuItem("↓ Roll Front Windows Down", "Roll both front windows down.");
-            UIMenuItem rwd = new UIMenuItem("↓ Roll Rear Windows Down", "Roll both rear windows down.");
+            UIMenuItem fwu = new UIMenuItem("~y~↑~s~ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem fwd = new UIMenuItem("~o~↓~s~ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwu = new UIMenuItem("~y~↑~s~ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem rwd = new UIMenuItem("~o~↓~s~ Roll Rear Windows Down", "Roll both rear windows down.");
             VehicleWindowsMenu.AddItem(fwu);
-            VehicleWindowsMenu.AddItem(rwu);
             VehicleWindowsMenu.AddItem(fwd);
+            VehicleWindowsMenu.AddItem(rwu);
             VehicleWindowsMenu.AddItem(rwd);
             VehicleWindowsMenu.OnItemSelect += (sender, item, index) =>
             {
@@ -773,55 +775,69 @@ namespace vMenuClient
             #region Vehicle Liveries Submenu Stuff
             menu.OnItemSelect += (sender, item, idex) =>
             {
+                // If the liverys menu button is selected.
                 if (item == liveriesMenuBtn)
                 {
+                    // Get the player's vehicle.
                     var veh = cf.GetVehicle();
-                    if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
+                    // If it exists, isn't dead and the player is in the drivers seat continue.
+                    if (DoesEntityExist(veh) && !IsEntityDead(veh))
                     {
-                        VehicleLiveriesMenu.Clear();
-                        SetVehicleModKit(veh, 0);
-                        var liveryCount = GetVehicleLiveryCount(veh);
-
-                        if (liveryCount > 0)
+                        if (GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                         {
-                            var liveryList = new List<dynamic>();
-                            for (var i = 0; i < liveryCount; i++)
+                            VehicleLiveriesMenu.MenuItems.Clear();
+                            SetVehicleModKit(veh, 0);
+                            var liveryCount = GetVehicleLiveryCount(veh);
+
+                            if (liveryCount > 0)
                             {
-                                var livery = GetLiveryName(veh, i);
-                                livery = GetLabelText(livery) != "NULL" ? GetLabelText(livery) : $"Livery #{i}";
-                                liveryList.Add(livery);
+                                var liveryList = new List<dynamic>();
+                                for (var i = 0; i < liveryCount; i++)
+                                {
+                                    var livery = GetLiveryName(veh, i);
+                                    livery = GetLabelText(livery) != "NULL" ? GetLabelText(livery) : $"Livery #{i}";
+                                    liveryList.Add(livery);
+                                }
+                                UIMenuListItem liveryListItem = new UIMenuListItem("Set Livery", liveryList, GetVehicleLivery(veh), "Choose a livery for this vehicle.");
+                                VehicleLiveriesMenu.AddItem(liveryListItem);
+                                VehicleLiveriesMenu.OnListChange += (sender2, item2, index2) =>
+                                {
+                                    veh = cf.GetVehicle();
+                                    SetVehicleLivery(veh, index2);
+                                };
+                                VehicleLiveriesMenu.RefreshIndex();
+                                VehicleLiveriesMenu.UpdateScaleform();
                             }
-                            UIMenuListItem liveryListItem = new UIMenuListItem("Set Livery", liveryList, GetVehicleLivery(veh), "Choose a livery for this vehicle.");
-                            VehicleLiveriesMenu.AddItem(liveryListItem);
-                            VehicleLiveriesMenu.OnListChange += (sender2, item2, index2) =>
+                            else
                             {
-                                veh = cf.GetVehicle();
-                                SetVehicleLivery(veh, index2);
-                            };
-                            VehicleLiveriesMenu.RefreshIndex();
-                            VehicleLiveriesMenu.UpdateScaleform();
+                                Notify.Error("This vehicle does not have any liveries.");
+                                VehicleLiveriesMenu.Visible = false;
+                                menu.Visible = true;
+                                UIMenuItem backBtn = new UIMenuItem("No Liveries Available :(", "Click me to go back.");
+                                backBtn.SetRightLabel("Go Back");
+                                VehicleLiveriesMenu.AddItem(backBtn);
+                                VehicleLiveriesMenu.OnItemSelect += (sender2, item2, index2) =>
+                                {
+                                    if (item2 == backBtn)
+                                    {
+                                        VehicleLiveriesMenu.GoBack();
+                                    }
+                                };
+
+                                VehicleLiveriesMenu.RefreshIndex();
+                                VehicleLiveriesMenu.UpdateScaleform();
+                            }
                         }
                         else
                         {
-                            Notify.Error("This vehicle does not have any liveries.");
-                            UIMenuItem backBtn = new UIMenuItem("No liveries for this vehicle :(", "Click me to go back.");
-                            backBtn.SetRightLabel("Go Back");
-                            VehicleLiveriesMenu.AddItem(backBtn);
-                            VehicleLiveriesMenu.OnItemSelect += (sender2, item2, index2) =>
-                            {
-                                if (item2 == backBtn)
-                                {
-                                    VehicleLiveriesMenu.GoBack();
-                                }
-                            };
-
-                            VehicleLiveriesMenu.RefreshIndex();
-                            VehicleLiveriesMenu.UpdateScaleform();
+                            Notify.Error("You have to be the driver of a vehicle to access this menu.");
                         }
-                        veh = cf.GetVehicle();
+                    }
+                    else
+                    {
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                 }
-
             };
             #endregion
 
@@ -831,7 +847,16 @@ namespace vMenuClient
                 // When the mod submenu is openend, reset all items in there.
                 if (item == modMenuBtn)
                 {
-                    UpdateMods();
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        UpdateMods();
+                    }
+                    else
+                    {
+                        VehicleModMenu.Visible = false;
+                        menu.Visible = true;
+                    }
+
                 }
             };
             #endregion
@@ -893,7 +918,7 @@ namespace vMenuClient
                         }
                         else
                         {
-                            UIMenuItem backBtn = new UIMenuItem("No extras available :(", "Go back to the Vehicle Options menu.");
+                            UIMenuItem backBtn = new UIMenuItem("No Extras Available :(", "Go back to the Vehicle Options menu.");
                             backBtn.SetRightLabel("Go Back");
                             VehicleComponentsMenu.AddItem(backBtn);
                             VehicleComponentsMenu.OnItemSelect += (sender3, item3, index3) =>

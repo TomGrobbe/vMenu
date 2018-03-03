@@ -176,7 +176,8 @@ namespace vMenuClient
                         {
                             textureList.Add("Item #" + x.ToString());
                         }
-                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable, "Cycle through all available drawables, and press enter to cycle through the different textures/colors available for this drawable.");
+                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
+                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                         pedTextures.AddItem(listItem);
 
                         // Manage list changes.
@@ -232,7 +233,9 @@ namespace vMenuClient
                         propsList.Add("Off");
 
                         // Create and add the list item to the menu.
-                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp, "Cycle through all available props, and press enter to cycle through the different textures/colors available for this prop.");
+                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp,
+                            $"Use ← & → to select a ~o~{propNames[ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+
                         pedTextures.AddItem(listItem);
 
                         // Handle list changes.

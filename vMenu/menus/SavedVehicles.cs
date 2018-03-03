@@ -27,7 +27,7 @@ namespace vMenuClient
             string menuTitle = "Saved Vehicles";
             #region Create menus and submenus
             // Create the menu.
-            menu = new UIMenu(menuTitle, "Select an option", true)
+            menu = new UIMenu(menuTitle, "Manage Saved Vehicles", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,

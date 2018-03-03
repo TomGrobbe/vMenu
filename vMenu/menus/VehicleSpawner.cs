@@ -34,7 +34,7 @@ namespace vMenuClient
             };
 
             // Create the buttons and checkboxes.
-            UIMenuItem spawnByName = new UIMenuItem("Spawn By Name", "Enter the name of a vehicle to spawn.");
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
             UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle, "This will teleport you into the vehicle when you spawn it.");
             UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", SpawnInVehicle, "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
