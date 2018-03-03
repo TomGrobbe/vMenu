@@ -104,6 +104,7 @@ namespace vMenuClient
                 }
                 else if (item == savePed)
                 {
+                    cf.SavePed();
                 }
             };
 
@@ -325,6 +326,35 @@ namespace vMenuClient
         private void RefreshSpawnSavedPedMenu()
         {
             spawnSavedPedMenu.MenuItems.Clear();
+            int findHandle = StartFindKvp("ped_");
+            List<string> savesFound = new List<string>();
+            while (true)
+            {
+                var saveName = FindKvp(findHandle);
+                if (saveName != null && saveName != "" && saveName != "NULL")
+                {
+                    savesFound.Add(saveName);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            foreach (var savename in savesFound)
+            {
+                UIMenuItem savedPedBtn = new UIMenuItem(savename.Substring(4), "Spawn this saved ped.");
+                spawnSavedPedMenu.AddItem(savedPedBtn);
+            }
+
+            spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
+            {
+                var name = item.Text.ToString();
+                cf.LoadSavedPed(name);
+            };
+
+            spawnSavedPedMenu.RefreshIndex();
+            spawnSavedPedMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -333,6 +363,36 @@ namespace vMenuClient
         private void RefreshDeleteSavedPedMenu()
         {
             deleteSavedPedMenu.MenuItems.Clear();
+            int findHandle = StartFindKvp("ped_");
+            List<string> savesFound = new List<string>();
+            while (true)
+            {
+                var saveName = FindKvp(findHandle);
+                if (saveName != null && saveName != "" && saveName != "NULL")
+                {
+                    savesFound.Add(saveName);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            foreach (var savename in savesFound)
+            {
+                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
+                deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+                deleteSavedPedMenu.AddItem(deleteSavedPed);
+            }
+
+            deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
+            {
+                var name = item.Text.ToString();
+                sm.DeleteSavedDictionary("ped_" + name);
+                Notify.Success("Saved ped deleted.");
+                deleteSavedPedMenu.GoBack();
+            };
+            deleteSavedPedMenu.RefreshIndex();
+            deleteSavedPedMenu.UpdateScaleform();
         }
 
 
