@@ -369,6 +369,11 @@ namespace vMenuClient
                 #region Disable Inputs when any menu is open.
                 if (Mp.IsAnyMenuOpen())
                 {
+                    if (Game.PlayerPed.IsDead)
+                    {
+                        Mp.CloseAllMenus();
+                    }
+
                     // Disable Gamepad/Controller Specific controls:
                     if (Game.CurrentInputMode == InputMode.GamePad)
                     {

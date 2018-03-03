@@ -1433,6 +1433,48 @@ namespace vMenuClient
             EndTextCommandDisplayText(xPosition, yPosition);
         }
         #endregion
+
+        #region Set Player Skin
+        /// <summary>
+        /// Sets the player's model to the provided modelName.
+        /// </summary>
+        /// <param name="modelName"></param>
+        public async void SetPlayerSkin(string modelName)
+        {
+            uint model = (uint)GetHashKey(modelName);
+            if (IsModelInCdimage(model))
+            {
+                SaveWeaponLoadout();
+                RequestModel(model);
+                while (!HasModelLoaded(model))
+                {
+                    await Delay(0);
+                }
+                SetPlayerModel(PlayerId(), model);
+                SetPedDefaultComponentVariation(PlayerPedId());
+                RestoreWeaponLoadout();
+            }
+            else
+            {
+                Notify.Error("Sorry, this model is unavailable.");
+            }
+        }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void SaveWeaponLoadout()
+        {
+        }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void RestoreWeaponLoadout()
+        {
+        }
+
+        #endregion
     }
 
 }
