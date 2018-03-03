@@ -1444,10 +1444,20 @@ namespace vMenuClient
         /// <summary>
         /// Sets the player's model to the provided modelName.
         /// </summary>
-        /// <param name="modelName"></param>
-        public async void SetPlayerSkin(string modelName)
+        /// <param name="modelName">The model name.</param>
+        public void SetPlayerSkin(string modelName, Dictionary<string, string> pedCustomizationOptions = null)
         {
-            uint model = (uint)GetHashKey(modelName);
+            int model = GetHashKey(modelName);
+            SetPlayerSkin(model, pedCustomizationOptions);
+        }
+
+        /// <summary>
+        /// Sets the player's model to the provided modelName.
+        /// </summary>
+        /// <param name="modelHash">The model hash.</param>
+        public async void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        {
+            uint model = (uint)modelHash;
             if (IsModelInCdimage(model))
             {
                 SaveWeaponLoadout();
@@ -1459,13 +1469,130 @@ namespace vMenuClient
                 SetPlayerModel(PlayerId(), model);
                 SetPedDefaultComponentVariation(PlayerPedId());
                 RestoreWeaponLoadout();
+
+                if (pedCustomizationOptions != null && pedCustomizationOptions.Count > 1)
+                {
+                    var ped = PlayerPedId();
+                    for (var i = 0; i < 21; i++)
+                    {
+                        int drawable = int.Parse(pedCustomizationOptions[$"drawable_variation_{i.ToString()}"]);
+                        int drawableTexture = int.Parse(pedCustomizationOptions[$"drawable_texture_{i.ToString()}"]);
+                        SetPedComponentVariation(ped, i, drawable, drawableTexture, 0);
+                    }
+
+                    for (var i = 0; i < 21; i++)
+                    {
+                        int prop = int.Parse(pedCustomizationOptions[$"prop_{i.ToString()}"]);
+                        int propTexture = int.Parse(pedCustomizationOptions[$"prop_texture_{i.ToString()}"]);
+                        if (prop == -1 || propTexture == -1)
+                        {
+                            ClearPedProp(ped, i);
+                        }
+                        else
+                        {
+                            SetPedPropIndex(ped, i, prop, propTexture, true);
+                        }
+
+                    }
+                }
             }
             else
             {
                 Notify.Error("Sorry, this model is unavailable.");
             }
         }
+        #endregion
 
+        #region Save Ped Model + Customizations
+        /// <summary>
+        /// Saves the current player ped.
+        /// </summary>
+        public async void SavePed()
+        {
+            // Get the save name.
+            string name = await GetUserInputAsync("Enter a ped save name", maxInputLength: 15);
+            // If the save name is not invalid.
+            if (name != "" && name != null && name != "NULL")
+            {
+                // Create a dictionary to store all data in.
+                Dictionary<string, string> pedData = new Dictionary<string, string>();
+
+                // Get the ped.
+                int ped = PlayerPedId();
+
+                // Get the ped model hash & add it to the dictionary.
+                int model = GetEntityModel(ped);
+                pedData.Add("modelHash", model.ToString());
+
+                // Loop through all drawable variations.
+                for (var i = 0; i < 21; i++)
+                {
+                    int drawable = GetPedDrawableVariation(ped, i);
+                    int textureVariation = GetPedTextureVariation(ped, i);
+                    pedData.Add($"drawable_variation_{i.ToString()}", drawable.ToString());
+                    pedData.Add($"drawable_texture_{i.ToString()}", textureVariation.ToString());
+                }
+
+                // Loop through all prop variations.
+                for (var i = 0; i < 21; i++)
+                {
+                    int prop = GetPedPropIndex(ped, i);
+                    int propTexture = GetPedPropTextureIndex(ped, i);
+                    pedData.Add($"prop_{i.ToString()}", $"{prop.ToString()}");
+                    pedData.Add($"prop_texture_{i.ToString()}", $"{propTexture.ToString()}");
+                }
+
+                // Try to save the data, and save the result in a variable.
+                bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+
+                // If the save was successfull.
+                if (saveSuccessful)
+                {
+                    Notify.Success("Ped saved.");
+                }
+                // Save was not successfull.
+                else
+                {
+                    Notify.Error("Could not save this ped because the save name already exists.");
+                }
+            }
+            // User cancelled the saving or they did not enter a valid name.
+            else
+            {
+                Notify.Error("You did not enter a valid ped name or you cancelled the save.");
+            }
+        }
+        #endregion
+
+        #region Load Saved Ped
+        /// <summary>
+        /// Load the saved ped and spawn it.
+        /// </summary>
+        /// <param name="savedName">The ped saved name</param>
+        public async void LoadSavedPed(string savedName)
+        {
+            string savedPedName = savedName ?? await GetUserInputAsync("Enter saved name");
+            if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
+            {
+                Notify.Error("Invalid saved ped name.");
+            }
+            else
+            {
+                Dictionary<string, string> dict = sm.GetSavedDictionary("ped_" + savedPedName);
+                int model = int.Parse(dict["modelHash"]);
+                if (dict != null && dict.Count > 1)
+                {
+                    SetPlayerSkin(model, dict);
+                }
+                else
+                {
+                    Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
+                }
+            }
+        }
+        #endregion
+
+        #region Save and restore weapon loadouts when changing models (TODO)
         /// <summary>
         /// Todo
         /// </summary>
@@ -1479,7 +1606,6 @@ namespace vMenuClient
         public void RestoreWeaponLoadout()
         {
         }
-
         #endregion
     }
 
