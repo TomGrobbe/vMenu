@@ -18,6 +18,7 @@ namespace vMenuClient
         private string currentScenario = "";
         private int previousVehicle = -1;
         private StorageManager sm = new StorageManager();
+        private WeaponInfo[] weaponList;
 
         #endregion
 
@@ -1492,7 +1493,6 @@ namespace vMenuClient
                         {
                             SetPedPropIndex(ped, i, prop, propTexture, true);
                         }
-
                     }
                 }
             }
@@ -1593,11 +1593,51 @@ namespace vMenuClient
         #endregion
 
         #region Save and restore weapon loadouts when changing models (TODO)
+
+        private struct WeaponInfo
+        {
+            public int Ammo;
+            public bool Equipped;
+            public WeaponHash Hash;
+            public WeaponComponentCollection Components;
+            public WeaponTint Tint;
+        }
+
         /// <summary>
         /// Todo
         /// </summary>
         public void SaveWeaponLoadout()
         {
+            var weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
+            weaponList = new WeaponInfo[weaponCount];
+            
+            //weaponList.Clear();
+            var ped = new Ped(PlayerPedId());
+            var iterator = 0;
+            foreach (WeaponHash wh in Enum.GetValues(typeof(WeaponHash)))
+            {
+                if (ped.Weapons.HasWeapon(wh))
+                {
+                    var test = new WeaponInfo
+                    {
+                        Ammo = ped.Weapons[wh].Ammo,
+                        Equipped = false,
+                        Hash = wh,
+                        Components = ped.Weapons[wh].Components,
+                        Tint = ped.Weapons[wh].Tint
+                    };
+                    weaponList[iterator] = test;
+                    iterator++;
+                }
+            }
+            //foreach (var wh in Enum.GetValues(typeof(WeaponHash)))
+            //{
+            //    if (ped.Weapons.HasWeapon((WeaponHash)wh))
+            //    {
+            //        int ammoCount = ped.Weapons[(WeaponHash)wh].Ammo;
+            //        weaponList.Add((WeaponHash)wh, ammoCount);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -1605,6 +1645,10 @@ namespace vMenuClient
         /// </summary>
         public void RestoreWeaponLoadout()
         {
+            foreach(WeaponInfo wi in weaponList)
+            {
+                Game.PlayerPed.Weapons.Give(wi.Hash, wi.Ammo, false, true);
+            }
         }
         #endregion
     }
