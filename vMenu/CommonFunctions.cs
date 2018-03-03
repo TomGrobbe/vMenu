@@ -42,43 +42,49 @@ namespace vMenuClient
             else
             {
                 // check to see if the vehicle options menu exists but the player is not inside a vehicle.
-                if (MainMenu.VehicleOptionsMenu.VehicleModMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
+                if (MainMenu.VehicleOptionsMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
                 {
                     // If the vehicle mod submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleModMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle liveries submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle colors submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle doors submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle windows submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle extras submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                 }
             }
