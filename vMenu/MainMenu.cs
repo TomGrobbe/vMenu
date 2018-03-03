@@ -179,16 +179,17 @@ namespace vMenuClient
                 if (cf.IsAllowed("vMenu_menus_onlinePlayers"))
                 {
                     OnlinePlayersMenu = new OnlinePlayers();
-                    UIMenu onlinePlayers = OnlinePlayersMenu.GetMenu();
-                    UIMenuItem onlinePlayersBtn = new UIMenuItem("Online Players", "All currently connected players.");
-                    AddMenu(onlinePlayers, onlinePlayersBtn);
+                    UIMenu menu = OnlinePlayersMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Online Players", "All currently connected players.");
+                    button.SetRightLabel("→→→");
+                    AddMenu(menu, button);
                     Menu.OnItemSelect += (sender, item, index) =>
                     {
-                        if (item == onlinePlayersBtn)
+                        if (item == button)
                         {
                             OnlinePlayersMenu.UpdatePlayerlist();
-                            onlinePlayers.RefreshIndex();
-                            onlinePlayers.UpdateScaleform();
+                            menu.RefreshIndex();
+                            menu.UpdateScaleform();
                         }
                     };
                 }
@@ -197,18 +198,20 @@ namespace vMenuClient
                 if (cf.IsAllowed("vMenu_menus_playerOptions"))
                 {
                     PlayerOptionsMenu = new PlayerOptions();
-                    UIMenu playerOptions = PlayerOptionsMenu.GetMenu();
-                    UIMenuItem playerOptionsBtn = new UIMenuItem("Player Options", "Common player options can be accessed here.");
-                    AddMenu(playerOptions, playerOptionsBtn);
+                    UIMenu menu = PlayerOptionsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Player Options", "Common player options can be accessed here.");
+                    button.SetRightLabel("→→→");
+                    AddMenu(menu, button);
                 }
 
                 // Add the vehicle options Menu.
                 if (cf.IsAllowed("vMenu_menus_vehicleOptions"))
                 {
                     VehicleOptionsMenu = new VehicleOptions();
-                    UIMenu vehicleOptions = VehicleOptionsMenu.GetMenu();
-                    UIMenuItem vehicleOptionsBtn = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
-                    AddMenu(vehicleOptions, vehicleOptionsBtn);
+                    UIMenu menu = VehicleOptionsMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
+                    button.SetRightLabel("→→→");
+                    AddMenu(menu, button);
                 }
 
                 var vl = new Vehicles().VehicleClasses;
@@ -216,18 +219,20 @@ namespace vMenuClient
                 if (cf.IsAllowed("vMenu_menus_vehicleSpawner"))
                 {
                     VehicleSpawnerMenu = new VehicleSpawner();
-                    UIMenu vehicleSpawner = VehicleSpawnerMenu.GetMenu();
-                    UIMenuItem vehicleSpawnerBtn = new UIMenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.");
-                    AddMenu(vehicleSpawner, vehicleSpawnerBtn);
+                    UIMenu menu = VehicleSpawnerMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.");
+                    button.SetRightLabel("→→→");
+                    AddMenu(menu, button);
                 }
 
                 // Add Saved Vehicles menu.
                 if (cf.IsAllowed("vMenu_menus_savedVehicles"))
                 {
                     SavedVehiclesMenu = new SavedVehicles();
-                    UIMenu savedVehicles = SavedVehiclesMenu.GetMenu();
-                    UIMenuItem savedVehiclesBtn = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
-                    AddMenu(savedVehicles, savedVehiclesBtn);
+                    UIMenu menu = SavedVehiclesMenu.GetMenu();
+                    UIMenuItem button = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
+                    button.SetRightLabel("→→→");
+                    AddMenu(menu, button);
                 }
 
                 // Add the player appearance menu.
@@ -236,6 +241,7 @@ namespace vMenuClient
                     PlayerAppearanceMenu = new PlayerAppearance();
                     UIMenu menu = PlayerAppearanceMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -245,6 +251,7 @@ namespace vMenuClient
                     TimeOptionsMenu = new TimeOptions();
                     UIMenu menu = TimeOptionsMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("Time Options", "Change the time, and edit other time related options.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -254,6 +261,7 @@ namespace vMenuClient
                     WeatherOptionsMenu = new WeatherOptions();
                     UIMenu menu = WeatherOptionsMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("Weather Options", "Change all weather related options here.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -263,6 +271,7 @@ namespace vMenuClient
                     WeaponOptionsMenu = new WeaponOptions();
                     UIMenu menu = WeaponOptionsMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -272,6 +281,7 @@ namespace vMenuClient
                     MiscSettingsMenu = new MiscSettings();
                     UIMenu menu = MiscSettingsMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("Misc Settings", "Change general settings.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -281,6 +291,7 @@ namespace vMenuClient
                     VoiceChatSettingsMenu = new VoiceChat();
                     UIMenu menu = VoiceChatSettingsMenu.GetMenu();
                     UIMenuItem button = new UIMenuItem("VoiceChat Settings", "Change VoiceChat options here.");
+                    button.SetRightLabel("→→→");
                     AddMenu(menu, button);
                 }
 
@@ -288,6 +299,7 @@ namespace vMenuClient
                 AboutMenu = new About();
                 UIMenu sub = AboutMenu.GetMenu();
                 UIMenuItem btn = new UIMenuItem("About vMenu", "Information about this menu and it's creators.");
+                btn.SetRightLabel("→→→");
                 AddMenu(sub, btn);
 
                 // Refresh everything.

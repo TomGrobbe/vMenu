@@ -53,12 +53,13 @@ namespace vMenuClient
 
             #region Create, add and bind buttons to the menus.
             // Create menu buttons.
-            UIMenuItem saveVeh = new UIMenuItem("Save Vehicle", "Save your current vehicle.");
-            saveVeh.SetLeftBadge(UIMenuItem.BadgeStyle.Star);
-            UIMenuItem savedVehiclesBtn = new UIMenuItem("Spawn Vehicle", "Spawn a saved vehicle from the list.");
-            savedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Car);
-            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Vehicle", "~r~Delete a saved vehicle.");
+            UIMenuItem saveVeh = new UIMenuItem("Save Current Vehicle", "Save the vehicle you are currently in.");
+            saveVeh.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+            UIMenuItem savedVehiclesBtn = new UIMenuItem("Spawn Saved Vehicle", "Select a vehicle from your saved vehicles list.");
+            savedVehiclesBtn.SetRightLabel("→→→");
+            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Saved Vehicle", "~r~Delete ~s~a saved vehicle.");
             deleteSavedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+            deleteSavedVehiclesBtn.SetRightLabel("→→→");
 
             // Add buttons to the menu.
             menu.AddItem(saveVeh);

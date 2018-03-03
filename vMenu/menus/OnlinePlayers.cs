@@ -54,6 +54,7 @@ namespace vMenuClient
             {
                 // Create a button for this player and add it to the menu.
                 UIMenuItem playerItem = new UIMenuItem(p.Name, "[" + (p.Handle < 10 ? "0" : "") + p.Handle + "] " + p.Name + " (Server ID: " + p.ServerId + ")");
+                playerItem.SetRightLabel("→→→");
                 menu.AddItem(playerItem);
 
                 // Handle button presses.

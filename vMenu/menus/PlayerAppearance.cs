@@ -67,9 +67,14 @@ namespace vMenuClient
 
             // Create the menu items.
             UIMenuItem pedCustomization = new UIMenuItem("Ped Customization", "Modify your ped's appearance.");
-            UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your ped and your ped's clothes.");
+            pedCustomization.SetRightLabel("→→→");
+            UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your current ped and clothes.");
+            savePed.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuItem spawnSavedPed = new UIMenuItem("Spawn Saved Ped", "Spawn one of your saved peds.");
+            spawnSavedPed.SetRightLabel("→→→");
             UIMenuItem deleteSavedPed = new UIMenuItem("Delete Saved Ped", "Delete one of your saved peds.");
+            deleteSavedPed.SetRightLabel("→→→");
+            deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
 
             // Add items to the mneu.
             menu.AddItem(pedCustomization);
