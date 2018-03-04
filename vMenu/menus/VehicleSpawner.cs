@@ -34,7 +34,7 @@ namespace vMenuClient
             };
 
             // Create the buttons and checkboxes.
-            UIMenuItem spawnByName = new UIMenuItem("Spawn By Name", "Enter the name of a vehicle to spawn.");
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
             UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle, "This will teleport you into the vehicle when you spawn it.");
             UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", SpawnInVehicle, "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
@@ -55,7 +55,8 @@ namespace vMenuClient
                 string className = cf.GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
-                UIMenuItem btn = new UIMenuItem(className, $"Select a vehicle from the {className} class.");
+                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
+                btn.SetRightLabel("→→→");
                 UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
                 {
                     ScaleWithSafezone = false,
@@ -156,7 +157,7 @@ namespace vMenuClient
                 if (item == spawnByName)
                 {
                     // Passing "custom" as the vehicle name, will ask the user for input.
-                    cf.SpawnVehicle("custom");
+                    cf.SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
                 }
             };
 

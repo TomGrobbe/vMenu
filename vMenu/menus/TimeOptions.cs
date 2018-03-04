@@ -16,6 +16,7 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
+        public UIMenuItem freezeTimeToggle;
 
         /// <summary>
         /// Creates the menu.
@@ -32,7 +33,7 @@ namespace vMenuClient
             };
 
             // Create all menu items.
-            UIMenuItem freezeTimeToggle = new UIMenuItem("~h~Freeze Time", "Enable or disable time freezing.");
+            freezeTimeToggle = new UIMenuItem("Freeze/Unfreeze Time", "Enable or disable time freezing.");
             UIMenuItem earlymorning = new UIMenuItem("Early Morning", "Set the time to 06:00.");
             earlymorning.SetRightLabel("06:00");
             UIMenuItem morning = new UIMenuItem("Morning", "Set the time to 09:00.");

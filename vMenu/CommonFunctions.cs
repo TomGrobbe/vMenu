@@ -18,6 +18,7 @@ namespace vMenuClient
         private string currentScenario = "";
         private int previousVehicle = -1;
         private StorageManager sm = new StorageManager();
+        private WeaponInfo[] weaponList;
 
         #endregion
 
@@ -42,43 +43,49 @@ namespace vMenuClient
             else
             {
                 // check to see if the vehicle options menu exists but the player is not inside a vehicle.
-                if (MainMenu.VehicleOptionsMenu.VehicleModMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
+                if (MainMenu.VehicleOptionsMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
                 {
                     // If the vehicle mod submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleModMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle liveries submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle colors submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle doors submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle windows submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                     // If the vehicle extras submenu is open, close it.
                     if (MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible)
                     {
-                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.GoBack();
-                        Notify.Error("You must be inside a vehicle to use this menu.");
+                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
+                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible = false;
+                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     }
                 }
             }
@@ -1438,13 +1445,23 @@ namespace vMenuClient
         /// <summary>
         /// Sets the player's model to the provided modelName.
         /// </summary>
-        /// <param name="modelName"></param>
-        public async void SetPlayerSkin(string modelName)
+        /// <param name="modelName">The model name.</param>
+        public void SetPlayerSkin(string modelName, Dictionary<string, string> pedCustomizationOptions = null)
         {
-            uint model = (uint)GetHashKey(modelName);
+            int model = GetHashKey(modelName);
+            SetPlayerSkin(model, pedCustomizationOptions);
+        }
+
+        /// <summary>
+        /// Sets the player's model to the provided modelName.
+        /// </summary>
+        /// <param name="modelHash">The model hash.</param>
+        public async void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        {
+            uint model = (uint)modelHash;
             if (IsModelInCdimage(model))
             {
-                SaveWeaponLoadout();
+                await SaveWeaponLoadout();
                 RequestModel(model);
                 while (!HasModelLoaded(model))
                 {
@@ -1452,6 +1469,32 @@ namespace vMenuClient
                 }
                 SetPlayerModel(PlayerId(), model);
                 SetPedDefaultComponentVariation(PlayerPedId());
+
+                if (pedCustomizationOptions != null && pedCustomizationOptions.Count > 1)
+                {
+                    var ped = PlayerPedId();
+                    for (var i = 0; i < 21; i++)
+                    {
+                        int drawable = int.Parse(pedCustomizationOptions[$"drawable_variation_{i.ToString()}"]);
+                        int drawableTexture = int.Parse(pedCustomizationOptions[$"drawable_texture_{i.ToString()}"]);
+                        SetPedComponentVariation(ped, i, drawable, drawableTexture, 0);
+                    }
+
+                    for (var i = 0; i < 21; i++)
+                    {
+                        int prop = int.Parse(pedCustomizationOptions[$"prop_{i.ToString()}"]);
+                        int propTexture = int.Parse(pedCustomizationOptions[$"prop_texture_{i.ToString()}"]);
+                        if (prop == -1 || propTexture == -1)
+                        {
+                            ClearPedProp(ped, i);
+                        }
+                        else
+                        {
+                            SetPedPropIndex(ped, i, prop, propTexture, true);
+                        }
+                    }
+                }
+
                 RestoreWeaponLoadout();
             }
             else
@@ -1459,22 +1502,173 @@ namespace vMenuClient
                 Notify.Error("Sorry, this model is unavailable.");
             }
         }
-
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void SaveWeaponLoadout()
-        {
-        }
-
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void RestoreWeaponLoadout()
-        {
-        }
-
         #endregion
+
+        #region Save Ped Model + Customizations
+        /// <summary>
+        /// Saves the current player ped.
+        /// </summary>
+        public async void SavePed()
+        {
+            // Get the save name.
+            string name = await GetUserInputAsync("Enter a ped save name", maxInputLength: 15);
+            // If the save name is not invalid.
+            if (name != "" && name != null && name != "NULL")
+            {
+                // Create a dictionary to store all data in.
+                Dictionary<string, string> pedData = new Dictionary<string, string>();
+
+                // Get the ped.
+                int ped = PlayerPedId();
+
+                // Get the ped model hash & add it to the dictionary.
+                int model = GetEntityModel(ped);
+                pedData.Add("modelHash", model.ToString());
+
+                // Loop through all drawable variations.
+                for (var i = 0; i < 21; i++)
+                {
+                    int drawable = GetPedDrawableVariation(ped, i);
+                    int textureVariation = GetPedTextureVariation(ped, i);
+                    pedData.Add($"drawable_variation_{i.ToString()}", drawable.ToString());
+                    pedData.Add($"drawable_texture_{i.ToString()}", textureVariation.ToString());
+                }
+
+                // Loop through all prop variations.
+                for (var i = 0; i < 21; i++)
+                {
+                    int prop = GetPedPropIndex(ped, i);
+                    int propTexture = GetPedPropTextureIndex(ped, i);
+                    pedData.Add($"prop_{i.ToString()}", $"{prop.ToString()}");
+                    pedData.Add($"prop_texture_{i.ToString()}", $"{propTexture.ToString()}");
+                }
+
+                // Try to save the data, and save the result in a variable.
+                bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+
+                // If the save was successfull.
+                if (saveSuccessful)
+                {
+                    Notify.Success("Ped saved.");
+                }
+                // Save was not successfull.
+                else
+                {
+                    Notify.Error("Could not save this ped because the save name already exists.");
+                }
+            }
+            // User cancelled the saving or they did not enter a valid name.
+            else
+            {
+                Notify.Error("You did not enter a valid ped name or you cancelled the save.");
+            }
+        }
+        #endregion
+
+        #region Load Saved Ped
+        /// <summary>
+        /// Load the saved ped and spawn it.
+        /// </summary>
+        /// <param name="savedName">The ped saved name</param>
+        public async void LoadSavedPed(string savedName)
+        {
+            string savedPedName = savedName ?? await GetUserInputAsync("Enter saved name");
+            if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
+            {
+                Notify.Error("Invalid saved ped name.");
+            }
+            else
+            {
+                Dictionary<string, string> dict = sm.GetSavedDictionary("ped_" + savedPedName);
+                int model = int.Parse(dict["modelHash"]);
+                if (dict != null && dict.Count > 1)
+                {
+                    SetPlayerSkin(model, dict);
+                }
+                else
+                {
+                    Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
+                }
+            }
+        }
+        #endregion
+
+        #region Save and restore weapon loadouts when changing models
+
+        private struct WeaponInfo
+        {
+            public int Ammo;
+            public bool Equipped;
+            public uint Hash;
+            public uint[] Components;
+            public int Tint;
+        }
+
+        /// <summary>
+        /// Saves all current weapons and components.
+        /// </summary>
+        public async Task SaveWeaponLoadout()
+        {
+            await Delay(0);
+            int weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
+            weaponList = null;
+            weaponList = new WeaponInfo[weaponCount];
+            Ped ped = Game.PlayerPed;
+            var iterator = 0;
+
+            foreach (var weapon in WeaponOptions.ValidWeapons)
+            {
+                uint modelHash = weapon.Value;
+
+                bool inInventory = HasPedGotWeapon(Game.PlayerPed.Handle, modelHash, false);
+                if (inInventory)
+                {
+                    int ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, modelHash);
+                    WeaponInfo wi = new WeaponInfo { };
+                    wi.Ammo = ammo;
+                    wi.Hash = modelHash;
+                    wi.Equipped = Game.PlayerPed.Weapons.Current.Hash == (WeaponHash)modelHash;
+
+                    var componentlist = new uint[50];
+                    var it = 0;
+                    foreach (var wc in Enum.GetValues(typeof(WeaponComponentHash)))
+                    {
+                        if (DoesWeaponTakeWeaponComponent(modelHash, (uint)wc) && HasPedGotWeaponComponent(Game.PlayerPed.Handle, modelHash, (uint)wc))
+                        {
+                            componentlist[it] = (uint)wc;
+                            it++;
+                        }
+                    }
+                    wi.Components = componentlist;
+                    wi.Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, modelHash);
+                    weaponList[iterator] = wi;
+                    iterator++;
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Restores all weapons and components
+        /// </summary>
+        public async void RestoreWeaponLoadout()
+        {
+            await Delay(100);
+            foreach (WeaponInfo wi in weaponList)
+            {
+                GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, wi.Equipped);
+                if (wi.Components != null)
+                {
+                    foreach (uint comphash in wi.Components)
+                    {
+                        GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, comphash);
+                    }
+                }
+                SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
+            }
+        }
+        #endregion
+        
     }
 
 }

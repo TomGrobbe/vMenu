@@ -54,6 +54,7 @@ namespace vMenuClient
             {
                 // Create a button for this player and add it to the menu.
                 UIMenuItem playerItem = new UIMenuItem(p.Name, "[" + (p.Handle < 10 ? "0" : "") + p.Handle + "] " + p.Name + " (Server ID: " + p.ServerId + ")");
+                playerItem.SetRightLabel("→→→");
                 menu.AddItem(playerItem);
 
                 // Handle button presses.
@@ -84,10 +85,10 @@ namespace vMenuClient
                         UIMenuItem setWaypointBtn = new UIMenuItem("Set Waypoint", "Set a waypoint to this player.");
                         UIMenuItem spectateBtn = new UIMenuItem("Spectate Player", "Spectate this player.");
                         UIMenuItem summonBtn = new UIMenuItem("Summon Player", "Bring this player to your location.");
-                        summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Star);
+                        summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the selected player! Why are you so cruel :(");
-                        killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Gun);
-                        UIMenuItem kickPlayerBtn = new UIMenuItem("Kick Player", "Kick the player from the server, cancel the kick by pressing ESC when entering a kick reason.");
+                        killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
                         // Add all buttons to the player options submenu.

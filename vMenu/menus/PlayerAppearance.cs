@@ -67,9 +67,14 @@ namespace vMenuClient
 
             // Create the menu items.
             UIMenuItem pedCustomization = new UIMenuItem("Ped Customization", "Modify your ped's appearance.");
-            UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your ped and your ped's clothes.");
+            pedCustomization.SetRightLabel("→→→");
+            UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your current ped and clothes.");
+            savePed.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuItem spawnSavedPed = new UIMenuItem("Spawn Saved Ped", "Spawn one of your saved peds.");
+            spawnSavedPed.SetRightLabel("→→→");
             UIMenuItem deleteSavedPed = new UIMenuItem("Delete Saved Ped", "Delete one of your saved peds.");
+            deleteSavedPed.SetRightLabel("→→→");
+            deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
 
             // Add items to the mneu.
             menu.AddItem(pedCustomization);
@@ -99,11 +104,7 @@ namespace vMenuClient
                 }
                 else if (item == savePed)
                 {
-                    /* TODO
-                     * Create dictionary of current ped and save it using `ped_<pedname>`
-                     */
-
-                    //sm.SaveDictionary();
+                    cf.SavePed();
                 }
             };
 
@@ -176,7 +177,8 @@ namespace vMenuClient
                         {
                             textureList.Add("Item #" + x.ToString());
                         }
-                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable, "Cycle through all available drawables, and press enter to cycle through the different textures/colors available for this drawable.");
+                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
+                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                         pedTextures.AddItem(listItem);
 
                         // Manage list changes.
@@ -232,7 +234,9 @@ namespace vMenuClient
                         propsList.Add("Off");
 
                         // Create and add the list item to the menu.
-                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp, "Cycle through all available props, and press enter to cycle through the different textures/colors available for this prop.");
+                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp,
+                            $"Use ← & → to select a ~o~{propNames[ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+
                         pedTextures.AddItem(listItem);
 
                         // Handle list changes.
@@ -322,7 +326,35 @@ namespace vMenuClient
         private void RefreshSpawnSavedPedMenu()
         {
             spawnSavedPedMenu.MenuItems.Clear();
-            // todo load items
+            int findHandle = StartFindKvp("ped_");
+            List<string> savesFound = new List<string>();
+            while (true)
+            {
+                var saveName = FindKvp(findHandle);
+                if (saveName != null && saveName != "" && saveName != "NULL")
+                {
+                    savesFound.Add(saveName);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            foreach (var savename in savesFound)
+            {
+                UIMenuItem savedPedBtn = new UIMenuItem(savename.Substring(4), "Spawn this saved ped.");
+                spawnSavedPedMenu.AddItem(savedPedBtn);
+            }
+
+            spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
+            {
+                var name = item.Text.ToString();
+                cf.LoadSavedPed(name);
+            };
+
+            spawnSavedPedMenu.RefreshIndex();
+            spawnSavedPedMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -331,7 +363,36 @@ namespace vMenuClient
         private void RefreshDeleteSavedPedMenu()
         {
             deleteSavedPedMenu.MenuItems.Clear();
-            // todo load items
+            int findHandle = StartFindKvp("ped_");
+            List<string> savesFound = new List<string>();
+            while (true)
+            {
+                var saveName = FindKvp(findHandle);
+                if (saveName != null && saveName != "" && saveName != "NULL")
+                {
+                    savesFound.Add(saveName);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            foreach (var savename in savesFound)
+            {
+                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
+                deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+                deleteSavedPedMenu.AddItem(deleteSavedPed);
+            }
+
+            deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
+            {
+                var name = item.Text.ToString();
+                sm.DeleteSavedDictionary("ped_" + name);
+                Notify.Success("Saved ped deleted.");
+                deleteSavedPedMenu.GoBack();
+            };
+            deleteSavedPedMenu.RefreshIndex();
+            deleteSavedPedMenu.UpdateScaleform();
         }
 
 
