@@ -432,6 +432,17 @@ namespace vMenuClient
                     }
                 }
                 #endregion
+
+                #region Weapon Options
+                if (MainMenu.WeaponOptionsMenu != null)
+                {
+                    if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun)
+                    {
+                        PedSkipNextReloading(Game.PlayerPed.Handle);
+                    }
+                    SetPedInfiniteAmmoClip(Game.PlayerPed.Handle, MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+                }
+                #endregion
             }
         }
 

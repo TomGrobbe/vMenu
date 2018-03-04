@@ -1461,7 +1461,7 @@ namespace vMenuClient
             uint model = (uint)modelHash;
             if (IsModelInCdimage(model))
             {
-                SaveWeaponLoadout();
+                await SaveWeaponLoadout();
                 RequestModel(model);
                 while (!HasModelLoaded(model))
                 {
@@ -1469,7 +1469,6 @@ namespace vMenuClient
                 }
                 SetPlayerModel(PlayerId(), model);
                 SetPedDefaultComponentVariation(PlayerPedId());
-                RestoreWeaponLoadout();
 
                 if (pedCustomizationOptions != null && pedCustomizationOptions.Count > 1)
                 {
@@ -1495,6 +1494,8 @@ namespace vMenuClient
                         }
                     }
                 }
+
+                RestoreWeaponLoadout();
             }
             else
             {
@@ -1592,65 +1593,82 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Save and restore weapon loadouts when changing models (TODO)
+        #region Save and restore weapon loadouts when changing models
 
         private struct WeaponInfo
         {
             public int Ammo;
             public bool Equipped;
-            public WeaponHash Hash;
-            public WeaponComponentCollection Components;
-            public WeaponTint Tint;
+            public uint Hash;
+            public uint[] Components;
+            public int Tint;
         }
 
         /// <summary>
-        /// Todo
+        /// Saves all current weapons and components.
         /// </summary>
-        public void SaveWeaponLoadout()
+        public async Task SaveWeaponLoadout()
         {
-            var weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
+            await Delay(0);
+            int weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
+            weaponList = null;
             weaponList = new WeaponInfo[weaponCount];
-            
-            //weaponList.Clear();
-            var ped = new Ped(PlayerPedId());
+            Ped ped = Game.PlayerPed;
             var iterator = 0;
-            foreach (WeaponHash wh in Enum.GetValues(typeof(WeaponHash)))
+
+            foreach (var weapon in WeaponOptions.ValidWeapons)
             {
-                if (ped.Weapons.HasWeapon(wh))
+                uint modelHash = weapon.Value;
+
+                bool inInventory = HasPedGotWeapon(Game.PlayerPed.Handle, modelHash, false);
+                if (inInventory)
                 {
-                    var test = new WeaponInfo
+                    int ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, modelHash);
+                    WeaponInfo wi = new WeaponInfo { };
+                    wi.Ammo = ammo;
+                    wi.Hash = modelHash;
+                    wi.Equipped = Game.PlayerPed.Weapons.Current.Hash == (WeaponHash)modelHash;
+
+                    var componentlist = new uint[50];
+                    var it = 0;
+                    foreach (var wc in Enum.GetValues(typeof(WeaponComponentHash)))
                     {
-                        Ammo = ped.Weapons[wh].Ammo,
-                        Equipped = false,
-                        Hash = wh,
-                        Components = ped.Weapons[wh].Components,
-                        Tint = ped.Weapons[wh].Tint
-                    };
-                    weaponList[iterator] = test;
+                        if (DoesWeaponTakeWeaponComponent(modelHash, (uint)wc) && HasPedGotWeaponComponent(Game.PlayerPed.Handle, modelHash, (uint)wc))
+                        {
+                            componentlist[it] = (uint)wc;
+                            it++;
+                        }
+                    }
+                    wi.Components = componentlist;
+                    wi.Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, modelHash);
+                    weaponList[iterator] = wi;
                     iterator++;
+
                 }
             }
-            //foreach (var wh in Enum.GetValues(typeof(WeaponHash)))
-            //{
-            //    if (ped.Weapons.HasWeapon((WeaponHash)wh))
-            //    {
-            //        int ammoCount = ped.Weapons[(WeaponHash)wh].Ammo;
-            //        weaponList.Add((WeaponHash)wh, ammoCount);
-            //    }
-            //}
         }
 
         /// <summary>
-        /// Todo
+        /// Restores all weapons and components
         /// </summary>
-        public void RestoreWeaponLoadout()
+        public async void RestoreWeaponLoadout()
         {
-            foreach(WeaponInfo wi in weaponList)
+            await Delay(100);
+            foreach (WeaponInfo wi in weaponList)
             {
-                Game.PlayerPed.Weapons.Give(wi.Hash, wi.Ammo, false, true);
+                GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, wi.Equipped);
+                if (wi.Components != null)
+                {
+                    foreach (uint comphash in wi.Components)
+                    {
+                        GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, comphash);
+                    }
+                }
+                SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
             }
         }
         #endregion
+        
     }
 
 }

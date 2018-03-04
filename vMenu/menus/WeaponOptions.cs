@@ -16,9 +16,24 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.cf;
+        public bool UnlimitedAmmo = UserDefaults.WeaponsUnlimitedAmmo;
+        public bool NoReload = UserDefaults.WeaponsNoReload;
+        public static Dictionary<string, uint> ValidWeapons = new Dictionary<string, uint>();
 
         private void CreateMenu()
         {
+            var num = 0;
+            foreach (WeaponHash weaponHash in Enum.GetValues(typeof(WeaponHash)))
+            {
+                //string name = Weapon.GetDisplayNameFromHash(weaponHash);
+                string name = weaponNames[num];
+                if (name != "Invalid" && name != "Parachute" & name != "Unarmed")
+                {
+                    ValidWeapons.Add(name, (uint)weaponHash);
+                }
+                num++;
+            }
+
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Weapon Options", true)
             {
@@ -30,19 +45,30 @@ namespace vMenuClient
 
             UIMenuItem getAllWeapons = new UIMenuItem("Get All Weapons", "Get all weapons.");
             UIMenuItem removeAllWeapons = new UIMenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
+            UIMenuItem weaponComponents = new UIMenuItem("Weapon Components", "Toggle weapon components on/off for each weapon.");
+            UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem("Unlimited Ammo", UnlimitedAmmo, "Unlimited ammonition supply.");
+            UIMenuCheckboxItem noReload = new UIMenuCheckboxItem("No Reload", NoReload, "Never reload.");
 
 
             menu.AddItem(getAllWeapons);
             menu.AddItem(removeAllWeapons);
+            menu.AddItem(weaponComponents);
+            menu.AddItem(unlimitedAmmo);
+            menu.AddItem(noReload);
+
+            foreach (var weapon in ValidWeapons)
+            {
+                menu.AddItem(new UIMenuItem($"~o~{weapon.Key}"));
+            }
 
             menu.OnItemSelect += (sender, item, index) =>
             {
                 Ped ped = new Ped(PlayerPedId());
                 if (item == getAllWeapons)
                 {
-                    foreach (var wh in Enum.GetValues(typeof(WeaponHash)))
+                    foreach (var weapon in ValidWeapons)
                     {
-                        ped.Weapons.Give((WeaponHash)wh, 200, false, true);
+                        ped.Weapons.Give((WeaponHash)weapon.Value, 200, false, true);
                     }
                     // "Give" the player "unarmed" to make sure they don't auto equip any of the weapons.
                     ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
@@ -50,6 +76,38 @@ namespace vMenuClient
                 else if (item == removeAllWeapons)
                 {
                     ped.Weapons.RemoveAll();
+                }
+                else if (item == weaponComponents)
+                {
+                    // Todo
+                }
+                else
+                {
+                    uint hash = ValidWeapons[item.Text.Substring(3)];
+                    if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
+                    {
+                        RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("WEAPON_UNARMED"), 0, false, true);
+                    }
+                    else
+                    {
+                        int ammo = 900;
+                        GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, hash, ammo, false, true);
+                    }
+                }
+            };
+
+
+            menu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                if (item == noReload)
+                {
+                    NoReload = _checked;
+                }
+                else if (item == unlimitedAmmo)
+                {
+                    UnlimitedAmmo = _checked;
                 }
             };
         }
@@ -67,7 +125,99 @@ namespace vMenuClient
             return menu;
         }
 
+        #region Weapon names, hashes and localized names.
+        /// <summary>
+        /// List of all localized names.
+        /// </summary>
+        public static List<string> weaponNames = new List<string>()
+        {
+            "Sniper Rifle",
+            "Fire Extinguisher",
+            "Compact Grenade Launcher",
+            "Snowball",
+            "Vintage Pistol",
+            "Combat PDW",
+            "Heavy Sniper Mk II",
+            "Heavy Sniper",
+            "Sweeper Shotgun",
+            "Micro SMG",
+            "Pipe Wrench",
+            "Pistol",
+            "Pump Shotgun",
+            "AP Pistol",
+            "Ball",
+            "Molotov",
+            "SMG",
+            "Sticky Bomb",
+            "Jerry Can",
+            "Stun Gun",
+            "Assault Rifle Mk II",
+            "Heavy Shotgun",
+            "Minigun",
+            "Golf Club",
+            "Flare Gun",
+            "Flare",
+            "Invalid",
+            "Hammer",
+            "Combat Pistol",
+            "Gusenberg Sweeper",
+            "Compact Rifle",
+            "Homing Launcher",
+            "Nightstick",
+            "Railgun",
+            "Sawed-Off Shotgun",
+            "SMG Mk II",
+            "Bullpup Rifle",
+            "Firework Launcher",
+            "Combat MG",
+            "Carbine Rifle",
+            "Crowbar",
+            "Flashlight",
+            "Antique Cavalry Dagger",
+            "Grenade",
+            "Pool Cue",
+            "Baseball Bat",
+            "Pistol .50",
+            "Knife",
+            "MG",
+            "Bullpup Shotgun",
+            "BZ Gas",
+            "Invalid",
+            "Grenade Launcher",
+            "Unarmed",
+            "Musket",
+            "Proximity Mine",
+            "Advanced Rifle",
+            "RPG",
+            "Pipe Bomb",
+            "Mini SMG",
+            "SNS Pistol",
+            "Pistol Mk II",
+            "Assault Rifle",
+            "Special Carbine",
+            "Heavy Revolver",
+            "Marksman Rifle",
+            "Battle Axe",
+            "Heavy Pistol",
+            "Knuckle Duster",
+            "Machine Pistol",
+            "Combat MG Mk II",
+            "Marksman Pistol",
+            "Machete",
+            "Switchblade",
+            "Assault Shotgun",
+            "Double Barrel Shotgun",
+            "Assault SMG",
+            "Hatchet",
+            "Bottle",
+            "Carbine Rifle Mk II",
+            "Parachute",
+            "Tear Gas",
+        };
 
+        /// <summary>
+        /// List of all weapon names + hashes.
+        /// </summary>
         public static Dictionary<string, Int64> Weapons = new Dictionary<string, Int64>()
         {
             ["SniperRifle"] = 100416529,
@@ -153,5 +303,6 @@ namespace vMenuClient
             ["Parachute"] = 4222310262,
             ["SmokeGrenade"] = 4256991824
         };
+        #endregion
     }
 }
