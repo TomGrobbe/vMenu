@@ -1671,6 +1671,22 @@ namespace vMenuClient
         }
         #endregion
 
+        public UIMenuItem GetSpacerMenuItem(string title, string description = null)
+        {
+            string output = "~h~";
+            int length = title.Length;
+            int totalSize = 90 - int.Parse((length * 3).ToString());
+
+            for (var i = 0; i < totalSize / 2; i++)
+            {
+                output += " ";
+            }
+            output += title;
+            UIMenuItem item = new UIMenuItem(output, description ?? "");
+            item.Enabled = false;
+            return item;
+        }
+
     }
 
 }

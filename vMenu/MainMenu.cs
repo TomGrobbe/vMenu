@@ -428,7 +428,7 @@ namespace vMenuClient
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 UIMenu menu = VoiceChatSettingsMenu.GetMenu();
-                UIMenuItem button = new UIMenuItem("VoiceChat Settings", "Change VoiceChat options here.");
+                UIMenuItem button = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
             }

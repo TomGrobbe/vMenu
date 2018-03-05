@@ -476,22 +476,27 @@ namespace vMenuClient
             {
                 Wheels.Add(color.Key.ToString());
             }
+
+            // Dashboard Trim Colors
+            List<dynamic> DashboardColor = new List<dynamic>();
+            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            {
+                DashboardColor.Add(color.Key.ToString());
+            }
+
+            // Extra Accent Colors
+            List<dynamic> TrimColor = new List<dynamic>();
+            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            {
+                TrimColor.Add(color.Key.ToString());
+            }
             #endregion
 
             #region Create the headers + menu list items
             // Headers
-            UIMenuItem primaryColorsHeader = new UIMenuItem("~g~Primary Colors:")
-            {
-                Enabled = false
-            };
-            UIMenuItem secondaryColorsHeader = new UIMenuItem("~g~Secondary Colors:")
-            {
-                Enabled = false
-            };
-            UIMenuItem otherColorsHeader = new UIMenuItem("~g~Other Colors:")
-            {
-                Enabled = false
-            };
+            UIMenuItem primaryColorsHeader = cf.GetSpacerMenuItem("PRIMARY COLORS");
+            UIMenuItem secondaryColorsHeader = cf.GetSpacerMenuItem("SECONDARY COLORS");
+            UIMenuItem otherColorsHeader = cf.GetSpacerMenuItem("OTHER COLORS");
 
             // Primary Colors
             UIMenuListItem classicColors = new UIMenuListItem("Classic", Metallic, 0, "Select a Classic primary color.");
@@ -516,6 +521,8 @@ namespace vMenuClient
             UIMenuListItem wheelColors = new UIMenuListItem("Wheels Color", Wheels, 0, "Select a color for your wheels.");
             // Chrome Button
             UIMenuItem chromeBtn = new UIMenuItem("Chrome", "Make your vehicle chrome!");
+            UIMenuListItem dashboardColors = new UIMenuListItem("Dashboard Color", DashboardColor, 0, "Select a dashboard color (only availalbe on some cars).");
+            UIMenuListItem trimColors = new UIMenuListItem("Trim Color", TrimColor, 0, "Select an trim/accent color (only availalbe on some cars).");
             #endregion
 
             #region Add the items to the colors menu.
@@ -542,6 +549,8 @@ namespace vMenuClient
             VehicleColorsMenu.AddItem(pearlescentColors);
             VehicleColorsMenu.AddItem(wheelColors);
             VehicleColorsMenu.AddItem(chromeBtn);
+            VehicleColorsMenu.AddItem(dashboardColors);
+            VehicleColorsMenu.AddItem(trimColors);
             #endregion
 
             #region Handle Vehicle Color Changes
@@ -553,11 +562,20 @@ namespace vMenuClient
                 // Check if the vehicle exists and isn't dead and the player is the driver of the vehicle.
                 if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                 {
+                    var vehi = new Vehicle(veh);
                     // Get the primary and secondary colors from the current vehicle..
                     int primary = 0;
                     int secondary = 0;
                     int pearlescent = 0;
                     int wheels = 0;
+
+                    //int trimColor = (int)vehi.Mods.DashboardColor;
+                    //int dashboardColor = (int)vehi.Mods.TrimColor;
+                    int trimColor = 0;
+                    int dashboardColor = 0;
+                    GetVehicleInteriorColour(veh, ref trimColor);
+                    GetVehicleDashboardColour(veh, ref dashboardColor);
+
                     GetVehicleColours(veh, ref primary, ref secondary);
                     GetVehicleExtraColours(veh, ref pearlescent, ref wheels);
 
@@ -644,6 +662,19 @@ namespace vMenuClient
                             wheels = vd.MetallicColors[Metallic[index - 1]];
                         }
                     }
+
+                    else if (item == dashboardColors)
+                    {
+
+                        trimColor = vd.MetallicColors[DashboardColor[index]];
+                        SetVehicleInteriorColour(veh, trimColor);
+                    }
+                    else if (item == trimColors)
+                    {
+                        dashboardColor = vd.MetallicColors[TrimColor[index]];
+                        SetVehicleDashboardColour(veh, dashboardColor);
+                    }
+
                     // Set the mod kit so we can modify things.
                     SetVehicleModKit(veh, 0);
 
