@@ -228,11 +228,17 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
             EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
             EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
+            //EventHandlers.Add("vMenu:LogMessage", new Action<string>(LogMessage));
 
             Tick += WeatherLoop;
             Tick += TimeLoop;
         }
         #endregion
+
+        //private void LogMessage(string message)
+        //{
+        //    Debug.Write(message);
+        //}
 
         #region Manage weather and time changes.
         /// <summary>

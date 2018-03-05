@@ -18,7 +18,7 @@ namespace vMenuClient
         private string currentScenario = "";
         private int previousVehicle = -1;
         private StorageManager sm = new StorageManager();
-        private WeaponInfo[] weaponList;
+        //private WeaponInfo[] weaponList;
 
         #endregion
 
@@ -1595,14 +1595,14 @@ namespace vMenuClient
 
         #region Save and restore weapon loadouts when changing models
 
-        private struct WeaponInfo
-        {
-            public int Ammo;
-            public bool Equipped;
-            public uint Hash;
-            public uint[] Components;
-            public int Tint;
-        }
+        //private struct WeaponInfo
+        //{
+        //    public int Ammo;
+        //    public bool Equipped;
+        //    public uint Hash;
+        //    public uint[] Components;
+        //    public int Tint;
+        //}
 
         /// <summary>
         /// Saves all current weapons and components.
@@ -1611,11 +1611,12 @@ namespace vMenuClient
         {
             await Delay(0);
             int weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
-            weaponList = null;
-            weaponList = new WeaponInfo[weaponCount];
+            //weaponList = null;
+            //weaponList = new WeaponInfo[weaponCount];
             Ped ped = Game.PlayerPed;
-            var iterator = 0;
+            //var iterator = 0;
 
+            /*
             foreach (var weapon in WeaponOptions.ValidWeapons)
             {
                 uint modelHash = weapon.Value;
@@ -1646,6 +1647,7 @@ namespace vMenuClient
 
                 }
             }
+            */
         }
 
         /// <summary>
@@ -1654,21 +1656,21 @@ namespace vMenuClient
         public async void RestoreWeaponLoadout()
         {
             await Delay(100);
-            foreach (WeaponInfo wi in weaponList)
-            {
-                GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, wi.Equipped);
-                if (wi.Components != null)
-                {
-                    foreach (uint comphash in wi.Components)
-                    {
-                        GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, comphash);
-                    }
-                }
-                SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
-            }
+            //foreach (WeaponInfo wi in weaponList)
+            //{
+            //    GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, wi.Equipped);
+            //    if (wi.Components != null)
+            //    {
+            //        foreach (uint comphash in wi.Components)
+            //        {
+            //            GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, comphash);
+            //        }
+            //    }
+            //    SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
+            //}
         }
         #endregion
-        
+
     }
 
 }
