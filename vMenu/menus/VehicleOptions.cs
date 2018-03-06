@@ -85,7 +85,17 @@ namespace vMenuClient
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             UIMenuItem cycleSeats = new UIMenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
-            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
+            List<dynamic> lights = new List<dynamic>()
+            {
+                "Hazard Lights",
+                "Left Indicator",
+                "Right Indicator",
+                "Interior Lights",
+                "Taxi Light",
+                "Helicopter Spotlight",
+            };
+            UIMenuListItem vehicleLights = new UIMenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~w~!");
             deleteBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             deleteBtn.SetRightLabel("→→→");
             UIMenuItem deleteNoBtn = new UIMenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
@@ -481,8 +491,79 @@ namespace vMenuClient
                 {
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
-                        Vehicle veh = new Vehicle(cf.GetVehicle());
-                        veh.DirtLevel = float.Parse(index.ToString());
+                        Vehicle veh = new Vehicle(cf.GetVehicle())
+                        {
+                            DirtLevel = float.Parse(index.ToString())
+                        };
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
+                    }
+                }
+                // Toggle vehicle lights
+                else if (item == vehicleLights)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        var veh = cf.GetVehicle();
+                        var state = GetVehicleIndicatorLights(veh); // 0 = none, 1 = left, 2 = right, 3 = both
+
+                        if (index == 0) // Hazard lights
+                        {
+                            if (state != 3) // either all lights are off, or one of the two (left/right) is off.
+                            {
+                                SetVehicleIndicatorLights(veh, 1, true); // left on
+                                SetVehicleIndicatorLights(veh, 0, true); // right on
+                            }
+                            else // both are on.
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 1) // left indicator
+                        {
+                            if (state != 1) // Left indicator is (only) off
+                            {
+                                SetVehicleIndicatorLights(veh, 1, true); // left on
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                            else
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 2) // right indicator
+                        {
+                            if (state != 2) // Right indicator (only) is off
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, true); // right on
+                            }
+                            else
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 3) // Interior lights
+                        {
+                            SetVehicleInteriorlight(veh, !IsVehicleInteriorLightOn(veh));
+                        }
+                        else if (index == 4) // taxi light
+                        {
+                            SetTaxiLights(veh, !IsTaxiLightOn(veh));
+                        }
+                        else if (index == 5) // helicopter spotlight
+                        {
+                            SetVehicleSearchlight(veh, !IsVehicleSearchlightOn(veh), true);
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
                     }
                 }
             };
