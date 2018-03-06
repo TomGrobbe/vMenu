@@ -234,7 +234,15 @@ namespace vMenuClient
                             }
                             else if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                cf.DriveToWp();
+                                try
+                                {
+                                    cf.DriveToWp();
+                                }
+                                catch (NotImplementedException e)
+                                {
+                                    Debug.Write("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
+                                }
                             }
                             else
                             {
@@ -245,7 +253,16 @@ namespace vMenuClient
                         case 7:
                             if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                cf.DriveWander();
+                                try
+                                {
+                                    cf.DriveWander();
+                                }
+                                catch (NotImplementedException e)
+                                {
+                                    Debug.Write("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
+                                }
+
                             }
                             else
                             {
