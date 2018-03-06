@@ -15,7 +15,6 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
         private CommonFunctions cf = MainMenu.Cf;
         public UIMenuItem freezeTimeToggle;
 
