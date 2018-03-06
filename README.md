@@ -12,94 +12,188 @@ vMenu is a custom built server sided trainer, with basic permissions support, wh
 **Almost all features have custom permissions options.**
 
 
-## Menu Features
-_(Grouped by submenu/category)_
+## Menu Permissions/Features
+>### ⚠ Please note that ALL permissions are `CaSeSeNSItIve`!
+
+## Global Permissions
+**Notes:**
+1. __\*__ The `Default (allowed/denied)` values are based on the assumption that you use the default permissions file included with the menu, and you've granted yourself no special permissions or added yourself to any of the admin/moderator groups. If you **DON'T** use the default permissions file, then every option will be **DENIED** by default.
+2. __\*\*__ These options are only allowed by default for the "Moderators" / "Admins" groups in the provided permissions file with this resource.
+3. __\*\*\*__ When spawning a car using the `Spawn By Name` button, it will always check to see if you have permission for that specific vehicle's class. eg: If you don't have permission to spawn cars from the `Super` class, trying to spawn an `adder` using the `Spawn By Name` button won't work.
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.Everything`|Grants access to everything, not recommended to give this out.|Denied|
+|`vMenu.DontKickMe`|Prevents this player from being kicked.|Denied|
+
+## Online Players
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.OnlinePlayers.Menu`|Grants access to the Online Players Menu|Allowed|
+|`vMenu.OnlinePlayers.All`|Grants access to **ALL** `Online Players Menu` options.|Denied|
+|`vMenu.OnlinePlayers.Teleport`|Allows you to teleport to another player.|Allowed|
+|`vMenu.OnlinePlayers.Waypoint`|Allows you to set a waypoint to another player.|Allowed|
+|`vMenu.OnlinePlayers.Spectate`|Allows you to spectate another player.|Allowed|
+|`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you.|Denied|
+|`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. Dam, you're very cruel.|Denied|
+|`vMenu.OnlinePlayers.Kick`|Allows you to kick another player from the server.|Denied|
+
+## Player Options
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.PlayerOptions.Menu`|Grants access to the Player Options Menu.|Allowed|
+|`vMenu.PlayerOptions.All`|Grants access to **ALL** `Player Options Menu` options.|Denied|
+|`vMenu.PlayerOptions.God`|Allows you to use god mode.|Allowed|
+|`vMenu.PlayerOptions.Invisible`|Allows you to go invisble.|Allowed|
+|`vMenu.PlayerOptions.FastRun`|Allows you to enable Fast Run.|Allowed|
+|`vMenu.PlayerOptions.FastSwim`|Allows you to enable Fast Swim.|Allowed|
+|`vMenu.PlayerOptions.Superjump`|Allows you to enable Superjump.|Allowed|
+|`vMenu.PlayerOptions.NoRagdoll`|Allows you to enable No Ragdoll.|Allowed|
+|`vMenu.PlayerOptions.NeverWanted`|Allows you to enable Never Wanted.|Allowed|
+|`vMenu.PlayerOptions.SetWanted`|Allows you to set a custom wanted level.|Allowed|
+|`vMenu.PlayerOptions.Ignored`|Allows you to enable the Everyone Ignores Player option.|Allowed|
+|`vMenu.PlayerOptions.Functions`|Allows you to access some basic functions like healing, cleaning clothes, dry/wet clothes, commit suicide, etc.|Allowed|
+|`vMenu.PlayerOptions.Freeze`|Allows you to freeze your own player. Why would you need to do this though...|Allowed|
+|`vMenu.PlayerOptions.Scenarios`|Allows you to play and stop scenarios.|Allowed|
+
+## Vehicle Options
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.VehicleOptions.Menu`|Grants access to the Vehicle Options Menu.|Allowed|
+|`vMenu.VehicleOptions.All`|Grants access to **ALL** `Vehicle Options Menu` options.|Denied|
+|`vMenu.VehicleOptions.God`|Allows you to enable vehicle godmode.|Allowed|
+|`vMenu.VehicleOptions.Repair`|Allows you to repair your vehicle.|Allowed|
+|`vMenu.VehicleOptions.Wash`|Allows you to wash/clean your vehicle & set a custom dirt level.|Allowed|
+|`vMenu.VehicleOptions.Engine`|Allows you to toggle your engine on/off.|Allowed|
+|`vMenu.VehicleOptions.ChangePlate`|Allows you to change your vehicle's license plate style & text.|Allowed|
+|`vMenu.VehicleOptions.Mod`|Allows you to modify any visual and performance specs of your vehicle.|Allowed|
+|`vMenu.VehicleOptions.Colors`|Allows you to change the color of your vehicle.|Allowed|
+|`vMenu.VehicleOptions.Liveries`|Allows you to change the livery of your vehicle.|Allowed|
+|`vMenu.VehicleOptions.Components`|Allows you to modify the components/extras of your vehicle.|Allowed|
+|`vMenu.VehicleOptions.Doors`|Allows you to open/close vehicle doors using the menu.|Allowed|
+|`vMenu.VehicleOptions.Windows`|Allows you to roll up/down your windows using the menu.|Allowed|
+|`vMenu.VehicleOptions.Freeze`|Allows you to freeze the position of your vehicle (why would you do this though...)|Allowed|
+|`vMenu.VehicleOptions.TorqueMultiplier`|Allows you to set and enable an engine torque multiplier.|Allowed|
+|`vMenu.VehicleOptions.PowerMultiplier`|Allows you to set and enable an engine power multiplier.|Allowed|
+|`vMenu.VehicleOptions.Flip`|Allows you to flip your vehicle if it's upside down.|Allowed|
+|`vMenu.VehicleOptions.Alarm`|Allows you to toggle the vehicle's alarm on/off. Turning it on will randomize the alarm duration between 8-30 seconds.|Allowed|
+|`vMenu.VehicleOptions.CycleSeats`|Allows you to cycle through all available vehicle seats.|Allowed|
+|`vMenu.VehicleOptions.EngineAlwaysOn`|Allows you to enable the Engine Always On feature, this keeps the engine running when you exit your vehicle.|Allowed|
+|`vMenu.VehicleOptions.NoSiren`|Allows you to disable the siren on the vehicle.|Allowed|
+|`vMenu.VehicleOptions.NoHelmet`|Allows you to disable the "automatically equipped" helmets when getting on a bike.|Allowed|
+|`vMenu.VehicleOptions.Lights`|Allows you to enable/disable specific vehicle lights like hazard lights, turn signals, interior lighting, taxi lights or helicopter spotlights.|Allowed|
+|`vMenu.VehicleOptions.Delete`|Allows you to delete your current vehicle.|Allowed|
+
+## Vehicle Spawner
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.VehicleSpawner.Menu`|Grants access to the Vehicle Spawner Menu.|Allowed|
+|`vMenu.VehicleSpawner.All`|Allows you to spawn **ANY** vehicle.|Denied|
+|`vMenu.VehicleSpawner.SpawnByName`|Allows you to enter a **custom vehicle name** to spawn[\*\*\*](#global-permissions).|Allowed|
+|`vMenu.VehicleSpawner.Compacts`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Sedans`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.SUVs`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Coupes`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Muscle`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.SportsClassic`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Sports`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Super`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Motorcycles`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.OffRoad`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Industrial`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Utility`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Vans`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Cycles`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Boats`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Helicopters`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Planes`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Service`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Emergency`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Military`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Commercial`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.Trains`|Allows you to spawn a vehicle from this category.|Allowed|
+
+## Saved Vehicles
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.SavedVehicles.Menu`|Grants access to the Saved Vehicles Menu.|Allowed|
+|`vMenu.SavedVehicles.All`|Grants access to **ALL** `Saved Vehicles Menu` options.|Denied|
+|`vMenu.SavedVehicles.Spawn`|Allows you to spawn one of your saved cars. Saving new cars or deleting existing saved cars is always allowed no matter what.|Allowed|
+
+## Player Appearance
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.PlayerAppearance.Menu`|Grants access to the Player Appearance Menu.|Allowed|
+|`vMenu.PlayerAppearance.All`|Grants access to **ALL** `Player Appearance Menu` options.|Denied|
+|`vMenu.PlayerAppearance.Customize`|Allows you to customize your current ped.|Allowed|
+|`vMenu.PlayerAppearance.SpawnSaved`|Allows you to spawn a saved ped. Saving new peds or deleting existing saved peds is always allowed no matter what.|Allowed|
+|`vMenu.PlayerAppearance.SpawnNew`|Allows you to spawn any ped model from a list.|Allowed|
+
+## Time Options
+
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.TimeOptions.Menu`|Grants access to the Time Options Menu.|Denied[\*\*](#global-permissions)|
+|`vMenu.TimeOptions.All`|Grants access to **ALL** `Time Options Menu` options.|Denied|
+|`vMenu.TimeOptions.FreezeTime`|Allows you to freeze the current time. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.TimeOptions.SetTime`|Allows you to set the current time. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+
+## Weather Options
 
 
-**Wildcard permissions include: **
-- `vMenu.everything`: Grants access to everything (not recommended, only use this if you're lazy.)
-- `vMenu.menus.*`: Grans access to all menus, note this does not grant access to any option inside the menus.
-- `vMenu.<submenuName>.*`: Grants access to all the options inside that specific submenu.
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.WeatherOptions.Menu`|Grants access to the Weather Options Menu.|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.All`|Grants access to **ALL** `Weather Options Menu` options.|Denied|
+|`vMenu.WeatherOptions.Dynamic`|Allows you to enable/disable dynamic weather changes (which, when enabled, occur every 5 minutes). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.Blackout`|Allows you to enable/disable blackout mode (all light sources in the map go dark). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.SetWeather`|Allows you to set a custom weather type. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.RemoveClouds`|Allows you to remove all cloud effects (only use this with Clear or Extra Sunny weather, obviously). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.RandomizeClouds`|Allows you to randomize the cloud patterns/effects. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
 
+## Weapon Options
+**Adding/Removing/Customizing any weapon is automatically _ALLOWED_ when you give the player permissions to access this menu.**
 
-### Online Player Options
-Permission to access this submenu: `vMenu.menus.onlinePlayers` (note this does not auto-grant any of the options inside the submenu).
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.WeaponOptions.Menu`|Grants access to the Weapon Options Menu.|Allowed|
+|`vMenu.WeaponOptions.All`|Grants access to all `Weapon Options Menu` options.|Denied|
+|`vMenu.WeaponOptions.GetAll`|Allows you to use the `Get All Weapons` button.|Allowed|
+|`vMenu.WeaponOptions.RemoveAll`|Allows you to use the `Remove All Weapons` button.|Allowed|
+|`vMenu.WeaponOptions.UnlimitedAmmo`|Allows you to enable/disable unlimited ammo.|Allowed|
+|`vMenu.WeaponOptions.NoReload`|Allows you to enable/disable no-reload.|Allowed|
 
-|Option|Type|Description|Permission|Allowed by default|
-|:-|:-|:-|:-|-:|
-|Teleport To Player|Button|Teleport to the selected player.|`vMenu.onlinePlayers.teleport`|yes|
-|Teleport Into Vehicle|Button|Teleport to the selected player's vehicle.|`vMenu.onlinePlayers.teleport`|yes|
-|Set Waypoint|Button|Set a waypoint to the selected player.|`vMenu.onlinePlayers.waypoint`|yes|
-|Spectate|Button|Spectate the selected player.|`vMenu.onlinePlayers.spectate`|yes|
-|Summon|Button|Teleports the selected player to you.|`vMenu.onlinePlayers.summon`|no _(yes for moderators)_|
-|Kill|Button|Kills the selected player. Damn, you're cruel if you use this.|`vMenu.onlinePlayers.kill`|no _(yes for admins)_|
-|Kick|Button|Kicks the selected player from the server.|`vMenu.onlinePlayers.kick`|no _(yes for admins)_|
+## Misc Settings
+**The `Save Personal Settings` option in the Misc Settings Menu is always allowed, so there's no permission line for that.**
 
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.MiscSettings.Menu`|Grants access to the Misc Settings Menu.|Allowed|
+|`vMenu.MiscSettings.All`|Grants access to **ALL** `Misc Settings Menu` options.|Denied|
+|`vMenu.MiscSettings.TeleportToWp`|Allows you to teleport to the waypoint on your map.|Allowed|
+|`vMenu.MiscSettings.ShowCoordinates`|Allows you to show your current coordinates on screen.|Allowed|
+|`vMenu.MiscSettings.ShowLocation`|Allows you to show your current location on screen (pretty much just like PLD).|Allowed|
+|`vMenu.MiscSettings.JoinQuitNotifs`|Allows you to receive join/quit notifications when someone joins/quits the server.|Allowed|
+|`vMenu.MiscSettings.DeathNotifs`|Allows you to receive death notifications when someone dies or gets killed.|Allowed|
 
-### Player Options:
-Permission to access this submenu: `vMenu.menus.playerOptions` (note this does not auto-grant any of the options inside the submenu).
+## Voice Chat
 
-|Option|Type|Description|Permission|Allowed by default|
-|:-|:-|:-|:-|-:|
-|God Mode|Checkbox|Completely invincible.|`vMenu.playerOptions.god`|yes|
-|Invisibility|Checkbox|Become invisible for yourself and others.|`vMenu.playerOptions.invisible`|yes|
-|Unlimited Stamina|Checkbox|You can keep running without slowing down or taking damage.|`vMenu.playerOptions.stamina`|yes|
-|Fast Run|Checkbox|Enable super fast running.|`vMenu.playerOptions.fastrun`|yes|
-|Fast Swim|Checkbox|Enable super fast swimming.|`vMenu.playerOptions.fastswim`|yes|
-|Super Jump|Checkbox|Enable super high jumping.|`vMenu.playerOptions.superjump`|yes|
-|No Ragdoll|Checkbox|Keeps you from falling over when standing on top of a moving vehicle.|`vMenu.playerOptions.noragdoll`|yes|
-|Never Wanted|Checkbox|Disable all wanted levels.|`vMenu.playerOptions.neverwanted`|yes|
-|Set Wanted Level|List|Set your current wanted level.|`vMenu.playerOptions.setwanted`|yes|
-|Everyone Ignores You|Checkbox|Everyone ignores you with this enabled.|`vMenu.playerOptions.ignored`|yes|
-|Player Options|List|Allows you to perform these actions on your character: heal, clean, add armor, dry clothes, wet clothes, commit suicide, drive to wp, drive around randomly.|`vMenu.playerOptions.options`|yes|
-|Freeze Player|Checkbox|Freeze yourself, why would you do this though?|`vMenu.playerOptions.freeze`|yes|
-|Scenarios|List|Select a scenario and press **enter** to enable it. Press **enter** again to disable, or select another and it will switch instead.|`vMenu.playerOptions.scenarios`|yes|
-|Force Stop Scenario|Button|Allows you to forcefully stop a currently playing scenario.|`vMenu.playerOptions.scenarios`|yes|
+|Permission|Description|Default[\*](#global-permissions)|
+|:-|:-|:-|
+|`vMenu.VoiceChat.Menu`|Grants access to the Voice Chat Options Menu|Allowed|
+|`vMenu.VoiceChat.All`|Grants access to **ALL** `Voice Chat Options Menu` options.|Denied|
+|`vMenu.VoiceChat.Enable`|Allows you to enable/disable voice chat.|Allowed|
+|`vMenu.VoiceChat.ShowSpeaker`|Allows you to enable/disable the "Currently Talking" display at the top of your screen when someone is using voice chat.|Allowed|
+|`vMenu.VoiceChat.StaffChannel`|Allows you to enter the staff-only voice channel.|Denied[\*\*](#global-permissions)|
 
-
-### Vehicle Options
-Permission to access this submenu: `vMenu.menus.vehicleOptions` (note this does not auto-grant any of the options inside the submenu).
-
-|Option|Type|Description|Permission|Allowed by default|
-|:-|:-|:-|:-|-:|
-|God Mode|Checkbox|Prevents any visual and physical damage on your vehicle.|`vMenu.vehicleOptions.god`|yes|
-|Repair|Button|Repairs all damage on your vehicle.|`vMenu.vehicleOptions.repair`|yes|
-|Wash|Button|Cleans your vehicle.|`vMenu.vehicleOptions.wash`|yes|
-|Set Dirt Level|List|Set a specific dirt level on your vehicle.|`vMenu.vehicleOptions.setdirt`|yes|
-|Toggle Engine|Button|Turns your vehicle's engine on/off.|`vMenu.vehicleOptions.engine`|yes|
-|Set License Plate Text|Button (input)|Allows you to set your custom plate text.|`vMenu.vehicleOptions.platetext`|yes|
-|Set LIcense Plate Style|List|Sets the style of your license plate.|`vMenu.vehicleOptions.platestyle`|yes|
-|Mod Menu|Submenu|Allows you to customize your vehicle.|`vMenu.vehicleOptions.mod`|yes|
-|Vehicle Colors|Submenu|Allows you to change your vehicle's colors.|`vMenu.vehicleOptions.colors`|yes|
-|Vehicle Liveries|Submenu|Change your vehicle's livery (if available).|`vMenu.vehicleOptions.livery`|yes|
-|Vehicle Extras|Submenu|Enable/disable any vehicle extras/components (if available).|`vMenu.vehicleOptions.components`|yes|
-|Vehicle Doors|Submenu|Open/close specific or all vehicle doors.|`vMenu.vehicleOptions.doors`|yes|
-|Vehicle Windows|Submenu|Roll down/up the front/back windows.|`vMenu.vehicleOptions.windows`|yes|
-|Freeze Vehicle|Checkbox|Freezes your vehicle position, why would you do this though?|`vMenu.vehicleOptions.freeze`|yes|
-|Enable Engine Torque multiplier|Checkbox|Enables the selected engine torque multiplier.|`vMenu.vehicleOptions.torque`|yes|
-|Set Engine Torque multiplier|List|Set the engine torque multiplier amount.|`vMenu.vehicleOptions.torque`|yes|
-|Enable Engine Power multiplier|Checkbox|Enables the selected engine power multiplier.|`vMenu.vehicleOptions.power`|yes|
-|Set Engine Power multiplier|List|Set the engine power multiplier amount.|`vMenu.vehicleOptions.power`|yes|
-|Flip Vehicle|Button|Flips your vehicle if it's upside down.|`vMenu.vehicleOptions.flip`|yes|
-|Toggle Alarm|Button|Enables or disables the vehicle alarm, when you enable it the amount of time before the alarm shuts off is randomized between 8-30 seconds.|`vMenu.vehicleOptions.alarm`|yes|
-|Cycle Through Seats|Button|Places you in the next available seat.|`vMenu.vehicleOptions.seats`|yes|
-|Engine Always On|Checkbox|Leave the engine running when you exit a vehicle.|`vMenu.vehicleOptions.alwayson`|yes|
-|Disable Siren|Checkbox|Disables the siren on this vehicle (may not be synced for other players).|`vMenu.vehicleOptions.nosiren`|yes|
-|No Bike Helmet|Checkbox|Disables the helmet you would normally auto-equip when getting on a motorcycle or quad.|`vMenu.vehicleOptions.nohelmet`|yes|
-|Delete Vehicle|Button|Deletes your current vehicle.|`vMenu.vehicleOptions.delete`|yes|
-
-
-### Vehicle Spawner
-Permission to access this submenu: `vMenu.menus.vehicleSpawner` (note this does not auto-grant any of the options inside the submenu).
-
-|Option|Type|Description|Permission|Allowed by default|
-|:-|:-|:-|:-|-:|
-|Spawn Inside Vehicle|Checkbox|If this is enabled, then you will spawn inside the vehicle when you spawn it. If this is disabled, then the vehicle will spawn in front of you, rotated 90 degrees.|`vMenu.vehicleSpawner.spawninside`|yes|
-|Replace Previous|Checkbox|When you spawn a new vehicle, this will make sure to delete your old vehicle. If this permission is **NOT** granted, this option will be invisible, but always turned on iow: player's can't disable this, thus their previous vehicles will always be cleaned up.|`vMenu.vehicleSpawner.name`|yes|
-|Spawn Vehicle By Name|Button (input)|Allows you to enter a vehicle name to quickly spawn it in front of you. If you don't have permission to spawn the requested vehicle by it's class/category list (see the option below) then you won't be able to spawn it via this button either.|`vMenu.vehicleSpawner.name`|yes|
-|Spawn Vehicle By Category|Submenus [multiple]|Allows you to browse each vehicle class/category and spawn a specific vehicle. (Check the provided permissions.cfg file in the downloaded zip for more information regarding the different vehicle classes)|`vMenu.vehicleSpawner.<className>`|yes (only `.trains` is no by default)|
-
-***More documentation will be added soon™.***
+## About Submenu
+The **About vMenu** submenu is always available for everyone, and can not be disabled with the use of permissions. If you don't feel like showing credits to everyone --which seems very selfish to me-- then you'll have to edit the code and disable it yourself, which also means I won't be giving you any support whatsoever.
 
 -----
 
