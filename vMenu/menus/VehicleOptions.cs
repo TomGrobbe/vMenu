@@ -166,32 +166,95 @@ namespace vMenuClient
             #endregion
 
             #region Add items to the menu.
-            // Add everything to the menu.
-            menu.AddItem(vehicleGod); // GOD MODE
-            menu.AddItem(fixVehicle); // REPAIR VEHICLE
-            menu.AddItem(cleanVehicle); // CLEAN VEHICLE
-            menu.AddItem(setDirtLevel); // SET DIRT LEVEL
-            menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
-            menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
-            menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
-            menu.AddItem(modMenuBtn); // MOD MENU
-            menu.AddItem(colorsMenuBtn); // COLORS MENU
-            menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
-            menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
-            menu.AddItem(doorsMenuBtn); // DOORS MENU
-            menu.AddItem(windowsMenuBtn); // WINDOWS MENU
-            menu.AddItem(vehicleFreeze); // FREEZE VEHICLE
-            menu.AddItem(torqueEnabled); // TORQUE ENABLED
-            menu.AddItem(torqueMultiplier); // TORQUE LIST
-            menu.AddItem(powerEnabled); // POWER ENABLED
-            menu.AddItem(powerMultiplier); // POWER LIST
-            menu.AddItem(flipVehicle); // FLIP VEHICLE
-            menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
-            menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
-            menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
-            menu.AddItem(vehicleNoSiren); // DISABLE SIREN
-            menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
-            menu.AddItem(deleteBtn); // DELETE VEHICLE
+            // Add everything to the menu. (based on permissions)
+            if (cf.IsAllowed(Permission.VOGod))
+            {
+                menu.AddItem(vehicleGod); // GOD MODE
+            }
+            if (cf.IsAllowed(Permission.VORepair))
+            {
+                menu.AddItem(fixVehicle); // REPAIR VEHICLE
+            }
+            if (cf.IsAllowed(Permission.VOWash))
+            {
+                menu.AddItem(cleanVehicle); // CLEAN VEHICLE
+                menu.AddItem(setDirtLevel); // SET DIRT LEVEL
+            }
+            if (cf.IsAllowed(Permission.VOEngine))
+            {
+                menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
+            }
+            if (cf.IsAllowed(Permission.VOChangePlate))
+            {
+                menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
+                menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
+            }
+            if (cf.IsAllowed(Permission.VOMod))
+            {
+                menu.AddItem(modMenuBtn); // MOD MENU
+            }
+            if (cf.IsAllowed(Permission.VOColors))
+            {
+                menu.AddItem(colorsMenuBtn); // COLORS MENU
+            }
+            if (cf.IsAllowed(Permission.VOLiveries))
+            {
+                menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
+            }
+            if (cf.IsAllowed(Permission.VOComponents))
+            {
+                menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
+            }
+            if (cf.IsAllowed(Permission.VODoors))
+            {
+                menu.AddItem(doorsMenuBtn); // DOORS MENU
+            }
+            if (cf.IsAllowed(Permission.VOWindows))
+            {
+                menu.AddItem(windowsMenuBtn);
+            }
+            if (cf.IsAllowed(Permission.VOTorqueMultiplier))
+            {
+                menu.AddItem(torqueEnabled); // TORQUE ENABLED
+                menu.AddItem(torqueMultiplier); // TORQUE LIST
+            }
+            if (cf.IsAllowed(Permission.VOPowerMultiplier))
+            {
+                menu.AddItem(powerEnabled); // POWER ENABLED
+                menu.AddItem(powerMultiplier); // POWER LIST
+            }
+            if (cf.IsAllowed(Permission.VOFlip))
+            {
+                menu.AddItem(flipVehicle); // FLIP VEHICLE
+            }
+            if (cf.IsAllowed(Permission.VOAlarm))
+            {
+                menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
+            }
+            if (cf.IsAllowed(Permission.VOCycleSeats))
+            {
+                menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
+            }
+            if (cf.IsAllowed(Permission.VOEngineAlwaysOn))
+            {
+                menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
+            }
+            if (cf.IsAllowed(Permission.VONoSiren))
+            {
+                menu.AddItem(vehicleNoSiren); // DISABLE SIREN
+            }
+            if (cf.IsAllowed(Permission.VONoHelmet))
+            {
+                menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
+            }
+            if (cf.IsAllowed(Permission.VOLights))
+            {
+                menu.AddItem(vehicleLights);
+            }
+            if (cf.IsAllowed(Permission.VODelete))
+            {
+                menu.AddItem(deleteBtn); // DELETE VEHICLE
+            }
             #endregion
 
             #region delete vehicle handle stuff

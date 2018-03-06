@@ -68,21 +68,61 @@ namespace vMenuClient
             UIMenuItem stopScenario = new UIMenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
 
 
-            // Add all checkboxes to the menu.
-            menu.AddItem(playerGodModeCheckbox);
-            menu.AddItem(invisibleCheckbox);
+            // Add all checkboxes to the menu. (keeping permissions in mind)
+            if (cf.IsAllowed(Permission.POGod))
+            {
+                menu.AddItem(playerGodModeCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POInvisible))
+            {
+                menu.AddItem(invisibleCheckbox);
+            }
+
+            // Always allowed.
             menu.AddItem(unlimitedStaminaCheckbox);
-            menu.AddItem(fastRunCheckbox);
-            menu.AddItem(fastSwimCheckbox);
-            menu.AddItem(superJumpCheckbox);
-            menu.AddItem(noRagdollCheckbox);
-            menu.AddItem(neverWantedCheckbox);
-            menu.AddItem(setWantedLevel);
-            menu.AddItem(everyoneIgnoresPlayerCheckbox);
-            menu.AddItem(playerOptions);
-            menu.AddItem(playerFrozenCheckbox);
-            menu.AddItem(playerScenarios);
-            menu.AddItem(stopScenario);
+
+            if (cf.IsAllowed(Permission.POFastRun))
+            {
+                menu.AddItem(fastRunCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POFastSwim))
+            {
+                menu.AddItem(fastSwimCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POSuperjump))
+            {
+                menu.AddItem(superJumpCheckbox);
+            }
+            if (cf.IsAllowed(Permission.PONoRagdoll))
+            {
+                menu.AddItem(noRagdollCheckbox);
+            }
+            if (cf.IsAllowed(Permission.PONeverWanted))
+            {
+                menu.AddItem(neverWantedCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POSetWanted))
+            {
+                menu.AddItem(setWantedLevel);
+            }
+            if (cf.IsAllowed(Permission.POIgnored))
+            {
+                menu.AddItem(everyoneIgnoresPlayerCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POFunctions))
+            {
+                menu.AddItem(playerFunctions);
+            }
+            if (cf.IsAllowed(Permission.POFreeze))
+            {
+                menu.AddItem(playerFrozenCheckbox);
+            }
+            if (cf.IsAllowed(Permission.POScenarios))
+            {
+                menu.AddItem(playerScenarios);
+                menu.AddItem(stopScenario);
+            }
+
 
             // Handle all checkbox change events.
             menu.OnCheckboxChange += (sender, item, _checked) =>

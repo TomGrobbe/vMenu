@@ -19,10 +19,36 @@ namespace vMenuClient
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
+        public List<bool> allowedCategories;
 
         private void CreateMenu()
         {
             VehicleData vd = new VehicleData();
+
+            allowedCategories = new List<bool>(){
+                cf.IsAllowed(Permission.VSCompacts),
+                cf.IsAllowed(Permission.VSSedans),
+                cf.IsAllowed(Permission.VSSUVs),
+                cf.IsAllowed(Permission.VSCoupes),
+                cf.IsAllowed(Permission.VSMuscle),
+                cf.IsAllowed(Permission.VSSportsClassic),
+                cf.IsAllowed(Permission.VSSports),
+                cf.IsAllowed(Permission.VSSuper),
+                cf.IsAllowed(Permission.VSMotorcycles),
+                cf.IsAllowed(Permission.VSOffRoad),
+                cf.IsAllowed(Permission.VSIndustrial),
+                cf.IsAllowed(Permission.VSUtility),
+                cf.IsAllowed(Permission.VSVans),
+                cf.IsAllowed(Permission.VSCycles),
+                cf.IsAllowed(Permission.VSBoats),
+                cf.IsAllowed(Permission.VSHelicopters),
+                cf.IsAllowed(Permission.VSPlanes),
+                cf.IsAllowed(Permission.VSService),
+                cf.IsAllowed(Permission.VSEmergency),
+                cf.IsAllowed(Permission.VSMilitary),
+                cf.IsAllowed(Permission.VSCommercial),
+                cf.IsAllowed(Permission.VSTrains),
+            };
 
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner", true)
@@ -66,7 +92,17 @@ namespace vMenuClient
                 };
                 MainMenu.Mp.Add(vehicleClassMenu);
                 menu.AddItem(btn);
-                menu.BindMenuToItem(vehicleClassMenu, btn);
+                if (allowedCategories[vehClass])
+                {
+                    menu.BindMenuToItem(vehicleClassMenu, btn);
+                }
+                else
+                {
+                    btn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    btn.Description = "This category has been disabled by the server owner.";
+                    btn.Enabled = false;
+                }
+
 
                 // Create a dictionary for the duplicate vehicle names (in this vehicle class).
                 var duplicateVehNames = new Dictionary<string, int>();
@@ -118,7 +154,6 @@ namespace vMenuClient
                                 vehicleClassMenu.AddItem(vehBtn);
                                 vehBtn.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
                             }
-                            //vehicleClassMenu.AddItem(new UIMenuItem(vehName));
 
                             // Mark duplicate as true and break from the loop because we already found the duplicate.
                             duplicate = true;

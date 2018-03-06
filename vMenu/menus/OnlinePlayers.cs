@@ -91,33 +91,30 @@ namespace vMenuClient
                         UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
-                        // Add all buttons to the player options submenu.
-                        var perms = MainMenu.Permissions;
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
+
+                        // Add all buttons to the player options submenu. Keeping permissions in mind.
+                        if (cf.IsAllowed(Permission.OPTeleport))
                         {
                             PlayerMenu.AddItem(teleportBtn);
-                        }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_teleport"])
-                        {
                             PlayerMenu.AddItem(teleportInVehBtn);
                         }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_waypoint"])
+                        if (cf.IsAllowed(Permission.OPWaypoint))
                         {
                             PlayerMenu.AddItem(setWaypointBtn);
                         }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_spectate"])
+                        if (cf.IsAllowed(Permission.OPSpectate))
                         {
                             PlayerMenu.AddItem(spectateBtn);
                         }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_summon"])
+                        if (cf.IsAllowed(Permission.OPSummon))
                         {
                             PlayerMenu.AddItem(summonBtn);
                         }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kill"])
+                        if (cf.IsAllowed(Permission.OPKill))
                         {
                             PlayerMenu.AddItem(killBtn);
                         }
-                        if (perms["vMenu_onlinePlayers_*"] || perms["vMenu_onlinePlayers_kick"])
+                        if (cf.IsAllowed(Permission.OPKick))
                         {
                             PlayerMenu.AddItem(kickPlayerBtn);
                         }

@@ -45,7 +45,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             currentChannel = channels[0];
-            if (cf.IsAllowed("vMenu_voiceChatChannels_staff"))
+            if (cf.IsAllowed(Permission.VCStaffChannel))
             {
                 channels.Add("Staff Channel");
             }
