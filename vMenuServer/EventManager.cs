@@ -11,7 +11,6 @@ namespace vMenuServer
 {
     public class EventManager : BaseScript
     {
-
         // Debug shows more information when doing certain things. Leave it off to improve performance!
         private bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
@@ -190,17 +189,32 @@ namespace vMenuServer
         /// </summary>
         public EventManager()
         {
-            // Add event handlers.
-            EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
-            EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
-            EventHandlers.Add("vMenu:KickPlayer", new Action<Player, int, string>(KickPlayer));
-            EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
-            EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
-            EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
-            EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
+            if (GetCurrentResourceName() != "vMenu")
+            {
+                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
+                try
+                {
+                    throw InvalidNameException;
+                }
+                catch (Exception e)
+                {
+                    Debug.Write(e.Message);
+                }
+            }
+            else
+            {
+                // Add event handlers.
+                EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
+                EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
+                EventHandlers.Add("vMenu:KickPlayer", new Action<Player, int, string>(KickPlayer));
+                EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
+                EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
+                EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
+                EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
 
-            Tick += WeatherLoop;
-            Tick += TimeLoop;
+                Tick += WeatherLoop;
+                Tick += TimeLoop;
+            }
         }
         #endregion
 
