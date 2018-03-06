@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         public bool UnlimitedAmmo = UserDefaults.WeaponsUnlimitedAmmo;
         public bool NoReload = UserDefaults.WeaponsNoReload;
 
@@ -57,7 +57,7 @@ namespace vMenuClient
                         MouseEdgeEnabled = false,
                         ControlDisablingEnabled = false
                     };
-                    UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
+                    UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~w~.");
                     weaponItem.SetRightLabel("→→→");
                     weaponItem.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);
 

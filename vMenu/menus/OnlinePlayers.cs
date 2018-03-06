@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
 
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace vMenuClient
                         summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the selected player! Why are you so cruel :(");
                         killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
-                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
+                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~w~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
 
@@ -135,27 +135,26 @@ namespace vMenuClient
                             // Teleport button is pressed.
                             if (item2 == teleportBtn)
                             {
-                                Subtitle.Info($"Teleported to ~y~{player.Name}~z~.", prefix: "Info:");
                                 cf.TeleportToPlayerAsync(player.Handle, false);
                             }
                             // Teleport in vehicle button is pressed.
                             else if (item2 == teleportInVehBtn)
                             {
-                                Subtitle.Info($"Teleported to ~y~{player.Name}~z~.", prefix: "Info:");
                                 cf.TeleportToPlayerAsync(player.Handle, true);
                             }
                             // Set waypoint button is pressed.
                             else if (item2 == setWaypointBtn)
                             {
                                 World.WaypointPosition = GetEntityCoords(GetPlayerPed(player.Handle), true);
-                                Subtitle.Info($"A new waypoint has been set to ~y~{player.Name}~z~.", prefix: "Info:");
+                                //Subtitle.Info($"A new waypoint has been set to ~y~{player.Name}~z~.", prefix: "Info:");
                             }
                             // Spectate player button is pressed.
                             else if (item2 == spectateBtn)
                             {
                                 if (player.Handle == PlayerId())
                                 {
-                                    Subtitle.Error("You can ~h~not~h~ spectate yourself!", prefix: "Error:");
+                                    //Subtitle.Error("You can ~h~not~h~ spectate yourself!", prefix: "Error:");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~spectate yourself!");
                                 }
                                 else
                                 {
@@ -167,7 +166,7 @@ namespace vMenuClient
                             {
                                 if (player.Handle == PlayerId())
                                 {
-                                    Subtitle.Error("You can ~h~not~h~ summon yourself!", prefix: "Error:");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~summon yourself!");
                                 }
                                 else
                                 {
@@ -177,7 +176,8 @@ namespace vMenuClient
                             // Kill player button is pressed.
                             else if (item2 == killBtn)
                             {
-                                Subtitle.Info($"~y~{player.Name} ~z~has been killed.", prefix: "Info:");
+                                //Subtitle.Info($"~y~{player.Name} ~z~has been killed.", prefix: "Info:");
+                                Notify.Success($"Player ~y~{player.Name} ~h~has been killed.");
                                 cf.KillPlayer(player);
                             }
                             // Kick player button is pressed.

@@ -13,19 +13,15 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         // Variables
-        public static CommonFunctions cf { get; } = new CommonFunctions();
+        public static CommonFunctions Cf { get; } = new CommonFunctions();
         public static Notification Notify { get; } = new Notification();
         public static Subtitles Subtitle { get; } = new Subtitles();
 
         public static MenuPool Mp { get; } = new MenuPool();
-        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 800f, 45f);
-        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(0f, 0f);
-        //public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(1920f, 1080f), UnknownColors.SlateGray);
-        //public static ValidWeapons Vw = new ValidWeapons();
-
 
         private bool firstTick = true;
-        private bool setupComplete = false;
+        private static bool setupComplete = false;
+        //public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
         public static UIMenu Menu { get; private set; }
 
@@ -41,14 +37,12 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
-
-
-        public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
-
+        // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
-        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
 
+        public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool DontOpenMenus { get; set; } = false;
+        public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
 
         /// <summary>f
@@ -56,11 +50,12 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
-            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
-            //InvokeFunctionReference("0x7bdcbd45", $"Enjoying vMenu {GetResourceMetadata(GetCurrentResourceName(), "version", 0)} (Pre-Release)", 0, ref unused);
+            // Set discord rich precense once, allowing it to be overruled by other resources once those load.
+            SetRichPresence($"{(DebugMode ? "Debugging" : "Enjoying")} vMenu {Version}!");
             Tick += OnTick;
         }
 
+        #region Set Permissions function
         /// <summary>
         /// Set the permissions for this client.
         /// </summary>
@@ -75,21 +70,6 @@ namespace vMenuClient
             }
             
             setupComplete = true;
-        }
-
-        /// <summary>
-        /// Add the menu to the menu pool and set it up correctly.
-        /// Also add and bind the menu buttons.
-        /// </summary>
-        /// <param name="submenu"></param>
-        /// <param name="menuButton"></param>
-        private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
-        {
-            Menu.AddItem(menuButton);
-            Menu.BindMenuToItem(submenu, menuButton);
-            Mp.Add(submenu);
-            submenu.RefreshIndex();
-            submenu.UpdateScaleform();
         }
         #endregion
 
@@ -136,11 +116,10 @@ namespace vMenuClient
             }
             #endregion
 
-            // When it's not the first tick, do these things:
-            else
+            // If the setup (permissions) is done, and it's not the first tick, then do this:
+            if (setupComplete && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
-
                 // If menus can be opened.
                 if (!DontOpenMenus && !IsPauseMenuActive())
                 {
@@ -172,7 +151,7 @@ namespace vMenuClient
                             timer++;
 
                             // If debugging is enabled, show the progress using a timerbar.
-                            if (debug)
+                            if (DebugMode)
                             {
                                 bt.Draw(0);
                                 float percent = (timer / 60f);
@@ -204,6 +183,7 @@ namespace vMenuClient
                 #region Disable Inputs when any menu is open.
                 if (Mp.IsAnyMenuOpen())
                 {
+                    // Close all menus when the player dies.
                     if (Game.PlayerPed.IsDead)
                     {
                         Mp.CloseAllMenus();
@@ -266,11 +246,26 @@ namespace vMenuClient
                 // Process all menus in the menu pool (displays them when they're active).
                 Mp.ProcessMenus();
                 Mp.WidthOffset = 50;
-
             }
-
         }
 
+
+        #region Add Menu Function
+        /// <summary>
+        /// Add the menu to the menu pool and set it up correctly.
+        /// Also add and bind the menu buttons.
+        /// </summary>
+        /// <param name="submenu"></param>
+        /// <param name="menuButton"></param>
+        private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
+        {
+            Menu.AddItem(menuButton);
+            Menu.BindMenuToItem(submenu, menuButton);
+            Mp.Add(submenu);
+            submenu.RefreshIndex();
+            submenu.UpdateScaleform();
+        }
+        #endregion
         #region Create Submenus
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.

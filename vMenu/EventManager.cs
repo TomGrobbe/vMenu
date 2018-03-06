@@ -11,7 +11,7 @@ namespace vMenuClient
     public class EventManager : BaseScript
     {
         // common functions.
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         public static string currentWeatherType = "CLEAR";
         public static bool blackoutMode = false;
         public static bool dynamicWeather = true;

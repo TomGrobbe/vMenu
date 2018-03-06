@@ -14,7 +14,7 @@ namespace vMenuClient
         // Variables
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         private StorageManager sm = new StorageManager();
 
         private UIMenu menu;

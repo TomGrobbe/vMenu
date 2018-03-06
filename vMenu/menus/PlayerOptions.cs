@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private static Notification Notify = MainMenu.Notify;
         private static Subtitles Subtitle = MainMenu.Subtitle;
-        private static CommonFunctions cf = MainMenu.cf;
+        private static CommonFunctions cf = MainMenu.Cf;
 
         // Public variables (getters only), return the private variables.
         public bool PlayerGodMode { get; private set; } = UserDefaults.PlayerGodMode;
@@ -47,9 +47,9 @@ namespace vMenuClient
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("Godmode", PlayerGodMode, "Makes you invincible.");
             UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
             UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
-            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", false, "Get ~g~Snail~s~ powers and run very fast!");
-            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", false, "Get ~g~Sail 2.0~s~ powers and swim super fast!");
-            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
+            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", false, "Get ~g~Snail~w~ powers and run very fast!");
+            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", false, "Get ~g~Sail 2.0~w~ powers and swim super fast!");
+            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~w~ powers and jump like a champ!");
             UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
             UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
             UIMenuCheckboxItem everyoneIgnoresPlayerCheckbox = new UIMenuCheckboxItem("Everyone Ignore Player", PlayerIsIgnored, "Everyone will leave you alone.");
@@ -61,7 +61,7 @@ namespace vMenuClient
 
             // Player options
             List<dynamic> playerOptionsList = new List<dynamic> { "Max Health", "Max Armor", "Clean Player Clothes", "Player Dry", "Player Wet", "~r~Commit Suicide", "Drive To Waypoint", "Drive Around Randomly" };
-            UIMenuListItem playerOptions = new UIMenuListItem("Player Functions", playerOptionsList, 0, "Select an option and press enter to run/stop it.");
+            UIMenuListItem playerFunctions = new UIMenuListItem("Player Functions", playerOptionsList, 0, "Select an option and press enter to run/stop it.");
 
             // Scenarios (list can be found in the PedScenarios class)
             UIMenuListItem playerScenarios = new UIMenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
@@ -191,19 +191,19 @@ namespace vMenuClient
                     SetPlayerWantedLevelNow(PlayerId(), false);
                 }
                 // Player options (healing, cleaning, armor, dry/wet, etc)
-                else if (listItem == playerOptions)
+                else if (listItem == playerFunctions)
                 {
                     switch (index)
                     {
                         // Max Health
                         case 0:
                             SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
-                            Subtitle.Info("Max ~g~health ~s~applied.", prefix: "Info:");
+                            Subtitle.Info("Max ~g~health ~w~applied.", prefix: "Info:");
                             break;
                         // Max Armor
                         case 1:
                             SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
-                            Subtitle.Info("Max ~b~armor ~s~applied.", prefix: "Info:");
+                            Subtitle.Info("Max ~b~armor ~w~applied.", prefix: "Info:");
                             break;
                         // Clean Player Clothes
                         case 2:
@@ -213,24 +213,24 @@ namespace vMenuClient
                         // Make Player Dry
                         case 3:
                             ClearPedWetness(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~c~dry~s~.", prefix: "Info:");
+                            Subtitle.Info("Player clothes are now ~c~dry~w~.", prefix: "Info:");
                             break;
                         // Make Player Wet
                         case 4:
                             SetPedWetnessHeight(PlayerPedId(), 2f);
                             SetPedWetnessEnabledThisFrame(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~b~wet~s~.", prefix: "Info:");
+                            Subtitle.Info("Player clothes are now ~b~wet~w~.", prefix: "Info:");
                             break;
                         // Kill Player
                         case 5:
                             SetEntityHealth(PlayerPedId(), 0);
-                            Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
+                            Subtitle.Info("You ~r~killed ~w~yourself.", prefix: "Info:");
                             break;
                         // Drive To Waypoint
                         case 6:
                             if (!Game.IsWaypointActive)
                             {
-                                Subtitle.Error("You need to set a ~p~waypoint ~s~first!", prefix: "Error:");
+                                Subtitle.Error("You need to set a ~p~waypoint ~w~first!", prefix: "Error:");
                             }
                             else if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
@@ -238,7 +238,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                                Subtitle.Error("You need a ~r~vehicle ~w~first!", prefix: "Error:");
                             }
                             break;
                         // Drive Around Randomly (wander)
@@ -249,7 +249,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                                Subtitle.Error("You need a ~r~vehicle ~w~first!", prefix: "Error:");
                             }
                             break;
                         default:

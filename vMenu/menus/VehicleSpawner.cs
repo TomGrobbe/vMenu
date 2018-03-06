@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
@@ -61,8 +61,10 @@ namespace vMenuClient
 
             // Create the buttons and checkboxes.
             UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
-            UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle, "This will teleport you into the vehicle when you spawn it.");
-            UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", SpawnInVehicle, "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
+            UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle,
+                "This will teleport you into the vehicle when you spawn it.");
+            UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", SpawnInVehicle,
+                "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
             // Add the items to the menu.
             menu.AddItem(spawnByName);
@@ -71,17 +73,17 @@ namespace vMenuClient
 
             // Create the submenus for each category.
 
-
             var vl = new Vehicles();
 
             // Loop through all the vehicle classes.
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
+
                 // Get the class name.
                 string className = cf.GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
-                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
+                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~w~class.");
                 btn.SetRightLabel("→→→");
                 UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
                 {

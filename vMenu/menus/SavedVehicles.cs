@@ -15,7 +15,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         private Dictionary<string, Dictionary<string, string>> SavedVehiclesDict;
 
 
@@ -57,7 +57,7 @@ namespace vMenuClient
             saveVeh.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuItem savedVehiclesBtn = new UIMenuItem("Spawn Saved Vehicle", "Select a vehicle from your saved vehicles list.");
             savedVehiclesBtn.SetRightLabel("→→→");
-            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Saved Vehicle", "~r~Delete ~s~a saved vehicle.");
+            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Saved Vehicle", "~r~Delete ~w~a saved vehicle.");
             deleteSavedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             deleteSavedVehiclesBtn.SetRightLabel("→→→");
 

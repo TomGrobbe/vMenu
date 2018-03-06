@@ -16,7 +16,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         private static VehicleData vd = new VehicleData();
 
         // Submenus
@@ -80,7 +80,7 @@ namespace vMenuClient
             componentsMenuBtn.SetRightLabel("→→→");
             UIMenuItem liveriesMenuBtn = new UIMenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!");
             liveriesMenuBtn.SetRightLabel("→→→");
-            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
+            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~w~colors!");
             colorsMenuBtn.SetRightLabel("→→→");
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
@@ -95,9 +95,9 @@ namespace vMenuClient
 
             // Create lists.
             var dirtlevel = new List<dynamic> { "No Dirt", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ to apply the selected level.");
+            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~w~ to apply the selected level.");
             var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
-            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply it to your vehicle.");
+            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~w~to apply it to your vehicle.");
             var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
@@ -476,6 +476,7 @@ namespace vMenuClient
             #region Handle List Items Selected
             menu.OnListSelect += (sender, item, index) =>
             {
+                // Set dirt level
                 if (item == setDirtLevel)
                 {
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
@@ -632,8 +633,6 @@ namespace vMenuClient
                     int pearlescent = 0;
                     int wheels = 0;
 
-                    //int trimColor = (int)vehi.Mods.DashboardColor;
-                    //int dashboardColor = (int)vehi.Mods.TrimColor;
                     int trimColor = 0;
                     int dashboardColor = 0;
                     GetVehicleInteriorColour(veh, ref trimColor);
@@ -728,7 +727,6 @@ namespace vMenuClient
 
                     else if (item == dashboardColors)
                     {
-
                         trimColor = vd.MetallicColors[DashboardColor[index]];
                         SetVehicleInteriorColour(veh, trimColor);
                     }
@@ -829,10 +827,10 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Windows Submenu Stuff
-            UIMenuItem fwu = new UIMenuItem("~y~↑~s~ Roll Front Windows Up", "Roll both front windows up.");
-            UIMenuItem fwd = new UIMenuItem("~o~↓~s~ Roll Front Windows Down", "Roll both front windows down.");
-            UIMenuItem rwu = new UIMenuItem("~y~↑~s~ Roll Rear Windows Up", "Roll both rear windows up.");
-            UIMenuItem rwd = new UIMenuItem("~o~↓~s~ Roll Rear Windows Down", "Roll both rear windows down.");
+            UIMenuItem fwu = new UIMenuItem("~y~↑~w~ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem fwd = new UIMenuItem("~o~↓~w~ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwu = new UIMenuItem("~y~↑~w~ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem rwd = new UIMenuItem("~o~↓~w~ Roll Rear Windows Down", "Roll both rear windows down.");
             VehicleWindowsMenu.AddItem(fwu);
             VehicleWindowsMenu.AddItem(fwd);
             VehicleWindowsMenu.AddItem(rwu);
