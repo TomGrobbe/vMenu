@@ -94,6 +94,20 @@ namespace vMenuClient
                 }
             };
 
+            menu.OnListChange += (sender, item, index) =>
+            {
+                if (item == voiceChatProximity)
+                {
+                    currentProximity = proximityRange[index];
+                    Subtitle.Custom($"New voice chat proximity set to: ~b~{proximity[index]}~w~.");
+                }
+                else if (item == voiceChatChannel)
+                {
+                    currentChannel = channels[index];
+                    Subtitle.Custom($"New voice chat channel set to: ~b~{channels[index]}~w~.");
+                }
+            };
+
         }
 
         /// <summary>
