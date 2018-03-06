@@ -159,9 +159,10 @@ namespace vMenuClient
             pedTextures.MenuItems.Clear();
 
             #region Loop through all ped drawable variations and all ped props.
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 17; i++)
             {
                 #region Ped Drawable Variations
+                //if (i < 12)
                 if (i < 12)
                 {
                     // Get the drawable information.
@@ -178,7 +179,7 @@ namespace vMenuClient
                             textureList.Add("Item #" + x.ToString());
                         }
                         UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
-                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
                         pedTextures.AddItem(listItem);
 
                         // Manage list changes.
@@ -217,7 +218,11 @@ namespace vMenuClient
                 else
                 {
                     // Variables setup.
-                    var ii = i - 12;
+                    var ii = i - 12;// 20;
+                    if (ii > 2)
+                    {
+                        ii += 3;
+                    }
                     var currentProp = GetPedPropIndex(PlayerPedId(), ii);
                     var props = GetNumberOfPedPropDrawableVariations(PlayerPedId(), ii);
                     // If there are any props.
@@ -234,8 +239,8 @@ namespace vMenuClient
                         propsList.Add("Off");
 
                         // Create and add the list item to the menu.
-                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii]}", propsList, currentProp,
-                            $"Use ← & → to select a ~o~{propNames[ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii > 2 ? ii - 3 : ii]}", propsList, currentProp,
+                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
 
                         pedTextures.AddItem(listItem);
 
@@ -246,11 +251,11 @@ namespace vMenuClient
                             {
                                 if (index2 == propsList.Count - 1)
                                 {
-                                    ClearPedProp(PlayerPedId(), sender2.CurrentSelection - 12);
+                                    ClearPedProp(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
                                 }
                                 else
                                 {
-                                    SetPedPropIndex(PlayerPedId(), sender2.CurrentSelection - 12, index2, 0, true);
+                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, 0, true);
                                 }
                             }
                         };
@@ -262,9 +267,9 @@ namespace vMenuClient
                             {
                                 if (index2 != propsList.Count - 1)
                                 {
-                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(), sender2.CurrentSelection - 12, index2);
-                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(), sender2.CurrentSelection - 12);
-                                    SetPedPropIndex(PlayerPedId(), sender2.CurrentSelection - 12, index2, (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
+                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2);
+                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
+                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
                                 }
                             }
                         };
@@ -272,7 +277,7 @@ namespace vMenuClient
                     // If there's not enough variations available (none at all) then add a placeholder to let them know this option is unavailable.
                     else
                     {
-                        UIMenuItem placeholder = new UIMenuItem($"{propNames[ii]}");
+                        UIMenuItem placeholder = new UIMenuItem($"{propNames[ii > 2 ? ii - 3 : ii]}");
                         placeholder.SetRightLabel("None");
                         placeholder.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                         placeholder.Enabled = false;
@@ -292,30 +297,27 @@ namespace vMenuClient
         #region Textures & Props
         private List<string> textureNames = new List<string>()
         {
-            "Head / Face",
-            "Beard / Mask",
-            "Hair / Hat",
-            "Top",
-            "Legs",
-            "Accessory / Gloves",
-            "Accessory / Shoes",
-            "Neck",
-            "Shirt",
-            "Accessory",
-            "Badges",
-            "Shirt / Jacket",
+            "Head",
+            "Mask / Facial Hair",
+            "Hair Style / Color",
+            "Hands / Upper Body",
+            "Legs / Pants",
+            "Bags / Parachutes",
+            "Shoes",
+            "Neck / Scarfs",
+            "Shirt / Accessory",
+            "Body Armor / Accessory 2",
+            "Badges / Logos",
+            "Shirt Overlay / Jackets",
         };
 
         private List<string> propNames = new List<string>()
         {
-            "Hats / Helmets",
-            "Glasses",
-            "Earrings",
-            "Unknown 3",
-            "Unknown 4",
-            "Unknown 5",
-            "Watches",
-            "Bracelets",
+            "Hats / Helmets", // id 0
+            "Glasses", // id 1
+            "Misc", // id 2
+            "Watches", // id 6
+            "Bracelets", // id 7
         };
         #endregion
         #endregion
@@ -379,7 +381,7 @@ namespace vMenuClient
             }
             foreach (var savename in savesFound)
             {
-                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
+                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~w~this saved ped, this action can ~r~NOT~w~ be undone!");
                 deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
                 deleteSavedPedMenu.AddItem(deleteSavedPed);
             }
