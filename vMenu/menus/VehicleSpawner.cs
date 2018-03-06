@@ -67,7 +67,10 @@ namespace vMenuClient
                 "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
             // Add the items to the menu.
-            menu.AddItem(spawnByName);
+            if (cf.IsAllowed(Permission.VSSpawnByName))
+            {
+                menu.AddItem(spawnByName);
+            }
             menu.AddItem(spawnInVeh);
             menu.AddItem(replacePrev);
 

@@ -50,25 +50,44 @@ namespace vMenuClient
             UIMenuItem removeclouds = new UIMenuItem("Remove All Clouds", "Remove all clouds from the sky!");
             UIMenuItem randomizeclouds = new UIMenuItem("Randomize Clouds", "Add random clouds to the sky!");
 
-            menu.AddItem(dynamicWeatherEnabled);
-            menu.AddItem(blackout);
-            menu.AddItem(extrasunny);
-            menu.AddItem(clear);
-            menu.AddItem(neutral);
-            menu.AddItem(smog);
-            menu.AddItem(foggy);
-            menu.AddItem(clouds);
-            menu.AddItem(overcast);
-            menu.AddItem(clearing);
-            menu.AddItem(rain);
-            menu.AddItem(thunder);
-            menu.AddItem(blizzard);
-            menu.AddItem(snow);
-            menu.AddItem(snowlight);
-            menu.AddItem(xmas);
-            menu.AddItem(halloween);
-            menu.AddItem(removeclouds);
-            menu.AddItem(randomizeclouds);
+            var indexOffset = 2;
+            if (cf.IsAllowed(Permission.WODynamic))
+            {
+                menu.AddItem(dynamicWeatherEnabled);
+                indexOffset--;
+            }
+            if (cf.IsAllowed(Permission.WOBlackout))
+            {
+                menu.AddItem(blackout);
+                indexOffset--;
+            }
+            if (cf.IsAllowed(Permission.WOSetWeather))
+            {
+                menu.AddItem(extrasunny);
+                menu.AddItem(clear);
+                menu.AddItem(neutral);
+                menu.AddItem(smog);
+                menu.AddItem(foggy);
+                menu.AddItem(clouds);
+                menu.AddItem(overcast);
+                menu.AddItem(clearing);
+                menu.AddItem(rain);
+                menu.AddItem(thunder);
+                menu.AddItem(blizzard);
+                menu.AddItem(snow);
+                menu.AddItem(snowlight);
+                menu.AddItem(xmas);
+                menu.AddItem(halloween);
+            }
+            if (cf.IsAllowed(Permission.WORandomizeClouds))
+            {
+                menu.AddItem(removeclouds);
+            }
+
+            if (cf.IsAllowed(Permission.WORemoveClouds))
+            {
+                menu.AddItem(randomizeclouds);
+            }
 
             List<string> weatherTypes = new List<string>()
             {
@@ -89,36 +108,35 @@ namespace vMenuClient
                 "HALLOWEEN"
             };
 
-            menu.OnItemSelect += (sender, item, index) =>
+            menu.OnItemSelect += (sender, item, index2) =>
             {
+                var index = index2 + indexOffset;
                 // A weather type is selected.
                 if (index >= 2 && index <= 16)
                 {
                     Notify.Custom($"The almighty ~g~Snail~w~ will change the weather to ~y~{weatherTypes[index - 2]}~w~.");
                     cf.UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
-                // Another button was pressed.
-                else
+
+                if (item == blackout)
                 {
-                    if (item == blackout)
-                    {
-                        Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.blackoutMode ? "enable" : "disable")}~w~ blackout mode.");
-                        cf.UpdateServerWeather(EventManager.currentWeatherType, !EventManager.blackoutMode, EventManager.dynamicWeather);
-                    }
-                    else if (item == dynamicWeatherEnabled)
-                    {
-                        Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.dynamicWeather ? "enable" : "disable")}~w~ dynamic weather changes.");
-                        cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, !EventManager.dynamicWeather);
-                    }
-                    else if (item == removeclouds)
-                    {
-                        cf.ModifyClouds(true);
-                    }
-                    else if (item == randomizeclouds)
-                    {
-                        cf.ModifyClouds(false);
-                    }
+                    Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.blackoutMode ? "enable" : "disable")}~w~ blackout mode.");
+                    cf.UpdateServerWeather(EventManager.currentWeatherType, !EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
+                else if (item == dynamicWeatherEnabled)
+                {
+                    Notify.Custom($"The almighty ~g~Snail~w~ will ~y~{(!EventManager.dynamicWeather ? "enable" : "disable")}~w~ dynamic weather changes.");
+                    cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, !EventManager.dynamicWeather);
+                }
+                else if (item == removeclouds)
+                {
+                    cf.ModifyClouds(true);
+                }
+                else if (item == randomizeclouds)
+                {
+                    cf.ModifyClouds(false);
+                }
+
             };
 
         }

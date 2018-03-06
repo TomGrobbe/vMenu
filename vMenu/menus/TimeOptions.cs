@@ -52,16 +52,22 @@ namespace vMenuClient
             night.SetRightLabel("03:00");
 
             // Add all menu items to the menu.
-            menu.AddItem(freezeTimeToggle);
-            menu.AddItem(earlymorning);
-            menu.AddItem(morning);
-            menu.AddItem(noon);
-            menu.AddItem(earlyafternoon);
-            menu.AddItem(afternoon);
-            menu.AddItem(evening);
-            menu.AddItem(midnight);
-            menu.AddItem(night);
-
+            if (cf.IsAllowed(Permission.TOFreezeTime))
+            {
+                menu.AddItem(freezeTimeToggle);
+            }
+            if (cf.IsAllowed(Permission.TOSetTime))
+            {
+                menu.AddItem(earlymorning);
+                menu.AddItem(morning);
+                menu.AddItem(noon);
+                menu.AddItem(earlyafternoon);
+                menu.AddItem(afternoon);
+                menu.AddItem(evening);
+                menu.AddItem(midnight);
+                menu.AddItem(night);
+            }
+            
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
@@ -76,7 +82,16 @@ namespace vMenuClient
                     // Set the time using the index and some math :)
                     // eg: index = 3 (12:00) ---> 3 * 3 (=9) + 3 [= 12] ---> 12:00
                     // eg: index = 8 (03:00) ---> 8 * 3 (=24) + 3 (=27, >23 so 27-24) [=3] ---> 03:00
-                    var newHour = (((index * 3) + 3 < 23) ? (index * 3) + 3 : ((index * 3) + 3) - 24);
+                    var newHour = 0;
+                    if (cf.IsAllowed(Permission.TOFreezeTime))
+                    {
+                        newHour = (((index * 3) + 3 < 23) ? (index * 3) + 3 : ((index * 3) + 3) - 24);
+                    }
+                    else
+                    {
+                        newHour = ((((index + 1) * 3) + 3 < 23) ? ((index + 1) * 3) + 3 : (((index + 1) * 3) + 3) - 24);
+                    }
+
                     var newMinute = 0;
                     Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~w~:~y~" +
                         $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~w~.", prefix: "Info:");

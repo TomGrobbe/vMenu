@@ -83,8 +83,29 @@ namespace vMenuClient
             menu.AddItem(deleteSavedPed);
 
             // Bind items to the submenus.
-            menu.BindMenuToItem(pedTextures, pedCustomization);
-            menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
+            if (cf.IsAllowed(Permission.PACustomize))
+            {
+                menu.BindMenuToItem(pedTextures, pedCustomization);
+            }
+            else
+            {
+                pedCustomization.Enabled = false;
+                pedCustomization.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                pedCustomization.Description = "This option has been disabled by the server owner.";
+            }
+
+
+            if (cf.IsAllowed(Permission.PASpawnSaved))
+            {
+                menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
+            }
+            else
+            {
+                spawnSavedPed.Enabled = false;
+                spawnSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                spawnSavedPed.Description = "This option has been disabled by the server owner.";
+            }
+
             menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
 
             // Handle button presses.
@@ -123,7 +144,14 @@ namespace vMenuClient
                     pedList.Add(modelNames[index] + $" ({(ii + 1).ToString()}/{max.ToString()})");
                 }
                 UIMenuListItem pedl = new UIMenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
+
                 menu.AddItem(pedl);
+                if (!cf.IsAllowed(Permission.PASpawnNew))
+                {
+                    pedl.Enabled = false;
+                    pedl.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    pedl.Description = "This option has been disabled by the server owner.";
+                }
             }
 
             // Handle list selections.
@@ -131,7 +159,10 @@ namespace vMenuClient
             {
                 int i = ((sender.CurrentSelection - 4) * 50) + index;
                 string modelName = modelNames[i];
-                cf.SetPlayerSkin(modelName);
+                if (cf.IsAllowed(Permission.PASpawnNew))
+                {
+                    cf.SetPlayerSkin(modelName);
+                }
             };
 
         }

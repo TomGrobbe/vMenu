@@ -1029,10 +1029,10 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public bool IsAllowed(Permission perm)
+        public bool IsAllowed(Permission permission)
         {
             // Get the permissions.
-            return PermissionsManager.IsAllowed(perm);
+            return PermissionsManager.IsAllowed(permission);
         }
         #endregion
 

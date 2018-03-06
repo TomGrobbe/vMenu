@@ -77,10 +77,19 @@ namespace vMenuClient
             UIMenuListItem voiceChatProximity = new UIMenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
             UIMenuListItem voiceChatChannel = new UIMenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
 
-            menu.AddItem(voiceChatEnabled);
-            menu.AddItem(showCurrentSpeaker);
-            menu.AddItem(voiceChatProximity);
-            menu.AddItem(voiceChatChannel);
+            if (cf.IsAllowed(Permission.VCEnable))
+            {
+                menu.AddItem(voiceChatEnabled);
+
+                // Nested permissions because without voice chat enabled, you wouldn't be able to use these settings anyway.
+                if (cf.IsAllowed(Permission.VCShowSpeaker))
+                {
+                    menu.AddItem(showCurrentSpeaker);
+                }
+
+                menu.AddItem(voiceChatProximity);
+                menu.AddItem(voiceChatChannel);
+            }
 
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
