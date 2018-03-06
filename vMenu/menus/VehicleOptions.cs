@@ -16,7 +16,7 @@ namespace vMenuClient
         private UIMenu menu;
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         private static VehicleData vd = new VehicleData();
 
         // Submenus
@@ -80,12 +80,22 @@ namespace vMenuClient
             componentsMenuBtn.SetRightLabel("→→→");
             UIMenuItem liveriesMenuBtn = new UIMenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!");
             liveriesMenuBtn.SetRightLabel("→→→");
-            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
+            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~w~colors!");
             colorsMenuBtn.SetRightLabel("→→→");
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             UIMenuItem cycleSeats = new UIMenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
-            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
+            List<dynamic> lights = new List<dynamic>()
+            {
+                "Hazard Lights",
+                "Left Indicator",
+                "Right Indicator",
+                "Interior Lights",
+                "Taxi Light",
+                "Helicopter Spotlight",
+            };
+            UIMenuListItem vehicleLights = new UIMenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~w~!");
             deleteBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             deleteBtn.SetRightLabel("→→→");
             UIMenuItem deleteNoBtn = new UIMenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
@@ -95,9 +105,9 @@ namespace vMenuClient
 
             // Create lists.
             var dirtlevel = new List<dynamic> { "No Dirt", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ to apply the selected level.");
+            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~w~ to apply the selected level.");
             var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
-            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply it to your vehicle.");
+            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~w~to apply it to your vehicle.");
             var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
@@ -166,32 +176,95 @@ namespace vMenuClient
             #endregion
 
             #region Add items to the menu.
-            // Add everything to the menu.
-            menu.AddItem(vehicleGod); // GOD MODE
-            menu.AddItem(fixVehicle); // REPAIR VEHICLE
-            menu.AddItem(cleanVehicle); // CLEAN VEHICLE
-            menu.AddItem(setDirtLevel); // SET DIRT LEVEL
-            menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
-            menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
-            menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
-            menu.AddItem(modMenuBtn); // MOD MENU
-            menu.AddItem(colorsMenuBtn); // COLORS MENU
-            menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
-            menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
-            menu.AddItem(doorsMenuBtn); // DOORS MENU
-            menu.AddItem(windowsMenuBtn); // WINDOWS MENU
-            menu.AddItem(vehicleFreeze); // FREEZE VEHICLE
-            menu.AddItem(torqueEnabled); // TORQUE ENABLED
-            menu.AddItem(torqueMultiplier); // TORQUE LIST
-            menu.AddItem(powerEnabled); // POWER ENABLED
-            menu.AddItem(powerMultiplier); // POWER LIST
-            menu.AddItem(flipVehicle); // FLIP VEHICLE
-            menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
-            menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
-            menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
-            menu.AddItem(vehicleNoSiren); // DISABLE SIREN
-            menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
-            menu.AddItem(deleteBtn); // DELETE VEHICLE
+            // Add everything to the menu. (based on permissions)
+            if (cf.IsAllowed(Permission.VOGod))
+            {
+                menu.AddItem(vehicleGod); // GOD MODE
+            }
+            if (cf.IsAllowed(Permission.VORepair))
+            {
+                menu.AddItem(fixVehicle); // REPAIR VEHICLE
+            }
+            if (cf.IsAllowed(Permission.VOWash))
+            {
+                menu.AddItem(cleanVehicle); // CLEAN VEHICLE
+                menu.AddItem(setDirtLevel); // SET DIRT LEVEL
+            }
+            if (cf.IsAllowed(Permission.VOEngine))
+            {
+                menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
+            }
+            if (cf.IsAllowed(Permission.VOChangePlate))
+            {
+                menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
+                menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
+            }
+            if (cf.IsAllowed(Permission.VOMod))
+            {
+                menu.AddItem(modMenuBtn); // MOD MENU
+            }
+            if (cf.IsAllowed(Permission.VOColors))
+            {
+                menu.AddItem(colorsMenuBtn); // COLORS MENU
+            }
+            if (cf.IsAllowed(Permission.VOLiveries))
+            {
+                menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
+            }
+            if (cf.IsAllowed(Permission.VOComponents))
+            {
+                menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
+            }
+            if (cf.IsAllowed(Permission.VODoors))
+            {
+                menu.AddItem(doorsMenuBtn); // DOORS MENU
+            }
+            if (cf.IsAllowed(Permission.VOWindows))
+            {
+                menu.AddItem(windowsMenuBtn);
+            }
+            if (cf.IsAllowed(Permission.VOTorqueMultiplier))
+            {
+                menu.AddItem(torqueEnabled); // TORQUE ENABLED
+                menu.AddItem(torqueMultiplier); // TORQUE LIST
+            }
+            if (cf.IsAllowed(Permission.VOPowerMultiplier))
+            {
+                menu.AddItem(powerEnabled); // POWER ENABLED
+                menu.AddItem(powerMultiplier); // POWER LIST
+            }
+            if (cf.IsAllowed(Permission.VOFlip))
+            {
+                menu.AddItem(flipVehicle); // FLIP VEHICLE
+            }
+            if (cf.IsAllowed(Permission.VOAlarm))
+            {
+                menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
+            }
+            if (cf.IsAllowed(Permission.VOCycleSeats))
+            {
+                menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
+            }
+            if (cf.IsAllowed(Permission.VOEngineAlwaysOn))
+            {
+                menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
+            }
+            if (cf.IsAllowed(Permission.VONoSiren))
+            {
+                menu.AddItem(vehicleNoSiren); // DISABLE SIREN
+            }
+            if (cf.IsAllowed(Permission.VONoHelmet))
+            {
+                menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
+            }
+            if (cf.IsAllowed(Permission.VOLights))
+            {
+                menu.AddItem(vehicleLights);
+            }
+            if (cf.IsAllowed(Permission.VODelete))
+            {
+                menu.AddItem(deleteBtn); // DELETE VEHICLE
+            }
             #endregion
 
             #region delete vehicle handle stuff
@@ -413,12 +486,84 @@ namespace vMenuClient
             #region Handle List Items Selected
             menu.OnListSelect += (sender, item, index) =>
             {
+                // Set dirt level
                 if (item == setDirtLevel)
                 {
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
-                        Vehicle veh = new Vehicle(cf.GetVehicle());
-                        veh.DirtLevel = float.Parse(index.ToString());
+                        Vehicle veh = new Vehicle(cf.GetVehicle())
+                        {
+                            DirtLevel = float.Parse(index.ToString())
+                        };
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
+                    }
+                }
+                // Toggle vehicle lights
+                else if (item == vehicleLights)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        var veh = cf.GetVehicle();
+                        var state = GetVehicleIndicatorLights(veh); // 0 = none, 1 = left, 2 = right, 3 = both
+
+                        if (index == 0) // Hazard lights
+                        {
+                            if (state != 3) // either all lights are off, or one of the two (left/right) is off.
+                            {
+                                SetVehicleIndicatorLights(veh, 1, true); // left on
+                                SetVehicleIndicatorLights(veh, 0, true); // right on
+                            }
+                            else // both are on.
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 1) // left indicator
+                        {
+                            if (state != 1) // Left indicator is (only) off
+                            {
+                                SetVehicleIndicatorLights(veh, 1, true); // left on
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                            else
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 2) // right indicator
+                        {
+                            if (state != 2) // Right indicator (only) is off
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, true); // right on
+                            }
+                            else
+                            {
+                                SetVehicleIndicatorLights(veh, 1, false); // left off
+                                SetVehicleIndicatorLights(veh, 0, false); // right off
+                            }
+                        }
+                        else if (index == 3) // Interior lights
+                        {
+                            SetVehicleInteriorlight(veh, !IsVehicleInteriorLightOn(veh));
+                        }
+                        else if (index == 4) // taxi light
+                        {
+                            SetTaxiLights(veh, !IsTaxiLightOn(veh));
+                        }
+                        else if (index == 5) // helicopter spotlight
+                        {
+                            SetVehicleSearchlight(veh, !IsVehicleSearchlightOn(veh), true);
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
                     }
                 }
             };
@@ -476,22 +621,27 @@ namespace vMenuClient
             {
                 Wheels.Add(color.Key.ToString());
             }
+
+            // Dashboard Trim Colors
+            List<dynamic> DashboardColor = new List<dynamic>();
+            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            {
+                DashboardColor.Add(color.Key.ToString());
+            }
+
+            // Extra Accent Colors
+            List<dynamic> TrimColor = new List<dynamic>();
+            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            {
+                TrimColor.Add(color.Key.ToString());
+            }
             #endregion
 
             #region Create the headers + menu list items
             // Headers
-            UIMenuItem primaryColorsHeader = new UIMenuItem("~g~Primary Colors:")
-            {
-                Enabled = false
-            };
-            UIMenuItem secondaryColorsHeader = new UIMenuItem("~g~Secondary Colors:")
-            {
-                Enabled = false
-            };
-            UIMenuItem otherColorsHeader = new UIMenuItem("~g~Other Colors:")
-            {
-                Enabled = false
-            };
+            UIMenuItem primaryColorsHeader = cf.GetSpacerMenuItem("PRIMARY COLORS");
+            UIMenuItem secondaryColorsHeader = cf.GetSpacerMenuItem("SECONDARY COLORS");
+            UIMenuItem otherColorsHeader = cf.GetSpacerMenuItem("OTHER COLORS");
 
             // Primary Colors
             UIMenuListItem classicColors = new UIMenuListItem("Classic", Metallic, 0, "Select a Classic primary color.");
@@ -516,6 +666,8 @@ namespace vMenuClient
             UIMenuListItem wheelColors = new UIMenuListItem("Wheels Color", Wheels, 0, "Select a color for your wheels.");
             // Chrome Button
             UIMenuItem chromeBtn = new UIMenuItem("Chrome", "Make your vehicle chrome!");
+            UIMenuListItem dashboardColors = new UIMenuListItem("Dashboard Color", DashboardColor, 0, "Select a dashboard color (only availalbe on some cars).");
+            UIMenuListItem trimColors = new UIMenuListItem("Trim Color", TrimColor, 0, "Select an trim/accent color (only availalbe on some cars).");
             #endregion
 
             #region Add the items to the colors menu.
@@ -542,6 +694,8 @@ namespace vMenuClient
             VehicleColorsMenu.AddItem(pearlescentColors);
             VehicleColorsMenu.AddItem(wheelColors);
             VehicleColorsMenu.AddItem(chromeBtn);
+            VehicleColorsMenu.AddItem(dashboardColors);
+            VehicleColorsMenu.AddItem(trimColors);
             #endregion
 
             #region Handle Vehicle Color Changes
@@ -553,11 +707,18 @@ namespace vMenuClient
                 // Check if the vehicle exists and isn't dead and the player is the driver of the vehicle.
                 if (DoesEntityExist(veh) && !IsEntityDead(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                 {
+                    var vehi = new Vehicle(veh);
                     // Get the primary and secondary colors from the current vehicle..
                     int primary = 0;
                     int secondary = 0;
                     int pearlescent = 0;
                     int wheels = 0;
+
+                    int trimColor = 0;
+                    int dashboardColor = 0;
+                    GetVehicleInteriorColour(veh, ref trimColor);
+                    GetVehicleDashboardColour(veh, ref dashboardColor);
+
                     GetVehicleColours(veh, ref primary, ref secondary);
                     GetVehicleExtraColours(veh, ref pearlescent, ref wheels);
 
@@ -644,6 +805,18 @@ namespace vMenuClient
                             wheels = vd.MetallicColors[Metallic[index - 1]];
                         }
                     }
+
+                    else if (item == dashboardColors)
+                    {
+                        trimColor = vd.MetallicColors[DashboardColor[index]];
+                        SetVehicleInteriorColour(veh, trimColor);
+                    }
+                    else if (item == trimColors)
+                    {
+                        dashboardColor = vd.MetallicColors[TrimColor[index]];
+                        SetVehicleDashboardColour(veh, dashboardColor);
+                    }
+
                     // Set the mod kit so we can modify things.
                     SetVehicleModKit(veh, 0);
 
@@ -735,10 +908,10 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Windows Submenu Stuff
-            UIMenuItem fwu = new UIMenuItem("~y~↑~s~ Roll Front Windows Up", "Roll both front windows up.");
-            UIMenuItem fwd = new UIMenuItem("~o~↓~s~ Roll Front Windows Down", "Roll both front windows down.");
-            UIMenuItem rwu = new UIMenuItem("~y~↑~s~ Roll Rear Windows Up", "Roll both rear windows up.");
-            UIMenuItem rwd = new UIMenuItem("~o~↓~s~ Roll Rear Windows Down", "Roll both rear windows down.");
+            UIMenuItem fwu = new UIMenuItem("~y~↑~w~ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem fwd = new UIMenuItem("~o~↓~w~ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwu = new UIMenuItem("~y~↑~w~ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem rwd = new UIMenuItem("~o~↓~w~ Roll Rear Windows Down", "Roll both rear windows down.");
             VehicleWindowsMenu.AddItem(fwu);
             VehicleWindowsMenu.AddItem(fwd);
             VehicleWindowsMenu.AddItem(rwu);

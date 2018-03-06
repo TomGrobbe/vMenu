@@ -25,7 +25,7 @@ namespace vMenuClient
             if (GetResourceKvpString(saveName) == null || overrideExistingData)
             {
                 // Get the json string from the dictionary.
-                string jsonString = MainMenu.cf.DictionaryToJson(data);
+                string jsonString = MainMenu.Cf.DictionaryToJson(data);
 
                 // Save the kvp.
                 SetResourceKvp(saveName, jsonString);
@@ -48,7 +48,7 @@ namespace vMenuClient
         public Dictionary<string, string> GetSavedDictionary(string name)
         {
             string json = GetResourceKvpString(name);
-            var dict = MainMenu.cf.JsonToDictionary(json);
+            var dict = MainMenu.Cf.JsonToDictionary(json);
             return dict ?? new Dictionary<string, string>();
         }
 

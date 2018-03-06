@@ -18,105 +18,12 @@ namespace vMenuClient
         private string currentScenario = "";
         private int previousVehicle = -1;
         private StorageManager sm = new StorageManager();
-        //private WeaponInfo[] weaponList;
-
         #endregion
 
-        #region Constructor
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
-        public CommonFunctions()
-        {
-            Tick += OnTick;
-            Tick += ManageVehicleOptionsMenu;
-        }
-        #endregion
-
-        #region OnTick Vehicle Options
-        private async Task ManageVehicleOptionsMenu()
-        {
-            if (MainMenu.VehicleOptionsMenu == null)
-            {
-                await Delay(0);
-            }
-            else
-            {
-                // check to see if the vehicle options menu exists but the player is not inside a vehicle.
-                if (MainMenu.VehicleOptionsMenu != null && !IsPedInAnyVehicle(PlayerPedId(), false))
-                {
-                    // If the vehicle mod submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                    // If the vehicle liveries submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                    // If the vehicle colors submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                    // If the vehicle doors submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                    // If the vehicle windows submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                    // If the vehicle extras submenu is open, close it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible)
-                    {
-                        MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible = false;
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region OnTick for spectate handling
-        /// <summary>
-        /// OnTick runs every game tick.
-        /// Used here for the spectating feature.
-        /// </summary>
-        /// <returns></returns>
-        private async Task OnTick()
-        {
-            // When the player dies while spectating, cancel the spectating to prevent an infinite black loading screen.
-            if (GetEntityHealth(PlayerPedId()) < 1 && NetworkIsInSpectatorMode())
-            {
-                DoScreenFadeOut(50);
-                await Delay(50);
-                NetworkSetInSpectatorMode(true, PlayerPedId());
-                NetworkSetInSpectatorMode(false, PlayerPedId());
-
-                await Delay(50);
-                DoScreenFadeIn(50);
-                while (GetEntityHealth(PlayerPedId()) < 1)
-                {
-                    await Delay(0);
-                }
-            }
-        }
-        #endregion
+        public CommonFunctions() { }
 
         #region Get Localized Label Text
         /// <summary>
@@ -220,15 +127,17 @@ namespace vMenuClient
                 int playerPed = GetPlayerPed(playerId);
                 if (PlayerPedId() == playerPed)
                 {
-                    Notify.Alert("Sorry, you can ~h~not ~w~teleport to yourself!");
+                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~teleport to yourself!");
                     return;
                 }
 
                 // Get the coords of the other player.
                 Vector3 playerPos = GetEntityCoords(playerPed, true);
 
-                // Teleport to the other player (2.0 meters above the other player).
-                //SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
+                // Pre-load the world by teleporting to the other player (2.0 meters above the other player).
+                SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
+
+                // Then await the proper loading/teleporting.
                 await TeleportToCoords(playerPos);
 
                 // If the player should be teleported inside the other player's vehcile.
@@ -254,12 +163,12 @@ namespace vMenuClient
                             // If there's only one seat on this vehicle, tell them that it's a one-seater.
                             if (totalVehicleSeats == 1)
                             {
-                                Notify.Alert("This vehicle only has room for 1 player!");
+                                Notify.Error("This vehicle only has room for 1 player!");
                             }
                             // Otherwise, tell them there's not enough empty seats remaining.
                             else
                             {
-                                Notify.Alert("Not enough empty vehicle seats remaining!");
+                                Notify.Error("Not enough empty vehicle seats remaining!");
                             }
                         }
                     }
@@ -274,10 +183,12 @@ namespace vMenuClient
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error("This player does not exist so the teleport has been cancelled.");
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
+                //Notify.Error("This player does not exist so the teleport has been cancelled.");
                 return;
             }
         }
+        #endregion
 
         /// <summary>
         /// Todo
@@ -294,7 +205,6 @@ namespace vMenuClient
         {
             throw new NotImplementedException();
         }
-        #endregion
 
         #region Teleport To Player / Coords
         /// <summary>
@@ -553,14 +463,21 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    //await LoadModel(model);
-                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
-
+                    int modelClass = GetVehicleClassFromName(model);
+                    //var tmpMenu = new VehicleSpawner()
+                    if (MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
+                    {
+                        SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
+                    }
+                    else
+                    {
+                        Notify.Alert("You are not allowed to spawn this vehicle, it belongs to a restricted category.");
+                    }
                 }
                 // Result was invalid.
                 else
                 {
-                    Notify.Alert("You cancelled the input or the input was invalid.");
+                    Notify.Error(CommonErrors.InvalidInput);
                 }
             }
             // Spawn the specified vehicle.
@@ -586,7 +503,7 @@ namespace vMenuClient
                 if (!successFull)
                 {
                     // Vehicle model is invalid.
-                    Notify.Error("This is not a valid model.");
+                    Notify.Error(CommonErrors.InvalidModel);
                 }
             }
 
@@ -817,25 +734,25 @@ namespace vMenuClient
                         // If the save was not successfull:
                         else
                         {
-                            Notify.Error("Saving failed because this save name is already in use.");
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
                         }
                     }
                     // The user did not enter a valid name to use as a save name for this vehicle.
                     else
                     {
-                        Notify.Error("Saving failed because you did not enter a valid save name.");
+                        Notify.Error(CommonErrors.InvalidSaveName);
                     }
                 }
                 // The player is not inside a vehicle, or the vehicle is dead/not existing so we won't do anything. Only alert the user.
                 else
                 {
-                    Notify.Error("You need to be in a vehicle.");
+                    Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to save it");
                 }
             }
             // The player is not inside a vehicle.
             else
             {
-                Notify.Error("You need to be in a vehicle.");
+                Notify.Error(CommonErrors.NoVehicle);
             }
         }
         #endregion
@@ -1052,13 +969,15 @@ namespace vMenuClient
                 // If it doesn't exist, notify the user.
                 else
                 {
-                    Notify.Error("You're not inside a vehicle!");
+                    Notify.Error(CommonErrors.NoVehicle);
+                    //Notify.Error("You're not inside a vehicle!");
                 }
             }
             // No valid text was given.
             else
             {
-                Notify.Alert("You did not enter a valid license plate text!");
+                Notify.Error(CommonErrors.InvalidInput);
+                //Notify.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~w~can not be used on a license plate!");
             }
 
         }
@@ -1109,31 +1028,11 @@ namespace vMenuClient
         /// Also checks parent/inherited/wildcard permissions.
         /// </summary>
         /// <param name="permission"></param>
-        /// <returns>True = allowed. False = not allowed.</returns>
-        public bool IsAllowed(string permission)
+        /// <returns></returns>
+        public bool IsAllowed(Permission perm)
         {
             // Get the permissions.
-            var permissions = MainMenu.Permissions;
-
-            // If the player has ALL permissions, then return true.
-            if (permissions.ContainsKey("vMenu_everything"))
-            {
-                if (permissions["vMenu_everything"])
-                {
-                    return true;
-                }
-            }
-
-            // If the requested permission exists, then return true/false depending on the value of the permission.
-            if (permissions.ContainsKey(permission))
-            {
-                return permissions[permission];
-            }
-            // If the permission does not exist, then return false.
-            else
-            {
-                return false;
-            }
+            return PermissionsManager.IsAllowed(perm);
         }
         #endregion
 
@@ -1427,17 +1326,20 @@ namespace vMenuClient
         /// <param name="disableTextOutline">Disables the default text outline.</param>
         public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
         {
-            SetTextFont(font);
-            SetTextScale(1.0f, size);
-            if (justification == CitizenFX.Core.UI.Alignment.Right)
+            if (IsHudPreferenceSwitchedOn() && !IsHudHidden())
             {
-                SetTextWrap(0f, xPosition);
+                SetTextFont(font);
+                SetTextScale(1.0f, size);
+                if (justification == CitizenFX.Core.UI.Alignment.Right)
+                {
+                    SetTextWrap(0f, xPosition);
+                }
+                SetTextJustification((int)justification);
+                if (!disableTextOutline) { SetTextOutline(); }
+                BeginTextCommandDisplayText("STRING");
+                AddTextComponentSubstringPlayerName(text);
+                EndTextCommandDisplayText(xPosition, yPosition);
             }
-            SetTextJustification((int)justification);
-            if (!disableTextOutline) { SetTextOutline(); }
-            BeginTextCommandDisplayText("STRING");
-            AddTextComponentSubstringPlayerName(text);
-            EndTextCommandDisplayText(xPosition, yPosition);
         }
         #endregion
 
@@ -1499,7 +1401,7 @@ namespace vMenuClient
             }
             else
             {
-                Notify.Error("Sorry, this model is unavailable.");
+                Notify.Error(CommonErrors.InvalidModel);
             }
         }
         #endregion
@@ -1554,13 +1456,14 @@ namespace vMenuClient
                 // Save was not successfull.
                 else
                 {
-                    Notify.Error("Could not save this ped because the save name already exists.");
+                    Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                    //Notify.Error("Could not save this ped because the save name already exists.");
                 }
             }
             // User cancelled the saving or they did not enter a valid name.
             else
             {
-                Notify.Error("You did not enter a valid ped name or you cancelled the save.");
+                Notify.Error(CommonErrors.InvalidSaveName);
             }
         }
         #endregion
@@ -1572,10 +1475,11 @@ namespace vMenuClient
         /// <param name="savedName">The ped saved name</param>
         public async void LoadSavedPed(string savedName)
         {
-            string savedPedName = savedName ?? await GetUserInputAsync("Enter saved name");
+            string savedPedName = savedName ?? await GetUserInputAsync("Enter A Saved Ped Name");
             if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
             {
-                Notify.Error("Invalid saved ped name.");
+                //Notify.Error("Invalid saved ped name.");
+                Notify.Error(CommonErrors.InvalidInput);
             }
             else
             {
@@ -1587,7 +1491,8 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
+                    Notify.Error(CommonErrors.CouldNotLoadSave, placeholderValue: "this saved ped");
+                    //Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
                 }
             }
         }
@@ -1621,10 +1526,10 @@ namespace vMenuClient
             {
                 uint modelHash = weapon.Value;
 
-                bool inInventory = HasPedGotWeapon(Game.PlayerPed.Handle, modelHash, false);
+                bool inInventory = HasPedGotWeapon(PlayerPedId(), modelHash, false);
                 if (inInventory)
                 {
-                    int ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, modelHash);
+                    int ammo = GetAmmoInPedWeapon(PlayerPedId(), modelHash);
                     WeaponInfo wi = new WeaponInfo { };
                     wi.Ammo = ammo;
                     wi.Hash = modelHash;
@@ -1634,14 +1539,14 @@ namespace vMenuClient
                     var it = 0;
                     foreach (var wc in Enum.GetValues(typeof(WeaponComponentHash)))
                     {
-                        if (DoesWeaponTakeWeaponComponent(modelHash, (uint)wc) && HasPedGotWeaponComponent(Game.PlayerPed.Handle, modelHash, (uint)wc))
+                        if (DoesWeaponTakeWeaponComponent(modelHash, (uint)wc) && HasPedGotWeaponComponent(PlayerPedId(), modelHash, (uint)wc))
                         {
                             componentlist[it] = (uint)wc;
                             it++;
                         }
                     }
                     wi.Components = componentlist;
-                    wi.Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, modelHash);
+                    wi.Tint = GetPedWeaponTintIndex(PlayerPedId(), modelHash);
                     weaponList[iterator] = wi;
                     iterator++;
 
@@ -1658,19 +1563,44 @@ namespace vMenuClient
             await Delay(100);
             //foreach (WeaponInfo wi in weaponList)
             //{
-            //    GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, wi.Equipped);
+            //    GiveWeaponToPed(PlayerPedId(), wi.Hash, wi.Ammo, false, wi.Equipped);
             //    if (wi.Components != null)
             //    {
             //        foreach (uint comphash in wi.Components)
             //        {
-            //            GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, comphash);
+            //            GiveWeaponComponentToPed(PlayerPedId(), wi.Hash, comphash);
             //        }
             //    }
-            //    SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
+            //    SetPedWeaponTintIndex(PlayerPedId(), wi.Hash, wi.Tint);
             //}
         }
         #endregion
 
-    }
+        #region Get "Header" Menu Item
+        /// <summary>
+        /// Get a header menu item (text-centered, disabled UIMenuItem)
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public UIMenuItem GetSpacerMenuItem(string title, string description = null)
+        {
+            string output = "~h~";
+            int length = title.Length;
+            int totalSize = 90 - int.Parse((length * 3).ToString());
 
+            for (var i = 0; i < totalSize / 2; i++)
+            {
+                output += " ";
+            }
+            output += title;
+            UIMenuItem item = new UIMenuItem(output, description ?? "")
+            {
+                Enabled = false
+            };
+            return item;
+        }
+        #endregion
+
+    }
 }

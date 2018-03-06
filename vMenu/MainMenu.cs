@@ -13,19 +13,15 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         // Variables
-        public static CommonFunctions cf { get; } = new CommonFunctions();
+        public static CommonFunctions Cf { get; } = new CommonFunctions();
         public static Notification Notify { get; } = new Notification();
         public static Subtitles Subtitle { get; } = new Subtitles();
 
         public static MenuPool Mp { get; } = new MenuPool();
-        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(CitizenFX.Core.UI.Screen.Resolution.Width - 800f, 45f);
-        //public static System.Drawing.PointF MenuPosition { get; } = new System.Drawing.PointF(0f, 0f);
-        //public static UIResRectangle BannerSprite { get; } = new UIResRectangle(new System.Drawing.PointF(0f, 0f), new System.Drawing.SizeF(1920f, 1080f), UnknownColors.SlateGray);
-        //public static ValidWeapons Vw = new ValidWeapons();
-
 
         private bool firstTick = true;
-        private bool setupComplete = false;
+        private static bool setupComplete = false;
+        //public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
         public static UIMenu Menu { get; private set; }
 
@@ -41,14 +37,12 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
-
-
-        public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
-
+        // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
-        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
 
+        public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool DontOpenMenus { get; set; } = false;
+        public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
 
         /// <summary>f
@@ -56,82 +50,28 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
-            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(SetPermissions));
-            //InvokeFunctionReference("0x7bdcbd45", $"Enjoying vMenu {GetResourceMetadata(GetCurrentResourceName(), "version", 0)} (Pre-Release)", 0, ref unused);
+            // Set discord rich precense once, allowing it to be overruled by other resources once those load.
+            SetRichPresence($"{(DebugMode ? "Debugging" : "Enjoying")} vMenu {Version}!");
             Tick += OnTick;
         }
 
+        #region Set Permissions function
         /// <summary>
         /// Set the permissions for this client.
         /// </summary>
         /// <param name="dict"></param>
-        private void SetPermissions(dynamic dict)
+        public static void SetPermissions(dynamic dict)
         {
-            // Convert the dynamic object into a dictionary<string, bool>
+            // Loop through the dynamic object and get the keys and values.
             foreach (dynamic permission in dict)
             {
                 // Add the new permission to the dictionary.
-                Permissions.Add(permission.Key.ToString(), permission.Value);
-
-                // Only if debugging is set to true, notify the client of the values.
-                if (debug)
-                {
-                    Notify.Custom($"Key: {permission.Key.ToString()}\r\nValue: {permission.Value}");
-                }
-
+                PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-
-            // Loop through the new permissions list.
-            // Check for wildcards and if they are true, set all "child" permissions to true (allowed)
-            foreach (KeyValuePair<string, bool> perm in Permissions)
-            {
-                // If the permission is currently not allowed.
-                if (!perm.Value)
-                {
-                    // Check the wildcard for this permission.
-                    var wildCardVersion = perm.Key.ToString().Split('_')[0].ToString() + perm.Key.ToString().Split('_')[1].ToString() + "_*";
-                    if (Permissions.ContainsKey(wildCardVersion))
-                    {
-                        // If that wildcard is set to true (allowed) then allow the current permission as well.
-                        if (Permissions[wildCardVersion])
-                        {
-                            // Update the current permission in the dictionary to be set to true instead of false.
-                            Permissions[perm.Key] = true;
-                        }
-                    }
-                }
-            }
-
-            #region if debug
-            if (debug)
-            {
-                foreach (KeyValuePair<string, bool> perm in Permissions)
-                {
-                    if (perm.Value)
-                    {
-                        TriggerEvent("chatMessage", perm.Key.ToString());
-                    }
-                }
-            }
-            #endregion
-
+            
             setupComplete = true;
         }
-
-        /// <summary>
-        /// Add the menu to the menu pool and set it up correctly.
-        /// Also add and bind the menu buttons.
-        /// </summary>
-        /// <param name="submenu"></param>
-        /// <param name="menuButton"></param>
-        private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
-        {
-            Menu.AddItem(menuButton);
-            Menu.BindMenuToItem(submenu, menuButton);
-            Mp.Add(submenu);
-            submenu.RefreshIndex();
-            submenu.UpdateScaleform();
-        }
+        #endregion
 
         /// <summary>
         /// OnTick runs every game tick.
@@ -176,11 +116,10 @@ namespace vMenuClient
             }
             #endregion
 
-            // When it's not the first tick, do these things:
-            else
+            // If the setup (permissions) is done, and it's not the first tick, then do this:
+            if (setupComplete && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
-
                 // If menus can be opened.
                 if (!DontOpenMenus && !IsPauseMenuActive())
                 {
@@ -212,7 +151,7 @@ namespace vMenuClient
                             timer++;
 
                             // If debugging is enabled, show the progress using a timerbar.
-                            if (debug)
+                            if (DebugMode)
                             {
                                 bt.Draw(0);
                                 float percent = (timer / 60f);
@@ -244,6 +183,7 @@ namespace vMenuClient
                 #region Disable Inputs when any menu is open.
                 if (Mp.IsAnyMenuOpen())
                 {
+                    // Close all menus when the player dies.
                     if (Game.PlayerPed.IsDead)
                     {
                         Mp.CloseAllMenus();
@@ -306,15 +246,34 @@ namespace vMenuClient
                 // Process all menus in the menu pool (displays them when they're active).
                 Mp.ProcessMenus();
                 Mp.WidthOffset = 50;
-
             }
-
         }
 
+
+        #region Add Menu Function
+        /// <summary>
+        /// Add the menu to the menu pool and set it up correctly.
+        /// Also add and bind the menu buttons.
+        /// </summary>
+        /// <param name="submenu"></param>
+        /// <param name="menuButton"></param>
+        private void AddMenu(UIMenu submenu, UIMenuItem menuButton)
+        {
+            Menu.AddItem(menuButton);
+            Menu.BindMenuToItem(submenu, menuButton);
+            Mp.Add(submenu);
+            submenu.RefreshIndex();
+            submenu.UpdateScaleform();
+        }
+        #endregion
+        #region Create Submenus
+        /// <summary>
+        /// Creates all the submenus depending on the permissions of the user.
+        /// </summary>
         private void CreateSubmenus()
         {
             // Add the online players menu.
-            if (cf.IsAllowed("vMenu_menus_onlinePlayers"))
+            if (Cf.IsAllowed(Permission.OPMenu))
             {
                 OnlinePlayersMenu = new OnlinePlayers();
                 UIMenu menu = OnlinePlayersMenu.GetMenu();
@@ -333,7 +292,7 @@ namespace vMenuClient
             }
 
             // Add the player options menu.
-            if (cf.IsAllowed("vMenu_menus_playerOptions"))
+            if (Cf.IsAllowed(Permission.POMenu))
             {
                 PlayerOptionsMenu = new PlayerOptions();
                 UIMenu menu = PlayerOptionsMenu.GetMenu();
@@ -343,7 +302,7 @@ namespace vMenuClient
             }
 
             // Add the vehicle options Menu.
-            if (cf.IsAllowed("vMenu_menus_vehicleOptions"))
+            if (Cf.IsAllowed(Permission.VOMenu))
             {
                 VehicleOptionsMenu = new VehicleOptions();
                 UIMenu menu = VehicleOptionsMenu.GetMenu();
@@ -354,7 +313,7 @@ namespace vMenuClient
 
             var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
-            if (cf.IsAllowed("vMenu_menus_vehicleSpawner"))
+            if (Cf.IsAllowed(Permission.VSMenu))
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
                 UIMenu menu = VehicleSpawnerMenu.GetMenu();
@@ -364,7 +323,7 @@ namespace vMenuClient
             }
 
             // Add Saved Vehicles menu.
-            if (cf.IsAllowed("vMenu_menus_savedVehicles"))
+            if (Cf.IsAllowed(Permission.SVMenu))
             {
                 SavedVehiclesMenu = new SavedVehicles();
                 UIMenu menu = SavedVehiclesMenu.GetMenu();
@@ -374,7 +333,7 @@ namespace vMenuClient
             }
 
             // Add the player appearance menu.
-            if (cf.IsAllowed("vMenu_menus_playerAppearance"))
+            if (Cf.IsAllowed(Permission.PAMenu))
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
                 UIMenu menu = PlayerAppearanceMenu.GetMenu();
@@ -384,7 +343,7 @@ namespace vMenuClient
             }
 
             // Add the time options menu.
-            if (cf.IsAllowed("vMenu_menus_timeOptions"))
+            if (Cf.IsAllowed(Permission.TOMenu))
             {
                 TimeOptionsMenu = new TimeOptions();
                 UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -394,7 +353,7 @@ namespace vMenuClient
             }
 
             // Add the weather options menu.
-            if (cf.IsAllowed("vMenu_menus_weatherOptions"))
+            if (Cf.IsAllowed(Permission.WOMenu))
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 UIMenu menu = WeatherOptionsMenu.GetMenu();
@@ -404,7 +363,7 @@ namespace vMenuClient
             }
 
             // Add the weapons menu.
-            if (cf.IsAllowed("vMenu_menus_weaponOptions"))
+            if (Cf.IsAllowed(Permission.WPMenu))
             {
                 WeaponOptionsMenu = new WeaponOptions();
                 UIMenu menu = WeaponOptionsMenu.GetMenu();
@@ -414,7 +373,7 @@ namespace vMenuClient
             }
 
             // Add misc settings menu.
-            if (cf.IsAllowed("vMenu_menus_miscSettings"))
+            if (Cf.IsAllowed(Permission.MSMenu))
             {
                 MiscSettingsMenu = new MiscSettings();
                 UIMenu menu = MiscSettingsMenu.GetMenu();
@@ -424,11 +383,11 @@ namespace vMenuClient
             }
 
             // Add Voice Chat Menu.
-            if (cf.IsAllowed("vMenu_menus_voiceChat"))
+            if (Cf.IsAllowed(Permission.VCMenu))
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 UIMenu menu = VoiceChatSettingsMenu.GetMenu();
-                UIMenuItem button = new UIMenuItem("VoiceChat Settings", "Change VoiceChat options here.");
+                UIMenuItem button = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
             }
@@ -449,7 +408,6 @@ namespace vMenuClient
             // Globally disable the "mouse edge" feature.
             Mp.MouseEdgeEnabled = false;
         }
+        #endregion
     }
-
-
 }

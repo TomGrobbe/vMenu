@@ -157,6 +157,18 @@ namespace vMenuClient
             get { return GetSettingsBool("voiceChatEnabled"); }
             set { SetSavedSettingsBool("voiceChatEnabled", value); }
         }
+
+        public static float VoiceChatProximity
+        {
+            get { return GetSettingsFloat("voiceChatProximity"); }
+            set { SetSavedSettingsFloat("voiceChatProximity", value); }
+        }
+
+        public static bool ShowCurrentSpeaker
+        {
+            get { return GetSettingsBool("voiceChatShowSpeaker"); }
+            set { SetSavedSettingsBool("voiceChatShowSpeaker", value); }
+        }
         #endregion
 
 
@@ -181,7 +193,8 @@ namespace vMenuClient
             {
                 // Some options should be enabled by default:
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
-                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted")
+                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted"
+                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -198,7 +211,6 @@ namespace vMenuClient
                 // Return the (new) value.
                 return (GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}").ToLower() == "true");
             }
-
         }
 
         /// <summary>
@@ -210,6 +222,25 @@ namespace vMenuClient
         {
             SetResourceKvp(SETTINGS_PREFIX + kvpString, newValue.ToString());
         }
+
+        private static float GetSettingsFloat(string kvpString)
+        {
+            if ((FindKvp(StartFindKvp(SETTINGS_PREFIX + kvpString)) ?? "") != "")
+            {
+                float savedValue = GetResourceKvpFloat(SETTINGS_PREFIX + kvpString);
+                return savedValue;
+            }
+            else
+            {
+                return -1f;
+            }
+        }
+
+        private static void SetSavedSettingsFloat(string kvpString, float newValue)
+        {
+            SetResourceKvpFloat(SETTINGS_PREFIX + kvpString, newValue);
+        }
+
         #endregion
 
         #region Public Functions

@@ -11,7 +11,7 @@ namespace vMenuClient
     public class EventManager : BaseScript
     {
         // common functions.
-        private CommonFunctions cf = MainMenu.cf;
+        private CommonFunctions cf = MainMenu.Cf;
         public static string currentWeatherType = "CLEAR";
         public static bool blackoutMode = false;
         public static bool dynamicWeather = true;
@@ -26,6 +26,8 @@ namespace vMenuClient
         public EventManager()
         {
             // Add event handlers.
+            // Handle the SetPermissions event.
+            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(UpdatePermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
             EventHandlers.Add("vMenu:KickCallback", new Action<string>(KickCallback));
@@ -35,6 +37,11 @@ namespace vMenuClient
 
             Tick += WeatherSync;
             Tick += TimeSync;
+        }
+
+        private void UpdatePermissions(dynamic permissions)
+        {
+            MainMenu.SetPermissions(permissions);
         }
 
         /// <summary>

@@ -31,7 +31,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CitizenFX.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CitizenFX.Core.1.3.0\lib\net45\CitizenFX.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\CitizenFX.Core.dll</HintPath>
     </Reference>
     <Reference Include="NativeUI, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -65,15 +66,13 @@
     <Compile Include="Notification.cs" />
     <Compile Include="PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
+    <Compile Include="PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="UserDefaults.cs" />
     <Compile Include="ValidWeapon.cs" />
     <Compile Include="VehicleData.cs" />
     <Compile Include="Vehicles.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
