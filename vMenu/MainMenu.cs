@@ -61,7 +61,7 @@ namespace vMenuClient
                 }
                 catch (Exception e)
                 {
-                    Debug.Write(e.Message);
+                    Cf.Log(e.Message);
                 }
                 TriggerEvent("chatMessage", "^3IMPORTANT: vMenu IS NOT SETUP CORRECTLY. PLEASE CHECK THE SERVER LOG FOR MORE INFO.");
             }
@@ -192,7 +192,7 @@ namespace vMenuClient
                 // If the pause menu is active or all menus should be closed, close all menus.
                 else
                 {
-                    await Delay(5);
+                    await Delay(3);
                     Mp.CloseAllMenus();
                 }
                 #endregion
