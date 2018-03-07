@@ -81,7 +81,7 @@ namespace vMenuClient
         private async Task PlayerOptions()
         {
             // Player options. Only run player options if the player options menu has actually been created.
-            if (MainMenu.PlayerOptionsMenu != null)
+            if (MainMenu.PlayerOptionsMenu != null && cf.IsAllowed(Permission.POMenu))
             {
                 // Manage Player God Mode
                 SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod));
@@ -157,7 +157,7 @@ namespace vMenuClient
         {
 
             // Vehicle options. Only run vehicle options if the vehicle options menu has actually been created.
-            if (MainMenu.VehicleOptionsMenu != null)
+            if (MainMenu.VehicleOptionsMenu != null && cf.IsAllowed(Permission.VOMenu))
             {
                 // When the player is in a valid vehicle:
                 if (DoesEntityExist(cf.GetVehicle()))
@@ -184,10 +184,10 @@ namespace vMenuClient
                     }
 
                     // Freeze Vehicle Position (if enabled).
-                    FreezeEntityPosition(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleFrozen);
+                    FreezeEntityPosition(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze));
 
                     // If the torque multiplier is enabled.
-                    if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier)
+                    if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))
                     {
                         // Set the torque multiplier to the selected value by the player.
                         // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
@@ -200,7 +200,7 @@ namespace vMenuClient
                         SwitchedVehicle = false;
 
                         // Vehicle engine power multiplier.
-                        if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier)
+                        if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
                         {
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
                         }
@@ -209,23 +209,23 @@ namespace vMenuClient
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
                         }
                         // No Siren Toggle
-                        vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
+                        vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
                     }
 
                     // Manage "no helmet"
                     var ped = new Ped(PlayerPedId());
                     // If the no helmet feature is turned on, disalbe "ped can wear helmet"
-                    if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
                     {
                         ped.CanWearHelmet = false;
                     }
                     // otherwise, allow helmets.
-                    else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet || !cf.IsAllowed(Permission.VONoHelmet))
                     {
                         ped.CanWearHelmet = true;
                     }
                     // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.
-                    if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet)
+                    if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
                     {
                         ped.RemoveHelmet(true);
                     }
@@ -246,13 +246,14 @@ namespace vMenuClient
                         {
                             MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
                             m.Visible = false;
-                            Notify.Error("You need to be inside a vehicle to access this menu.");
+                            Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
                     }
                 }
 
                 // Manage vehicle engine always on.
-                if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !IsPedInAnyVehicle(PlayerPedId(), false) && cf.IsAllowed(Permission.VOEngineAlwaysOn))
+                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !IsPedInAnyVehicle(PlayerPedId(), false)) &&
+                    (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
                 {
                     await Delay(100);
                     SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
@@ -271,7 +272,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task MiscSettings()
         {
-            if (MainMenu.MiscSettingsMenu != null)
+            if (MainMenu.MiscSettingsMenu != null && cf.IsAllowed(Permission.MSMenu))
             {
                 #region Misc Settings
                 // Show speedometer km/h
@@ -287,7 +288,7 @@ namespace vMenuClient
                 }
 
                 // Show coordinates.
-                if (MainMenu.MiscSettingsMenu.ShowCoordinates)
+                if (MainMenu.MiscSettingsMenu.ShowCoordinates && cf.IsAllowed(Permission.MSShowCoordinates))
                 {
                     var pos = GetEntityCoords(PlayerPedId(), true);
                     cf.DrawTextOnScreen($"~r~X~t~: {Math.Round(pos.X, 2)}" +
@@ -316,7 +317,7 @@ namespace vMenuClient
 
                 #region Show Location
                 // Show location & time.
-                if (MainMenu.MiscSettingsMenu.ShowLocation)
+                if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
                 {
 
                     // Get the current location.
@@ -327,13 +328,13 @@ namespace vMenuClient
                     var node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
 
                     // Create the default prefix.
-                    var prefix = "~w~";
+                    var prefix = "~s~";
 
                     // If the vehicle node is further away than 1400f, then the player is not near a valid road.
                     // So we set the prefix to "Near " (<streetname>).
                     if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
                     {
-                        prefix = "~m~Near ~w~";
+                        prefix = "~m~Near ~s~";
                     }
 
                     // Get the heading.
@@ -397,7 +398,7 @@ namespace vMenuClient
 
                 #region Join / Quit notifications
                 // Join/Quit notifications
-                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications)
+                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
                 {
                     PlayerList plist = new PlayerList();
                     Dictionary<int, string> pl = new Dictionary<int, string>();
@@ -412,7 +413,7 @@ namespace vMenuClient
                         {
                             if (!playerList.Contains(player))
                             {
-                                Notify.Custom($"~g~{player.Value}~w~ joined the server.");
+                                Notify.Custom($"~g~{player.Value}~s~ joined the server.");
                             }
                         }
                     }
@@ -423,7 +424,7 @@ namespace vMenuClient
                         {
                             if (!pl.Contains(player))
                             {
-                                Notify.Custom($"~r~{player.Value}~w~ left the server.");
+                                Notify.Custom($"~r~{player.Value}~s~ left the server.");
                             }
                         }
                     }
@@ -433,7 +434,7 @@ namespace vMenuClient
 
                 #region Death Notifications
                 // Death notifications
-                if (MainMenu.MiscSettingsMenu.DeathNotifications)
+                if (MainMenu.MiscSettingsMenu.DeathNotifications && cf.IsAllowed(Permission.MSDeathNotifs))
                 {
                     PlayerList pl = new PlayerList();
                     foreach (Player p in pl)
@@ -452,24 +453,24 @@ namespace vMenuClient
                                         {
                                             if (playerKiller.Character.Handle == killer.Handle)
                                             {
-                                                Notify.Custom($"~o~{p.Name} ~w~has been murdered by ~y~{playerKiller.Name}~w~.");
+                                                Notify.Custom($"~o~{p.Name} ~s~has been murdered by ~y~{playerKiller.Name}~s~.");
                                                 break;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~{p.Name} ~w~has been murdered.");
+                                        Notify.Custom($"~o~{p.Name} ~s~has been murdered.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~{p.Name} ~w~committed suicide.");
+                                    Notify.Custom($"~o~{p.Name} ~s~committed suicide.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~{p.Name} ~w~died.");
+                                Notify.Custom($"~o~{p.Name} ~s~died.");
                             }
                             deadPlayers.Add(p.Handle);
                         }
@@ -497,9 +498,9 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task VoiceChat()
         {
-            if (MainMenu.VoiceChatSettingsMenu != null)
+            if (MainMenu.VoiceChatSettingsMenu != null && cf.IsAllowed(Permission.VCMenu))
             {
-                if (MainMenu.VoiceChatSettingsMenu.EnableVoicechat)
+                if (MainMenu.VoiceChatSettingsMenu.EnableVoicechat && cf.IsAllowed(Permission.VCEnable))
                 {
                     NetworkSetVoiceActive(true);
                     NetworkSetTalkerProximity(MainMenu.VoiceChatSettingsMenu.currentProximity);
@@ -512,7 +513,7 @@ namespace vMenuClient
                     {
                         NetworkSetVoiceChannel(channel);
                     }
-                    if (MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker)
+                    if (MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker && cf.IsAllowed(Permission.VCShowSpeaker))
                     {
                         PlayerList pl = new PlayerList();
                         var i = 1;
@@ -525,7 +526,7 @@ namespace vMenuClient
                             {
                                 if (!currentlyTalking)
                                 {
-                                    cf.DrawTextOnScreen("~w~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
+                                    cf.DrawTextOnScreen("~s~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
                                     currentlyTalking = true;
                                 }
                                 cf.DrawTextOnScreen($"~b~{p.Name}", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
@@ -553,9 +554,9 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task TimeOptions()
         {
-            if (MainMenu.TimeOptionsMenu != null)
+            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu))
             {
-                if (MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible)
+                if ((MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible) && cf.IsAllowed(Permission.TOFreezeTime))
                 {
                     // Update the current time displayed in the Time Options menu (only when the menu is actually visible).
                     var hours = GetClockHours();
@@ -576,17 +577,17 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeaponOptions()
         {
-            if (MainMenu.WeaponOptionsMenu != null)
+            if (MainMenu.WeaponOptionsMenu != null && cf.IsAllowed(Permission.WPMenu))
             {
                 // If no reload is enabled.
-                if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun)
+                if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && cf.IsAllowed(Permission.WPNoReload))
                 {
                     // Disable reloading.
                     PedSkipNextReloading(PlayerPedId());
                 }
 
                 // Enable/disable infinite ammo.
-                SetPedInfiniteAmmoClip(PlayerPedId(), MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+                SetPedInfiniteAmmoClip(PlayerPedId(), MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
             }
             else
             {
@@ -602,7 +603,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task SpectateHandling()
         {
-            if (MainMenu.OnlinePlayersMenu != null)
+            if (MainMenu.OnlinePlayersMenu != null && cf.IsAllowed(Permission.OPMenu) && cf.IsAllowed(Permission.OPSpectate))
             {
                 // When the player dies while spectating, cancel the spectating to prevent an infinite black loading screen.
                 if (GetEntityHealth(PlayerPedId()) < 1 && NetworkIsInSpectatorMode())
@@ -628,7 +629,7 @@ namespace vMenuClient
         #endregion
 
         /// Not task related
-        #region Private functions used by some of the tasks.
+        #region Private ShowSpeed Functions
         /// <summary>
         /// Shows the current speed in km/h.
         /// Must be in a vehicle.
@@ -639,7 +640,6 @@ namespace vMenuClient
             {
                 int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle()) * 3.6f).ToString());
                 cf.DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
-                //HideHudComponentThisFrame((int)HudComponent.StreetName);
             }
         }
 
@@ -651,27 +651,16 @@ namespace vMenuClient
         {
             if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
-                //SetTextFont(4);
-                //SetTextScale(1.0f, 0.7f);
-                //SetTextJustification(2);
-                //SetTextWrap(0f, 0.995f);
-                //SetTextOutline();
-                //BeginTextCommandDisplayText("STRING");
-
                 int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle()) * 2.23694f).ToString());
-
-                //AddTextComponentSubstringPlayerName($"{speed} MPH");
 
                 if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
                 {
-                    //EndTextCommandDisplayText(0f, 0.925f);
                     cf.DrawTextOnScreen($"{speed} MPH", 0.995f, 0.925f, 0.7f, Alignment.Right, 4);
+                    HideHudComponentThisFrame((int)HudComponent.StreetName);
                 }
                 else
                 {
                     cf.DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
-                    //EndTextCommandDisplayText(0f, 0.955f);
-                    HideHudComponentThisFrame((int)HudComponent.StreetName);
                 }
             }
         }
