@@ -240,13 +240,13 @@ namespace vMenuClient
                                 }
                                 catch (NotImplementedException e)
                                 {
-                                    Debug.Write("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
                                     Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
                                 }
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~w~first!", prefix: "Error:");
+                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
                             }
                             break;
                         // Drive Around Randomly (wander)
@@ -259,7 +259,7 @@ namespace vMenuClient
                                 }
                                 catch (NotImplementedException e)
                                 {
-                                    Debug.Write("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
                                     Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
                                 }
 
