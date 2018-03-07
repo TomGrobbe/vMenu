@@ -104,10 +104,14 @@ namespace vMenuClient
         public void Custom(string message, bool blink = false, bool saveToBrief = true)
         {
             SetNotificationTextEntry("THREESTRINGS");
-            var messages = MainMenu.Cf.StringToArray(message);
-            foreach (var msg in messages)
+            string[] messages = MainMenu.Cf.StringToArray(message);
+            foreach (string msg in messages)
             {
-                AddTextComponentSubstringPlayerName(msg);
+                if (msg != null)
+                {
+                    AddTextComponentSubstringPlayerName(msg);
+                }
+                
             }
             DrawNotification(blink, saveToBrief);
         }
