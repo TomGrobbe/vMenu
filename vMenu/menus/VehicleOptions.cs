@@ -90,12 +90,12 @@ namespace vMenuClient
                 "Hazard Lights",
                 "Left Indicator",
                 "Right Indicator",
-                "Interior Lights",
-                "Taxi Light",
+                //"Interior Lights",
+                //"Taxi Light", // this doesn't seem to work no matter what.
                 "Helicopter Spotlight",
             };
             UIMenuListItem vehicleLights = new UIMenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
-            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~w~!");
+            UIMenuItem deleteBtn = new UIMenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
             deleteBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             deleteBtn.SetRightLabel("→→→");
             UIMenuItem deleteNoBtn = new UIMenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
@@ -548,15 +548,22 @@ namespace vMenuClient
                                 SetVehicleIndicatorLights(veh, 0, false); // right off
                             }
                         }
-                        else if (index == 3) // Interior lights
-                        {
-                            SetVehicleInteriorlight(veh, !IsVehicleInteriorLightOn(veh));
-                        }
-                        else if (index == 4) // taxi light
-                        {
-                            SetTaxiLights(veh, !IsTaxiLightOn(veh));
-                        }
-                        else if (index == 5) // helicopter spotlight
+                        //else if (index == 3) // Interior lights
+                        //{
+                        //    cf.Log("Something cool here.");
+                        //}
+                        //else if (index == 4) // taxi light
+                        //{
+                        //    SetTaxiLights(veh, true);
+                        //    SetTaxiLights(veh, false);
+                        //    //Debug.Write(IsTaxiLightOn(veh).ToString());
+                        //    //SetTaxiLights(veh, true);
+                        //    //Debug.Write(IsTaxiLightOn(veh).ToString());
+                        //    //SetTaxiLights(veh, false);
+                        //    //SetTaxiLights(veh, !IsTaxiLightOn(veh));
+                        //    Debug.Write
+                        //}
+                        else if (index == 3) // helicopter spotlight
                         {
                             SetVehicleSearchlight(veh, !IsVehicleSearchlightOn(veh), true);
                         }
