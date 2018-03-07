@@ -47,9 +47,9 @@ namespace vMenuClient
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("Godmode", PlayerGodMode, "Makes you invincible.");
             UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
             UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
-            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", false, "Get ~g~Snail~w~ powers and run very fast!");
-            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", false, "Get ~g~Sail 2.0~w~ powers and swim super fast!");
-            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~w~ powers and jump like a champ!");
+            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", false, "Get ~g~Snail~s~ powers and run very fast!");
+            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", false, "Get ~g~Sail 2.0~s~ powers and swim super fast!");
+            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
             UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
             UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
             UIMenuCheckboxItem everyoneIgnoresPlayerCheckbox = new UIMenuCheckboxItem("Everyone Ignore Player", PlayerIsIgnored, "Everyone will leave you alone.");
@@ -198,12 +198,12 @@ namespace vMenuClient
                         // Max Health
                         case 0:
                             SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
-                            Subtitle.Info("Max ~g~health ~w~applied.", prefix: "Info:");
+                            Subtitle.Info("Max ~g~health ~s~applied.", prefix: "Info:");
                             break;
                         // Max Armor
                         case 1:
                             SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
-                            Subtitle.Info("Max ~b~armor ~w~applied.", prefix: "Info:");
+                            Subtitle.Info("Max ~b~armor ~s~applied.", prefix: "Info:");
                             break;
                         // Clean Player Clothes
                         case 2:
@@ -213,43 +213,60 @@ namespace vMenuClient
                         // Make Player Dry
                         case 3:
                             ClearPedWetness(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~c~dry~w~.", prefix: "Info:");
+                            Subtitle.Info("Player clothes are now ~c~dry~s~.", prefix: "Info:");
                             break;
                         // Make Player Wet
                         case 4:
                             SetPedWetnessHeight(PlayerPedId(), 2f);
                             SetPedWetnessEnabledThisFrame(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~b~wet~w~.", prefix: "Info:");
+                            Subtitle.Info("Player clothes are now ~b~wet~s~.", prefix: "Info:");
                             break;
                         // Kill Player
                         case 5:
                             SetEntityHealth(PlayerPedId(), 0);
-                            Subtitle.Info("You ~r~killed ~w~yourself.", prefix: "Info:");
+                            Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
                             break;
                         // Drive To Waypoint
                         case 6:
                             if (!Game.IsWaypointActive)
                             {
-                                Subtitle.Error("You need to set a ~p~waypoint ~w~first!", prefix: "Error:");
+                                Subtitle.Error("You need to set a ~p~waypoint ~s~first!", prefix: "Error:");
                             }
                             else if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                cf.DriveToWp();
+                                try
+                                {
+                                    cf.DriveToWp();
+                                }
+                                catch (NotImplementedException e)
+                                {
+                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
+                                }
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~w~first!", prefix: "Error:");
+                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
                             }
                             break;
                         // Drive Around Randomly (wander)
                         case 7:
                             if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                cf.DriveWander();
+                                try
+                                {
+                                    cf.DriveWander();
+                                }
+                                catch (NotImplementedException e)
+                                {
+                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
+                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
+                                }
+
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~w~first!", prefix: "Error:");
+                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
                             }
                             break;
                         default:

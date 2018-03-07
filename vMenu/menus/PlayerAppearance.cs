@@ -83,8 +83,29 @@ namespace vMenuClient
             menu.AddItem(deleteSavedPed);
 
             // Bind items to the submenus.
-            menu.BindMenuToItem(pedTextures, pedCustomization);
-            menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
+            if (cf.IsAllowed(Permission.PACustomize))
+            {
+                menu.BindMenuToItem(pedTextures, pedCustomization);
+            }
+            else
+            {
+                pedCustomization.Enabled = false;
+                pedCustomization.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                pedCustomization.Description = "This option has been disabled by the server owner.";
+            }
+
+
+            if (cf.IsAllowed(Permission.PASpawnSaved))
+            {
+                menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
+            }
+            else
+            {
+                spawnSavedPed.Enabled = false;
+                spawnSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                spawnSavedPed.Description = "This option has been disabled by the server owner.";
+            }
+
             menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
 
             // Handle button presses.
@@ -123,7 +144,14 @@ namespace vMenuClient
                     pedList.Add(modelNames[index] + $" ({(ii + 1).ToString()}/{max.ToString()})");
                 }
                 UIMenuListItem pedl = new UIMenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
+
                 menu.AddItem(pedl);
+                if (!cf.IsAllowed(Permission.PASpawnNew))
+                {
+                    pedl.Enabled = false;
+                    pedl.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    pedl.Description = "This option has been disabled by the server owner.";
+                }
             }
 
             // Handle list selections.
@@ -131,7 +159,10 @@ namespace vMenuClient
             {
                 int i = ((sender.CurrentSelection - 4) * 50) + index;
                 string modelName = modelNames[i];
-                cf.SetPlayerSkin(modelName);
+                if (cf.IsAllowed(Permission.PASpawnNew))
+                {
+                    cf.SetPlayerSkin(modelName);
+                }
             };
 
         }
@@ -179,7 +210,7 @@ namespace vMenuClient
                             textureList.Add("Item #" + x.ToString());
                         }
                         UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
-                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
+                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                         pedTextures.AddItem(listItem);
 
                         // Manage list changes.
@@ -240,7 +271,7 @@ namespace vMenuClient
 
                         // Create and add the list item to the menu.
                         UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii > 2 ? ii - 3 : ii]}", propsList, currentProp,
-                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
+                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
 
                         pedTextures.AddItem(listItem);
 
@@ -381,7 +412,7 @@ namespace vMenuClient
             }
             foreach (var savename in savesFound)
             {
-                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~w~this saved ped, this action can ~r~NOT~w~ be undone!");
+                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
                 deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
                 deleteSavedPedMenu.AddItem(deleteSavedPed);
             }

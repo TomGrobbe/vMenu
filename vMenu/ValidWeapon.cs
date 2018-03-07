@@ -147,6 +147,9 @@ namespace vMenuClient
             ["SmokeGrenade"] = "Tear Gas",
         };
 
+        /// <summary>
+        /// Key = Weapon Name (NOT localized - string), value = hash (uint).
+        /// </summary>
         public static Dictionary<string, uint> Weapons = new Dictionary<string, uint>()
         {
             ["AdvancedRifle"] = 2937143193,

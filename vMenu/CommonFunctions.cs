@@ -127,7 +127,7 @@ namespace vMenuClient
                 int playerPed = GetPlayerPed(playerId);
                 if (PlayerPedId() == playerPed)
                 {
-                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~teleport to yourself!");
+                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!");
                     return;
                 }
 
@@ -155,7 +155,7 @@ namespace vMenuClient
                         if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle) && IsAnyVehicleSeatEmpty(vehicle))
                         {
                             TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
-                            Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~w~vehicle.");
+                            Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~s~vehicle.");
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                         else
@@ -610,11 +610,18 @@ namespace vMenuClient
                 int pearlescentColor = int.Parse(vehicleInfo["pearlescentColor"].ToString());
                 int wheelColor = int.Parse(vehicleInfo["wheelsColor"].ToString());
 
+                int.TryParse(vehicleInfo["interiorColor"], out int interiorcolor);
+                int.TryParse(vehicleInfo["dashboardColor"], out int dashboardcolor);
+
+                SetVehicleInteriorColour(vehicle.Handle, interiorcolor);
+                SetVehicleDashboardColour(vehicle.Handle, dashboardcolor);
+
                 SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
                 SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
 
+
                 // Skip all non-vehicle "mod" options and loop through the remaining mods and apply them to the vehicle.
-                var skip = 8 + 24;
+                var skip = 8 + 24 + 2;
                 foreach (var mod in vehicleInfo)
                 {
                     skip--;
@@ -707,6 +714,12 @@ namespace vMenuClient
                     dict.Add("secondaryColor", secondaryColor.ToString());
                     dict.Add("wheelsColor", wheelColor.ToString());
                     dict.Add("pearlescentColor", pearlescentColor.ToString());
+                    var interiorColor = 0;
+                    var dashboardColor = 0;
+                    GetVehicleInteriorColour(veh, ref interiorColor);
+                    GetVehicleDashboardColour(veh, ref dashboardColor);
+                    dict.Add("interiorColor", interiorColor.ToString());
+                    dict.Add("dashboardColor", dashboardColor.ToString());
 
                     dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
                     dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
@@ -854,36 +867,22 @@ namespace vMenuClient
         public async Task<string> GetUserInputAsync(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
 
-            MainMenu.DontOpenMenus = true;
             UIMenu openMenu = null;
 
             // Check for any open menus, then go through all of them and save the state if they're open so we can reopen them later.
             if (MainMenu.Mp.IsAnyMenuOpen())
             {
-                if (MainMenu.VehicleOptionsMenu.GetMenu().Visible)
+                foreach (UIMenu m in MainMenu.Mp.ToList())
                 {
-                    openMenu = MainMenu.VehicleOptionsMenu.GetMenu();
+                    if (m.Visible)
+                    {
+                        openMenu = m;
+                    }
                 }
-                else if (MainMenu.OnlinePlayersMenu.GetMenu().Visible)
-                {
-                    openMenu = MainMenu.OnlinePlayersMenu.GetMenu();
-                }
-                else if (MainMenu.PlayerOptionsMenu.GetMenu().Visible)
-                {
-                    openMenu = MainMenu.PlayerOptionsMenu.GetMenu();
-                }
-                else if (MainMenu.VehicleSpawnerMenu.GetMenu().Visible)
-                {
-                    openMenu = MainMenu.VehicleSpawnerMenu.GetMenu();
-                }
-                else if (MainMenu.SavedVehiclesMenu.GetMenu().Visible)
-                {
-                    openMenu = MainMenu.SavedVehiclesMenu.GetMenu();
-                }
-
-                // Then close all menus.
                 MainMenu.Mp.CloseAllMenus();
             }
+            await Delay(1);
+            MainMenu.DontOpenMenus = true;
 
             // Create the window title string.
             AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
@@ -919,28 +918,31 @@ namespace vMenuClient
             int status = UpdateOnscreenKeyboard();
             string result = GetOnscreenKeyboardResult();
 
+            // Allow menus to be opened again.
+            MainMenu.DontOpenMenus = false;
+            // Reopen any menus if they were open.
+            await Delay(4);
+            if (openMenu != null)
+            {
+                openMenu.Visible = true;
+            }
+
             // If the result is not empty or null
             if (result != "" && result != null && status == 1)
             {
-                // Reopen any menus if they were open.
-                if (openMenu != null)
-                {
-                    openMenu.Visible = true;
-                }
-                // Allow menus to be opened again.
-                MainMenu.DontOpenMenus = false;
+
                 // Return result.
                 return result.ToString();
             }
             else
             {
-                // Reopen any menus if they were open.
-                if (openMenu != null)
-                {
-                    openMenu.Visible = true;
-                }
-                // Allow menus to be opened again.
-                MainMenu.DontOpenMenus = false;
+                //// Allow menus to be opened again.
+                //MainMenu.DontOpenMenus = false;
+                //// Reopen any menus if they were open.
+                //if (openMenu != null)
+                //{
+                //    openMenu.Visible = true;
+                //}
                 // Return result.
                 return "NULL";
             }
@@ -977,7 +979,7 @@ namespace vMenuClient
             else
             {
                 Notify.Error(CommonErrors.InvalidInput);
-                //Notify.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~w~can not be used on a license plate!");
+                //Notify.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~s~can not be used on a license plate!");
             }
 
         }
@@ -1029,10 +1031,10 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public bool IsAllowed(Permission perm)
+        public bool IsAllowed(Permission permission)
         {
             // Get the permissions.
-            return PermissionsManager.IsAllowed(perm);
+            return PermissionsManager.IsAllowed(permission);
         }
         #endregion
 
@@ -1182,7 +1184,7 @@ namespace vMenuClient
                 }
                 //foreach (KeyValuePair<string, string> t in dict)
                 //{
-                //    Notify.Custom($"Key: ~r~{t.Key} ~w~value: ~g~{t.Value}");
+                //    Notify.Custom($"Key: ~r~{t.Key} ~s~value: ~g~{t.Value}");
                 //}
             }
 
@@ -1246,18 +1248,52 @@ namespace vMenuClient
         /// <returns>String[] containing 1, 2 or 3 strings.</returns>
         public string[] StringToArray(string inputString)
         {
-            var size = (inputString.Length > 99 ? (inputString.Length > 198 ? 3 : 2) : 1);
-            string[] outputString = new string[size];
-            int length = inputString.Length;
-            for (var x = 0; x < size; x++)
+            string[] outputString = new string[3];
+
+            var lastSpaceIndex = 0;
+            var newStartIndex = 0;
+            outputString[0] = inputString;
+
+            if (inputString.Length > 99)
             {
-                var tmplength = (length >= 99 ? 99 : length);
+                for (int i = 0; i < inputString.Length; i++)
+                {
+                    if (inputString.Substring(i, 1) == " ")
+                    {
+                        lastSpaceIndex = i;
+                    }
 
-                var tmpstring = inputString.Substring(99 * x, tmplength);
-                outputString[x] = tmpstring;
-
-                length -= tmplength;
+                    if (inputString.Length > 99 && i >= 98)
+                    {
+                        if (i == 98)
+                        {
+                            outputString[0] = inputString.Substring(0, lastSpaceIndex);
+                            newStartIndex = lastSpaceIndex + 1;
+                        }
+                        if (i > 98 && i < 198)
+                        {
+                            if (i == 197)
+                            {
+                                outputString[1] = inputString.Substring(newStartIndex, (lastSpaceIndex - (outputString[0].Length - 1)) - (inputString.Length - 1 > 197 ? 1 : -1));
+                                newStartIndex = lastSpaceIndex + 1;
+                            }
+                            else if (i == inputString.Length - 1 && inputString.Length < 198)
+                            {
+                                outputString[1] = inputString.Substring(newStartIndex, ((inputString.Length - 1) - outputString[0].Length));
+                                newStartIndex = lastSpaceIndex + 1;
+                            }
+                        }
+                        if (i > 197)
+                        {
+                            if (i == inputString.Length - 1 || i == 296)
+                            {
+                                outputString[2] = inputString.Substring(newStartIndex, ((inputString.Length - 1) - outputString[0].Length) - outputString[1].Length);
+                            }
+                        }
+                    }
+                }
             }
+
             return outputString;
         }
         #endregion
@@ -1326,7 +1362,7 @@ namespace vMenuClient
         /// <param name="disableTextOutline">Disables the default text outline.</param>
         public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
         {
-            if (IsHudPreferenceSwitchedOn() && !IsHudHidden())
+            if (IsHudPreferenceSwitchedOn() && CitizenFX.Core.UI.Screen.Hud.IsVisible && !MainMenu.MiscSettingsMenu.HideHud)
             {
                 SetTextFont(font);
                 SetTextScale(1.0f, size);
@@ -1500,59 +1536,47 @@ namespace vMenuClient
 
         #region Save and restore weapon loadouts when changing models
 
-        //private struct WeaponInfo
-        //{
-        //    public int Ammo;
-        //    public bool Equipped;
-        //    public uint Hash;
-        //    public uint[] Components;
-        //    public int Tint;
-        //}
-
+        private struct WeaponInfo
+        {
+            public int Ammo;
+            public uint Hash;
+            public List<uint> Components;
+            public int Tint;
+        }
+        private List<WeaponInfo> weaponsList = new List<WeaponInfo>();
         /// <summary>
         /// Saves all current weapons and components.
         /// </summary>
         public async Task SaveWeaponLoadout()
         {
-            await Delay(0);
-            int weaponCount = Enum.GetValues(typeof(WeaponHash)).Length;
-            //weaponList = null;
-            //weaponList = new WeaponInfo[weaponCount];
-            Ped ped = Game.PlayerPed;
-            //var iterator = 0;
-
-            /*
-            foreach (var weapon in WeaponOptions.ValidWeapons)
+            await Delay(1);
+            weaponsList.Clear();
+            await Delay(1);
+            foreach (var vw in ValidWeapons.Weapons)
             {
-                uint modelHash = weapon.Value;
-
-                bool inInventory = HasPedGotWeapon(PlayerPedId(), modelHash, false);
-                if (inInventory)
+                if (HasPedGotWeapon(PlayerPedId(), vw.Value, false))
                 {
-                    int ammo = GetAmmoInPedWeapon(PlayerPedId(), modelHash);
-                    WeaponInfo wi = new WeaponInfo { };
-                    wi.Ammo = ammo;
-                    wi.Hash = modelHash;
-                    wi.Equipped = Game.PlayerPed.Weapons.Current.Hash == (WeaponHash)modelHash;
-
-                    var componentlist = new uint[50];
-                    var it = 0;
-                    foreach (var wc in Enum.GetValues(typeof(WeaponComponentHash)))
+                    List<uint> components = new List<uint>();
+                    foreach (var wc in ValidWeapons.weaponComponents)
                     {
-                        if (DoesWeaponTakeWeaponComponent(modelHash, (uint)wc) && HasPedGotWeaponComponent(PlayerPedId(), modelHash, (uint)wc))
+                        if (DoesWeaponTakeWeaponComponent(vw.Value, wc.Value))
                         {
-                            componentlist[it] = (uint)wc;
-                            it++;
+                            if (HasPedGotWeaponComponent(PlayerPedId(), vw.Value, wc.Value))
+                            {
+                                components.Add(wc.Value);
+                            }
                         }
                     }
-                    wi.Components = componentlist;
-                    wi.Tint = GetPedWeaponTintIndex(PlayerPedId(), modelHash);
-                    weaponList[iterator] = wi;
-                    iterator++;
-
+                    weaponsList.Add(new WeaponInfo()
+                    {
+                        Ammo = GetAmmoInPedWeapon(PlayerPedId(), vw.Value),
+                        Hash = vw.Value,
+                        Components = components,
+                        Tint = GetPedWeaponTintIndex(PlayerPedId(), vw.Value)
+                    });
                 }
             }
-            */
+            await Delay(1);
         }
 
         /// <summary>
@@ -1560,19 +1584,22 @@ namespace vMenuClient
         /// </summary>
         public async void RestoreWeaponLoadout()
         {
-            await Delay(100);
-            //foreach (WeaponInfo wi in weaponList)
-            //{
-            //    GiveWeaponToPed(PlayerPedId(), wi.Hash, wi.Ammo, false, wi.Equipped);
-            //    if (wi.Components != null)
-            //    {
-            //        foreach (uint comphash in wi.Components)
-            //        {
-            //            GiveWeaponComponentToPed(PlayerPedId(), wi.Hash, comphash);
-            //        }
-            //    }
-            //    SetPedWeaponTintIndex(PlayerPedId(), wi.Hash, wi.Tint);
-            //}
+            await Delay(0);
+            if (weaponsList.Count > 0)
+            {
+                foreach (WeaponInfo wi in weaponsList)
+                {
+                    GiveWeaponToPed(PlayerPedId(), wi.Hash, wi.Ammo, false, false);
+                    if (wi.Components.Count > 0)
+                    {
+                        foreach (var wc in wi.Components)
+                        {
+                            GiveWeaponComponentToPed(PlayerPedId(), wi.Hash, wc);
+                        }
+                    }
+                    SetPedWeaponTintIndex(PlayerPedId(), wi.Hash, wi.Tint);
+                }
+            }
         }
         #endregion
 
@@ -1599,6 +1626,13 @@ namespace vMenuClient
                 Enabled = false
             };
             return item;
+        }
+        #endregion
+
+        #region Log Function
+        public void Log(string data)
+        {
+            Debug.WriteLine(data, "");
         }
         #endregion
 

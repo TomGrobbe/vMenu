@@ -57,7 +57,7 @@ namespace vMenuClient
             saveVeh.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuItem savedVehiclesBtn = new UIMenuItem("Spawn Saved Vehicle", "Select a vehicle from your saved vehicles list.");
             savedVehiclesBtn.SetRightLabel("→→→");
-            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Saved Vehicle", "~r~Delete ~w~a saved vehicle.");
+            UIMenuItem deleteSavedVehiclesBtn = new UIMenuItem("~r~Delete Saved Vehicle", "~r~Delete ~s~a saved vehicle.");
             deleteSavedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             deleteSavedVehiclesBtn.SetRightLabel("→→→");
 
@@ -67,7 +67,16 @@ namespace vMenuClient
             menu.AddItem(deleteSavedVehiclesBtn);
 
             // Bind submenus to menu items.
-            menu.BindMenuToItem(savedVehicles, savedVehiclesBtn);
+            if (cf.IsAllowed(Permission.SVSpawn))
+            {
+                menu.BindMenuToItem(savedVehicles, savedVehiclesBtn);
+            }
+            else
+            {
+                savedVehiclesBtn.Enabled = false;
+                savedVehiclesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                savedVehiclesBtn.Description = "This option has been disabled by the server owner.";
+            }
             menu.BindMenuToItem(deleteSavedVehicles, deleteSavedVehiclesBtn);
             #endregion
 

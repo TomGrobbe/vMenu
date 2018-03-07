@@ -225,13 +225,21 @@ namespace vMenuClient
 
         private static float GetSettingsFloat(string kvpString)
         {
-            if ((FindKvp(StartFindKvp(SETTINGS_PREFIX + kvpString)) ?? "") != "")
+            float savedValue = GetResourceKvpFloat(SETTINGS_PREFIX + kvpString);
+            if (savedValue.ToString() != null) // this can still become null for some reason, so that's why we check it.
             {
-                float savedValue = GetResourceKvpFloat(SETTINGS_PREFIX + kvpString);
-                return savedValue;
+                if (savedValue.GetType() == typeof(float))
+                {
+                    return savedValue;
+                }
+                else
+                {
+                    return -1f;
+                }
             }
             else
             {
+                SetSavedSettingsFloat(SETTINGS_PREFIX + kvpString, -1f);
                 return -1f;
             }
         }
@@ -285,14 +293,19 @@ namespace vMenuClient
                 VehicleSpawnerSpawnInside = MainMenu.VehicleSpawnerMenu.SpawnInVehicle;
             }
 
-            // Todo:
-            //VoiceChatEnabled
-            //WeaponsNoReload
-            //WeaponsUnlimitedAmmo
+            if (MainMenu.VoiceChatSettingsMenu != null)
+            {
+                VoiceChatEnabled = MainMenu.VoiceChatSettingsMenu.EnableVoicechat;
+                VoiceChatProximity = MainMenu.VoiceChatSettingsMenu.currentProximity;
+            }
 
+            if (MainMenu.WeaponOptionsMenu != null)
+            {
+                WeaponsNoReload = MainMenu.WeaponOptionsMenu.NoReload;
+                WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
+            }
 
             MainMenu.Notify.Success("Your settings have been saved.");
-
         }
 
         #endregion

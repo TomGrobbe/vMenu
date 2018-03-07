@@ -52,7 +52,24 @@ namespace vMenuClient
         {
             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
             SetRichPresence($"{(DebugMode ? "Debugging" : "Enjoying")} vMenu {Version}!");
-            Tick += OnTick;
+            if (GetCurrentResourceName() != "vMenu")
+            {
+                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
+                try
+                {
+                    throw InvalidNameException;
+                }
+                catch (Exception e)
+                {
+                    Cf.Log(e.Message);
+                }
+                TriggerEvent("chatMessage", "^3IMPORTANT: vMenu IS NOT SETUP CORRECTLY. PLEASE CHECK THE SERVER LOG FOR MORE INFO.");
+            }
+            else
+            {
+                Tick += OnTick;
+            }
+            
         }
 
         #region Set Permissions function
@@ -175,7 +192,7 @@ namespace vMenuClient
                 // If the pause menu is active or all menus should be closed, close all menus.
                 else
                 {
-                    await Delay(5);
+                    await Delay(3);
                     Mp.CloseAllMenus();
                 }
                 #endregion

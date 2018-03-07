@@ -34,10 +34,26 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
+            //RegisterCommand("test", new Action<int, List<dynamic>>(Test), false);
 
             Tick += WeatherSync;
             Tick += TimeSync;
         }
+
+        //private void Test(int test, List<dynamic> t)
+        //{
+        //    string output = "";
+        //    var first = true;
+        //    foreach (string x in t)
+        //    {
+        //        if (x != null)
+        //        {
+        //            output += (!first ? " " : "") + x;
+        //            first = false;
+        //        }
+        //    }
+        //    MainMenu.Notify.Error(CommonErrors.UnknownError, placeholderValue: output);
+        //}
 
         private void UpdatePermissions(dynamic permissions)
         {

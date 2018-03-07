@@ -31,6 +31,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
+            
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", true)
             {
@@ -54,15 +55,35 @@ namespace vMenuClient
             UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
 
             // Add menu items to the menu.
-            menu.AddItem(tptowp);
+            if (cf.IsAllowed(Permission.MSTeleportToWp))
+            {
+                menu.AddItem(tptowp);
+            }
+
+            // Always allowed
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
-            menu.AddItem(coords);
+
+            if (cf.IsAllowed(Permission.MSShowCoordinates))
+            {
+                menu.AddItem(coords);
+            }
+            if (cf.IsAllowed(Permission.MSShowLocation))
+            {
+                menu.AddItem(showLocation);
+            }
+            if (cf.IsAllowed(Permission.MSJoinQuitNotifs))
+            {
+                menu.AddItem(deathNotifs);
+            }
+            if (cf.IsAllowed(Permission.MSDeathNotifs))
+            {
+                menu.AddItem(joinQuitNotifs);
+            }
+            
+            // Always allowed
             menu.AddItem(hideRadar);
             menu.AddItem(hideHud);
-            menu.AddItem(showLocation);
-            menu.AddItem(joinQuitNotifs);
-            menu.AddItem(deathNotifs);
             menu.AddItem(saveSettings);
 
             // Handle checkbox changes.
