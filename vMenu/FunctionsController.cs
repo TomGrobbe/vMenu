@@ -84,10 +84,10 @@ namespace vMenuClient
             if (MainMenu.PlayerOptionsMenu != null)
             {
                 // Manage Player God Mode
-                SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode);
+                SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod));
 
                 // Manage invisibility.
-                SetEntityVisible(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerInvisible, false);
+                SetEntityVisible(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible), false);
 
                 // Manage Stamina
                 if (MainMenu.PlayerOptionsMenu.PlayerStamina)
@@ -96,42 +96,51 @@ namespace vMenuClient
                 }
 
                 // Manage Super jump.
-                if (MainMenu.PlayerOptionsMenu.PlayerSuperJump)
+                if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
                 {
                     SetSuperJumpThisFrame(PlayerId());
                 }
 
                 // Manage PlayerNoRagdoll
-                SetPedCanRagdoll(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                SetPedCanRagdoll(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll));
 
 
                 // Fall off bike / dragged out of car.
                 if (MainMenu.VehicleOptionsMenu != null)
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll || MainMenu.VehicleOptionsMenu.VehicleGodMode) ? 1 : 0));
-                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored || MainMenu.VehicleOptionsMenu.VehicleGodMode || MainMenu.PlayerOptionsMenu.PlayerGodMode));
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode || MainMenu.VehicleOptionsMenu.VehicleGodMode));
+                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll))
+                        || (MainMenu.VehicleOptionsMenu.VehicleGodMode) && cf.IsAllowed(Permission.VOGod)) ? 1 : 0));
+
+                    SetPedCanBeDraggedOut(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
+                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod)) ||
+                        (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
+
+                    SetPedCanBeShotInVehicle(PlayerPedId(), !((MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod)) ||
+                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod))));
                 }
                 else
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll) ? 1 : 0));
-                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored));
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode));
+                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) ? 1 : 0));
+                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)));
+                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod)));
                 }
 
                 // Manage never wanted.
-                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0)
+                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0 && cf.IsAllowed(Permission.PONeverWanted))
                 {
                     ClearPlayerWantedLevel(PlayerId());
                 }
 
                 // Manage player is ignored by everyone.
-                SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
-                SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
-                SetPlayerCanBeHassledByGangs(PlayerId(), !(MainMenu.PlayerOptionsMenu.PlayerIsIgnored || MainMenu.PlayerOptionsMenu.PlayerGodMode));
+                SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored));
+
+                SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored));
+
+                SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
+                    (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
 
                 // Manage player frozen.
-                FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen);
+                FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
             }
             else
             {
@@ -157,7 +166,7 @@ namespace vMenuClient
                     Vehicle vehicle = new Vehicle(cf.GetVehicle());
 
                     // God mode
-                    bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode;
+                    bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
                     vehicle.CanBeVisiblyDamaged = !god;
                     vehicle.CanEngineDegrade = !god;
                     vehicle.CanTiresBurst = !god;
@@ -203,11 +212,7 @@ namespace vMenuClient
                         vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
                     }
 
-                    // Manage vehicle engine always on.
-                    if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !DoesEntityExist(cf.GetVehicle(lastVehicle: false)))
-                    {
-                        SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
-                    }
+
 
                     // Manage "no helmet"
                     var ped = new Ped(PlayerPedId());
@@ -227,6 +232,8 @@ namespace vMenuClient
                         ped.RemoveHelmet(true);
                     }
                 }
+
+
 
                 // When the player is not inside a vehicle:
                 else
@@ -290,6 +297,13 @@ namespace vMenuClient
                     //    MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible = false;
                     //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
                     //}
+                }
+
+                // Manage vehicle engine always on.
+                if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !IsPedInAnyVehicle(PlayerPedId(), false) && cf.IsAllowed(Permission.VOEngineAlwaysOn))
+                {
+                    await Delay(100);
+                    SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
                 }
             }
             else
@@ -657,7 +671,7 @@ namespace vMenuClient
             else
             {
                 await Delay(0);
-            }   
+            }
         }
         #endregion
 

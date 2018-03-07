@@ -191,7 +191,13 @@ namespace vMenuClient
                 Ped ped = new Ped(PlayerPedId());
                 if (item == getAllWeapons)
                 {
-                    ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
+                    foreach (var weapon in ValidWeapons.Weapons)
+                    {
+                        var ammo = 255;
+                        GetMaxAmmo(PlayerPedId(), weapon.Value, ref ammo);
+                        ped.Weapons.Give((WeaponHash)weapon.Value, ammo, weapon.Key == "Unarmed", true);
+                    }
+                    //ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
                 }
                 else if (item == removeAllWeapons)
                 {

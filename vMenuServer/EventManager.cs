@@ -461,7 +461,7 @@ namespace vMenuServer
             }
             else if (prefix == "SV")
             {
-                outputString = "vMenu.VehicleSpawner." + inputString.Substring(2);
+                outputString = "vMenu.SavedVehicles." + inputString.Substring(2);
             }
             else if (prefix == "PA")
             {
