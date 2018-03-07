@@ -57,7 +57,7 @@ namespace vMenuClient
                         MouseEdgeEnabled = false,
                         ControlDisablingEnabled = false
                     };
-                    UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~w~.");
+                    UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
                     weaponItem.SetRightLabel("→→→");
                     weaponItem.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);
 

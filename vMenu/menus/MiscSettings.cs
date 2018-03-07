@@ -31,6 +31,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
+            
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", true)
             {

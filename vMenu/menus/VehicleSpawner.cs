@@ -86,7 +86,7 @@ namespace vMenuClient
                 string className = cf.GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
-                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~w~class.");
+                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
                 btn.SetRightLabel("→→→");
                 UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
                 {

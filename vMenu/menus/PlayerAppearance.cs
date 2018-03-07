@@ -210,7 +210,7 @@ namespace vMenuClient
                             textureList.Add("Item #" + x.ToString());
                         }
                         UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
-                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
+                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                         pedTextures.AddItem(listItem);
 
                         // Manage list changes.
@@ -271,7 +271,7 @@ namespace vMenuClient
 
                         // Create and add the list item to the menu.
                         UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii > 2 ? ii - 3 : ii]}", propsList, currentProp,
-                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~w~, press ~r~enter~w~ to cycle through the available textures.");
+                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
 
                         pedTextures.AddItem(listItem);
 
@@ -412,7 +412,7 @@ namespace vMenuClient
             }
             foreach (var savename in savesFound)
             {
-                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~w~this saved ped, this action can ~r~NOT~w~ be undone!");
+                UIMenuItem deleteSavedPed = new UIMenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
                 deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
                 deleteSavedPedMenu.AddItem(deleteSavedPed);
             }

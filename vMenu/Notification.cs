@@ -55,22 +55,22 @@ namespace vMenuClient
                     outputMessage = $"You are not allowed to{placeholder}, sorry.";
                     break;
                 case CommonErrors.InvalidModel:
-                    outputMessage = $"This model~r~{placeholder} ~w~could not be found, are you sure it's valid?";
+                    outputMessage = $"This model~r~{placeholder} ~s~could not be found, are you sure it's valid?";
                     break;
                 case CommonErrors.InvalidInput:
-                    outputMessage = $"The provided input~r~{placeholder} ~w~is not valid or you cancelled the action, please try again.";
+                    outputMessage = $"The input~r~{placeholder} ~s~is invalid or you cancelled the action, please try again.";
                     break;
                 case CommonErrors.InvalidSaveName:
-                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~w~is invalid.";
+                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~s~is invalid.";
                     break;
                 case CommonErrors.SaveNameAlreadyExists:
-                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~w~already exists.";
+                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~s~already exists.";
                     break;
                 case CommonErrors.CouldNotLoadSave:
-                    outputMessage = $"Loading of~r~{placeholder} ~w~failed! Is the saves file corrupt?";
+                    outputMessage = $"Loading of~r~{placeholder} ~s~failed! Is the saves file corrupt?";
                     break;
                 case CommonErrors.CouldNotLoad:
-                    outputMessage = $"Could not load~r~{placeholder}~w~, sorry!";
+                    outputMessage = $"Could not load~r~{placeholder}~s~, sorry!";
                     break;
                 case CommonErrors.PedNotFound:
                     outputMessage = $"The specified ped could not be found.{placeholder}";
@@ -120,7 +120,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public void Alert(string message, bool blink = false, bool saveToBrief = true)
         {
-            Custom("~y~~h~Alert~h~~w~: " + message, blink, saveToBrief);
+            Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public void Error(string message, bool blink = false, bool saveToBrief = true)
         {
-            Custom("~r~~h~Error~h~~w~: " + message, blink, saveToBrief);
+            Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public void Info(string message, bool blink = false, bool saveToBrief = true)
         {
-            Custom("~b~~h~Info~h~~w~: " + message, blink, saveToBrief);
+            Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public void Success(string message, bool blink = false, bool saveToBrief = true)
         {
-            Custom("~g~~h~Success~h~~w~: " + message, blink, saveToBrief);
+            Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
         }
     }
     #endregion
@@ -217,7 +217,7 @@ namespace vMenuClient
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
         public void Alert(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
-            Custom((prefix != null ? "~y~" + prefix + " ~w~" : "~y~") + message, duration, drawImmediately);
+            Custom((prefix != null ? "~y~" + prefix + " ~s~" : "~y~") + message, duration, drawImmediately);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace vMenuClient
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
         public void Error(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
-            Custom((prefix != null ? "~r~" + prefix + " ~w~" : "~r~") + message, duration, drawImmediately);
+            Custom((prefix != null ? "~r~" + prefix + " ~s~" : "~r~") + message, duration, drawImmediately);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace vMenuClient
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
         public void Info(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
-            Custom((prefix != null ? "~b~" + prefix + " ~w~" : "~b~") + message, duration, drawImmediately);
+            Custom((prefix != null ? "~b~" + prefix + " ~s~" : "~b~") + message, duration, drawImmediately);
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace vMenuClient
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
         public void Success(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
-            Custom((prefix != null ? "~g~" + prefix + " ~w~" : "~g~") + message, duration, drawImmediately);
+            Custom((prefix != null ? "~g~" + prefix + " ~s~" : "~g~") + message, duration, drawImmediately);
         }
     }
     #endregion

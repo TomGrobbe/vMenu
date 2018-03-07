@@ -80,7 +80,7 @@ namespace vMenuClient
             componentsMenuBtn.SetRightLabel("→→→");
             UIMenuItem liveriesMenuBtn = new UIMenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!");
             liveriesMenuBtn.SetRightLabel("→→→");
-            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~w~colors!");
+            UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
             colorsMenuBtn.SetRightLabel("→→→");
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
@@ -105,9 +105,9 @@ namespace vMenuClient
 
             // Create lists.
             var dirtlevel = new List<dynamic> { "No Dirt", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~w~ to apply the selected level.");
+            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ to apply the selected level.");
             var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
-            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~w~to apply it to your vehicle.");
+            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply it to your vehicle.");
             var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
@@ -908,10 +908,10 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Windows Submenu Stuff
-            UIMenuItem fwu = new UIMenuItem("~y~↑~w~ Roll Front Windows Up", "Roll both front windows up.");
-            UIMenuItem fwd = new UIMenuItem("~o~↓~w~ Roll Front Windows Down", "Roll both front windows down.");
-            UIMenuItem rwu = new UIMenuItem("~y~↑~w~ Roll Rear Windows Up", "Roll both rear windows up.");
-            UIMenuItem rwd = new UIMenuItem("~o~↓~w~ Roll Rear Windows Down", "Roll both rear windows down.");
+            UIMenuItem fwu = new UIMenuItem("~y~↑~s~ Roll Front Windows Up", "Roll both front windows up.");
+            UIMenuItem fwd = new UIMenuItem("~o~↓~s~ Roll Front Windows Down", "Roll both front windows down.");
+            UIMenuItem rwu = new UIMenuItem("~y~↑~s~ Roll Rear Windows Up", "Roll both rear windows up.");
+            UIMenuItem rwd = new UIMenuItem("~o~↓~s~ Roll Rear Windows Down", "Roll both rear windows down.");
             VehicleWindowsMenu.AddItem(fwu);
             VehicleWindowsMenu.AddItem(fwd);
             VehicleWindowsMenu.AddItem(rwu);
@@ -1187,7 +1187,7 @@ namespace vMenuClient
 
                     // Create the UIMenuListItem for this mod type.
                     var currIndex = GetVehicleMod(veh, (int)mod.ModType) + 1;
-                    UIMenuListItem modTypeListItem = new UIMenuListItem(typeName, modlist, currIndex, $"Choose a ~y~{typeName}~w~ upgrade, it will be automatically applied to your vehicle.");
+                    UIMenuListItem modTypeListItem = new UIMenuListItem(typeName, modlist, currIndex, $"Choose a ~y~{typeName}~s~ upgrade, it will be automatically applied to your vehicle.");
 
                     // Add the list item to the menu.
                     VehicleModMenu.AddItem(modTypeListItem);
@@ -1198,14 +1198,14 @@ namespace vMenuClient
                 veh = cf.GetVehicle();
                 // Create the wheel types list & listitem and add it to the menu.
                 List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
-                UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~w~ for your vehicle. ~r~Important:~w~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
+                UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh), $"Choose a ~y~wheel type~s~ for your vehicle. ~r~Important:~s~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
                 VehicleModMenu.AddItem(vehicleWheelType);
 
                 // Create the checkboxes for some options.
-                UIMenuCheckboxItem toggleCustomWheels = new UIMenuCheckboxItem("Toggle Custom Wheels", GetVehicleModVariation(veh, 23), "Press this to add or remove ~y~custom~w~ wheels.");
-                UIMenuCheckboxItem xenonHeadlights = new UIMenuCheckboxItem("Xenon Headlights", IsToggleModOn(veh, 22), "Enable or disable ~b~xenon ~w~headlights.");
-                UIMenuCheckboxItem turbo = new UIMenuCheckboxItem("Turbo", IsToggleModOn(veh, 18), "Enable or disable the ~y~turbo~w~ for this vehicle.");
-                UIMenuCheckboxItem bulletProofTires = new UIMenuCheckboxItem("Bullet Proof Tires", !GetVehicleTyresCanBurst(veh), "Enable or disable ~y~bullet proof tires~w~ for this vehicle.");
+                UIMenuCheckboxItem toggleCustomWheels = new UIMenuCheckboxItem("Toggle Custom Wheels", GetVehicleModVariation(veh, 23), "Press this to add or remove ~y~custom~s~ wheels.");
+                UIMenuCheckboxItem xenonHeadlights = new UIMenuCheckboxItem("Xenon Headlights", IsToggleModOn(veh, 22), "Enable or disable ~b~xenon ~s~headlights.");
+                UIMenuCheckboxItem turbo = new UIMenuCheckboxItem("Turbo", IsToggleModOn(veh, 18), "Enable or disable the ~y~turbo~s~ for this vehicle.");
+                UIMenuCheckboxItem bulletProofTires = new UIMenuCheckboxItem("Bullet Proof Tires", !GetVehicleTyresCanBurst(veh), "Enable or disable ~y~bullet proof tires~s~ for this vehicle.");
 
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddItem(toggleCustomWheels);
@@ -1228,11 +1228,11 @@ namespace vMenuClient
                     ["Pink"] = new int[] { 192, 24, 172 },
                     ["Black"] = new int[] { 1, 1, 1 }
                 };
-                UIMenuListItem tireSmoke = new UIMenuListItem("Tire Smoke Color", tireSmokes, 0, $"Choose a ~y~wheel type~w~ for your vehicle.");
+                UIMenuListItem tireSmoke = new UIMenuListItem("Tire Smoke Color", tireSmokes, 0, $"Choose a ~y~wheel type~s~ for your vehicle.");
                 VehicleModMenu.AddItem(tireSmoke);
 
                 // Create the checkbox to enable/disable the tiresmoke.
-                UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~w~ for your vehicle. ~h~~r~Important:~w~ When disabling tire smoke, you'll need to drive around before it takes affect.");
+                UIMenuCheckboxItem tireSmokeEnabled = new UIMenuCheckboxItem("Tire Smoke", IsToggleModOn(veh, 20), "Enable or disable ~y~tire smoke~s~ for your vehicle. ~h~~r~Important:~s~ When disabling tire smoke, you'll need to drive around before it takes affect.");
                 VehicleModMenu.AddItem(tireSmokeEnabled);
 
                 // Create list for window tint

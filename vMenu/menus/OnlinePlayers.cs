@@ -88,7 +88,7 @@ namespace vMenuClient
                         summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the selected player! Why are you so cruel :(");
                         killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
-                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~w~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
+                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
 
@@ -154,7 +154,7 @@ namespace vMenuClient
                                 if (player.Handle == PlayerId())
                                 {
                                     //Subtitle.Error("You can ~h~not~h~ spectate yourself!", prefix: "Error:");
-                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~spectate yourself!");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~spectate yourself!");
                                 }
                                 else
                                 {
@@ -166,7 +166,7 @@ namespace vMenuClient
                             {
                                 if (player.Handle == PlayerId())
                                 {
-                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~w~summon yourself!");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~summon yourself!");
                                 }
                                 else
                                 {
