@@ -27,18 +27,16 @@ namespace vMenuClient
             "Channel 4",
         };
         public string currentChannel;
-
-
         private List<float> proximityRange = new List<float>()
         {
+            5f, // 5m
+            10f, // 10m
+            15f, // 15m
             20f, // 20m
-            50f, // 50m
             100f, // 100m
-            150f, // 150m
             300f, // 300m
-            500f, // 500m
+            1000f, // 1.000m
             2000f, // 2.000m
-            5000f, // 5.000m
             0f, // global
         };
 
@@ -64,14 +62,14 @@ namespace vMenuClient
 
             List<dynamic> proximity = new List<dynamic>()
             {
+                "5 m",
+                "10 m",
+                "15 m",
                 "20 m",
-                "50 m",
                 "100 m",
-                "150 m",
                 "300 m",
-                "500 m",
+                "1 km",
                 "2 km",
-                "5 km",
                 "Global",
             };
             UIMenuListItem voiceChatProximity = new UIMenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
