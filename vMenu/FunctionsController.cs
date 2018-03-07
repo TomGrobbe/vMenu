@@ -212,8 +212,6 @@ namespace vMenuClient
                         vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
                     }
 
-
-
                     // Manage "no helmet"
                     var ped = new Ped(PlayerPedId());
                     // If the no helmet feature is turned on, disalbe "ped can wear helmet"
@@ -232,9 +230,6 @@ namespace vMenuClient
                         ped.RemoveHelmet(true);
                     }
                 }
-
-
-
                 // When the player is not inside a vehicle:
                 else
                 {
@@ -254,49 +249,6 @@ namespace vMenuClient
                             Notify.Error("You need to be inside a vehicle to access this menu.");
                         }
                     }
-
-                    //// If the vehicle mod submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
-                    //// If the vehicle liveries submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
-                    //// If the vehicle colors submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleColorsMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
-                    //// If the vehicle doors submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleDoorsMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
-                    //// If the vehicle windows submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleWindowsMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
-                    //// If the vehicle extras submenu is open, close it.
-                    //if (MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible)
-                    //{
-                    //    MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                    //    MainMenu.VehicleOptionsMenu.VehicleComponentsMenu.Visible = false;
-                    //    Notify.Error("You have to be the driver of a vehicle to access this menu.");
-                    //}
                 }
 
                 // Manage vehicle engine always on.
