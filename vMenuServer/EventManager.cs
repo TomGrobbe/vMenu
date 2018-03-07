@@ -381,7 +381,7 @@ namespace vMenuServer
         {
             // If the player is allowed to be kicked.
             var targetPlayer = new PlayerList()[target];
-            if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.dontkick"))
+            if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
             {
                 // Kick the player from the server using the specified reason.
                 DropPlayer(targetPlayer.Handle, kickReason);
