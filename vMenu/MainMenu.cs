@@ -82,6 +82,10 @@ namespace vMenuClient
             // Loop through the dynamic object and get the keys and values.
             foreach (dynamic permission in dict)
             {
+                if (DebugMode)
+                {
+                    Cf.Log($"{permission.Key.ToString()} = {permission.Value.ToString()}");
+                }
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
