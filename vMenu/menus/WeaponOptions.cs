@@ -24,7 +24,6 @@ namespace vMenuClient
 
         private void CreateMenu()
         {
-
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Weapon Options", true)
             {
@@ -41,10 +40,23 @@ namespace vMenuClient
             ValidWeapons vw = new ValidWeapons();
 
 
-            menu.AddItem(getAllWeapons);
-            menu.AddItem(removeAllWeapons);
-            menu.AddItem(unlimitedAmmo);
-            menu.AddItem(noReload);
+            if (cf.IsAllowed(Permission.WPGetAll))
+            {
+                menu.AddItem(getAllWeapons);
+            }
+            if (cf.IsAllowed(Permission.WPRemoveAll))
+            {
+                menu.AddItem(removeAllWeapons);
+            }
+            if (cf.IsAllowed(Permission.WPUnlimitedAmmo))
+            {
+                menu.AddItem(unlimitedAmmo);
+            }
+            if (cf.IsAllowed(Permission.WPNoReload))
+            {
+                menu.AddItem(noReload);
+            }
+
 
             foreach (ValidWeapon weapon in vw.WeaponList)
             {

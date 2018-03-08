@@ -20,9 +20,11 @@ namespace vMenuClient
         public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        private static bool setupComplete = false;
+        private static bool permissionsSetupDone = false;
+        private static bool optionsSetupDone = false;
         //public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
+        private static int MenuToggleKey = (int)(Control)MenuToggleKey;
         public static UIMenu Menu { get; private set; }
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
@@ -43,6 +45,8 @@ namespace vMenuClient
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
+
+        public static Dictionary<string, string> MenuOptions { get; private set; }
 
 
         /// <summary>f
@@ -69,7 +73,7 @@ namespace vMenuClient
             {
                 Tick += OnTick;
             }
-            
+
         }
 
         #region Set Permissions function
@@ -89,10 +93,25 @@ namespace vMenuClient
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-            
-            setupComplete = true;
+
+            permissionsSetupDone = true;
         }
         #endregion
+
+        public static void SetOptions(dynamic options)
+        {
+            MenuOptions = new Dictionary<string, string>();
+            foreach (dynamic option in options)
+            {
+                if (DebugMode)
+                {
+                    Cf.Log($"{option.Key} == {option.Value}");
+                }
+                MenuOptions.Add(option.Key, option.Value);
+            }
+            MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
+            optionsSetupDone = true;
+        }
 
         /// <summary>
         /// OnTick runs every game tick.
@@ -112,7 +131,7 @@ namespace vMenuClient
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
 
                 // Wait until the data is received.
-                while (!setupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
+                while (!permissionsSetupDone || !optionsSetupDone || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
                 {
                     await Delay(0);
                 }
@@ -138,14 +157,14 @@ namespace vMenuClient
             #endregion
 
             // If the setup (permissions) is done, and it's not the first tick, then do this:
-            if (setupComplete && !firstTick)
+            if (permissionsSetupDone && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
                 // If menus can be opened.
                 if (!DontOpenMenus && !IsPauseMenuActive())
                 {
                     // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
-                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && (Game.IsControlJustPressed(0, Control.InteractionMenu) || Game.IsDisabledControlJustPressed(0, Control.InteractionMenu)))
+                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && (Game.IsControlJustPressed(0, (Control)MenuToggleKey) || Game.IsDisabledControlJustPressed(0, (Control)MenuToggleKey)))
                     {
                         // If any menu is already open: close all menus.
                         if (Mp.IsAnyMenuOpen())
@@ -252,7 +271,7 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, Control.Aim);
 
                     // Menu toggle button.
-                    Game.DisableControlThisFrame(0, Control.InteractionMenu);
+                    Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
 
                     // When in a vehicle
                     if (IsPedInAnyVehicle(PlayerPedId(), false))
@@ -364,7 +383,8 @@ namespace vMenuClient
             }
 
             // Add the time options menu.
-            if (Cf.IsAllowed(Permission.TOMenu))
+            // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
+            if (Cf.IsAllowed(Permission.TOMenu) && MenuOptions["disableSync"] != "true")
             {
                 TimeOptionsMenu = new TimeOptions();
                 UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -374,7 +394,8 @@ namespace vMenuClient
             }
 
             // Add the weather options menu.
-            if (Cf.IsAllowed(Permission.WOMenu))
+            // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
+            if (Cf.IsAllowed(Permission.WOMenu) && MenuOptions["disableSync"] != "true")
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 UIMenu menu = WeatherOptionsMenu.GetMenu();
