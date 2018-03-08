@@ -34,26 +34,16 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
-            //RegisterCommand("test", new Action<int, List<dynamic>>(Test), false);
+            EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
 
             Tick += WeatherSync;
             Tick += TimeSync;
         }
 
-        //private void Test(int test, List<dynamic> t)
-        //{
-        //    string output = "";
-        //    var first = true;
-        //    foreach (string x in t)
-        //    {
-        //        if (x != null)
-        //        {
-        //            output += (!first ? " " : "") + x;
-        //            first = false;
-        //        }
-        //    }
-        //    MainMenu.Notify.Error(CommonErrors.UnknownError, placeholderValue: output);
-        //}
+        private void UpdateSettings(dynamic options)
+        {
+            MainMenu.SetOptions(options);
+        }
 
         private void UpdatePermissions(dynamic permissions)
         {
@@ -66,48 +56,58 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-            // Weather is set every second, if it's changed, then it will transition to the new phase within 20 seconds.
-            await Delay(1000);
-            var justChanged = false;
-            if (currentWeatherType != lastWeather)
+            if (MainMenu.MenuOptions != null)
             {
-                if (currentWeatherType == "XMAS")
+                // Check if the weather sync should be disabled.
+                if (MainMenu.MenuOptions.ContainsKey("disableSync"))
                 {
-                    RequestScriptAudioBank("ICE_FOOTSTEPS", false);
-                    RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
-                    RequestNamedPtfxAsset("core_snow");
-                    while (!HasNamedPtfxAssetLoaded("core_snow"))
+                    if (MainMenu.MenuOptions["disableSync"] != "true")
                     {
-                        await Delay(0);
-                    }
-                    UseParticleFxAssetNextCall("core_snow");
-                    SetForceVehicleTrails(true);
-                    SetForcePedFootstepsTracks(true);
-                }
-                else
-                {
-                    SetForceVehicleTrails(false);
-                    SetForcePedFootstepsTracks(false);
-                    RemoveNamedPtfxAsset("core_snow");
-                    ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
-                    ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
-                }
-                ClearWeatherTypePersist();
-                ClearOverrideWeather();
-                SetWeatherTypeNow(lastWeather);
-                lastWeather = currentWeatherType;
-                SetWeatherTypeOverTime(currentWeatherType, 15f);
-                await Delay(16000);
-                //SetWeatherTypePersist(currentWeatherType);
-                SetWeatherTypeNow(currentWeatherType);
-                justChanged = true;
-            }
-            if (!justChanged)
-            {
-                SetWeatherTypeNowPersist(currentWeatherType);
-            }
-            SetBlackout(blackoutMode);
+                        // Weather is set every second, if it's changed, then it will transition to the new phase within 20 seconds.
+                        await Delay(1000);
 
+                        var justChanged = false;
+                        if (currentWeatherType != lastWeather)
+                        {
+                            if (currentWeatherType == "XMAS")
+                            {
+                                RequestScriptAudioBank("ICE_FOOTSTEPS", false);
+                                RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
+                                RequestNamedPtfxAsset("core_snow");
+                                while (!HasNamedPtfxAssetLoaded("core_snow"))
+                                {
+                                    await Delay(0);
+                                }
+                                UseParticleFxAssetNextCall("core_snow");
+                                SetForceVehicleTrails(true);
+                                SetForcePedFootstepsTracks(true);
+                            }
+                            else
+                            {
+                                SetForceVehicleTrails(false);
+                                SetForcePedFootstepsTracks(false);
+                                RemoveNamedPtfxAsset("core_snow");
+                                ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
+                                ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
+                            }
+                            ClearWeatherTypePersist();
+                            ClearOverrideWeather();
+                            SetWeatherTypeNow(lastWeather);
+                            lastWeather = currentWeatherType;
+                            SetWeatherTypeOverTime(currentWeatherType, 15f);
+                            await Delay(16000);
+                            //SetWeatherTypePersist(currentWeatherType);
+                            SetWeatherTypeNow(currentWeatherType);
+                            justChanged = true;
+                        }
+                        if (!justChanged)
+                        {
+                            SetWeatherTypeNowPersist(currentWeatherType);
+                        }
+                        SetBlackout(blackoutMode);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -116,33 +116,47 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task TimeSync()
         {
-            // If time is frozen...
-            if (freezeTime)
+            // Check if the time sync should be disabled.
+            if (MainMenu.MenuOptions != null)
             {
-                // Time is set every second to make sure it never changes (even with some lag).
-                await Delay(1000);
-                NetworkOverrideClockTime(currentHours, currentMinutes, 0);
-            }
-            // Otherwise...
-            else
-            {
-                // Time is synced every 2 seconds (which equals 1 in-game minute).
-                await Delay(2000);
-                currentMinutes++;
-                if (currentMinutes > 59)
+                if (MainMenu.MenuOptions.ContainsKey("disableSync"))
                 {
-                    currentMinutes = 0;
-                    currentHours++;
+                    if (MainMenu.MenuOptions["disableSync"] != "true")
+                    {
+                        // If time is frozen...
+                        if (freezeTime)
+                        {
+                            // Time is set every second to make sure it never changes (even with some lag).
+                            await Delay(1000);
+                            NetworkOverrideClockTime(currentHours, currentMinutes, 0);
+                        }
+                        // Otherwise...
+                        else
+                        {
+                            // Time is synced every 2 seconds (which equals 1 in-game minute).
+                            await Delay(2000);
+                            currentMinutes++;
+                            if (currentMinutes > 59)
+                            {
+                                currentMinutes = 0;
+                                currentHours++;
+                            }
+                            if (currentHours > 23)
+                            {
+                                currentHours = 0;
+                            }
+                            NetworkOverrideClockTime(currentHours, currentMinutes, 0);
+                        }
+                    }
                 }
-                if (currentHours > 23)
-                {
-                    currentHours = 0;
-                }
-                NetworkOverrideClockTime(currentHours, currentMinutes, 0);
             }
-
         }
 
+        /// <summary>
+        /// Set the cloud hat type.
+        /// </summary>
+        /// <param name="opacity"></param>
+        /// <param name="cloudsType"></param>
         private void SetClouds(float opacity, string cloudsType)
         {
             if (opacity == 0f && cloudsType == "removed")

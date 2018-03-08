@@ -434,8 +434,21 @@ namespace vMenuServer
                 perms.Add(ace, allowed);
             }
 
+
+
+            Dictionary<string, string> options = new Dictionary<string, string>
+            {
+                { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
+                { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
+            };
+
+            // Send the permissions to the client.
             TriggerClientEvent(player, "vMenu:SetPermissions", perms);
-            await Delay(0);
+
+            // Wait 50 ms, then send the settings to the client.
+            await Delay(50);
+            TriggerClientEvent(player, "vMenu:SetOptions", options);
+
         }
 
         private string GetRealAceName(string inputString)
