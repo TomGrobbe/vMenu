@@ -55,7 +55,11 @@ namespace vMenuClient
         public MainMenu()
         {
             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
-            SetRichPresence($"{(DebugMode ? "Debugging" : "Enjoying")} vMenu {Version}!");
+            if (DebugMode)
+            {
+                SetRichPresence($"Debugging vMenu {Version}!");
+            }
+
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
