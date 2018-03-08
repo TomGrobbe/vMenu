@@ -87,7 +87,7 @@ namespace vMenuClient
                 SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod));
 
                 // Manage invisibility.
-                SetEntityVisible(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible), false);
+                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible)) || (!cf.IsAllowed(Permission.POInvisible)), false);
 
                 // Manage Stamina
                 if (MainMenu.PlayerOptionsMenu.PlayerStamina)
@@ -102,7 +102,7 @@ namespace vMenuClient
                 }
 
                 // Manage PlayerNoRagdoll
-                SetPedCanRagdoll(PlayerPedId(), !MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll));
+                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) || (!cf.IsAllowed(Permission.PONoRagdoll)));
 
 
                 // Fall off bike / dragged out of car.
