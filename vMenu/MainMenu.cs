@@ -76,6 +76,7 @@ namespace vMenuClient
             else
             {
                 Tick += OnTick;
+                Tick += ProcessMenus;
             }
 
         }
@@ -97,7 +98,6 @@ namespace vMenuClient
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-
             permissionsSetupDone = true;
         }
         #endregion
@@ -115,6 +115,16 @@ namespace vMenuClient
             }
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             optionsSetupDone = true;
+        }
+
+        /// <summary>
+        /// This has to be separated from the "draw" function to fix the fast scrolling bug.
+        /// </summary>
+        /// <returns></returns>
+        private async Task ProcessMenus()
+        {
+            await Mp.ProcessControlAsync();
+            Mp.WidthOffset = 50;
         }
 
         /// <summary>
@@ -286,10 +296,8 @@ namespace vMenuClient
                     }
                 }
                 #endregion
-
-                // Process all menus in the menu pool (displays them when they're active).
-                Mp.ProcessMenus();
-                Mp.WidthOffset = 50;
+                // Only draw the menu each frame, control handling is done in another Tick task because that needs delays.
+                Mp.Draw();
             }
         }
 
