@@ -55,7 +55,11 @@ namespace vMenuClient
         public MainMenu()
         {
             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
-            SetRichPresence($"{(DebugMode ? "Debugging" : "Enjoying")} vMenu {Version}!");
+            if (DebugMode)
+            {
+                SetRichPresence($"Debugging vMenu {Version}!");
+            }
+
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
@@ -72,6 +76,7 @@ namespace vMenuClient
             else
             {
                 Tick += OnTick;
+                Tick += ProcessMenus;
             }
 
         }
@@ -93,7 +98,6 @@ namespace vMenuClient
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-
             permissionsSetupDone = true;
         }
         #endregion
@@ -111,6 +115,16 @@ namespace vMenuClient
             }
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             optionsSetupDone = true;
+        }
+
+        /// <summary>
+        /// This has to be separated from the "draw" function to fix the fast scrolling bug.
+        /// </summary>
+        /// <returns></returns>
+        private async Task ProcessMenus()
+        {
+            await Mp.ProcessControlAsync();
+            Mp.WidthOffset = 50;
         }
 
         /// <summary>
@@ -282,10 +296,8 @@ namespace vMenuClient
                     }
                 }
                 #endregion
-
-                // Process all menus in the menu pool (displays them when they're active).
-                Mp.ProcessMenus();
-                Mp.WidthOffset = 50;
+                // Only draw the menu each frame, control handling is done in another Tick task because that needs delays.
+                Mp.Draw();
             }
         }
 
