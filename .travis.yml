@@ -21,7 +21,7 @@ before_deploy:
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
     - cd /home/travis/build/TomGrobbe/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-release.zip *
     - git config --local user.name "TomGrobbe"
-    - git config --local user.email "tom.grobbe@gmail.com"
+    - git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
     - git tag "vMenu$(git log --format=%h -1)"
 deploy:
     provider: releases
@@ -30,7 +30,7 @@ deploy:
     skip_cleanup: true
     prerelease: true
     draft: true
-    name: "[Alpha] vMenu v0.1.x"
+    name: "[Release] vMenu v1.x.x"
     on:
         branch: production
         # tags: true

@@ -161,18 +161,18 @@ namespace vMenuClient
         {
             if (perms.Contains("Everything"))
             {
+                if (MainMenu.DebugMode)
+                {
+                    MainMenu.Cf.Log("Everything allowed, breaking.");
+                }
                 return true;
             }
             else
             {
                 var allowed = false;
-                foreach (var p in Enum.GetNames(typeof(Permission)))
+                if (perms.Contains(permission.ToString().Substring(0,2) + "All"))
                 {
-                    if (perms.Contains(p.Substring(0, 2) + "All"))
-                    {
-                        allowed = true;
-                        break;
-                    }
+                    allowed = true;
                 }
 
                 if (!allowed)
