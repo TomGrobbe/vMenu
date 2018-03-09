@@ -134,7 +134,7 @@ namespace vMenuClient
             if (currentMenu != null)
             {
                 // Select / Enter
-                if (Game.IsDisabledControlJustPressed(0, Control.FrontendAccept) || Game.IsControlJustPressed(0, Control.FrontendAccept))
+                if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                 {
                     currentMenu.SelectItem();
                     if (DebugMode)
@@ -143,11 +143,14 @@ namespace vMenuClient
                     }
                 }
                 // Cancel / Go Back
-                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneCancel))
-                {
+                else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
+                { 
+                    // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
+                    await Delay(0);
                     currentMenu.GoBack();
                     if (DebugMode)
                     {
+                        
                         Subtitle.Custom("cancel");
                     }
                 }
@@ -375,25 +378,23 @@ namespace vMenuClient
                     else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
                     {
                         // Create a timer and set it to 0.
-                        float timer = 0f;
+                        //float timer = 0f;
+                        int timer = GetGameTimer();
 
                         // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
                         while (Game.CurrentInputMode == InputMode.GamePad && Game.IsControlPressed(0, Control.InteractionMenu))
                         {
-                            // Increment the timer.
-                            timer++;
-
                             // If debugging is enabled, show the progress using a timerbar.
                             if (DebugMode)
                             {
                                 bt.Draw(0);
-                                float percent = (timer / 60f);
+                                float percent = ((GetGameTimer() - timer) / 900f);
                                 bt.Percentage = percent;
-                                Subtitle.Success(percent.ToString(), 0, true, "Progress:");
+                                //Subtitle.Success(percent.ToString(), 0, true, "Progress:");
                             }
 
-                            // If the timer has reached 60, open the menu. (60 is +/- 1 second, so the player is holding down the button for at least 1 second).
-                            if (timer > 59)
+                            // If 900ms in real time have passed.
+                            if (GetGameTimer() - timer > 900)
                             {
                                 Menu.Visible = !Mp.IsAnyMenuOpen();
                                 // Break the loop (resetting the timer).
@@ -467,7 +468,7 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
 
                     // When in a vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    //if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
                         Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
                         Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);
