@@ -152,9 +152,6 @@ namespace vMenuClient
                 // Get the coords of the other player.
                 Vector3 playerPos = GetEntityCoords(playerPed, true);
 
-                // Pre-load the world by teleporting to the other player (2.0 meters above the other player).
-                SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
-
                 // Then await the proper loading/teleporting.
                 await TeleportToCoords(playerPos);
 
@@ -215,7 +212,15 @@ namespace vMenuClient
         /// <param name="pos">These are the target coordinates to teleport to.</param>
         public async Task TeleportToCoords(Vector3 pos)
         {
-            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+            if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+            {
+                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+            }
+            else
+            {
+                SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
+            }
+
             var timer = 0;
             var failed = false;
             while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
@@ -241,17 +246,38 @@ namespace vMenuClient
                 if (foundSafeSpot)
                 {
                     Notify.Alert("No safe location near waypoint :( going to closest safe location instead.");
-                    SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                    {
+                        SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                    }
+                    else
+                    {
+                        SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                    }
                 }
                 else
                 {
                     Notify.Alert("No safe location near you :( open your parachute!");
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                    {
+                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                    }
+                    else
+                    {
+                        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
+                    }
                 }
             }
             else
             {
-                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+                if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                {
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+                }
+                else
+                {
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f, false, false, false, true);
+                }
             }
         }
 
