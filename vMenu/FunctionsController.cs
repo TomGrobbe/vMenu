@@ -413,7 +413,7 @@ namespace vMenuClient
                         {
                             if (!playerList.Contains(player))
                             {
-                                Notify.Custom($"~g~{player.Value}~s~ joined the server.");
+                                Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
                             }
                         }
                     }
@@ -424,7 +424,7 @@ namespace vMenuClient
                         {
                             if (!pl.Contains(player))
                             {
-                                Notify.Custom($"~r~{player.Value}~s~ left the server.");
+                                Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
                             }
                         }
                     }
@@ -453,24 +453,24 @@ namespace vMenuClient
                                         {
                                             if (playerKiller.Character.Handle == killer.Handle)
                                             {
-                                                Notify.Custom($"~o~{p.Name} ~s~has been murdered by ~y~{playerKiller.Name}~s~.");
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
                                                 break;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~{p.Name} ~s~has been murdered.");
+                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~{p.Name} ~s~committed suicide.");
+                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~committed suicide.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~{p.Name} ~s~died.");
+                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~died.");
                             }
                             deadPlayers.Add(p.Handle);
                         }

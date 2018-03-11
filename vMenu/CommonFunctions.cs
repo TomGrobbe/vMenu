@@ -170,7 +170,7 @@ namespace vMenuClient
                         if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle) && IsAnyVehicleSeatEmpty(vehicle))
                         {
                             TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
-                            Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~s~vehicle.");
+                            Notify.Success("Teleported into ~g~<C>" + GetPlayerName(playerId) + "</C>'s ~s~vehicle.");
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                         else
@@ -192,7 +192,7 @@ namespace vMenuClient
                 // Notify the user.
                 else
                 {
-                    Notify.Success("Teleported to " + GetPlayerName(playerId) + ".");
+                    Notify.Success("Teleported to ~y~<C>" + GetPlayerName(playerId) + "</C>~s~.");
                 }
             }
             // The specified playerId does not exist, notify the user of the error.
@@ -385,7 +385,7 @@ namespace vMenuClient
                 //spectating = true;
                 DoScreenFadeOut(100);
                 await Delay(100);
-                Notify.Info("Spectating ~r~" + GetPlayerName(playerId), false, false);
+                Notify.Info($"Spectating ~r~{GetPlayerName(playerId)}</C>~s~.", false, false);
                 NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
                 DoScreenFadeIn(100);
                 await Delay(100);
@@ -499,7 +499,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Alert("You are not allowed to spawn this vehicle, it belongs to a restricted category.");
+                        Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
                     }
                 }
                 // Result was invalid.
@@ -1075,11 +1075,11 @@ namespace vMenuClient
 
                 var canPlay = true;
                 // Check if the player CAN play a scenario... 
-                if (IsPedInAnyVehicle(PlayerPedId(), true))
-                {
-                    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
-                    canPlay = false;
-                }
+                //if (IsPedInAnyVehicle(PlayerPedId(), true))
+                //{
+                //    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
+                //    canPlay = false;
+                //}
                 if (IsPedRunning(PlayerPedId()))
                 {
                     Notify.Alert("You can't start a scenario when you are running.", true, false);
