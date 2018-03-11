@@ -49,6 +49,7 @@ namespace vMenuClient
 
         public static Dictionary<string, string> MenuOptions { get; private set; }
 
+        public static bool DisableControls { get; set; } = false;
         #endregion
 
         /// <summary>
@@ -133,27 +134,29 @@ namespace vMenuClient
         private async Task ProcessMainButtons()
         {
             UIMenu currentMenu = Cf.GetOpenMenu();
-            if (currentMenu != null)
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen())
             {
-                // Select / Enter
-                if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
+                if (currentMenu.Visible && !DisableControls)
                 {
-                    currentMenu.SelectItem();
-                    if (DebugMode)
+                    // Select / Enter
+                    if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                     {
-                        Subtitle.Custom("select");
+                        currentMenu.SelectItem();
+                        if (DebugMode)
+                        {
+                            Subtitle.Custom("select");
+                        }
                     }
-                }
-                // Cancel / Go Back
-                else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
-                { 
-                    // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
-                    await Delay(0);
-                    currentMenu.GoBack();
-                    if (DebugMode)
+                    // Cancel / Go Back
+                    else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
                     {
-                        
-                        Subtitle.Custom("cancel");
+                        // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
+                        await Delay(0);
+                        currentMenu.GoBack();
+                        if (DebugMode)
+                        {
+                            Subtitle.Custom("cancel");
+                        }
                     }
                 }
             }
@@ -172,141 +175,152 @@ namespace vMenuClient
             // Get the currently open menu.
             UIMenu currentMenu = Cf.GetOpenMenu();
             // If it exists.
-            if (currentMenu != null)
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen())
             {
-                // Check if the Go Up controls are pressed.
-                if (Game.IsDisabledControlJustPressed(0, Control.Phone) || Game.IsControlJustPressed(0, Control.SniperZoomInSecondary))
+                if (currentMenu.Visible && !DisableControls)
                 {
-                    // Update the currently selected item to the new one.
-                    currentMenu.GoUp();
-                    currentMenu.GoUpOverflow();
-
-                    // Get the current game time.
-                    var time = GetGameTimer();
-                    var times = 0;
-                    var delay = 200;
-
-                    // Do the following as long as the controls are being pressed.
-                    while (Game.IsDisabledControlPressed(0, Control.Phone) && Cf.GetOpenMenu() != null)
+                    // Check if the Go Up controls are pressed.
+                    if (Game.IsDisabledControlJustPressed(0, Control.Phone) || Game.IsControlJustPressed(0, Control.SniperZoomInSecondary))
                     {
-                        // Update the current menu.
-                        currentMenu = Cf.GetOpenMenu();
+                        // Update the currently selected item to the new one.
+                        currentMenu.GoUp();
+                        currentMenu.GoUpOverflow();
 
-                        // Check if the game time has changed by "delay" amount.
-                        if (GetGameTimer() - time > delay)
+                        // Get the current game time.
+                        var time = GetGameTimer();
+                        var times = 0;
+                        var delay = 200;
+
+                        // Do the following as long as the controls are being pressed.
+                        while (Game.IsDisabledControlPressed(0, Control.Phone) && Cf.GetOpenMenu() != null)
                         {
-                            // Increment the "changed indexes" counter
-                            times++;
+                            // Update the current menu.
+                            currentMenu = Cf.GetOpenMenu();
 
-                            // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
-                            if (times > 2)
+                            // Check if the game time has changed by "delay" amount.
+                            if (GetGameTimer() - time > delay)
                             {
-                                delay = 150;
+                                // Increment the "changed indexes" counter
+                                times++;
+
+                                // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
+                                if (times > 2)
+                                {
+                                    delay = 150;
+                                }
+
+                                // Update the currently selected item to the new one.
+                                currentMenu.GoUp();
+                                currentMenu.GoUpOverflow();
+
+                                // Reset the time to the current game timer.
+                                time = GetGameTimer();
                             }
 
-                            // Update the currently selected item to the new one.
-                            currentMenu.GoUp();
-                            currentMenu.GoUpOverflow();
-
-                            // Reset the time to the current game timer.
-                            time = GetGameTimer();
+                            // Wait for the next game tick.
+                            await Delay(0);
                         }
-
-                        // Wait for the next game tick.
-                        await Delay(0);
-                    }
-                    // If debugging is enabled, a subtitle will be shown when this control is pressed.
-                    if (DebugMode)
-                    {
-                        Subtitle.Custom("up");
-                    }
-                }
-
-                // Check if the Go Left controls are pressed.
-                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
-                {
-                    currentMenu.GoLeft();
-                    var time = GetGameTimer();
-                    var times = 0;
-                    var delay = 200;
-                    while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
-                    {
-                        currentMenu = Cf.GetOpenMenu();
-                        if (GetGameTimer() - time > delay)
+                        // If debugging is enabled, a subtitle will be shown when this control is pressed.
+                        if (DebugMode)
                         {
-                            times++;
-                            if (times > 2)
-                            {
-                                delay = 150;
-                            }
-                            currentMenu.GoLeft();
-                            time = GetGameTimer();
+                            Subtitle.Custom("up");
                         }
-                        await Delay(0);
                     }
-                    if (DebugMode)
-                    {
-                        Subtitle.Custom("left");
-                    }
-                }
 
-                // Check if the Go Right controls are pressed.
-                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
-                {
-                    currentMenu.GoRight();
-                    var time = GetGameTimer();
-                    var times = 0;
-                    var delay = 200;
-                    while (Game.IsDisabledControlPressed(0, Control.PhoneRight) && Cf.GetOpenMenu() != null)
+                    // Check if the Go Left controls are pressed.
+                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
                     {
-                        currentMenu = Cf.GetOpenMenu();
-                        if (GetGameTimer() - time > delay)
+                        currentMenu.GoLeft();
+                        var time = GetGameTimer();
+                        var times = 0;
+                        var delay = 200;
+                        while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
                         {
-                            times++;
-                            if (times > 2)
+                            currentMenu = Cf.GetOpenMenu();
+                            if (GetGameTimer() - time > delay)
                             {
-                                delay = 150;
+                                times++;
+                                if (times > 2)
+                                {
+                                    delay = 150;
+                                }
+                                currentMenu.GoLeft();
+                                time = GetGameTimer();
                             }
-                            currentMenu.GoRight();
-                            time = GetGameTimer();
+                            await Delay(0);
                         }
-                        await Delay(0);
+                        if (DebugMode)
+                        {
+                            Subtitle.Custom("left");
+                        }
                     }
-                    if (DebugMode)
-                    {
-                        Subtitle.Custom("right");
-                    }
-                }
 
-                // Check if the Go Down controls are pressed.
-                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneDown) || Game.IsControlJustPressed(0, Control.SniperZoomOutSecondary))
-                {
-                    currentMenu.GoDown();
-                    currentMenu.GoDownOverflow();
-                    var time = GetGameTimer();
-                    var times = 0;
-                    var delay = 200;
-                    while (Game.IsDisabledControlPressed(0, Control.PhoneDown) && Cf.GetOpenMenu() != null)
+                    // Check if the Go Right controls are pressed.
+                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
                     {
-                        currentMenu = Cf.GetOpenMenu();
-                        if (GetGameTimer() - time > delay)
+                        currentMenu.GoRight();
+                        var time = GetGameTimer();
+                        var times = 0;
+                        var delay = 200;
+                        while (Game.IsDisabledControlPressed(0, Control.PhoneRight) && Cf.GetOpenMenu() != null)
                         {
-                            times++;
-                            if (times > 2)
+                            currentMenu = Cf.GetOpenMenu();
+                            if (GetGameTimer() - time > delay)
                             {
-                                delay = 150;
+                                times++;
+                                if (times > 2)
+                                {
+                                    delay = 150;
+                                }
+                                currentMenu.GoRight();
+                                time = GetGameTimer();
                             }
-                            currentMenu.GoDown();
-                            currentMenu.GoDownOverflow();
-                            time = GetGameTimer();
+                            await Delay(0);
                         }
-                        await Delay(0);
+                        if (DebugMode)
+                        {
+                            Subtitle.Custom("right");
+                        }
                     }
-                    if (DebugMode)
+
+                    // Check if the Go Down controls are pressed.
+                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneDown) || Game.IsControlJustPressed(0, Control.SniperZoomOutSecondary))
                     {
-                        Subtitle.Custom("down");
+                        currentMenu.GoDown();
+                        currentMenu.GoDownOverflow();
+                        var time = GetGameTimer();
+                        var times = 0;
+                        var delay = 200;
+                        while (Game.IsDisabledControlPressed(0, Control.PhoneDown) && Cf.GetOpenMenu() != null)
+                        {
+                            currentMenu = Cf.GetOpenMenu();
+                            if (GetGameTimer() - time > delay)
+                            {
+                                times++;
+                                if (times > 2)
+                                {
+                                    delay = 150;
+                                }
+                                currentMenu.GoDown();
+                                currentMenu.GoDownOverflow();
+                                time = GetGameTimer();
+                            }
+                            await Delay(0);
+                        }
+                        if (DebugMode)
+                        {
+                            Subtitle.Custom("down");
+                        }
                     }
                 }
+                else
+                {
+                    await Delay(0);
+                }
+            }
+            else
+            {
+                await Delay(0);
             }
         }
         #endregion
@@ -379,8 +393,7 @@ namespace vMenuClient
                     // If the player is using a controller, and no menus are currently open.
                     else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
                     {
-                        // Create a timer and set it to 0.
-                        //float timer = 0f;
+                        // Create a timer and set it to the current game timer value.
                         int timer = GetGameTimer();
 
                         // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
