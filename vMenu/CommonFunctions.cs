@@ -894,29 +894,12 @@ namespace vMenuClient
         /// <returns>Reruns the input or "NULL" if cancelled.</returns>
         public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
-
-            UIMenu openMenu = null;
-
-            // Check for any open menus, then go through all of them and save the state if they're open so we can reopen them later.
-            if (MainMenu.Mp.IsAnyMenuOpen())
-            {
-                foreach (UIMenu m in MainMenu.Mp.ToList())
-                {
-                    if (m.Visible)
-                    {
-                        openMenu = m;
-                    }
-                }
-                MainMenu.Mp.CloseAllMenus();
-            }
-            await Delay(1);
-            MainMenu.DontOpenMenus = true;
-
             // Create the window title string.
             AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
 
             // Display the input box.
             DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
+            await Delay(0);
             // Wait for a result.
             while (true)
             {
@@ -947,14 +930,6 @@ namespace vMenuClient
             int status = UpdateOnscreenKeyboard();
             string result = GetOnscreenKeyboardResult();
 
-            // Allow menus to be opened again.
-            MainMenu.DontOpenMenus = false;
-            // Reopen any menus if they were open.
-            await Delay(4);
-            if (openMenu != null)
-            {
-                openMenu.Visible = true;
-            }
             // If the result is not empty or null
             if (result != "" && result != null && status == 1)
             {
