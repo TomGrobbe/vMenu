@@ -111,7 +111,7 @@ namespace vMenuClient
                 {
                     AddTextComponentSubstringPlayerName(msg);
                 }
-                
+
             }
             DrawNotification(blink, saveToBrief);
         }

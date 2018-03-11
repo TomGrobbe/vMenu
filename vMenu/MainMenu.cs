@@ -12,7 +12,8 @@ namespace vMenuClient
 {
     public class MainMenu : BaseScript
     {
-        // Variables
+        #region Variables
+        // Function Variables
         public static CommonFunctions Cf { get; } = new CommonFunctions();
         public static Notification Notify { get; } = new Notification();
         public static Subtitles Subtitle { get; } = new Subtitles();
@@ -48,8 +49,9 @@ namespace vMenuClient
 
         public static Dictionary<string, string> MenuOptions { get; private set; }
 
+        #endregion
 
-        /// <summary>f
+        /// <summary>
         /// Constructor.
         /// </summary>
         public MainMenu()
@@ -390,7 +392,6 @@ namespace vMenuClient
                                 bt.Draw(0);
                                 float percent = ((GetGameTimer() - timer) / 900f);
                                 bt.Percentage = percent;
-                                //Subtitle.Success(percent.ToString(), 0, true, "Progress:");
                             }
 
                             // If 900ms in real time have passed.
@@ -401,7 +402,7 @@ namespace vMenuClient
                                 break;
                             }
 
-                            // Wait for the next game tick. This will make the timer only increment once per tick, so it'll take 60 game ticks for the menu to be open (60 frames is +/- 1 sec).
+                            // Wait for the next game tick. 
                             await Delay(0);
                         }
                     }
@@ -409,10 +410,13 @@ namespace vMenuClient
                 // If the pause menu is active or all menus should be closed, close all menus.
                 else
                 {
-                    await Delay(3);
+                    await Delay(1);
                     Mp.CloseAllMenus();
                 }
                 #endregion
+
+                // Menu toggle button.
+                Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
 
                 #region Disable Inputs when any menu is open.
                 if (Mp.IsAnyMenuOpen())
@@ -464,11 +468,8 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, Control.VehiclePassengerAttack);
                     Game.DisableControlThisFrame(0, Control.Aim);
 
-                    // Menu toggle button.
-                    Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
-
                     // When in a vehicle
-                    //if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
                         Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
                         Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);

@@ -113,6 +113,24 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Drive Tasks (Unimplemented)
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveToWp()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveWander()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         #region Teleport to player (or teleport into the player's vehicle)
         /// <summary>
         /// Teleport to the specified player id. (Optionally teleport into their vehicle).
@@ -190,23 +208,7 @@ namespace vMenuClient
         }
         #endregion
 
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void DriveToWp()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void DriveWander()
-        {
-            throw new NotImplementedException();
-        }
-
-        #region Teleport To Player / Coords
+        #region Teleport To Coords
         /// <summary>
         /// Teleport the player to a specific location.
         /// </summary>
@@ -886,6 +888,7 @@ namespace vMenuClient
 
             // Create the window title string.
             AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
+
             // Display the input box.
             DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
             // Wait for a result.
@@ -926,24 +929,14 @@ namespace vMenuClient
             {
                 openMenu.Visible = true;
             }
-
             // If the result is not empty or null
             if (result != "" && result != null && status == 1)
             {
-
                 // Return result.
                 return result.ToString();
             }
             else
             {
-                //// Allow menus to be opened again.
-                //MainMenu.DontOpenMenus = false;
-                //// Reopen any menus if they were open.
-                //if (openMenu != null)
-                //{
-                //    openMenu.Visible = true;
-                //}
-                // Return result.
                 return "NULL";
             }
         }
@@ -1635,7 +1628,12 @@ namespace vMenuClient
             Debug.WriteLine(data, "");
         }
         #endregion
-        
+
+        #region Get Currently Opened Menu
+        /// <summary>
+        /// Returns the currently opened menu, if no menu is open, it'll return null.
+        /// </summary>
+        /// <returns></returns>
         public UIMenu GetOpenMenu()
         {
             foreach (UIMenu m in MainMenu.Mp.ToList())
@@ -1648,5 +1646,6 @@ namespace vMenuClient
             return null;
         }
 
+        #endregion
     }
 }
