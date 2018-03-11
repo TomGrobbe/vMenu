@@ -76,6 +76,8 @@ namespace vMenuClient
             else
             {
                 Tick += OnTick;
+                Tick += ProcessMainButtons;
+                Tick += ProcessDirectionalButtons;
             }
 
         }
@@ -97,11 +99,14 @@ namespace vMenuClient
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-
             permissionsSetupDone = true;
         }
         #endregion
-
+        #region set settings
+        /// <summary>
+        /// Sets the settings received from the server.
+        /// </summary>
+        /// <param name="options"></param>
         public static void SetOptions(dynamic options)
         {
             MenuOptions = new Dictionary<string, string>();
@@ -116,9 +121,196 @@ namespace vMenuClient
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             optionsSetupDone = true;
         }
+        #endregion
+
+        #region Process Menu Buttons
+        /// <summary>
+        /// Process the select & go back/cancel buttons.
+        /// </summary>
+        /// <returns></returns>
+        private async Task ProcessMainButtons()
+        {
+            UIMenu currentMenu = Cf.GetOpenMenu();
+            if (currentMenu != null)
+            {
+                // Select / Enter
+                if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
+                {
+                    currentMenu.SelectItem();
+                    if (DebugMode)
+                    {
+                        Subtitle.Custom("select");
+                    }
+                }
+                // Cancel / Go Back
+                else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
+                { 
+                    // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
+                    await Delay(0);
+                    currentMenu.GoBack();
+                    if (DebugMode)
+                    {
+                        
+                        Subtitle.Custom("cancel");
+                    }
+                }
+            }
+            else
+            {
+                await Delay(0);
+            }
+        }
 
         /// <summary>
-        /// OnTick runs every game tick.
+        /// Process left/right/up/down buttons (also holding down buttons will speed up after 3 iterations)
+        /// </summary>
+        /// <returns></returns>
+        private async Task ProcessDirectionalButtons()
+        {
+            // Get the currently open menu.
+            UIMenu currentMenu = Cf.GetOpenMenu();
+            // If it exists.
+            if (currentMenu != null)
+            {
+                // Check if the Go Up controls are pressed.
+                if (Game.IsDisabledControlJustPressed(0, Control.Phone) || Game.IsControlJustPressed(0, Control.SniperZoomInSecondary))
+                {
+                    // Update the currently selected item to the new one.
+                    currentMenu.GoUp();
+                    currentMenu.GoUpOverflow();
+
+                    // Get the current game time.
+                    var time = GetGameTimer();
+                    var times = 0;
+                    var delay = 200;
+
+                    // Do the following as long as the controls are being pressed.
+                    while (Game.IsDisabledControlPressed(0, Control.Phone) && Cf.GetOpenMenu() != null)
+                    {
+                        // Update the current menu.
+                        currentMenu = Cf.GetOpenMenu();
+
+                        // Check if the game time has changed by "delay" amount.
+                        if (GetGameTimer() - time > delay)
+                        {
+                            // Increment the "changed indexes" counter
+                            times++;
+
+                            // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
+                            if (times > 2)
+                            {
+                                delay = 150;
+                            }
+
+                            // Update the currently selected item to the new one.
+                            currentMenu.GoUp();
+                            currentMenu.GoUpOverflow();
+
+                            // Reset the time to the current game timer.
+                            time = GetGameTimer();
+                        }
+
+                        // Wait for the next game tick.
+                        await Delay(0);
+                    }
+                    // If debugging is enabled, a subtitle will be shown when this control is pressed.
+                    if (DebugMode)
+                    {
+                        Subtitle.Custom("up");
+                    }
+                }
+
+                // Check if the Go Left controls are pressed.
+                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
+                {
+                    currentMenu.GoLeft();
+                    var time = GetGameTimer();
+                    var times = 0;
+                    var delay = 200;
+                    while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
+                    {
+                        currentMenu = Cf.GetOpenMenu();
+                        if (GetGameTimer() - time > delay)
+                        {
+                            times++;
+                            if (times > 2)
+                            {
+                                delay = 150;
+                            }
+                            currentMenu.GoLeft();
+                            time = GetGameTimer();
+                        }
+                        await Delay(0);
+                    }
+                    if (DebugMode)
+                    {
+                        Subtitle.Custom("left");
+                    }
+                }
+
+                // Check if the Go Right controls are pressed.
+                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
+                {
+                    currentMenu.GoRight();
+                    var time = GetGameTimer();
+                    var times = 0;
+                    var delay = 200;
+                    while (Game.IsDisabledControlPressed(0, Control.PhoneRight) && Cf.GetOpenMenu() != null)
+                    {
+                        currentMenu = Cf.GetOpenMenu();
+                        if (GetGameTimer() - time > delay)
+                        {
+                            times++;
+                            if (times > 2)
+                            {
+                                delay = 150;
+                            }
+                            currentMenu.GoRight();
+                            time = GetGameTimer();
+                        }
+                        await Delay(0);
+                    }
+                    if (DebugMode)
+                    {
+                        Subtitle.Custom("right");
+                    }
+                }
+
+                // Check if the Go Down controls are pressed.
+                else if (Game.IsDisabledControlJustPressed(0, Control.PhoneDown) || Game.IsControlJustPressed(0, Control.SniperZoomOutSecondary))
+                {
+                    currentMenu.GoDown();
+                    currentMenu.GoDownOverflow();
+                    var time = GetGameTimer();
+                    var times = 0;
+                    var delay = 200;
+                    while (Game.IsDisabledControlPressed(0, Control.PhoneDown) && Cf.GetOpenMenu() != null)
+                    {
+                        currentMenu = Cf.GetOpenMenu();
+                        if (GetGameTimer() - time > delay)
+                        {
+                            times++;
+                            if (times > 2)
+                            {
+                                delay = 150;
+                            }
+                            currentMenu.GoDown();
+                            currentMenu.GoDownOverflow();
+                            time = GetGameTimer();
+                        }
+                        await Delay(0);
+                    }
+                    if (DebugMode)
+                    {
+                        Subtitle.Custom("down");
+                    }
+                }
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Main OnTick task runs every game tick and handles all the menu stuff.
         /// </summary>
         /// <returns></returns>
         private async Task OnTick()
@@ -161,7 +353,7 @@ namespace vMenuClient
             #endregion
 
             // If the setup (permissions) is done, and it's not the first tick, then do this:
-            if (permissionsSetupDone && !firstTick)
+            if (permissionsSetupDone && optionsSetupDone && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
                 // If menus can be opened.
@@ -186,25 +378,23 @@ namespace vMenuClient
                     else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
                     {
                         // Create a timer and set it to 0.
-                        float timer = 0f;
+                        //float timer = 0f;
+                        int timer = GetGameTimer();
 
                         // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
                         while (Game.CurrentInputMode == InputMode.GamePad && Game.IsControlPressed(0, Control.InteractionMenu))
                         {
-                            // Increment the timer.
-                            timer++;
-
                             // If debugging is enabled, show the progress using a timerbar.
                             if (DebugMode)
                             {
                                 bt.Draw(0);
-                                float percent = (timer / 60f);
+                                float percent = ((GetGameTimer() - timer) / 900f);
                                 bt.Percentage = percent;
-                                Subtitle.Success(percent.ToString(), 0, true, "Progress:");
+                                //Subtitle.Success(percent.ToString(), 0, true, "Progress:");
                             }
 
-                            // If the timer has reached 60, open the menu. (60 is +/- 1 second, so the player is holding down the button for at least 1 second).
-                            if (timer > 59)
+                            // If 900ms in real time have passed.
+                            if (GetGameTimer() - timer > 900)
                             {
                                 Menu.Visible = !Mp.IsAnyMenuOpen();
                                 // Break the loop (resetting the timer).
@@ -278,7 +468,7 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
 
                     // When in a vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    //if (IsPedInAnyVehicle(PlayerPedId(), false))
                     {
                         Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
                         Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);
@@ -287,12 +477,11 @@ namespace vMenuClient
                 }
                 #endregion
 
-                // Process all menus in the menu pool (displays them when they're active).
-                Mp.ProcessMenus();
+                // Process the menu. Draw it and reset the menu width offset to make sure any newly generated menus always have the right width offset.
                 Mp.WidthOffset = 50;
+                Mp.Draw();
             }
         }
-
 
         #region Add Menu Function
         /// <summary>

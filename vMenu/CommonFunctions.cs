@@ -1635,6 +1635,18 @@ namespace vMenuClient
             Debug.WriteLine(data, "");
         }
         #endregion
+        
+        public UIMenu GetOpenMenu()
+        {
+            foreach (UIMenu m in MainMenu.Mp.ToList())
+            {
+                if (m.Visible)
+                {
+                    return m;
+                }
+            }
+            return null;
+        }
 
     }
 }
