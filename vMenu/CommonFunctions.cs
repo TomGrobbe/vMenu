@@ -310,7 +310,7 @@ namespace vMenuClient
             // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
             if (askUserForReason && providedReason == defaultReason)
             {
-                var userInput = await GetUserInputAsync("Enter Kick Message", "", 100);
+                var userInput = await GetUserInput("Enter Kick Message", "", 100);
                 // If the input is not invalid, set the kick reason to the user's custom message.
                 if (userInput != "NULL")
                 {
@@ -485,7 +485,7 @@ namespace vMenuClient
             if (vehicleName == "custom")
             {
                 // Get the result.
-                string result = await GetUserInputAsync("Enter Vehicle Name", "adder");
+                string result = await GetUserInput("Enter Vehicle Name", "Adder");
                 // If the result was not invalid.
                 if (result != "NULL")
                 {
@@ -762,7 +762,7 @@ namespace vMenuClient
                     }
 
                     // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                    var saveName = await GetUserInputAsync("Enter a save name", "", 15);
+                    var saveName = await GetUserInput("Enter a save name", "", 15);
                     // If the name is not invalid.
                     if (saveName != "NULL")
                     {
@@ -892,7 +892,7 @@ namespace vMenuClient
         /// <param name="defaultText"></param>
         /// <param name="maxInputLength"></param>
         /// <returns>Reruns the input or "NULL" if cancelled.</returns>
-        public async Task<string> GetUserInputAsync(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
+        public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
 
             UIMenu openMenu = null;
@@ -975,7 +975,7 @@ namespace vMenuClient
         public async void SetLicensePlateTextAsync()
         {
             // Get the input.
-            var text = await GetUserInputAsync("Enter License Plate", maxInputLength: 8);
+            var text = await GetUserInput("Enter License Plate", maxInputLength: 8);
             // If the input is valid.
             if (text != "NULL")
             {
@@ -1468,7 +1468,7 @@ namespace vMenuClient
         public async void SavePed()
         {
             // Get the save name.
-            string name = await GetUserInputAsync("Enter a ped save name", maxInputLength: 15);
+            string name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
             // If the save name is not invalid.
             if (name != "" && name != null && name != "NULL")
             {
@@ -1530,7 +1530,7 @@ namespace vMenuClient
         /// <param name="savedName">The ped saved name</param>
         public async void LoadSavedPed(string savedName)
         {
-            string savedPedName = savedName ?? await GetUserInputAsync("Enter A Saved Ped Name");
+            string savedPedName = savedName ?? await GetUserInput("Enter A Saved Ped Name");
             if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
             {
                 //Notify.Error("Invalid saved ped name.");

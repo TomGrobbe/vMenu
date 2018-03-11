@@ -286,7 +286,15 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Alert("You need to in the driver's seat if you want to delete a vehicle.");
+                        if (!IsPedInAnyVehicle(PlayerPedId(), false))
+                        {
+                            Notify.Alert(CommonErrors.NoVehicle);
+                        }
+                        else
+                        {
+                            Notify.Alert("You need to be in the driver's seat if you want to delete a vehicle.");
+                        }
+
                     }
                     DeleteConfirmMenu.GoBack();
                     menu.GoBack();
@@ -670,7 +678,7 @@ namespace vMenuClient
             // Other Colors
             // Pearlescent == Classic + Classic on top of secondary color.
             UIMenuListItem pearlescentColors = new UIMenuListItem("Pearlescent", Metallic, 0, "Select a pearlescent color.");
-            UIMenuListItem wheelColors = new UIMenuListItem("Wheels Color", Wheels, 0, "Select a color for your wheels.");
+            UIMenuListItem wheelColors = new UIMenuListItem("Wheel Color", Wheels, 0, "Select a color for your wheels.");
             // Chrome Button
             UIMenuItem chromeBtn = new UIMenuItem("Chrome", "Make your vehicle chrome!");
             UIMenuListItem dashboardColors = new UIMenuListItem("Dashboard Color", DashboardColor, 0, "Select a dashboard color (only availalbe on some cars).");
@@ -907,7 +915,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Alert("You need to be inside a vehicle to toggle vehicle doors.");
+                    Notify.Alert(CommonErrors.NoVehicle, placeholderValue: "to open/close a vehicle door");
                 }
 
             };
