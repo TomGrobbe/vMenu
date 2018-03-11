@@ -1662,16 +1662,20 @@ namespace vMenuClient
         /// <returns></returns>
         public UIMenu GetOpenMenu()
         {
-            foreach (UIMenu m in MainMenu.Mp.ToList())
+            UIMenu output = null;
+            if (MainMenu.Mp.IsAnyMenuOpen())
             {
-                if (m.Visible)
+                foreach (UIMenu m in MainMenu.Mp.ToList())
                 {
-                    return m;
+                    if (m.Visible)
+                    {
+                        return m;
+                    }
                 }
             }
-            return null;
-        }
+            return output;
 
+        }
         #endregion
     }
 }
