@@ -51,6 +51,7 @@ namespace vMenuServer
             // Global
             "Everything",
             "DontKickMe",
+            "NoClip",
 
             // Onlie Players
             "OPMenu",

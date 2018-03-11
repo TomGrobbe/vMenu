@@ -173,8 +173,21 @@ namespace vMenuClient
                 SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
                     (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
 
-                // Manage player frozen.
-                FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                if (MainMenu.NoClipMenu != null)
+                {
+                    if (!MainMenu.NoClipEnabled)
+                    {
+                        // Manage player frozen.
+                        FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                    }
+                    else
+                    {
+                        FreezeEntityPosition(PlayerPedId(), true);
+                    }
+                    
+                }
+
+                
             }
             else
             {

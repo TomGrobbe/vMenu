@@ -40,6 +40,9 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
+        public static UIMenu NoClipMenu { get; } = new NoclipMenu().GetMenu();
+        public static bool NoClipEnabled { get; set; } = false;
+
         // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
 
@@ -134,7 +137,7 @@ namespace vMenuClient
         private async Task ProcessMainButtons()
         {
             UIMenu currentMenu = Cf.GetOpenMenu();
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen())
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && currentMenu != NoClipMenu)
             {
                 if (currentMenu.Visible && !DisableControls)
                 {
@@ -175,7 +178,7 @@ namespace vMenuClient
             // Get the currently open menu.
             UIMenu currentMenu = Cf.GetOpenMenu();
             // If it exists.
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen())
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && currentMenu != NoClipMenu)
             {
                 if (currentMenu.Visible && !DisableControls)
                 {
@@ -417,6 +420,14 @@ namespace vMenuClient
 
                             // Wait for the next game tick. 
                             await Delay(0);
+                        }
+                    }
+
+                    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                    {
+                        if (Game.IsControlJustPressed(0, Control.ReplayStartStopRecordingSecondary))
+                        {
+                            NoClipEnabled = !Mp.IsAnyMenuOpen();
                         }
                     }
                 }

@@ -12,6 +12,7 @@ namespace vMenuClient
         // Global
         Everything,
         DontKickMe,
+        NoClip,
 
         // Onlie Players
         OPMenu,
@@ -142,6 +143,7 @@ namespace vMenuClient
         VCEnable,
         VCShowSpeaker,
         VCStaffChannel,
+        
     };
 
     public static class PermissionsManager
