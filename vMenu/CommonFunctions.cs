@@ -596,6 +596,7 @@ namespace vMenuClient
             // If mod info about the vehicle was specified, check if it's not null.
             if (vehicleInfo != null)
             {
+
                 // Set the modkit so we can modify the car.
                 SetVehicleModKit(vehicle.Handle, 0);
 
@@ -647,11 +648,26 @@ namespace vMenuClient
                 SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
                 SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
 
+                // Declare a variable to indicate how many "iterations" the foreach loop further down should be "skipped",
+                // before starting "consider" the "mod strings" as "dynamic" mods.
+                int skip = 8 + 24 + 2;
 
-                // Skip all non-vehicle "mod" options and loop through the remaining mods and apply them to the vehicle.
-                var skip = 8 + 24 + 2;
+                bool updateSavedVehicleInfo = false;
+                if (vehicleInfo.ContainsKey("windowTint"))
+                {
+                    int.TryParse(vehicleInfo["windowTint"].ToString(), out int tint);
+                    SetVehicleWindowTint(vehicle.Handle, tint);
+                    skip++; // add one to skip because the tint was found.
+                }
+                else
+                {
+                    updateSavedVehicleInfo = true;
+                }
+
+                // Loop through all mods.
                 foreach (var mod in vehicleInfo)
                 {
+                    // Ignore the first "skip" amount of mods because those are not dynamic mods.
                     skip--;
                     if (skip < 0)
                     {
@@ -665,6 +681,12 @@ namespace vMenuClient
                 SetVehicleColours(vehicle.Handle, primaryColor, secondaryColor);
                 SetVehicleExtraColours(vehicle.Handle, pearlescentColor, wheelColor);
 
+                if (updateSavedVehicleInfo)
+                {
+                    // Because we need to re-save the vehicle with the new modded format, we'll teleport the player into it.
+                    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
+                    SaveVehicle(vehicleInfo["name"].ToString());
+                }
             }
         }
         #endregion
@@ -674,7 +696,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the vehicle the player is currently in to the client's kvp storage.
         /// </summary>
-        public async void SaveVehicle()
+        public async void SaveVehicle(string updateExistingSavedVehicleName = null)
         {
             // Only continue if the player is in a vehicle.
             if (IsPedInAnyVehicle(PlayerPedId(), false))
@@ -751,6 +773,7 @@ namespace vMenuClient
 
                     dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
                     dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
+                    dict.Add("windowTint", GetVehicleWindowTint(veh).ToString());
 
                     // Now add all vehicle mods that are dynamic (different per vehicle model).
                     Vehicle vehicle = new Vehicle(veh);
@@ -761,28 +784,38 @@ namespace vMenuClient
                         dict.Add(modType.ToString(), modValue.ToString());
                     }
 
-                    // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                    var saveName = await GetUserInput("Enter a save name", "", 15);
-                    // If the name is not invalid.
-                    if (saveName != "NULL")
+
+                    if (updateExistingSavedVehicleName == null)
                     {
-                        // Save everything from the dictionary into the client's kvp storage.
-                        // If the save was successfull:
-                        if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                        // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
+                        var saveName = await GetUserInput("Enter a save name", "", 15);
+                        // If the name is not invalid.
+                        if (saveName != "NULL")
                         {
-                            Notify.Success($"Vehicle {saveName} saved.");
+                            // Save everything from the dictionary into the client's kvp storage.
+                            // If the save was successfull:
+                            if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                            {
+                                Notify.Success($"Vehicle {saveName} saved.");
+                            }
+                            // If the save was not successfull:
+                            else
+                            {
+                                Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
+                            }
                         }
-                        // If the save was not successfull:
+                        // The user did not enter a valid name to use as a save name for this vehicle.
                         else
                         {
-                            Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
+                            Notify.Error(CommonErrors.InvalidSaveName);
                         }
                     }
-                    // The user did not enter a valid name to use as a save name for this vehicle.
+                    // We need to update an existing slot.
                     else
                     {
-                        Notify.Error(CommonErrors.InvalidSaveName);
+                        sm.SaveDictionary("veh_" + updateExistingSavedVehicleName, dict, true);
                     }
+
                 }
                 // The player is not inside a vehicle, or the vehicle is dead/not existing so we won't do anything. Only alert the user.
                 else
