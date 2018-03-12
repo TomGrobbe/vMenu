@@ -180,14 +180,12 @@ namespace vMenuClient
                         // Manage player frozen.
                         FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
                     }
-                    else
-                    {
-                        FreezeEntityPosition(PlayerPedId(), true);
-                    }
-                    
                 }
-
-                
+                else
+                {
+                    // Manage player frozen.
+                    FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                }
             }
             else
             {
