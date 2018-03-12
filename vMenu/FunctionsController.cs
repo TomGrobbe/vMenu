@@ -25,6 +25,7 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
+        private UIMenu lastOpenMenu = null;
 
         /// <summary>
         /// Constructor.
@@ -65,6 +66,39 @@ namespace vMenuClient
                     // Set the last vehicle to the new vehicle entity.
                     LastVehicle = tmpVehicle;
                     SwitchedVehicle = true;
+                }
+
+                if (!MainMenu.DontOpenMenus && MainMenu.Mp.IsAnyMenuOpen())
+                {
+                    lastOpenMenu = cf.GetOpenMenu();
+                }
+                // If any on-screen keyboard is visible, close any open menus and disable any menu from opening.
+                if (UpdateOnscreenKeyboard() == 0) // still editing aka the input box is visible.
+                {
+                    MainMenu.DontOpenMenus = true;
+                    MainMenu.DisableControls = true;
+                }
+                // Otherwise, check if the "DontOpenMenus" option is (still) true.
+                else
+                {
+                    if (MainMenu.DontOpenMenus)
+                    {
+                        // Allow menus from being displayed.
+                        MainMenu.DontOpenMenus = false;
+
+                        // Check if the previous menu isn't null.
+                        if (lastOpenMenu != null)
+                        {
+                            // Re-open the last menu.
+                            lastOpenMenu.Visible = true;
+                            // Set the last menu to null.
+                            lastOpenMenu = null;
+                        }
+
+                        // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
+                        await Delay(5);
+                        MainMenu.DisableControls = false;
+                    }
                 }
             }
             else
@@ -139,8 +173,21 @@ namespace vMenuClient
                 SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
                     (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
 
-                // Manage player frozen.
-                FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                if (MainMenu.NoClipMenu != null)
+                {
+                    if (!MainMenu.NoClipEnabled)
+                    {
+                        // Manage player frozen.
+                        FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                    }
+                    else
+                    {
+                        FreezeEntityPosition(PlayerPedId(), true);
+                    }
+                    
+                }
+
+                
             }
             else
             {
@@ -413,7 +460,7 @@ namespace vMenuClient
                         {
                             if (!playerList.Contains(player))
                             {
-                                Notify.Custom($"~g~{player.Value}~s~ joined the server.");
+                                Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
                             }
                         }
                     }
@@ -424,7 +471,7 @@ namespace vMenuClient
                         {
                             if (!pl.Contains(player))
                             {
-                                Notify.Custom($"~r~{player.Value}~s~ left the server.");
+                                Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
                             }
                         }
                     }
@@ -453,24 +500,24 @@ namespace vMenuClient
                                         {
                                             if (playerKiller.Character.Handle == killer.Handle)
                                             {
-                                                Notify.Custom($"~o~{p.Name} ~s~has been murdered by ~y~{playerKiller.Name}~s~.");
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
                                                 break;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~{p.Name} ~s~has been murdered.");
+                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~{p.Name} ~s~committed suicide.");
+                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~committed suicide.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~{p.Name} ~s~died.");
+                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~died.");
                             }
                             deadPlayers.Add(p.Handle);
                         }

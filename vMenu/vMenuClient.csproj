@@ -63,6 +63,7 @@
     <Compile Include="menus\VoiceChat.cs" />
     <Compile Include="menus\WeaponOptions.cs" />
     <Compile Include="menus\WeatherOptions.cs" />
+    <Compile Include="NoclipMenu.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
