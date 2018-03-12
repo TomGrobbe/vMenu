@@ -25,7 +25,8 @@ namespace vMenuClient
         private static bool optionsSetupDone = false;
         //public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
 
-        private static int MenuToggleKey = (int)(Control)MenuToggleKey;
+        private static int MenuToggleKey = 244; // M by default (InteractionMenu)
+        private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
         public static UIMenu Menu { get; private set; }
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
@@ -125,6 +126,7 @@ namespace vMenuClient
                 MenuOptions.Add(option.Key, option.Value);
             }
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
+            NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
             optionsSetupDone = true;
         }
         #endregion
@@ -137,7 +139,7 @@ namespace vMenuClient
         private async Task ProcessMainButtons()
         {
             UIMenu currentMenu = Cf.GetOpenMenu();
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && currentMenu != NoClipMenu)
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
             {
                 if (currentMenu.Visible && !DisableControls)
                 {
@@ -178,7 +180,7 @@ namespace vMenuClient
             // Get the currently open menu.
             UIMenu currentMenu = Cf.GetOpenMenu();
             // If it exists.
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && currentMenu != NoClipMenu)
+            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
             {
                 if (currentMenu.Visible && !DisableControls)
                 {
@@ -425,9 +427,25 @@ namespace vMenuClient
 
                     if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                     {
-                        if (Game.IsControlJustPressed(0, Control.ReplayStartStopRecordingSecondary))
+                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && Cf.IsAllowed(Permission.NoClip))
                         {
-                            NoClipEnabled = !Mp.IsAnyMenuOpen();
+                            if (IsPedInAnyVehicle(PlayerPedId(), false))
+                            {
+                                if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == PlayerPedId())
+                                {
+                                    NoClipEnabled = !Mp.IsAnyMenuOpen();
+                                }
+                                else
+                                {
+                                    NoClipEnabled = false;
+                                    Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                }
+                            }
+                            else
+                            {
+                                NoClipEnabled = !Mp.IsAnyMenuOpen();
+                            }
+
                         }
                     }
                 }

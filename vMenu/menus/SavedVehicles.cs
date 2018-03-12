@@ -107,6 +107,9 @@ namespace vMenuClient
                         savedVehicles.AddItem(vehBtn);
                     }
 
+                    // Sort the menu items (case IN-sensitive) by name.
+                    savedVehicles.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
+
                     // When a vehicle is selected...
                     savedVehicles.OnItemSelect += (sender2, item2, index2) =>
                     {
@@ -130,8 +133,10 @@ namespace vMenuClient
                 {
                     deleteSavedVehicles.MenuItems.Clear();
 
+                    // Get the dictionary containing all saved vehicles.
                     SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
 
+                    // Loop through the list and add all saved vehicles to the menu. 
                     foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
                     {
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Are you sure you want to delete this saved vehicle? This action cannot be undone!");
@@ -139,6 +144,11 @@ namespace vMenuClient
                         vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
                         deleteSavedVehicles.AddItem(vehBtn);
                     }
+
+                    // Sort the menu items (case IN-sensitive) by name.
+                    deleteSavedVehicles.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
+
+                    // Handle vehicle deletions
                     deleteSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
                     {
                         var vehDictName = "veh_" + item2.Text;

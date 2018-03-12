@@ -12,6 +12,7 @@
 |:-|:-|:-|
 |`vMenu.Everything`|Grants access to everything, not recommended to give this out.|Denied|
 |`vMenu.DontKickMe`|Prevents this player from being kicked.|Denied|
+|`vMenu.NoClip`|Allows the user to use the NoClip feature.|Allowed|
 
 ## Online Players
 

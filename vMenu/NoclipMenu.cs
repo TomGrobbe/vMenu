@@ -14,7 +14,17 @@ namespace vMenuClient
         private CommonFunctions cf = MainMenu.Cf;
         private bool setupDone = false;
         private UIMenu noclipMenu = null;
-        private int speed = 1;
+        private int currentSpeed = 1;
+
+        private List<string> speeds = new List<string>()
+        {
+            "Slow",
+            "Medium",
+            "Fast",
+            "Very Fast",
+            "Extremely Fast",
+            "~g~~h~Snail~h~ ~s~Speed!"
+        };
 
         /// <summary>
         /// Constructor
@@ -52,12 +62,16 @@ namespace vMenuClient
                 {
                     while (MainMenu.NoClipEnabled)
                     {
+                        var noclipEntity = IsPedInAnyVehicle(PlayerPedId(), false) ? cf.GetVehicle() : PlayerPedId();
+
                         if (noclipMenu.Visible == false)
                         {
                             noclipMenu.Visible = true;
                         }
-                        //var pos = GetEntityCoords(PlayerPedId(), true);
-                        Vector3 newPos = GetEntityCoords(PlayerPedId(), true);
+                        FreezeEntityPosition(noclipEntity, true);
+                        SetEntityInvincible(noclipEntity, true);
+
+                        Vector3 newPos = GetEntityCoords(noclipEntity, true);
                         Game.DisableControlThisFrame(0, Control.MoveUpOnly);
                         Game.DisableControlThisFrame(0, Control.MoveUp);
                         Game.DisableControlThisFrame(0, Control.MoveUpDown);
@@ -69,15 +83,24 @@ namespace vMenuClient
                         Game.DisableControlThisFrame(0, Control.MoveRight);
                         Game.DisableControlThisFrame(0, Control.MoveRightOnly);
                         Game.DisableControlThisFrame(0, Control.Cover);
-                        Game.DisableControlThisFrame(0, Control.Pickup);
-                        SetEntityCollision(PlayerPedId(), false, false);
+                        Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
 
-                        var xoff = 0f;
-                        var yoff = 0f;
-                        var zoff = 0f;
+                        //var xoff = 0.0f;
+                        var yoff = 0.0f;
+                        var zoff = 0.0f;
 
                         if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                         {
+                            if (Game.IsControlJustPressed(0, Control.Sprint))
+                            {
+                                currentSpeed++;
+                                if (currentSpeed == speeds.Count)
+                                {
+                                    currentSpeed = 0;
+                                }
+                                noclipMenu.MenuItems[0].SetRightLabel(speeds[currentSpeed]);
+                            }
+
                             if (Game.IsDisabledControlPressed(0, Control.MoveUpOnly))
                             {
                                 yoff = 0.5f;
@@ -96,26 +119,39 @@ namespace vMenuClient
                             }
                             if (Game.IsDisabledControlPressed(0, Control.Cover))
                             {
-                                zoff = 0.18f;
+                                zoff = 0.21f;
                             }
-                            if (Game.IsDisabledControlPressed(0, Control.Pickup))
+                            if (Game.IsDisabledControlPressed(0, Control.MultiplayerInfo))
                             {
-                                zoff = -0.18f;
+                                zoff = -0.21f;
                             }
                         }
 
-                        newPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), xoff * speed, yoff * speed, zoff * speed);
+                        newPos = GetOffsetFromEntityInWorldCoords(noclipEntity, 0f, yoff * (currentSpeed + 0.3f), zoff * (currentSpeed + 0.3f));
 
-                        var heading = GetEntityHeading(PlayerPedId());
-                        SetEntityVelocity(PlayerPedId(), 0f, 0f, 0f);
-                        SetEntityRotation(PlayerPedId(), 0f, 0f, 0f, 0, false);
-                        SetEntityHeading(PlayerPedId(), heading);
-                        SetEntityCoordsNoOffset(PlayerPedId(), newPos.X, newPos.Y, newPos.Z + 0.001f, true, true, true);
+                        var heading = GetEntityHeading(noclipEntity);
+                        SetEntityVelocity(noclipEntity, 0f, 0f, 0f);
+                        SetEntityRotation(noclipEntity, 0f, 0f, 0f, 0, false);
+                        SetEntityHeading(noclipEntity, heading);
 
+                        //if (!((yoff > -0.01f && yoff < 0.01f) && (zoff > -0.01f && zoff < 0.01f)))
+                        {
+                            SetEntityCollision(noclipEntity, false, false);
+                            SetEntityCoordsNoOffset(noclipEntity, newPos.X, newPos.Y, newPos.Z, true, true, true);
+                        }
+
+                        // After the next game tick, reset the entity properties.
                         await Delay(0);
+                        FreezeEntityPosition(noclipEntity, false);
+                        SetEntityInvincible(noclipEntity, false);
+                        SetEntityCollision(noclipEntity, true, true);
                     }
-                    SetEntityCollision(PlayerPedId(), true, true);
-                    noclipMenu.Visible = false;
+
+                    if (noclipMenu.Visible && !MainMenu.NoClipEnabled)
+                    {
+                        noclipMenu.Visible = false;
+                    }
+
                 }
             }
         }
@@ -135,17 +171,25 @@ namespace vMenuClient
             };
             noclipMenu.SetMenuWidthOffset(50);
 
-            var speedList = new List<dynamic>()
-            {
-                "Slow",
-                "Medium",
-                "Fast",
-                "Very Fast",
-                "Extremely Fast",
-                "~g~Snail Power!"
-            };
 
-            UIMenuListItem speed = new UIMenuListItem("Speed", speedList, 1, "Select a moving speed.");
+
+            UIMenuItem speed = new UIMenuItem("Current Moving Speed", "This is your current moving speed.");
+            speed.SetRightLabel(speeds[currentSpeed]);
+
+            noclipMenu.AddItem(speed);
+
+            noclipMenu.DisableInstructionalButtons(true);
+            noclipMenu.DisableInstructionalButtons(false);
+
+            // Only disable the default instructional buttons (back & select) (requires modified NativeUI build.)
+            noclipMenu.DisableInstructionalButtons(false, disableDefaultButtons: true);
+
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Sprint, "Change Speed"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveUpDown, "Go Forwards/Backwards"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Left/Right"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Cover, "Go Up"));
+            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
+
 
             MainMenu.Mp.Add(noclipMenu);
 
