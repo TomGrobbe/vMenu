@@ -51,6 +51,7 @@ namespace vMenuServer
             // Global
             "Everything",
             "DontKickMe",
+            "NoClip",
 
             // Onlie Players
             "OPMenu",
@@ -418,13 +419,14 @@ namespace vMenuServer
         }
         #endregion
 
-        #region SendPermissions to all clients
+        #region Send Permissions & Settings to the requesting client
         /// <summary>
         /// Send the permissions to the client that requested it.
         /// </summary>
         /// <param name="player"></param>
         private async void SendPermissionsAsync([FromSource] Player player)
         {
+            // Permissions
             Dictionary<string, bool> perms = new Dictionary<string, bool>();
 
             foreach (string ace in aceNames)
@@ -433,12 +435,12 @@ namespace vMenuServer
                 var allowed = IsPlayerAceAllowed(player.Handle, realAceName);
                 perms.Add(ace, allowed);
             }
-
-
-
+            
+            // Settings
             Dictionary<string, string> options = new Dictionary<string, string>
             {
                 { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
+                { "noclipKey", GetConvarInt("vMenuNoClipKey", 289).ToString() ?? "289" },
                 { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
             };
 

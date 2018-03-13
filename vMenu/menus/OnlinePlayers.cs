@@ -177,7 +177,7 @@ namespace vMenuClient
                             else if (item2 == killBtn)
                             {
                                 //Subtitle.Info($"~y~{player.Name} ~z~has been killed.", prefix: "Info:");
-                                Notify.Success($"Player ~y~{player.Name} ~h~has been killed.");
+                                Notify.Success($"Player ~y~<C>{player.Name}</C> ~s~has been killed.");
                                 cf.KillPlayer(player);
                             }
                             // Kick player button is pressed.

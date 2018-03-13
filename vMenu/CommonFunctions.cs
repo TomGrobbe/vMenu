@@ -113,6 +113,24 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Drive Tasks (Unimplemented)
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveToWp()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Todo
+        /// </summary>
+        public void DriveWander()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         #region Teleport to player (or teleport into the player's vehicle)
         /// <summary>
         /// Teleport to the specified player id. (Optionally teleport into their vehicle).
@@ -134,9 +152,6 @@ namespace vMenuClient
                 // Get the coords of the other player.
                 Vector3 playerPos = GetEntityCoords(playerPed, true);
 
-                // Pre-load the world by teleporting to the other player (2.0 meters above the other player).
-                SetPedCoordsKeepVehicle(PlayerPedId(), playerPos.X, playerPos.Y, playerPos.Z + 2.0f);
-
                 // Then await the proper loading/teleporting.
                 await TeleportToCoords(playerPos);
 
@@ -155,7 +170,7 @@ namespace vMenuClient
                         if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle) && IsAnyVehicleSeatEmpty(vehicle))
                         {
                             TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
-                            Notify.Success("Teleported into ~g~" + GetPlayerName(playerId) + "'s ~s~vehicle.");
+                            Notify.Success("Teleported into ~g~<C>" + GetPlayerName(playerId) + "</C>'s ~s~vehicle.");
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                         else
@@ -177,7 +192,7 @@ namespace vMenuClient
                 // Notify the user.
                 else
                 {
-                    Notify.Success("Teleported to " + GetPlayerName(playerId) + ".");
+                    Notify.Success("Teleported to ~y~<C>" + GetPlayerName(playerId) + "</C>~s~.");
                 }
             }
             // The specified playerId does not exist, notify the user of the error.
@@ -190,30 +205,22 @@ namespace vMenuClient
         }
         #endregion
 
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void DriveToWp()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Todo
-        /// </summary>
-        public void DriveWander()
-        {
-            throw new NotImplementedException();
-        }
-
-        #region Teleport To Player / Coords
+        #region Teleport To Coords
         /// <summary>
         /// Teleport the player to a specific location.
         /// </summary>
         /// <param name="pos">These are the target coordinates to teleport to.</param>
         public async Task TeleportToCoords(Vector3 pos)
         {
-            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+            if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+            {
+                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+            }
+            else
+            {
+                SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
+            }
+
             var timer = 0;
             var failed = false;
             while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
@@ -239,17 +246,38 @@ namespace vMenuClient
                 if (foundSafeSpot)
                 {
                     Notify.Alert("No safe location near waypoint :( going to closest safe location instead.");
-                    SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                    {
+                        SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                    }
+                    else
+                    {
+                        SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                    }
                 }
                 else
                 {
                     Notify.Alert("No safe location near you :( open your parachute!");
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                    {
+                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                    }
+                    else
+                    {
+                        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
+                    }
                 }
             }
             else
             {
-                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+                if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                {
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
+                }
+                else
+                {
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f, false, false, false, true);
+                }
             }
         }
 
@@ -282,7 +310,7 @@ namespace vMenuClient
             // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
             if (askUserForReason && providedReason == defaultReason)
             {
-                var userInput = await GetUserInputAsync("Enter Kick Message", "", 100);
+                var userInput = await GetUserInput("Enter Kick Message", "", 100);
                 // If the input is not invalid, set the kick reason to the user's custom message.
                 if (userInput != "NULL")
                 {
@@ -357,7 +385,7 @@ namespace vMenuClient
                 //spectating = true;
                 DoScreenFadeOut(100);
                 await Delay(100);
-                Notify.Info("Spectating ~r~" + GetPlayerName(playerId), false, false);
+                Notify.Info($"Spectating ~r~{GetPlayerName(playerId)}</C>~s~.", false, false);
                 NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
                 DoScreenFadeIn(100);
                 await Delay(100);
@@ -457,7 +485,7 @@ namespace vMenuClient
             if (vehicleName == "custom")
             {
                 // Get the result.
-                string result = await GetUserInputAsync("Enter Vehicle Name", "adder");
+                string result = await GetUserInput("Enter Vehicle Name", "Adder");
                 // If the result was not invalid.
                 if (result != "NULL")
                 {
@@ -471,7 +499,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Alert("You are not allowed to spawn this vehicle, it belongs to a restricted category.");
+                        Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
                     }
                 }
                 // Result was invalid.
@@ -568,6 +596,7 @@ namespace vMenuClient
             // If mod info about the vehicle was specified, check if it's not null.
             if (vehicleInfo != null)
             {
+
                 // Set the modkit so we can modify the car.
                 SetVehicleModKit(vehicle.Handle, 0);
 
@@ -619,11 +648,26 @@ namespace vMenuClient
                 SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
                 SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
 
+                // Declare a variable to indicate how many "iterations" the foreach loop further down should be "skipped",
+                // before starting "consider" the "mod strings" as "dynamic" mods.
+                int skip = 8 + 24 + 2;
 
-                // Skip all non-vehicle "mod" options and loop through the remaining mods and apply them to the vehicle.
-                var skip = 8 + 24 + 2;
+                bool updateSavedVehicleInfo = false;
+                if (vehicleInfo.ContainsKey("windowTint"))
+                {
+                    int.TryParse(vehicleInfo["windowTint"].ToString(), out int tint);
+                    SetVehicleWindowTint(vehicle.Handle, tint);
+                    skip++; // add one to skip because the tint was found.
+                }
+                else
+                {
+                    updateSavedVehicleInfo = true;
+                }
+
+                // Loop through all mods.
                 foreach (var mod in vehicleInfo)
                 {
+                    // Ignore the first "skip" amount of mods because those are not dynamic mods.
                     skip--;
                     if (skip < 0)
                     {
@@ -637,6 +681,12 @@ namespace vMenuClient
                 SetVehicleColours(vehicle.Handle, primaryColor, secondaryColor);
                 SetVehicleExtraColours(vehicle.Handle, pearlescentColor, wheelColor);
 
+                if (updateSavedVehicleInfo)
+                {
+                    // Because we need to re-save the vehicle with the new modded format, we'll teleport the player into it.
+                    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
+                    SaveVehicle(vehicleInfo["name"].ToString());
+                }
             }
         }
         #endregion
@@ -646,7 +696,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the vehicle the player is currently in to the client's kvp storage.
         /// </summary>
-        public async void SaveVehicle()
+        public async void SaveVehicle(string updateExistingSavedVehicleName = null)
         {
             // Only continue if the player is in a vehicle.
             if (IsPedInAnyVehicle(PlayerPedId(), false))
@@ -723,6 +773,7 @@ namespace vMenuClient
 
                     dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
                     dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
+                    dict.Add("windowTint", GetVehicleWindowTint(veh).ToString());
 
                     // Now add all vehicle mods that are dynamic (different per vehicle model).
                     Vehicle vehicle = new Vehicle(veh);
@@ -733,28 +784,38 @@ namespace vMenuClient
                         dict.Add(modType.ToString(), modValue.ToString());
                     }
 
-                    // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                    var saveName = await GetUserInputAsync("Enter a save name", "", 15);
-                    // If the name is not invalid.
-                    if (saveName != "NULL")
+
+                    if (updateExistingSavedVehicleName == null)
                     {
-                        // Save everything from the dictionary into the client's kvp storage.
-                        // If the save was successfull:
-                        if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                        // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
+                        var saveName = await GetUserInput("Enter a save name", "", 15);
+                        // If the name is not invalid.
+                        if (saveName != "NULL")
                         {
-                            Notify.Success($"Vehicle {saveName} saved.");
+                            // Save everything from the dictionary into the client's kvp storage.
+                            // If the save was successfull:
+                            if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                            {
+                                Notify.Success($"Vehicle {saveName} saved.");
+                            }
+                            // If the save was not successfull:
+                            else
+                            {
+                                Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
+                            }
                         }
-                        // If the save was not successfull:
+                        // The user did not enter a valid name to use as a save name for this vehicle.
                         else
                         {
-                            Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
+                            Notify.Error(CommonErrors.InvalidSaveName);
                         }
                     }
-                    // The user did not enter a valid name to use as a save name for this vehicle.
+                    // We need to update an existing slot.
                     else
                     {
-                        Notify.Error(CommonErrors.InvalidSaveName);
+                        sm.SaveDictionary("veh_" + updateExistingSavedVehicleName, dict, true);
                     }
+
                 }
                 // The player is not inside a vehicle, or the vehicle is dead/not existing so we won't do anything. Only alert the user.
                 else
@@ -864,30 +925,14 @@ namespace vMenuClient
         /// <param name="defaultText"></param>
         /// <param name="maxInputLength"></param>
         /// <returns>Reruns the input or "NULL" if cancelled.</returns>
-        public async Task<string> GetUserInputAsync(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
+        public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
-
-            UIMenu openMenu = null;
-
-            // Check for any open menus, then go through all of them and save the state if they're open so we can reopen them later.
-            if (MainMenu.Mp.IsAnyMenuOpen())
-            {
-                foreach (UIMenu m in MainMenu.Mp.ToList())
-                {
-                    if (m.Visible)
-                    {
-                        openMenu = m;
-                    }
-                }
-                MainMenu.Mp.CloseAllMenus();
-            }
-            await Delay(1);
-            MainMenu.DontOpenMenus = true;
-
             // Create the window title string.
             AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
+
             // Display the input box.
             DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
+            await Delay(0);
             // Wait for a result.
             while (true)
             {
@@ -918,32 +963,14 @@ namespace vMenuClient
             int status = UpdateOnscreenKeyboard();
             string result = GetOnscreenKeyboardResult();
 
-            // Allow menus to be opened again.
-            MainMenu.DontOpenMenus = false;
-            // Reopen any menus if they were open.
-            await Delay(4);
-            if (openMenu != null)
-            {
-                openMenu.Visible = true;
-            }
-
             // If the result is not empty or null
             if (result != "" && result != null && status == 1)
             {
-
                 // Return result.
                 return result.ToString();
             }
             else
             {
-                //// Allow menus to be opened again.
-                //MainMenu.DontOpenMenus = false;
-                //// Reopen any menus if they were open.
-                //if (openMenu != null)
-                //{
-                //    openMenu.Visible = true;
-                //}
-                // Return result.
                 return "NULL";
             }
         }
@@ -956,7 +983,7 @@ namespace vMenuClient
         public async void SetLicensePlateTextAsync()
         {
             // Get the input.
-            var text = await GetUserInputAsync("Enter License Plate", maxInputLength: 8);
+            var text = await GetUserInput("Enter License Plate", maxInputLength: 8);
             // If the input is valid.
             if (text != "NULL")
             {
@@ -1056,11 +1083,11 @@ namespace vMenuClient
 
                 var canPlay = true;
                 // Check if the player CAN play a scenario... 
-                if (IsPedInAnyVehicle(PlayerPedId(), true))
-                {
-                    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
-                    canPlay = false;
-                }
+                //if (IsPedInAnyVehicle(PlayerPedId(), true))
+                //{
+                //    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
+                //    canPlay = false;
+                //}
                 if (IsPedRunning(PlayerPedId()))
                 {
                     Notify.Alert("You can't start a scenario when you are running.", true, false);
@@ -1449,7 +1476,7 @@ namespace vMenuClient
         public async void SavePed()
         {
             // Get the save name.
-            string name = await GetUserInputAsync("Enter a ped save name", maxInputLength: 15);
+            string name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
             // If the save name is not invalid.
             if (name != "" && name != null && name != "NULL")
             {
@@ -1511,7 +1538,7 @@ namespace vMenuClient
         /// <param name="savedName">The ped saved name</param>
         public async void LoadSavedPed(string savedName)
         {
-            string savedPedName = savedName ?? await GetUserInputAsync("Enter A Saved Ped Name");
+            string savedPedName = savedName ?? await GetUserInput("Enter A Saved Ped Name");
             if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
             {
                 //Notify.Error("Invalid saved ped name.");
@@ -1635,18 +1662,28 @@ namespace vMenuClient
             Debug.WriteLine(data, "");
         }
         #endregion
-        
+
+        #region Get Currently Opened Menu
+        /// <summary>
+        /// Returns the currently opened menu, if no menu is open, it'll return null.
+        /// </summary>
+        /// <returns></returns>
         public UIMenu GetOpenMenu()
         {
-            foreach (UIMenu m in MainMenu.Mp.ToList())
+            UIMenu output = null;
+            if (MainMenu.Mp.IsAnyMenuOpen())
             {
-                if (m.Visible)
+                foreach (UIMenu m in MainMenu.Mp.ToList())
                 {
-                    return m;
+                    if (m.Visible)
+                    {
+                        return m;
+                    }
                 }
             }
-            return null;
-        }
+            return output;
 
+        }
+        #endregion
     }
 }

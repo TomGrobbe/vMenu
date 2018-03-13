@@ -12,6 +12,7 @@ namespace vMenuClient
         // Global
         Everything,
         DontKickMe,
+        NoClip,
 
         // Onlie Players
         OPMenu,
@@ -142,6 +143,7 @@ namespace vMenuClient
         VCEnable,
         VCShowSpeaker,
         VCStaffChannel,
+        
     };
 
     public static class PermissionsManager
@@ -170,7 +172,7 @@ namespace vMenuClient
             else
             {
                 var allowed = false;
-                if (perms.Contains(permission.ToString().Substring(0,2) + "All"))
+                if (perms.Contains(permission.ToString().Substring(0, 2) + "All"))
                 {
                     allowed = true;
                 }
@@ -179,10 +181,10 @@ namespace vMenuClient
                 {
                     allowed = perms.Contains(permission.ToString());
                 }
-                
+
                 return allowed;
             }
-            
+
 
         }
     }

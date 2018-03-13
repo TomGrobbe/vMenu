@@ -67,7 +67,7 @@ namespace vMenuClient
                 menu.AddItem(midnight);
                 menu.AddItem(night);
             }
-            
+
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
