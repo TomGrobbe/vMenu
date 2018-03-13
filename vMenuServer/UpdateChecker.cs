@@ -54,7 +54,7 @@ namespace vMenuServer
                     if (currentVersion == version)
                     {
                         // yay up to date! :) Snail is happy.
-                        Debug.WriteLine("\r\n[vMenu] You are currently usng the latest version, good job!");
+                        Debug.WriteLine("\r\n[vMenu] You are currently using the latest version, good job!");
                     }
                     // If not up to date :(
                     else
