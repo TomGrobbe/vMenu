@@ -289,7 +289,7 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = 800f;
+                pos.Z = 200f;
                 await TeleportToCoords(pos);
             }
         }
