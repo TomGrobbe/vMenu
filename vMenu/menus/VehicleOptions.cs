@@ -285,6 +285,7 @@ namespace vMenuClient
                     var veh = cf.GetVehicle();
                     if (DoesEntityExist(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
+                        SetVehicleHasBeenOwnedByPlayer(veh, false);
                         SetEntityAsMissionEntity(veh, false, false);
                         DeleteVehicle(ref veh);
                     }
