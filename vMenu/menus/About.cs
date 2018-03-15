@@ -28,9 +28,6 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-
-            //var currentVersion = ($"v{GetResourceMetadata(GetCurrentResourceName(), "version", 0)}");
-
             // Create menu items.
             UIMenuItem version = new UIMenuItem("Version", $"Currently installed version of vMenu: ~h~v{MainMenu.Version}~h~");
             version.SetRightLabel($"~h~v{MainMenu.Version}~h~");
