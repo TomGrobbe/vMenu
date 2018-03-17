@@ -365,7 +365,7 @@ namespace vMenuClient
                         // Toggle engine
                         else if (item == toggleEngine)
                         {
-                            vehicle.IsEngineRunning = !vehicle.IsEngineRunning;
+                            SetVehicleEngineOn(vehicle.Handle, !vehicle.IsEngineRunning, false, true);
                         }
                         // Set license plate text
                         else if (item == setLicensePlateText)
