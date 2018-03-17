@@ -75,12 +75,14 @@ namespace vMenuClient
             UIMenuItem deleteSavedPed = new UIMenuItem("Delete Saved Ped", "Delete one of your saved peds.");
             deleteSavedPed.SetRightLabel("→→→");
             deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Ped By Name", "Enter a model name of a custom ped you want to spawn.");
 
             // Add items to the mneu.
             menu.AddItem(pedCustomization);
             menu.AddItem(savePed);
             menu.AddItem(spawnSavedPed);
             menu.AddItem(deleteSavedPed);
+            menu.AddItem(spawnByName);
 
             // Bind items to the submenus.
             if (cf.IsAllowed(Permission.PACustomize))
@@ -93,7 +95,6 @@ namespace vMenuClient
                 pedCustomization.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                 pedCustomization.Description = "This option has been disabled by the server owner.";
             }
-
 
             if (cf.IsAllowed(Permission.PASpawnSaved))
             {
@@ -126,6 +127,10 @@ namespace vMenuClient
                 else if (item == savePed)
                 {
                     cf.SavePed();
+                }
+                else if (item == spawnByName)
+                {
+                    cf.SpawnPedByName();
                 }
             };
 

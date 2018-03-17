@@ -35,7 +35,9 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
             EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
+            EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
+            EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
 
             Tick += WeatherSync;
             Tick += TimeSync;
@@ -68,6 +70,17 @@ namespace vMenuClient
             {
                 VehicleSpawner.AddonVehicles = models;
                 MainMenu.addonCarsLoaded = true;
+            }
+            else if (addonType == "peds")
+            {
+                // Todo
+                MainMenu.addonPedsLoaded = true;
+            }
+            else if (addonType == "weapons")
+            {
+                // Todo
+                WeaponOptions.AddonWeapons = models;
+                MainMenu.addonWeaponsLoaded = true;
             }
 
         }

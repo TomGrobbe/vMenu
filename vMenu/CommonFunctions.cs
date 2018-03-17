@@ -1500,6 +1500,22 @@ namespace vMenuClient
                 Notify.Error(CommonErrors.InvalidModel);
             }
         }
+
+        /// <summary>
+        /// Set the player model by asking for user input.
+        /// </summary>
+        public async void SpawnPedByName()
+        {
+            string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
+            if (input != "NULL")
+            {
+                SetPlayerSkin(GetHashKey(input));
+            }
+            else
+            {
+                Notify.Error(CommonErrors.InvalidModel);
+            }
+        }
         #endregion
 
         #region Save Ped Model + Customizations
@@ -1716,6 +1732,61 @@ namespace vMenuClient
             }
             return output;
 
+        }
+        #endregion
+
+        #region Weapon Options
+        /// <summary>
+        /// Set the ammo for all weapons in inventory to the custom amount entered by the user.
+        /// </summary>
+        public async void SetAllWeaponsAmmo()
+        {
+            int ammo = 100;
+            string inputAmmo = await GetUserInput("Enter Ammo Amount", "100") ?? "NULL";
+
+            if (inputAmmo != "NULL")
+            {
+                ammo = int.Parse(inputAmmo);
+                Ped ped = Game.PlayerPed;
+                foreach (var wp in ValidWeapons.Weapons)
+                {
+                    if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                    {
+                        SetPedAmmo(ped.Handle, wp.Value, ammo);
+                    }
+                }
+            }
+            else
+            {
+                Notify.Error("You did not enter a valid ammo count.");
+            }
+        }
+
+        /// <summary>
+        /// Spawn a weapon by asking the player for the weapon name.
+        /// </summary>
+        public async void SpawnCustomWeapon()
+        {
+            int ammo = 900;
+            string inputName = await GetUserInput("Enter Weapon Model Name", "", 30) ?? "NULL";
+            if (inputName != "NULL")
+            {
+                var model = (uint)GetHashKey(inputName.ToUpper());
+                
+                if (IsWeaponValid(model))
+                {
+                    GiveWeaponToPed(PlayerPedId(), model, ammo, false, true);
+                    Notify.Success("Added weapon to inventory.");
+                }
+                else
+                {
+                    Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
+                }
+            }
+            else
+            {
+                Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name.");
+            }
         }
         #endregion
     }

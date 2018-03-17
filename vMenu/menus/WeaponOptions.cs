@@ -18,6 +18,7 @@ namespace vMenuClient
         private CommonFunctions cf = MainMenu.Cf;
         public bool UnlimitedAmmo = UserDefaults.WeaponsUnlimitedAmmo;
         public bool NoReload = UserDefaults.WeaponsNoReload;
+        public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
 
         private Dictionary<UIMenu, ValidWeapon> weaponInfo = new Dictionary<UIMenu, ValidWeapon>();
         private Dictionary<UIMenuItem, string> weaponComponents = new Dictionary<UIMenuItem, string>();
@@ -37,8 +38,26 @@ namespace vMenuClient
             UIMenuItem removeAllWeapons = new UIMenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
             UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem("Unlimited Ammo", UnlimitedAmmo, "Unlimited ammonition supply.");
             UIMenuCheckboxItem noReload = new UIMenuCheckboxItem("No Reload", NoReload, "Never reload.");
+            UIMenuItem setAmmo = new UIMenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
+            UIMenuItem refillMaxAmmo = new UIMenuItem("Refill All Ammo", "Give all your weapons max ammo.");
             ValidWeapons vw = new ValidWeapons();
-
+            UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
+            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
+            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true)
+            {
+                MouseEdgeEnabled = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
 
             if (cf.IsAllowed(Permission.WPGetAll))
             {
@@ -56,7 +75,71 @@ namespace vMenuClient
             {
                 menu.AddItem(noReload);
             }
+            if (cf.IsAllowed(Permission.WPSetAllAmmo))
+            {
+                menu.AddItem(setAmmo);
+                menu.AddItem(refillMaxAmmo);
+            }
+            if (cf.IsAllowed(Permission.WPSpawn))
+            {
+                menu.AddItem(spawnByName);
+            }
 
+            menu.AddItem(addonWeaponsBtn);
+
+            if (cf.IsAllowed(Permission.WPSpawn) && AddonWeapons != null && AddonWeapons.Count > 0)
+            {
+                menu.BindMenuToItem(addonWeaponsMenu, addonWeaponsBtn);
+                foreach (KeyValuePair<string, uint> weapon in AddonWeapons)
+                {
+                    string name = weapon.Key.ToString();
+                    uint model = weapon.Value;
+                    var item = new UIMenuItem(name, $"Click to add/remove this weapon ({name}) to/from your inventory.");
+                    addonWeaponsMenu.AddItem(item);
+                    if (!IsWeaponValid(model))
+                    {
+                        item.Enabled = false;
+                        item.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        item.Description = "This model is not available. Please ask the server owner to verify it's being streamed correctly.";
+                    }
+                }
+                addonWeaponsMenu.OnItemSelect += (sender, item, index) =>
+                {
+                    var weapon = AddonWeapons.ElementAt(index);
+                    if (HasPedGotWeapon(PlayerPedId(), weapon.Value, false))
+                    {
+                        RemoveWeaponFromPed(PlayerPedId(), weapon.Value);
+                    }
+                    else
+                    {
+                        var maxAmmo = 200;
+                        GetMaxAmmo(PlayerPedId(), weapon.Value, ref maxAmmo);
+                        GiveWeaponToPed(PlayerPedId(), weapon.Value, maxAmmo, false, true);
+                    }
+                };
+                addonWeaponsBtn.SetRightLabel("→→→");
+            }
+            else
+            {
+                addonWeaponsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                addonWeaponsBtn.Enabled = false;
+                addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
+            }
+
+            parachuteBtn.Enabled = false;
+            parachuteBtn.SetRightLabel("WIP");
+            parachuteBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+            menu.AddItem(parachuteBtn);
+            //menu.BindMenuToItem(parachuteMenu, parachuteBtn);
+
+            addonWeaponsMenu.RefreshIndex();
+            addonWeaponsMenu.UpdateScaleform();
+
+            parachuteMenu.RefreshIndex();
+            parachuteMenu.UpdateScaleform();
+
+            MainMenu.Mp.Add(addonWeaponsMenu);
+            MainMenu.Mp.Add(parachuteMenu);
 
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
@@ -77,9 +160,16 @@ namespace vMenuClient
 
                     weaponInfo.Add(weaponMenu, weapon);
 
-                    UIMenuItem getOrRemoveWeapon = new UIMenuItem("Equip/Remove Weapon");
+                    UIMenuItem getOrRemoveWeapon = new UIMenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.");
                     getOrRemoveWeapon.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);
                     weaponMenu.AddItem(getOrRemoveWeapon);
+                    if (!cf.IsAllowed(Permission.WPSpawn))
+                    {
+                        getOrRemoveWeapon.Enabled = false;
+                        getOrRemoveWeapon.Description = "This option has been disabled by the server owner.";
+                        getOrRemoveWeapon.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    }
+
                     UIMenuItem fillAmmo = new UIMenuItem("Re-fill Ammo", "Get max ammo for this weapon.");
                     fillAmmo.SetLeftBadge(UIMenuItem.BadgeStyle.Ammo);
                     weaponMenu.AddItem(fillAmmo);
@@ -209,11 +299,31 @@ namespace vMenuClient
                         GetMaxAmmo(PlayerPedId(), weapon.Value, ref ammo);
                         ped.Weapons.Give((WeaponHash)weapon.Value, ammo, weapon.Key == "Unarmed", true);
                     }
-                    //ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
+                    ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
                 }
                 else if (item == removeAllWeapons)
                 {
                     ped.Weapons.RemoveAll();
+                }
+                else if (item == setAmmo)
+                {
+                    cf.SetAllWeaponsAmmo();
+                }
+                else if (item == refillMaxAmmo)
+                {
+                    foreach (var wp in ValidWeapons.Weapons)
+                    {
+                        if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        {
+                            int maxammo = 200;
+                            GetMaxAmmo(ped.Handle, wp.Value, ref maxammo);
+                            SetPedAmmo(ped.Handle, wp.Value, maxammo);
+                        }
+                    }
+                }
+                else if (item == spawnByName)
+                {
+                    cf.SpawnCustomWeapon();
                 }
             };
 

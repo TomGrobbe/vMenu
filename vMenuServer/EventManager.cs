@@ -187,6 +187,8 @@ namespace vMenuServer
             "VCStaffChannel",
         };
         public List<string> addonVehicles = new List<string>();
+        public List<string> addonPeds = new List<string>();
+        public List<string> addonWeapons = new List<string>();
 
         #region Constructor
         /// <summary>
@@ -226,6 +228,24 @@ namespace vMenuServer
                     {
                         if (debug) { Debug.WriteLine("Addon vehicle loaded: " + modelName, ""); }
                         addonVehicles.Add(modelName);
+                    }
+                }
+
+                if (json.ContainsKey("peds"))
+                {
+                    foreach (var modelName in json["peds"])
+                    {
+                        if (debug) { Debug.WriteLine("Addon ped loaded:" + modelName, ""); }
+                        addonPeds.Add(modelName);
+                    }
+                }
+
+                if (json.ContainsKey("weapons"))
+                {
+                    foreach (var modelName in json["weapons"])
+                    {
+                        if (debug) { Debug.WriteLine("Addon weapon loaded:" + modelName, ""); }
+                        addonWeapons.Add(modelName);
                     }
                 }
 
@@ -444,6 +464,8 @@ namespace vMenuServer
         {
             // First send the vehicle & ped addons list
             TriggerClientEvent(player, "vMenu:SetupAddonCars", "vehicles", addonVehicles);
+            TriggerClientEvent(player, "vMenu:SetupAddonPeds", "peds", addonPeds);
+            TriggerClientEvent(player, "vMenu:SetupAddonWeapons", "weapons", addonWeapons);
 
             // Get Permissions
             Dictionary<string, bool> perms = new Dictionary<string, bool>();

@@ -135,7 +135,6 @@
 
 ## Weather Options
 
-
 |Permission|Description|Default[\*](#global-permissions)|
 |:-|:-|:-|
 |`vMenu.WeatherOptions.Menu`|Grants access to the Weather Options Menu.|Denied[\*\*](#global-permissions)|
@@ -157,6 +156,8 @@
 |`vMenu.WeaponOptions.RemoveAll`|Allows you to use the `Remove All Weapons` button.|Allowed|
 |`vMenu.WeaponOptions.UnlimitedAmmo`|Allows you to enable/disable unlimited ammo.|Allowed|
 |`vMenu.WeaponOptions.NoReload`|Allows you to enable/disable no-reload.|Allowed|
+|`vMenu.WeaponOptions.Spawn`|Allows you to spawn/remove ANY weapon, denying this will still grant access to the customization options for each weapon. This also allows players to spawn addon weapons.|Allowed|
+|`vMenu.WeaponOptions.SetAllAmmo`|Allows you to bulk set the ammo count in all currently equipped weapons.|Allowed|
 
 ## Misc Settings
 **The `Save Personal Settings` option in the Misc Settings Menu is always allowed, so there's no permission line for that.**
