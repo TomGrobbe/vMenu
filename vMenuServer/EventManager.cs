@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using Newtonsoft.Json;
+using System.Dynamic;
 
 namespace vMenuServer
 {
@@ -109,6 +111,7 @@ namespace vMenuServer
             "VSMenu",
             "VSAll",
             "VSSpawnByName",
+            "VSAddon",
             "VSCompacts",
             "VSSedans",
             "VSSUVs",
@@ -183,6 +186,7 @@ namespace vMenuServer
             "VCShowSpeaker",
             "VCStaffChannel",
         };
+        public List<string> addonVehicles = new List<string>();
 
         #region Constructor
         /// <summary>
@@ -212,6 +216,18 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
+
+                string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json");
+                var json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+
+                if (json.ContainsKey("vehicles"))
+                {
+                    foreach (var modelName in json["vehicles"])
+                    {
+                        if (debug) { Debug.WriteLine("Addon vehicle loaded: " + modelName, ""); }
+                        addonVehicles.Add(modelName);
+                    }
+                }
 
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
@@ -426,17 +442,19 @@ namespace vMenuServer
         /// <param name="player"></param>
         private async void SendPermissionsAsync([FromSource] Player player)
         {
-            // Permissions
-            Dictionary<string, bool> perms = new Dictionary<string, bool>();
+            // First send the vehicle & ped addons list
+            TriggerClientEvent(player, "vMenu:SetupAddonCars", "vehicles", addonVehicles);
 
+            // Get Permissions
+            Dictionary<string, bool> perms = new Dictionary<string, bool>();
             foreach (string ace in aceNames)
             {
                 var realAceName = GetRealAceName(ace);
                 var allowed = IsPlayerAceAllowed(player.Handle, realAceName);
                 perms.Add(ace, allowed);
             }
-            
-            // Settings
+
+            // Get Settings
             Dictionary<string, string> options = new Dictionary<string, string>
             {
                 { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
@@ -444,10 +462,10 @@ namespace vMenuServer
                 { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
             };
 
-            // Send the permissions to the client.
+            // Send Permissions
             TriggerClientEvent(player, "vMenu:SetPermissions", perms);
 
-            // Wait 50 ms, then send the settings to the client.
+            // Send Settings
             await Delay(50);
             TriggerClientEvent(player, "vMenu:SetOptions", options);
 

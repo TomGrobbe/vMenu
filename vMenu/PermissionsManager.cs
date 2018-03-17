@@ -70,6 +70,7 @@ namespace vMenuClient
         VSMenu,
         VSAll,
         VSSpawnByName,
+        VSAddon,
         VSCompacts,
         VSSedans,
         VSSUVs,

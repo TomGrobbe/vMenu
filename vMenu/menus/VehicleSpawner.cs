@@ -16,6 +16,7 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
+        public static Dictionary<string, uint> AddonVehicles;
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
@@ -74,20 +75,86 @@ namespace vMenuClient
             menu.AddItem(spawnInVeh);
             menu.AddItem(replacePrev);
 
-            // Create the submenus for each category.
 
+            // Vehicle Addons List
+
+            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenuItem addonCarsBtn = new UIMenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
+            addonCarsBtn.SetRightLabel("→→→");
+
+            menu.AddItem(addonCarsBtn);
+
+            if (cf.IsAllowed(Permission.VSAddon))
+            {
+                if (AddonVehicles != null)
+                {
+                    if (AddonVehicles.Count > 0)
+                    {
+                        menu.BindMenuToItem(addonCarsMenu, addonCarsBtn);
+                        MainMenu.Mp.Add(addonCarsMenu);
+                        foreach (KeyValuePair<string, uint> veh in AddonVehicles)
+                        {
+                            string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
+                            string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
+                            name = name != "CARNOTFOUND" ? name : veh.Key;
+                            UIMenuItem carBtn = new UIMenuItem(name, $"Click to spawn {name}.");
+                            carBtn.SetRightLabel($"({veh.Key.ToString()})");
+                            if (!IsModelInCdimage(veh.Value))
+                            {
+                                carBtn.Enabled = false;
+                                carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
+                                carBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            }
+                            addonCarsMenu.AddItem(carBtn);
+                        }
+
+                        addonCarsMenu.OnItemSelect += (sender, item, index) =>
+                        {
+                            cf.SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
+                        };
+                        addonCarsMenu.RefreshIndex();
+                        addonCarsMenu.UpdateScaleform();
+                    }
+                    else
+                    {
+                        addonCarsBtn.Enabled = false;
+                        addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        addonCarsBtn.Description = "There are no addon vehicles available on this server.";
+                    }
+                }
+                else
+                {
+                    addonCarsBtn.Enabled = false;
+                    addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    addonCarsBtn.Description = "The list containing all addon cars could not be loaded, is it configured properly?";
+                }
+            }
+            else
+            {
+                addonCarsBtn.Enabled = false;
+                addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                addonCarsBtn.Description = "Access to this list has been restricted by the server owner.";
+            }
+
+            // Create the submenus for each category.
             var vl = new Vehicles();
 
             // Loop through all the vehicle classes.
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
-
                 // Get the class name.
                 string className = cf.GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
                 btn.SetRightLabel("→→→");
+
                 UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
                 {
                     ScaleWithSafezone = false,
@@ -95,8 +162,10 @@ namespace vMenuClient
                     MouseEdgeEnabled = false,
                     ControlDisablingEnabled = false
                 };
+
                 MainMenu.Mp.Add(vehicleClassMenu);
                 menu.AddItem(btn);
+
                 if (allowedCategories[vehClass])
                 {
                     menu.BindMenuToItem(vehicleClassMenu, btn);
@@ -115,7 +184,6 @@ namespace vMenuClient
                 // Loop through all the vehicles in the vehicle class.
                 foreach (var veh in vl.VehicleClasses[className])
                 {
-
                     // Convert the model name to start with a Capital letter, converting the other characters to lowercase. 
                     var properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
 

@@ -1,0 +1,15 @@
+{
+  "vehicles": [
+    "mgt",
+    "addonvehiclename1",
+    "addonvehiclename2"
+  ],
+  "peds": [
+    "addonpedname1",
+    "addonpedname2"
+  ],
+  "weapons": [
+    "addonweaponname1",
+    "addonweaponname2"
+  ]
+}

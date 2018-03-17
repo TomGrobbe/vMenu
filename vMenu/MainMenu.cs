@@ -23,7 +23,9 @@ namespace vMenuClient
         private bool firstTick = true;
         private static bool permissionsSetupDone = false;
         private static bool optionsSetupDone = false;
-        //public static Dictionary<string, bool> Permissions { get; private set; } = new Dictionary<string, bool>();
+        public static bool addonCarsLoaded = false;
+        public static bool addonPedsLoaded = false;
+        public static bool addonWeaponsLoaded = false;
 
         private static int MenuToggleKey = 244; // M by default (InteractionMenu)
         private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
@@ -347,8 +349,10 @@ namespace vMenuClient
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
 
-                // Wait until the data is received.
-                while (!permissionsSetupDone || !optionsSetupDone || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
+                // Wait until the data is received and the player's name is loaded correctly.
+                while (!permissionsSetupDone || !optionsSetupDone
+                    || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **" ||
+                    !addonCarsLoaded || !addonPedsLoaded || !addonWeaponsLoaded)
                 {
                     await Delay(0);
                 }
