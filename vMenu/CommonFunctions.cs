@@ -1454,9 +1454,18 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        public void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
         {
-            uint model = (uint)modelHash;
+            SetPlayerSkin((uint)modelHash, pedCustomizationOptions);
+        }
+
+        /// <summary>
+        /// Sets the player's model to the provided modelHash.
+        /// </summary>
+        /// <param name="modelHash">The model hash.</param>
+        public async void SetPlayerSkin(uint modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        {
+            uint model = modelHash;
             if (IsModelInCdimage(model))
             {
                 await SaveWeaponLoadout();
@@ -1492,7 +1501,6 @@ namespace vMenuClient
                         }
                     }
                 }
-
                 RestoreWeaponLoadout();
             }
             else
@@ -1772,7 +1780,7 @@ namespace vMenuClient
             if (inputName != "NULL")
             {
                 var model = (uint)GetHashKey(inputName.ToUpper());
-                
+
                 if (IsWeaponValid(model))
                 {
                     GiveWeaponToPed(PlayerPedId(), model, ammo, false, true);

@@ -73,12 +73,11 @@ namespace vMenuClient
             }
             else if (addonType == "peds")
             {
-                // Todo
+                PlayerAppearance.AddonPeds = models;
                 MainMenu.addonPedsLoaded = true;
             }
             else if (addonType == "weapons")
             {
-                // Todo
                 WeaponOptions.AddonWeapons = models;
                 MainMenu.addonWeaponsLoaded = true;
             }

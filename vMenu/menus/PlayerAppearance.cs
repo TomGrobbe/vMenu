@@ -23,6 +23,8 @@ namespace vMenuClient
         private UIMenu spawnSavedPedMenu;
         private UIMenu deleteSavedPedMenu;
 
+        public static Dictionary<string, uint> AddonPeds;
+
         /// <summary>
         /// Creates the menu(s).
         /// </summary>
@@ -109,6 +111,68 @@ namespace vMenuClient
 
             menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
 
+            UIMenu addonPeds = new UIMenu("Model Spawner", "Spawn Addon Ped", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            UIMenuItem addonPedsBtn = new UIMenuItem("Addon Peds", "Choose a player skin from the addons list available on this server.");
+            menu.AddItem(addonPedsBtn);
+            MainMenu.Mp.Add(addonPeds);
+
+            if (AddonPeds != null)
+            {
+                if (AddonPeds.Count > 0)
+                {
+                    addonPedsBtn.SetRightLabel("→→→");
+                    foreach (KeyValuePair<string, uint> ped in AddonPeds)
+                    {
+                        var button = new UIMenuItem(ped.Key, "Click to use this ped.");
+                        addonPeds.AddItem(button);
+                        if (!IsModelAPed(ped.Value) || !IsModelInCdimage(ped.Value))
+                        {
+                            button.Enabled = false;
+                            button.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            button.Description = "This ped is not available on this server. Are you sure the model is valid?";
+                        }
+                    }
+                    addonPeds.OnItemSelect += (sender, item, index) =>
+                    {
+                        if (item.Enabled)
+                        {
+                            cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value);
+                        }
+                        else
+                        {
+                            Notify.Error("This ped is not available. Please ask the server owner to verify this addon ped.");
+                        }
+
+                    };
+                    menu.BindMenuToItem(addonPeds, addonPedsBtn);
+                }
+                else
+                {
+                    addonPedsBtn.Enabled = false;
+                    addonPedsBtn.Description = "This server does not have any addon peds available.";
+                    addonPedsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                }
+            }
+            else
+            {
+                addonPedsBtn.Enabled = false;
+                addonPedsBtn.Description = "This server does not have any addon peds available.";
+                addonPedsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+            }
+
+            addonPeds.RefreshIndex();
+            addonPeds.UpdateScaleform();
+
+            // Add the spawn by name button after the addon peds menu item.
+            menu.AddItem(spawnByName);
+
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
@@ -162,7 +226,7 @@ namespace vMenuClient
             // Handle list selections.
             menu.OnListSelect += (sender, item, index) =>
             {
-                int i = ((sender.CurrentSelection - 4) * 50) + index;
+                int i = ((sender.CurrentSelection - 6) * 50) + index;
                 string modelName = modelNames[i];
                 if (cf.IsAllowed(Permission.PASpawnNew))
                 {
