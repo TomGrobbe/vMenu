@@ -260,17 +260,8 @@ namespace vMenuClient
                 }
                 else if (item == toggleSecondary)
                 {
-                    if (GetPlayerHasReserveParachute(PlayerId()))
-                    {
-                        RemoveWeaponFromPed(PlayerPedId(), (uint)WeaponHash.Parachute);
-                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
-                        Notify.Success("Reserve parachute ~r~removed~s~.", true);
-                    }
-                    else
-                    {
-                        SetPlayerHasReserveParachute(PlayerId());
-                        Notify.Success("Reserve parachute ~g~equippped~s~.", true);
-                    }
+                    SetPlayerHasReserveParachute(PlayerId());
+                    Notify.Success("Reserve parachute ~g~equippped~s~.", true);
                 }
             };
 
@@ -281,6 +272,7 @@ namespace vMenuClient
                     AutoEquipChute = _checked;
                 }
             };
+
             List<dynamic> smokeColor = new List<dynamic>()
             {
                 "White",
@@ -290,7 +282,6 @@ namespace vMenuClient
                 "Blue",
                 "Dark Gray",
             };
-
 
             UIMenuListItem smokeColors = new UIMenuListItem("Smoke Trail Color", smokeColor, 0, "Select a parachute smoke trail color.");
             parachuteMenu.AddItem(smokeColors);
