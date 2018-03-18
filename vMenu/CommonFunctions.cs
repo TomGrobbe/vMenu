@@ -18,6 +18,9 @@ namespace vMenuClient
         private string currentScenario = "";
         private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
+
+        public bool driveToWpTaskActive = false;
+        public bool driveWanderTaskActive = false;
         #endregion
 
         /// <summary>
@@ -119,7 +122,23 @@ namespace vMenuClient
         /// </summary>
         public void DriveToWp()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveToWpTaskActive = true;
+                var waypoint = World.WaypointPosition;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
+                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 1074528293, 10f);
+            }
         }
 
         /// <summary>
@@ -127,7 +146,21 @@ namespace vMenuClient
         /// </summary>
         public void DriveWander()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveWanderTaskActive = true;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), 1074528293);
+            }
         }
         #endregion
 

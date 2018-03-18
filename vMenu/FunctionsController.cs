@@ -188,6 +188,14 @@ namespace vMenuClient
                     // Manage player frozen.
                     FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
                 }
+
+
+                if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
+                {
+                    ClearPedTasks(PlayerPedId());
+                    Notify.Custom("Destination reached, the car will now stop driving!");
+                    MainMenu.Cf.driveToWpTaskActive = false;
+                }
             }
             else
             {
