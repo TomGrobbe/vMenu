@@ -117,6 +117,12 @@ namespace vMenuClient
             get { return GetSettingsBool("weaponsUnlimitedAmmo"); }
             set { SetSavedSettingsBool("weaponsUnlimitedAmmo", value); }
         }
+
+        public static bool AutoEquipChute
+        {
+            get { return GetSettingsBool("autoEquipParachuteWhenInPlane"); }
+            set { SetSavedSettingsBool("autoEquipParachuteWhenInPlane", value); }
+        }
         #endregion
 
         #region Misc Settings
@@ -194,7 +200,7 @@ namespace vMenuClient
                 // Some options should be enabled by default:
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
                     || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted"
-                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled")
+                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;

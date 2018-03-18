@@ -84,7 +84,6 @@ namespace vMenuClient
             menu.AddItem(savePed);
             menu.AddItem(spawnSavedPed);
             menu.AddItem(deleteSavedPed);
-            menu.AddItem(spawnByName);
 
             // Bind items to the submenus.
             if (cf.IsAllowed(Permission.PACustomize))

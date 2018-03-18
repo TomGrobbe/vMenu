@@ -639,6 +639,16 @@ namespace vMenuClient
 
                 // Enable/disable infinite ammo.
                 SetPedInfiniteAmmoClip(PlayerPedId(), MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
+
+                if (MainMenu.WeaponOptionsMenu.AutoEquipChute)
+                {
+                    if ((IsPedInAnyHeli(PlayerPedId()) || IsPedInAnyPlane(PlayerPedId())) && !HasPedGotWeapon(PlayerPedId(), (uint)WeaponHash.Parachute, false))
+                    {
+                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                        SetPlayerHasReserveParachute(PlayerId());
+                        SetPlayerCanLeaveParachuteSmokeTrail(PlayerPedId(), true);
+                    }
+                }
             }
             else
             {
