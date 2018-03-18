@@ -70,6 +70,7 @@ namespace vMenuClient
         VSMenu,
         VSAll,
         VSSpawnByName,
+        VSAddon,
         VSCompacts,
         VSSedans,
         VSSUVs,
@@ -127,6 +128,8 @@ namespace vMenuClient
         WPRemoveAll,
         WPUnlimitedAmmo,
         WPNoReload,
+        WPSpawn,
+        WPSetAllAmmo,
 
         // Misc Settings
         MSMenu,

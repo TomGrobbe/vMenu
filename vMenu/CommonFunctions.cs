@@ -18,6 +18,9 @@ namespace vMenuClient
         private string currentScenario = "";
         private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
+
+        public bool driveToWpTaskActive = false;
+        public bool driveWanderTaskActive = false;
         #endregion
 
         /// <summary>
@@ -119,7 +122,23 @@ namespace vMenuClient
         /// </summary>
         public void DriveToWp()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveToWpTaskActive = true;
+                var waypoint = World.WaypointPosition;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
+                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 1074528293, 10f);
+            }
         }
 
         /// <summary>
@@ -127,7 +146,21 @@ namespace vMenuClient
         /// </summary>
         public void DriveWander()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveWanderTaskActive = true;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), 1074528293);
+            }
         }
         #endregion
 
@@ -961,10 +994,11 @@ namespace vMenuClient
         public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
             // Create the window title string.
-            AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
+            var spacer = "\t";
+            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
 
             // Display the input box.
-            DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
+            DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
             await Delay(0);
             // Wait for a result.
             while (true)
@@ -1454,9 +1488,18 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        public void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
         {
-            uint model = (uint)modelHash;
+            SetPlayerSkin((uint)modelHash, pedCustomizationOptions);
+        }
+
+        /// <summary>
+        /// Sets the player's model to the provided modelHash.
+        /// </summary>
+        /// <param name="modelHash">The model hash.</param>
+        public async void SetPlayerSkin(uint modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        {
+            uint model = modelHash;
             if (IsModelInCdimage(model))
             {
                 await SaveWeaponLoadout();
@@ -1492,8 +1535,23 @@ namespace vMenuClient
                         }
                     }
                 }
-
                 RestoreWeaponLoadout();
+            }
+            else
+            {
+                Notify.Error(CommonErrors.InvalidModel);
+            }
+        }
+
+        /// <summary>
+        /// Set the player model by asking for user input.
+        /// </summary>
+        public async void SpawnPedByName()
+        {
+            string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
+            if (input != "NULL")
+            {
+                SetPlayerSkin(GetHashKey(input));
             }
             else
             {
@@ -1716,6 +1774,61 @@ namespace vMenuClient
             }
             return output;
 
+        }
+        #endregion
+
+        #region Weapon Options
+        /// <summary>
+        /// Set the ammo for all weapons in inventory to the custom amount entered by the user.
+        /// </summary>
+        public async void SetAllWeaponsAmmo()
+        {
+            int ammo = 100;
+            string inputAmmo = await GetUserInput("Enter Ammo Amount", "100") ?? "NULL";
+
+            if (inputAmmo != "NULL")
+            {
+                ammo = int.Parse(inputAmmo);
+                Ped ped = Game.PlayerPed;
+                foreach (var wp in ValidWeapons.Weapons)
+                {
+                    if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                    {
+                        SetPedAmmo(ped.Handle, wp.Value, ammo);
+                    }
+                }
+            }
+            else
+            {
+                Notify.Error("You did not enter a valid ammo count.");
+            }
+        }
+
+        /// <summary>
+        /// Spawn a weapon by asking the player for the weapon name.
+        /// </summary>
+        public async void SpawnCustomWeapon()
+        {
+            int ammo = 900;
+            string inputName = await GetUserInput("Enter Weapon Model Name", "", 30) ?? "NULL";
+            if (inputName != "NULL")
+            {
+                var model = (uint)GetHashKey(inputName.ToUpper());
+
+                if (IsWeaponValid(model))
+                {
+                    GiveWeaponToPed(PlayerPedId(), model, ammo, false, true);
+                    Notify.Success("Added weapon to inventory.");
+                }
+                else
+                {
+                    Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
+                }
+            }
+            else
+            {
+                Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name.");
+            }
         }
         #endregion
     }

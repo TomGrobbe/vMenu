@@ -16,8 +16,12 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
-        public bool UnlimitedAmmo = UserDefaults.WeaponsUnlimitedAmmo;
-        public bool NoReload = UserDefaults.WeaponsNoReload;
+
+        public bool UnlimitedAmmo { get; private set; } = UserDefaults.WeaponsUnlimitedAmmo;
+        public bool NoReload { get; private set; } = UserDefaults.WeaponsNoReload;
+        public bool AutoEquipChute { get; private set; } = UserDefaults.AutoEquipChute;
+
+        public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
 
         private Dictionary<UIMenu, ValidWeapon> weaponInfo = new Dictionary<UIMenu, ValidWeapon>();
         private Dictionary<UIMenuItem, string> weaponComponents = new Dictionary<UIMenuItem, string>();
@@ -37,8 +41,26 @@ namespace vMenuClient
             UIMenuItem removeAllWeapons = new UIMenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
             UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem("Unlimited Ammo", UnlimitedAmmo, "Unlimited ammonition supply.");
             UIMenuCheckboxItem noReload = new UIMenuCheckboxItem("No Reload", NoReload, "Never reload.");
+            UIMenuItem setAmmo = new UIMenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
+            UIMenuItem refillMaxAmmo = new UIMenuItem("Refill All Ammo", "Give all your weapons max ammo.");
             ValidWeapons vw = new ValidWeapons();
-
+            UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
+            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
+            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true)
+            {
+                MouseEdgeEnabled = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenuItem spawnByName = new UIMenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
 
             if (cf.IsAllowed(Permission.WPGetAll))
             {
@@ -56,7 +78,264 @@ namespace vMenuClient
             {
                 menu.AddItem(noReload);
             }
+            if (cf.IsAllowed(Permission.WPSetAllAmmo))
+            {
+                menu.AddItem(setAmmo);
+                menu.AddItem(refillMaxAmmo);
+            }
+            if (cf.IsAllowed(Permission.WPSpawn))
+            {
+                menu.AddItem(spawnByName);
+            }
 
+            menu.AddItem(addonWeaponsBtn);
+
+            if (cf.IsAllowed(Permission.WPSpawn) && AddonWeapons != null && AddonWeapons.Count > 0)
+            {
+                menu.BindMenuToItem(addonWeaponsMenu, addonWeaponsBtn);
+                foreach (KeyValuePair<string, uint> weapon in AddonWeapons)
+                {
+                    string name = weapon.Key.ToString();
+                    uint model = weapon.Value;
+                    var item = new UIMenuItem(name, $"Click to add/remove this weapon ({name}) to/from your inventory.");
+                    addonWeaponsMenu.AddItem(item);
+                    if (!IsWeaponValid(model))
+                    {
+                        item.Enabled = false;
+                        item.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        item.Description = "This model is not available. Please ask the server owner to verify it's being streamed correctly.";
+                    }
+                }
+                addonWeaponsMenu.OnItemSelect += (sender, item, index) =>
+                {
+                    var weapon = AddonWeapons.ElementAt(index);
+                    if (HasPedGotWeapon(PlayerPedId(), weapon.Value, false))
+                    {
+                        RemoveWeaponFromPed(PlayerPedId(), weapon.Value);
+                    }
+                    else
+                    {
+                        var maxAmmo = 200;
+                        GetMaxAmmo(PlayerPedId(), weapon.Value, ref maxAmmo);
+                        GiveWeaponToPed(PlayerPedId(), weapon.Value, maxAmmo, false, true);
+                    }
+                };
+                addonWeaponsBtn.SetRightLabel("→→→");
+            }
+            else
+            {
+                addonWeaponsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                addonWeaponsBtn.Enabled = false;
+                addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
+            }
+
+            addonWeaponsMenu.RefreshIndex();
+            addonWeaponsMenu.UpdateScaleform();
+
+            UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            UIMenu secondaryChute = new UIMenu("Parachute Options", "Select A Reserve Parachute", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            UIMenuItem chute = new UIMenuItem("No Style", "Default parachute.");
+            UIMenuItem chute0 = new UIMenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
+            UIMenuItem chute1 = new UIMenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
+            UIMenuItem chute2 = new UIMenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
+            UIMenuItem chute3 = new UIMenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
+            UIMenuItem chute4 = new UIMenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
+            UIMenuItem chute5 = new UIMenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
+            UIMenuItem chute6 = new UIMenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
+            UIMenuItem chute7 = new UIMenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
+            UIMenuItem chute8 = new UIMenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
+            UIMenuItem chute9 = new UIMenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
+            UIMenuItem chute10 = new UIMenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
+            UIMenuItem chute11 = new UIMenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
+            UIMenuItem chute12 = new UIMenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
+            UIMenuItem chute13 = new UIMenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
+            UIMenuItem rchute = new UIMenuItem("No Style", "Default parachute.");
+            UIMenuItem rchute0 = new UIMenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
+            UIMenuItem rchute1 = new UIMenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
+            UIMenuItem rchute2 = new UIMenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
+            UIMenuItem rchute3 = new UIMenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
+            UIMenuItem rchute4 = new UIMenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
+            UIMenuItem rchute5 = new UIMenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
+            UIMenuItem rchute6 = new UIMenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
+            UIMenuItem rchute7 = new UIMenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
+            UIMenuItem rchute8 = new UIMenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
+            UIMenuItem rchute9 = new UIMenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
+            UIMenuItem rchute10 = new UIMenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
+            UIMenuItem rchute11 = new UIMenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
+            UIMenuItem rchute12 = new UIMenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
+            UIMenuItem rchute13 = new UIMenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
+
+            primaryChute.AddItem(chute);
+            primaryChute.AddItem(chute0);
+            primaryChute.AddItem(chute1);
+            primaryChute.AddItem(chute2);
+            primaryChute.AddItem(chute3);
+            primaryChute.AddItem(chute4);
+            primaryChute.AddItem(chute5);
+            primaryChute.AddItem(chute6);
+            primaryChute.AddItem(chute7);
+            primaryChute.AddItem(chute8);
+            primaryChute.AddItem(chute9);
+            primaryChute.AddItem(chute10);
+            primaryChute.AddItem(chute11);
+            primaryChute.AddItem(chute12);
+            primaryChute.AddItem(chute13);
+
+            secondaryChute.AddItem(rchute);
+            secondaryChute.AddItem(rchute0);
+            secondaryChute.AddItem(rchute1);
+            secondaryChute.AddItem(rchute2);
+            secondaryChute.AddItem(rchute3);
+            secondaryChute.AddItem(rchute4);
+            secondaryChute.AddItem(rchute5);
+            secondaryChute.AddItem(rchute6);
+            secondaryChute.AddItem(rchute7);
+            secondaryChute.AddItem(rchute8);
+            secondaryChute.AddItem(rchute9);
+            secondaryChute.AddItem(rchute10);
+            secondaryChute.AddItem(rchute11);
+            secondaryChute.AddItem(rchute12);
+            secondaryChute.AddItem(rchute13);
+
+            primaryChute.OnItemSelect += (sender, item, index) =>
+            {
+                SetPedParachuteTintIndex(PlayerPedId(), index - 1);
+                Subtitle.Custom($"Primary parachute style selected: ~r~{item.Text}~s~.");
+            };
+
+            secondaryChute.OnItemSelect += (sender, item, index) =>
+            {
+                SetPlayerReserveParachuteTintIndex(PlayerId(), index - 1);
+                Subtitle.Custom($"Reserve parachute style selected: ~r~{item.Text}~s~.");
+            };
+
+            UIMenuItem primaryChuteBtn = new UIMenuItem("Primary Parachute Style", "Select a primary parachute.");
+            UIMenuItem secondaryChuteBtn = new UIMenuItem("Reserve Parachute Style", "Select a reserve parachute.");
+
+            parachuteMenu.AddItem(primaryChuteBtn);
+            primaryChuteBtn.SetRightLabel("→→→");
+            parachuteMenu.AddItem(secondaryChuteBtn);
+            secondaryChuteBtn.SetRightLabel("→→→");
+
+            parachuteMenu.BindMenuToItem(primaryChute, primaryChuteBtn);
+            parachuteMenu.BindMenuToItem(secondaryChute, secondaryChuteBtn);
+
+            UIMenuCheckboxItem autoEquipParachute = new UIMenuCheckboxItem("Auto Equip Parachute", AutoEquipChute, "Automatically equip a parachute whenever you enter a plane/helicopter.");
+            parachuteMenu.AddItem(autoEquipParachute);
+
+            UIMenuItem togglePrimary = new UIMenuItem("Get / Remove Primary Parachute", "Equip a primary parachute.");
+            UIMenuItem toggleSecondary = new UIMenuItem("Get Reserve Parachute", "Equip a reserve parachute, you need to get a primary parachute first before equipping a reserve parachute.");
+
+            parachuteMenu.AddItem(togglePrimary);
+            parachuteMenu.AddItem(toggleSecondary);
+
+            parachuteMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == togglePrimary)
+                {
+                    if (HasPedGotWeapon(PlayerPedId(), (uint)WeaponHash.Parachute, false))
+                    {
+                        RemoveWeaponFromPed(PlayerPedId(), (uint)WeaponHash.Parachute);
+                        Notify.Success("Primary parachute ~r~removed~s~.", true);
+                    }
+                    else
+                    {
+                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, false);
+                        Notify.Success("Primary parachute ~g~equippped~s~.", true);
+                    }
+                }
+                else if (item == toggleSecondary)
+                {
+                    SetPlayerHasReserveParachute(PlayerId());
+                    Notify.Success("Reserve parachute ~g~equippped~s~.", true);
+                }
+            };
+
+            parachuteMenu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                if (item == autoEquipParachute)
+                {
+                    AutoEquipChute = _checked;
+                }
+            };
+
+            List<dynamic> smokeColor = new List<dynamic>()
+            {
+                "White",
+                "Yellow",
+                "Red",
+                "Green",
+                "Blue",
+                "Dark Gray",
+            };
+
+            UIMenuListItem smokeColors = new UIMenuListItem("Smoke Trail Color", smokeColor, 0, "Select a parachute smoke trail color.");
+            parachuteMenu.AddItem(smokeColors);
+            parachuteMenu.OnListChange += (sender, item, index) =>
+            {
+                if (item == smokeColors)
+                {
+                    SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), false);
+                    if (index == 0)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 255, 255);
+                    }
+                    else if (index == 1)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 255, 0);
+                    }
+                    else if (index == 2)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 0, 0);
+                    }
+                    else if (index == 3)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 0, 255, 0);
+                    }
+                    else if (index == 4)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 0, 0, 255);
+                    }
+                    else if (index == 5)
+                    {
+                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 1, 1, 1);
+                    }
+
+                    SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), true);
+                }
+            };
+
+            menu.AddItem(parachuteBtn);
+            parachuteBtn.SetRightLabel("→→→");
+            menu.BindMenuToItem(parachuteMenu, parachuteBtn);
+
+            parachuteMenu.RefreshIndex();
+            parachuteMenu.UpdateScaleform();
+
+            primaryChute.RefreshIndex();
+            primaryChute.UpdateScaleform();
+
+            secondaryChute.RefreshIndex();
+            secondaryChute.UpdateScaleform();
+
+            MainMenu.Mp.Add(addonWeaponsMenu);
+            MainMenu.Mp.Add(parachuteMenu);
+            MainMenu.Mp.Add(primaryChute);
+            MainMenu.Mp.Add(secondaryChute);
 
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
@@ -77,9 +356,16 @@ namespace vMenuClient
 
                     weaponInfo.Add(weaponMenu, weapon);
 
-                    UIMenuItem getOrRemoveWeapon = new UIMenuItem("Equip/Remove Weapon");
+                    UIMenuItem getOrRemoveWeapon = new UIMenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.");
                     getOrRemoveWeapon.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);
                     weaponMenu.AddItem(getOrRemoveWeapon);
+                    if (!cf.IsAllowed(Permission.WPSpawn))
+                    {
+                        getOrRemoveWeapon.Enabled = false;
+                        getOrRemoveWeapon.Description = "This option has been disabled by the server owner.";
+                        getOrRemoveWeapon.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    }
+
                     UIMenuItem fillAmmo = new UIMenuItem("Re-fill Ammo", "Get max ammo for this weapon.");
                     fillAmmo.SetLeftBadge(UIMenuItem.BadgeStyle.Ammo);
                     weaponMenu.AddItem(fillAmmo);
@@ -209,11 +495,31 @@ namespace vMenuClient
                         GetMaxAmmo(PlayerPedId(), weapon.Value, ref ammo);
                         ped.Weapons.Give((WeaponHash)weapon.Value, ammo, weapon.Key == "Unarmed", true);
                     }
-                    //ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
+                    ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
                 }
                 else if (item == removeAllWeapons)
                 {
                     ped.Weapons.RemoveAll();
+                }
+                else if (item == setAmmo)
+                {
+                    cf.SetAllWeaponsAmmo();
+                }
+                else if (item == refillMaxAmmo)
+                {
+                    foreach (var wp in ValidWeapons.Weapons)
+                    {
+                        if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        {
+                            int maxammo = 200;
+                            GetMaxAmmo(ped.Handle, wp.Value, ref maxammo);
+                            SetPedAmmo(ped.Handle, wp.Value, maxammo);
+                        }
+                    }
+                }
+                else if (item == spawnByName)
+                {
+                    cf.SpawnCustomWeapon();
                 }
             };
 

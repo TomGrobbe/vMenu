@@ -105,6 +105,13 @@ namespace vMenuClient
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Click to spawn this saved vehicle.");
                         vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
                         savedVehicles.AddItem(vehBtn);
+                        if (!IsModelInCdimage((uint)Int64.Parse(savedVehicle.Value["model"])))
+                        {
+                            vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            vehBtn.Enabled = false;
+                            vehBtn.Description = "This model is not available on this server, if this is an addon vehicle or DLC vehicle, please make sure " +
+                            "that it's being streamed on this server.";
+                        }
                     }
 
                     // Sort the menu items (case IN-sensitive) by name.
