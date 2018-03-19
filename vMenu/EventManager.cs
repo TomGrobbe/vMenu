@@ -35,6 +35,9 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
             EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
+            EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
+            EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
+            EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
 
             Tick += WeatherSync;
             Tick += TimeSync;
@@ -48,6 +51,37 @@ namespace vMenuClient
         private void UpdatePermissions(dynamic permissions)
         {
             MainMenu.SetPermissions(permissions);
+        }
+
+        private void SetAddonModels(string addonType, dynamic addons)
+        {
+            Dictionary<string, uint> models = new Dictionary<string, uint>();
+            foreach (var addon in addons)
+            {
+                string modelName = addon.ToString();
+                uint modelHash = (uint)GetHashKey(modelName);
+
+                if (!models.ContainsKey(modelName))
+                {
+                    models.Add(modelName, modelHash);
+                }
+            }
+            if (addonType == "vehicles")
+            {
+                VehicleSpawner.AddonVehicles = models;
+                MainMenu.addonCarsLoaded = true;
+            }
+            else if (addonType == "peds")
+            {
+                PlayerAppearance.AddonPeds = models;
+                MainMenu.addonPedsLoaded = true;
+            }
+            else if (addonType == "weapons")
+            {
+                WeaponOptions.AddonWeapons = models;
+                MainMenu.addonWeaponsLoaded = true;
+            }
+
         }
 
         /// <summary>

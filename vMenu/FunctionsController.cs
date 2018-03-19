@@ -121,7 +121,8 @@ namespace vMenuClient
                 SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod));
 
                 // Manage invisibility.
-                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible)) || (!cf.IsAllowed(Permission.POInvisible)), false);
+                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible)) ||
+                    (!cf.IsAllowed(Permission.POInvisible)), false);
 
                 // Manage Stamina
                 if (MainMenu.PlayerOptionsMenu.PlayerStamina)
@@ -136,7 +137,8 @@ namespace vMenuClient
                 }
 
                 // Manage PlayerNoRagdoll
-                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) || (!cf.IsAllowed(Permission.PONoRagdoll)));
+                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) ||
+                    (!cf.IsAllowed(Permission.PONoRagdoll)));
 
 
                 // Fall off bike / dragged out of car.
@@ -186,6 +188,14 @@ namespace vMenuClient
                     // Manage player frozen.
                     FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
                 }
+
+
+                if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
+                {
+                    ClearPedTasks(PlayerPedId());
+                    Notify.Custom("Destination reached, the car will now stop driving!");
+                    MainMenu.Cf.driveToWpTaskActive = false;
+                }
             }
             else
             {
@@ -231,7 +241,7 @@ namespace vMenuClient
                     // Freeze Vehicle Position (if enabled).
                     FreezeEntityPosition(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze));
 
-                    // If the torque multiplier is enabled.
+                    // If the torque multiplier is enabled and the player is allowed to use it.
                     if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))
                     {
                         // Set the torque multiplier to the selected value by the player.
@@ -244,15 +254,19 @@ namespace vMenuClient
                         // Only needs to be set once.
                         SwitchedVehicle = false;
 
-                        // Vehicle engine power multiplier.
+                        // Vehicle engine power multiplier. Enable it once the player switched vehicles.
+                        // Only do this if the option is enabled AND the player has permissions for it.
                         if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
                         {
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
                         }
+                        // If the player switched vehicles and the option is turned off or the player has no permissions for it
+                        // Then reset the power multiplier ONCE.
                         else
                         {
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
                         }
+
                         // No Siren Toggle
                         vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
                     }
@@ -297,8 +311,8 @@ namespace vMenuClient
                 }
 
                 // Manage vehicle engine always on.
-                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) && !IsPedInAnyVehicle(PlayerPedId(), false)) &&
-                    (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
+                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) &&
+                    !IsPedInAnyVehicle(PlayerPedId(), false)) && (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
                 {
                     await Delay(100);
                     SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
@@ -633,6 +647,16 @@ namespace vMenuClient
 
                 // Enable/disable infinite ammo.
                 SetPedInfiniteAmmoClip(PlayerPedId(), MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
+
+                if (MainMenu.WeaponOptionsMenu.AutoEquipChute)
+                {
+                    if ((IsPedInAnyHeli(PlayerPedId()) || IsPedInAnyPlane(PlayerPedId())) && !HasPedGotWeapon(PlayerPedId(), (uint)WeaponHash.Parachute, false))
+                    {
+                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                        SetPlayerHasReserveParachute(PlayerId());
+                        SetPlayerCanLeaveParachuteSmokeTrail(PlayerPedId(), true);
+                    }
+                }
             }
             else
             {

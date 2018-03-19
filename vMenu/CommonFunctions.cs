@@ -16,8 +16,11 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
-        private int previousVehicle = -1;
+        private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
+
+        public bool driveToWpTaskActive = false;
+        public bool driveWanderTaskActive = false;
         #endregion
 
         /// <summary>
@@ -119,7 +122,23 @@ namespace vMenuClient
         /// </summary>
         public void DriveToWp()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveToWpTaskActive = true;
+                var waypoint = World.WaypointPosition;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
+                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 1074528293, 10f);
+            }
         }
 
         /// <summary>
@@ -127,7 +146,21 @@ namespace vMenuClient
         /// </summary>
         public void DriveWander()
         {
-            throw new NotImplementedException();
+            if (driveWanderTaskActive || driveToWpTaskActive)
+            {
+                ClearPedTasks(PlayerPedId());
+                driveWanderTaskActive = false;
+                driveToWpTaskActive = false;
+            }
+            else
+            {
+                driveWanderTaskActive = true;
+                var veh = GetVehicle();
+                var model = (uint)GetEntityModel(veh);
+                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAggressiveness(PlayerPedId(), 0f);
+                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), 1074528293);
+            }
         }
         #endregion
 
@@ -289,7 +322,7 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = 800f;
+                pos.Z = 200f;
                 await TeleportToCoords(pos);
             }
         }
@@ -528,24 +561,75 @@ namespace vMenuClient
             if (!skipLoad)
             {
                 bool successFull = await LoadModel(vehicleHash);
-                if (!successFull)
+                if (!successFull || !IsModelAVehicle(vehicleHash))
                 {
                     // Vehicle model is invalid.
                     Notify.Error(CommonErrors.InvalidModel);
+                    return;
                 }
+            }
+            if (MainMenu.DebugMode)
+            {
+                Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
             }
 
             // Get the heading & position for where the vehicle should be spawned.
             Vector3 pos = (spawnInside) ? GetEntityCoords(PlayerPedId(), true) : GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
-            var heading = GetEntityHeading(PlayerPedId()) + (spawnInside ? 0f : 90f);
+            float heading = GetEntityHeading(PlayerPedId()) + (spawnInside ? 0f : 90f);
 
-            // Create the vehicle.
-            var veh = CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z + 1f, heading, true, true);
-
-            // Create a new vehicle object for this vehicle and remove the need to hotwire the car.
-            Vehicle vehicle = new Vehicle(veh)
+            // If the previous vehicle exists...
+            if (previousVehicle != null)
             {
-                NeedsToBeHotwired = false
+                ClearPedTasksImmediately(PlayerPedId());
+                // And it's actually a vehicle (rather than another random entity type)
+                //if (IsEntityAVehicle(previousVehicle) && IsVehiclePreviouslyOwnedByPlayer(previousVehicle))
+                if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
+                    (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
+                {
+                    // If the previous vehicle should be deleted:
+                    if (replacePrevious)
+                    {
+                        // Delete it.
+                        previousVehicle.PreviouslyOwnedByPlayer = false;
+                        previousVehicle.Delete();
+                    }
+                    // Otherwise
+                    else
+                    {
+                        // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
+                        previousVehicle.PreviouslyOwnedByPlayer = false;
+                        previousVehicle.MarkAsNoLongerNeeded();
+                    }
+                    previousVehicle = null;
+                }
+                else if (IsPedInAnyVehicle(PlayerPedId(), false))
+                {
+                    if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
+                    {
+                        int tmpveh = GetVehicle();
+                        SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
+                        SetEntityAsMissionEntity(tmpveh, true, true);
+                        DeleteVehicle(ref tmpveh);
+                    }
+                }
+            }
+            else if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
+                {
+                    int tmpveh = GetVehicle();
+                    SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
+                    SetEntityAsMissionEntity(tmpveh, true, true);
+                    DeleteVehicle(ref tmpveh);
+                }
+            }
+
+            // Create the new vehicle and remove the need to hotwire the car.
+            Vehicle vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z + 1f, heading, true, false))
+            {
+                NeedsToBeHotwired = false,
+                PreviouslyOwnedByPlayer = true,
+                IsPersistent = true
             };
 
             // If spawnInside is true
@@ -553,8 +637,10 @@ namespace vMenuClient
             {
                 // Set the vehicle's engine to be running.
                 vehicle.IsEngineRunning = true;
+
                 // Set the ped into the vehicle.
                 new Ped(PlayerPedId()).SetIntoVehicle(vehicle, VehicleSeat.Driver);
+
                 // If the vehicle is a helicopter and the player is in the air, set the blades to be full speed.
                 if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(PlayerPedId()) > 10.0f)
                 {
@@ -563,40 +649,14 @@ namespace vMenuClient
                 // If it's not a helicopter or the player is not in the air, set the vehicle on the ground properly.
                 else
                 {
-                    SetVehicleOnGroundProperly(vehicle.Handle);
+                    //SetVehicleOnGroundProperly(vehicle.Handle);
+                    vehicle.PlaceOnGround();
                 }
             }
-
-            // If the previous vehicle exists...
-            if (DoesEntityExist(previousVehicle))
-            {
-                // And it's actually a vehicle (rather than another random entity type)
-                if (IsEntityAVehicle(previousVehicle))
-                {
-                    // If the previous vehicle should be deleted:
-                    if (replacePrevious)
-                    {
-                        // Delete it.
-                        SetEntityAsMissionEntity(previousVehicle, false, false);
-                        DeleteVehicle(ref previousVehicle);
-                    }
-                    // Otherwise
-                    else
-                    {
-                        // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                        SetEntityAsMissionEntity(previousVehicle, false, false);
-                        SetVehicleAsNoLongerNeeded(ref previousVehicle);
-                    }
-                }
-            }
-
-            // Set the previous vehicle to the new vehicle.
-            previousVehicle = vehicle.Handle;
 
             // If mod info about the vehicle was specified, check if it's not null.
             if (vehicleInfo != null)
             {
-
                 // Set the modkit so we can modify the car.
                 SetVehicleModKit(vehicle.Handle, 0);
 
@@ -688,6 +748,12 @@ namespace vMenuClient
                     SaveVehicle(vehicleInfo["name"].ToString());
                 }
             }
+
+            // Set the previous vehicle to the new vehicle.
+            previousVehicle = vehicle;
+
+            // Discard the model.
+            SetModelAsNoLongerNeeded(vehicleHash);
         }
         #endregion
         #endregion
@@ -928,10 +994,11 @@ namespace vMenuClient
         public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
         {
             // Create the window title string.
-            AddTextEntry("FMMC_KEY_TIP1", $"{windowTitle ?? "Enter"}:   (MAX {maxInputLength.ToString()} CHARACTERS)");
+            var spacer = "\t";
+            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
 
             // Display the input box.
-            DisplayOnscreenKeyboard(1, "FMMC_KEY_TIP1", "", defaultText ?? "", "", "", "", maxInputLength);
+            DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
             await Delay(0);
             // Wait for a result.
             while (true)
@@ -1421,9 +1488,18 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        public void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
         {
-            uint model = (uint)modelHash;
+            SetPlayerSkin((uint)modelHash, pedCustomizationOptions);
+        }
+
+        /// <summary>
+        /// Sets the player's model to the provided modelHash.
+        /// </summary>
+        /// <param name="modelHash">The model hash.</param>
+        public async void SetPlayerSkin(uint modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        {
+            uint model = modelHash;
             if (IsModelInCdimage(model))
             {
                 await SaveWeaponLoadout();
@@ -1459,8 +1535,23 @@ namespace vMenuClient
                         }
                     }
                 }
-
                 RestoreWeaponLoadout();
+            }
+            else
+            {
+                Notify.Error(CommonErrors.InvalidModel);
+            }
+        }
+
+        /// <summary>
+        /// Set the player model by asking for user input.
+        /// </summary>
+        public async void SpawnPedByName()
+        {
+            string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
+            if (input != "NULL")
+            {
+                SetPlayerSkin(GetHashKey(input));
             }
             else
             {
@@ -1683,6 +1774,61 @@ namespace vMenuClient
             }
             return output;
 
+        }
+        #endregion
+
+        #region Weapon Options
+        /// <summary>
+        /// Set the ammo for all weapons in inventory to the custom amount entered by the user.
+        /// </summary>
+        public async void SetAllWeaponsAmmo()
+        {
+            int ammo = 100;
+            string inputAmmo = await GetUserInput("Enter Ammo Amount", "100") ?? "NULL";
+
+            if (inputAmmo != "NULL")
+            {
+                ammo = int.Parse(inputAmmo);
+                Ped ped = Game.PlayerPed;
+                foreach (var wp in ValidWeapons.Weapons)
+                {
+                    if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                    {
+                        SetPedAmmo(ped.Handle, wp.Value, ammo);
+                    }
+                }
+            }
+            else
+            {
+                Notify.Error("You did not enter a valid ammo count.");
+            }
+        }
+
+        /// <summary>
+        /// Spawn a weapon by asking the player for the weapon name.
+        /// </summary>
+        public async void SpawnCustomWeapon()
+        {
+            int ammo = 900;
+            string inputName = await GetUserInput("Enter Weapon Model Name", "", 30) ?? "NULL";
+            if (inputName != "NULL")
+            {
+                var model = (uint)GetHashKey(inputName.ToUpper());
+
+                if (IsWeaponValid(model))
+                {
+                    GiveWeaponToPed(PlayerPedId(), model, ammo, false, true);
+                    Notify.Success("Added weapon to inventory.");
+                }
+                else
+                {
+                    Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
+                }
+            }
+            else
+            {
+                Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name.");
+            }
         }
         #endregion
     }

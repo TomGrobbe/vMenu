@@ -177,49 +177,49 @@ namespace vMenuClient
 
             #region Add items to the menu.
             // Add everything to the menu. (based on permissions)
-            if (cf.IsAllowed(Permission.VOGod))
+            if (cf.IsAllowed(Permission.VOGod)) // GOD MODE
             {
-                menu.AddItem(vehicleGod); // GOD MODE
+                menu.AddItem(vehicleGod);
             }
-            if (cf.IsAllowed(Permission.VORepair))
+            if (cf.IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
-                menu.AddItem(fixVehicle); // REPAIR VEHICLE
+                menu.AddItem(fixVehicle);
             }
             if (cf.IsAllowed(Permission.VOWash))
             {
                 menu.AddItem(cleanVehicle); // CLEAN VEHICLE
                 menu.AddItem(setDirtLevel); // SET DIRT LEVEL
             }
-            if (cf.IsAllowed(Permission.VOEngine))
+            if (cf.IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
             {
-                menu.AddItem(toggleEngine); // TOGGLE ENGINE ON/OFF
+                menu.AddItem(toggleEngine);
             }
             if (cf.IsAllowed(Permission.VOChangePlate))
             {
                 menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
                 menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
             }
-            if (cf.IsAllowed(Permission.VOMod))
+            if (cf.IsAllowed(Permission.VOMod)) // MOD MENU
             {
-                menu.AddItem(modMenuBtn); // MOD MENU
+                menu.AddItem(modMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOColors))
+            if (cf.IsAllowed(Permission.VOColors)) // COLORS MENU
             {
-                menu.AddItem(colorsMenuBtn); // COLORS MENU
+                menu.AddItem(colorsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOLiveries))
+            if (cf.IsAllowed(Permission.VOLiveries)) // LIVERIES MENU
             {
-                menu.AddItem(liveriesMenuBtn); // LIVERIES MENU
+                menu.AddItem(liveriesMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOComponents))
+            if (cf.IsAllowed(Permission.VOComponents)) // COMPONENTS MENU
             {
-                menu.AddItem(componentsMenuBtn); // COMPONENTS MENU
+                menu.AddItem(componentsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VODoors))
+            if (cf.IsAllowed(Permission.VODoors)) // DOORS MENU
             {
-                menu.AddItem(doorsMenuBtn); // DOORS MENU
+                menu.AddItem(doorsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOWindows))
+            if (cf.IsAllowed(Permission.VOWindows)) // WINDOWS MENU
             {
                 menu.AddItem(windowsMenuBtn);
             }
@@ -233,37 +233,41 @@ namespace vMenuClient
                 menu.AddItem(powerEnabled); // POWER ENABLED
                 menu.AddItem(powerMultiplier); // POWER LIST
             }
-            if (cf.IsAllowed(Permission.VOFlip))
+            if (cf.IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
             {
-                menu.AddItem(flipVehicle); // FLIP VEHICLE
+                menu.AddItem(flipVehicle);
             }
-            if (cf.IsAllowed(Permission.VOAlarm))
+            if (cf.IsAllowed(Permission.VOAlarm)) // TOGGLE VEHICLE ALARM
             {
-                menu.AddItem(vehicleAlarm); // TOGGLE VEHICLE ALARM
+                menu.AddItem(vehicleAlarm);
             }
-            if (cf.IsAllowed(Permission.VOCycleSeats))
+            if (cf.IsAllowed(Permission.VOCycleSeats)) // CYCLE THROUGH VEHICLE SEATS
             {
-                menu.AddItem(cycleSeats); // CYCLE THROUGH VEHICLE SEATS
+                menu.AddItem(cycleSeats);
             }
-            if (cf.IsAllowed(Permission.VOEngineAlwaysOn))
-            {
-                menu.AddItem(vehicleEngineAO); // LEAVE ENGINE RUNNING
-            }
-            if (cf.IsAllowed(Permission.VONoSiren))
-            {
-                menu.AddItem(vehicleNoSiren); // DISABLE SIREN
-            }
-            if (cf.IsAllowed(Permission.VONoHelmet))
-            {
-                menu.AddItem(vehicleNoBikeHelmet); // DISABLE BIKE HELMET
-            }
-            if (cf.IsAllowed(Permission.VOLights))
+            if (cf.IsAllowed(Permission.VOLights)) // VEHICLE LIGHTS LIST
             {
                 menu.AddItem(vehicleLights);
             }
-            if (cf.IsAllowed(Permission.VODelete))
+            if (cf.IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
-                menu.AddItem(deleteBtn); // DELETE VEHICLE
+                menu.AddItem(vehicleFreeze);
+            }
+            if (cf.IsAllowed(Permission.VOEngineAlwaysOn)) // LEAVE ENGINE RUNNING
+            {
+                menu.AddItem(vehicleEngineAO);
+            }
+            if (cf.IsAllowed(Permission.VONoSiren)) // DISABLE SIREN
+            {
+                menu.AddItem(vehicleNoSiren);
+            }
+            if (cf.IsAllowed(Permission.VONoHelmet)) // DISABLE BIKE HELMET
+            {
+                menu.AddItem(vehicleNoBikeHelmet);
+            }
+            if (cf.IsAllowed(Permission.VODelete)) // DELETE VEHICLE
+            {
+                menu.AddItem(deleteBtn);
             }
             #endregion
 
@@ -281,6 +285,7 @@ namespace vMenuClient
                     var veh = cf.GetVehicle();
                     if (DoesEntityExist(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
+                        SetVehicleHasBeenOwnedByPlayer(veh, false);
                         SetEntityAsMissionEntity(veh, false, false);
                         DeleteVehicle(ref veh);
                     }
@@ -360,7 +365,7 @@ namespace vMenuClient
                         // Toggle engine
                         else if (item == toggleEngine)
                         {
-                            vehicle.IsEngineRunning = !vehicle.IsEngineRunning;
+                            SetVehicleEngineOn(vehicle.Handle, !vehicle.IsEngineRunning, false, true);
                         }
                         // Set license plate text
                         else if (item == setLicensePlateText)
