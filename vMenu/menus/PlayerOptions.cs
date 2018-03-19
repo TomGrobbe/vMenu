@@ -34,6 +34,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
+            #region create menu and menu items
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options", true)
             {
@@ -66,8 +67,9 @@ namespace vMenuClient
             // Scenarios (list can be found in the PedScenarios class)
             UIMenuListItem playerScenarios = new UIMenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
             UIMenuItem stopScenario = new UIMenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
+            #endregion
 
-
+            #region add items to menu based on permissions
             // Add all checkboxes to the menu. (keeping permissions in mind)
             if (cf.IsAllowed(Permission.POGod))
             {
@@ -122,9 +124,10 @@ namespace vMenuClient
                 menu.AddItem(playerScenarios);
                 menu.AddItem(stopScenario);
             }
+            #endregion
 
-
-            // Handle all checkbox change events.
+            #region handle all events
+            // Checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
                 // God Mode toggled.
@@ -181,7 +184,7 @@ namespace vMenuClient
                 }
             };
 
-            #region When lists are selected, handle the functions here.
+            // List selections
             menu.OnListSelect += (sender, listItem, index) =>
             {
                 // Set wanted Level
@@ -279,9 +282,8 @@ namespace vMenuClient
                     cf.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
                 }
             };
-            #endregion
 
-            #region On Menu Button Press
+            // button presses
             menu.OnItemSelect += (sender, item, index) =>
             {
                 // Force Stop Scenario button
