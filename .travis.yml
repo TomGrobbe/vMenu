@@ -7,7 +7,7 @@ notifications:
       - https://vespura.com/travis-ci.php
 branches:
     only:
-        #- master
+        - master
         #- production
         - development
 before_deploy:
@@ -30,7 +30,7 @@ deploy:
     api_key: $GITHUB_API_KEY
     file: "/home/travis/build/TomGrobbe/vMenu/builds/vMenu-release.zip"
     skip_cleanup: true
-    prerelease: true
+    prerelease: false
     draft: true
     name: "[Release] vMenu v1.x.x"
     on:
