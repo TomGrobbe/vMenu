@@ -7,13 +7,14 @@ notifications:
       - https://vespura.com/travis-ci.php
 branches:
     only:
-        - master
+        #- master
+        #- production
         - development
 before_deploy:
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds/config
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds/src
-	- cp /home/travis/build/TomGrobbe/vMenu/* /home/travis/build/TomGrobbe/vMenu/builds/src/
+    - cp /home/travis/build/TomGrobbe/vMenu/* /home/travis/build/TomGrobbe/vMenu/builds/src/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/vMenu/builds/
@@ -33,4 +34,5 @@ deploy:
     draft: true
     name: "[Release] vMenu v1.x.x"
     on:
+        # branch: production
         branch: development
