@@ -8,8 +8,8 @@ notifications:
 branches:
     only:
         - master
-        #- production
         - development
+        #- production
 before_deploy:
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds/config
@@ -34,5 +34,5 @@ deploy:
     draft: true
     name: "[Release] vMenu v1.x.x"
     on:
-        # branch: production
         branch: development
+        #branch: production
