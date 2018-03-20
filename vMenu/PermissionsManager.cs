@@ -139,6 +139,8 @@ namespace vMenuClient
         MSShowLocation,
         MSJoinQuitNotifs,
         MSDeathNotifs,
+        MSNightVision,
+        MSThermalVision,
 
         // Voice Chat
         VCMenu,

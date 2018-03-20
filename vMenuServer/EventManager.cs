@@ -178,6 +178,8 @@ namespace vMenuServer
             "MSShowLocation",
             "MSJoinQuitNotifs",
             "MSDeathNotifs",
+            "MSNightVision",
+            "MSThermalVision",
 
             // Voice Chat
             "VCMenu",
