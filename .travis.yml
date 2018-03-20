@@ -24,9 +24,9 @@ before_deploy:
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cd /home/travis/build/TomGrobbe/release/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-release.zip *
-    - git config --local user.name "TomGrobbe"
-    - git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
-    - git tag "vMenu$(git log --format=%h -1)"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "TomGrobbe"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git tag "vMenu$(git log --format=%h -1)"
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
