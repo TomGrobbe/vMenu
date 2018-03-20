@@ -9,7 +9,6 @@ branches:
     only:
         - master
         - development
-        #- production
 before_deploy:
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds
     - mkdir /home/travis/build/TomGrobbe/vMenu/builds/config
@@ -35,4 +34,3 @@ deploy:
     name: "[Release] vMenu v1.x.x"
     on:
         branch: development
-        #branch: production
