@@ -171,6 +171,8 @@
 |`vMenu.MiscSettings.ShowLocation`|Allows you to show your current location on screen (pretty much just like PLD).|Allowed|
 |`vMenu.MiscSettings.JoinQuitNotifs`|Allows you to receive join/quit notifications when someone joins/quits the server.|Allowed|
 |`vMenu.MiscSettings.DeathNotifs`|Allows you to receive death notifications when someone dies or gets killed.|Allowed|
+|`vMenu.MiscSettings.NightVision`|Allows you to toggle night vision on/off.|Allowed|
+|`vMenu.MiscSettings.ThermalVision`|Allows you to toggle thermal vision on/off.|Allowed|
 
 ## Voice Chat
 

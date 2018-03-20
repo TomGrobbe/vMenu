@@ -60,6 +60,7 @@ set vMenuToggleMenuKey 244
 set vMenuNoClipKey 289
 ```
 8. Save the server.cfg file if you haven't already, and restart the server. You're now done, enjoy!
+9. (v1.0.7+) In `/resources/vMenu/config` go to the `addons.json` file and customize it to add your own addon vehicles, player models and weapons. Restart the server and your addon weapons will show up in the menu (if the player has permission for it). If you're using v1.0.7, then copy the file to `/resources/vMenu/`, if you're using v1.0.8 you can choose to copy it, or leave it where it is (`/resources/vMenu/config`).
 
 
 
