@@ -9,7 +9,7 @@ branches:
     only:
         - master
         - production
-        - development
+        #- development
 before_deploy:
     - mkdir /home/travis/build/TomGrobbe/release/
     - mkdir /home/travis/build/TomGrobbe/release/vMenu/
@@ -31,7 +31,7 @@ before_deploy:
     - cd /home/travis/build/TomGrobbe/release/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-$version.zip *
     - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "TomGrobbe"
     - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
-    - cd /home/travis/build/TomGrobbe/vMenu/ && git tag "vMenu$(git log --format=%h -1)"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
@@ -43,4 +43,4 @@ deploy:
     on:
         branch: 
         - production
-        - development
+        #- development
