@@ -223,7 +223,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
 
-                string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? "{}";
+                string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 var json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
 
                 if (json.ContainsKey("vehicles"))
