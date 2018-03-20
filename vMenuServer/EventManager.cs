@@ -169,6 +169,8 @@ namespace vMenuServer
             "WPRemoveAll",
             "WPUnlimitedAmmo",
             "WPNoReload",
+            "WPSpawn",
+            "WPSetAllAmmo",
 
             // Misc Settings
             "MSMenu",
