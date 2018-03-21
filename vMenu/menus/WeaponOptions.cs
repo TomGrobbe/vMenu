@@ -26,8 +26,13 @@ namespace vMenuClient
         private Dictionary<UIMenu, ValidWeapon> weaponInfo = new Dictionary<UIMenu, ValidWeapon>();
         private Dictionary<UIMenuItem, string> weaponComponents = new Dictionary<UIMenuItem, string>();
 
+        #region Create Menu
+        /// <summary>
+        /// Creates the menu.
+        /// </summary>
         private void CreateMenu()
         {
+            #region create main weapon options menu and add items
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Weapon Options", true)
             {
@@ -44,24 +49,9 @@ namespace vMenuClient
             UIMenuItem setAmmo = new UIMenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
             UIMenuItem refillMaxAmmo = new UIMenuItem("Refill All Ammo", "Give all your weapons max ammo.");
             ValidWeapons vw = new ValidWeapons();
-            UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
-            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
-            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true)
-            {
-                MouseEdgeEnabled = false,
-                MouseControlsEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
             UIMenuItem spawnByName = new UIMenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
 
+            // Add items based on permissions
             if (cf.IsAllowed(Permission.WPGetAll))
             {
                 menu.AddItem(getAllWeapons);
@@ -87,9 +77,20 @@ namespace vMenuClient
             {
                 menu.AddItem(spawnByName);
             }
+            #endregion
 
+            #region addonweapons submenu
+            UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
+            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true)
+            {
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
             menu.AddItem(addonWeaponsBtn);
 
+            #region manage creating and accessing addon weapons menu
             if (cf.IsAllowed(Permission.WPSpawn) && AddonWeapons != null && AddonWeapons.Count > 0)
             {
                 menu.BindMenuToItem(addonWeaponsMenu, addonWeaponsBtn);
@@ -128,9 +129,22 @@ namespace vMenuClient
                 addonWeaponsBtn.Enabled = false;
                 addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
             }
+            #endregion
 
             addonWeaponsMenu.RefreshIndex();
             addonWeaponsMenu.UpdateScaleform();
+            #endregion
+
+            #region parachute options menu
+            #region parachute buttons and submenus
+            UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
+            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true)
+            {
+                MouseEdgeEnabled = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                ScaleWithSafezone = false
+            };
 
             UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", true)
             {
@@ -210,7 +224,9 @@ namespace vMenuClient
             secondaryChute.AddItem(rchute11);
             secondaryChute.AddItem(rchute12);
             secondaryChute.AddItem(rchute13);
+            #endregion
 
+            #region handle events
             primaryChute.OnItemSelect += (sender, item, index) =>
             {
                 SetPedParachuteTintIndex(PlayerPedId(), index - 1);
@@ -222,7 +238,9 @@ namespace vMenuClient
                 SetPlayerReserveParachuteTintIndex(PlayerId(), index - 1);
                 Subtitle.Custom($"Reserve parachute style selected: ~r~{item.Text}~s~.");
             };
+            #endregion
 
+            #region create more buttons
             UIMenuItem primaryChuteBtn = new UIMenuItem("Primary Parachute Style", "Select a primary parachute.");
             UIMenuItem secondaryChuteBtn = new UIMenuItem("Reserve Parachute Style", "Select a reserve parachute.");
 
@@ -242,7 +260,9 @@ namespace vMenuClient
 
             parachuteMenu.AddItem(togglePrimary);
             parachuteMenu.AddItem(toggleSecondary);
+            #endregion
 
+            #region handle parachute menu events
             parachuteMenu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == togglePrimary)
@@ -272,7 +292,9 @@ namespace vMenuClient
                     AutoEquipChute = _checked;
                 }
             };
+            #endregion
 
+            #region parachute smoke trail colors
             List<dynamic> smokeColor = new List<dynamic>()
             {
                 "White",
@@ -318,7 +340,9 @@ namespace vMenuClient
                     SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), true);
                 }
             };
+            #endregion
 
+            #region misc parachute menu setup
             menu.AddItem(parachuteBtn);
             parachuteBtn.SetRightLabel("→→→");
             menu.BindMenuToItem(parachuteMenu, parachuteBtn);
@@ -336,11 +360,15 @@ namespace vMenuClient
             MainMenu.Mp.Add(parachuteMenu);
             MainMenu.Mp.Add(primaryChute);
             MainMenu.Mp.Add(secondaryChute);
+            #endregion
+            #endregion
 
+            #region Loop through all weapons, create menus for them and add all menu items and handle events.
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
                 if (weapon.Name != null)
                 {
+                    #region Create menu for this weapon and add buttons
                     UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true)
                     {
                         ScaleWithSafezone = false,
@@ -388,7 +416,9 @@ namespace vMenuClient
 
                     UIMenuListItem weaponTints = new UIMenuListItem("Tints", tints, 0, "Select a tint for your weapon.");
                     weaponMenu.AddItem(weaponTints);
+                    #endregion
 
+                    #region Handle weapon specific list changes
                     weaponMenu.OnListChange += (sender, item, index) =>
                     {
                         if (item == weaponTints)
@@ -403,8 +433,9 @@ namespace vMenuClient
                             }
                         }
                     };
+                    #endregion
 
-
+                    #region Handle weapon specific button presses
                     weaponMenu.OnItemSelect += (sender, item, index) =>
                     {
                         if (item == getOrRemoveWeapon)
@@ -438,7 +469,9 @@ namespace vMenuClient
                             }
                         }
                     };
+                    #endregion
 
+                    #region load components
                     if (weapon.Components != null)
                     {
                         if (weapon.Components.Count > 0)
@@ -448,6 +481,8 @@ namespace vMenuClient
                                 UIMenuItem compItem = new UIMenuItem(comp.Key, "Click to equip or remove this component.");
                                 weaponComponents.Add(compItem, comp.Key);
                                 weaponMenu.AddItem(compItem);
+
+                                #region Handle component button presses
                                 weaponMenu.OnItemSelect += (sender, item, index) =>
                                 {
                                     if (item == compItem)
@@ -473,9 +508,13 @@ namespace vMenuClient
                                         }
                                     }
                                 };
+                                #endregion
                             }
                         }
                     }
+                    #endregion
+
+                    // refresh and add to menu.
                     weaponMenu.RefreshIndex();
                     weaponMenu.UpdateScaleform();
 
@@ -483,7 +522,9 @@ namespace vMenuClient
                     menu.BindMenuToItem(weaponMenu, weaponItem);
                 }
             }
+            #endregion
 
+            #region Handle button presses
             menu.OnItemSelect += (sender, item, index) =>
             {
                 Ped ped = new Ped(PlayerPedId());
@@ -522,8 +563,9 @@ namespace vMenuClient
                     cf.SpawnCustomWeapon();
                 }
             };
+            #endregion
 
-
+            #region Handle checkbox changes
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
                 if (item == noReload)
@@ -535,7 +577,9 @@ namespace vMenuClient
                     UnlimitedAmmo = _checked;
                 }
             };
+            #endregion
         }
+        #endregion
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.

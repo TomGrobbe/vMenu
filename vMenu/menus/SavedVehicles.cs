@@ -127,7 +127,7 @@ namespace vMenuClient
                         var model = vehInfo["model"];
 
                         // Spawn a vehicle using the hash, and pass on the vehicleInfo dictionary containing all saved vehicle mods.
-                        cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo);
+                        cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo, saveName: item2.Text);
                     };
 
                     // Refresh the index of the page.

@@ -25,7 +25,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             VehicleData vd = new VehicleData();
-
+            #region initial setup.
             allowedCategories = new List<bool>(){
                 cf.IsAllowed(Permission.VSCompacts),
                 cf.IsAllowed(Permission.VSSedans),
@@ -74,10 +74,10 @@ namespace vMenuClient
             }
             menu.AddItem(spawnInVeh);
             menu.AddItem(replacePrev);
+            #endregion
 
-
+            #region addon cars menu
             // Vehicle Addons List
-
             UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", true)
             {
                 MouseControlsEnabled = false,
@@ -141,7 +141,9 @@ namespace vMenuClient
                 addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                 addonCarsBtn.Description = "Access to this list has been restricted by the server owner.";
             }
+            #endregion
 
+            #region vehicle classes submenus
             // Create the submenus for each category.
             var vl = new Vehicles();
 
@@ -177,10 +179,10 @@ namespace vMenuClient
                     btn.Enabled = false;
                 }
 
-
                 // Create a dictionary for the duplicate vehicle names (in this vehicle class).
                 var duplicateVehNames = new Dictionary<string, int>();
 
+                #region Add vehicles per class
                 // Loop through all the vehicles in the vehicle class.
                 foreach (var veh in vl.VehicleClasses[className])
                 {
@@ -250,15 +252,17 @@ namespace vMenuClient
                         }
                     }
                 }
+                #endregion
 
+                // Handle button presses
                 vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
                 {
                     cf.SpawnVehicle(vl.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
                 };
-
             }
+            #endregion
 
-
+            #region handle events
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
@@ -281,6 +285,7 @@ namespace vMenuClient
                     ReplaceVehicle = _checked;
                 }
             };
+            #endregion
         }
 
         /// <summary>

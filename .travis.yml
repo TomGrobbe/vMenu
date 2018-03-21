@@ -11,26 +11,36 @@ branches:
         - production
         #- development
 before_deploy:
-    - mkdir /home/travis/build/TomGrobbe/vMenu/builds
-    - mkdir /home/travis/build/TomGrobbe/vMenu/builds/config
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/vMenu/builds/config/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/vMenu/builds/
-    - cd /home/travis/build/TomGrobbe/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-release.zip *
-    - git config --local user.name "TomGrobbe"
-    - git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
-    - git tag "vMenu$(git log --format=%h -1)"
+    - mkdir /home/travis/build/TomGrobbe/release/
+    - mkdir /home/travis/build/TomGrobbe/release/vMenu/
+    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds
+    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/config
+    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/src
+    - cp /home/travis/build/TomGrobbe/vMenu/ /home/travis/build/TomGrobbe/release/vMenu/builds/src/ -rf
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/addons.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/PERMISSIONS.md /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/README.md /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - cp /home/travis/build/TomGrobbe/vMenu/LICENSE /home/travis/build/TomGrobbe/release/vMenu/builds/
+    - version=`curl -s https://vespura.com/vmenu/__resource.lua | grep "version " | tail -n 1 | cut -d ' ' -f 2 | cut -c 2- | rev | cut -c 3- | rev`
+    - cd /home/travis/build/TomGrobbe/release/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-$version.zip *
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "TomGrobbe"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
-    file: "/home/travis/build/TomGrobbe/vMenu/builds/vMenu-release.zip"
+    file: "/home/travis/build/TomGrobbe/release/vMenu/builds/vMenu-$version.zip"
     skip_cleanup: true
-    prerelease: true
+    prerelease: false
     draft: true
-    name: "[Release] vMenu v1.x.x"
+    name: "[Release] vMenu $version"
     on:
-        branch: production
-        # tags: true
+        branch: 
+        - production
+        #- development

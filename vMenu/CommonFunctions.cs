@@ -116,7 +116,7 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Drive Tasks (Unimplemented)
+        #region Drive Tasks (WIP)
         /// <summary>
         /// Todo
         /// </summary>
@@ -555,9 +555,8 @@ namespace vMenuClient
         /// </summary>
         /// <param name="vehicleHash">Hash of the vehicle model to spawn.</param>
         /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
-        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null)
+        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null, string saveName = null)
         {
-
             if (!skipLoad)
             {
                 bool successFull = await LoadModel(vehicleHash);
@@ -568,6 +567,7 @@ namespace vMenuClient
                     return;
                 }
             }
+
             if (MainMenu.DebugMode)
             {
                 Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
@@ -582,7 +582,6 @@ namespace vMenuClient
             {
                 ClearPedTasksImmediately(PlayerPedId());
                 // And it's actually a vehicle (rather than another random entity type)
-                //if (IsEntityAVehicle(previousVehicle) && IsVehiclePreviouslyOwnedByPlayer(previousVehicle))
                 if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
                     (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
                 {
@@ -599,21 +598,12 @@ namespace vMenuClient
                         // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
                         previousVehicle.PreviouslyOwnedByPlayer = false;
                         previousVehicle.MarkAsNoLongerNeeded();
+                        previousVehicle.IsPersistent = false;
                     }
                     previousVehicle = null;
                 }
-                else if (IsPedInAnyVehicle(PlayerPedId(), false))
-                {
-                    if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
-                    {
-                        int tmpveh = GetVehicle();
-                        SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
-                        SetEntityAsMissionEntity(tmpveh, true, true);
-                        DeleteVehicle(ref tmpveh);
-                    }
-                }
             }
-            else if (IsPedInAnyVehicle(PlayerPedId(), false))
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
                 if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
                 {
@@ -745,7 +735,7 @@ namespace vMenuClient
                 {
                     // Because we need to re-save the vehicle with the new modded format, we'll teleport the player into it.
                     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
-                    SaveVehicle(vehicleInfo["name"].ToString());
+                    SaveVehicle(saveName ?? vehicleInfo["name"].ToString());
                 }
             }
 

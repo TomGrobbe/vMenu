@@ -25,6 +25,8 @@ namespace vMenuClient
         public bool ShowLocation { get; private set; } = UserDefaults.MiscShowLocation;
         public bool DeathNotifications { get; private set; } = UserDefaults.MiscDeathNotifications;
         public bool JoinQuitNotifications { get; private set; } = UserDefaults.MiscJoinQuitNotifications;
+        public bool NightVision { get; private set; } = false;
+        public bool ThermalVision { get; private set; } = false;
 
         /// <summary>
         /// Creates the menu.
@@ -53,7 +55,8 @@ namespace vMenuClient
             saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
             UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
-
+            UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", NightVision, "Enable or disable night vision.");
+            UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", ThermalVision, "Enable or disable thermal vision.");
             // Add menu items to the menu.
             if (cf.IsAllowed(Permission.MSTeleportToWp))
             {
@@ -79,6 +82,14 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.MSDeathNotifs))
             {
                 menu.AddItem(joinQuitNotifs);
+            }
+            if (cf.IsAllowed(Permission.MSNightVision))
+            {
+                menu.AddItem(nightVision);
+            }
+            if (cf.IsAllowed(Permission.MSThermalVision))
+            {
+                menu.AddItem(thermalVision);
             }
 
             // Always allowed
@@ -120,6 +131,14 @@ namespace vMenuClient
                 else if (item == joinQuitNotifs)
                 {
                     JoinQuitNotifications = _checked;
+                }
+                else if (item == nightVision)
+                {
+                    NightVision = _checked;
+                }
+                else if (item == thermalVision)
+                {
+                    ThermalVision = _checked;
                 }
             };
 
