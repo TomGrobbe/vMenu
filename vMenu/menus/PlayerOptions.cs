@@ -226,8 +226,9 @@ namespace vMenuClient
                             break;
                         // Kill Player
                         case 5:
-                            SetEntityHealth(PlayerPedId(), 0);
-                            Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
+                            cf.CommitSuicide();
+                            //SetEntityHealth(PlayerPedId(), 0);
+                            //Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
                             break;
                         // Drive To Waypoint
                         case 6:

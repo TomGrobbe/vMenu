@@ -381,6 +381,42 @@ namespace vMenuClient
         {
             TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
         }
+
+        public async void CommitSuicide()
+        {
+            // Get the suicide animations ready.
+            RequestAnimDict("mp_suicide");
+            while (!HasAnimDictLoaded("mp_suicide"))
+            {
+                await Delay(0);
+            }
+            // Decide if the death should be using a pill or a gun (randomly).
+            bool takePill = new Random().Next(0, 2) == 0;
+
+            // If we take the pill, remove any weapons in our hands.
+            if (takePill)
+            {
+                SetPedCurrentWeaponVisible(PlayerPedId(), false, true, false, false);
+                await Delay(500);
+            }
+
+            // Otherwise, give the ped a gun.
+            else
+            {
+                GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("WEAPON_PISTOL"), 1, false, true);
+                await Delay(500);
+                SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+            }
+            // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
+            TaskPlayAnim(PlayerPedId(), "mp_suicide", (takePill ? "pill" : "pistol"), 8.0f, 0f, -1, 0, 0.0f, false, false, false);
+
+            // Wait before killing the player (1700 ms for the gun animation, and 5000 ms for the pil animation to finish).
+            await Delay(takePill ? 5000 : 1700);
+
+            // Kill the player.
+            SetEntityHealth(PlayerPedId(), 0);
+
+        }
         #endregion
 
         #region Summon Player
