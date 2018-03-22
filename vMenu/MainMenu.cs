@@ -526,7 +526,10 @@ namespace vMenuClient
 
                 // Process the menu. Draw it and reset the menu width offset to make sure any newly generated menus always have the right width offset.
                 Mp.WidthOffset = 50;
-                Mp.Draw();
+                if (Mp.IsAnyMenuOpen())
+                {
+                    Mp.Draw();
+                }
             }
         }
 
