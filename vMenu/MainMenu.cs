@@ -412,12 +412,12 @@ namespace vMenuClient
                             if (DebugMode)
                             {
                                 bt.Draw(0);
-                                float percent = ((GetGameTimer() - timer) / 900f);
+                                float percent = ((GetGameTimer() - timer) / 350f);
                                 bt.Percentage = percent;
                             }
 
                             // If 900ms in real time have passed.
-                            if (GetGameTimer() - timer > 900)
+                            if (GetGameTimer() - timer > 350)
                             {
                                 Menu.Visible = !Mp.IsAnyMenuOpen();
                                 // Break the loop (resetting the timer).
