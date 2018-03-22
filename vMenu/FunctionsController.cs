@@ -127,7 +127,12 @@ namespace vMenuClient
                 // Manage Stamina
                 if (MainMenu.PlayerOptionsMenu.PlayerStamina)
                 {
-                    ResetPlayerStamina(PlayerId());
+                    //ResetPlayerStamina(PlayerId());
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                }
+                else
+                {
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
                 }
 
                 // Manage Super jump.
