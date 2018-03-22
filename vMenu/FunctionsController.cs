@@ -134,6 +134,13 @@ namespace vMenuClient
                 {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
                 }
+                // Manage other stats.
+                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
 
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
