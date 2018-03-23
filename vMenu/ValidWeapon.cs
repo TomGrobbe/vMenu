@@ -12,6 +12,7 @@ namespace vMenuClient
         public uint Hash;
         public string Name;
         public Dictionary<string, uint> Components;
+        public Permission Perm;
     }
 
     public class ValidWeapons
@@ -52,7 +53,8 @@ namespace vMenuClient
                     {
                         Hash = hash,
                         Name = localizedName,
-                        Components = componentHashes
+                        Components = componentHashes,
+                        Perm = weaponPermissions[realName]
                     };
                     _validWeaponsList[num] = vw;
                     num++;
@@ -60,7 +62,7 @@ namespace vMenuClient
             }
         }
 
-        #region Weapon names, hashes and localized names (+ all components & tints).
+        #region Weapon names, Weapons Permissions, hashes and localized names (+ all components & tints).
         public static Dictionary<string, string> weaponNames = new Dictionary<string, string>()
         {
             ["SniperRifle"] = "Sniper Rifle",
@@ -145,6 +147,92 @@ namespace vMenuClient
             ["CarbineRifleMk2"] = "Carbine Rifle Mk II",
             ["Parachute"] = "Parachute",
             ["SmokeGrenade"] = "Tear Gas",
+        };
+
+        public static Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
+        {
+            ["SniperRifle"] = Permission.WPSniperRifle,
+            ["FireExtinguisher"] = Permission.WPFireExtinguisher,
+            ["CompactGrenadeLauncher"] = Permission.WPCompactGrenadeLauncher,
+            ["Snowball"] = Permission.WPSnowball,
+            ["VintagePistol"] = Permission.WPVintagePistol,
+            ["CombatPDW"] = Permission.WPCombatPDW,
+            ["HeavySniperMk2"] = Permission.WPHeavySniperMk2,
+            ["HeavySniper"] = Permission.WPHeavySniper,
+            ["SweeperShotgun"] = Permission.WPSweeperShotgun,
+            ["MicroSMG"] = Permission.WPMicroSMG,
+            ["Wrench"] = Permission.WPWrench,
+            ["Pistol"] = Permission.WPPistol,
+            ["PumpShotgun"] = Permission.WPPumpShotgun,
+            ["APPistol"] = Permission.WPAPPistol,
+            ["Ball"] = Permission.WPBall,
+            ["Molotov"] = Permission.WPMolotov,
+            ["SMG"] = Permission.WPSMG,
+            ["StickyBomb"] = Permission.WPStickyBomb,
+            ["PetrolCan"] = Permission.WPPetrolCan,
+            ["StunGun"] = Permission.WPStunGun,
+            ["AssaultRifleMk2"] = Permission.WPAssaultRifleMk2,
+            ["HeavyShotgun"] = Permission.WPHeavyShotgun,
+            ["Minigun"] = Permission.WPMinigun,
+            ["GolfClub"] = Permission.WPGolfClub,
+            ["FlareGun"] = Permission.WPFlareGun,
+            ["Flare"] = Permission.WPFlare,
+            ["GrenadeLauncherSmoke"] = Permission.WPGrenadeLauncherSmoke,
+            ["Hammer"] = Permission.WPHammer,
+            ["CombatPistol"] = Permission.WPCombatPistol,
+            ["Gusenberg"] = Permission.WPGusenberg,
+            ["CompactRifle"] = Permission.WPCompactRifle,
+            ["HomingLauncher"] = Permission.WPHomingLauncher,
+            ["Nightstick"] = Permission.WPNightstick,
+            ["Railgun"] = Permission.WPRailgun,
+            ["SawnOffShotgun"] = Permission.WPSawnOffShotgun,
+            ["SMGMk2"] = Permission.WPSMGMk2,
+            ["BullpupRifle"] = Permission.WPBullpupRifle,
+            ["Firework"] = Permission.WPFirework,
+            ["CombatMG"] = Permission.WPCombatMG,
+            ["CarbineRifle"] = Permission.WPCarbineRifle,
+            ["Crowbar"] = Permission.WPCrowbar,
+            ["Flashlight"] = Permission.WPFlashlight,
+            ["Dagger"] = Permission.WPDagger,
+            ["Grenade"] = Permission.WPGrenade,
+            ["PoolCue"] = Permission.WPPoolCue,
+            ["Bat"] = Permission.WPBat,
+            ["Pistol50"] = Permission.WPPistol50,
+            ["Knife"] = Permission.WPKnife,
+            ["MG"] = Permission.WPMG,
+            ["BullpupShotgun"] = Permission.WPBullpupShotgun,
+            ["BZGas"] = Permission.WPBZGas,
+            ["Unarmed"] = Permission.WPUnarmed,
+            ["GrenadeLauncher"] = Permission.WPGrenadeLauncher,
+            ["NightVision"] = Permission.WPNightVision,
+            ["Musket"] = Permission.WPMusket,
+            ["ProximityMine"] = Permission.WPProximityMine,
+            ["AdvancedRifle"] = Permission.WPAdvancedRifle,
+            ["RPG"] = Permission.WPRPG,
+            ["PipeBomb"] = Permission.WPPipeBomb,
+            ["MiniSMG"] = Permission.WPMiniSMG,
+            ["SNSPistol"] = Permission.WPSNSPistol,
+            ["PistolMk2"] = Permission.WPPistolMk2,
+            ["AssaultRifle"] = Permission.WPAssaultRifle,
+            ["SpecialCarbine"] = Permission.WPSpecialCarbine,
+            ["Revolver"] = Permission.WPRevolver,
+            ["MarksmanRifle"] = Permission.WPMarksmanRifle,
+            ["BattleAxe"] = Permission.WPBattleAxe,
+            ["HeavyPistol"] = Permission.WPHeavyPistol,
+            ["KnuckleDuster"] = Permission.WPKnuckleDuster,
+            ["MachinePistol"] = Permission.WPMachinePistol,
+            ["CombatMGMk2"] = Permission.WPCombatMGMk2,
+            ["MarksmanPistol"] = Permission.WPMarksmanPistol,
+            ["Machete"] = Permission.WPMachete,
+            ["SwitchBlade"] = Permission.WPSwitchBlade,
+            ["AssaultShotgun"] = Permission.WPAssaultShotgun,
+            ["DoubleBarrelShotgun"] = Permission.WPDoubleBarrelShotgun,
+            ["AssaultSMG"] = Permission.WPAssaultSMG,
+            ["Hatchet"] = Permission.WPHatchet,
+            ["Bottle"] = Permission.WPBottle,
+            ["CarbineRifleMk2"] = Permission.WPCarbineRifleMk2,
+            ["Parachute"] = Permission.WPParachute,
+            ["SmokeGrenade"] = Permission.WPSmokeGrenade,
         };
 
         /// <summary>
