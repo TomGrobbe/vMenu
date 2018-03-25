@@ -633,8 +633,8 @@ namespace vMenuClient
                     {
                         // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
                         previousVehicle.PreviouslyOwnedByPlayer = false;
-                        previousVehicle.MarkAsNoLongerNeeded();
                         previousVehicle.IsPersistent = false;
+                        previousVehicle.MarkAsNoLongerNeeded();
                     }
                     previousVehicle = null;
                 }
@@ -657,6 +657,10 @@ namespace vMenuClient
                 PreviouslyOwnedByPlayer = true,
                 IsPersistent = true
             };
+            if (MainMenu.DebugMode)
+            {
+                Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} heading:{heading}");
+            }
 
             // If spawnInside is true
             if (spawnInside)
@@ -771,7 +775,12 @@ namespace vMenuClient
                 {
                     // Because we need to re-save the vehicle with the new modded format, we'll teleport the player into it.
                     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
+                    await Delay(10);
                     SaveVehicle(saveName ?? vehicleInfo["name"].ToString());
+                    if (MainMenu.DebugMode)
+                    {
+                        Log($"Saved vehicle needs to be converted. Re-saving with name: {(saveName ?? vehicleInfo["name"].ToString())}");
+                    }
                 }
             }
 

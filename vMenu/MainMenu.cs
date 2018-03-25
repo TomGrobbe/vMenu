@@ -365,7 +365,7 @@ namespace vMenuClient
                     MouseEdgeEnabled = false,
                     ControlDisablingEnabled = false
                 };
-
+                
                 // Add the main menu to the menu pool.
                 Mp.Add(Menu);
 
