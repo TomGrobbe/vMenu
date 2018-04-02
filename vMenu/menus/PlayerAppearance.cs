@@ -429,29 +429,87 @@ namespace vMenuClient
             spawnSavedPedMenu.MenuItems.Clear();
             int findHandle = StartFindKvp("ped_");
             List<string> savesFound = new List<string>();
+            var i = 0;
             while (true)
             {
+                i++;
                 var saveName = FindKvp(findHandle);
                 if (saveName != null && saveName != "" && saveName != "NULL")
                 {
+                    //cf.Log($"Hi {i}");
+                    //if (!saveName.Substring(saveName.Length - 3).Contains("_v2")) // it's the old format
+                    //{
+                    //    cf.Log($"Hi 2 {i}");
+                    //    //var tmpFindHandle = StartFindKvp("ped_" + saveName + "_v2");
+                    //    if (GetResourceKvpString("ped_" + saveName + "_v2") != null && !savesFound.Contains(saveName + "_v2")) // check if new format exists.
+                    //    {
+                    //        savesFound.Add(saveName + "_v2"); // if so, add that one.
+                    //        cf.Log($"Hi 3 {i}");
+                    //    }
+                    //    else
+                    //    {
+                    //        savesFound.Add(saveName); // there's no new format, add the old format, once spawned, will be converted to new one automatically.
+                    //        cf.Log($"Hi 4 {i}");
+                    //    }
+
+                    //}
+                    //else
+                    //{
+
+                    // It's already the new format, so add it.
                     savesFound.Add(saveName);
+
+                    //    cf.Log($"Hi 5 {i}");
+                    //}
                 }
                 else
                 {
+                    //cf.Log($"Break {i}");
                     break;
                 }
             }
 
+            var items = new List<string>();
             foreach (var savename in savesFound)
             {
-                UIMenuItem savedPedBtn = new UIMenuItem(savename.Substring(4), "Spawn this saved ped.");
-                spawnSavedPedMenu.AddItem(savedPedBtn);
+                if (savename.Length > 4)
+                {
+                    //if (savename.Substring(savename.Length - 3).Contains("_v2"))
+                    //{
+                    //    var title = savename.Substring(4, savename.Length - 7);
+                    //    if (!items.Contains(title))
+                    //    {
+                    //        UIMenuItem savedPedBtn = new UIMenuItem(title, "Spawn this saved ped.");
+                    //        spawnSavedPedMenu.AddItem(savedPedBtn);
+                    //        items.Add(title);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    var title = savename.Substring(4);
+                    if (!items.Contains(title))
+                    {
+                        UIMenuItem savedPedBtn = new UIMenuItem(title, "Spawn this saved ped.");
+                        spawnSavedPedMenu.AddItem(savedPedBtn);
+                        items.Add(title);
+                    }
+                    //}
+
+                }
             }
 
             spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
+                //if (GetResourceKvpString("ped_" + name + "_v2") != null)
+                //{
+                //    cf.LoadSavedPed(name + "_v2");
+                //}
+                //else
+                //{
                 cf.LoadSavedPed(name);
+                //}
+
             };
 
             spawnSavedPedMenu.RefreshIndex();
@@ -489,6 +547,7 @@ namespace vMenuClient
             {
                 var name = item.Text.ToString();
                 sm.DeleteSavedDictionary("ped_" + name);
+                //sm.DeleteSavedDictionary("ped_" + name + "_v2");
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();
             };

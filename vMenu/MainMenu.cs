@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
@@ -101,13 +102,11 @@ namespace vMenuClient
             // Loop through the dynamic object and get the keys and values.
             foreach (dynamic permission in dict)
             {
-                if (DebugMode)
-                {
-                    Cf.Log($"{permission.Key.ToString()} = {permission.Value.ToString()}");
-                }
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
+            Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
+
             permissionsSetupDone = true;
         }
         #endregion
@@ -121,12 +120,10 @@ namespace vMenuClient
             MenuOptions = new Dictionary<string, string>();
             foreach (dynamic option in options)
             {
-                if (DebugMode)
-                {
-                    Cf.Log($"{option.Key} == {option.Value}");
-                }
-                MenuOptions.Add(option.Key, option.Value);
+                MenuOptions.Add(option.Key.ToString(), option.Value.ToString());
             }
+            Cf.Log($"Settings loaded: {JsonConvert.SerializeObject(MenuOptions)}");
+
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
             optionsSetupDone = true;
@@ -149,10 +146,6 @@ namespace vMenuClient
                     if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                     {
                         currentMenu.SelectItem();
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("select");
-                        }
                     }
                     // Cancel / Go Back
                     else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
@@ -160,10 +153,6 @@ namespace vMenuClient
                         // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
                         await Delay(0);
                         currentMenu.GoBack();
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("cancel");
-                        }
                     }
                 }
             }
@@ -227,11 +216,6 @@ namespace vMenuClient
                             // Wait for the next game tick.
                             await Delay(0);
                         }
-                        // If debugging is enabled, a subtitle will be shown when this control is pressed.
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("up");
-                        }
                     }
 
                     // Check if the Go Left controls are pressed.
@@ -256,10 +240,6 @@ namespace vMenuClient
                             }
                             await Delay(0);
                         }
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("left");
-                        }
                     }
 
                     // Check if the Go Right controls are pressed.
@@ -283,10 +263,6 @@ namespace vMenuClient
                                 time = GetGameTimer();
                             }
                             await Delay(0);
-                        }
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("right");
                         }
                     }
 
@@ -313,10 +289,6 @@ namespace vMenuClient
                                 time = GetGameTimer();
                             }
                             await Delay(0);
-                        }
-                        if (DebugMode)
-                        {
-                            Subtitle.Custom("down");
                         }
                     }
                 }
@@ -412,12 +384,12 @@ namespace vMenuClient
                             if (DebugMode)
                             {
                                 bt.Draw(0);
-                                float percent = ((GetGameTimer() - timer) / 900f);
+                                float percent = ((GetGameTimer() - timer) / 350f);
                                 bt.Percentage = percent;
                             }
 
                             // If 900ms in real time have passed.
-                            if (GetGameTimer() - timer > 900)
+                            if (GetGameTimer() - timer > 350)
                             {
                                 Menu.Visible = !Mp.IsAnyMenuOpen();
                                 // Break the loop (resetting the timer).
@@ -526,7 +498,10 @@ namespace vMenuClient
 
                 // Process the menu. Draw it and reset the menu width offset to make sure any newly generated menus always have the right width offset.
                 Mp.WidthOffset = 50;
-                Mp.Draw();
+                if (Mp.IsAnyMenuOpen())
+                {
+                    Mp.Draw();
+                }
             }
         }
 
