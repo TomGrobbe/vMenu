@@ -569,12 +569,12 @@ namespace vMenuClient
                         //{
                         //    SetTaxiLights(veh, true);
                         //    SetTaxiLights(veh, false);
-                        //    //Debug.Write(IsTaxiLightOn(veh).ToString());
+                        //    //MainMenu.Cf.Log(IsTaxiLightOn(veh).ToString());
                         //    //SetTaxiLights(veh, true);
-                        //    //Debug.Write(IsTaxiLightOn(veh).ToString());
+                        //    //MainMenu.Cf.Log(IsTaxiLightOn(veh).ToString());
                         //    //SetTaxiLights(veh, false);
                         //    //SetTaxiLights(veh, !IsTaxiLightOn(veh));
-                        //    Debug.Write
+                        //    MainMenu.Cf.Log
                         //}
                         else if (index == 3) // helicopter spotlight
                         {
