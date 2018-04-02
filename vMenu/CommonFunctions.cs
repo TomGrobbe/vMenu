@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using Newtonsoft.Json;
 
 namespace vMenuClient
 {
@@ -604,10 +605,7 @@ namespace vMenuClient
                 }
             }
 
-            if (MainMenu.DebugMode)
-            {
-                Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
-            }
+            Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
 
             // Get the heading & position for where the vehicle should be spawned.
             Vector3 pos = (spawnInside) ? GetEntityCoords(PlayerPedId(), true) : GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
@@ -657,10 +655,7 @@ namespace vMenuClient
                 PreviouslyOwnedByPlayer = true,
                 IsPersistent = true
             };
-            if (MainMenu.DebugMode)
-            {
-                Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} heading:{heading}");
-            }
+            Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} heading:{heading}");
 
             // If spawnInside is true
             if (spawnInside)
@@ -777,10 +772,7 @@ namespace vMenuClient
                     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
                     await Delay(10);
                     SaveVehicle(saveName ?? vehicleInfo["name"].ToString());
-                    if (MainMenu.DebugMode)
-                    {
-                        Log($"Saved vehicle needs to be converted. Re-saving with name: {(saveName ?? vehicleInfo["name"].ToString())}");
-                    }
+                    Log($"Saved vehicle needs to be converted. Re-saving with name: {(saveName ?? vehicleInfo["name"].ToString())}");
                 }
             }
 
@@ -953,6 +945,23 @@ namespace vMenuClient
         /// <returns>A dictionary containing all saved vehicle names (keys) and the vehicle info for each vehicle.</returns>
         public Dictionary<string, Dictionary<string, string>> GetSavedVehiclesDictionary()
         {
+            //var t = StartFindKvp("veh_");
+            //var tt = 0;
+            //while (true)
+            //{
+            //    tt++;
+            //    var foundkvp = FindKvp(t);
+            //    if (foundkvp != null && tt < 50)
+            //    {
+            //        MainMenu.Cf.Log(foundkvp);
+            //    }
+            //    else
+            //    {
+
+            //        break;
+            //    }
+
+            //}
             // Create a list to store all saved vehicle names in.
             var savedVehicleNames = new List<string>();
             // Start looking for kvps starting with veh_
@@ -963,24 +972,55 @@ namespace vMenuClient
                 // Get the kvp string key.
                 var vehString = FindKvp(findHandle);
 
+                //MainMenu.Cf.Log("Vehicle: " + vehString + "\r");
                 // If it exists then the key to the list.
                 if (vehString != "" && vehString != null && vehString != "NULL")
                 {
+                    //MainMenu.Cf.Log(vehString + "\r");
+                    //if (!vehString.Substring(vehString.Length - 3).Contains("_v2")) // it's the old format
+                    //{
+                    //    //var tmpFindHandle = StartFindKvp("veh_" + vehString + "_v2");
+                    //    if (GetResourceKvpString("veh_" + vehString + "_v2") != null) // check if new format exists.
+                    //    {
+                    //        savedVehicleNames.Add(vehString + "_v2"); // if so, add that one.
+                    //    }
+                    //    else
+                    //    {
+                    //        savedVehicleNames.Add(vehString); // there's no new format, add the old format, once spawned, will be converted to new one automatically.
+                    //    }
+                    //    //EndFindKvp(tmpFindHandle);
+                    //}
+                    //else if (!savedVehicleNames.Contains(vehString.Substring(0, vehString.Length - 3)))
+                    //{
+                    //    savedVehicleNames.Add(vehString); // It's already the new format, so add it.
+                    //}
                     savedVehicleNames.Add(vehString);
                 }
                 // Otherwise stop.
                 else
                 {
+                    //MainMenu.Cf.Log("done");
+                    EndFindKvp(findHandle);
                     break;
                 }
             }
+            //MainMenu.Cf.Log("lodaing");
             // Create a Dictionary to store all vehicle information in.
             var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
             // Loop through all save names (keys) from the list above, convert the string into a dictionary 
             // and add it to the dictionary above, with the vehicle save name as the key.
             foreach (var saveName in savedVehicleNames)
             {
+                //if (saveName.Substring(saveName.Length - 3).Contains("_v2"))
+                //{
+                //    vehiclesList.Add(saveName.Substring(0, saveName.Length - 3), sm.GetSavedDictionary(saveName));
+                //}
+                //else
+                //{
+                //MainMenu.Cf.Log(saveName);
                 vehiclesList.Add(saveName, sm.GetSavedDictionary(saveName));
+                //}
+
             }
             // Return the vehicle dictionary containing all vehicle save names (keys) linked to the correct vehicle
             // including all vehicle mods/customization parts.
@@ -1277,9 +1317,10 @@ namespace vMenuClient
         /// <returns></returns>
         public string DictionaryToJson(Dictionary<string, string> dict)
         {
-            var entries = dict.Select(d =>
-                string.Format("\"{0}\": \"{1}\"", d.Key, string.Join(",", d.Value)));
-            return "{" + string.Join(",", entries) + "}";
+            //var entries = dict.Select(d =>
+            //    string.Format("\"{0}\": \"{1}\"", d.Key, string.Join(",", d.Value)));
+            //return "{" + string.Join(",", entries) + "}";
+            return JsonConvert.SerializeObject(dict);
         }
 
         /// <summary>
@@ -1287,35 +1328,51 @@ namespace vMenuClient
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public Dictionary<string, string> JsonToDictionary(string json)
+        public Dictionary<string, string> JsonToDictionary(string json)//, bool v2 = false)
         {
+            //MainMenu.Cf.Log(json);
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            var entries = json.Split(',');
-            foreach (var entry in entries)
+            //if (v2)
+            //{
+            dynamic obj = JsonConvert.DeserializeObject(json);
+            MainMenu.Cf.Log(obj.ToString());
+            foreach (Newtonsoft.Json.Linq.JProperty item in obj)
             {
-                //Notify.Custom(entry.ToString());
-                var items = entry.Split(':');
-                var key = "";
-                var counter = 1;
-                foreach (var item in items)
-                {
-                    counter++;
-                    if (counter % 2 == 0)
-                    {
-                        key = item.Split('"')[1].ToString();
-                    }
-                    else
-                    {
-                        var val = item.Split('"')[1].ToString();
-                        dict.Add(key, item.Split('"')[1].ToString());
-                        counter = 1;
-                    }
-                }
-                //foreach (KeyValuePair<string, string> t in dict)
-                //{
-                //    Notify.Custom($"Key: ~r~{t.Key} ~s~value: ~g~{t.Value}");
-                //}
+                dict.Add(item.Name, item.Value.ToString());
+                //MainMenu.Cf.Log("Key: " + item.Name.ToString());
+                //MainMenu.Cf.Log("Val: " + item.Value.ToString());
             }
+            //}
+            //else
+            //{
+            //    //MainMenu.Cf.Log(json.ToString());
+            //    var entries = json.Split(',');
+            //    foreach (var entry in entries)
+            //    {
+            //        //Notify.Custom(entry.ToString());
+            //        var items = entry.Split(':');
+            //        var key = "";
+            //        var counter = 1;
+            //        foreach (var item in items)
+            //        {
+            //            counter++;
+            //            if (counter % 2 == 0)
+            //            {
+            //                key = item.Split('"')[1].ToString();
+            //            }
+            //            else
+            //            {
+            //                var val = item.Split('"')[1].ToString();
+            //                dict.Add(key, item.Split('"')[1].ToString());
+            //                counter = 1;
+            //            }
+            //        }
+            //        //foreach (KeyValuePair<string, string> t in dict)
+            //        //{
+            //        //    Notify.Custom($"Key: ~r~{t.Key} ~s~value: ~g~{t.Value}");
+            //        //}
+            //    }
+            //}
 
             return dict;
         }
@@ -1785,7 +1842,8 @@ namespace vMenuClient
         #region Log Function
         public void Log(string data)
         {
-            Debug.WriteLine(data, "");
+            if (MainMenu.DebugMode)
+                Debug.WriteLine(data.Replace("{", "{{").Replace("}", "}}"), "");
         }
         #endregion
 
