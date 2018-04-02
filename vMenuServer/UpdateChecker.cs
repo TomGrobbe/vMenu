@@ -42,9 +42,9 @@ namespace vMenuServer
                     // Get the results
                     var currentVersion = GetResourceMetadata(GetCurrentResourceName(), "version", 0);
                     dynamic output = JsonConvert.DeserializeObject<dynamic>(result.content);
-                    string version = output.version.ToString();
-                    string date = output.date.ToString();
-                    string changes = output.changes.ToString() ?? "N/A";
+                    string version = output["version"].ToString();
+                    string date = output["date"].ToString();
+                    string changes = output["changes"].ToString() ?? "N/A";
 
                     // Output the info.
                     Debug.WriteLine($"[vMenu] Current version: {currentVersion}");

@@ -200,6 +200,8 @@ namespace vMenuServer
         /// </summary>
         public EventManager()
         {
+            
+
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
@@ -67,6 +68,13 @@ namespace vMenuClient
             if (DebugMode)
             {
                 SetRichPresence($"Debugging vMenu {Version}!");
+                var test = new Dictionary<string, string>()
+                {
+                    ["key1"] = "value1",
+                    ["key2"] = "value2"
+                };
+                var json = JsonConvert.SerializeObject(test);
+                Debug.Write(json);
             }
 
             if (GetCurrentResourceName() != "vMenu")
