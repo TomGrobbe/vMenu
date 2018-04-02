@@ -110,6 +110,7 @@ namespace vMenuServer
             // Vehicle Spawner
             "VSMenu",
             "VSAll",
+            "VSDisableReplacePrevious",
             "VSSpawnByName",
             "VSAddon",
             "VSCompacts",
@@ -200,7 +201,7 @@ namespace vMenuServer
         /// </summary>
         public EventManager()
         {
-            
+
 
             if (GetCurrentResourceName() != "vMenu")
             {
