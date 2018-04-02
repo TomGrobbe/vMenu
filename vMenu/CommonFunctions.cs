@@ -622,7 +622,7 @@ namespace vMenuClient
                     (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
                 {
                     // If the previous vehicle should be deleted:
-                    if (replacePrevious)
+                    if (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious))
                     {
                         // Delete it.
                         previousVehicle.PreviouslyOwnedByPlayer = false;

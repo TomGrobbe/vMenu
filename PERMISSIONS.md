@@ -81,6 +81,7 @@
 |:-|:-|:-|
 |`vMenu.VehicleSpawner.Menu`|Grants access to the Vehicle Spawner Menu.|Allowed|
 |`vMenu.VehicleSpawner.All`|Allows you to spawn **ANY** vehicle.|Denied|
+|`vMenu.VehicleSpawner.DisableReplacePrevious`|Allows you to disable the "Replace Previous" vehicle option, if this is not allowed, then the option will be forced on.|Allowed|
 |`vMenu.VehicleSpawner.SpawnByName`|Allows you to enter a **custom vehicle name** to spawn[\*\*\*](#global-permissions).|Allowed|
 |`vMenu.VehicleSpawner.Addon`|Allows you to spawn a vehicle from the Addon Vehicles list (requires vMenu v1.0.7+).|Allowed|
 |`vMenu.VehicleSpawner.Compacts`|Allows you to spawn a vehicle from this category.|Allowed|
