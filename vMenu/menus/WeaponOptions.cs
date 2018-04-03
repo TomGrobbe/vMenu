@@ -366,7 +366,7 @@ namespace vMenuClient
             #region Loop through all weapons, create menus for them and add all menu items and handle events.
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
-                if (weapon.Name != null)
+                if (weapon.Name != null && cf.IsAllowed(weapon.Perm))
                 {
                     #region Create menu for this weapon and add buttons
                     UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true)
