@@ -102,6 +102,7 @@ namespace vMenuClient
                     // Loop through all saved vehicles and create a button for it, then add that button to the submenu.
                     foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
                     {
+                        //MainMenu.Cf.Log(savedVehicle.ToString());
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Click to spawn this saved vehicle.");
                         vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
                         savedVehicles.AddItem(vehBtn);
@@ -120,8 +121,7 @@ namespace vMenuClient
                     // When a vehicle is selected...
                     savedVehicles.OnItemSelect += (sender2, item2, index2) =>
                     {
-                        // Get the vehicle info.
-                        var vehInfo = SavedVehiclesDict["veh_" + item2.Text];
+                        Dictionary<string, string> vehInfo = SavedVehiclesDict["veh_" + item2.Text];
 
                         // Get the model hash.
                         var model = vehInfo["model"];
@@ -146,6 +146,7 @@ namespace vMenuClient
                     // Loop through the list and add all saved vehicles to the menu. 
                     foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
                     {
+                        //MainMenu.Cf.Log(savedVehicle.ToString());
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Are you sure you want to delete this saved vehicle? This action cannot be undone!");
                         vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
                         vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");

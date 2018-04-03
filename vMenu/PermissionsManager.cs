@@ -69,6 +69,7 @@ namespace vMenuClient
         // Vehicle Spawner
         VSMenu,
         VSAll,
+        VSDisableReplacePrevious,
         VSSpawnByName,
         VSAddon,
         VSCompacts,
@@ -232,43 +233,47 @@ namespace vMenuClient
         VCEnable,
         VCShowSpeaker,
         VCStaffChannel,
-        
+
     };
 
     public static class PermissionsManager
     {
-        private static List<string> perms = new List<string>() { };
+        public static List<string> Permissions { get; private set; } = new List<string>() { };
 
         public static void SetPermission(string permissionName, bool allowed)
         {
             if (allowed)
             {
-                perms.Add(permissionName);
+                Permissions.Add(permissionName);
+
             }
+            //if (allowed)
+            //    MainMenu.Cf.Log("Permission: " + permissionName.ToString() + " is ALLOWED.");
+            //else
+            //    MainMenu.Cf.Log("Permission: " + permissionName.ToString() + " is DENIED.");
         }
 
         public static bool IsAllowed(Permission permission)
         {
-            if (perms.Contains("Everything"))
+
+            if (Permissions.Contains("Everything"))
             {
-                if (MainMenu.DebugMode)
-                {
-                    MainMenu.Cf.Log("Everything allowed, breaking.");
-                }
+                MainMenu.Cf.Log("Everything allowed, breaking.");
                 return true;
             }
             else
             {
                 var allowed = false;
-                if (perms.Contains(permission.ToString().Substring(0, 2) + "All"))
+                if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
                 {
                     allowed = true;
                 }
 
                 if (!allowed)
                 {
-                    allowed = perms.Contains(permission.ToString());
+                    allowed = Permissions.Contains(permission.ToString());
                 }
+
 
                 return allowed;
             }
