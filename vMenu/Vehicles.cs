@@ -385,6 +385,7 @@ namespace vMenuClient
             "INSURGENT2",
             "INSURGENT3",
             "KALAHARI",
+            "KAMACHO",
             "MARSHALL",
             "MESA3",
             "MONSTER",
