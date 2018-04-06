@@ -402,6 +402,8 @@ namespace vMenuClient
                 else if (item == vehicleFreeze) // Freeze Vehicle Toggled
                 {
                     VehicleFrozen = _checked;
+                    if (!_checked)
+                        FreezeEntityPosition(cf.GetVehicle(), false);
                 }
                 else if (item == torqueEnabled) // Enable Torque Multiplier Toggled
                 {
