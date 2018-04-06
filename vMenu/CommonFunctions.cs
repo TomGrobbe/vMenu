@@ -561,16 +561,7 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    int modelClass = GetVehicleClassFromName(model);
-                    //var tmpMenu = new VehicleSpawner()
-                    if (MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
-                    {
-                        SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
-                    }
-                    else
-                    {
-                        Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
-                    }
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
                 }
                 // Result was invalid.
                 else
@@ -594,6 +585,14 @@ namespace vMenuClient
         /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
         public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null, string saveName = null)
         {
+            var vehClass = GetVehicleClassFromName(vehicleHash);
+            int modelClass = GetVehicleClassFromName(vehicleHash);
+            if (!MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
+            {
+                Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
+                return;
+            }
+
             if (!skipLoad)
             {
                 bool successFull = await LoadModel(vehicleHash);
