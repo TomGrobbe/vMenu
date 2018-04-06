@@ -255,6 +255,10 @@ namespace vMenuServer
                     }
                 }
 
+                if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
+                {
+                    dynamicWeather = false;
+                }
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
