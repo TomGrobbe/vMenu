@@ -1823,9 +1823,9 @@ namespace vMenuClient
         {
             string output = "~h~";
             int length = title.Length;
-            int totalSize = 90 - int.Parse((length * 3).ToString());
+            int totalSize = 80 - length;
 
-            for (var i = 0; i < totalSize / 2; i++)
+            for (var i = 0; i < totalSize / 2 - (length / 2); i++)
             {
                 output += " ";
             }
