@@ -135,6 +135,7 @@ namespace vMenuClient
         // Misc Settings
         MSMenu,
         MSAll,
+        MSClearArea,
         MSTeleportToWp,
         MSShowCoordinates,
         MSShowLocation,
@@ -142,6 +143,8 @@ namespace vMenuClient
         MSDeathNotifs,
         MSNightVision,
         MSThermalVision,
+        
+
 
         // Voice Chat
         VCMenu,
