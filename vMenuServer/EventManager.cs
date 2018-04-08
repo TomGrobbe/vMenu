@@ -426,18 +426,23 @@ namespace vMenuServer
         /// <param name="kickReason"></param>
         private void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            // If the player is allowed to be kicked.
-            var targetPlayer = new PlayerList()[target];
-            if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kick"))
             {
-                // Kick the player from the server using the specified reason.
-                DropPlayer(targetPlayer.Handle, kickReason);
-            }
-            else
-            {
+                // If the player is allowed to be kicked.
+                var targetPlayer = new PlayerList()[target];
+                if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+                {
+                    // Kick the player from the server using the specified reason.
+                    DropPlayer(targetPlayer.Handle, kickReason);
+                    return;
+                }
                 // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
+                return;
             }
+            // If this happens, the person who thinks they're funny knows exactly what this is for.
+            TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
+            // todo: Make sure they enjoy their day.
         }
 
         /// <summary>
@@ -447,9 +452,14 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void KillPlayer([FromSource] Player source, int target)
         {
-            var targetPlayer = new PlayerList()[target];
-            // Trigger the client event on the target player to make them kill themselves. R.I.P.
-            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kill"))
+            {
+                var targetPlayer = new PlayerList()[target];
+                // Trigger the client event on the target player to make them kill themselves. R.I.P.
+                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+                return;
+            }
+            // todo: enjoy.
         }
 
         /// <summary>
@@ -459,9 +469,14 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void SummonPlayer([FromSource] Player source, int target)
         {
-            // Trigger the client event on the target player to make them teleport to the source player.
-            var targetPlayer = new PlayerList()[target];
-            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Summon"))
+            {
+                // Trigger the client event on the target player to make them teleport to the source player.
+                var targetPlayer = new PlayerList()[target];
+                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
+                return;
+            }
+            // todo: enjoy.
         }
         #endregion
 
