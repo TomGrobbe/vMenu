@@ -141,11 +141,13 @@ namespace vMenuClient
                 }
                 else if (item == nightVision)
                 {
-                    NightVision = _checked;
+                    //NightVision = _checked;
+                    SetNightvision(_checked);
                 }
                 else if (item == thermalVision)
                 {
-                    ThermalVision = _checked;
+                    //ThermalVision = _checked;
+                    SetSeethrough(_checked);
                 }
             };
 

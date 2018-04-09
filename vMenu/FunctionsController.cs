@@ -563,8 +563,8 @@ namespace vMenuClient
                 #endregion
 
                 #region Nightvision & Thermal vision
-                SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
-                SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
+                //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
+                //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
                 #endregion
             }
             else
