@@ -327,7 +327,7 @@ namespace vMenuServer
         /// </summary>
         private void RefreshWeather()
         {
-            var random = new Random().Next(10);
+            var random = new Random().Next(20);
             if (currentWeather == "RAIN" || currentWeather == "THUNDER")
             {
                 currentWeather = "CLEARING";
@@ -343,23 +343,35 @@ namespace vMenuServer
                     case 0:
                     case 1:
                     case 2:
-                        currentWeather = (currentWeather == "EXTRASUNNY" ? "CLEAR" : "EXTRASUNNY");
-                        break;
                     case 3:
-                        currentWeather = (currentWeather == "SMOG" ? "FOGGY" : "SMOG");
-                        break;
                     case 4:
                     case 5:
+                        currentWeather = (currentWeather == "EXTRASUNNY" ? "CLEAR" : "EXTRASUNNY");
+                        break;
                     case 6:
-                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
-                        break;
                     case 7:
-                        currentWeather = (currentWeather == "CLOUDS" ? "EXTRASUNNY" : "RAIN");
-                        break;
                     case 8:
-                        currentWeather = (currentWeather == "OVERCAST" ? "THUNDER" : "OVERCAST");
+                        currentWeather = (currentWeather == "SMOG" ? "FOGGY" : "SMOG");
                         break;
                     case 9:
+                    case 10:
+                    case 11:
+                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
+                        break;
+                    case 12:
+                    case 13:
+                    case 14:
+                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
+                        break;
+                    case 15:
+                        currentWeather = (currentWeather == "OVERCAST" ? "THUNDER" : "OVERCAST");
+                        break;
+                    case 16:
+                        currentWeather = (currentWeather == "CLOUDS" ? "EXTRASUNNY" : "RAIN");
+                        break;
+                    case 17:
+                    case 18:
+                    case 19:
                     default:
                         currentWeather = (currentWeather == "FOGGY" ? "SMOG" : "FOGGY");
                         break;
