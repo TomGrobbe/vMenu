@@ -561,16 +561,7 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    int modelClass = GetVehicleClassFromName(model);
-                    //var tmpMenu = new VehicleSpawner()
-                    if (MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
-                    {
-                        SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
-                    }
-                    else
-                    {
-                        Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
-                    }
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
                 }
                 // Result was invalid.
                 else
@@ -594,6 +585,14 @@ namespace vMenuClient
         /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
         public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null, string saveName = null)
         {
+            var vehClass = GetVehicleClassFromName(vehicleHash);
+            int modelClass = GetVehicleClassFromName(vehicleHash);
+            if (!MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
+            {
+                Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
+                return;
+            }
+
             if (!skipLoad)
             {
                 bool successFull = await LoadModel(vehicleHash);
@@ -614,7 +613,7 @@ namespace vMenuClient
             // If the previous vehicle exists...
             if (previousVehicle != null)
             {
-                ClearPedTasksImmediately(PlayerPedId());
+                //ClearPedTasksImmediately(PlayerPedId());
                 // And it's actually a vehicle (rather than another random entity type)
                 if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
                     (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
@@ -624,29 +623,41 @@ namespace vMenuClient
                     {
                         // Delete it.
                         previousVehicle.PreviouslyOwnedByPlayer = false;
+                        SetEntityAsMissionEntity(previousVehicle.Handle, true, true);
                         previousVehicle.Delete();
                     }
                     // Otherwise
                     else
                     {
                         // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                        previousVehicle.PreviouslyOwnedByPlayer = false;
                         previousVehicle.IsPersistent = false;
                         previousVehicle.MarkAsNoLongerNeeded();
                     }
                     previousVehicle = null;
                 }
             }
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
+
+            if (IsPedInAnyVehicle(PlayerPedId(), false) && (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious)))
             {
                 if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
                 {
-                    int tmpveh = GetVehicle();
+                    var tmpveh = GetVehicle();
                     SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
                     SetEntityAsMissionEntity(tmpveh, true, true);
+
+                    if (previousVehicle != null)
+                        if (previousVehicle.Handle == tmpveh)
+                            previousVehicle = null;
+
                     DeleteVehicle(ref tmpveh);
                 }
             }
+
+            if (previousVehicle != null)
+                previousVehicle.PreviouslyOwnedByPlayer = false;
+
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+                pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0, 8f, 0.1f);
 
             // Create the new vehicle and remove the need to hotwire the car.
             Vehicle vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z + 1f, heading, true, false))
@@ -655,6 +666,10 @@ namespace vMenuClient
                 PreviouslyOwnedByPlayer = true,
                 IsPersistent = true
             };
+
+            //// Set the previous vehicle to the new vehicle.
+            //previousVehicle = vehicle;
+
             Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} heading:{heading}");
 
             // If spawnInside is true
@@ -1824,9 +1839,9 @@ namespace vMenuClient
         {
             string output = "~h~";
             int length = title.Length;
-            int totalSize = 90 - int.Parse((length * 3).ToString());
+            int totalSize = 80 - length;
 
-            for (var i = 0; i < totalSize / 2; i++)
+            for (var i = 0; i < totalSize / 2 - (length / 2); i++)
             {
                 output += " ";
             }

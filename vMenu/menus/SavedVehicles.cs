@@ -35,7 +35,7 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
             // Create submenus.
-            UIMenu savedVehicles = new UIMenu(menuTitle, "Spawn Saved Vehicle", true)
+            UIMenu spawnSavedVehicles = new UIMenu(menuTitle, "Spawn Saved Vehicle", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -69,7 +69,7 @@ namespace vMenuClient
             // Bind submenus to menu items.
             if (cf.IsAllowed(Permission.SVSpawn))
             {
-                menu.BindMenuToItem(savedVehicles, savedVehiclesBtn);
+                menu.BindMenuToItem(spawnSavedVehicles, savedVehiclesBtn);
             }
             else
             {
@@ -94,7 +94,7 @@ namespace vMenuClient
                 else if (item == savedVehiclesBtn)
                 {
                     // Remove all old items.
-                    savedVehicles.MenuItems.Clear();
+                    spawnSavedVehicles.MenuItems.Clear();
 
                     // Get all saved vehicles.
                     SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
@@ -105,7 +105,7 @@ namespace vMenuClient
                         //MainMenu.Cf.Log(savedVehicle.ToString());
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Click to spawn this saved vehicle.");
                         vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
-                        savedVehicles.AddItem(vehBtn);
+                        spawnSavedVehicles.AddItem(vehBtn);
                         if (!IsModelInCdimage((uint)Int64.Parse(savedVehicle.Value["model"])))
                         {
                             vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
@@ -116,24 +116,12 @@ namespace vMenuClient
                     }
 
                     // Sort the menu items (case IN-sensitive) by name.
-                    savedVehicles.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
-
-                    // When a vehicle is selected...
-                    savedVehicles.OnItemSelect += (sender2, item2, index2) =>
-                    {
-                        Dictionary<string, string> vehInfo = SavedVehiclesDict["veh_" + item2.Text];
-
-                        // Get the model hash.
-                        var model = vehInfo["model"];
-
-                        // Spawn a vehicle using the hash, and pass on the vehicleInfo dictionary containing all saved vehicle mods.
-                        cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo, saveName: item2.Text);
-                    };
+                    spawnSavedVehicles.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
 
                     // Refresh the index of the page.
-                    savedVehicles.RefreshIndex();
+                    spawnSavedVehicles.RefreshIndex();
                     // Update the scaleform.
-                    savedVehicles.UpdateScaleform();
+                    spawnSavedVehicles.UpdateScaleform();
                 }
                 // Delete saved vehicle.
                 else if (item == deleteSavedVehiclesBtn)
@@ -155,20 +143,36 @@ namespace vMenuClient
 
                     // Sort the menu items (case IN-sensitive) by name.
                     deleteSavedVehicles.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
-
-                    // Handle vehicle deletions
-                    deleteSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
-                    {
-                        var vehDictName = "veh_" + item2.Text;
-                        new StorageManager().DeleteSavedDictionary(vehDictName);
-                        deleteSavedVehicles.GoBack();
-                    };
+                    deleteSavedVehicles.RefreshIndex();
+                    deleteSavedVehicles.UpdateScaleform();
                 }
             };
             #endregion
 
+            #region Handle saved vehicles being pressed. (spawning)
+            // When a vehicle is selected...
+            spawnSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
+            {
+                Dictionary<string, string> vehInfo = SavedVehiclesDict["veh_" + item2.Text];
+
+                // Get the model hash.
+                var model = vehInfo["model"];
+
+                // Spawn a vehicle using the hash, and pass on the vehicleInfo dictionary containing all saved vehicle mods.
+                cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo, saveName: item2.Text);
+            };
+
+            // Handle vehicle deletions
+            deleteSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
+            {
+                var vehDictName = "veh_" + item2.Text;
+                new StorageManager().DeleteSavedDictionary(vehDictName);
+                deleteSavedVehicles.GoBack();
+            };
+            #endregion
+
             // Add the submenus to the menu pool.
-            MainMenu.Mp.Add(savedVehicles);
+            MainMenu.Mp.Add(spawnSavedVehicles);
             MainMenu.Mp.Add(deleteSavedVehicles);
         }
 

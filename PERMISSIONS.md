@@ -167,6 +167,7 @@
 |:-|:-|:-|
 |`vMenu.MiscSettings.Menu`|Grants access to the Misc Settings Menu.|Allowed|
 |`vMenu.MiscSettings.All`|Grants access to **ALL** `Misc Settings Menu` options.|Denied|
+|`vMenu.MiscSettings.ClearArea`|Allows you to reset/clear everything 100m around you in the world.|Allowed|
 |`vMenu.MiscSettings.TeleportToWp`|Allows you to teleport to the waypoint on your map.|Allowed|
 |`vMenu.MiscSettings.ShowCoordinates`|Allows you to show your current coordinates on screen.|Allowed|
 |`vMenu.MiscSettings.ShowLocation`|Allows you to show your current location on screen (pretty much just like PLD).|Allowed|

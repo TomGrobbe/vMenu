@@ -181,6 +181,8 @@ namespace vMenuClient
                 else if (item == playerFrozenCheckbox)
                 {
                     PlayerFrozen = _checked;
+                    if (!_checked)
+                        FreezeEntityPosition(PlayerPedId(), false);
                 }
             };
 

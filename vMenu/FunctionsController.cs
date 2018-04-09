@@ -192,13 +192,15 @@ namespace vMenuClient
                     if (!MainMenu.NoClipEnabled)
                     {
                         // Manage player frozen.
-                        FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                        if (MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze))
+                            FreezeEntityPosition(PlayerPedId(), true);
                     }
                 }
                 else
                 {
                     // Manage player frozen.
-                    FreezeEntityPosition(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze));
+                    if (MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze))
+                        FreezeEntityPosition(PlayerPedId(), true);
                 }
 
 
@@ -251,7 +253,11 @@ namespace vMenuClient
                     }
 
                     // Freeze Vehicle Position (if enabled).
-                    FreezeEntityPosition(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze));
+                    if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
+                    {
+                        FreezeEntityPosition(vehicle.Handle, true);
+                    }
+
 
                     // If the torque multiplier is enabled and the player is allowed to use it.
                     if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))

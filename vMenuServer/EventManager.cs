@@ -176,6 +176,7 @@ namespace vMenuServer
             // Misc Settings
             "MSMenu",
             "MSAll",
+            "MSClearArea",
             "MSTeleportToWp",
             "MSShowCoordinates",
             "MSShowLocation",
@@ -201,8 +202,6 @@ namespace vMenuServer
         /// </summary>
         public EventManager()
         {
-
-
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
@@ -256,6 +255,10 @@ namespace vMenuServer
                     }
                 }
 
+                if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
+                {
+                    dynamicWeather = false;
+                }
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
@@ -324,7 +327,7 @@ namespace vMenuServer
         /// </summary>
         private void RefreshWeather()
         {
-            var random = new Random().Next(10);
+            var random = new Random().Next(20);
             if (currentWeather == "RAIN" || currentWeather == "THUNDER")
             {
                 currentWeather = "CLEARING";
@@ -340,23 +343,35 @@ namespace vMenuServer
                     case 0:
                     case 1:
                     case 2:
-                        currentWeather = (currentWeather == "EXTRASUNNY" ? "CLEAR" : "EXTRASUNNY");
-                        break;
                     case 3:
-                        currentWeather = (currentWeather == "SMOG" ? "FOGGY" : "SMOG");
-                        break;
                     case 4:
                     case 5:
+                        currentWeather = (currentWeather == "EXTRASUNNY" ? "CLEAR" : "EXTRASUNNY");
+                        break;
                     case 6:
-                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
-                        break;
                     case 7:
-                        currentWeather = (currentWeather == "CLOUDS" ? "EXTRASUNNY" : "RAIN");
-                        break;
                     case 8:
-                        currentWeather = (currentWeather == "OVERCAST" ? "THUNDER" : "OVERCAST");
+                        currentWeather = (currentWeather == "SMOG" ? "FOGGY" : "SMOG");
                         break;
                     case 9:
+                    case 10:
+                    case 11:
+                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
+                        break;
+                    case 12:
+                    case 13:
+                    case 14:
+                        currentWeather = (currentWeather == "CLOUDS" ? "OVERCAST" : "CLOUDS");
+                        break;
+                    case 15:
+                        currentWeather = (currentWeather == "OVERCAST" ? "THUNDER" : "OVERCAST");
+                        break;
+                    case 16:
+                        currentWeather = (currentWeather == "CLOUDS" ? "EXTRASUNNY" : "RAIN");
+                        break;
+                    case 17:
+                    case 18:
+                    case 19:
                     default:
                         currentWeather = (currentWeather == "FOGGY" ? "SMOG" : "FOGGY");
                         break;
@@ -423,18 +438,23 @@ namespace vMenuServer
         /// <param name="kickReason"></param>
         private void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            // If the player is allowed to be kicked.
-            var targetPlayer = new PlayerList()[target];
-            if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kick"))
             {
-                // Kick the player from the server using the specified reason.
-                DropPlayer(targetPlayer.Handle, kickReason);
-            }
-            else
-            {
+                // If the player is allowed to be kicked.
+                var targetPlayer = new PlayerList()[target];
+                if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+                {
+                    // Kick the player from the server using the specified reason.
+                    DropPlayer(targetPlayer.Handle, kickReason);
+                    return;
+                }
                 // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
+                return;
             }
+            // If this happens, the person who thinks they're funny knows exactly what this is for.
+            TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
+            // todo: Make sure they enjoy their day.
         }
 
         /// <summary>
@@ -444,9 +464,14 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void KillPlayer([FromSource] Player source, int target)
         {
-            var targetPlayer = new PlayerList()[target];
-            // Trigger the client event on the target player to make them kill themselves. R.I.P.
-            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kill"))
+            {
+                var targetPlayer = new PlayerList()[target];
+                // Trigger the client event on the target player to make them kill themselves. R.I.P.
+                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+                return;
+            }
+            // todo: enjoy.
         }
 
         /// <summary>
@@ -456,9 +481,14 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void SummonPlayer([FromSource] Player source, int target)
         {
-            // Trigger the client event on the target player to make them teleport to the source player.
-            var targetPlayer = new PlayerList()[target];
-            TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
+            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Summon"))
+            {
+                // Trigger the client event on the target player to make them teleport to the source player.
+                var targetPlayer = new PlayerList()[target];
+                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
+                return;
+            }
+            // todo: enjoy.
         }
         #endregion
 

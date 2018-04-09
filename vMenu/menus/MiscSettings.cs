@@ -57,6 +57,9 @@ namespace vMenuClient
             UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
             UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", NightVision, "Enable or disable night vision.");
             UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", ThermalVision, "Enable or disable thermal vision.");
+
+            UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
+
             // Add menu items to the menu.
             if (cf.IsAllowed(Permission.MSTeleportToWp))
             {
@@ -90,6 +93,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.MSThermalVision))
             {
                 menu.AddItem(thermalVision);
+            }
+            if (cf.IsAllowed(Permission.MSClearArea))
+            {
+                menu.AddItem(clearArea);
             }
 
             // Always allowed
@@ -153,6 +160,11 @@ namespace vMenuClient
                 else if (item == saveSettings)
                 {
                     UserDefaults.SaveSettingsAsync();
+                }
+                else if (item == clearArea)
+                {
+                    var pos = Game.PlayerPed.Position;
+                    ClearAreaOfEverything(pos.X, pos.Y, pos.Z, 100f, false, false, false, false);
                 }
             };
         }

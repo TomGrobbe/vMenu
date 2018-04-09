@@ -363,9 +363,136 @@ namespace vMenuClient
             #endregion
             #endregion
 
+            UIMenuItem spacer = cf.GetSpacerMenuItem("↓ Weapon Categories ↓");
+            menu.AddItem(spacer);
+
+            UIMenu handGuns = new UIMenu("Weapons", "Handguns", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            handGuns.SetMenuWidthOffset(50);
+            UIMenuItem handGunsBtn = new UIMenuItem("Handguns");
+
+            UIMenu rifles = new UIMenu("Weapons", "Assault Rifles", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            rifles.SetMenuWidthOffset(50);
+            UIMenuItem riflesBtn = new UIMenuItem("Assault Rifles");
+
+            UIMenu shotguns = new UIMenu("Weapons", "Shotguns", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            shotguns.SetMenuWidthOffset(50);
+            UIMenuItem shotgunsBtn = new UIMenuItem("Shotguns");
+
+            UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            smgs.SetMenuWidthOffset(50);
+            UIMenuItem smgsBtn = new UIMenuItem("Sub-/Light Machine Guns");
+
+            UIMenu throwables = new UIMenu("Weapons", "Throwables", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            throwables.SetMenuWidthOffset(50);
+            UIMenuItem throwablesBtn = new UIMenuItem("Throwables");
+
+            UIMenu melee = new UIMenu("Weapons", "Melee", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            melee.SetMenuWidthOffset(50);
+            UIMenuItem meleeBtn = new UIMenuItem("Melee");
+
+            UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            heavy.SetMenuWidthOffset(50);
+            UIMenuItem heavyBtn = new UIMenuItem("Heavy Weapons");
+
+            UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles", true)
+            {
+                ScaleWithSafezone = false,
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+            };
+            snipers.SetMenuWidthOffset(50);
+            UIMenuItem snipersBtn = new UIMenuItem("Sniper Rifles");
+
+
+            MainMenu.Mp.Add(handGuns);
+            MainMenu.Mp.Add(rifles);
+            MainMenu.Mp.Add(shotguns);
+            MainMenu.Mp.Add(smgs);
+            MainMenu.Mp.Add(throwables);
+            MainMenu.Mp.Add(melee);
+            MainMenu.Mp.Add(heavy);
+            MainMenu.Mp.Add(snipers);
+
+            handGunsBtn.SetRightLabel("→→→");
+            menu.AddItem(handGunsBtn);
+            menu.BindMenuToItem(handGuns, handGunsBtn);
+
+            riflesBtn.SetRightLabel("→→→");
+            menu.AddItem(riflesBtn);
+            menu.BindMenuToItem(rifles, riflesBtn);
+
+            shotgunsBtn.SetRightLabel("→→→");
+            menu.AddItem(shotgunsBtn);
+            menu.BindMenuToItem(shotguns, shotgunsBtn);
+
+            smgsBtn.SetRightLabel("→→→");
+            menu.AddItem(smgsBtn);
+            menu.BindMenuToItem(smgs, smgsBtn);
+
+            throwablesBtn.SetRightLabel("→→→");
+            menu.AddItem(throwablesBtn);
+            menu.BindMenuToItem(throwables, throwablesBtn);
+
+            meleeBtn.SetRightLabel("→→→");
+            menu.AddItem(meleeBtn);
+            menu.BindMenuToItem(melee, meleeBtn);
+
+            heavyBtn.SetRightLabel("→→→");
+            menu.AddItem(heavyBtn);
+            menu.BindMenuToItem(heavy, heavyBtn);
+
+            snipersBtn.SetRightLabel("→→→");
+            menu.AddItem(snipersBtn);
+            menu.BindMenuToItem(snipers, snipersBtn);
+
+
             #region Loop through all weapons, create menus for them and add all menu items and handle events.
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
+                uint cat = (uint)GetWeapontypeGroup(weapon.Hash);
                 if (weapon.Name != null)
                 {
                     #region Create menu for this weapon and add buttons
@@ -518,8 +645,49 @@ namespace vMenuClient
                     weaponMenu.RefreshIndex();
                     weaponMenu.UpdateScaleform();
 
-                    menu.AddItem(weaponItem);
-                    menu.BindMenuToItem(weaponMenu, weaponItem);
+                    if (cat == 970310034) // 970310034 rifles
+                    {
+                        rifles.AddItem(weaponItem);
+                        rifles.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 416676503 || cat == 690389602) // 416676503 hand guns // 690389602 stun gun
+                    {
+                        handGuns.AddItem(weaponItem);
+                        handGuns.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 860033945) // 860033945 shotguns
+                    {
+                        shotguns.AddItem(weaponItem);
+                        shotguns.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 3337201093 || cat == 1159398588) // 3337201093 sub machine guns // 1159398588 light machine guns
+                    {
+                        smgs.AddItem(weaponItem);
+                        smgs.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 1548507267 || cat == 4257178988 || cat == 1595662460) // 1548507267 throwables // 4257178988 fire extinghuiser // jerry can
+                    {
+                        throwables.AddItem(weaponItem);
+                        throwables.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 3566412244 || cat == 2685387236) // 3566412244 melee weapons // 2685387236 knuckle duster
+                    {
+                        melee.AddItem(weaponItem);
+                        melee.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 2725924767) // 2725924767 heavy weapons
+                    {
+                        heavy.AddItem(weaponItem);
+                        heavy.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+                    else if (cat == 3082541095) // 3082541095 sniper rifles
+                    {
+                        snipers.AddItem(weaponItem);
+                        snipers.BindMenuToItem(weaponMenu, weaponItem);
+                    }
+
+
+
                 }
             }
             #endregion
