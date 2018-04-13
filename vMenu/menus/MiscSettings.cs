@@ -27,6 +27,8 @@ namespace vMenuClient
         public bool JoinQuitNotifications { get; private set; } = UserDefaults.MiscJoinQuitNotifications;
         public bool NightVision { get; private set; } = false;
         public bool ThermalVision { get; private set; } = false;
+        public bool LockCameraX { get; private set; } = false;
+        public bool LockCameraY { get; private set; } = false;
 
         /// <summary>
         /// Creates the menu.
@@ -59,6 +61,8 @@ namespace vMenuClient
             UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", ThermalVision, "Enable or disable thermal vision.");
 
             UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
+            UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
+            UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
             // Add menu items to the menu.
             if (cf.IsAllowed(Permission.MSTeleportToWp))
@@ -102,6 +106,8 @@ namespace vMenuClient
             // Always allowed
             menu.AddItem(hideRadar);
             menu.AddItem(hideHud);
+            menu.AddItem(lockCamX);
+            menu.AddItem(lockCamY);
             menu.AddItem(saveSettings);
 
             // Handle checkbox changes.
@@ -148,6 +154,14 @@ namespace vMenuClient
                 {
                     //ThermalVision = _checked;
                     SetSeethrough(_checked);
+                }
+                else if (item == lockCamX)
+                {
+                    LockCameraX = _checked;
+                }
+                else if (item == lockCamY)
+                {
+                    LockCameraY = _checked;
                 }
             };
 
