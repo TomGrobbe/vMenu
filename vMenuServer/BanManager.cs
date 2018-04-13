@@ -26,15 +26,15 @@ namespace vMenuServer
         /// <summary>
         /// List of ban records.
         /// </summary>
-        private List<BanRecord> BannedPlayersList = new List<BanRecord>();
+        private static List<BanRecord> BannedPlayersList = new List<BanRecord>();
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public BanManager()
         {
-            EventHandlers.Add("vMenu.TempBanPlayer", new Action<Player, int, double, string>(BanPlayer));
-            EventHandlers.Add("vMenu.PermBanPlayer", new Action<Player, int, string>(BanPlayer));
+            EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int, double, string>(BanPlayer));
+            EventHandlers.Add("vMenu:PermBanPlayer", new Action<Player, int, string>(BanPlayer));
             EventHandlers.Add("playerConnecting", new Action<Player, string, CallbackDelegate>(CheckForBans));
             BannedPlayersList = GetBanList();
         }
@@ -43,7 +43,7 @@ namespace vMenuServer
         /// Gets the ban list from the bans.json file.
         /// </summary>
         /// <returns></returns>
-        private List<BanRecord> GetBanList()
+        private static List<BanRecord> GetBanList()
         {
             var banList = new List<BanRecord>();
             string bansJson = LoadResourceFile(GetCurrentResourceName(), "bans.json");
@@ -265,7 +265,7 @@ namespace vMenuServer
         /// </summary>
         /// <param name="ban"></param>
         /// <returns></returns>
-        private bool AddBan(BanRecord ban)
+        private static bool AddBan(BanRecord ban)
         {
             BannedPlayersList = GetBanList();
             var found = false;
@@ -327,17 +327,18 @@ namespace vMenuServer
         /// Someone trying to trigger fake server events? Well, goodbye idiots.
         /// </summary>
         /// <param name="source"></param>
-        public void BanCheater(Player source)
+        public static void BanCheater(Player source)
         {
             AddBan(new BanRecord()
             {
                 bannedBy = "Yourself, idiot.",
                 bannedUntil = new DateTime(3000, 1, 1),
-                banReason = "You know exactly what you did wrong, you're a fucking idiot, but nobody needs to tell you that.",
+                banReason = "You know exactly what you did wrong, you're a fucking idiot, but nobody needs to tell you that. Enjoy this: https://youtu.be/dQw4w9WgXcQ",
                 identifiers = source.Identifiers.ToList(),
                 playerName = source.Name
             });
-            source.Drop("Enjoy, idiot.");
+            //source.Drop("Enjoy, idiot.");
+            source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
         }
     }
 }

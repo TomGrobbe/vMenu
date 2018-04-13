@@ -38,21 +38,43 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
+            EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
 
             Tick += WeatherSync;
             Tick += TimeSync;
         }
 
+        /// <summary>
+        /// Used for cheating idiots.
+        /// </summary>
+        private void GoodBye()
+        {
+            ForceSocialClubUpdate();
+        }
+
+        /// <summary>
+        /// Triggers a settings update.
+        /// </summary>
+        /// <param name="options"></param>
         private void UpdateSettings(dynamic options)
         {
             MainMenu.SetOptions(options);
         }
 
+        /// <summary>
+        /// Triggers a permissions update.
+        /// </summary>
+        /// <param name="permissions"></param>
         private void UpdatePermissions(dynamic permissions)
         {
             MainMenu.SetPermissions(permissions);
         }
 
+        /// <summary>
+        /// Triggers a addons list update.
+        /// </summary>
+        /// <param name="addonType"></param>
+        /// <param name="addons"></param>
         private void SetAddonModels(string addonType, dynamic addons)
         {
             Dictionary<string, uint> models = new Dictionary<string, uint>();

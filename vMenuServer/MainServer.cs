@@ -454,9 +454,13 @@ namespace vMenuServer
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
                 return;
             }
-            // If this happens, the person who thinks they're funny knows exactly what this is for.
-            TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
-            // todo: Make sure they enjoy their day.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
+            //// If this happens, the person who thinks they're funny knows exactly what this is for.
+            //TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
+            //// todo: Make sure they enjoy their day.
         }
 
         /// <summary>
@@ -473,7 +477,10 @@ namespace vMenuServer
                 TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
                 return;
             }
-            // todo: enjoy.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
         }
 
         /// <summary>
@@ -490,7 +497,10 @@ namespace vMenuServer
                 TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
                 return;
             }
-            // todo: enjoy.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
         }
         #endregion
 

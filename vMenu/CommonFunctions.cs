@@ -386,20 +386,20 @@ namespace vMenuClient
             {
                 if (forever)
                 {
-                    TriggerServerEvent("vMenu.PermBanPlayer", player.ServerId, banReason);
+                    TriggerServerEvent("vMenu:PermBanPlayer", player.ServerId, banReason);
                 }
                 else
                 {
                     string banDurationHours = await GetUserInput("Ban Duration (in hours)                      Max: 720 (1 month)", "1.5", 10);
                     if (double.TryParse(banDurationHours, out double banHours))
                     {
-                        TriggerServerEvent("vMenu.TempBanPlayer", player.ServerId, banHours, banReason);
+                        TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, banHours, banReason);
                     }
                     else
                     {
                         if (int.TryParse(banDurationHours, out int banHoursInt))
                         {
-                            TriggerServerEvent("vMenu.TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
+                            TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
                         }
                         else
                         {
