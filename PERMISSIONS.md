@@ -7,11 +7,13 @@
 1. __\*__ The `Default (allowed/denied)` values are based on the assumption that you use the default permissions file included with the menu, and you've granted yourself no special permissions or added yourself to any of the admin/moderator groups. If you **DON'T** use the default permissions file, then every option will be **DENIED** by default.
 2. __\*\*__ These options are only allowed by default for the "Moderators" / "Admins" groups in the provided permissions file with this resource.
 3. __\*\*\*__ When spawning a car using the `Spawn By Name` button, it will always check to see if you have permission for that specific vehicle's class. eg: If you don't have permission to spawn cars from the `Super` class, trying to spawn an `adder` using the `Spawn By Name` button won't work.
+4. __\*\*\*\*__ Only admins are allowed to use this by default.
 
 |Permission|Description|Default[\*](#global-permissions)|
 |:-|:-|:-|
 |`vMenu.Everything`|Grants access to everything, not recommended to give this out.|Denied|
 |`vMenu.DontKickMe`|Prevents this player from being kicked.|Denied|
+|`vMenu.DontBanMe`|Prevents this player from being banned.|Denied|
 |`vMenu.NoClip`|Allows the user to use the NoClip feature.|Allowed|
 
 ## Online Players
@@ -23,9 +25,11 @@
 |`vMenu.OnlinePlayers.Teleport`|Allows you to teleport to another player.|Allowed|
 |`vMenu.OnlinePlayers.Waypoint`|Allows you to set a waypoint to another player.|Allowed|
 |`vMenu.OnlinePlayers.Spectate`|Allows you to spectate another player.|Allowed|
-|`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you.|Denied|
-|`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. Dam, you're very cruel.|Denied|
-|`vMenu.OnlinePlayers.Kick`|Allows you to kick another player from the server.|Denied|
+|`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you. (Default: moderators only)|Denied|
+|`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. Dam, you're very cruel. (Default: moderators only)|Denied|
+|`vMenu.OnlinePlayers.Kick`|Allows you to kick another player from the server. (Default: moderators only)|Denied|
+|`vMenu.OnlinePlayers.TempBan`|Allows you to ban the player from the server for a custom amount of time, max 1 month. (Default: moderators only)|Denied\*|
+|`vMenu.OnlinePlayers.PermBan`|Allows you to ban the player from the server forever. (Default: admin only)|Denied\*\*\*\*|
 
 ## Player Options
 

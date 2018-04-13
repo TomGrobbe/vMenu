@@ -11,10 +11,10 @@ using System.Dynamic;
 
 namespace vMenuServer
 {
-    public class EventManager : BaseScript
+    public class MainServer : BaseScript
     {
         // Debug shows more information when doing certain things. Leave it off to improve performance!
-        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
+        public static bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
         private int currentHours = 9;
         private int currentMinutes = 0;
@@ -64,6 +64,8 @@ namespace vMenuServer
             "OPSummon",
             "OPKill",
             "OPKick",
+            "OPPermBan",
+            "OPTempBan",
 
             // Player Options
             "POMenu",
@@ -200,7 +202,7 @@ namespace vMenuServer
         /// <summary>
         /// Constructor.
         /// </summary>
-        public EventManager()
+        public MainServer()
         {
             if (GetCurrentResourceName() != "vMenu")
             {

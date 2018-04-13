@@ -373,6 +373,48 @@ namespace vMenuClient
         }
         #endregion
 
+        #region (Temp) Ban Player
+        /// <summary>
+        /// Bans the specified player.
+        /// </summary>
+        /// <param name="player">Player to ban.</param>
+        /// <param name="forever">Ban forever or ban temporarily.</param>
+        public async void BanPlayer(Player player, bool forever)
+        {
+            string banReason = await GetUserInput("Enter Ban Reason", "Banned by staff", 200);
+            if (banReason != "" && banReason != null && banReason.Length > 1)
+            {
+                if (forever)
+                {
+                    TriggerServerEvent("vMenu.PermBanPlayer", player.ServerId, banReason);
+                }
+                else
+                {
+                    string banDurationHours = await GetUserInput("Ban Duration (in hours)                      Max: 720 (1 month)", "1.5", 10);
+                    if (double.TryParse(banDurationHours, out double banHours))
+                    {
+                        TriggerServerEvent("vMenu.TempBanPlayer", player.ServerId, banHours, banReason);
+                    }
+                    else
+                    {
+                        if (int.TryParse(banDurationHours, out int banHoursInt))
+                        {
+                            TriggerServerEvent("vMenu.TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
+                        }
+                        else
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Notify.Error(CommonErrors.InvalidInput);
+            }
+        }
+        #endregion
+
         #region Kill Player
         /// <summary>
         /// Kill player

@@ -14,7 +14,7 @@ namespace vMenuClient
         DontKickMe,
         NoClip,
 
-        // Onlie Players
+        // Online Players
         OPMenu,
         OPAll,
         OPTeleport,
@@ -23,6 +23,8 @@ namespace vMenuClient
         OPSummon,
         OPKill,
         OPKick,
+        OPPermBan,
+        OPTempBan,
 
         // Player Options
         POMenu,
@@ -143,7 +145,7 @@ namespace vMenuClient
         MSDeathNotifs,
         MSNightVision,
         MSThermalVision,
-        
+
 
 
         // Voice Chat
