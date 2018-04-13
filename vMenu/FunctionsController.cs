@@ -26,6 +26,7 @@ namespace vMenuClient
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
         private UIMenu lastOpenMenu = null;
+        private float cameraRotationHeading = 0f;
 
         /// <summary>
         /// Constructor.
@@ -566,6 +567,22 @@ namespace vMenuClient
                 //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
                 //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
                 #endregion
+                if (MainMenu.MiscSettingsMenu.LockCameraY)
+                {
+                    SetGameplayCamRelativePitch(0f, 0f);
+                }
+                if (MainMenu.MiscSettingsMenu.LockCameraX)
+                {
+                    if (Game.IsControlPressed(0, Control.LookLeftOnly))
+                    {
+                        cameraRotationHeading++;
+                    }
+                    else if (Game.IsControlPressed(0, Control.LookRightOnly))
+                    {
+                        cameraRotationHeading--;
+                    }
+                    SetGameplayCamRelativeHeading(cameraRotationHeading);
+                }
             }
             else
             {

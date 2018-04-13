@@ -11,10 +11,10 @@ using System.Dynamic;
 
 namespace vMenuServer
 {
-    public class EventManager : BaseScript
+    public class MainServer : BaseScript
     {
         // Debug shows more information when doing certain things. Leave it off to improve performance!
-        private bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
+        public static bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
         private int currentHours = 9;
         private int currentMinutes = 0;
@@ -64,6 +64,8 @@ namespace vMenuServer
             "OPSummon",
             "OPKill",
             "OPKick",
+            "OPPermBan",
+            "OPTempBan",
 
             // Player Options
             "POMenu",
@@ -200,7 +202,7 @@ namespace vMenuServer
         /// <summary>
         /// Constructor.
         /// </summary>
-        public EventManager()
+        public MainServer()
         {
             if (GetCurrentResourceName() != "vMenu")
             {
@@ -452,9 +454,13 @@ namespace vMenuServer
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
                 return;
             }
-            // If this happens, the person who thinks they're funny knows exactly what this is for.
-            TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
-            // todo: Make sure they enjoy their day.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
+            //// If this happens, the person who thinks they're funny knows exactly what this is for.
+            //TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
+            //// todo: Make sure they enjoy their day.
         }
 
         /// <summary>
@@ -471,7 +477,10 @@ namespace vMenuServer
                 TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
                 return;
             }
-            // todo: enjoy.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
         }
 
         /// <summary>
@@ -488,7 +497,10 @@ namespace vMenuServer
                 TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
                 return;
             }
-            // todo: enjoy.
+            else
+            {
+                BanManager.BanCheater(new PlayerList()[target]);
+            }
         }
         #endregion
 

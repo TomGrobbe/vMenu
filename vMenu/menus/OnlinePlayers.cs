@@ -67,7 +67,8 @@ namespace vMenuClient
                         Player player = new Player(int.Parse(item.Description.Substring(1, 2).ToString()));
 
                         // Create the menu for the player & set the width offset.
-                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name + " (Server ID: " + player.ServerId + ")", true)
+                        UIMenu PlayerMenu = new UIMenu(player.Name, "[" + (player.Handle < 10 ? "0" : "") + player.Handle + "] " + player.Name +
+                            " (Server ID: " + player.ServerId + ")", true)
                         {
                             ScaleWithSafezone = false,
                             MouseControlsEnabled = false,
@@ -88,9 +89,14 @@ namespace vMenuClient
                         summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
                         UIMenuItem killBtn = new UIMenuItem("Kill Player", "Kill the selected player! Why are you so cruel :(");
                         killBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
-                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason otherwise the kick will be cancelled.");
+                        UIMenuItem kickPlayerBtn = new UIMenuItem("~r~Kick Player", "~r~Kick~s~ this player from the server, you need to specify a reason " +
+                            "otherwise the kick will be cancelled.");
                         kickPlayerBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
-
+                        UIMenuItem permBanBtn = new UIMenuItem("~r~Ban Player", "Ban the player from the server forever.");
+                        permBanBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
+                        UIMenuItem tempBanBtn = new UIMenuItem("~r~Tempban Player", "Ban the player from the server for the specified amount of hours. " +
+                            "The player will be able to rejoin after the ban expires.");
+                        tempBanBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
 
                         // Add all buttons to the player options submenu. Keeping permissions in mind.
                         if (cf.IsAllowed(Permission.OPTeleport))
@@ -117,6 +123,14 @@ namespace vMenuClient
                         if (cf.IsAllowed(Permission.OPKick))
                         {
                             PlayerMenu.AddItem(kickPlayerBtn);
+                        }
+                        if (cf.IsAllowed(Permission.OPTempBan))
+                        {
+                            PlayerMenu.AddItem(tempBanBtn);
+                        }
+                        if (cf.IsAllowed(Permission.OPPermBan))
+                        {
+                            PlayerMenu.AddItem(permBanBtn);
                         }
 
 
@@ -195,6 +209,14 @@ namespace vMenuClient
                                 // Refresh the index & update scaleform.
                                 menu.RefreshIndex();
                                 menu.UpdateScaleform();
+                            }
+                            else if (item2 == tempBanBtn)
+                            {
+                                cf.BanPlayer(player: player, forever: false);
+                            }
+                            else if (item2 == permBanBtn)
+                            {
+                                cf.BanPlayer(player: player, forever: true);
                             }
                         };
 
