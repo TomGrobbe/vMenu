@@ -155,7 +155,7 @@ namespace vMenuServer
         /// <param name="banReason">The reason why the player is getting banned.</param>
         private void BanPlayer([FromSource] Player source, int targetPlayer, string banReason)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.PermBan"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.PermBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Player target = new PlayerList()[targetPlayer];
                 if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
@@ -198,7 +198,7 @@ namespace vMenuServer
         /// <param name="banReason">Reason for the ban.</param>
         private void BanPlayer([FromSource] Player source, int targetPlayer, double banDurationHours, string banReason)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Player target = new PlayerList()[targetPlayer];
                 if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
