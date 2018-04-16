@@ -363,6 +363,7 @@ namespace vMenuClient
             #endregion
             #endregion
 
+            #region Create Weapon Category Submenus
             UIMenuItem spacer = cf.GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddItem(spacer);
 
@@ -446,7 +447,6 @@ namespace vMenuClient
             snipers.SetMenuWidthOffset(50);
             UIMenuItem snipersBtn = new UIMenuItem("Sniper Rifles");
 
-
             MainMenu.Mp.Add(handGuns);
             MainMenu.Mp.Add(rifles);
             MainMenu.Mp.Add(shotguns);
@@ -455,7 +455,9 @@ namespace vMenuClient
             MainMenu.Mp.Add(melee);
             MainMenu.Mp.Add(heavy);
             MainMenu.Mp.Add(snipers);
+            #endregion
 
+            #region Setup weapon category buttons and submenus.
             handGunsBtn.SetRightLabel("→→→");
             menu.AddItem(handGunsBtn);
             menu.BindMenuToItem(handGuns, handGunsBtn);
@@ -487,13 +489,13 @@ namespace vMenuClient
             snipersBtn.SetRightLabel("→→→");
             menu.AddItem(snipersBtn);
             menu.BindMenuToItem(snipers, snipersBtn);
-
+            #endregion
 
             #region Loop through all weapons, create menus for them and add all menu items and handle events.
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
                 uint cat = (uint)GetWeapontypeGroup(weapon.Hash);
-                if (weapon.Name != null && cf.IsAllowed(weapon.Perm))
+                if (weapon.Name != null && (cf.IsAllowed(weapon.Perm) || cf.IsAllowed(Permission.WPGetAll)))
                 {
                     #region Create menu for this weapon and add buttons
                     UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true)
@@ -685,10 +687,66 @@ namespace vMenuClient
                         snipers.AddItem(weaponItem);
                         snipers.BindMenuToItem(weaponMenu, weaponItem);
                     }
-
-
-
                 }
+            }
+            #endregion
+
+            #region Disable submenus if no weapons in that category are allowed.
+            if (handGuns.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(handGunsBtn);
+                handGunsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                handGunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                handGunsBtn.Enabled = false;
+            }
+            if (rifles.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(riflesBtn);
+                riflesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                riflesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                riflesBtn.Enabled = false;
+            }
+            if (shotguns.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(shotgunsBtn);
+                shotgunsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                shotgunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                shotgunsBtn.Enabled = false;
+            }
+            if (smgs.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(smgsBtn);
+                smgsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                smgsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                smgsBtn.Enabled = false;
+            }
+            if (throwables.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(throwablesBtn);
+                throwablesBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                throwablesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                throwablesBtn.Enabled = false;
+            }
+            if (melee.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(meleeBtn);
+                meleeBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                meleeBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                meleeBtn.Enabled = false;
+            }
+            if (heavy.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(heavyBtn);
+                heavyBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                heavyBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                heavyBtn.Enabled = false;
+            }
+            if (snipers.MenuItems.Count == 0)
+            {
+                menu.ReleaseMenuFromItem(snipersBtn);
+                snipersBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                snipersBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                snipersBtn.Enabled = false;
             }
             #endregion
 
