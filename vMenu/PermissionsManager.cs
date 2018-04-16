@@ -134,6 +134,90 @@ namespace vMenuClient
         WPSpawn,
         WPSetAllAmmo,
 
+        //Weapons Permissions
+        WPSniperRifle,
+        WPFireExtinguisher,
+        WPCompactGrenadeLauncher,
+        WPSnowball,
+        WPVintagePistol,
+        WPCombatPDW,
+        WPHeavySniperMk2,
+        WPHeavySniper,
+        WPSweeperShotgun,
+        WPMicroSMG,
+        WPWrench,
+        WPPistol,
+        WPPumpShotgun,
+        WPAPPistol,
+        WPBall,
+        WPMolotov,
+        WPSMG,
+        WPStickyBomb,
+        WPPetrolCan,
+        WPStunGun,
+        WPAssaultRifleMk2,
+        WPHeavyShotgun,
+        WPMinigun,
+        WPGolfClub,
+        WPFlareGun,
+        WPFlare,
+        WPGrenadeLauncherSmoke,
+        WPHammer,
+        WPCombatPistol,
+        WPGusenberg,
+        WPCompactRifle,
+        WPHomingLauncher,
+        WPNightstick,
+        WPRailgun,
+        WPSawnOffShotgun,
+        WPSMGMk2,
+        WPBullpupRifle,
+        WPFirework,
+        WPCombatMG,
+        WPCarbineRifle,
+        WPCrowbar,
+        WPFlashlight,
+        WPDagger,
+        WPGrenade,
+        WPPoolCue,
+        WPBat,
+        WPPistol50,
+        WPKnife,
+        WPMG,
+        WPBullpupShotgun,
+        WPBZGas,
+        WPUnarmed,
+        WPGrenadeLauncher,
+        WPNightVision,
+        WPMusket,
+        WPProximityMine,
+        WPAdvancedRifle,
+        WPRPG,
+        WPPipeBomb,
+        WPMiniSMG,
+        WPSNSPistol,
+        WPPistolMk2,
+        WPAssaultRifle,
+        WPSpecialCarbine,
+        WPRevolver,
+        WPMarksmanRifle,
+        WPBattleAxe,
+        WPHeavyPistol,
+        WPKnuckleDuster,
+        WPMachinePistol,
+        WPCombatMGMk2,
+        WPMarksmanPistol,
+        WPMachete,
+        WPSwitchBlade,
+        WPAssaultShotgun,
+        WPDoubleBarrelShotgun,
+        WPAssaultSMG,
+        WPHatchet,
+        WPBottle,
+        WPCarbineRifleMk2,
+        WPParachute,
+        WPSmokeGrenade,
+
         // Misc Settings
         MSMenu,
         MSAll,
@@ -145,8 +229,6 @@ namespace vMenuClient
         MSDeathNotifs,
         MSNightVision,
         MSThermalVision,
-
-
 
         // Voice Chat
         VCMenu,
@@ -166,18 +248,11 @@ namespace vMenuClient
             if (allowed)
             {
                 Permissions.Add(permissionName);
-
             }
-            //if (allowed)
-            //    MainMenu.Cf.Log("Permission: " + permissionName.ToString() + " is ALLOWED.");
-            //else
-            //    MainMenu.Cf.Log("Permission: " + permissionName.ToString() + " is DENIED.");
         }
-
 
         public static bool IsAllowed(Permission permission)
         {
-
             if (Permissions.Contains("Everything"))
             {
                 MainMenu.Cf.Log("Everything allowed, breaking.");
@@ -190,17 +265,12 @@ namespace vMenuClient
                 {
                     allowed = true;
                 }
-
                 if (!allowed)
                 {
                     allowed = Permissions.Contains(permission.ToString());
                 }
-
-
                 return allowed;
             }
-
-
         }
     }
 }

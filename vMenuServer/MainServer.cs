@@ -174,6 +174,90 @@ namespace vMenuServer
             "WPNoReload",
             "WPSpawn",
             "WPSetAllAmmo",
+            
+            // Weapons Permissions
+            "WPSniperRifle",
+            "WPFireExtinguisher",
+            "WPCompactGrenadeLauncher",
+            "WPSnowball",
+            "WPVintagePistol",
+            "WPCombatPDW",
+            "WPHeavySniperMk2",
+            "WPHeavySniper",
+            "WPSweeperShotgun",
+            "WPMicroSMG",
+            "WPWrench",
+            "WPPistol",
+            "WPPumpShotgun",
+            "WPAPPistol",
+            "WPBall",
+            "WPMolotov",
+            "WPSMG",
+            "WPStickyBomb",
+            "WPPetrolCan",
+            "WPStunGun",
+            "WPAssaultRifleMk2",
+            "WPHeavyShotgun",
+            "WPMinigun",
+            "WPGolfClub",
+            "WPFlareGun",
+            "WPFlare",
+            "WPGrenadeLauncherSmoke",
+            "WPHammer",
+            "WPCombatPistol",
+            "WPGusenberg",
+            "WPCompactRifle",
+            "WPHomingLauncher",
+            "WPNightstick",
+            "WPRailgun",
+            "WPSawnOffShotgun",
+            "WPSMGMk2",
+            "WPBullpupRifle",
+            "WPFirework",
+            "WPCombatMG",
+            "WPCarbineRifle",
+            "WPCrowbar",
+            "WPFlashlight",
+            "WPDagger",
+            "WPGrenade",
+            "WPPoolCue",
+            "WPBat",
+            "WPPistol50",
+            "WPKnife",
+            "WPMG",
+            "WPBullpupShotgun",
+            "WPBZGas",
+            "WPUnarmed",
+            "WPGrenadeLauncher",
+            "WPNightVision",
+            "WPMusket",
+            "WPProximityMine",
+            "WPAdvancedRifle",
+            "WPRPG",
+            "WPPipeBomb",
+            "WPMiniSMG",
+            "WPSNSPistol",
+            "WPPistolMk2",
+            "WPAssaultRifle",
+            "WPSpecialCarbine",
+            "WPRevolver",
+            "WPMarksmanRifle",
+            "WPBattleAxe",
+            "WPHeavyPistol",
+            "WPKnuckleDuster",
+            "WPMachinePistol",
+            "WPCombatMGMk2",
+            "WPMarksmanPistol",
+            "WPMachete",
+            "WPSwitchBlade",
+            "WPAssaultShotgun",
+            "WPDoubleBarrelShotgun",
+            "WPAssaultSMG",
+            "WPHatchet",
+            "WPBottle",
+            "WPCarbineRifleMk2",
+            "WPParachute",
+            "WPSmokeGrenade",
 
             // Misc Settings
             "MSMenu",
@@ -440,7 +524,7 @@ namespace vMenuServer
         /// <param name="kickReason"></param>
         private void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kick"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kick") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // If the player is allowed to be kicked.
                 var targetPlayer = new PlayerList()[target];
@@ -470,7 +554,7 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void KillPlayer([FromSource] Player source, int target)
         {
-            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Kill"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kill") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 var targetPlayer = new PlayerList()[target];
                 // Trigger the client event on the target player to make them kill themselves. R.I.P.
@@ -490,7 +574,7 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void SummonPlayer([FromSource] Player source, int target)
         {
-            if (IsPlayerAceAllowed(source.ToString(), "vMenu.OnlinePlayers.Summon"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Summon") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // Trigger the client event on the target player to make them teleport to the source player.
                 var targetPlayer = new PlayerList()[target];

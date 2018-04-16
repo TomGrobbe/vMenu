@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using System.Text.RegularExpressions;
 
 namespace vMenuServer
 {
@@ -139,7 +140,6 @@ namespace vMenuServer
                                     Debug.WriteLine("Ban time expired, but an unknown error occurred while removing the player from the banlist!" +
                                                     " They have been allowed to join the server, but please remove them from the ban list manually!");
                             }
-
                         }
                         break;
                     }
@@ -155,18 +155,19 @@ namespace vMenuServer
         /// <param name="banReason">The reason why the player is getting banned.</param>
         private void BanPlayer([FromSource] Player source, int targetPlayer, string banReason)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.PermBan"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.PermBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Player target = new PlayerList()[targetPlayer];
                 if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                 {
                     BanRecord ban = new BanRecord()
                     {
-                        bannedBy = source.Name,
+                        bannedBy = GetSafePlayerName(source.Name),
                         bannedUntil = new DateTime(3000, 1, 1),
                         banReason = banReason,
                         identifiers = target.Identifiers.ToList<string>(),
-                        playerName = target.Name
+                        playerName = GetSafePlayerName(target.Name)
                     };
                     if (AddBan(ban))
                     {
@@ -198,18 +199,19 @@ namespace vMenuServer
         /// <param name="banReason">Reason for the ban.</param>
         private void BanPlayer([FromSource] Player source, int targetPlayer, double banDurationHours, string banReason)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Player target = new PlayerList()[targetPlayer];
                 if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                 {
                     BanRecord ban = new BanRecord()
                     {
-                        bannedBy = source.Name,
+                        bannedBy = GetSafePlayerName(source.Name),
                         bannedUntil = DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0),
                         banReason = banReason,
                         identifiers = target.Identifiers.ToList<string>(),
-                        playerName = target.Name
+                        playerName = GetSafePlayerName(target.Name)
                     };
                     if (AddBan(ban))
                     {
@@ -331,14 +333,27 @@ namespace vMenuServer
         {
             AddBan(new BanRecord()
             {
-                bannedBy = "Yourself, idiot.",
+                bannedBy = "vMenu Auto Ban",
                 bannedUntil = new DateTime(3000, 1, 1),
-                banReason = "You know exactly what you did wrong, you're a fucking idiot, but nobody needs to tell you that. Enjoy this: https://youtu.be/dQw4w9WgXcQ",
+                banReason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.",
                 identifiers = source.Identifiers.ToList(),
-                playerName = source.Name
+                playerName = GetSafePlayerName(source.Name)
             });
             //source.Drop("Enjoy, idiot.");
             source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
+        }
+
+
+        /// <summary>
+        /// Returns the safe playername string to be used in json converter to prevent fuckups when saving the bans file.
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <returns></returns>
+        public static string GetSafePlayerName(string playerName)
+        {
+            string safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
+            safeName = Regex.Replace(safeName, @"[^\u0000-\u007F]+", string.Empty);
+            return safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
         }
     }
 }
