@@ -382,7 +382,7 @@ namespace vMenuClient
         public async void BanPlayer(Player player, bool forever)
         {
             string banReason = await GetUserInput("Enter Ban Reason", "Banned by staff", 200);
-            if (banReason != "" && banReason != null && banReason.Length > 1)
+            if (banReason != "" && banReason != null && banReason.Length > 1 && banReason != "NULL")
             {
                 if (forever)
                 {
