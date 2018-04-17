@@ -46,6 +46,7 @@ namespace vMenuClient
             Tick += MiscSettings;
             Tick += VoiceChat;
             Tick += TimeOptions;
+            Tick += _WeatherOptions;
             Tick += WeaponOptions;
         }
 
@@ -340,6 +341,21 @@ namespace vMenuClient
             else
             {
                 await Delay(0);
+            }
+        }
+        #endregion
+        #region Weather Options
+        private async Task _WeatherOptions()
+        {
+            await Delay(1000);
+            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu))
+            {
+                if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
+                {
+                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
+                    var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
+                    item.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+                }
             }
         }
         #endregion

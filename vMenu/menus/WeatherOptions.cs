@@ -17,6 +17,8 @@ namespace vMenuClient
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
 
+        public static Dictionary<string, UIMenuItem> weatherHashMenuIndex = new Dictionary<string, UIMenuItem>();
+
         public bool DynamicWeatherEnabled { get; private set; } = true;
 
         private void CreateMenu()
@@ -63,6 +65,22 @@ namespace vMenuClient
             }
             if (cf.IsAllowed(Permission.WOSetWeather))
             {
+                weatherHashMenuIndex.Add("-1750463879", extrasunny);
+                weatherHashMenuIndex.Add("916995460", clear);
+                weatherHashMenuIndex.Add("-1530260698", neutral);
+                weatherHashMenuIndex.Add("282916021", smog);
+                weatherHashMenuIndex.Add("-1368164796", foggy);
+                weatherHashMenuIndex.Add("821931868", clouds);
+                weatherHashMenuIndex.Add("-1148613331", overcast);
+                weatherHashMenuIndex.Add("1840358669", clearing);
+                weatherHashMenuIndex.Add("1420204096", rain);
+                weatherHashMenuIndex.Add("-1233681761", thunder);
+                weatherHashMenuIndex.Add("669657108", blizzard);
+                weatherHashMenuIndex.Add("-273223690", snow);
+                weatherHashMenuIndex.Add("603685163", snowlight);
+                weatherHashMenuIndex.Add("-1429616491", xmas);
+                weatherHashMenuIndex.Add("-921030142", halloween);
+
                 menu.AddItem(extrasunny);
                 menu.AddItem(clear);
                 menu.AddItem(neutral);
