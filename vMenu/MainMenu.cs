@@ -146,7 +146,10 @@ namespace vMenuClient
                     // Select / Enter
                     if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                     {
-                        currentMenu.SelectItem();
+                        if (currentMenu.MenuItems.Count() > 0)
+                        {
+                            currentMenu.SelectItem();
+                        }
                     }
                     // Cancel / Go Back
                     else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
