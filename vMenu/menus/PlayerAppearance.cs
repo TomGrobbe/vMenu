@@ -78,12 +78,18 @@ namespace vMenuClient
             deleteSavedPed.SetRightLabel("→→→");
             deleteSavedPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             UIMenuItem spawnByName = new UIMenuItem("Spawn Ped By Name", "Enter a model name of a custom ped you want to spawn.");
+            List<dynamic> walkstyles = new List<dynamic>() { "Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster" };
+            UIMenuListItem walkingStyle = new UIMenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
+                "You need to re-apply this each time you change player model or load a saved ped.");
 
             // Add items to the mneu.
             menu.AddItem(pedCustomization);
             menu.AddItem(savePed);
             menu.AddItem(spawnSavedPed);
             menu.AddItem(deleteSavedPed);
+            menu.AddItem(walkingStyle);
+
+
 
             // Bind items to the submenus.
             if (cf.IsAllowed(Permission.PACustomize))
@@ -225,12 +231,21 @@ namespace vMenuClient
             // Handle list selections.
             menu.OnListSelect += (sender, item, index) =>
             {
-                int i = ((sender.CurrentSelection - 6) * 50) + index;
-                string modelName = modelNames[i];
-                if (cf.IsAllowed(Permission.PASpawnNew))
+                if (item == walkingStyle)
                 {
-                    cf.SetPlayerSkin(modelName);
+                    Subtitle.Custom("Ped is: " + IsPedMale(PlayerPedId()));
+                    cf.SetWalkingStyle(walkstyles[index].ToString());
                 }
+                else
+                {
+                    int i = ((sender.CurrentSelection - 7) * 50) + index;
+                    string modelName = modelNames[i];
+                    if (cf.IsAllowed(Permission.PASpawnNew))
+                    {
+                        cf.SetPlayerSkin(modelName);
+                    }
+                }
+
             };
 
         }
