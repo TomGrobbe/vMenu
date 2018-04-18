@@ -531,12 +531,14 @@ namespace vMenuServer
                 var targetPlayer = new PlayerList()[target];
                 if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
                 {
+                    TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
                     // Kick the player from the server using the specified reason.
                     DropPlayer(targetPlayer.Handle, kickReason);
                     return;
                 }
                 // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
+
                 return;
             }
             else

@@ -40,7 +40,6 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:RequestPlayerUnban", new Action<Player, string>(RemoveBanRecord));
             EventHandlers.Add("vMenu:RequestBanList", new Action<Player>(SendBanList));
             BannedPlayersList = GetBanList();
-
         }
 
         /// <summary>
@@ -198,6 +197,7 @@ namespace vMenuServer
                     {
                         BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by {ban.bannedBy} " +
                             $"for {ban.banReason} until {ban.bannedUntil} (forever).");
+                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                     }
                     else
                     {
@@ -242,6 +242,7 @@ namespace vMenuServer
                     {
                         BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by " +
                             $"{ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.");
+                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                     }
                     else
                     {
@@ -374,6 +375,7 @@ namespace vMenuServer
                 {
                     BanLog($"The following ban record has been removed (player unbanned). " +
                         $"[Player: {ban.playerName} was banned by {ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.]");
+                    TriggerEvent("vMenu:UnbanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                 }
             }
             else
@@ -388,15 +390,20 @@ namespace vMenuServer
         /// <param name="source"></param>
         public static void BanCheater(Player source)
         {
-            BanLog($"A cheater has been banned. Name: {source.Name}, identifiers: {JsonConvert.SerializeObject(source.Identifiers).ToString()}");
-            AddBan(new BanRecord()
+            var ban = new BanRecord()
             {
                 bannedBy = "vMenu Auto Ban",
                 bannedUntil = new DateTime(3000, 1, 1),
                 banReason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.",
                 identifiers = source.Identifiers.ToList(),
                 playerName = GetSafePlayerName(source.Name)
-            });
+            };
+
+            if (AddBan(ban))
+            {
+                TriggerEvent("vMenu:BanCheaterSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                BanLog($"A cheater has been banned. {JsonConvert.SerializeObject(ban).ToString()}");
+            }
 
             source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
         }
