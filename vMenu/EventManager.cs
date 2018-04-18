@@ -39,9 +39,20 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
+            EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
 
             Tick += WeatherSync;
             Tick += TimeSync;
+        }
+
+        /// <summary>
+        /// Update ban list.
+        /// </summary>
+        /// <param name="list"></param>
+        private void UpdateBanList(string list)
+        {
+            if (MainMenu.BannedPlayersMenu != null)
+                MainMenu.BannedPlayersMenu.UpdateBanList(list);
         }
 
         /// <summary>

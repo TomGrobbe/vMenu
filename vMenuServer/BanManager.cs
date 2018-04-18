@@ -37,7 +37,16 @@ namespace vMenuServer
             EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int, double, string>(BanPlayer));
             EventHandlers.Add("vMenu:PermBanPlayer", new Action<Player, int, string>(BanPlayer));
             EventHandlers.Add("playerConnecting", new Action<Player, string, CallbackDelegate>(CheckForBans));
+            EventHandlers.Add("vMenu:RequestPlayerUnban", new Action<Player, string>(RemoveBanRecord));
+            EventHandlers.Add("vMenu:RequestBanList", new Action<Player>(SendBanList));
             BannedPlayersList = GetBanList();
+        }
+
+        private void SendBanList([FromSource] Player source)
+        {
+            if (MainServer.debug)
+                Debug.Write("Updating player with new banlist.\n");
+            source.TriggerEvent("vMenu:SetBanList", JsonConvert.SerializeObject(GetBanList()).ToString());
         }
 
         /// <summary>
@@ -55,42 +64,47 @@ namespace vMenuServer
                 {
                     foreach (dynamic br in banRecords)
                     {
-                        var newBr = new BanRecord();
-                        foreach (Newtonsoft.Json.Linq.JProperty brValue in br)
-                        {
-                            string key = brValue.Name.ToString();
-                            var value = brValue.Value;
-                            if (key == "playerName")
-                            {
-                                newBr.playerName = value.ToString();
-                            }
-                            else if (key == "identifiers")
-                            {
-                                var tmpList = new List<string>();
-                                foreach (string identifier in value)
-                                {
-                                    tmpList.Add(identifier);
-                                }
-                                newBr.identifiers = tmpList;
-                            }
-                            else if (key == "bannedUntil")
-                            {
-                                newBr.bannedUntil = DateTime.Parse(value.ToString());
-                            }
-                            else if (key == "banReason")
-                            {
-                                newBr.banReason = value.ToString();
-                            }
-                            else if (key == "bannedBy")
-                            {
-                                newBr.bannedBy = value.ToString();
-                            }
-                        }
-                        banList.Add(newBr);
+                        banList.Add(JsonToBanRecord(br));
                     }
                 }
             }
             return banList;
+        }
+
+        private static BanRecord JsonToBanRecord(dynamic br)
+        {
+            var newBr = new BanRecord();
+            foreach (Newtonsoft.Json.Linq.JProperty brValue in br)
+            {
+                string key = brValue.Name.ToString();
+                var value = brValue.Value;
+                if (key == "playerName")
+                {
+                    newBr.playerName = value.ToString();
+                }
+                else if (key == "identifiers")
+                {
+                    var tmpList = new List<string>();
+                    foreach (string identifier in value)
+                    {
+                        tmpList.Add(identifier);
+                    }
+                    newBr.identifiers = tmpList;
+                }
+                else if (key == "bannedUntil")
+                {
+                    newBr.bannedUntil = DateTime.Parse(value.ToString());
+                }
+                else if (key == "banReason")
+                {
+                    newBr.banReason = value.ToString();
+                }
+                else if (key == "bannedBy")
+                {
+                    newBr.bannedBy = value.ToString();
+                }
+            }
+            return newBr;
         }
 
         /// <summary>
@@ -105,7 +119,7 @@ namespace vMenuServer
         {
             foreach (BanRecord ban in BannedPlayersList)
             {
-                foreach (string identifier in source.Identifiers.ToList<string>())
+                foreach (string identifier in source.Identifiers)
                 {
                     if (ban.identifiers.Contains(identifier))
                     {
@@ -286,6 +300,7 @@ namespace vMenuServer
                     break;
                 }
             }
+
             BannedPlayersList.Add(ban);
 
             var output = JsonConvert.SerializeObject(BannedPlayersList);
@@ -305,12 +320,20 @@ namespace vMenuServer
             {
                 if (!itemsToRemove.Contains(BannedPlayersList.IndexOf(ban)))
                 {
+                    var found = 0;
                     foreach (string s in ban.identifiers)
                     {
                         if (record.identifiers.Contains(s))
                         {
-                            itemsToRemove.Add(BannedPlayersList.IndexOf(ban));
+                            found++;
                         }
+                    }
+
+                    // if everything matches, we can be sure that this is the correct ban record/player so we can unban.
+                    if (found == ban.identifiers.Count && ban.playerName == record.playerName && ban.bannedBy == record.bannedBy
+                        && ban.banReason == record.banReason && ban.bannedUntil.ToString() == record.bannedUntil.ToString())
+                    {
+                        itemsToRemove.Add(BannedPlayersList.IndexOf(ban));
                     }
                 }
             }
@@ -323,6 +346,20 @@ namespace vMenuServer
             }
             var output = JsonConvert.SerializeObject(BannedPlayersList);
             return SaveResourceFile(GetCurrentResourceName(), "bans.json", output, output.Length);
+        }
+
+        private void RemoveBanRecord([FromSource]Player source, string banRecordJsonString)
+        {
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban"))
+            {
+                dynamic obj = JsonConvert.DeserializeObject(banRecordJsonString);
+                BanRecord ban = JsonToBanRecord(obj);
+                RemoveBan(ban);
+            }
+            else
+            {
+                BanCheater(source);
+            }
         }
 
         /// <summary>
