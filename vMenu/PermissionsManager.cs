@@ -25,6 +25,7 @@ namespace vMenuClient
         OPKick,
         OPPermBan,
         OPTempBan,
+        OPUnban,
 
         // Player Options
         POMenu,

@@ -66,6 +66,7 @@ namespace vMenuServer
             "OPKick",
             "OPPermBan",
             "OPTempBan",
+            "OPUnban",
 
             // Player Options
             "POMenu",
