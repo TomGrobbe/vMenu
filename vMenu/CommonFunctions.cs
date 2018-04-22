@@ -1981,5 +1981,88 @@ namespace vMenuClient
             }
         }
         #endregion
+
+        #region Set Player Walking Style
+        public async void SetWalkingStyle(string walkingStyle)
+        {
+            if (IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_f_freemode_01")) || IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_m_freemode_01")))
+            {
+                bool isPedMale = IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_m_freemode_01"));
+                ClearPedAlternateMovementAnim(PlayerPedId(), 0, 1f);
+                ClearPedAlternateMovementAnim(PlayerPedId(), 1, 1f);
+                ClearPedAlternateMovementAnim(PlayerPedId(), 2, 1f);
+                ClearPedAlternateWalkAnim(PlayerPedId(), 1f);
+                string animDict = null;
+                if (walkingStyle == "Injured")
+                {
+                    animDict = isPedMale ? "move_m@injured" : "move_f@injured";
+                }
+                else if (walkingStyle == "Tough Guy")
+                {
+                    animDict = isPedMale ? "move_m@tough_guy@" : "move_f@tough_guy@";
+                }
+                else if (walkingStyle == "Femme")
+                {
+                    animDict = isPedMale ? "move_m@femme@" : "move_f@femme@";
+                }
+                else if (walkingStyle == "Gangster")
+                {
+                    animDict = isPedMale ? "move_m@gangster@a" : "move_f@gangster@ng";
+                }
+                else if (walkingStyle == "Posh")
+                {
+                    animDict = isPedMale ? "move_m@posh@" : "move_f@posh@";
+                }
+                else if (walkingStyle == "Sexy")
+                {
+                    animDict = isPedMale ? null : "move_f@sexy@a";
+                }
+                else if (walkingStyle == "Business")
+                {
+                    animDict = isPedMale ? null : "move_f@business@a";
+                }
+                else if (walkingStyle == "Drunk")
+                {
+                    animDict = isPedMale ? "move_m@drunk@a" : "move_f@drunk@a";
+                }
+                else if (walkingStyle == "Hipster")
+                {
+                    animDict = isPedMale ? "move_m@hipster@a" : null;
+                }
+                if (animDict != null)
+                {
+                    if (!HasAnimDictLoaded(animDict))
+                    {
+                        RequestAnimDict(animDict);
+                        while (!HasAnimDictLoaded(animDict))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                    SetPedAlternateMovementAnim(PlayerPedId(), 0, animDict, "idle", 1f, true);
+                    SetPedAlternateMovementAnim(PlayerPedId(), 1, animDict, "walk", 1f, true);
+                    SetPedAlternateMovementAnim(PlayerPedId(), 2, animDict, "run", 1f, true);
+                }
+                else if (walkingStyle != "Normal")
+                {
+                    if (isPedMale)
+                    {
+                        Notify.Error(CommonErrors.WalkingStyleNotForMale);
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.WalkingStyleNotForFemale);
+                    }
+                }
+            }
+            else
+            {
+                Notify.Error("This feature only supports the multiplayer freemode male/female ped models.");
+            }
+
+
+        }
+        #endregion
+
     }
 }

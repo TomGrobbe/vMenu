@@ -34,6 +34,7 @@ namespace vMenuClient
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
+        public static BannedPlayers BannedPlayersMenu { get; private set; }
         public static SavedVehicles SavedVehiclesMenu { get; private set; }
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
         public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
@@ -145,7 +146,10 @@ namespace vMenuClient
                     // Select / Enter
                     if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                     {
-                        currentMenu.SelectItem();
+                        if (currentMenu.MenuItems.Count() > 0)
+                        {
+                            currentMenu.SelectItem();
+                        }
                     }
                     // Cancel / Go Back
                     else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
@@ -320,6 +324,7 @@ namespace vMenuClient
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
+                TriggerServerEvent("vMenu:RequestBanList", PlayerId());
 
                 // Wait until the data is received and the player's name is loaded correctly.
                 while (!permissionsSetupDone || !optionsSetupDone
@@ -540,6 +545,24 @@ namespace vMenuClient
                     if (item == button)
                     {
                         OnlinePlayersMenu.UpdatePlayerlist();
+                        menu.RefreshIndex();
+                        menu.UpdateScaleform();
+                    }
+                };
+            }
+            if (Cf.IsAllowed(Permission.OPUnban))
+            {
+                TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                BannedPlayersMenu = new BannedPlayers();
+                UIMenu menu = BannedPlayersMenu.GetMenu();
+                UIMenuItem button = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.");
+                button.SetRightLabel("→→→");
+                AddMenu(menu, button);
+                Menu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == button)
+                    {
+                        TriggerServerEvent("vMenu:RequestBanList", PlayerId());
                         menu.RefreshIndex();
                         menu.UpdateScaleform();
                     }

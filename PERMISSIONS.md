@@ -28,8 +28,9 @@
 |`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you. (Default: moderators only)|Denied|
 |`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. Dam, you're very cruel. (Default: moderators only)|Denied|
 |`vMenu.OnlinePlayers.Kick`|Allows you to kick another player from the server. (Default: moderators only)|Denied|
-|`vMenu.OnlinePlayers.TempBan`|Allows you to ban the player from the server for a custom amount of time, max 1 month. (Default: moderators only)|Denied\*|
+|`vMenu.OnlinePlayers.TempBan`|Allows you to ban the player from the server for a custom amount of time, max temp-ban duration: 30 days. (Default: admins only)|Denied\*|
 |`vMenu.OnlinePlayers.PermBan`|Allows you to ban the player from the server forever. (Default: admin only)|Denied\*\*\*\*|
+|`vMenu.OnlinePlayers.Unban`|Allows you to access the "Banned Players" menu to view and unban banned players. (The menu is not actually located in the "Online Players menu", it's in the main menu instead. It is still part of "user management" and thus the permission node is related to "Online Players"). (Allowed by default for admins)|Denied|
 
 ## Player Options
 

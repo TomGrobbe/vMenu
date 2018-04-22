@@ -26,6 +26,8 @@ namespace vMenuClient
         CouldNotLoad,
         PlayerNotFound,
         PedNotFound,
+        WalkingStyleNotForMale,
+        WalkingStyleNotForFemale,
     };
 
     /// <summary>
@@ -78,6 +80,13 @@ namespace vMenuClient
                 case CommonErrors.PlayerNotFound:
                     outputMessage = $"The specified player could not be found.{placeholder}";
                     break;
+                case CommonErrors.WalkingStyleNotForMale:
+                    outputMessage = $"This walking style is not available for male peds.{placeholder}";
+                    break;
+                case CommonErrors.WalkingStyleNotForFemale:
+                    outputMessage = $"This walking style is not available for female peds.{placeholder}";
+                    break;
+
                 case CommonErrors.UnknownError:
                 default:
                     outputMessage = $"An unknown error occurred, sorry!{placeholder}";

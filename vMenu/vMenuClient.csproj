@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>vMenuClient</RootNamespace>
     <AssemblyName>vMenuClient.net</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,7 @@
     <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="menus\About.cs" />
+    <Compile Include="menus\BannedPlayers.cs" />
     <Compile Include="menus\MiscSettings.cs" />
     <Compile Include="menus\OnlinePlayers.cs" />
     <Compile Include="menus\PlayerAppearance.cs" />

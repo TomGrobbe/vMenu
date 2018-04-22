@@ -87,7 +87,7 @@ namespace vMenuClient
         public static bool VehicleNoBikeHelmet
         {
             get { return GetSettingsBool("vehicleNoBikeHelmet"); }
-            set { SetSavedSettingsBool("vehicleNoBikeHelemet", value); }
+            set { SetSavedSettingsBool("vehicleNoBikeHelmet", value); }
         }
         #endregion
 
