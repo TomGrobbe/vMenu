@@ -79,6 +79,7 @@
 |`vMenu.VehicleOptions.NoHelmet`|Allows you to disable the "automatically equipped" helmets when getting on a bike.|Allowed|
 |`vMenu.VehicleOptions.Lights`|Allows you to enable/disable specific vehicle lights like hazard lights, turn signals, interior lighting, taxi lights or helicopter spotlights.|Allowed|
 |`vMenu.VehicleOptions.Delete`|Allows you to delete your current vehicle.|Allowed|
+|`vMenu.VehicleOptions.Underglow`|Allows you to access the vehicle underglow options submenu.|Allowed|
 
 ## Vehicle Spawner
 

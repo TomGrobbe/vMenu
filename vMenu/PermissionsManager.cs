@@ -68,6 +68,8 @@ namespace vMenuClient
         VONoHelmet,
         VOLights,
         VODelete,
+        VOUnderglow,
+
 
         // Vehicle Spawner
         VSMenu,

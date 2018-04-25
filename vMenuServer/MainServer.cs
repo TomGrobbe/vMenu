@@ -109,6 +109,7 @@ namespace vMenuServer
             "VONoHelmet",
             "VOLights",
             "VODelete",
+            "VOUnderglow",
             
             // Vehicle Spawner
             "VSMenu",
