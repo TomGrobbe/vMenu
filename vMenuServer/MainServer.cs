@@ -55,7 +55,7 @@ namespace vMenuServer
             "DontKickMe",
             "NoClip",
 
-            // Onlie Players
+            // Online Players
             "OPMenu",
             "OPAll",
             "OPTeleport",
