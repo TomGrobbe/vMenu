@@ -1442,7 +1442,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public Dictionary<string, string> JsonToDictionary(string json)//, bool v2 = false)
+        public Dictionary<string, string> JsonToDictionary(string json)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
             dynamic obj = JsonConvert.DeserializeObject(json);
@@ -1642,58 +1642,64 @@ namespace vMenuClient
         }
         #endregion
 
+        public struct MultiplayerPedInfo
+        {
+            // todo
+        };
+
+        public struct PedInfo
+        {
+            public int version;
+            public uint model;
+            public bool isMpPed;
+            public MultiplayerPedInfo mpPedInfo;
+            public Dictionary<int, int> props;
+            public Dictionary<int, int> propTextures;
+            public Dictionary<int, int> drawableVariations;
+            public Dictionary<int, int> drawableVariationTextures;
+        };
         #region Set Player Skin
         /// <summary>
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, Dictionary<string, string> pedCustomizationOptions = null)
+        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions)
         {
-            int model = GetHashKey(modelName);
-            SetPlayerSkin(model, pedCustomizationOptions);
-        }
-
-        /// <summary>
-        /// Sets the player's model to the provided modelName.
-        /// </summary>
-        /// <param name="modelHash">The model hash.</param>
-        public void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
-        {
-            SetPlayerSkin((uint)modelHash, pedCustomizationOptions);
+            SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
         }
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(uint modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions)
         {
-            uint model = modelHash;
-            if (IsModelInCdimage(model))
+            //uint model = modelHash;
+            //Debug.Write(modelHash.ToString() + "\n");
+            if (IsModelInCdimage(modelHash))
             {
                 await SaveWeaponLoadout();
-                RequestModel(model);
-                while (!HasModelLoaded(model))
+                RequestModel(modelHash);
+                while (!HasModelLoaded(modelHash))
                 {
                     await Delay(0);
                 }
-                SetPlayerModel(PlayerId(), model);
+                SetPlayerModel(PlayerId(), modelHash);
                 SetPedDefaultComponentVariation(PlayerPedId());
 
-                if (pedCustomizationOptions != null && pedCustomizationOptions.Count > 1)
+                if (pedCustomizationOptions.version == 1)
                 {
                     var ped = PlayerPedId();
-                    for (var i = 0; i < 21; i++)
+                    for (var drawable = 0; drawable < 21; drawable++)
                     {
-                        int drawable = int.Parse(pedCustomizationOptions[$"drawable_variation_{i.ToString()}"]);
-                        int drawableTexture = int.Parse(pedCustomizationOptions[$"drawable_texture_{i.ToString()}"]);
-                        SetPedComponentVariation(ped, i, drawable, drawableTexture, 0);
+                        SetPedComponentVariation(ped, drawable, pedCustomizationOptions.drawableVariations[drawable],
+                            pedCustomizationOptions.drawableVariationTextures[drawable], 1);
                     }
 
                     for (var i = 0; i < 21; i++)
                     {
-                        int prop = int.Parse(pedCustomizationOptions[$"prop_{i.ToString()}"]);
-                        int propTexture = int.Parse(pedCustomizationOptions[$"prop_texture_{i.ToString()}"]);
+                        int prop = pedCustomizationOptions.props[i];
+                        int propTexture = pedCustomizationOptions.propTextures[i];
                         if (prop == -1 || propTexture == -1)
                         {
                             ClearPedProp(ped, i);
@@ -1703,6 +1709,15 @@ namespace vMenuClient
                             SetPedPropIndex(ped, i, prop, propTexture, true);
                         }
                     }
+                }
+                else if (pedCustomizationOptions.version == -1)
+                {
+                    // do nothing.
+                }
+                else
+                {
+                    // notify user of unsupported version
+                    Notify.Error("This is an unsupported saved ped version. Cannot restore appearance. :(");
                 }
                 RestoreWeaponLoadout();
             }
@@ -1720,7 +1735,7 @@ namespace vMenuClient
             string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
             if (input != "NULL")
             {
-                SetPlayerSkin(GetHashKey(input));
+                SetPlayerSkin((uint)GetHashKey(input), new PedInfo() { version = -1 });
             }
             else
             {
@@ -1741,35 +1756,49 @@ namespace vMenuClient
             if (name != "" && name != null && name != "NULL")
             {
                 // Create a dictionary to store all data in.
-                Dictionary<string, string> pedData = new Dictionary<string, string>();
+                //Dictionary<string, string> pedData = new Dictionary<string, string>();
+                PedInfo data = new PedInfo();
 
                 // Get the ped.
                 int ped = PlayerPedId();
 
+                data.version = 1;
                 // Get the ped model hash & add it to the dictionary.
-                int model = GetEntityModel(ped);
-                pedData.Add("modelHash", model.ToString());
+                uint model = (uint)GetEntityModel(ped);
+                data.model = model;
 
                 // Loop through all drawable variations.
+                var drawables = new Dictionary<int, int>();
+                var drawableTextures = new Dictionary<int, int>();
                 for (var i = 0; i < 21; i++)
                 {
                     int drawable = GetPedDrawableVariation(ped, i);
                     int textureVariation = GetPedTextureVariation(ped, i);
-                    pedData.Add($"drawable_variation_{i.ToString()}", drawable.ToString());
-                    pedData.Add($"drawable_texture_{i.ToString()}", textureVariation.ToString());
+                    drawables.Add(i, drawable);
+                    drawableTextures.Add(i, textureVariation);
                 }
+                data.drawableVariations = drawables;
+                data.drawableVariationTextures = drawableTextures;
 
+                var props = new Dictionary<int, int>();
+                var propTextures = new Dictionary<int, int>();
                 // Loop through all prop variations.
                 for (var i = 0; i < 21; i++)
                 {
                     int prop = GetPedPropIndex(ped, i);
                     int propTexture = GetPedPropTextureIndex(ped, i);
-                    pedData.Add($"prop_{i.ToString()}", $"{prop.ToString()}");
-                    pedData.Add($"prop_texture_{i.ToString()}", $"{propTexture.ToString()}");
+                    props.Add(i, prop);
+                    propTextures.Add(i, propTexture);
                 }
+                data.props = props;
+                data.propTextures = propTextures;
+
+                data.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
+                data.mpPedInfo = new MultiplayerPedInfo();
 
                 // Try to save the data, and save the result in a variable.
-                bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+                //bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+                bool saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
 
                 // If the save was successfull.
                 if (saveSuccessful)
@@ -1780,7 +1809,6 @@ namespace vMenuClient
                 else
                 {
                     Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
-                    //Notify.Error("Could not save this ped because the save name already exists.");
                 }
             }
             // User cancelled the saving or they did not enter a valid name.
@@ -1796,30 +1824,103 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public async void LoadSavedPed(string savedName)
+        public void LoadSavedPed(string savedName)
         {
-            string savedPedName = savedName ?? await GetUserInput("Enter A Saved Ped Name");
-            if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
+            PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+            SetPlayerSkin(pi.model, pi);
+        }
+        #endregion
+
+        /// <summary>
+        /// Load and convert json ped info into PedInfo struct.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="saveName"></param>
+        /// <returns></returns>
+        public PedInfo JsonToPedInfo(string json, string saveName)
+        {
+            var pi = new PedInfo() { version = -1 };
+            dynamic obj = JsonConvert.DeserializeObject(json);
+            if (json.Contains("version")) // new ped save
             {
-                //Notify.Error("Invalid saved ped name.");
-                Notify.Error(CommonErrors.InvalidInput);
-            }
-            else
-            {
-                Dictionary<string, string> dict = sm.GetSavedDictionary("ped_" + savedPedName);
-                int model = int.Parse(dict["modelHash"]);
-                if (dict != null && dict.Count > 1)
+                pi.model = (uint)obj["model"];
+                Dictionary<int, int> drawables = new Dictionary<int, int>();
+                Dictionary<int, int> drawableTextures = new Dictionary<int, int>();
+                Dictionary<int, int> props = new Dictionary<int, int>();
+                Dictionary<int, int> propTextures = new Dictionary<int, int>();
+                foreach (Newtonsoft.Json.Linq.JProperty drawable in obj["drawableVariations"])
                 {
-                    SetPlayerSkin(model, dict);
+                    drawables.Add(int.Parse(drawable.Name.ToString()), (int)drawable.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty drawableVar in obj["drawableVariationTextures"])
+                {
+                    drawableTextures.Add(int.Parse(drawableVar.Name.ToString()), (int)drawableVar.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty prop in obj["props"])
+                {
+                    props.Add(int.Parse(prop.Name.ToString()), (int)prop.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty propVar in obj["propTextures"])
+                {
+                    propTextures.Add(int.Parse(propVar.Name.ToString()), (int)propVar.Value);
+                }
+                pi.drawableVariations = drawables;
+                pi.drawableVariationTextures = drawableTextures;
+                pi.props = props;
+                pi.propTextures = propTextures;
+                pi.isMpPed = (bool)obj["isMpPed"];
+                pi.mpPedInfo = new MultiplayerPedInfo();
+                pi.version = (int)obj["version"];
+            }
+            else // old ped save
+            {
+                Dictionary<int, int> drawables = new Dictionary<int, int>();
+                Dictionary<int, int> drawableTextures = new Dictionary<int, int>();
+                Dictionary<int, int> props = new Dictionary<int, int>();
+                Dictionary<int, int> propTextures = new Dictionary<int, int>();
+                //Debug.Write(obj["modelHash"].ToString() + "\n");
+                uint model = (uint)Int64.Parse(obj["modelHash"].ToString());
+                foreach (Newtonsoft.Json.Linq.JProperty i in obj)
+                {
+                    string key = i.Name.ToString();
+                    if (key.Contains("drawable_variation"))
+                    {
+                        drawables.Add(int.Parse(key.Substring(19)), (int)i.Value);
+                    }
+                    else if (key.Contains("drawable_texture"))
+                    {
+                        drawableTextures.Add(int.Parse(key.Substring(17)), (int)i.Value);
+                    }
+                    else if (key.Contains("prop_texture"))
+                    {
+                        propTextures.Add(int.Parse(key.Substring(13)), (int)i.Value);
+                    }
+                    else if (key.Contains("prop"))
+                    {
+                        props.Add(int.Parse(key.Split('_')[1]), (int)i.Value);
+                    }
+                }
+                pi.drawableVariations = drawables;
+                pi.model = model;
+                pi.drawableVariationTextures = drawableTextures;
+                pi.mpPedInfo = new MultiplayerPedInfo() { };
+                pi.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
+                pi.props = props;
+                pi.propTextures = propTextures;
+                pi.version = 1;
+
+                //Debug.Write(JsonConvert.SerializeObject(pi) + "\n");
+                if (sm.SavePedInfo(saveName, pi, true))
+                {
+                    Notify.Success("Converted saved ped successfully.");
                 }
                 else
                 {
-                    Notify.Error(CommonErrors.CouldNotLoadSave, placeholderValue: "this saved ped");
-                    //Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
+                    Notify.Error("Could not convert saved ped! Reason: unknown.");
                 }
             }
+            return pi;
         }
-        #endregion
 
         #region Save and restore weapon loadouts when changing models
 

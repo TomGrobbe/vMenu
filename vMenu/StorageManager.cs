@@ -58,6 +58,22 @@ namespace vMenuClient
             return dict ?? new Dictionary<string, string>();
         }
 
+        public CommonFunctions.PedInfo GetSavedPedInfo(string name)
+        {
+            return MainMenu.Cf.JsonToPedInfo(GetResourceKvpString(name), name);
+        }
+
+        public bool SavePedInfo(string saveName, CommonFunctions.PedInfo pedData, bool overrideExisting)
+        {
+            if (overrideExisting || (GetResourceKvpString(saveName) ?? "NULL") == "NULL")
+            {
+                SetResourceKvp(saveName, JsonConvert.SerializeObject(pedData));
+                return GetResourceKvpString(saveName) == JsonConvert.SerializeObject(pedData);
+            }
+            return false;
+
+        }
+
         /// <summary>
         /// Delete the specified saved item from local storage.
         /// </summary>
