@@ -561,7 +561,7 @@ namespace vMenuClient
             deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                sm.DeleteSavedDictionary("ped_" + name);
+                sm.DeleteSavedStorageItem("ped_" + name);
                 //sm.DeleteSavedDictionary("ped_" + name + "_v2");
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();

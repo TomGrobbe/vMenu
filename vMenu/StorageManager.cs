@@ -59,10 +59,10 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Delete the specified dictionary from local storage.
+        /// Delete the specified saved item from local storage.
         /// </summary>
-        /// <param name="saveName"></param>
-        public void DeleteSavedDictionary(string saveName)
+        /// <param name="saveName">The full name of the item to remove.</param>
+        public void DeleteSavedStorageItem(string saveName)
         {
             DeleteResourceKvp(saveName);
         }
