@@ -33,6 +33,7 @@ namespace vMenuClient
         public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
+        public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
@@ -64,6 +65,8 @@ namespace vMenuClient
             UIMenuCheckboxItem vehicleFreeze = new UIMenuCheckboxItem("Freeze Vehicle", VehicleFrozen, "Freeze your vehicle's position.");
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
+            UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. " +
+                "Does not work during the day when you have your lights turned off.");
 
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -265,6 +268,8 @@ namespace vMenuClient
             {
                 menu.AddItem(vehicleNoBikeHelmet);
             }
+            // always allowed.
+            menu.AddItem(highbeamsOnHonk);
             if (cf.IsAllowed(Permission.VODelete)) // DELETE VEHICLE
             {
                 menu.AddItem(deleteBtn);
@@ -433,6 +438,10 @@ namespace vMenuClient
                 else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
                 {
                     VehicleNoBikeHelemet = _checked;
+                }
+                else if (item == highbeamsOnHonk)
+                {
+                    FlashHighbeamsOnHonk = _checked;
                 }
             };
             #endregion

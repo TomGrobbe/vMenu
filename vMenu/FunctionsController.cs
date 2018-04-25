@@ -308,6 +308,21 @@ namespace vMenuClient
                     {
                         ped.RemoveHelmet(true);
                     }
+
+                    if (MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && vehicle.Driver == Game.PlayerPed && !IsPauseMenuActive())
+                    {
+                        // turn on high beams when honking.
+                        if (Game.IsControlPressed(0, Control.VehicleHorn))
+                        {
+                            vehicle.AreHighBeamsOn = true;
+                        }
+                        // turn high beams back off when just stopped honking.
+                        if (Game.IsControlJustReleased(0, Control.VehicleHorn))
+                        {
+                            vehicle.AreHighBeamsOn = false;
+                        }
+                    }
+
                 }
                 // When the player is not inside a vehicle:
                 else

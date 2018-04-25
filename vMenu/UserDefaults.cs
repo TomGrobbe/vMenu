@@ -89,6 +89,12 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleNoBikeHelmet"); }
             set { SetSavedSettingsBool("vehicleNoBikeHelmet", value); }
         }
+
+        public static bool VehicleHighbeamsOnHonk
+        {
+            get { return GetSettingsBool("vehicleHighbeamsOnHonk"); }
+            set { SetSavedSettingsBool("vehicleHighbeamsOnHonk", value); }
+        }
         #endregion
 
         #region Vehicle Spawner Options
@@ -200,7 +206,7 @@ namespace vMenuClient
                 // Some options should be enabled by default:
                 if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
                     || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted"
-                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane")
+                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "vehicleHighbeamsOnHonk")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
