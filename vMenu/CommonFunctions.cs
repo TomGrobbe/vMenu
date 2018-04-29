@@ -2009,6 +2009,10 @@ namespace vMenuClient
         #endregion
 
         #region Log Function
+        /// <summary>
+        /// Print data to the console and save it to the CitizenFX.log file. Only when vMenu debugging mode is enabled.
+        /// </summary>
+        /// <param name="data"></param>
         public void Log(string data)
         {
             if (MainMenu.DebugMode)
