@@ -478,6 +478,9 @@ namespace vMenuClient
                 }
             }
 
+            // Sort the menu items (case IN-sensitive) by name.
+            spawnSavedPedMenu.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
+
             spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
@@ -516,6 +519,9 @@ namespace vMenuClient
                 deleteSavedPedMenu.AddItem(deleteSavedPed);
             }
 
+            // Sort the menu items (case IN-sensitive) by name.
+            deleteSavedPedMenu.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
+
             deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
@@ -523,6 +529,7 @@ namespace vMenuClient
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();
             };
+
             deleteSavedPedMenu.RefreshIndex();
             deleteSavedPedMenu.UpdateScaleform();
         }
