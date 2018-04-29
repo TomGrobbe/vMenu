@@ -28,6 +28,17 @@ namespace vMenuClient
         private UIMenu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
+        // show location variables
+        private Vector3 currentPos = Game.PlayerPed.Position;
+        private Vector3 nodePos = Game.PlayerPed.Position;
+        private bool node = false;
+        private float heading = 0f;
+        private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
+        private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
+        private uint crossing = 1;
+        private string crossingName = "";
+        private string suffix = "";
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -48,6 +59,7 @@ namespace vMenuClient
             Tick += TimeOptions;
             Tick += _WeatherOptions;
             Tick += WeaponOptions;
+            Tick += UpdateLocation;
         }
 
         /// Task related
@@ -428,80 +440,7 @@ namespace vMenuClient
                 // Show location & time.
                 if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
                 {
-
-                    // Get the current location.
-                    var currentPos = GetEntityCoords(PlayerPedId(), true);
-
-                    // Get the nearest vehicle node.
-                    var nodePos = currentPos;
-                    var node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
-
-                    // Create the default prefix.
-                    var prefix = "~s~";
-
-                    // If the vehicle node is further away than 1400f, then the player is not near a valid road.
-                    // So we set the prefix to "Near " (<streetname>).
-                    if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
-                    {
-                        prefix = "~m~Near ~s~";
-                    }
-
-                    // Get the heading.
-                    float heading = Game.PlayerPed.Heading;
-                    string headingCharacter = "";
-
-                    // Heading Facing North
-                    if (heading > 320 || heading < 45)
-                    {
-                        headingCharacter = "N";
-                    }
-                    // Heading Facing West
-                    else if (heading >= 45 && heading <= 135)
-                    {
-                        headingCharacter = "W";
-                    }
-                    // Heading Facing South
-                    else if (heading > 135 && heading < 225)
-                    {
-                        headingCharacter = "S";
-                    }
-                    // Heading Facing East
-                    else
-                    {
-                        headingCharacter = "E";
-                    }
-
-                    // Get the safezone size for x and y to be able to move with the minimap.
-                    float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                    float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
-
-                    // Get the cross road.
-                    var p1 = (uint)1; // unused
-                    var crossing = (uint)1;
-                    GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
-                    var crossingName = GetStreetNameFromHashKey(crossing);
-
-                    // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
-                    string suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
-
-                    // Draw the street name + crossing.
-                    cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
-                    // Draw the zone name.
-                    cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
-
-                    // Draw the left border for the heading character.
-                    cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
-                    // Draw the heading character.
-                    cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
-                    // Draw the right border for the heading character.
-                    cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
-
-                    // Get and draw the time.
-                    var tth = GetClockHours();
-                    var ttm = GetClockMinutes();
-                    var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
-                    var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-                    cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+                    ShowLocation();
                 }
                 #endregion
 
@@ -598,6 +537,8 @@ namespace vMenuClient
                 //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
                 //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
                 #endregion
+
+                #region camera angle locking
                 if (MainMenu.MiscSettingsMenu.LockCameraY)
                 {
                     SetGameplayCamRelativePitch(0f, 0f);
@@ -614,11 +555,103 @@ namespace vMenuClient
                     }
                     SetGameplayCamRelativeHeading(cameraRotationHeading);
                 }
+                #endregion
             }
             else
             {
                 await Delay(0);
             }
+        }
+
+        private async Task UpdateLocation()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
+                {
+                    // Get the current location.
+                    currentPos = GetEntityCoords(PlayerPedId(), true);
+
+                    // Get the nearest vehicle node.
+                    nodePos = currentPos;
+                    node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
+                    heading = Game.PlayerPed.Heading;
+
+                    // Get the safezone size for x and y to be able to move with the minimap.
+                    safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
+                    safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
+
+                    // Get the cross road.
+                    var p1 = (uint)1; // unused
+                    crossing = (uint)1;
+                    GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
+                    crossingName = GetStreetNameFromHashKey(crossing);
+
+                    // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
+                    suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
+
+                    await Delay(200);
+                }
+                else
+                {
+                    await Delay(0);
+                }
+            }
+        }
+
+        private void ShowLocation()
+        {
+            // Create the default prefix.
+            var prefix = "~s~";
+
+            // If the vehicle node is further away than 1400f, then the player is not near a valid road.
+            // So we set the prefix to "Near " (<streetname>).
+            if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+            {
+                prefix = "~m~Near ~s~";
+            }
+
+            string headingCharacter = "";
+
+            // Heading Facing North
+            if (heading > 320 || heading < 45)
+            {
+                headingCharacter = "N";
+            }
+            // Heading Facing West
+            else if (heading >= 45 && heading <= 135)
+            {
+                headingCharacter = "W";
+            }
+            // Heading Facing South
+            else if (heading > 135 && heading < 225)
+            {
+                headingCharacter = "S";
+            }
+            // Heading Facing East
+            else
+            {
+                headingCharacter = "E";
+            }
+
+            // Draw the street name + crossing.
+            cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
+            // Draw the zone name.
+            cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
+
+            // Draw the left border for the heading character.
+            cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
+            // Draw the heading character.
+            cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
+            // Draw the right border for the heading character.
+            cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+
+            // Get and draw the time.
+            var tth = GetClockHours();
+            var ttm = GetClockMinutes();
+            var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
+            var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
+            cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
         }
         #endregion
         #region Voice Chat Tasks
