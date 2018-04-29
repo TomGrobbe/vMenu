@@ -130,6 +130,7 @@ namespace vMenuClient
             permissionsSetupDone = true;
         }
         #endregion
+
         #region set settings
         /// <summary>
         /// Sets the settings received from the server.
@@ -147,6 +148,13 @@ namespace vMenuClient
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
             optionsSetupDone = true;
+            if (MenuOptions.ContainsKey("disableSync"))
+            {
+                if (MenuOptions["disableSync"] == "true")
+                {
+                    EventManager.enableSync = false;
+                }
+            }
         }
         #endregion
 
