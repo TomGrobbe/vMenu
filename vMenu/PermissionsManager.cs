@@ -68,6 +68,8 @@ namespace vMenuClient
         VONoHelmet,
         VOLights,
         VODelete,
+        VOUnderglow,
+
 
         // Vehicle Spawner
         VSMenu,
@@ -220,7 +222,7 @@ namespace vMenuClient
         WPSmokeGrenade,
 
         // Misc Settings
-        MSMenu,
+        //MSMenu, (removed because this menu should always be allowed).
         MSAll,
         MSClearArea,
         MSTeleportToWp,

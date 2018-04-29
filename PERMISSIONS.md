@@ -79,6 +79,7 @@
 |`vMenu.VehicleOptions.NoHelmet`|Allows you to disable the "automatically equipped" helmets when getting on a bike.|Allowed|
 |`vMenu.VehicleOptions.Lights`|Allows you to enable/disable specific vehicle lights like hazard lights, turn signals, interior lighting, taxi lights or helicopter spotlights.|Allowed|
 |`vMenu.VehicleOptions.Delete`|Allows you to delete your current vehicle.|Allowed|
+|`vMenu.VehicleOptions.Underglow`|Allows you to access the vehicle underglow options submenu.|Allowed|
 
 ## Vehicle Spawner
 
@@ -172,7 +173,6 @@
 
 |Permission|Description|Default[\*](#global-permissions)|
 |:-|:-|:-|
-|`vMenu.MiscSettings.Menu`|Grants access to the Misc Settings Menu.|Allowed|
 |`vMenu.MiscSettings.All`|Grants access to **ALL** `Misc Settings Menu` options.|Denied|
 |`vMenu.MiscSettings.ClearArea`|Allows you to reset/clear everything 100m around you in the world.|Allowed|
 |`vMenu.MiscSettings.TeleportToWp`|Allows you to teleport to the waypoint on your map.|Allowed|

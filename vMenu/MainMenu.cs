@@ -65,6 +65,25 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                if (args != null)
+                {
+                    if (args.Count > 0)
+                    {
+                        if (args[0].ToString().ToLower() == "debug")
+                        {
+                            DebugMode = !DebugMode;
+                            Notify.Custom($"Debug mode is now set to: {DebugMode}.");
+                        }
+                    }
+                    else
+                    {
+                        Notify.Custom($"vMenu is currently running version: {Version}.");
+                    }
+                }
+            }), false);
+
             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
             if (DebugMode)
             {
@@ -111,6 +130,7 @@ namespace vMenuClient
             permissionsSetupDone = true;
         }
         #endregion
+
         #region set settings
         /// <summary>
         /// Sets the settings received from the server.
@@ -128,6 +148,13 @@ namespace vMenuClient
             MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
             NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
             optionsSetupDone = true;
+            if (MenuOptions.ContainsKey("disableSync"))
+            {
+                if (MenuOptions["disableSync"] == "true")
+                {
+                    EventManager.enableSync = false;
+                }
+            }
         }
         #endregion
 
@@ -653,7 +680,10 @@ namespace vMenuClient
             }
 
             // Add misc settings menu.
-            if (Cf.IsAllowed(Permission.MSMenu))
+            //if (Cf.IsAllowed(Permission.MSMenu))
+            // removed the permissions check, because the misc menu should've never been restricted in the first place.
+            // not sure why I even added this before... saving of preferences and similar functions should always be allowed.
+            // no matter what.
             {
                 MiscSettingsMenu = new MiscSettings();
                 UIMenu menu = MiscSettingsMenu.GetMenu();

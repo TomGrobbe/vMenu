@@ -27,12 +27,14 @@ namespace vMenuClient
         public UIMenu VehicleLiveriesMenu { get; private set; }
         public UIMenu VehicleColorsMenu { get; private set; }
         public UIMenu DeleteConfirmMenu { get; private set; }
+        public UIMenu VehicleUnderglowMenu { get; private set; }
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = UserDefaults.VehicleGodMode;
         public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
+        public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
@@ -64,6 +66,8 @@ namespace vMenuClient
             UIMenuCheckboxItem vehicleFreeze = new UIMenuCheckboxItem("Freeze Vehicle", VehicleFrozen, "Freeze your vehicle's position.");
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
+            UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. " +
+                "Does not work during the day when you have your lights turned off.");
 
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -82,6 +86,8 @@ namespace vMenuClient
             liveriesMenuBtn.SetRightLabel("→→→");
             UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
             colorsMenuBtn.SetRightLabel("→→→");
+            UIMenuItem underglowMenuBtn = new UIMenuItem("Vehicle Underglow Options", "Make your vehicle shine with some fancy underglow!");
+            underglowMenuBtn.SetRightLabel("→→→");
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             UIMenuItem cycleSeats = new UIMenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
@@ -105,9 +111,12 @@ namespace vMenuClient
 
             // Create lists.
             var dirtlevel = new List<dynamic> { "No Dirt", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ to apply the selected level.");
-            var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"), GetLabelText("CMOD_PLA_4"), "North Yankton" };
-            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply it to your vehicle.");
+            UIMenuListItem setDirtLevel = new UIMenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ " +
+                "to apply the selected level.");
+            var licensePlates = new List<dynamic> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"),
+                GetLabelText("CMOD_PLA_4"), "North Yankton" };
+            UIMenuListItem setLicensePlateType = new UIMenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply " +
+                "it to your vehicle.");
             var torqueMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
@@ -165,6 +174,13 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
+            VehicleUnderglowMenu = new UIMenu("Vehicle Underglow", "Vehicle Underglow Options", true)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
 
             MainMenu.Mp.Add(VehicleModMenu);
             MainMenu.Mp.Add(VehicleDoorsMenu);
@@ -173,6 +189,7 @@ namespace vMenuClient
             MainMenu.Mp.Add(VehicleLiveriesMenu);
             MainMenu.Mp.Add(VehicleColorsMenu);
             MainMenu.Mp.Add(DeleteConfirmMenu);
+            MainMenu.Mp.Add(VehicleUnderglowMenu);
             #endregion
 
             #region Add items to the menu.
@@ -206,6 +223,11 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.VOColors)) // COLORS MENU
             {
                 menu.AddItem(colorsMenuBtn);
+            }
+            if (cf.IsAllowed(Permission.VOUnderglow)) // UNDERGLOW EFFECTS
+            {
+                menu.AddItem(underglowMenuBtn);
+                menu.BindMenuToItem(VehicleUnderglowMenu, underglowMenuBtn);
             }
             if (cf.IsAllowed(Permission.VOLiveries)) // LIVERIES MENU
             {
@@ -265,6 +287,8 @@ namespace vMenuClient
             {
                 menu.AddItem(vehicleNoBikeHelmet);
             }
+            // always allowed.
+            menu.AddItem(highbeamsOnHonk);
             if (cf.IsAllowed(Permission.VODelete)) // DELETE VEHICLE
             {
                 menu.AddItem(deleteBtn);
@@ -434,6 +458,10 @@ namespace vMenuClient
                 {
                     VehicleNoBikeHelemet = _checked;
                 }
+                else if (item == highbeamsOnHonk)
+                {
+                    FlashHighbeamsOnHonk = _checked;
+                }
             };
             #endregion
 
@@ -492,7 +520,6 @@ namespace vMenuClient
                             default:
                                 break;
                         }
-
                     }
                 }
             };
@@ -1129,6 +1156,134 @@ namespace vMenuClient
                 }
             };
             #endregion
+
+            #region Underglow Submenu
+            UIMenuCheckboxItem underglowFront = new UIMenuCheckboxItem("Enable Front Light", false, "Enable or disable the underglow on the front side of the" +
+                " vehicle. Note not all vehicles have lights.");
+            UIMenuCheckboxItem underglowBack = new UIMenuCheckboxItem("Enable Rear Light", false, "Enable or disable the underglow on the left side of the vehicle. " +
+                "Note not all vehicles have lights.");
+            UIMenuCheckboxItem underglowLeft = new UIMenuCheckboxItem("Enable Left Light", false, "Enable or disable the underglow on the right side of the " +
+                "vehicle. Note not all vehicles have lights.");
+            UIMenuCheckboxItem underglowRight = new UIMenuCheckboxItem("Enable Right Light", false, "Enable or disable the underglow on the back side of the " +
+                "vehicle. Note not all vehicles have lights.");
+            var underglowColorsList = new List<dynamic>() { "Red", "Pink", "Purple", "Blacklight", "Dark Blue", "Light Blue", "White", "Lime", "Green", "Dark Green", "Gold", "Orange", "Yellow" };
+            UIMenuListItem underglowColor = new UIMenuListItem("Underglow Color", underglowColorsList, 0, "Select the color of the underglow.");
+
+            VehicleUnderglowMenu.AddItem(underglowFront);
+            VehicleUnderglowMenu.AddItem(underglowBack);
+            VehicleUnderglowMenu.AddItem(underglowLeft);
+            VehicleUnderglowMenu.AddItem(underglowRight);
+
+            VehicleUnderglowMenu.AddItem(underglowColor);
+
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                #region reset checkboxes state when opening the menu.
+                if (item == underglowMenuBtn)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        Vehicle veh = new Vehicle(cf.GetVehicle());
+                        if (veh.Mods.HasNeonLights)
+                        {
+                            underglowFront.Checked = veh.Mods.HasNeonLight(VehicleNeonLight.Front) && veh.Mods.IsNeonLightsOn(VehicleNeonLight.Front);
+                            underglowBack.Checked = veh.Mods.HasNeonLight(VehicleNeonLight.Back) && veh.Mods.IsNeonLightsOn(VehicleNeonLight.Back);
+                            underglowLeft.Checked = veh.Mods.HasNeonLight(VehicleNeonLight.Left) && veh.Mods.IsNeonLightsOn(VehicleNeonLight.Left);
+                            underglowRight.Checked = veh.Mods.HasNeonLight(VehicleNeonLight.Right) && veh.Mods.IsNeonLightsOn(VehicleNeonLight.Right);
+
+                            underglowFront.Enabled = true;
+                            underglowBack.Enabled = true;
+                            underglowLeft.Enabled = true;
+                            underglowRight.Enabled = true;
+
+                            underglowFront.SetLeftBadge(UIMenuItem.BadgeStyle.None);
+                            underglowBack.SetLeftBadge(UIMenuItem.BadgeStyle.None);
+                            underglowLeft.SetLeftBadge(UIMenuItem.BadgeStyle.None);
+                            underglowRight.SetLeftBadge(UIMenuItem.BadgeStyle.None);
+                        }
+                        else
+                        {
+                            underglowFront.Checked = false;
+                            underglowBack.Checked = false;
+                            underglowLeft.Checked = false;
+                            underglowRight.Checked = false;
+
+                            underglowFront.Enabled = false;
+                            underglowBack.Enabled = false;
+                            underglowLeft.Enabled = false;
+                            underglowRight.Enabled = false;
+
+                            underglowFront.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            underglowBack.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            underglowLeft.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                            underglowRight.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        }
+                    }
+                    else
+                    {
+                        underglowFront.Checked = false;
+                        underglowBack.Checked = false;
+                        underglowLeft.Checked = false;
+                        underglowRight.Checked = false;
+
+                        underglowFront.Enabled = false;
+                        underglowBack.Enabled = false;
+                        underglowLeft.Enabled = false;
+                        underglowRight.Enabled = false;
+
+                        underglowFront.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        underglowBack.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        underglowLeft.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        underglowRight.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    }
+                }
+                #endregion
+            };
+            // handle item selections
+            VehicleUnderglowMenu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                if (IsPedInAnyVehicle(PlayerPedId(), false))
+                {
+                    Vehicle veh = new Vehicle(cf.GetVehicle());
+                    if (veh.Mods.HasNeonLights)
+                    {
+                        veh.Mods.NeonLightsColor = GetColorFromIndex(underglowColor.Index);
+                        if (item == underglowLeft)
+                        {
+                            veh.Mods.SetNeonLightsOn(VehicleNeonLight.Left, veh.Mods.HasNeonLight(VehicleNeonLight.Left) && _checked);
+                        }
+                        else if (item == underglowRight)
+                        {
+                            veh.Mods.SetNeonLightsOn(VehicleNeonLight.Right, veh.Mods.HasNeonLight(VehicleNeonLight.Right) && _checked);
+                        }
+                        else if (item == underglowBack)
+                        {
+                            veh.Mods.SetNeonLightsOn(VehicleNeonLight.Back, veh.Mods.HasNeonLight(VehicleNeonLight.Back) && _checked);
+                        }
+                        else if (item == underglowFront)
+                        {
+                            veh.Mods.SetNeonLightsOn(VehicleNeonLight.Front, veh.Mods.HasNeonLight(VehicleNeonLight.Front) && _checked);
+                        }
+                    }
+                }
+            };
+
+            VehicleUnderglowMenu.OnListChange += (sender, item, newIndex) =>
+            {
+                if (item == underglowColor)
+                {
+                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    {
+                        Vehicle veh = new Vehicle(cf.GetVehicle());
+                        if (veh.Mods.HasNeonLights)
+                        {
+                            veh.Mods.NeonLightsColor = GetColorFromIndex(newIndex);
+                        }
+                    }
+                }
+            };
+            #endregion
+
         }
         #endregion
 
@@ -1458,6 +1613,49 @@ namespace vMenuClient
             // selected item back to the "wheelsType" list so the user doesn't have to scroll down each time they
             // change the wheels type.
             VehicleModMenu.CurrentSelection = selectedIndex;
+        }
+        #endregion
+
+        #region GetColorFromIndex function (underglow)
+        /// <summary>
+        /// Converts a list index to a color.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private System.Drawing.Color GetColorFromIndex(int index)
+        {
+            switch (index)
+            {
+                // { "Red", "Pink", "Purple", "Blacklight", "Dark Blue", "Light Blue", "White", "Lime", "Green", "Dark Green", "Gold", "Orange", "Yellow" }
+                case 0:
+                    return System.Drawing.Color.FromArgb(red: 237, green: 0, blue: 0); // red
+                case 1:
+                    return System.Drawing.Color.FromArgb(red: 237, green: 0, blue: 201); // pink
+                case 2:
+                    return System.Drawing.Color.FromArgb(red: 156, green: 0, blue: 237); // purple
+                case 3:
+                    return System.Drawing.Color.FromArgb(red: 66, green: 0, blue: 255); // blacklight
+                case 4:
+                    return System.Drawing.Color.FromArgb(red: 0, green: 66, blue: 255); // dark blue
+                case 5:
+                    return System.Drawing.Color.FromArgb(red: 0, green: 198, blue: 255); // light blue
+                case 6:
+                    return System.Drawing.Color.FromArgb(red: 255, green: 255, blue: 255); // white
+                case 7:
+                    return System.Drawing.Color.FromArgb(red: 0, green: 255, blue: 0); // lime green
+                case 8:
+                    return System.Drawing.Color.FromArgb(red: 33, green: 169, blue: 15); // green
+                case 9:
+                    return System.Drawing.Color.FromArgb(red: 8, green: 64, blue: 0); // dark green
+                case 10:
+                    return System.Drawing.Color.FromArgb(red: 222, green: 165, blue: 10); // golden shower
+                case 11:
+                    return System.Drawing.Color.FromArgb(red: 222, green: 85, blue: 10); // orange
+                case 12:
+                    return System.Drawing.Color.FromArgb(red: 236, green: 244, blue: 28); // yellow
+                default:
+                    return System.Drawing.Color.FromArgb(red: 255, green: 255, blue: 255); // white
+            }
         }
         #endregion
     }

@@ -89,8 +89,6 @@ namespace vMenuClient
             menu.AddItem(deleteSavedPed);
             menu.AddItem(walkingStyle);
 
-
-
             // Bind items to the submenus.
             if (cf.IsAllowed(Permission.PACustomize))
             {
@@ -148,7 +146,7 @@ namespace vMenuClient
                     {
                         if (item.Enabled)
                         {
-                            cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value);
+                            cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
                         }
                         else
                         {
@@ -242,12 +240,11 @@ namespace vMenuClient
                     string modelName = modelNames[i];
                     if (cf.IsAllowed(Permission.PASpawnNew))
                     {
-                        cf.SetPlayerSkin(modelName);
+                        cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
                     }
                 }
 
             };
-
         }
 
         /// <summary>
@@ -365,11 +362,13 @@ namespace vMenuClient
                             {
                                 if (index2 == propsList.Count - 1)
                                 {
-                                    ClearPedProp(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
+                                    ClearPedProp(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
+                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
                                 }
                                 else
                                 {
-                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, 0, true);
+                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
+                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, 0, true);
                                 }
                             }
                         };
@@ -381,9 +380,13 @@ namespace vMenuClient
                             {
                                 if (index2 != propsList.Count - 1)
                                 {
-                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2);
-                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
-                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
+                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(),
+                                        (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2);
+                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(),
+                                        (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
+                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
+                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2,
+                                        (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
                                 }
                             }
                         };
@@ -451,35 +454,11 @@ namespace vMenuClient
                 var saveName = FindKvp(findHandle);
                 if (saveName != null && saveName != "" && saveName != "NULL")
                 {
-                    //cf.Log($"Hi {i}");
-                    //if (!saveName.Substring(saveName.Length - 3).Contains("_v2")) // it's the old format
-                    //{
-                    //    cf.Log($"Hi 2 {i}");
-                    //    //var tmpFindHandle = StartFindKvp("ped_" + saveName + "_v2");
-                    //    if (GetResourceKvpString("ped_" + saveName + "_v2") != null && !savesFound.Contains(saveName + "_v2")) // check if new format exists.
-                    //    {
-                    //        savesFound.Add(saveName + "_v2"); // if so, add that one.
-                    //        cf.Log($"Hi 3 {i}");
-                    //    }
-                    //    else
-                    //    {
-                    //        savesFound.Add(saveName); // there's no new format, add the old format, once spawned, will be converted to new one automatically.
-                    //        cf.Log($"Hi 4 {i}");
-                    //    }
-
-                    //}
-                    //else
-                    //{
-
                     // It's already the new format, so add it.
                     savesFound.Add(saveName);
-
-                    //    cf.Log($"Hi 5 {i}");
-                    //}
                 }
                 else
                 {
-                    //cf.Log($"Break {i}");
                     break;
                 }
             }
@@ -489,18 +468,6 @@ namespace vMenuClient
             {
                 if (savename.Length > 4)
                 {
-                    //if (savename.Substring(savename.Length - 3).Contains("_v2"))
-                    //{
-                    //    var title = savename.Substring(4, savename.Length - 7);
-                    //    if (!items.Contains(title))
-                    //    {
-                    //        UIMenuItem savedPedBtn = new UIMenuItem(title, "Spawn this saved ped.");
-                    //        spawnSavedPedMenu.AddItem(savedPedBtn);
-                    //        items.Add(title);
-                    //    }
-                    //}
-                    //else
-                    //{
                     var title = savename.Substring(4);
                     if (!items.Contains(title))
                     {
@@ -508,22 +475,16 @@ namespace vMenuClient
                         spawnSavedPedMenu.AddItem(savedPedBtn);
                         items.Add(title);
                     }
-                    //}
-
                 }
             }
+
+            // Sort the menu items (case IN-sensitive) by name.
+            spawnSavedPedMenu.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
 
             spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                //if (GetResourceKvpString("ped_" + name + "_v2") != null)
-                //{
-                //    cf.LoadSavedPed(name + "_v2");
-                //}
-                //else
-                //{
                 cf.LoadSavedPed(name);
-                //}
 
             };
 
@@ -558,14 +519,17 @@ namespace vMenuClient
                 deleteSavedPedMenu.AddItem(deleteSavedPed);
             }
 
+            // Sort the menu items (case IN-sensitive) by name.
+            deleteSavedPedMenu.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
+
             deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                sm.DeleteSavedDictionary("ped_" + name);
-                //sm.DeleteSavedDictionary("ped_" + name + "_v2");
+                sm.DeleteSavedStorageItem("ped_" + name);
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();
             };
+
             deleteSavedPedMenu.RefreshIndex();
             deleteSavedPedMenu.UpdateScaleform();
         }

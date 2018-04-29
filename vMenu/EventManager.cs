@@ -20,6 +20,8 @@ namespace vMenuClient
         public static int currentMinutes = 0;
         public static bool freezeTime = false;
 
+        public static bool enableSync = true;
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -60,6 +62,7 @@ namespace vMenuClient
         /// </summary>
         private void GoodBye()
         {
+            cf.Log("fuck you.");
             ForceSocialClubUpdate();
         }
 
@@ -69,6 +72,7 @@ namespace vMenuClient
         /// <param name="options"></param>
         private void UpdateSettings(dynamic options)
         {
+            cf.Log("Options are being updated.");
             MainMenu.SetOptions(options);
         }
 
@@ -78,6 +82,7 @@ namespace vMenuClient
         /// <param name="permissions"></param>
         private void UpdatePermissions(dynamic permissions)
         {
+            cf.Log("Permissions are being updated.");
             MainMenu.SetPermissions(permissions);
         }
 
@@ -88,6 +93,7 @@ namespace vMenuClient
         /// <param name="addons"></param>
         private void SetAddonModels(string addonType, dynamic addons)
         {
+            cf.Log($"Addon models are being loaded. Addon type: {addonType}.");
             Dictionary<string, uint> models = new Dictionary<string, uint>();
             foreach (var addon in addons)
             {
@@ -123,99 +129,92 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-            if (MainMenu.MenuOptions != null)
+            if (enableSync)
             {
-                // Check if the weather sync should be disabled.
-                if (MainMenu.MenuOptions.ContainsKey("disableSync"))
-                {
-                    if (MainMenu.MenuOptions["disableSync"] != "true")
-                    {
-                        // Weather is set every second, if it's changed, then it will transition to the new phase within 20 seconds.
-                        await Delay(1000);
+                // Weather is set every 500ms, if it's changed, then it will transition to the new phase within 20 seconds.
+                await Delay(500);
 
-                        var justChanged = false;
-                        if (currentWeatherType != lastWeather)
+                var justChanged = false;
+                if (currentWeatherType != lastWeather)
+                {
+                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}");
+                    if (currentWeatherType == "XMAS")
+                    {
+                        RequestScriptAudioBank("ICE_FOOTSTEPS", false);
+                        RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
+                        RequestNamedPtfxAsset("core_snow");
+                        while (!HasNamedPtfxAssetLoaded("core_snow"))
                         {
-                            if (currentWeatherType == "XMAS")
-                            {
-                                RequestScriptAudioBank("ICE_FOOTSTEPS", false);
-                                RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
-                                RequestNamedPtfxAsset("core_snow");
-                                while (!HasNamedPtfxAssetLoaded("core_snow"))
-                                {
-                                    await Delay(0);
-                                }
-                                UseParticleFxAssetNextCall("core_snow");
-                                SetForceVehicleTrails(true);
-                                SetForcePedFootstepsTracks(true);
-                            }
-                            else
-                            {
-                                SetForceVehicleTrails(false);
-                                SetForcePedFootstepsTracks(false);
-                                RemoveNamedPtfxAsset("core_snow");
-                                ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
-                                ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
-                            }
-                            ClearWeatherTypePersist();
-                            ClearOverrideWeather();
-                            SetWeatherTypeNow(lastWeather);
-                            lastWeather = currentWeatherType;
-                            SetWeatherTypeOverTime(currentWeatherType, 15f);
-                            await Delay(16000);
-                            //SetWeatherTypePersist(currentWeatherType);
-                            SetWeatherTypeNow(currentWeatherType);
-                            justChanged = true;
+                            await Delay(0);
                         }
-                        if (!justChanged)
-                        {
-                            SetWeatherTypeNowPersist(currentWeatherType);
-                        }
-                        SetBlackout(blackoutMode);
+                        UseParticleFxAssetNextCall("core_snow");
+                        SetForceVehicleTrails(true);
+                        SetForcePedFootstepsTracks(true);
                     }
+                    else
+                    {
+                        SetForceVehicleTrails(false);
+                        SetForcePedFootstepsTracks(false);
+                        RemoveNamedPtfxAsset("core_snow");
+                        ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
+                        ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
+                    }
+                    ClearWeatherTypePersist();
+                    ClearOverrideWeather();
+                    SetWeatherTypeNow(lastWeather);
+                    lastWeather = currentWeatherType;
+                    SetWeatherTypeOverTime(currentWeatherType, 15f);
+                    int tmpTimer = GetGameTimer();
+                    while (GetGameTimer() - tmpTimer < 15500) // wait 15.5 _real_ seconds
+                    {
+                        await Delay(0);
+                    }
+                    SetWeatherTypeNow(currentWeatherType);
+                    justChanged = true;
+                    cf.Log("done changing weather type.");
                 }
+                if (!justChanged)
+                {
+                    SetWeatherTypeNowPersist(currentWeatherType);
+                }
+                SetBlackout(blackoutMode);
             }
         }
 
         /// <summary>
-        /// OnTick loop to keep the time synced.
+        /// This function will take care of time sync. It'll be called once, and never stop.
         /// </summary>
         /// <returns></returns>
         private async Task TimeSync()
         {
             // Check if the time sync should be disabled.
-            if (MainMenu.MenuOptions != null)
+            if (enableSync)
             {
-                if (MainMenu.MenuOptions.ContainsKey("disableSync"))
+                // If time is frozen...
+                if (freezeTime)
                 {
-                    if (MainMenu.MenuOptions["disableSync"] != "true")
-                    {
-                        // If time is frozen...
-                        if (freezeTime)
-                        {
-                            // Time is set every second to make sure it never changes (even with some lag).
-                            await Delay(1000);
-                            NetworkOverrideClockTime(currentHours, currentMinutes, 0);
-                        }
-                        // Otherwise...
-                        else
-                        {
-                            // Time is synced every 2 seconds (which equals 1 in-game minute).
-                            await Delay(2000);
-                            currentMinutes++;
-                            if (currentMinutes > 59)
-                            {
-                                currentMinutes = 0;
-                                currentHours++;
-                            }
-                            if (currentHours > 23)
-                            {
-                                currentHours = 0;
-                            }
-                            NetworkOverrideClockTime(currentHours, currentMinutes, 0);
-                        }
-                    }
+                    // Time is set every tick to make sure it never changes (even with some lag).
+                    await Delay(0);
+                    NetworkOverrideClockTime(currentHours, currentMinutes, 0);
                 }
+                // Otherwise...
+                else
+                {
+                    // Time is synced every 2 seconds (which equals 1 in-game minute).
+                    await Delay(2000);
+                    currentMinutes++;
+                    if (currentMinutes > 59)
+                    {
+                        currentMinutes = 0;
+                        currentHours++;
+                    }
+                    if (currentHours > 23)
+                    {
+                        currentHours = 0;
+                    }
+                    NetworkOverrideClockTime(currentHours, currentMinutes, 0);
+                }
+
             }
         }
 
@@ -244,9 +243,9 @@ namespace vMenuClient
         /// <param name="blackoutEnabled"></param>
         private void SetWeather(string newWeather, bool blackoutEnabled, bool dynamicChanges)
         {
-            EventManager.currentWeatherType = newWeather;
-            EventManager.blackoutMode = blackoutEnabled;
-            EventManager.dynamicWeather = dynamicChanges;
+            currentWeatherType = newWeather;
+            blackoutMode = blackoutEnabled;
+            dynamicWeather = dynamicChanges;
         }
 
         /// <summary>

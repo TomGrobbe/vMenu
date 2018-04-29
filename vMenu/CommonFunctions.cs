@@ -246,72 +246,66 @@ namespace vMenuClient
         /// <param name="pos">These are the target coordinates to teleport to.</param>
         public async Task TeleportToCoords(Vector3 pos)
         {
-            if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
-            {
+            RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
+            bool inCar = IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId();
+            if (inCar)
                 SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
-            }
             else
-            {
                 SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
-            }
 
-            var timer = 0;
-            var failed = false;
-            while (!GetGroundZFor_3dCoord(pos.X, pos.Y, 800f, ref pos.Z, true))
+            int timer = GetGameTimer();
+            bool failed = false;
+            float outputZ = pos.Z;
+            await Delay(100);
+            var z = 0f;
+            while (!GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
             {
                 await Delay(0);
-                timer++;
-                if (timer > 60)
+                if (GetGameTimer() - timer > 5000)
                 {
                     failed = true;
                     break;
                 }
+                z = z < 900f ? z + 10f : 0f;
             }
-            if (IsEntityInWater(PlayerPedId()) || IsEntityInAir(PlayerPedId()))
+            if (!failed)
             {
-                failed = true;
+                if (inCar)
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ);
+                else
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ, false, false, false, true);
             }
+            await Delay(200);
+            failed = (IsEntityInWater(PlayerPedId()) || GetEntityHeightAboveGround(PlayerPedId()) > 50f) ? true : failed;
             if (failed)
             {
                 GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
-                var safePos = pos;
+                Vector3 safePos = pos;
                 safePos.Z = 810f;
                 var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
                 if (foundSafeSpot)
                 {
-                    Notify.Alert("No safe location near waypoint :( going to closest safe location instead.");
-                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
-                    {
+                    Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.", true);
+                    if (inCar)
                         SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
-                    }
                     else
-                    {
                         SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
-                    }
                 }
                 else
                 {
-                    Notify.Alert("No safe location near you :( open your parachute!");
-                    if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
-                    {
+                    Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!", true);
+                    if (inCar)
                         SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
-                    }
                     else
-                    {
                         SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
-                    }
                 }
             }
             else
             {
-                if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
-                {
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f);
-                }
+                if (inCar)
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ + 2f);
                 else
-                {
-                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z + 2f, false, false, false, true);
-                }
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ + 2f, false, false, false, true);
             }
         }
 
@@ -323,7 +317,7 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = 200f;
+                pos.Z = 150f;
                 await TeleportToCoords(pos);
             }
         }
@@ -588,10 +582,11 @@ namespace vMenuClient
         #region Spawn Vehicle
         #region Overload Spawn Vehicle Function
         /// <summary>
-        /// Spawn a vehicle by providing a vehicle name.
-        /// If no name is specified or "custom" was passed, the user will be asked to input the vehicle name to spawn.
+        /// Simple custom vehicle spawn function.
         /// </summary>
-        /// <param name="vehicleName">The name of the vehicle to spawn.</param>
+        /// <param name="vehicleName">Vehicle model name. If "custom" the user will be asked to enter a model name.</param>
+        /// <param name="spawnInside">Warp the player inside the vehicle after spawning.</param>
+        /// <param name="replacePrevious">Replace the previous vehicle of the player.</param>
         public async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
         {
             if (vehicleName == "custom")
@@ -603,7 +598,8 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false, vehicleInfo: new VehicleInfo(),
+                        saveName: null);
                 }
                 // Result was invalid.
                 else
@@ -614,18 +610,23 @@ namespace vMenuClient
             // Spawn the specified vehicle.
             else
             {
-                SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false);
+                SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false,
+                    vehicleInfo: new VehicleInfo(), saveName: null);
             }
         }
         #endregion
 
         #region Main Spawn Vehicle Function
         /// <summary>
-        /// Spawn a vehicle by providing the vehicle hash.
+        /// Spawns a vehicle.
         /// </summary>
-        /// <param name="vehicleHash">Hash of the vehicle model to spawn.</param>
-        /// <param name="skipLoad">If true, this will not load or verify the model, it will instantly spawn the vehicle.</param>
-        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad = false, Dictionary<string, string> vehicleInfo = null, string saveName = null)
+        /// <param name="vehicleHash">Model hash of the vehicle to spawn.</param>
+        /// <param name="spawnInside">Teleports the player into the vehicle after spawning.</param>
+        /// <param name="replacePrevious">Replaces the previous vehicle of the player with the new one.</param>
+        /// <param name="skipLoad">Does not attempt to load the vehicle, but will spawn it right a way.</param>
+        /// <param name="vehicleInfo">All information needed for a saved vehicle to re-apply all mods.</param>
+        /// <param name="saveName">Used to get/set info about the saved vehicle data.</param>
+        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null)
         {
             var vehClass = GetVehicleClassFromName(vehicleHash);
             int modelClass = GetVehicleClassFromName(vehicleHash);
@@ -655,7 +656,6 @@ namespace vMenuClient
             // If the previous vehicle exists...
             if (previousVehicle != null)
             {
-                //ClearPedTasksImmediately(PlayerPedId());
                 // And it's actually a vehicle (rather than another random entity type)
                 if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
                     (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
@@ -709,10 +709,8 @@ namespace vMenuClient
                 IsPersistent = true
             };
 
-            //// Set the previous vehicle to the new vehicle.
-            //previousVehicle = vehicle;
-
-            Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} heading:{heading}");
+            Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} " +
+                $"heading:{heading}");
 
             // If spawnInside is true
             if (spawnInside)
@@ -731,106 +729,55 @@ namespace vMenuClient
                 // If it's not a helicopter or the player is not in the air, set the vehicle on the ground properly.
                 else
                 {
-                    //SetVehicleOnGroundProperly(vehicle.Handle);
                     vehicle.PlaceOnGround();
                 }
             }
 
             // If mod info about the vehicle was specified, check if it's not null.
-            if (vehicleInfo != null)
+            if (saveName != null)
             {
                 // Set the modkit so we can modify the car.
                 SetVehicleModKit(vehicle.Handle, 0);
 
-                // Loop through all extra ID's and set it if it was specified in the dictionary mods.
-                for (var extraId = 0; extraId < 15; extraId++)
+                // set the extras
+                foreach (var extra in vehicleInfo.extras)
                 {
-                    if (DoesExtraExist(vehicle.Handle, extraId))
-                    {
-                        vehicle.ToggleExtra(extraId, (vehicleInfo[$"extra{extraId.ToString()}"] == "true"));
-                    }
+                    if (DoesExtraExist(vehicle.Handle, extra.Key))
+                        vehicle.ToggleExtra(extra.Key, extra.Value);
                 }
 
-                // Set all other Toggles.
-                int wheelType = int.Parse(vehicleInfo["wheelType"]);
-                SetVehicleWheelType(vehicle.Handle, wheelType);
-                bool customWheels = vehicleInfo["customWheels"] == "true";
-                SetVehicleMod(vehicle.Handle, 23, 0, customWheels);
+                SetVehicleWheelType(vehicle.Handle, vehicleInfo.wheelType);
+                SetVehicleMod(vehicle.Handle, 23, 0, vehicleInfo.customWheels);
                 if (vehicle.Model.IsBike)
                 {
-                    SetVehicleMod(vehicle.Handle, 24, 0, customWheels);
+                    SetVehicleMod(vehicle.Handle, 24, 0, vehicleInfo.customWheels);
                 }
-                bool turbo = vehicleInfo["turbo"] == "true";
-                ToggleVehicleMod(vehicle.Handle, 18, turbo);
+                ToggleVehicleMod(vehicle.Handle, 18, vehicleInfo.turbo);
+                SetVehicleTyreSmokeColor(vehicle.Handle, vehicleInfo.colors["tyresmokeR"], vehicleInfo.colors["tyresmokeB"], vehicleInfo.colors["tyresmokeG"]);
+                ToggleVehicleMod(vehicle.Handle, 20, vehicleInfo.tyreSmoke);
+                ToggleVehicleMod(vehicle.Handle, 22, vehicleInfo.xenonHeadlights);
+                SetVehicleLivery(vehicle.Handle, vehicleInfo.livery);
 
-                bool tireSmokeEnabled = vehicleInfo["tireSmoke"] == "true";
-                int tireR = int.Parse(vehicleInfo["tireSmokeR"]);
-                int tireG = int.Parse(vehicleInfo["tireSmokeG"]);
-                int tireB = int.Parse(vehicleInfo["tireSmokeB"]);
-                SetVehicleTyreSmokeColor(vehicle.Handle, tireR, tireG, tireB);
-                ToggleVehicleMod(vehicle.Handle, 20, tireSmokeEnabled);
+                SetVehicleColours(vehicle.Handle, vehicleInfo.colors["primary"], vehicleInfo.colors["secondary"]);
+                SetVehicleInteriorColour(vehicle.Handle, vehicleInfo.colors["trim"]);
+                SetVehicleDashboardColour(vehicle.Handle, vehicleInfo.colors["dash"]);
 
-                bool xenonHeadlights = vehicleInfo["xenonHeadlights"] == "true";
-                ToggleVehicleMod(vehicle.Handle, 22, xenonHeadlights);
+                SetVehicleExtraColours(vehicle.Handle, vehicleInfo.colors["pearlescent"], vehicleInfo.colors["wheels"]);
 
-                int oldLivery = int.Parse(vehicleInfo["oldLivery"]);
-                SetVehicleLivery(vehicle.Handle, oldLivery);
+                SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo.plateText);
+                SetVehicleNumberPlateTextIndex(vehicle.Handle, vehicleInfo.plateStyle);
 
-                int primaryColor = int.Parse(vehicleInfo["primaryColor"].ToString());
-                int secondaryColor = int.Parse(vehicleInfo["secondaryColor"].ToString());
-                int pearlescentColor = int.Parse(vehicleInfo["pearlescentColor"].ToString());
-                int wheelColor = int.Parse(vehicleInfo["wheelsColor"].ToString());
+                SetVehicleWindowTint(vehicle.Handle, vehicleInfo.windowTint);
 
-                int.TryParse(vehicleInfo["interiorColor"], out int interiorcolor);
-                int.TryParse(vehicleInfo["dashboardColor"], out int dashboardcolor);
-
-                SetVehicleInteriorColour(vehicle.Handle, interiorcolor);
-                SetVehicleDashboardColour(vehicle.Handle, dashboardcolor);
-
-                SetVehicleNumberPlateText(vehicle.Handle, vehicleInfo["plate"]);
-                SetVehicleNumberPlateTextIndex(vehicle.Handle, int.Parse(vehicleInfo["plateStyle"]));
-
-                // Declare a variable to indicate how many "iterations" the foreach loop further down should be "skipped",
-                // before starting "consider" the "mod strings" as "dynamic" mods.
-                int skip = 8 + 24 + 2;
-
-                bool updateSavedVehicleInfo = false;
-                if (vehicleInfo.ContainsKey("windowTint"))
+                foreach (var mod in vehicleInfo.mods)
                 {
-                    int.TryParse(vehicleInfo["windowTint"].ToString(), out int tint);
-                    SetVehicleWindowTint(vehicle.Handle, tint);
-                    skip++; // add one to skip because the tint was found.
+                    SetVehicleMod(vehicle.Handle, mod.Key, mod.Value, vehicleInfo.customWheels);
                 }
-                else
-                {
-                    updateSavedVehicleInfo = true;
-                }
-
-                // Loop through all mods.
-                foreach (var mod in vehicleInfo)
-                {
-                    // Ignore the first "skip" amount of mods because those are not dynamic mods.
-                    skip--;
-                    if (skip < 0)
-                    {
-                        var key = int.Parse(mod.Key);
-                        var val = int.Parse(mod.Value);
-                        SetVehicleMod(vehicle.Handle, key, val, customWheels);
-                    }
-                }
-
-                // Set the vehicle colours last to make sure they don't get overridden by applying vehicle mods.
-                SetVehicleColours(vehicle.Handle, primaryColor, secondaryColor);
-                SetVehicleExtraColours(vehicle.Handle, pearlescentColor, wheelColor);
-
-                if (updateSavedVehicleInfo)
-                {
-                    // Because we need to re-save the vehicle with the new modded format, we'll teleport the player into it.
-                    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, -1);
-                    await Delay(10);
-                    SaveVehicle(saveName ?? vehicleInfo["name"].ToString());
-                    Log($"Saved vehicle needs to be converted. Re-saving with name: {(saveName ?? vehicleInfo["name"].ToString())}");
-                }
+                vehicle.Mods.NeonLightsColor = System.Drawing.Color.FromArgb(red: vehicleInfo.colors["neonR"], green: vehicleInfo.colors["neonG"], blue: vehicleInfo.colors["neonB"]);
+                vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Left, vehicleInfo.neonLeft);
+                vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Right, vehicleInfo.neonRight);
+                vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Front, vehicleInfo.neonFront);
+                vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Back, vehicleInfo.neonBack);
             }
 
             // Set the previous vehicle to the new vehicle.
@@ -840,6 +787,34 @@ namespace vMenuClient
             SetModelAsNoLongerNeeded(vehicleHash);
         }
         #endregion
+        #endregion
+
+        #region VehicleInfo struct
+        /// <summary>
+        /// Contains all information for a saved vehicle.
+        /// </summary>
+        public struct VehicleInfo
+        {
+            public Dictionary<string, int> colors;
+            public bool customWheels;
+            public Dictionary<int, bool> extras;
+            public int livery;
+            public uint model;
+            public Dictionary<int, int> mods;
+            public string name;
+            public bool neonBack;
+            public bool neonFront;
+            public bool neonLeft;
+            public bool neonRight;
+            public string plateText;
+            public int plateStyle;
+            public bool turbo;
+            public bool tyreSmoke;
+            public int version;
+            public int wheelType;
+            public int windowTint;
+            public bool xenonHeadlights;
+        };
         #endregion
 
         #region Save Vehicle
@@ -852,99 +827,99 @@ namespace vMenuClient
             if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
                 // Get the vehicle.
-                var veh = GetVehicle();
+                Vehicle veh = new Vehicle(GetVehicle());
                 // Make sure the entity is actually a vehicle and it still exists, and it's not dead.
-                if (DoesEntityExist(veh) && (IsEntityAVehicle(veh)) && !IsEntityDead(veh))
+                if (veh.Exists() && !veh.IsDead && veh.IsDriveable)
                 {
-                    // Get some info about the car.
-                    var model = (uint)GetEntityModel(veh);
-                    var name = GetLabelText(GetDisplayNameFromVehicleModel(model));
+                    #region new saving method
+                    Dictionary<int, int> mods = new Dictionary<int, int>();
 
+                    foreach (var mod in veh.Mods.GetAllMods())
+                    {
+                        mods.Add((int)mod.ModType, mod.Index);
+                    }
+
+                    #region colors
+                    var colors = new Dictionary<string, int>();
                     int primaryColor = 0;
                     int secondaryColor = 0;
                     int pearlescentColor = 0;
                     int wheelColor = 0;
-                    GetVehicleExtraColours(veh, ref pearlescentColor, ref wheelColor);
-                    GetVehicleColours(veh, ref primaryColor, ref secondaryColor);
-
-                    // Store all info into a Dictionary.
-                    Dictionary<string, string> dict = new Dictionary<string, string>();
-                    dict.Add("name", name != "NULL" ? name : "N/A");
-                    dict.Add("model", model.ToString() ?? "");
-
-                    // Add all vehicle extras.
-                    for (var extraId = 0; extraId < 15; extraId++)
+                    int dashColor = 0;
+                    int trimColor = 0;
+                    GetVehicleExtraColours(veh.Handle, ref pearlescentColor, ref wheelColor);
+                    GetVehicleColours(veh.Handle, ref primaryColor, ref secondaryColor);
+                    GetVehicleDashboardColour(veh.Handle, ref dashColor);
+                    GetVehicleInteriorColour(veh.Handle, ref trimColor);
+                    colors.Add("primary", primaryColor);
+                    colors.Add("secondary", secondaryColor);
+                    colors.Add("pearlescent", pearlescentColor);
+                    colors.Add("wheels", wheelColor);
+                    colors.Add("dash", dashColor);
+                    colors.Add("trim", trimColor);
+                    int neonR = 255;
+                    int neonG = 255;
+                    int neonB = 255;
+                    if (veh.Mods.HasNeonLights)
                     {
-                        if (DoesExtraExist(veh, extraId))
+                        GetVehicleNeonLightsColour(veh.Handle, ref neonR, ref neonG, ref neonB);
+                    }
+                    colors.Add("neonR", neonR);
+                    colors.Add("neonG", neonG);
+                    colors.Add("neonB", neonB);
+                    int tyresmokeR = 0;
+                    int tyresmokeG = 0;
+                    int tyresmokeB = 0;
+                    GetVehicleTyreSmokeColor(veh.Handle, ref tyresmokeR, ref tyresmokeG, ref tyresmokeB);
+                    colors.Add("tyresmokeR", tyresmokeR);
+                    colors.Add("tyresmokeG", tyresmokeG);
+                    colors.Add("tyresmokeB", tyresmokeB);
+                    #endregion
+
+                    var extras = new Dictionary<int, bool>();
+                    for (int i = 0; i < 20; i++)
+                    {
+                        if (veh.ExtraExists(i))
                         {
-                            if (IsVehicleExtraTurnedOn(veh, extraId))
-                            {
-                                dict.Add($"extra{extraId.ToString()}", "true");
-                            }
-                            else
-                            {
-                                dict.Add($"extra{extraId.ToString()}", "false");
-                            }
-                        }
-                        else
-                        {
-                            dict.Add($"extra{extraId.ToString()}", "false");
+                            extras.Add(i, veh.IsExtraOn(i));
                         }
                     }
 
-                    // Add more stuff to the db.
-                    dict.Add("customWheels", GetVehicleModVariation(veh, 23) ? "true" : "false");
-                    dict.Add("wheelType", GetVehicleWheelType(veh).ToString());
-                    dict.Add("turbo", IsToggleModOn(veh, 18) ? "true" : "false");
-
-                    dict.Add("tireSmoke", IsToggleModOn(veh, 20) ? "true" : "false");
-                    var tireR = 255;
-                    var tireG = 255;
-                    var tireB = 255;
-                    GetVehicleTyreSmokeColor(veh, ref tireR, ref tireG, ref tireB);
-
-                    dict.Add("tireSmokeR", tireR.ToString());
-                    dict.Add("tireSmokeG", tireG.ToString());
-                    dict.Add("tireSmokeB", tireB.ToString());
-
-                    dict.Add("xenonHeadlights", IsToggleModOn(veh, 22) ? "true" : "false");
-                    dict.Add("oldLivery", GetVehicleLivery(veh).ToString());
-
-                    dict.Add("primaryColor", primaryColor.ToString());
-                    dict.Add("secondaryColor", secondaryColor.ToString());
-                    dict.Add("wheelsColor", wheelColor.ToString());
-                    dict.Add("pearlescentColor", pearlescentColor.ToString());
-                    var interiorColor = 0;
-                    var dashboardColor = 0;
-                    GetVehicleInteriorColour(veh, ref interiorColor);
-                    GetVehicleDashboardColour(veh, ref dashboardColor);
-                    dict.Add("interiorColor", interiorColor.ToString());
-                    dict.Add("dashboardColor", dashboardColor.ToString());
-
-                    dict.Add("plate", GetVehicleNumberPlateText(veh).ToString());
-                    dict.Add("plateStyle", GetVehicleNumberPlateTextIndex(veh).ToString());
-                    dict.Add("windowTint", GetVehicleWindowTint(veh).ToString());
-
-                    // Now add all vehicle mods that are dynamic (different per vehicle model).
-                    Vehicle vehicle = new Vehicle(veh);
-                    foreach (VehicleMod mod in vehicle.Mods.GetAllMods())
+                    VehicleInfo vi = new VehicleInfo()
                     {
-                        var modType = ((int)mod.ModType).ToString();
-                        var modValue = mod.Index;
-                        dict.Add(modType.ToString(), modValue.ToString());
-                    }
+                        colors = colors,
+                        customWheels = GetVehicleModVariation(veh.Handle, 23),
+                        extras = extras,
+                        livery = GetVehicleLivery(veh.Handle),
+                        model = (uint)GetEntityModel(veh.Handle),
+                        mods = mods,
+                        name = GetLabelText(GetDisplayNameFromVehicleModel((uint)GetEntityModel(veh.Handle))),
+                        neonBack = veh.Mods.IsNeonLightsOn(VehicleNeonLight.Back),
+                        neonFront = veh.Mods.IsNeonLightsOn(VehicleNeonLight.Front),
+                        neonLeft = veh.Mods.IsNeonLightsOn(VehicleNeonLight.Left),
+                        neonRight = veh.Mods.IsNeonLightsOn(VehicleNeonLight.Right),
+                        plateText = veh.Mods.LicensePlate,
+                        plateStyle = (int)veh.Mods.LicensePlateStyle,
+                        turbo = IsToggleModOn(veh.Handle, 18),
+                        tyreSmoke = IsToggleModOn(veh.Handle, 20),
+                        version = 1,
+                        wheelType = GetVehicleWheelType(veh.Handle),
+                        windowTint = (int)veh.Mods.WindowTint,
+                        xenonHeadlights = IsToggleModOn(veh.Handle, 22)
+                    };
 
+                    #endregion
 
                     if (updateExistingSavedVehicleName == null)
                     {
                         // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                        var saveName = await GetUserInput("Enter a save name", "", 15);
+                        var saveName = await GetUserInput("Enter a save name", "", 25);
                         // If the name is not invalid.
                         if (saveName != "NULL")
                         {
                             // Save everything from the dictionary into the client's kvp storage.
                             // If the save was successfull:
-                            if (sm.SaveDictionary("veh_" + saveName, dict, false))
+                            if (sm.SaveVehicleInfo("veh_" + saveName, vi, false))
                             {
                                 Notify.Success($"Vehicle {saveName} saved.");
                             }
@@ -963,7 +938,7 @@ namespace vMenuClient
                     // We need to update an existing slot.
                     else
                     {
-                        sm.SaveDictionary("veh_" + updateExistingSavedVehicleName, dict, true);
+                        sm.SaveVehicleInfo("veh_" + updateExistingSavedVehicleName, vi, true);
                     }
 
                 }
@@ -983,42 +958,23 @@ namespace vMenuClient
 
         #region Loading Saved Vehicle
         /// <summary>
-        /// Get the data for a specific saved vehicle.
+        /// New updated function to get the saved vehicle info from storage.
         /// </summary>
-        /// <param name="saveName">Name is the key (vehicle name) to load the info for.</param>
+        /// <param name="saveName"></param>
         /// <returns></returns>
-        public Dictionary<string, string> GetSavedVehicleData(string saveName)
+        public VehicleInfo GetSavedVehicleInfo(string saveName)
         {
-            var dict = sm.GetSavedDictionary(saveName);
-            return dict;
+            return sm.GetSavedVehicleInfo(saveName);
         }
         #endregion
 
         #region Get Saved Vehicles Dictionary
         /// <summary>
-        /// Get a dictionary containing all saved vehicle names (keys) and a nested dictionary for all the vehicle modifications
-        /// and customization for each specific vehicle.
+        /// Returns a collection of all saved vehicles, with their save name and saved vehicle info struct.
         /// </summary>
-        /// <returns>A dictionary containing all saved vehicle names (keys) and the vehicle info for each vehicle.</returns>
-        public Dictionary<string, Dictionary<string, string>> GetSavedVehiclesDictionary()
+        /// <returns></returns>
+        public Dictionary<string, VehicleInfo> GetSavedVehicles()
         {
-            //var t = StartFindKvp("veh_");
-            //var tt = 0;
-            //while (true)
-            //{
-            //    tt++;
-            //    var foundkvp = FindKvp(t);
-            //    if (foundkvp != null && tt < 50)
-            //    {
-            //        MainMenu.Cf.Log(foundkvp);
-            //    }
-            //    else
-            //    {
-
-            //        break;
-            //    }
-
-            //}
             // Create a list to store all saved vehicle names in.
             var savedVehicleNames = new List<string>();
             // Start looking for kvps starting with veh_
@@ -1029,55 +985,27 @@ namespace vMenuClient
                 // Get the kvp string key.
                 var vehString = FindKvp(findHandle);
 
-                //MainMenu.Cf.Log("Vehicle: " + vehString + "\r");
                 // If it exists then the key to the list.
                 if (vehString != "" && vehString != null && vehString != "NULL")
                 {
-                    //MainMenu.Cf.Log(vehString + "\r");
-                    //if (!vehString.Substring(vehString.Length - 3).Contains("_v2")) // it's the old format
-                    //{
-                    //    //var tmpFindHandle = StartFindKvp("veh_" + vehString + "_v2");
-                    //    if (GetResourceKvpString("veh_" + vehString + "_v2") != null) // check if new format exists.
-                    //    {
-                    //        savedVehicleNames.Add(vehString + "_v2"); // if so, add that one.
-                    //    }
-                    //    else
-                    //    {
-                    //        savedVehicleNames.Add(vehString); // there's no new format, add the old format, once spawned, will be converted to new one automatically.
-                    //    }
-                    //    //EndFindKvp(tmpFindHandle);
-                    //}
-                    //else if (!savedVehicleNames.Contains(vehString.Substring(0, vehString.Length - 3)))
-                    //{
-                    //    savedVehicleNames.Add(vehString); // It's already the new format, so add it.
-                    //}
                     savedVehicleNames.Add(vehString);
                 }
                 // Otherwise stop.
                 else
                 {
-                    //MainMenu.Cf.Log("done");
                     EndFindKvp(findHandle);
                     break;
                 }
             }
-            //MainMenu.Cf.Log("lodaing");
+
             // Create a Dictionary to store all vehicle information in.
-            var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
+            //var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
+            var vehiclesList = new Dictionary<string, VehicleInfo>();
             // Loop through all save names (keys) from the list above, convert the string into a dictionary 
             // and add it to the dictionary above, with the vehicle save name as the key.
             foreach (var saveName in savedVehicleNames)
             {
-                //if (saveName.Substring(saveName.Length - 3).Contains("_v2"))
-                //{
-                //    vehiclesList.Add(saveName.Substring(0, saveName.Length - 3), sm.GetSavedDictionary(saveName));
-                //}
-                //else
-                //{
-                //MainMenu.Cf.Log(saveName);
-                vehiclesList.Add(saveName, sm.GetSavedDictionary(saveName));
-                //}
-
+                vehiclesList.Add(saveName, sm.GetSavedVehicleInfo(saveName));
             }
             // Return the vehicle dictionary containing all vehicle save names (keys) linked to the correct vehicle
             // including all vehicle mods/customization parts.
@@ -1368,16 +1296,139 @@ namespace vMenuClient
 
         #region Data parsing functions
         /// <summary>
-        /// Converts a dictionary (string, string) into a json string.
+        /// New updated method for converting a KVP (string) json object (vehicle info data) to VehicleInfo struct.
         /// </summary>
-        /// <param name="dict"></param>
+        /// <param name="jsonObject"></param>
+        /// <param name="version"></param>
+        /// <param name="saveName">Name used to re-save the info if necessary.</param>
         /// <returns></returns>
-        public string DictionaryToJson(Dictionary<string, string> dict)
+        public VehicleInfo JsonToVehicleInfo(dynamic jsonObject, int version, string saveName)
         {
-            //var entries = dict.Select(d =>
-            //    string.Format("\"{0}\": \"{1}\"", d.Key, string.Join(",", d.Value)));
-            //return "{" + string.Join(",", entries) + "}";
-            return JsonConvert.SerializeObject(dict);
+            VehicleInfo vi = new VehicleInfo();
+            if (version == 1)
+            {
+                var colors = new Dictionary<string, int>
+                {
+                    ["primary"] = jsonObject.colors.primary,
+                    ["secondary"] = jsonObject.colors.secondary,
+                    ["pearlescent"] = jsonObject.colors.pearlescent,
+                    ["wheels"] = jsonObject.colors.wheels,
+                    ["dash"] = jsonObject.colors.dash,
+                    ["trim"] = jsonObject.colors.trim,
+                    ["neonR"] = jsonObject.colors.neonR,
+                    ["neonG"] = jsonObject.colors.neonG,
+                    ["neonB"] = jsonObject.colors.neonB,
+                    ["tyresmokeR"] = jsonObject.colors.tyresmokeR,
+                    ["tyresmokeG"] = jsonObject.colors.tyresmokeG,
+                    ["tyresmokeB"] = jsonObject.colors.tyresmokeB,
+                };
+                vi.colors = colors;
+
+                vi.customWheels = jsonObject.customWheels;
+
+                var extras = new Dictionary<int, bool>();
+                foreach (KeyValuePair<int, bool> e in jsonObject.extras)
+                {
+                    extras.Add(e.Key, e.Value);
+                }
+                vi.extras = extras;
+
+                vi.livery = jsonObject.livery;
+                vi.model = jsonObject.model;
+
+                var mods = new Dictionary<int, int>();
+                foreach (KeyValuePair<int, int> m in jsonObject.mods)
+                {
+                    mods.Add(m.Key, m.Value);
+                }
+                vi.mods = mods;
+
+                vi.name = jsonObject.name;
+                vi.neonBack = jsonObject.neonBack;
+                vi.neonFront = jsonObject.neonFront;
+                vi.neonLeft = jsonObject.neonLeft;
+                vi.neonRight = jsonObject.neonRight;
+                vi.plateStyle = jsonObject.plateStyle;
+                vi.plateText = jsonObject.plateText;
+                vi.turbo = jsonObject.turbo;
+                vi.tyreSmoke = jsonObject.tyreSmoke;
+                vi.version = jsonObject.version;
+                vi.wheelType = jsonObject.wheelType;
+                vi.windowTint = jsonObject.windowTint;
+                vi.xenonHeadlights = jsonObject.xenonHeadlights;
+            }
+            else if (version == 0)
+            {
+                var dict = JsonToDictionary(JsonConvert.SerializeObject(jsonObject));
+                var colors = new Dictionary<string, int>()
+                {
+                    ["primary"] = int.Parse(dict["primaryColor"]),
+                    ["secondary"] = int.Parse(dict["secondaryColor"]),
+                    ["pearlescent"] = int.Parse(dict["pearlescentColor"]),
+                    ["wheels"] = int.Parse(dict["wheelsColor"]),
+                    ["dash"] = int.Parse(dict["dashboardColor"]),
+                    ["trim"] = int.Parse(dict["interiorColor"]),
+                    ["neonR"] = 255,
+                    ["neonG"] = 255,
+                    ["neonB"] = 255,
+                    ["tyresmokeR"] = int.Parse(dict["tireSmokeR"]),
+                    ["tyresmokeG"] = int.Parse(dict["tireSmokeG"]),
+                    ["tyresmokeB"] = int.Parse(dict["tireSmokeB"]),
+                };
+                var extras = new Dictionary<int, bool>();
+                for (int i = 0; i < 15; i++)
+                {
+                    if (dict["extra" + i] == "true")
+                    {
+                        extras.Add(i, true);
+                    }
+                    else
+                    {
+                        extras.Add(i, false);
+                    }
+                }
+
+                var mods = new Dictionary<int, int>();
+                int skip = 8 + 24 + 2 + 1;
+                foreach (var mod in dict)
+                {
+                    skip--;
+                    if (skip < 0)
+                    {
+                        var key = int.Parse(mod.Key);
+                        var val = int.Parse(mod.Value);
+                        mods.Add(key, val);
+                    }
+                }
+
+                vi.colors = colors;
+                vi.customWheels = dict["customWheels"] == "true";
+                vi.extras = extras;
+                vi.livery = int.Parse(dict["oldLivery"]);
+                vi.model = (uint)Int64.Parse(dict["model"]);
+                vi.mods = mods;
+                vi.name = dict["name"];
+                vi.neonBack = false;
+                vi.neonFront = false;
+                vi.neonLeft = false;
+                vi.neonRight = false;
+                vi.plateStyle = int.Parse(dict["plateStyle"]);
+                vi.plateText = dict["plate"];
+                vi.turbo = dict["turbo"] == "true";
+                vi.tyreSmoke = dict["tireSmoke"] == "true";
+                vi.version = 1;
+                vi.wheelType = int.Parse(dict["wheelType"]);
+                vi.windowTint = int.Parse(dict["windowTint"]);
+                vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
+
+                sm.SaveVehicleInfo(saveName, vi, true);
+            }
+            else
+            {
+                Notify.Error("An error occurred while converting a saved vehicle record. Unknown version to convert from.");
+            }
+
+            return vi;
         }
 
         /// <summary>
@@ -1385,52 +1436,15 @@ namespace vMenuClient
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public Dictionary<string, string> JsonToDictionary(string json)//, bool v2 = false)
+        public Dictionary<string, string> JsonToDictionary(string json)
         {
-            //MainMenu.Cf.Log(json);
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            //if (v2)
-            //{
             dynamic obj = JsonConvert.DeserializeObject(json);
             MainMenu.Cf.Log(obj.ToString());
             foreach (Newtonsoft.Json.Linq.JProperty item in obj)
             {
                 dict.Add(item.Name, item.Value.ToString());
-                //MainMenu.Cf.Log("Key: " + item.Name.ToString());
-                //MainMenu.Cf.Log("Val: " + item.Value.ToString());
             }
-            //}
-            //else
-            //{
-            //    //MainMenu.Cf.Log(json.ToString());
-            //    var entries = json.Split(',');
-            //    foreach (var entry in entries)
-            //    {
-            //        //Notify.Custom(entry.ToString());
-            //        var items = entry.Split(':');
-            //        var key = "";
-            //        var counter = 1;
-            //        foreach (var item in items)
-            //        {
-            //            counter++;
-            //            if (counter % 2 == 0)
-            //            {
-            //                key = item.Split('"')[1].ToString();
-            //            }
-            //            else
-            //            {
-            //                var val = item.Split('"')[1].ToString();
-            //                dict.Add(key, item.Split('"')[1].ToString());
-            //                counter = 1;
-            //            }
-            //        }
-            //        //foreach (KeyValuePair<string, string> t in dict)
-            //        //{
-            //        //    Notify.Custom($"Key: ~r~{t.Key} ~s~value: ~g~{t.Value}");
-            //        //}
-            //    }
-            //}
-
             return dict;
         }
         #endregion
@@ -1622,58 +1636,64 @@ namespace vMenuClient
         }
         #endregion
 
+        public struct MultiplayerPedInfo
+        {
+            // todo
+        };
+
+        public struct PedInfo
+        {
+            public int version;
+            public uint model;
+            public bool isMpPed;
+            public MultiplayerPedInfo mpPedInfo;
+            public Dictionary<int, int> props;
+            public Dictionary<int, int> propTextures;
+            public Dictionary<int, int> drawableVariations;
+            public Dictionary<int, int> drawableVariationTextures;
+        };
         #region Set Player Skin
         /// <summary>
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, Dictionary<string, string> pedCustomizationOptions = null)
+        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions)
         {
-            int model = GetHashKey(modelName);
-            SetPlayerSkin(model, pedCustomizationOptions);
-        }
-
-        /// <summary>
-        /// Sets the player's model to the provided modelName.
-        /// </summary>
-        /// <param name="modelHash">The model hash.</param>
-        public void SetPlayerSkin(int modelHash, Dictionary<string, string> pedCustomizationOptions = null)
-        {
-            SetPlayerSkin((uint)modelHash, pedCustomizationOptions);
+            SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
         }
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(uint modelHash, Dictionary<string, string> pedCustomizationOptions = null)
+        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions)
         {
-            uint model = modelHash;
-            if (IsModelInCdimage(model))
+            //uint model = modelHash;
+            //Debug.Write(modelHash.ToString() + "\n");
+            if (IsModelInCdimage(modelHash))
             {
                 await SaveWeaponLoadout();
-                RequestModel(model);
-                while (!HasModelLoaded(model))
+                RequestModel(modelHash);
+                while (!HasModelLoaded(modelHash))
                 {
                     await Delay(0);
                 }
-                SetPlayerModel(PlayerId(), model);
+                SetPlayerModel(PlayerId(), modelHash);
                 SetPedDefaultComponentVariation(PlayerPedId());
 
-                if (pedCustomizationOptions != null && pedCustomizationOptions.Count > 1)
+                if (pedCustomizationOptions.version == 1)
                 {
                     var ped = PlayerPedId();
-                    for (var i = 0; i < 21; i++)
+                    for (var drawable = 0; drawable < 21; drawable++)
                     {
-                        int drawable = int.Parse(pedCustomizationOptions[$"drawable_variation_{i.ToString()}"]);
-                        int drawableTexture = int.Parse(pedCustomizationOptions[$"drawable_texture_{i.ToString()}"]);
-                        SetPedComponentVariation(ped, i, drawable, drawableTexture, 0);
+                        SetPedComponentVariation(ped, drawable, pedCustomizationOptions.drawableVariations[drawable],
+                            pedCustomizationOptions.drawableVariationTextures[drawable], 1);
                     }
 
                     for (var i = 0; i < 21; i++)
                     {
-                        int prop = int.Parse(pedCustomizationOptions[$"prop_{i.ToString()}"]);
-                        int propTexture = int.Parse(pedCustomizationOptions[$"prop_texture_{i.ToString()}"]);
+                        int prop = pedCustomizationOptions.props[i];
+                        int propTexture = pedCustomizationOptions.propTextures[i];
                         if (prop == -1 || propTexture == -1)
                         {
                             ClearPedProp(ped, i);
@@ -1683,6 +1703,15 @@ namespace vMenuClient
                             SetPedPropIndex(ped, i, prop, propTexture, true);
                         }
                     }
+                }
+                else if (pedCustomizationOptions.version == -1)
+                {
+                    // do nothing.
+                }
+                else
+                {
+                    // notify user of unsupported version
+                    Notify.Error("This is an unsupported saved ped version. Cannot restore appearance. :(");
                 }
                 RestoreWeaponLoadout();
             }
@@ -1700,7 +1729,7 @@ namespace vMenuClient
             string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
             if (input != "NULL")
             {
-                SetPlayerSkin(GetHashKey(input));
+                SetPlayerSkin((uint)GetHashKey(input), new PedInfo() { version = -1 });
             }
             else
             {
@@ -1721,35 +1750,49 @@ namespace vMenuClient
             if (name != "" && name != null && name != "NULL")
             {
                 // Create a dictionary to store all data in.
-                Dictionary<string, string> pedData = new Dictionary<string, string>();
+                //Dictionary<string, string> pedData = new Dictionary<string, string>();
+                PedInfo data = new PedInfo();
 
                 // Get the ped.
                 int ped = PlayerPedId();
 
+                data.version = 1;
                 // Get the ped model hash & add it to the dictionary.
-                int model = GetEntityModel(ped);
-                pedData.Add("modelHash", model.ToString());
+                uint model = (uint)GetEntityModel(ped);
+                data.model = model;
 
                 // Loop through all drawable variations.
+                var drawables = new Dictionary<int, int>();
+                var drawableTextures = new Dictionary<int, int>();
                 for (var i = 0; i < 21; i++)
                 {
                     int drawable = GetPedDrawableVariation(ped, i);
                     int textureVariation = GetPedTextureVariation(ped, i);
-                    pedData.Add($"drawable_variation_{i.ToString()}", drawable.ToString());
-                    pedData.Add($"drawable_texture_{i.ToString()}", textureVariation.ToString());
+                    drawables.Add(i, drawable);
+                    drawableTextures.Add(i, textureVariation);
                 }
+                data.drawableVariations = drawables;
+                data.drawableVariationTextures = drawableTextures;
 
+                var props = new Dictionary<int, int>();
+                var propTextures = new Dictionary<int, int>();
                 // Loop through all prop variations.
                 for (var i = 0; i < 21; i++)
                 {
                     int prop = GetPedPropIndex(ped, i);
                     int propTexture = GetPedPropTextureIndex(ped, i);
-                    pedData.Add($"prop_{i.ToString()}", $"{prop.ToString()}");
-                    pedData.Add($"prop_texture_{i.ToString()}", $"{propTexture.ToString()}");
+                    props.Add(i, prop);
+                    propTextures.Add(i, propTexture);
                 }
+                data.props = props;
+                data.propTextures = propTextures;
+
+                data.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
+                data.mpPedInfo = new MultiplayerPedInfo();
 
                 // Try to save the data, and save the result in a variable.
-                bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+                //bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
+                bool saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
 
                 // If the save was successfull.
                 if (saveSuccessful)
@@ -1760,7 +1803,6 @@ namespace vMenuClient
                 else
                 {
                     Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
-                    //Notify.Error("Could not save this ped because the save name already exists.");
                 }
             }
             // User cancelled the saving or they did not enter a valid name.
@@ -1776,30 +1818,100 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public async void LoadSavedPed(string savedName)
+        public void LoadSavedPed(string savedName)
         {
-            string savedPedName = savedName ?? await GetUserInput("Enter A Saved Ped Name");
-            if (savedPedName == null || savedPedName == "NULL" || savedPedName == "")
+            PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+            SetPlayerSkin(pi.model, pi);
+        }
+        #endregion
+
+        /// <summary>
+        /// Load and convert json ped info into PedInfo struct.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="saveName"></param>
+        /// <returns></returns>
+        public PedInfo JsonToPedInfo(string json, string saveName)
+        {
+            var pi = new PedInfo() { version = -1 };
+            dynamic obj = JsonConvert.DeserializeObject(json);
+            if (json.Contains("version")) // new ped save
             {
-                //Notify.Error("Invalid saved ped name.");
-                Notify.Error(CommonErrors.InvalidInput);
-            }
-            else
-            {
-                Dictionary<string, string> dict = sm.GetSavedDictionary("ped_" + savedPedName);
-                int model = int.Parse(dict["modelHash"]);
-                if (dict != null && dict.Count > 1)
+                pi.model = (uint)obj["model"];
+                Dictionary<int, int> drawables = new Dictionary<int, int>();
+                Dictionary<int, int> drawableTextures = new Dictionary<int, int>();
+                Dictionary<int, int> props = new Dictionary<int, int>();
+                Dictionary<int, int> propTextures = new Dictionary<int, int>();
+                foreach (Newtonsoft.Json.Linq.JProperty drawable in obj["drawableVariations"])
                 {
-                    SetPlayerSkin(model, dict);
+                    drawables.Add(int.Parse(drawable.Name.ToString()), (int)drawable.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty drawableVar in obj["drawableVariationTextures"])
+                {
+                    drawableTextures.Add(int.Parse(drawableVar.Name.ToString()), (int)drawableVar.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty prop in obj["props"])
+                {
+                    props.Add(int.Parse(prop.Name.ToString()), (int)prop.Value);
+                }
+                foreach (Newtonsoft.Json.Linq.JProperty propVar in obj["propTextures"])
+                {
+                    propTextures.Add(int.Parse(propVar.Name.ToString()), (int)propVar.Value);
+                }
+                pi.drawableVariations = drawables;
+                pi.drawableVariationTextures = drawableTextures;
+                pi.props = props;
+                pi.propTextures = propTextures;
+                pi.isMpPed = (bool)obj["isMpPed"];
+                pi.mpPedInfo = new MultiplayerPedInfo();
+                pi.version = (int)obj["version"];
+            }
+            else // old ped save
+            {
+                Dictionary<int, int> drawables = new Dictionary<int, int>();
+                Dictionary<int, int> drawableTextures = new Dictionary<int, int>();
+                Dictionary<int, int> props = new Dictionary<int, int>();
+                Dictionary<int, int> propTextures = new Dictionary<int, int>();
+                uint model = (uint)Int64.Parse(obj["modelHash"].ToString());
+                foreach (Newtonsoft.Json.Linq.JProperty i in obj)
+                {
+                    string key = i.Name.ToString();
+                    if (key.Contains("drawable_variation"))
+                    {
+                        drawables.Add(int.Parse(key.Substring(19)), (int)i.Value);
+                    }
+                    else if (key.Contains("drawable_texture"))
+                    {
+                        drawableTextures.Add(int.Parse(key.Substring(17)), (int)i.Value);
+                    }
+                    else if (key.Contains("prop_texture"))
+                    {
+                        propTextures.Add(int.Parse(key.Substring(13)), (int)i.Value);
+                    }
+                    else if (key.Contains("prop"))
+                    {
+                        props.Add(int.Parse(key.Split('_')[1]), (int)i.Value);
+                    }
+                }
+                pi.drawableVariations = drawables;
+                pi.model = model;
+                pi.drawableVariationTextures = drawableTextures;
+                pi.mpPedInfo = new MultiplayerPedInfo() { };
+                pi.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
+                pi.props = props;
+                pi.propTextures = propTextures;
+                pi.version = 1;
+                if (sm.SavePedInfo(saveName, pi, true))
+                {
+                    Notify.Success("Converted saved ped successfully.");
                 }
                 else
                 {
-                    Notify.Error(CommonErrors.CouldNotLoadSave, placeholderValue: "this saved ped");
-                    //Notify.Error("Sorry, could not load saved ped. Is your save file corrupt?");
+                    Notify.Error("Could not convert saved ped! Reason: unknown.");
                 }
             }
+            return pi;
         }
-        #endregion
 
         #region Save and restore weapon loadouts when changing models
 
@@ -1897,10 +2009,15 @@ namespace vMenuClient
         #endregion
 
         #region Log Function
+        /// <summary>
+        /// Print data to the console and save it to the CitizenFX.log file. Only when vMenu debugging mode is enabled.
+        /// </summary>
+        /// <param name="data"></param>
         public void Log(string data)
         {
             if (MainMenu.DebugMode)
-                Debug.WriteLine(data.Replace("{", "{{").Replace("}", "}}"), "");
+                Debug.Write(data + "\n");
+            //Debug.WriteLine(data.Replace("{", "{{").Replace("}", "}}"), "");
         }
         #endregion
 
@@ -2059,8 +2176,6 @@ namespace vMenuClient
             {
                 Notify.Error("This feature only supports the multiplayer freemode male/female ped models.");
             }
-
-
         }
         #endregion
 

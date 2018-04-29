@@ -16,7 +16,7 @@ namespace vMenuClient
         private Notification Notify = MainMenu.Notify;
         private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
-        private Dictionary<string, Dictionary<string, string>> SavedVehiclesDict;
+        private Dictionary<string, CommonFunctions.VehicleInfo> SavedVehiclesDict;
 
 
         /// <summary>
@@ -97,16 +97,16 @@ namespace vMenuClient
                     spawnSavedVehicles.MenuItems.Clear();
 
                     // Get all saved vehicles.
-                    SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
+                    SavedVehiclesDict = cf.GetSavedVehicles();
 
                     // Loop through all saved vehicles and create a button for it, then add that button to the submenu.
-                    foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
+                    foreach (KeyValuePair<string, CommonFunctions.VehicleInfo> savedVehicle in SavedVehiclesDict)
                     {
                         //MainMenu.Cf.Log(savedVehicle.ToString());
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Click to spawn this saved vehicle.");
-                        vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
+                        vehBtn.SetRightLabel($"({savedVehicle.Value.name})");
                         spawnSavedVehicles.AddItem(vehBtn);
-                        if (!IsModelInCdimage((uint)Int64.Parse(savedVehicle.Value["model"])))
+                        if (!IsModelInCdimage(savedVehicle.Value.model))
                         {
                             vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                             vehBtn.Enabled = false;
@@ -120,6 +120,7 @@ namespace vMenuClient
 
                     // Refresh the index of the page.
                     spawnSavedVehicles.RefreshIndex();
+                    
                     // Update the scaleform.
                     spawnSavedVehicles.UpdateScaleform();
                 }
@@ -129,15 +130,15 @@ namespace vMenuClient
                     deleteSavedVehicles.MenuItems.Clear();
 
                     // Get the dictionary containing all saved vehicles.
-                    SavedVehiclesDict = cf.GetSavedVehiclesDictionary();
+                    SavedVehiclesDict = cf.GetSavedVehicles();
 
                     // Loop through the list and add all saved vehicles to the menu. 
-                    foreach (KeyValuePair<string, Dictionary<string, string>> savedVehicle in SavedVehiclesDict)
+                    foreach (KeyValuePair<string, CommonFunctions.VehicleInfo> savedVehicle in SavedVehiclesDict)
                     {
                         //MainMenu.Cf.Log(savedVehicle.ToString());
                         UIMenuItem vehBtn = new UIMenuItem(savedVehicle.Key.Substring(4), "Are you sure you want to delete this saved vehicle? This action cannot be undone!");
                         vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
-                        vehBtn.SetRightLabel($"({savedVehicle.Value["name"]})");
+                        vehBtn.SetRightLabel($"({savedVehicle.Value.name})");
                         deleteSavedVehicles.AddItem(vehBtn);
                     }
 
@@ -153,20 +154,17 @@ namespace vMenuClient
             // When a vehicle is selected...
             spawnSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
             {
-                Dictionary<string, string> vehInfo = SavedVehiclesDict["veh_" + item2.Text];
-
-                // Get the model hash.
-                var model = vehInfo["model"];
+                CommonFunctions.VehicleInfo vehInfo = SavedVehiclesDict["veh_" + item2.Text];
 
                 // Spawn a vehicle using the hash, and pass on the vehicleInfo dictionary containing all saved vehicle mods.
-                cf.SpawnVehicle((uint)Int64.Parse(model), MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, vehicleInfo: vehInfo, saveName: item2.Text);
+                cf.SpawnVehicle(vehInfo.model, MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, false, vehicleInfo: vehInfo, saveName: item2.Text);
             };
 
             // Handle vehicle deletions
             deleteSavedVehicles.OnItemSelect += (sender2, item2, index2) =>
             {
                 var vehDictName = "veh_" + item2.Text;
-                new StorageManager().DeleteSavedDictionary(vehDictName);
+                new StorageManager().DeleteSavedStorageItem(vehDictName);
                 deleteSavedVehicles.GoBack();
             };
             #endregion
