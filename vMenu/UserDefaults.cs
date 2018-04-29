@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using Newtonsoft.Json;
 
 namespace vMenuClient
 {
@@ -260,64 +261,105 @@ namespace vMenuClient
         {
             SetResourceKvpFloat(SETTINGS_PREFIX + kvpString, newValue);
         }
-
         #endregion
 
         #region Public Functions
-
         /// <summary>
         /// Saves all personal settings to the client storage.
         /// </summary>
-        public static void SaveSettingsAsync()
+        public static void SaveSettings()
         {
+            Dictionary<string, dynamic> prefs = new Dictionary<string, dynamic>();
             if (MainMenu.PlayerOptionsMenu != null)
             {
                 EveryoneIgnorePlayer = MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
+                prefs.Add("EveryoneIgnorePlayer", MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
+
                 FastRun = MainMenu.PlayerOptionsMenu.PlayerFastRun;
+                prefs.Add("FastRun", MainMenu.PlayerOptionsMenu.PlayerFastRun);
+
                 FastSwim = MainMenu.PlayerOptionsMenu.PlayerFastSwim;
+                prefs.Add("FastSwim", MainMenu.PlayerOptionsMenu.PlayerFastSwim);
+
                 NeverWanted = MainMenu.PlayerOptionsMenu.PlayerNeverWanted;
+                prefs.Add("NeverWanted", MainMenu.PlayerOptionsMenu.PlayerNeverWanted);
+
                 NoRagdoll = MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
+                prefs.Add("NoRagdoll", MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+
                 PlayerGodMode = MainMenu.PlayerOptionsMenu.PlayerGodMode;
+                prefs.Add("PlayerGodMode", MainMenu.PlayerOptionsMenu.PlayerGodMode);
+
                 SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
+                prefs.Add("SuperJump", MainMenu.PlayerOptionsMenu.PlayerSuperJump);
+
                 UnlimitedStamina = MainMenu.PlayerOptionsMenu.PlayerStamina;
+                prefs.Add("UnlimitedStamina", MainMenu.PlayerOptionsMenu.PlayerStamina);
             }
 
             if (MainMenu.MiscSettingsMenu != null)
             {
                 MiscDeathNotifications = MainMenu.MiscSettingsMenu.DeathNotifications;
+                prefs.Add("MiscDeathNotifications", MainMenu.MiscSettingsMenu.DeathNotifications);
+
                 MiscJoinQuitNotifications = MainMenu.MiscSettingsMenu.JoinQuitNotifications;
+                prefs.Add("MiscJoinQuitNotifications", MainMenu.MiscSettingsMenu.JoinQuitNotifications);
+
                 MiscSpeedKmh = MainMenu.MiscSettingsMenu.ShowSpeedoKmh;
+                prefs.Add("MiscSpeedKmh", MainMenu.MiscSettingsMenu.ShowSpeedoKmh);
+
                 MiscSpeedMph = MainMenu.MiscSettingsMenu.ShowSpeedoMph;
+                prefs.Add("MiscSpeedMph", MainMenu.MiscSettingsMenu.ShowSpeedoMph);
+
                 MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
+                prefs.Add("MiscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
             {
                 VehicleEngineAlwaysOn = MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn;
+                prefs.Add("VehicleEngineAlwaysOn", MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn);
+
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
+                prefs.Add("VehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
+
                 VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
+                prefs.Add("VehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);
+
                 VehicleNoSiren = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
+                prefs.Add("VehicleNoSiren", MainMenu.VehicleOptionsMenu.VehicleNoSiren);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)
             {
                 VehicleSpawnerReplacePrevious = MainMenu.VehicleSpawnerMenu.ReplaceVehicle;
+                prefs.Add("VehicleSpawnerReplacePrevious", MainMenu.VehicleSpawnerMenu.ReplaceVehicle);
+
                 VehicleSpawnerSpawnInside = MainMenu.VehicleSpawnerMenu.SpawnInVehicle;
+                prefs.Add("VehicleSpawnerSpawnInside", MainMenu.VehicleSpawnerMenu.SpawnInVehicle);
             }
 
             if (MainMenu.VoiceChatSettingsMenu != null)
             {
                 VoiceChatEnabled = MainMenu.VoiceChatSettingsMenu.EnableVoicechat;
+                prefs.Add("VoiceChatEnabled", MainMenu.VoiceChatSettingsMenu.EnableVoicechat);
+
                 VoiceChatProximity = MainMenu.VoiceChatSettingsMenu.currentProximity;
+                prefs.Add("VoiceChatProximity", MainMenu.VoiceChatSettingsMenu.currentProximity);
             }
 
             if (MainMenu.WeaponOptionsMenu != null)
             {
                 WeaponsNoReload = MainMenu.WeaponOptionsMenu.NoReload;
+                prefs.Add("WeaponsNoReload", MainMenu.WeaponOptionsMenu.NoReload);
+
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
+                prefs.Add("WeaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
             }
 
             MainMenu.Notify.Success("Your settings have been saved.");
+
+            MainMenu.Cf.Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
         }
 
         #endregion

@@ -60,6 +60,7 @@ namespace vMenuClient
         /// </summary>
         private void GoodBye()
         {
+            cf.Log("fuck you.");
             ForceSocialClubUpdate();
         }
 
@@ -69,6 +70,7 @@ namespace vMenuClient
         /// <param name="options"></param>
         private void UpdateSettings(dynamic options)
         {
+            cf.Log("Options are being updated.");
             MainMenu.SetOptions(options);
         }
 
@@ -78,6 +80,7 @@ namespace vMenuClient
         /// <param name="permissions"></param>
         private void UpdatePermissions(dynamic permissions)
         {
+            cf.Log("Permissions are being updated.");
             MainMenu.SetPermissions(permissions);
         }
 
@@ -88,6 +91,7 @@ namespace vMenuClient
         /// <param name="addons"></param>
         private void SetAddonModels(string addonType, dynamic addons)
         {
+            cf.Log($"Addon models are being loaded. Addon type: {addonType}.");
             Dictionary<string, uint> models = new Dictionary<string, uint>();
             foreach (var addon in addons)
             {
@@ -129,6 +133,7 @@ namespace vMenuClient
                 if (MainMenu.MenuOptions.ContainsKey("disableSync"))
                 {
                     if (MainMenu.MenuOptions["disableSync"] != "true")
+                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}");
                     {
                         // Weather is set every second, if it's changed, then it will transition to the new phase within 20 seconds.
                         await Delay(1000);
@@ -173,6 +178,7 @@ namespace vMenuClient
                         }
                         SetBlackout(blackoutMode);
                     }
+                    cf.Log("done changing weather type.");
                 }
             }
         }
