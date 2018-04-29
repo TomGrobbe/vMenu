@@ -173,7 +173,6 @@
 
 |Permission|Description|Default[\*](#global-permissions)|
 |:-|:-|:-|
-|`vMenu.MiscSettings.Menu`|Grants access to the Misc Settings Menu.|Allowed|
 |`vMenu.MiscSettings.All`|Grants access to **ALL** `Misc Settings Menu` options.|Denied|
 |`vMenu.MiscSettings.ClearArea`|Allows you to reset/clear everything 100m around you in the world.|Allowed|
 |`vMenu.MiscSettings.TeleportToWp`|Allows you to teleport to the waypoint on your map.|Allowed|
