@@ -14,7 +14,9 @@ namespace vMenuServer
     public class MainServer : BaseScript
     {
         // Debug shows more information when doing certain things. Leave it off to improve performance!
-        public static bool debug = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
+        public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
+
+        public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
         private int currentHours = 9;
         private int currentMinutes = 0;
@@ -290,6 +292,33 @@ namespace vMenuServer
         /// </summary>
         public MainServer()
         {
+            RegisterCommand("vmenuserver", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                if (args != null)
+                {
+                    if (args.Count > 0)
+                    {
+                        if (args[0].ToString().ToLower() == "debug")
+                        {
+                            DebugMode = !DebugMode;
+                            if (source == 0)
+                            {
+                                Debug.WriteLine($"Debug mode is now set to: {DebugMode}.");
+                            }
+                            else
+                            {
+                                new PlayerList()[source].TriggerEvent("chatMessage", $"vMenu Debug mode is now set to: {DebugMode}.");
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                    }
+                }
+            }), true);
+
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
@@ -320,7 +349,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["vehicles"])
                     {
-                        if (debug) { Debug.WriteLine("Addon vehicle loaded: " + modelName, ""); }
+                        if (DebugMode) { Debug.WriteLine("Addon vehicle loaded: " + modelName, ""); }
                         addonVehicles.Add(modelName);
                     }
                 }
@@ -329,7 +358,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["peds"])
                     {
-                        if (debug) { Debug.WriteLine("Addon ped loaded:" + modelName, ""); }
+                        if (DebugMode) { Debug.WriteLine("Addon ped loaded:" + modelName, ""); }
                         addonPeds.Add(modelName);
                     }
                 }
@@ -338,7 +367,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["weapons"])
                     {
-                        if (debug) { Debug.WriteLine("Addon weapon loaded:" + modelName, ""); }
+                        if (DebugMode) { Debug.WriteLine("Addon weapon loaded:" + modelName, ""); }
                         addonWeapons.Add(modelName);
                     }
                 }
@@ -395,7 +424,7 @@ namespace vMenuServer
                 {
                     dynamicWeatherTimeLeft = 5 * 12 * 10;
                     RefreshWeather();
-                    if (debug)
+                    if (DebugMode)
                     {
                         long gameTimer2 = GetGameTimer();
                         Debug.WriteLine($"Duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");

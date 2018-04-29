@@ -48,7 +48,7 @@ namespace vMenuServer
         /// <param name="source"></param>
         private void SendBanList([FromSource] Player source)
         {
-            if (MainServer.debug)
+            if (MainServer.DebugMode)
                 Debug.Write("Updating player with new banlist.\n");
             source.TriggerEvent("vMenu:SetBanList", JsonConvert.SerializeObject(GetBanList()).ToString());
         }
@@ -146,7 +146,7 @@ namespace vMenuServer
                                 kickCallback($"You are banned from this server. Ban time remaining: {timeRemainingMessage}"
                                           + $". Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
                             }
-                            if (MainServer.debug)
+                            if (MainServer.DebugMode)
                                 Debug.Write($"Player is still banned for {Math.Round(timeRemaining.TotalHours, 2)} hours.\n");
                             CancelEvent();
                         }
@@ -201,7 +201,7 @@ namespace vMenuServer
                     }
                     else
                     {
-                        if (MainServer.debug)
+                        if (MainServer.DebugMode)
                             Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
                     }
                     BannedPlayersList = GetBanList();
@@ -246,7 +246,7 @@ namespace vMenuServer
                     }
                     else
                     {
-                        if (MainServer.debug)
+                        if (MainServer.DebugMode)
                             Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
                     }
                     BannedPlayersList = GetBanList();

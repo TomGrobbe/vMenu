@@ -65,6 +65,25 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                if (args != null)
+                {
+                    if (args.Count > 0)
+                    {
+                        if (args[0].ToString().ToLower() == "debug")
+                        {
+                            DebugMode = !DebugMode;
+                            Notify.Custom($"Debug mode is now set to: {DebugMode}.");
+                        }
+                    }
+                    else
+                    {
+                        Notify.Custom($"vMenu is currently running version: {Version}.");
+                    }
+                }
+            }), false);
+
             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
             if (DebugMode)
             {
