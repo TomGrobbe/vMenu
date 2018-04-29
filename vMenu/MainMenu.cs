@@ -680,7 +680,10 @@ namespace vMenuClient
             }
 
             // Add misc settings menu.
-            if (Cf.IsAllowed(Permission.MSMenu))
+            //if (Cf.IsAllowed(Permission.MSMenu))
+            // removed the permissions check, because the misc menu should've never been restricted in the first place.
+            // not sure why I even added this before... saving of preferences and similar functions should always be allowed.
+            // no matter what.
             {
                 MiscSettingsMenu = new MiscSettings();
                 UIMenu menu = MiscSettingsMenu.GetMenu();

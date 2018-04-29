@@ -393,7 +393,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task MiscSettings()
         {
-            if (MainMenu.MiscSettingsMenu != null && cf.IsAllowed(Permission.MSMenu))
+            if (MainMenu.MiscSettingsMenu != null /*&& cf.IsAllowed(Permission.MSMenu)*/)
             {
                 #region Misc Settings
                 // Show speedometer km/h
