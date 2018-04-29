@@ -172,7 +172,7 @@ namespace vMenuClient
                 // save settings
                 else if (item == saveSettings)
                 {
-                    UserDefaults.SaveSettingsAsync();
+                    UserDefaults.SaveSettings();
                 }
                 // clear area
                 else if (item == clearArea)
