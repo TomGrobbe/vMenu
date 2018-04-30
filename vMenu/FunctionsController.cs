@@ -54,11 +54,14 @@ namespace vMenuClient
             Tick += GeneralTasks;
             Tick += PlayerOptions;
             Tick += VehicleOptions;
-            Tick += MiscSettings;
             Tick += VoiceChat;
             Tick += TimeOptions;
             Tick += _WeatherOptions;
             Tick += WeaponOptions;
+
+            Tick += MiscSettings;
+            Tick += DeathNotifications;
+            Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
         }
 
@@ -444,49 +447,103 @@ namespace vMenuClient
                 }
                 #endregion
 
-                #region Join / Quit notifications
-                // Join/Quit notifications
-                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
-                {
-                    PlayerList plist = new PlayerList();
-                    Dictionary<int, string> pl = new Dictionary<int, string>();
-                    foreach (Player p in plist)
-                    {
-                        pl.Add(p.Handle, p.Name);
-                    }
-                    // new player joined.
-                    if (pl.Count > playerList.Count)
-                    {
-                        foreach (KeyValuePair<int, string> player in pl)
-                        {
-                            if (!playerList.Contains(player))
-                            {
-                                Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
-                            }
-                        }
-                    }
-                    // player left.
-                    else if (pl.Count < playerList.Count)
-                    {
-                        foreach (KeyValuePair<int, string> player in playerList)
-                        {
-                            if (!pl.Contains(player))
-                            {
-                                Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
-                            }
-                        }
-                    }
-                    playerList = pl;
-                }
+                #region Nightvision & Thermal vision
+                //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
+                //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
                 #endregion
 
-                #region Death Notifications
+                #region camera angle locking
+                if (MainMenu.MiscSettingsMenu.LockCameraY)
+                {
+                    SetGameplayCamRelativePitch(0f, 0f);
+                }
+                if (MainMenu.MiscSettingsMenu.LockCameraX)
+                {
+                    if (Game.IsControlPressed(0, Control.LookLeftOnly))
+                    {
+                        cameraRotationHeading++;
+                    }
+                    else if (Game.IsControlPressed(0, Control.LookRightOnly))
+                    {
+                        cameraRotationHeading--;
+                    }
+                    SetGameplayCamRelativeHeading(cameraRotationHeading);
+                }
+                #endregion
+            }
+            else
+            {
+                await Delay(0);
+            }
+        }
+
+        #region Join / Quit notifications
+        /// <summary>
+        /// Runs join/quit notification checks.
+        /// </summary>
+        /// <returns></returns>
+        private async Task JoinQuitNotifications()
+        {
+            // Join/Quit notifications
+            if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
+            {
+                PlayerList plist = new PlayerList();
+                Dictionary<int, string> pl = new Dictionary<int, string>();
+                foreach (Player p in plist)
+                {
+                    pl.Add(p.Handle, p.Name);
+                }
+                await Delay(0);
+                // new player joined.
+                if (pl.Count > playerList.Count)
+                {
+                    foreach (KeyValuePair<int, string> player in pl)
+                    {
+                        if (!playerList.Contains(player))
+                        {
+                            Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
+                            await Delay(0);
+                        }
+                    }
+                }
+                // player left.
+                else if (pl.Count < playerList.Count)
+                {
+                    foreach (KeyValuePair<int, string> player in playerList)
+                    {
+                        if (!pl.Contains(player))
+                        {
+                            Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
+                            await Delay(0);
+                        }
+                    }
+                }
+                playerList = pl;
+            }
+        }
+        #endregion
+
+        #region Death Notifications
+        /// <summary>
+        /// Runs death notification checks.
+        /// </summary>
+        /// <returns></returns>
+        private async Task DeathNotifications()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
                 // Death notifications
                 if (MainMenu.MiscSettingsMenu.DeathNotifications && cf.IsAllowed(Permission.MSDeathNotifs))
                 {
                     PlayerList pl = new PlayerList();
+                    var tmpiterator = 0;
                     foreach (Player p in pl)
                     {
+                        tmpiterator++;
+                        //if (tmpiterator % 5 == 0)
+                        //{
+                        await Delay(0);
+                        //}
                         if (p.IsDead)
                         {
                             if (deadPlayers.Contains(p.Handle)) { return; }
@@ -531,37 +588,9 @@ namespace vMenuClient
                         }
                     }
                 }
-                #endregion
-
-                #region Nightvision & Thermal vision
-                //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
-                //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
-                #endregion
-
-                #region camera angle locking
-                if (MainMenu.MiscSettingsMenu.LockCameraY)
-                {
-                    SetGameplayCamRelativePitch(0f, 0f);
-                }
-                if (MainMenu.MiscSettingsMenu.LockCameraX)
-                {
-                    if (Game.IsControlPressed(0, Control.LookLeftOnly))
-                    {
-                        cameraRotationHeading++;
-                    }
-                    else if (Game.IsControlPressed(0, Control.LookRightOnly))
-                    {
-                        cameraRotationHeading--;
-                    }
-                    SetGameplayCamRelativeHeading(cameraRotationHeading);
-                }
-                #endregion
-            }
-            else
-            {
-                await Delay(0);
             }
         }
+        #endregion
 
         private async Task UpdateLocation()
         {
@@ -654,6 +683,7 @@ namespace vMenuClient
             cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
         }
         #endregion
+
         #region Voice Chat Tasks
         /// <summary>
         /// Run all voice chat options tasks
