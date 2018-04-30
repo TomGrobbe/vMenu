@@ -13,6 +13,7 @@ namespace vMenuServer
 {
     public class MainServer : BaseScript
     {
+        public static bool UpToDate = true;
         // Debug shows more information when doing certain things. Leave it off to improve performance!
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
@@ -656,7 +657,14 @@ namespace vMenuServer
             // Send Settings
             await Delay(50);
             TriggerClientEvent(player, "vMenu:SetOptions", options);
-
+            while (!UpdateChecker.CheckedForUpdates)
+            {
+                await Delay(0);
+            }
+            if (!UpToDate)
+            {
+                TriggerClientEvent(player, "vMenu:OutdatedResource");
+            }
         }
 
         private string GetRealAceName(string inputString)

@@ -12,6 +12,7 @@ namespace vMenuClient
     {
         // common functions.
         private CommonFunctions cf = MainMenu.Cf;
+        private Notification Notify = new Notification();
         public static string currentWeatherType = "CLEAR";
         public static bool blackoutMode = false;
         public static bool dynamicWeather = true;
@@ -42,9 +43,22 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
+            EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
 
             Tick += WeatherSync;
             Tick += TimeSync;
+        }
+
+        /// <summary>
+        /// Notifies the player that the current version of vMenu is outdated.
+        /// </summary>
+        private async void NotifyOutdatedVersion()
+        {
+            Debug.Write("vMenu is outdated, please update asap.\n");
+            await Delay(5000);
+            cf.Log("Sending alert now.");
+            Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
+
         }
 
         /// <summary>
@@ -267,7 +281,7 @@ namespace vMenuClient
         /// <param name="reason"></param>
         private void KickCallback(string reason)
         {
-            MainMenu.Notify.Custom(reason, true, false);
+            Notify.Custom(reason, true, false);
         }
 
         /// <summary>
@@ -275,7 +289,7 @@ namespace vMenuClient
         /// </summary>
         private void KillMe()
         {
-            MainMenu.Notify.Info("Someone wanted you dead.... Sorry.");
+            Notify.Info("Someone wanted you dead.... Sorry.");
             SetEntityHealth(PlayerPedId(), 0);
         }
 
