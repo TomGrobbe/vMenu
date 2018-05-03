@@ -72,6 +72,11 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleGodMode"); }
             set { SetSavedSettingsBool("vehicleGodMode", value); }
         }
+        public static bool VehicleSpecialGodMode
+        {
+            get { return GetSettingsBool("VehicleSpecialGodMode"); }
+            set { SetSavedSettingsBool("VehicleSpecialGodMode", value); }
+        }
 
         public static bool VehicleEngineAlwaysOn
         {
@@ -183,7 +188,6 @@ namespace vMenuClient
             set { SetSavedSettingsBool("voiceChatShowSpeaker", value); }
         }
         #endregion
-
 
         #endregion
 
@@ -313,6 +317,8 @@ namespace vMenuClient
 
                 MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
                 prefs.Add("MiscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
+
+
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
@@ -328,6 +334,9 @@ namespace vMenuClient
 
                 VehicleNoSiren = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
                 prefs.Add("VehicleNoSiren", MainMenu.VehicleOptionsMenu.VehicleNoSiren);
+
+                VehicleHighbeamsOnHonk = MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk;
+                prefs.Add("vehicleHighbeamsOnHonk", MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)

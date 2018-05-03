@@ -234,14 +234,13 @@ namespace vMenuClient
             }
         }
         #endregion
-        #region OnTick Vehicle Tasks
+        #region Vehicle Options Tasks
         /// <summary>
         /// Manage all vehicle related tasks.
         /// </summary>
         /// <returns></returns>
         private async Task VehicleOptions()
         {
-
             // Vehicle options. Only run vehicle options if the vehicle options menu has actually been created.
             if (MainMenu.VehicleOptionsMenu != null && cf.IsAllowed(Permission.VOMenu))
             {
@@ -342,7 +341,6 @@ namespace vMenuClient
                             vehicle.AreHighBeamsOn = false;
                         }
                     }
-
                 }
                 // When the player is not inside a vehicle:
                 else
@@ -597,6 +595,11 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Update Location for location display
+        /// <summary>
+        /// Updates the location for location display.
+        /// </summary>
+        /// <returns></returns>
         private async Task UpdateLocation()
         {
             if (MainMenu.MiscSettingsMenu != null)
@@ -632,7 +635,12 @@ namespace vMenuClient
                 }
             }
         }
+        #endregion
 
+        #region ShowLocation
+        /// <summary>
+        /// Show location function to show the player's location.
+        /// </summary>
         private void ShowLocation()
         {
             // Create the default prefix.
@@ -688,7 +696,7 @@ namespace vMenuClient
             cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
         }
         #endregion
-
+        #endregion
         #region Voice Chat Tasks
         /// <summary>
         /// Run all voice chat options tasks
