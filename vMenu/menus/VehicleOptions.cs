@@ -31,6 +31,7 @@ namespace vMenuClient
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = UserDefaults.VehicleGodMode;
+        public bool VehicleSpecialGodMode { get; private set; } = UserDefaults.VehicleSpecialGodMode;
         public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
@@ -60,6 +61,8 @@ namespace vMenuClient
             #region menu variables
             // Create Checkboxes.
             UIMenuCheckboxItem vehicleGod = new UIMenuCheckboxItem("Vehicle God Mode", VehicleGodMode, "Your vehicle will not be able to take visual or physical damage.");
+            UIMenuCheckboxItem vehicleSpecialGod = new UIMenuCheckboxItem("Special Vehicle God Mode", VehicleSpecialGodMode, "This option repairs your vehicle immediately when " +
+                "it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.");
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
             UIMenuCheckboxItem vehicleNoSiren = new UIMenuCheckboxItem("Disable Siren", VehicleNoSiren, "Disables your vehicle's siren. Only works if your vehicle actually has a siren.");
             UIMenuCheckboxItem vehicleNoBikeHelmet = new UIMenuCheckboxItem("No Bike Helmet", VehicleNoBikeHelemet, "No longer auto-equip a helmet when getting on a bike or quad.");
@@ -197,6 +200,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.VOGod)) // GOD MODE
             {
                 menu.AddItem(vehicleGod);
+            }
+            if (cf.IsAllowed(Permission.VOSpecialGod)) // special god mode
+            {
+                menu.AddItem(vehicleSpecialGod);
             }
             if (cf.IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
@@ -422,6 +429,10 @@ namespace vMenuClient
                 if (item == vehicleGod) // God Mode Toggled
                 {
                     VehicleGodMode = _checked;
+                }
+                else if (item == vehicleSpecialGod) // special god mode
+                {
+                    VehicleSpecialGodMode = _checked;
                 }
                 else if (item == vehicleFreeze) // Freeze Vehicle Toggled
                 {

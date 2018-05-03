@@ -91,6 +91,7 @@ namespace vMenuServer
             "VOMenu",
             "VOAll",
             "VOGod",
+            "VOSpecialGod",
             "VORepair",
             "VOWash",
             "VOEngine",
