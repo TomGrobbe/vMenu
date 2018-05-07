@@ -487,41 +487,44 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task JoinQuitNotifications()
         {
-            // Join/Quit notifications
-            if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
+            if (MainMenu.MiscSettingsMenu != null)
             {
-                PlayerList plist = new PlayerList();
-                Dictionary<int, string> pl = new Dictionary<int, string>();
-                foreach (Player p in plist)
+                // Join/Quit notifications
+                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
                 {
-                    pl.Add(p.Handle, p.Name);
-                }
-                await Delay(0);
-                // new player joined.
-                if (pl.Count > playerList.Count)
-                {
-                    foreach (KeyValuePair<int, string> player in pl)
+                    PlayerList plist = new PlayerList();
+                    Dictionary<int, string> pl = new Dictionary<int, string>();
+                    foreach (Player p in plist)
                     {
-                        if (!playerList.Contains(player))
+                        pl.Add(p.Handle, p.Name);
+                    }
+                    await Delay(0);
+                    // new player joined.
+                    if (pl.Count > playerList.Count)
+                    {
+                        foreach (KeyValuePair<int, string> player in pl)
                         {
-                            Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
-                            await Delay(0);
+                            if (!playerList.Contains(player))
+                            {
+                                Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
+                                await Delay(0);
+                            }
                         }
                     }
-                }
-                // player left.
-                else if (pl.Count < playerList.Count)
-                {
-                    foreach (KeyValuePair<int, string> player in playerList)
+                    // player left.
+                    else if (pl.Count < playerList.Count)
                     {
-                        if (!pl.Contains(player))
+                        foreach (KeyValuePair<int, string> player in playerList)
                         {
-                            Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
-                            await Delay(0);
+                            if (!pl.Contains(player))
+                            {
+                                Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
+                                await Delay(0);
+                            }
                         }
                     }
+                    playerList = pl;
                 }
-                playerList = pl;
             }
         }
         #endregion
