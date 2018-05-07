@@ -311,7 +311,6 @@ namespace vMenuServer
                             {
                                 new PlayerList()[source].TriggerEvent("chatMessage", $"vMenu Debug mode is now set to: {DebugMode}.");
                             }
-                            
                         }
                     }
                     else
@@ -323,7 +322,8 @@ namespace vMenuServer
 
             if (GetCurrentResourceName() != "vMenu")
             {
-                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
+                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
+                    "Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
                 try
                 {
                     throw InvalidNameException;
@@ -566,20 +566,16 @@ namespace vMenuServer
                     TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
                     // Kick the player from the server using the specified reason.
                     DropPlayer(targetPlayer.Handle, kickReason);
+                    KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
                     return;
                 }
                 // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                 TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
-
-                return;
             }
             else
             {
                 BanManager.BanCheater(new PlayerList()[target]);
             }
-            //// If this happens, the person who thinks they're funny knows exactly what this is for.
-            //TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Have a nice day :)");
-            //// todo: Make sure they enjoy their day.
         }
 
         /// <summary>
@@ -725,5 +721,28 @@ namespace vMenuServer
             return outputString;
         }
         #endregion
+
+
+        /// <summary>
+        /// If enabled using convars, will log all kick actions to the server console as well as an external file.
+        /// </summary>
+        /// <param name="kickLogMesage"></param>
+        private static void KickLog(string kickLogMesage)
+        {
+            if (GetConvar("vMenuLogKickActions", "false") == "true")
+            {
+                string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
+                DateTime date = DateTime.Now;
+                string formattedDate = (date.Day < 10 ? "0" : "") + date.Day + "-" +
+                    (date.Month < 10 ? "0" : "") + date.Month + "-" +
+                    (date.Year < 10 ? "0" : "") + date.Year + " " +
+                    (date.Hour < 10 ? "0" : "") + date.Hour + ":" +
+                    (date.Minute < 10 ? "0" : "") + date.Minute + ":" +
+                    (date.Second < 10 ? "0" : "") + date.Second;
+                string outputFile = file + $"[\t{formattedDate}\t] [KICK ACTION] {kickLogMesage}\n";
+                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, outputFile.Length);
+                Debug.Write(kickLogMesage + "\n");
+            }
+        }
     }
 }
