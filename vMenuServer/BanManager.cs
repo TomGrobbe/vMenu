@@ -425,13 +425,20 @@ namespace vMenuServer
         /// If enabled using convars, will log all ban actions to the server console as well as an external file.
         /// </summary>
         /// <param name="banActionMessage"></param>
-        private static void BanLog(string banActionMessage)
+        public static void BanLog(string banActionMessage)
         {
             if (GetConvar("vMenuLogBanActions", "false") == "true")
             {
-                string file = LoadResourceFile(GetCurrentResourceName(), "ban-actions.log") ?? "";
-                string outputFile = file + "[ " + DateTime.Now.ToString() + " ]\t\t" + banActionMessage + "\n";
-                SaveResourceFile(GetCurrentResourceName(), "ban-actions.log", outputFile, outputFile.Length);
+                string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
+                DateTime date = DateTime.Now;
+                string formattedDate = (date.Day < 10 ? "0" : "") + date.Day + "-" +
+                    (date.Month < 10 ? "0" : "") + date.Month + "-" +
+                    (date.Year < 10 ? "0" : "") + date.Year + " " +
+                    (date.Hour < 10 ? "0" : "") + date.Hour + ":" +
+                    (date.Minute < 10 ? "0" : "") + date.Minute + ":" +
+                    (date.Second < 10 ? "0" : "") + date.Second;
+                string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
+                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, outputFile.Length);
                 Debug.Write(banActionMessage + "\n");
             }
         }
