@@ -9,7 +9,7 @@ branches:
     only:
         - master
         - production
-        #- development
+        - development
 before_deploy:
     - mkdir /home/travis/build/TomGrobbe/release/
     - mkdir /home/travis/build/TomGrobbe/release/vMenu/
