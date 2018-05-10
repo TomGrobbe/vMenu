@@ -62,6 +62,44 @@ namespace vMenuClient
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
             UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
+            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(PlayerId()), "Connection Options", true)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+            UIMenuItem connectionSubmenuBtn = new UIMenuItem("Connection Options", "Server connection/game quit options.");
+            UIMenuItem quitSession = new UIMenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
+                "Use this if you need to have addons streamed but want to use the rockstar editor.");
+            UIMenuItem quitGame = new UIMenuItem("Quit Game", "Exits the game after 5 seconds.");
+            UIMenuItem disconnectFromServer = new UIMenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
+                "~r~This feature is not recommended, quit the game instead for a better experience.");
+            connectionSubmenu.AddItem(quitSession);
+            connectionSubmenu.AddItem(quitGame);
+            connectionSubmenu.AddItem(disconnectFromServer);
+
+            MainMenu.Mp.Add(connectionSubmenu);
+            connectionSubmenu.RefreshIndex();
+            connectionSubmenu.UpdateScaleform();
+            menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
+
+            connectionSubmenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == quitGame)
+                {
+                    cf.QuitGame();
+                }
+                else if (item == quitSession)
+                {
+                    cf.QuitSession();
+                }
+                else if (item == disconnectFromServer)
+                {
+                    BaseScript.TriggerServerEvent("vMenu:DisconnectSelf");
+                }
+            };
+
             // Add menu items to the menu.
             if (cf.IsAllowed(Permission.MSTeleportToWp))
             {
@@ -71,6 +109,7 @@ namespace vMenuClient
             // Always allowed
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
+            menu.AddItem(connectionSubmenuBtn);
 
             if (cf.IsAllowed(Permission.MSShowCoordinates))
             {

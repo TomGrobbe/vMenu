@@ -343,6 +343,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
+                EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
 
                 string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 var json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
@@ -381,6 +382,15 @@ namespace vMenuServer
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
+        }
+
+        /// <summary>
+        /// Disconnect the source player because they used the disconnect menu button.
+        /// </summary>
+        /// <param name="src"></param>
+        private void DisconnectSource([FromSource] Player src)
+        {
+            src.Drop("You disconnected yourself.");
         }
         #endregion
 

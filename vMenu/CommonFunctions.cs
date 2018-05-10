@@ -165,6 +165,27 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Quit session & Quit game
+        /// <summary>
+        /// Quit the current network session, but leaves you connected to the server so addons/resources are still streamed.
+        /// </summary>
+        private void QuitSession()
+        {
+            NetworkSessionEnd(true, true);
+        }
+
+        /// <summary>
+        /// Quit the game after 5 seconds.
+        /// </summary>
+        private async void QuitGame()
+        {
+            Notify.Info("The game will exit in 5 seconds.", true, true);
+            Debug.WriteLine("Game will be terminated in 5 seconds, because the player used the Quit Game option in vMenu.");
+            await Delay(5000);
+            ForceSocialClubUpdate(); // bye bye
+        }
+        #endregion
+
         #region Teleport to player (or teleport into the player's vehicle)
         /// <summary>
         /// Teleport to the specified player id. (Optionally teleport into their vehicle).
