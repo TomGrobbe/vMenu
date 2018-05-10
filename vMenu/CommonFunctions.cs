@@ -413,6 +413,9 @@ namespace vMenuClient
         /// <param name="player"></param>
         public void KillPlayer(Player player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
 
+        /// <summary>
+        /// Kill yourself.
+        /// </summary>
         public async void CommitSuicide()
         {
             // Get the suicide animations ready.
@@ -1605,6 +1608,7 @@ namespace vMenuClient
         }
         #endregion
 
+        #region ped (& ped mp info) info struct
         public struct MultiplayerPedInfo
         {
             // todo
@@ -1621,6 +1625,7 @@ namespace vMenuClient
             public Dictionary<int, int> drawableVariations;
             public Dictionary<int, int> drawableVariationTextures;
         };
+        #endregion
 
         #region Set Player Skin
         /// <summary>
