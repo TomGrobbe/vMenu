@@ -14,8 +14,6 @@ namespace vMenuClient
         #region Variables
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private Notification Notify = MainMenu.Notify;
-        private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
         private static VehicleData vd = new VehicleData();
 

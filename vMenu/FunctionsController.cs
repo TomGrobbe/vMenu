@@ -17,8 +17,6 @@ namespace vMenuClient
     class FunctionsController : BaseScript
     {
         // Variables
-        private Notification Notify = MainMenu.Notify;
-        private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
 
         private int LastVehicle = 0;

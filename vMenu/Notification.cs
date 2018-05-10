@@ -33,7 +33,7 @@ namespace vMenuClient
     /// <summary>
     /// Gets the formatted error message.
     /// </summary>
-    public struct ErrorMessage
+    public static class ErrorMessage
     {
         /// <summary>
         /// Returns the formatted error message for the specified error type.
@@ -97,12 +97,12 @@ namespace vMenuClient
     }
     #endregion
 
-    #region Notifications Struct
+    #region Notifications class
     /// <summary>
-    /// Notifications struct to easilly show notifications using custom made templates,
+    /// Notifications class to easilly show notifications using custom made templates,
     /// or completely custom style if none of the templates are fitting for the current task.
     /// </summary>
-    public struct Notification
+    public static class Notify
     {
         /// <summary>
         /// Show a custom notification above the minimap.
@@ -110,7 +110,7 @@ namespace vMenuClient
         /// <param name="message">Message to display.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Custom(string message, bool blink = false, bool saveToBrief = true)
+        public static void Custom(string message, bool blink = false, bool saveToBrief = true)
         {
             SetNotificationTextEntry("THREESTRINGS");
             string[] messages = MainMenu.Cf.StringToArray(message);
@@ -131,7 +131,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Alert(string message, bool blink = false, bool saveToBrief = true)
+        public static void Alert(string message, bool blink = false, bool saveToBrief = true)
         {
             Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief);
         }
@@ -143,7 +143,7 @@ namespace vMenuClient
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
-        public void Alert(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
+        public static void Alert(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
         {
             string message = ErrorMessage.Get(errorMessage, placeholderValue);
             Alert(message, blink, saveToBrief);
@@ -155,7 +155,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Error(string message, bool blink = false, bool saveToBrief = true)
+        public static void Error(string message, bool blink = false, bool saveToBrief = true)
         {
             Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief);
         }
@@ -167,7 +167,7 @@ namespace vMenuClient
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
-        public void Error(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
+        public static void Error(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
         {
             string message = ErrorMessage.Get(errorMessage, placeholderValue);
             Error(message, blink, saveToBrief);
@@ -179,7 +179,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Info(string message, bool blink = false, bool saveToBrief = true)
+        public static void Info(string message, bool blink = false, bool saveToBrief = true)
         {
             Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief);
         }
@@ -190,19 +190,19 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public void Success(string message, bool blink = false, bool saveToBrief = true)
+        public static void Success(string message, bool blink = false, bool saveToBrief = true)
         {
             Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
         }
     }
     #endregion
 
-    #region Custom Subtitles Struct
+    #region Custom Subtitle class
     /// <summary>
-    /// Custom Subtitles struct used to display subtitles using preformatted templates.
+    /// Custom Subtitle class used to display subtitles using preformatted templates.
     /// Optionally you can also use a blank/custom style if you don't want to use an existing template.
     /// </summary>
-    public struct Subtitles
+    public static class Subtitle
     {
         /// <summary>
         /// Custom (white/custom text style subtitle)
@@ -210,7 +210,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
-        public void Custom(string message, int duration = 2500, bool drawImmediately = true)
+        public static void Custom(string message, int duration = 2500, bool drawImmediately = true)
         {
             BeginTextCommandPrint("THREESTRINGS");
             var messages = MainMenu.Cf.StringToArray(message);
@@ -228,7 +228,7 @@ namespace vMenuClient
         /// <param name="duration">(Optional) duration in ms.</param>
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
-        public void Alert(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
+        public static void Alert(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~y~" + prefix + " ~s~" : "~y~") + message, duration, drawImmediately);
         }
@@ -240,7 +240,7 @@ namespace vMenuClient
         /// <param name="duration">(Optional) duration in ms.</param>
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
-        public void Error(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
+        public static void Error(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~r~" + prefix + " ~s~" : "~r~") + message, duration, drawImmediately);
         }
@@ -252,7 +252,7 @@ namespace vMenuClient
         /// <param name="duration">(Optional) duration in ms.</param>
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
-        public void Info(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
+        public static void Info(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~b~" + prefix + " ~s~" : "~b~") + message, duration, drawImmediately);
         }
@@ -264,7 +264,7 @@ namespace vMenuClient
         /// <param name="duration">(Optional) duration in ms.</param>
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
-        public void Success(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
+        public static void Success(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~g~" + prefix + " ~s~" : "~g~") + message, duration, drawImmediately);
         }

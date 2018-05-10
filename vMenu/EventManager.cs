@@ -12,7 +12,6 @@ namespace vMenuClient
     {
         // common functions.
         private CommonFunctions cf = MainMenu.Cf;
-        private Notification Notify = new Notification();
         public static string currentWeatherType = "CLEAR";
         public static bool blackoutMode = false;
         public static bool dynamicWeather = true;
@@ -299,7 +298,7 @@ namespace vMenuClient
         /// <param name="targetPlayer"></param>
         private void SummonPlayer(string targetPlayer)
         {
-            //MainMenu.Notify.Error(targetPlayer);
+            //MainMenu.Notification.Error(targetPlayer);
             cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
         }
     }

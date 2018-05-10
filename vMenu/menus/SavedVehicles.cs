@@ -13,8 +13,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private Notification Notify = MainMenu.Notify;
-        private Subtitles Subtitle = MainMenu.Subtitle;
         private CommonFunctions cf = MainMenu.Cf;
         private Dictionary<string, CommonFunctions.VehicleInfo> SavedVehiclesDict;
 
@@ -120,7 +118,7 @@ namespace vMenuClient
 
                     // Refresh the index of the page.
                     spawnSavedVehicles.RefreshIndex();
-                    
+
                     // Update the scaleform.
                     spawnSavedVehicles.UpdateScaleform();
                 }

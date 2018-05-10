@@ -14,8 +14,8 @@ namespace vMenuClient
     {
         #region Variables
         // Variables
-        private Notification Notify = MainMenu.Notify;
-        private Subtitles Subtitle = MainMenu.Subtitle;
+        //private readonly Notification Notify = MainMenu.Notify;
+        //private readonly Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
         private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
@@ -254,7 +254,7 @@ namespace vMenuClient
             else
             {
                 Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
-                //Notify.Error("This player does not exist so the teleport has been cancelled.");
+                //Notification.Error("This player does not exist so the teleport has been cancelled.");
                 return;
             }
         }
@@ -1147,14 +1147,14 @@ namespace vMenuClient
                 else
                 {
                     Notify.Error(CommonErrors.NoVehicle);
-                    //Notify.Error("You're not inside a vehicle!");
+                    //Notification.Error("You're not inside a vehicle!");
                 }
             }
             // No valid text was given.
             else
             {
                 Notify.Error(CommonErrors.InvalidInput);
-                //Notify.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~s~can not be used on a license plate!");
+                //Notification.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~s~can not be used on a license plate!");
             }
 
         }
@@ -1233,7 +1233,7 @@ namespace vMenuClient
                 // Check if the player CAN play a scenario... 
                 //if (IsPedInAnyVehicle(PlayerPedId(), true))
                 //{
-                //    Notify.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
+                //    Notification.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
                 //    canPlay = false;
                 //}
                 if (IsPedRunning(PlayerPedId()))

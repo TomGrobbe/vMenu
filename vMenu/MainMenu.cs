@@ -16,8 +16,6 @@ namespace vMenuClient
         #region Variables
         // Function Variables
         public static CommonFunctions Cf { get; } = new CommonFunctions();
-        public static Notification Notify { get; } = new Notification();
-        public static Subtitles Subtitle { get; } = new Subtitles();
 
         public static MenuPool Mp { get; } = new MenuPool();
 

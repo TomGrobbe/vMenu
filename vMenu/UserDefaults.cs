@@ -191,7 +191,6 @@ namespace vMenuClient
 
         #endregion
 
-
         #region Private functions
         /// <summary>
         /// Gets whether or not the specified setting is enabled or disabled in the saved user settings.
@@ -366,7 +365,7 @@ namespace vMenuClient
                 prefs.Add("WeaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
             }
 
-            MainMenu.Notify.Success("Your settings have been saved.");
+            Notify.Success("Your settings have been saved.");
 
             MainMenu.Cf.Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
         }
