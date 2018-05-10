@@ -35,10 +35,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="label"></param>
         /// <returns></returns>
-        public string GetLocalizedName(string label)
-        {
-            return GetLabelText(label);
-        }
+        public string GetLocalizedName(string label) => GetLabelText(label);
         #endregion
 
         #region Get Localized Vehicle Display Name
@@ -47,10 +44,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string GetVehDisplayNameFromModel(string name)
-        {
-            return GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
-        }
+        public string GetVehDisplayNameFromModel(string name) => GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
         #endregion
 
         #region GetHashKey for other classes
@@ -59,10 +53,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="input">String to convert into a hash.</param>
         /// <returns>The has value of the input string.</returns>
-        public uint GetHash(string input)
-        {
-            return (uint)GetHashKey(input);
-        }
+        public uint GetHash(string input) => (uint)GetHashKey(input);
         #endregion
 
         #region DoesModelExist
@@ -71,20 +62,14 @@ namespace vMenuClient
         /// </summary>
         /// <param name="modelName">The model name</param>
         /// <returns></returns>
-        public bool DoesModelExist(string modelName)
-        {
-            return IsModelInCdimage((uint)GetHashKey(modelName));
-        }
+        public bool DoesModelExist(string modelName) => DoesModelExist((uint)GetHashKey(modelName));
 
         /// <summary>
         /// Does this model exist?
         /// </summary>
         /// <param name="modelHash">The model hash</param>
         /// <returns></returns>
-        public bool DoesModelExist(uint modelHash)
-        {
-            return IsModelInCdimage(modelHash);
-        }
+        public bool DoesModelExist(uint modelHash) => IsModelInCdimage(modelHash);
         #endregion
 
         #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
@@ -95,14 +80,7 @@ namespace vMenuClient
         /// <param name="ped">Get the vehicle for this player.</param>
         /// <param name="lastVehicle">If true, return the last vehicle, if false (default) return the current vehicle.</param>
         /// <returns>Returns a vehicle (int).</returns>
-        public int GetVehicle(int player = -1, bool lastVehicle = false)
-        {
-            if (player == -1)
-            {
-                return GetVehiclePedIsIn(PlayerPedId(), lastVehicle);
-            }
-            return GetVehiclePedIsIn(GetPlayerPed(player), lastVehicle);
-        }
+        public int GetVehicle(int player = -1, bool lastVehicle = false) => GetVehiclePedIsIn(GetPlayerPed(player), lastVehicle);
         #endregion
 
         #region GetVehicleModel (uint)(hash) from Entity/Vehicle (int)
@@ -111,10 +89,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="vehicle">Entity/vehicle.</param>
         /// <returns>Returns the (uint) model hash from a (vehicle) entity.</returns>
-        public uint GetVehicleModel(int vehicle)
-        {
-            return (uint)GetHashKey(GetEntityModel(vehicle).ToString());
-        }
+        public uint GetVehicleModel(int vehicle) => (uint)GetHashKey(GetEntityModel(vehicle).ToString());
         #endregion
 
         #region Drive Tasks (WIP)
@@ -169,10 +144,7 @@ namespace vMenuClient
         /// <summary>
         /// Quit the current network session, but leaves you connected to the server so addons/resources are still streamed.
         /// </summary>
-        public void QuitSession()
-        {
-            NetworkSessionEnd(true, true);
-        }
+        public void QuitSession() => NetworkSessionEnd(true, true);
 
         /// <summary>
         /// Quit the game after 5 seconds.
@@ -331,7 +303,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// 
+        /// Teleports to the player's waypoint. If no waypoint is set, notify the user.
         /// </summary>
         public async void TeleportToWp()
         {
@@ -430,15 +402,12 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Kill Player
+        #region Kill Player/commit suicide options
         /// <summary>
         /// Kill player
         /// </summary>
         /// <param name="player"></param>
-        public void KillPlayer(Player player)
-        {
-            TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
-        }
+        public void KillPlayer(Player player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
 
         public async void CommitSuicide()
         {
@@ -482,10 +451,7 @@ namespace vMenuClient
         /// Summon player.
         /// </summary>
         /// <param name="player"></param>
-        public void SummonPlayer(Player player)
-        {
-            TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
-        }
+        public void SummonPlayer(Player player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         #endregion
 
         #region Spectate function
@@ -589,14 +555,11 @@ namespace vMenuClient
                         }
                     }
                 }
-
-
             }
             else
             {
                 Notify.Alert("There are no more available seats to cycle through.");
             }
-
         }
         #endregion
 
@@ -983,10 +946,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName"></param>
         /// <returns></returns>
-        public VehicleInfo GetSavedVehicleInfo(string saveName)
-        {
-            return sm.GetSavedVehicleInfo(saveName);
-        }
+        public VehicleInfo GetSavedVehicleInfo(string saveName) => sm.GetSavedVehicleInfo(saveName);
         #endregion
 
         #region Get Saved Vehicles Dictionary
@@ -1206,11 +1166,9 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public bool IsAllowed(Permission permission)
-        {
+        public bool IsAllowed(Permission permission) =>
             // Get the permissions.
-            return PermissionsManager.IsAllowed(permission);
-        }
+            PermissionsManager.IsAllowed(permission);
         #endregion
 
         #region Play Scenarios
@@ -1477,19 +1435,13 @@ namespace vMenuClient
         /// <param name="newWeather">The new weather type.</param>
         /// <param name="blackout">Manual blackout mode enabled/disabled.</param>
         /// <param name="dynamicChanges">Dynamic weather changes enabled/disabled.</param>
-        public void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges)
-        {
-            TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
-        }
+        public void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges) => TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
 
         /// <summary>
         /// Modify the clouds for everyone. If removeClouds is true, then remove all clouds. If it's false, then randomize the clouds.
         /// </summary>
         /// <param name="removeClouds">Removes the clouds from the sky if true, otherwise randomizes the clouds type for all players.</param>
-        public void ModifyClouds(bool removeClouds)
-        {
-            TriggerServerEvent("vMenu:UpdateServerWeatherCloudsType", removeClouds);
-        }
+        public void ModifyClouds(bool removeClouds) => TriggerServerEvent("vMenu:UpdateServerWeatherCloudsType", removeClouds);
         #endregion
 
         #region Time Sync
@@ -1584,10 +1536,8 @@ namespace vMenuClient
         /// <param name="text">The text to display.</param>
         /// <param name="xPosition">The x position for the text draw origin.</param>
         /// <param name="yPosition">The y position for the text draw origin.</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition)
-        {
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition) =>
             DrawTextOnScreen(text, xPosition, yPosition, size: 0.48f);
-        }
 
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
@@ -1596,10 +1546,8 @@ namespace vMenuClient
         /// <param name="xPosition">The x position for the text draw origin.</param>
         /// <param name="yPosition">The y position for the text draw origin.</param>
         /// <param name="size">The size of the text.</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size)
-        {
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, CitizenFX.Core.UI.Alignment.Left);
-        }
 
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
@@ -1609,10 +1557,8 @@ namespace vMenuClient
         /// <param name="yPosition">The y position for the text draw origin.</param>
         /// <param name="size">The size of the text.</param>
         /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification)
-        {
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, justification, 6);
-        }
 
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
@@ -1623,10 +1569,8 @@ namespace vMenuClient
         /// <param name="size">The size of the text.</param>
         /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
         /// <param name="font">Specify the font to use (0-8).</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font)
-        {
+        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, justification, font, false);
-        }
 
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
@@ -1673,15 +1617,13 @@ namespace vMenuClient
             public Dictionary<int, int> drawableVariations;
             public Dictionary<int, int> drawableVariationTextures;
         };
+
         #region Set Player Skin
         /// <summary>
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions)
-        {
-            SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
-        }
+        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
@@ -1935,7 +1877,6 @@ namespace vMenuClient
         }
 
         #region Save and restore weapon loadouts when changing models
-
         private struct WeaponInfo
         {
             public int Ammo;
@@ -1943,7 +1884,9 @@ namespace vMenuClient
             public List<uint> Components;
             public int Tint;
         }
+
         private List<WeaponInfo> weaponsList = new List<WeaponInfo>();
+
         /// <summary>
         /// Saves all current weapons and components.
         /// </summary>
