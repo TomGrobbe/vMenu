@@ -169,7 +169,7 @@ namespace vMenuClient
         /// <summary>
         /// Quit the current network session, but leaves you connected to the server so addons/resources are still streamed.
         /// </summary>
-        private void QuitSession()
+        public void QuitSession()
         {
             NetworkSessionEnd(true, true);
         }
@@ -177,7 +177,7 @@ namespace vMenuClient
         /// <summary>
         /// Quit the game after 5 seconds.
         /// </summary>
-        private async void QuitGame()
+        public async void QuitGame()
         {
             Notify.Info("The game will exit in 5 seconds.", true, true);
             Debug.WriteLine("Game will be terminated in 5 seconds, because the player used the Quit Game option in vMenu.");
