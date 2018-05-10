@@ -795,10 +795,12 @@ namespace vMenuClient
                 if (item == noReload)
                 {
                     NoReload = _checked;
+                    Subtitle.Custom($"No reload is now {(_checked ? "enabled" : "disabled")}.");
                 }
                 else if (item == unlimitedAmmo)
                 {
                     UnlimitedAmmo = _checked;
+                    Subtitle.Custom($"Unlimited ammo is now {(_checked ? "enabled" : "disabled")}.");
                 }
             };
             #endregion

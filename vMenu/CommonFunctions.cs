@@ -313,6 +313,10 @@ namespace vMenuClient
                 pos.Z = 150f;
                 await TeleportToCoords(pos);
             }
+            else
+            {
+                Notify.Error("You need to set a waypoint first!");
+            }
         }
         #endregion
 
