@@ -50,6 +50,7 @@ namespace vMenuClient
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
 
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
+        public static bool EnableExperimentalFeatures = (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
         public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 

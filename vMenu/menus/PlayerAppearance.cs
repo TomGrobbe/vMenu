@@ -99,9 +99,7 @@ namespace vMenuClient
             menu.AddItem(walkingStyle);
 
             // Bind items to the submenus.
-            if (cf.IsAllowed(Permission.PACustomize) &&
-                // only enable it if experimental features are turned on
-                GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0).ToString() == "1")
+            if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
             {
                 CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
                 menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
