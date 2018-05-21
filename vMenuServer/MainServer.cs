@@ -567,20 +567,25 @@ namespace vMenuServer
         /// <param name="kickReason"></param>
         private void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kick") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kick") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // If the player is allowed to be kicked.
-                var targetPlayer = new PlayerList()[target];
-                if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+                Player targetPlayer = new PlayerList()[target];
+                if (targetPlayer != null)
                 {
-                    TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
-                    // Kick the player from the server using the specified reason.
-                    DropPlayer(targetPlayer.Handle, kickReason);
-                    KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
-                    return;
+                    if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
+                    {
+                        TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
+                        // Kick the player from the server using the specified reason.
+                        DropPlayer(targetPlayer.Handle, kickReason);
+                        KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
+                        return;
+                    }
+                    // Trigger the client event on the source player to let them know that kicking this player is not allowed.
+                    TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "Sorry, this player can ~r~not ~w~be kicked.");
                 }
-                // Trigger the client event on the source player to let them know that kicking this player is not allowed.
-                TriggerClientEvent(player: source, eventName: "vMenu:KickCallback", args: "Sorry, this player can ~r~not ~w~be kicked.");
+                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
             {
@@ -595,12 +600,17 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void KillPlayer([FromSource] Player source, int target)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kill") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kill") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                var targetPlayer = new PlayerList()[target];
-                // Trigger the client event on the target player to make them kill themselves. R.I.P.
-                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
-                return;
+                Player targetPlayer = new PlayerList()[target];
+                if (targetPlayer != null)
+                {
+                    // Trigger the client event on the target player to make them kill themselves. R.I.P.
+                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+                    return;
+                }
+                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
             {
@@ -615,12 +625,17 @@ namespace vMenuServer
         /// <param name="target"></param>
         private void SummonPlayer([FromSource] Player source, int target)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Summon") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Summon") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // Trigger the client event on the target player to make them teleport to the source player.
-                var targetPlayer = new PlayerList()[target];
-                TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
-                return;
+                Player targetPlayer = new PlayerList()[target];
+                if (targetPlayer != null)
+                {
+                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
+                    return;
+                }
+                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
             {

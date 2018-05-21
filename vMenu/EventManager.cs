@@ -32,7 +32,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(UpdatePermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
-            EventHandlers.Add("vMenu:KickCallback", new Action<string>(KickCallback));
+            EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
@@ -275,12 +275,12 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Kick callback. Notifies the player why a kick was not successfull.
+        /// Used by events triggered from the server to notify a user.
         /// </summary>
-        /// <param name="reason"></param>
-        private void KickCallback(string reason)
+        /// <param name="message"></param>
+        private void NotifyPlayer(string message)
         {
-            Notify.Custom(reason, true, false);
+            Notify.Custom(message, true, false);
         }
 
         /// <summary>

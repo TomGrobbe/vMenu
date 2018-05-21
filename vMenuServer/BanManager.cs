@@ -183,31 +183,40 @@ namespace vMenuServer
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Player target = new PlayerList()[targetPlayer];
-                if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
+                if (target != null)
                 {
-                    BanRecord ban = new BanRecord()
+                    if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
-                        bannedBy = GetSafePlayerName(source.Name),
-                        bannedUntil = new DateTime(3000, 1, 1),
-                        banReason = banReason,
-                        identifiers = target.Identifiers.ToList<string>(),
-                        playerName = GetSafePlayerName(target.Name)
-                    };
-                    if (AddBan(ban))
-                    {
-                        BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by {ban.bannedBy} " +
-                            $"for {ban.banReason} until {ban.bannedUntil} (forever).");
-                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                        BanRecord ban = new BanRecord()
+                        {
+                            bannedBy = GetSafePlayerName(source.Name),
+                            bannedUntil = new DateTime(3000, 1, 1),
+                            banReason = banReason,
+                            identifiers = target.Identifiers.ToList<string>(),
+                            playerName = GetSafePlayerName(target.Name)
+                        };
+                        if (AddBan(ban))
+                        {
+                            BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by {ban.bannedBy} " +
+                                $"for {ban.banReason} until {ban.bannedUntil} (forever).");
+                            TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                        }
+                        else
+                        {
+                            if (MainServer.DebugMode)
+                                Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?\n");
+                        }
+                        BannedPlayersList = GetBanList();
+                        target.Drop($"You have been permanently banned from this server. " +
+                                    $"Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
                     }
                     else
                     {
-                        if (MainServer.DebugMode)
-                            Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
+                        TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "This player is exempt from being banned.");
                     }
-                    BannedPlayersList = GetBanList();
-                    target.Drop($"You have been permanently banned from this server. " +
-                                $"Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                    return;
                 }
+                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
             {
