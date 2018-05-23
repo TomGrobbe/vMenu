@@ -629,6 +629,17 @@ namespace vMenuClient
         /// <param name="saveName">Used to get/set info about the saved vehicle data.</param>
         public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null)
         {
+            float speed = 0f;
+            float rpm = 0f;
+            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            {
+                Vehicle tmpOldVehicle = new Vehicle(GetVehicle());
+                speed = tmpOldVehicle.Speed;
+                rpm = tmpOldVehicle.CurrentRPM;
+                tmpOldVehicle = null;
+            }
+
+
             var vehClass = GetVehicleClassFromName(vehicleHash);
             int modelClass = GetVehicleClassFromName(vehicleHash);
             if (!MainMenu.VehicleSpawnerMenu.allowedCategories[modelClass])
@@ -783,6 +794,8 @@ namespace vMenuClient
 
             // Set the previous vehicle to the new vehicle.
             previousVehicle = vehicle;
+            vehicle.Speed = speed;
+            vehicle.CurrentRPM = rpm;
 
             // Discard the model.
             SetModelAsNoLongerNeeded(vehicleHash);
