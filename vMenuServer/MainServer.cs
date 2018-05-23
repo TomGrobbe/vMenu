@@ -577,13 +577,17 @@ namespace vMenuServer
                     if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
                     {
                         TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
+                        
+                        KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
+                        TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
+                        
                         // Kick the player from the server using the specified reason.
                         DropPlayer(targetPlayer.Handle, kickReason);
-                        KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
                         return;
                     }
                     // Trigger the client event on the source player to let them know that kicking this player is not allowed.
                     TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "Sorry, this player can ~r~not ~w~be kicked.");
+                    return;
                 }
                 TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }

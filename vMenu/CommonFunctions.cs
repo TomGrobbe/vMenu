@@ -329,38 +329,48 @@ namespace vMenuClient
         /// <param name="reason"></param>
         public async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
         {
-            // Default kick reason.
-            var defaultReason = "You have been kicked.";
-            var cancel = false;
-            // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
-            if (askUserForReason && providedReason == defaultReason)
+            if (player != null)
             {
-                var userInput = await GetUserInput("Enter Kick Message", "", 100);
-                // If the input is not invalid, set the kick reason to the user's custom message.
-                if (userInput != "NULL")
+                // Default kick reason.
+                string defaultReason = "You have been kicked.";
+                bool cancel = false;
+                // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
+                if (askUserForReason && providedReason == defaultReason)
                 {
-                    defaultReason += $" Reason: {userInput}";
+                    string userInput = await GetUserInput("Enter Kick Message", "", 100) ?? "NULL";
+                    // If the input is not invalid, set the kick reason to the user's custom message.
+                    if (userInput != "NULL")
+                    {
+                        defaultReason += $" Reason: {userInput}";
+                    }
+                    else
+                    {
+                        cancel = true;
+                        Notify.Error("An invalid kick reason was provided. Action cancelled.", true, true);
+                        return;
+                    }
+                }
+                // If the provided reason is not the same as the default reason, set the kick reason to the provided reason.
+                else if (providedReason != defaultReason)
+                {
+                    defaultReason = providedReason;
+                }
+
+                // Kick the player using the specified reason.
+                if (!cancel)
+                {
+                    TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
+                    Log($"Attempting to kick player {player.Name} (server id: {player.ServerId}, client id: {player.Handle}).");
                 }
                 else
                 {
-                    cancel = true;
-                    return;
+                    Notify.Error("The kick action was cancelled because the kick reason was invalid.", true, true);
                 }
             }
-            // If the provided reason is not the same as the default reason, set the kick reason to the provided reason.
-            else if (providedReason != defaultReason)
+            else
             {
-                defaultReason = providedReason;
+                Notify.Error("The selected player is somehow invalid, action aborted.", true, true);
             }
-            // Otherwise, don't change anything.
-
-
-            // Kick the player using the specified reason.
-            if (!cancel)
-            {
-                TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
-            }
-
         }
         #endregion
 
