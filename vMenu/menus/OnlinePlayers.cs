@@ -74,8 +74,6 @@ namespace vMenuClient
                             ControlDisablingEnabled = false
                         };
                         PlayerMenu.SetMenuWidthOffset(50);
-                        PlayerMenu.RefreshIndex();
-                        PlayerMenu.UpdateScaleform();
 
 
                         // Create all player options buttons.
@@ -223,6 +221,9 @@ namespace vMenuClient
                         {
                             menu.Visible = true;
                         };
+
+                        PlayerMenu.RefreshIndex();
+                        PlayerMenu.UpdateScaleform();
                     }
                 };
             };
