@@ -257,7 +257,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    int i = ((sender.CurrentSelection - 7) * 50) + index;
+                    int i = ((sender.CurrentSelection - 8) * 50) + index;
                     string modelName = modelNames[i];
                     if (cf.IsAllowed(Permission.PASpawnNew))
                     {
