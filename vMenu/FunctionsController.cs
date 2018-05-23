@@ -266,7 +266,7 @@ namespace vMenuClient
                         vd.CanBeBroken = !god;
                     }
                     bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && cf.IsAllowed(Permission.VOSpecialGod);
-                    if (specialgod && vehicle.Health != vehicle.MaxHealth)
+                    if (specialgod && vehicle.EngineHealth < 1000)
                     {
                         vehicle.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
                     }
