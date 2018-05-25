@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFunctions.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />

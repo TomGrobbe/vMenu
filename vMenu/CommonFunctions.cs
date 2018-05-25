@@ -683,9 +683,13 @@ namespace vMenuClient
                     // Otherwise
                     else
                     {
-                        // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                        previousVehicle.IsPersistent = false;
-                        previousVehicle.MarkAsNoLongerNeeded();
+                        if (!Configuration.keepSpawnedVehiclesPersistent)
+                        {
+                            // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
+                            previousVehicle.IsPersistent = false;
+                            previousVehicle.PreviouslyOwnedByPlayer = false;
+                            previousVehicle.MarkAsNoLongerNeeded();
+                        }
                     }
                     previousVehicle = null;
                 }
@@ -1820,6 +1824,7 @@ namespace vMenuClient
         }
         #endregion
 
+        #region saved ped json string to ped info
         /// <summary>
         /// Load and convert json ped info into PedInfo struct.
         /// </summary>
@@ -1907,6 +1912,7 @@ namespace vMenuClient
             }
             return pi;
         }
+        #endregion
 
         #region Save and restore weapon loadouts when changing models
         private struct WeaponInfo
