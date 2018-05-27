@@ -61,6 +61,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
+            Tick += ManageCamera;
         }
 
         /// Task related
@@ -844,6 +845,61 @@ namespace vMenuClient
             }
         }
         #endregion
+        #region Player Appearance
+        private async Task ManageCamera()
+        {
+            if (MainMenu.PlayerAppearanceMenu != null && MainMenu.PlayerAppearanceMenu.mpCharMenu != null)
+            {
+                //foreach (UIMenu m in )
+                bool open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+                if (open)
+                {
+                    int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
+                    Camera camera = new Camera(cam);
+
+                    Game.PlayerPed.Task.ClearAllImmediately();
+                    while (open)
+                    {
+                        await Delay(0);
+                        open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+
+                        //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
+                        SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
+
+                        RenderScriptCams(true, false, 0, true, false);
+
+                        FreezeEntityPosition(PlayerPedId(), true);
+
+                        cf.DisableMovementControlsThisFrame(true, true);
+
+                        camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.7f));
+                        camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
+                        Game.PlayerPed.Task.ClearAll();
+                        float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
+
+                        if (input > 0.5f)
+                        {
+                            Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                        }
+                        else if (input < -0.5f)
+                        {
+                            Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                        }
+                        else
+                        {
+                            Game.PlayerPed.Task.LookAt(camera.Position);
+                        }
+                    }
+                    RenderScriptCams(false, false, 0, false, false);
+                    camera.Delete();
+                    DestroyAllCams(true);
+                    Game.PlayerPed.Task.ClearLookAt();
+                    FreezeEntityPosition(PlayerPedId(), false);
+                }
+            }
+        }
+        #endregion
+
 
         /// Not task related
         #region Private ShowSpeed Functions

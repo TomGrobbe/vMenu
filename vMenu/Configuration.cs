@@ -10,6 +10,15 @@ namespace vMenuClient
 {
     public static class Configuration
     {
+        /// <summary>
+        /// all this is still a wip, currently all unused.
+        /// </summary>
+
+        
+        
+        
+        
+        
         private static bool initialized = false;
         public static void InitializeConfig()
         {

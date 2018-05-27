@@ -279,7 +279,7 @@ namespace vMenuClient
                         var time = GetGameTimer();
                         var times = 0;
                         var delay = 200;
-                        while (Game.IsDisabledControlPressed(0, Control.PhoneRight) && Cf.GetOpenMenu() != null)
+                        while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
                         {
                             currentMenu = Cf.GetOpenMenu();
                             if (GetGameTimer() - time > delay)
