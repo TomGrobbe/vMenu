@@ -2237,5 +2237,97 @@ namespace vMenuClient
             }
         }
         #endregion
+
+        #region Multiplayer Characters
+
+        #region Save MP Character
+        public async void SaveMultiplayerCharacter(PlayerAppearance.MpCharacterStyle currentCharacter)
+        {
+            string character = JsonConvert.SerializeObject(currentCharacter);
+            string saveName = await GetUserInput("Enter a save name", "", 20) ?? "NULL";
+            if (!string.IsNullOrEmpty(saveName) && saveName != "NULL")
+            {
+                if (!sm.SaveJsonData("mp_char_" + saveName, character, false))
+                {
+                    Notify.Error("Your character could not be saved, is the save name already taken?", true, true);
+                }
+                else
+                {
+                    Notify.Success($"Your character is now saved as <C>{saveName}</C>!");
+                }
+            }
+            else
+            {
+                Notify.Error("Your character could not be saved, the provided save name is invalid.", true, true);
+            }
+        }
+
+        public PlayerAppearance.MpCharacterStyle LoadMultiplayerCharacter(string saveName)
+        {
+            if (!string.IsNullOrEmpty(saveName))
+            {
+                //Debug.WriteLine(saveName);
+                string characterData = sm.GetJsonData("mp_char_" + saveName);
+                //Debug.Write(characterData.ToString() + "\n");
+                if (!string.IsNullOrEmpty(characterData))
+                {
+                    dynamic characterObj = JsonConvert.DeserializeObject(characterData);
+                    //Debug.Write(characterObj.ToString() + "\n");
+                    if (characterObj != null)
+                    {
+
+                        Debug.Write(characterObj.ToString() + "\n");
+
+                        bool IsMale = (bool)characterObj["IsMale"];
+
+                        int HairStyle = (int)characterObj["HairStyle"];
+                        int HairColor = (int)characterObj["HairColor"];
+                        int HairHighlightColor = (int)characterObj["HairHighlightColor"];
+
+                        int EyeColor = (int)characterObj["EyeColor"];
+
+                        float NoseWidth = (float)characterObj["NoseWidth"];
+                        float NosePeakHeight = (float)characterObj["NosePeakHeight"];
+                        float NosePeakLength = (float)characterObj["NosePeakLength"];
+                        float NosePeakLowering = (float)characterObj["NosePeakLowering"];
+                        float NoseBoneTwist = (float)characterObj["NoseBoneTwist"];
+
+                        float EyebrowHeight = (float)characterObj["EyebrowHeight"];
+                        float EyebrowForward = (float)characterObj["EyebrowForward"];
+
+                        float CheeksBoneHeight = (float)characterObj["CheeksBoneHeight"];
+                        float CheeksBoneWidth = (float)characterObj["CheeksBoneWidth"];
+                        float CheeksWidth = (float)characterObj["CheeksWidth"];
+
+                        float EyesOpening = (float)characterObj["EyesOpening"];
+
+                        float LipsThickness = (float)characterObj["LipsThickness"];
+
+                        float JawBoneWidth = (float)characterObj["JawBoneWidth"];
+                        float JawBoneBackLength = (float)characterObj["JawBoneBackLength"];
+
+                        float ChinBoneLength = (float)characterObj["ChinBoneLength"];
+                        float ChinBoneWidth = (float)characterObj["ChinBoneWidth"];
+                        float ChinBoneLowering = (float)characterObj["ChinBoneLowering"];
+                        float ChinHole = (float)characterObj["ChinHole"];
+
+                        float NeckThickness = (float)characterObj["NeckThickness"];
+
+                        int Mom = (int)characterObj["Mom"];
+                        int Dad = (int)characterObj["Dad"];
+
+                        float Resemblance = (float)characterObj["Resemblance"];
+                        float SkinTone = (float)characterObj["SkinTone"];
+
+                        return new PlayerAppearance.MpCharacterStyle(IsMale, true, HairStyle, HairColor, HairHighlightColor, EyeColor, NoseWidth, NosePeakHeight, NosePeakLength, NosePeakLowering, NoseBoneTwist, EyebrowHeight, EyebrowForward, CheeksBoneHeight, CheeksBoneWidth, CheeksWidth, EyesOpening, LipsThickness, JawBoneWidth, JawBoneBackLength, ChinBoneLowering, ChinBoneLength, ChinBoneWidth, ChinHole, NeckThickness, Mom, Dad, Resemblance, SkinTone);
+                    }
+                }
+            }
+            // in case of an error, return an invalid character struct.
+            return new PlayerAppearance.MpCharacterStyle(false, false);
+        }
+        #endregion
+
+        #endregion
     }
 }
