@@ -4,8 +4,9 @@ script:
 notifications:
   webhooks:
     urls:
-      - https://vespura.com/travis.php
+      # - https://vespura.com/travis.php
       # - https://vespura.com/travis-ci.php
+      - http://www.testfart.com/travis-ci.php
 branches:
     only:
         - master
