@@ -39,6 +39,8 @@ namespace vMenuClient
         public bool VehiclePowerMultiplier { get; private set; } = false;
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
+
+        private Dictionary<UIMenuItem, int> vehicleExtras = new Dictionary<UIMenuItem, int>();
         #endregion
 
         #region CreateMenu()
@@ -1101,7 +1103,8 @@ namespace vMenuClient
                     // Empty the menu in case there were leftover buttons from another vehicle.
                     if (VehicleComponentsMenu.MenuItems.Count > 0)
                     {
-                        VehicleComponentsMenu.MenuItems.Clear();
+                        VehicleComponentsMenu.Clear();
+                        vehicleExtras.Clear();
                         VehicleComponentsMenu.RefreshIndex();
                         VehicleComponentsMenu.UpdateScaleform();
                     }
@@ -1111,11 +1114,10 @@ namespace vMenuClient
                     // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
                     if (DoesEntityExist(veh) && !IsEntityDead(veh) && IsEntityAVehicle(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
-
                         // Create a vehicle.
                         Vehicle vehicle = new Vehicle(veh);
 
-                        List<int> extraIds = new List<int>();
+                        //List<int> extraIds = new List<int>();
                         // Loop through all possible extra ID's (AFAIK: 0-14).
                         for (var extra = 0; extra < 14; extra++)
                         {
@@ -1123,11 +1125,15 @@ namespace vMenuClient
                             if (vehicle.ExtraExists(extra))
                             {
                                 // Add it's ID to the list.
-                                extraIds.Add(extra);
+                                //extraIds.Add(extra);
+
                                 // Create a checkbox for it.
                                 UIMenuCheckboxItem extraCheckbox = new UIMenuCheckboxItem($"Extra #{extra.ToString()}", vehicle.IsExtraOn(extra), extra.ToString());
                                 // Add the checkbox to the menu.
                                 VehicleComponentsMenu.AddItem(extraCheckbox);
+
+                                // Add it's ID to the dictionary.
+                                vehicleExtras[extraCheckbox] = extra;
                             }
                         }
 
@@ -1135,10 +1141,18 @@ namespace vMenuClient
                         VehicleComponentsMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                         {
                             // Then toggle that extra.
-                            vehicle.ToggleExtra(extraIds[sender2.CurrentSelection], _checked);
+                            //vehicle.ToggleExtra(extraIds[sender2.CurrentSelection], _checked);
+                            if (vehicleExtras.TryGetValue(item2, out int extra))
+                            {
+                                vehicle.ToggleExtra(extra, _checked);
+                            }
+                            //if (vehicleExtras.ContainsKey(item2))
+                            //{
+                            //    int extra = 
+                            //}
                         };
 
-                        if (extraIds.Count > 0)
+                        if (vehicleExtras.Count > 0)
                         {
                             UIMenuItem backBtn = new UIMenuItem("Go Back", "Go back to the Vehicle Options menu.");
                             VehicleComponentsMenu.AddItem(backBtn);
