@@ -230,5 +230,55 @@ namespace vMenuClient
             MainMenu.Cf.Log(json + "\n");
             return vi;
         }
+
+        /// <summary>
+        /// Save json data. Returns true if save was successfull.
+        /// </summary>
+        /// <param name="saveName">Name to store the data under.</param>
+        /// <param name="jsonData">The data to store.</param>
+        /// <param name="overrideExistingData">If the saveName is already in use, can we override it?</param>
+        /// <returns>Whether or not the data was saved successfully.</returns>
+        public bool SaveJsonData(string saveName, string jsonData, bool overrideExistingData)
+        {
+            if (!string.IsNullOrEmpty(saveName) && !string.IsNullOrEmpty(jsonData))
+            {
+                string existingData = GetResourceKvpString(saveName); // check for existing data.
+
+                if (!string.IsNullOrEmpty(existingData)) // data already exists for this save name.
+                {
+                    if (!overrideExistingData)
+                    {
+                        return false; // data already exists, and we are not allowed to override it.
+                    }
+                }
+
+                // write data.
+                SetResourceKvp(saveName, jsonData);
+
+                // return true if the data is successfully written, otherwise return false.
+                return (GetResourceKvpString(saveName) ?? "") == jsonData;
+            }
+            return false; // input parameters are invalid.
+        }
+
+        /// <summary>
+        /// Returns the saved json data for the provided save name. Returns null if no data exists.
+        /// </summary>
+        /// <param name="saveName"></param>
+        /// <returns></returns>
+        public string GetJsonData(string saveName)
+        {
+            if (!string.IsNullOrEmpty(saveName))
+            {
+                //Debug.WriteLine("not null");
+                string data = GetResourceKvpString(saveName);
+                //Debug.Write(data + "\n");
+                if (!string.IsNullOrEmpty(data))
+                {
+                    return data;
+                }
+            }
+            return null;
+        }
     }
 }
