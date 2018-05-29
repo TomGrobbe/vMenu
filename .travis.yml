@@ -5,7 +5,7 @@ notifications:
   webhooks:
     urls:
       - $WEBHOOK_URL_DT
-      # - https://vespura.com/travis.php
+      - https://vespura.com/travis.php
       # - https://vespura.com/travis-ci.php
       # - http://www.testfart.com/travis-ci.php
 # after_success:
