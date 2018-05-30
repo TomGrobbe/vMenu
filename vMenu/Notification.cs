@@ -110,7 +110,7 @@ namespace vMenuClient
         /// <param name="message">Message to display.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Custom(string message, bool blink = false, bool saveToBrief = true)
+        public static void Custom(string message, bool blink = true, bool saveToBrief = true)
         {
             SetNotificationTextEntry("THREESTRINGS");
             string[] messages = MainMenu.Cf.StringToArray(message);
@@ -131,7 +131,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Alert(string message, bool blink = false, bool saveToBrief = true)
+        public static void Alert(string message, bool blink = true, bool saveToBrief = true)
         {
             Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief);
         }
@@ -143,7 +143,7 @@ namespace vMenuClient
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
-        public static void Alert(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
+        public static void Alert(CommonErrors errorMessage, bool blink = true, bool saveToBrief = true, string placeholderValue = null)
         {
             string message = ErrorMessage.Get(errorMessage, placeholderValue);
             Alert(message, blink, saveToBrief);
@@ -155,7 +155,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Error(string message, bool blink = false, bool saveToBrief = true)
+        public static void Error(string message, bool blink = true, bool saveToBrief = true)
         {
             Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief);
         }
@@ -167,7 +167,7 @@ namespace vMenuClient
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
-        public static void Error(CommonErrors errorMessage, bool blink = false, bool saveToBrief = true, string placeholderValue = null)
+        public static void Error(CommonErrors errorMessage, bool blink = true, bool saveToBrief = true, string placeholderValue = null)
         {
             string message = ErrorMessage.Get(errorMessage, placeholderValue);
             Error(message, blink, saveToBrief);
@@ -179,7 +179,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Info(string message, bool blink = false, bool saveToBrief = true)
+        public static void Info(string message, bool blink = true, bool saveToBrief = true)
         {
             Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief);
         }
@@ -190,7 +190,7 @@ namespace vMenuClient
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
-        public static void Success(string message, bool blink = false, bool saveToBrief = true)
+        public static void Success(string message, bool blink = true, bool saveToBrief = true)
         {
             Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
         }
