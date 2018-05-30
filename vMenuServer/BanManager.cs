@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using System.Text.RegularExpressions;
+using static vMenuServer.DebugLog;
 
 namespace vMenuServer
 {
@@ -34,7 +35,7 @@ namespace vMenuServer
         /// </summary>
         public BanManager()
         {
-            EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int, double, string>(BanPlayer));
+            EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int?, double, string>(BanPlayer));
             EventHandlers.Add("vMenu:PermBanPlayer", new Action<Player, int, string>(BanPlayer));
             EventHandlers.Add("playerConnecting", new Action<Player, string, CallbackDelegate>(CheckForBans));
             EventHandlers.Add("vMenu:RequestPlayerUnban", new Action<Player, string>(RemoveBanRecord));
@@ -48,8 +49,7 @@ namespace vMenuServer
         /// <param name="source"></param>
         private void SendBanList([FromSource] Player source)
         {
-            if (MainServer.DebugMode)
-                Debug.Write("Updating player with new banlist.\n");
+            Log("Updating player with new banlist.\n");
             source.TriggerEvent("vMenu:SetBanList", JsonConvert.SerializeObject(GetBanList()).ToString());
         }
 
@@ -146,8 +146,7 @@ namespace vMenuServer
                                 kickCallback($"You are banned from this server. Ban time remaining: {timeRemainingMessage}"
                                           + $". Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
                             }
-                            if (MainServer.DebugMode)
-                                Debug.Write($"Player is still banned for {Math.Round(timeRemaining.TotalHours, 2)} hours.\n");
+                            Log($"Player is still banned for {Math.Round(timeRemaining.TotalHours, 2)} hours.\n");
                             CancelEvent();
                         }
                         else
@@ -204,17 +203,17 @@ namespace vMenuServer
                         }
                         else
                         {
-                            Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?\n");
+                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?\n");
                         }
                     }
                     else
                     {
-                        Debug.WriteLine("Could not ban player because they are exempt from being banned.");
-                        TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "This player is exempt from being banned.");
+                        Log("Could not ban player because they are exempt from being banned.");
+                        source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
                     }
                     return;
                 }
-                Debug.WriteLine("An error occurred while trying to ban someone. Error details: The specified target player is 'null', unknown reason.");
+                Log("An error occurred while trying to ban someone. Error details: The specified target player is 'null', unknown reason.");
                 TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
@@ -230,43 +229,65 @@ namespace vMenuServer
         /// <param name="targetPlayer">Player who needs to be banned.</param>
         /// <param name="banDurationHours">Ban duration in hours.</param>
         /// <param name="banReason">Reason for the ban.</param>
-        private void BanPlayer([FromSource] Player source, int targetPlayer, double banDurationHours, string banReason)
+        private void BanPlayer([FromSource] Player source, int? targetPlayer, double banDurationHours, string banReason)
         {
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                Player target = new PlayerList()[targetPlayer];
-                if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
+                Log("Player is allowed to ban others.");
+                if (targetPlayer != null && new PlayerList().Any(p => (p.Handle == targetPlayer.ToString())))
                 {
-                    BanRecord ban = new BanRecord()
+                    Log("Target player (int) is not null and is still online.");
+                    Player target = new PlayerList()[(int)targetPlayer];
+                    if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
-                        bannedBy = GetSafePlayerName(source.Name),
-                        bannedUntil = DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0),
-                        banReason = banReason,
-                        identifiers = target.Identifiers.ToList<string>(),
-                        playerName = GetSafePlayerName(target.Name)
-                    };
-                    if (AddBan(ban))
-                    {
-                        BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by " +
-                            $"{ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.");
-                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                        Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban him.");
+                        BanRecord ban = new BanRecord()
+                        {
+                            bannedBy = GetSafePlayerName(source.Name),
+                            bannedUntil = DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0),
+                            banReason = banReason,
+                            identifiers = target.Identifiers.ToList<string>(),
+                            playerName = GetSafePlayerName(target.Name)
+                        };
+
+                        Log("Record created.");
+                        if (AddBan(ban))
+                        {
+                            Log("banning was successfull.");
+                            BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by " +
+                                $"{ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.");
+                            TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                            TriggerClientEvent("chatMessage", "Banned");
+                        }
+                        else
+                        {
+                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
+                        }
+                        BannedPlayersList = GetBanList();
+                        string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                        target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+
+                        Log("kicking of player would have occurred now.");
                     }
                     else
                     {
-                        if (MainServer.DebugMode)
-                            Debug.Write("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
+                        Log("Player could not be banned because he is exempt from being banned.");
+                        source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
                     }
-                    BannedPlayersList = GetBanList();
-                    string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                    target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}"
-                              + $". Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                }
+                else
+                {
+                    Log("Player is invalid (no longer online) and therefor the banning has failed.");
+                    source.TriggerEvent("vMenu:Notify", "Could not temp-ban this player because they already left the server.");
                 }
             }
             else
             {
+                Log("banning of cheater because original source is not allowed to ban.");
                 BanCheater(source);
             }
+
         }
 
         /// <summary>
@@ -303,6 +324,8 @@ namespace vMenuServer
         /// <returns></returns>
         private static bool AddBan(BanRecord ban)
         {
+
+            Log("Refreshing banned players list.");
             BannedPlayersList = GetBanList();
             var found = false;
             foreach (BanRecord b in BannedPlayersList)
@@ -320,6 +343,7 @@ namespace vMenuServer
                     break;
                 }
             }
+            Log("Player is found as already banned? : " + found.ToString());
 
             BannedPlayersList.Add(ban);
 
@@ -414,7 +438,7 @@ namespace vMenuServer
             }
 
             source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
-            Debug.WriteLine("A cheater has been banned because they attempted to trigger a fake event.");
+            Log("A cheater has been banned because they attempted to trigger a fake event.");
         }
 
 
@@ -448,7 +472,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, outputFile.Length);
-                Debug.Write(banActionMessage + "\n");
+                Log(banActionMessage + "\n");
             }
         }
     }
