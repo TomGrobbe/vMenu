@@ -208,11 +208,33 @@ namespace vMenuClient
                             }
                             else if (item2 == tempBanBtn)
                             {
+                                // Close the menu.
+                                PlayerMenu.GoBack();
+
+                                // ban player
                                 cf.BanPlayer(player: player, forever: false);
+
+                                // Update the player list.
+                                UpdatePlayerlist();
+
+                                // Refresh the index & update scaleform.
+                                menu.RefreshIndex();
+                                menu.UpdateScaleform();
                             }
                             else if (item2 == permBanBtn)
                             {
+                                // Close the menu.
+                                PlayerMenu.GoBack();
+
+                                // ban player
                                 cf.BanPlayer(player: player, forever: true);
+
+                                // Update the player list.
+                                UpdatePlayerlist();
+
+                                // Refresh the index & update scaleform.
+                                menu.RefreshIndex();
+                                menu.UpdateScaleform();
                             }
                         };
 
