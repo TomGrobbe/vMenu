@@ -8,9 +8,26 @@ using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
 using System.Dynamic;
+using static vMenuServer.DebugLog;
 
 namespace vMenuServer
 {
+
+    public static class DebugLog
+    {
+        /// <summary>
+        /// Global log data function, only logs when debugging is enabled.
+        /// </summary>
+        /// <param name="data"></param>
+        public static void Log(dynamic data)
+        {
+            if (MainServer.DebugMode)
+            {
+                Debug.Write(data.ToString() + "\n");
+            }
+        }
+    }
+
     public class MainServer : BaseScript
     {
         public static bool UpToDate = true;
@@ -352,7 +369,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["vehicles"])
                     {
-                        if (DebugMode) { Debug.WriteLine("Addon vehicle loaded: " + modelName, ""); }
+                        Log("Addon vehicle loaded: " + modelName);
                         addonVehicles.Add(modelName);
                     }
                 }
@@ -361,7 +378,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["peds"])
                     {
-                        if (DebugMode) { Debug.WriteLine("Addon ped loaded:" + modelName, ""); }
+                        Log("Addon ped loaded:" + modelName);
                         addonPeds.Add(modelName);
                     }
                 }
@@ -370,7 +387,7 @@ namespace vMenuServer
                 {
                     foreach (var modelName in json["weapons"])
                     {
-                        if (DebugMode) { Debug.WriteLine("Addon weapon loaded:" + modelName, ""); }
+                        Log("Addon weapon loaded:" + modelName);
                         addonWeapons.Add(modelName);
                     }
                 }
@@ -436,10 +453,11 @@ namespace vMenuServer
                 {
                     dynamicWeatherTimeLeft = 5 * 12 * 10;
                     RefreshWeather();
+
                     if (DebugMode)
                     {
                         long gameTimer2 = GetGameTimer();
-                        Debug.WriteLine($"Duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
+                        Log($"Duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
                         gameTimer = gameTimer2;
                     }
                 }
@@ -577,10 +595,10 @@ namespace vMenuServer
                     if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
                     {
                         TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
-                        
+
                         KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
                         TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
-                        
+
                         // Kick the player from the server using the specified reason.
                         DropPlayer(targetPlayer.Handle, kickReason);
                         return;
