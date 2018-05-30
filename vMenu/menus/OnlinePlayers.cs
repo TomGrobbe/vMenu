@@ -155,16 +155,17 @@ namespace vMenuClient
                             // Set waypoint button is pressed.
                             else if (item2 == setWaypointBtn)
                             {
-                                World.WaypointPosition = GetEntityCoords(GetPlayerPed(player.Handle), true);
-                                //Subtitle.Info($"A new waypoint has been set to ~y~{player.Name}~z~.", prefix: "Info:");
+                                if (player.Handle != PlayerPedId())
+                                    World.WaypointPosition = GetEntityCoords(GetPlayerPed(player.Handle), true);
+                                else
+                                    Notify.Error("You can not set a waypoint to yourself.", true, true);
                             }
                             // Spectate player button is pressed.
                             else if (item2 == spectateBtn)
                             {
                                 if (player.Handle == PlayerId())
                                 {
-                                    //Subtitle.Error("You can ~h~not~h~ spectate yourself!", prefix: "Error:");
-                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~spectate yourself!");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~spectate yourself!", true, true);
                                 }
                                 else
                                 {
@@ -176,7 +177,7 @@ namespace vMenuClient
                             {
                                 if (player.Handle == PlayerId())
                                 {
-                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~summon yourself!");
+                                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~summon yourself!", true, true);
                                 }
                                 else
                                 {
@@ -186,7 +187,6 @@ namespace vMenuClient
                             // Kill player button is pressed.
                             else if (item2 == killBtn)
                             {
-                                //Subtitle.Info($"~y~{player.Name} ~z~has been killed.", prefix: "Info:");
                                 Notify.Success($"Player ~y~<C>{player.Name}</C> ~s~has been killed.");
                                 cf.KillPlayer(player);
                             }
