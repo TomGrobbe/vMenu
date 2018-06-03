@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
@@ -17,7 +18,7 @@ namespace vMenuClient
 
     public class ValidWeapons
     {
-        private ValidWeapon[] _validWeaponsList = new ValidWeapon[82 - 4];
+        private ValidWeapon[] _validWeaponsList = new ValidWeapon[82 - 4 + 7];
 
         public ValidWeapon[] WeaponList
         {
@@ -41,7 +42,7 @@ namespace vMenuClient
                     Dictionary<string, uint> componentHashes = new Dictionary<string, uint>();
                     foreach (var comp in weaponComponents)
                     {
-                        if (CitizenFX.Core.Native.API.DoesWeaponTakeWeaponComponent(hash, comp.Value))
+                        if (DoesWeaponTakeWeaponComponent(hash, comp.Value))
                         {
                             if (!componentHashes.ContainsKey(weaponComponentNames[comp.Key]))
                             {
@@ -77,6 +78,7 @@ namespace vMenuClient
             ["BattleAxe"] = "Battle Axe",
             ["Bottle"] = "Bottle",
             ["BullpupRifle"] = "Bullpup Rifle",
+            ["BullpupRifleMk2"] = "Bullpup Rifle Mk II",
             ["BullpupShotgun"] = "Bullpup Shotgun",
             ["CarbineRifle"] = "Carbine Rifle",
             ["CarbineRifleMk2"] = "Carbine Rifle Mk II",
@@ -88,6 +90,7 @@ namespace vMenuClient
             ["CompactRifle"] = "Compact Rifle",
             ["Crowbar"] = "Crowbar",
             ["Dagger"] = "Antique Cavalry Dagger",
+            ["DoubleAction"] = "Double Action Revolver",
             ["DoubleBarrelShotgun"] = "Double Barrel Shotgun",
             ["FireExtinguisher"] = "Fire Extinguisher",
             ["Firework"] = "Firework Launcher",
@@ -113,6 +116,7 @@ namespace vMenuClient
             ["MachinePistol"] = "Machine Pistol",
             ["MarksmanPistol"] = "Marksman Pistol",
             ["MarksmanRifle"] = "Marksman Rifle",
+            ["MarksmanRifleMk2"] = "Marksman Rifle Mk II",
             ["MicroSMG"] = "Micro SMG",
             ["MiniSMG"] = "Mini SMG",
             ["Minigun"] = "Minigun",
@@ -129,9 +133,11 @@ namespace vMenuClient
             ["PoolCue"] = "Pool Cue",
             ["ProximityMine"] = "Proximity Mine",
             ["PumpShotgun"] = "Pump Shotgun",
+            ["PumpShotgunMk2"] = "Pump Shotgun Mk II",
             ["RPG"] = "RPG",
             ["Railgun"] = "Railgun",
             ["Revolver"] = "Heavy Revolver",
+            ["RevolverMk2"] = "Heavy Revolver Mk II",
             ["SMG"] = "SMG",
             ["SMGMk2"] = "SMG Mk II",
             ["SniperRifle"] = "Sniper Rifle",
@@ -141,6 +147,7 @@ namespace vMenuClient
             ["SmokeGrenade"] = "Tear Gas",
             ["Snowball"] = "Snowball",
             ["SpecialCarbine"] = "Special Carbine",
+            ["SpecialCarbineMk2"] = "Special Carbine Mk II",
             ["StickyBomb"] = "Sticky Bomb",
             ["StunGun"] = "Stun Gun",
             ["SweeperShotgun"] = "Sweeper Shotgun",
@@ -164,6 +171,7 @@ namespace vMenuClient
             ["BattleAxe"] = Permission.WPBattleAxe,
             ["Bottle"] = Permission.WPBottle,
             ["BullpupRifle"] = Permission.WPBullpupRifle,
+            ["BullpupRifleMk2"] = Permission.WPBullpupRifleMk2,
             ["BullpupShotgun"] = Permission.WPBullpupShotgun,
             ["CarbineRifle"] = Permission.WPCarbineRifle,
             ["CarbineRifleMk2"] = Permission.WPCarbineRifleMk2,
@@ -175,6 +183,7 @@ namespace vMenuClient
             ["CompactRifle"] = Permission.WPCompactRifle,
             ["Crowbar"] = Permission.WPCrowbar,
             ["Dagger"] = Permission.WPDagger,
+            ["DoubleAction"] = Permission.WPDoubleAction,
             ["DoubleBarrelShotgun"] = Permission.WPDoubleBarrelShotgun,
             ["FireExtinguisher"] = Permission.WPFireExtinguisher,
             ["Firework"] = Permission.WPFirework,
@@ -200,6 +209,7 @@ namespace vMenuClient
             ["MachinePistol"] = Permission.WPMachinePistol,
             ["MarksmanPistol"] = Permission.WPMarksmanPistol,
             ["MarksmanRifle"] = Permission.WPMarksmanRifle,
+            ["MarksmanRifleMk2"] = Permission.WPMarksmanRifleMk2,
             ["MicroSMG"] = Permission.WPMicroSMG,
             ["MiniSMG"] = Permission.WPMiniSMG,
             ["Minigun"] = Permission.WPMinigun,
@@ -216,9 +226,11 @@ namespace vMenuClient
             ["PoolCue"] = Permission.WPPoolCue,
             ["ProximityMine"] = Permission.WPProximityMine,
             ["PumpShotgun"] = Permission.WPPumpShotgun,
+            ["PumpShotgunMk2"] = Permission.WPPumpShotgunMk2,
             ["RPG"] = Permission.WPRPG,
             ["Railgun"] = Permission.WPRailgun,
             ["Revolver"] = Permission.WPRevolver,
+            ["RevolverMk2"] = Permission.WPRevolverMk2,
             ["SMG"] = Permission.WPSMG,
             ["SMGMk2"] = Permission.WPSMGMk2,
             ["SNSPistol"] = Permission.WPSNSPistol,
@@ -228,6 +240,7 @@ namespace vMenuClient
             ["SniperRifle"] = Permission.WPSniperRifle,
             ["Snowball"] = Permission.WPSnowball,
             ["SpecialCarbine"] = Permission.WPSpecialCarbine,
+            ["SpecialCarbineMk2"] = Permission.WPSpecialCarbineMk2,
             ["StickyBomb"] = Permission.WPStickyBomb,
             ["StunGun"] = Permission.WPStunGun,
             ["SweeperShotgun"] = Permission.WPSweeperShotgun,
@@ -253,6 +266,7 @@ namespace vMenuClient
             ["BattleAxe"] = 3441901897,
             ["Bottle"] = 4192643659,
             ["BullpupRifle"] = 2132975508,
+            ["BullpupRifleMk2"] = (uint)GetHashKey("WEAPON_BULLPUPRIFLE_MK2"),
             ["BullpupShotgun"] = 2640438543,
             ["BZGas"] = 2694266206,
             ["CarbineRifle"] = 2210333304,
@@ -265,6 +279,7 @@ namespace vMenuClient
             ["CompactRifle"] = 1649403952,
             ["Crowbar"] = 2227010557,
             ["Dagger"] = 2460120199,
+            ["DoubleAction"] = (uint)GetHashKey("WEAPON_DOUBLEACTION"),
             ["DoubleBarrelShotgun"] = 4019527611,
             ["FireExtinguisher"] = 101631238,
             ["Firework"] = 2138347493,
@@ -289,6 +304,7 @@ namespace vMenuClient
             ["MachinePistol"] = 3675956304,
             ["MarksmanPistol"] = 3696079510,
             ["MarksmanRifle"] = 3342088282,
+            ["MarksmanRifleMk2"] = (uint)GetHashKey("WEAPON_MARKSMANRIFLE_MK2"),
             ["MG"] = 2634544996,
             ["MicroSMG"] = 324215364,
             ["Minigun"] = 1119849093,
@@ -306,8 +322,10 @@ namespace vMenuClient
             ["PoolCue"] = 2484171525,
             ["ProximityMine"] = 2874559379,
             ["PumpShotgun"] = 487013001,
+            ["PumpShotgunMk2"] = (uint)GetHashKey("WEAPON_PUMPSHOTGUN_MK2"),
             ["Railgun"] = 1834241177,
             ["Revolver"] = 3249783761,
+            ["RevolverMk2"] = (uint)GetHashKey("WEAPON_REVOLVER_MK2"),
             ["RPG"] = 2982836145,
             ["SawnOffShotgun"] = 2017895192,
             ["SMG"] = 736523883,
@@ -316,8 +334,9 @@ namespace vMenuClient
             ["SniperRifle"] = 100416529,
             ["Snowball"] = 126349499,
             ["SNSPistol"] = 3218215474,
-            ["SNSPistolMk2"] = 2009644972,
+            ["SNSPistolMk2"] = (uint)GetHashKey("WEAPON_SNSPISTOL_MK2"),
             ["SpecialCarbine"] = 3231910285,
+            ["SpecialCarbineMk2"] = (uint)GetHashKey("WEAPON_SPECIALCARBINE_MK2"),
             ["StickyBomb"] = 741814745,
             ["StunGun"] = 911657153,
             ["SweeperShotgun"] = 317205821,
