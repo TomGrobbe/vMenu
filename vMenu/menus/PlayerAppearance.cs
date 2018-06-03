@@ -193,16 +193,18 @@ namespace vMenuClient
             menu.AddItem(walkingStyle);
 
             // Bind items to the submenus.
-            if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
-            {
-                CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
-                menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
-            }
-            else
+            //if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
+            //{
+            //    CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
+            //    menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
+            //}
+            //else
             {
                 mpCharMenuBtn.Enabled = false;
                 mpCharMenuBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                mpCharMenuBtn.Description = "~r~The options in this submenu are restricted because they are still experimental features. The server owner can enable this if they want to, but you have been warned because it may cause dataloss for users and could be buggy.";
+                //mpCharMenuBtn.Description = "~r~The options in this submenu are restricted because they are still experimental features. The server owner can enable this if they want to, but you have been warned because it may cause dataloss for users and could be buggy.";
+
+                mpCharMenuBtn.Description = "This will be added in the near future. It does not work, so don't even try to enable it, it WILL currently delete all your saved peds/vehicles if you do so.";
             }
 
             if (cf.IsAllowed(Permission.PACustomize))
