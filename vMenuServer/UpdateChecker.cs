@@ -35,6 +35,7 @@ namespace vMenuServer
                 await Delay(500);
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http("https://vespura.com/vMenu-version.json");
+                // TODO: create webserver api for proper version checking.
 
                 Debug.WriteLine("\r\n[vMenu] Checking for updates.");
 
