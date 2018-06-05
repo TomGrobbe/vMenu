@@ -64,7 +64,8 @@ namespace vMenuClient
         }
 
         #region Weapon names, hashes and localized names (+ all components & tints).
-        public static Dictionary<string, string> weaponNames = new Dictionary<string, string>()
+        #region weapon names
+        public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
         {
             ["APPistol"] = "AP Pistol",
             ["AdvancedRifle"] = "Advanced Rifle",
@@ -156,8 +157,10 @@ namespace vMenuClient
             ["VintagePistol"] = "Vintage Pistol",
             ["Wrench"] = "Pipe Wrench",
         };
+        #endregion
 
-        public static Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
+        #region weapon permissions
+        public static readonly Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
         {
             ["APPistol"] = Permission.WPAPPistol,
             ["AdvancedRifle"] = Permission.WPAdvancedRifle,
@@ -249,11 +252,10 @@ namespace vMenuClient
             ["VintagePistol"] = Permission.WPVintagePistol,
             ["Wrench"] = Permission.WPWrench,
         };
+        #endregion
 
-        /// <summary>
-        /// Key = Weapon Name (NOT localized - string), value = hash (uint).
-        /// </summary>
-        public static Dictionary<string, uint> Weapons = new Dictionary<string, uint>()
+        #region weapons (name to hash)
+        public static readonly Dictionary<string, uint> Weapons = new Dictionary<string, uint>()
         {
             ["AdvancedRifle"] = 2937143193,
             ["APPistol"] = 584646201,
@@ -345,8 +347,10 @@ namespace vMenuClient
             ["VintagePistol"] = 137902532,
             ["Wrench"] = 419712736
         };
+        #endregion
 
-        public static Dictionary<string, uint> weaponComponents = new Dictionary<string, uint>()
+        #region weapon components
+        public static readonly Dictionary<string, uint> weaponComponents = new Dictionary<string, uint>()
         {
             ["PistolMk2CamoSkull"] = 24902297,
             ["CombatMGMk2CamoBoom"] = 42685294,
@@ -622,8 +626,10 @@ namespace vMenuClient
             ["AssaultRifleMk2CamoZebra"] = 4234628436,
             ["PistolClip01"] = 4275109233
         };
+        #endregion
 
-        public static Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
+        #region weapon component names
+        public static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
         {
             ["SniperRifleVarmodLuxe"] = "Etched Wood Grip Finish",
             ["SniperRifleClip01"] = "Default Clip",
@@ -898,8 +904,10 @@ namespace vMenuClient
             ["CarbineRifleMk2CamoSkull"] = "Skull",
             ["CarbineRifleMk2CamoLeopard"] = "Leopard"
         };
+        #endregion
 
-        public static Dictionary<string, int> WeaponTints = new Dictionary<string, int>()
+        #region weapon tints
+        public static readonly Dictionary<string, int> WeaponTints = new Dictionary<string, int>()
         {
             ["Black"] = 0,
             ["Green"] = 1,
@@ -910,8 +918,10 @@ namespace vMenuClient
             ["Orange"] = 6,
             ["Platinum"] = 7,
         };
+        #endregion
 
-        public static Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int>()
+        #region weapon mk2 tints
+        public static readonly Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int>()
         {
             ["Classic Black"] = 0,
             ["Classic Gray"] = 1,
@@ -946,6 +956,7 @@ namespace vMenuClient
             ["Metallic White & Aqua"] = 30,
             ["Metallic Red & Yellow"] = 31
         };
+        #endregion
         #endregion
     }
 }
