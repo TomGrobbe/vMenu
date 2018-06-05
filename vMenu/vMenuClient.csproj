@@ -75,6 +75,7 @@
     <Compile Include="Notification.cs" />
     <Compile Include="PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
+    <Compile Include="Permission.cs" />
     <Compile Include="PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageManager.cs" />
