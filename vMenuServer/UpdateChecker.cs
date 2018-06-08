@@ -49,6 +49,7 @@ namespace vMenuServer
                 }
                 // sets the UUID convar.
                 ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
+                ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
 
 
                 // Get a response from the specified url.
