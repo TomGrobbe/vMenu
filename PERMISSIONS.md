@@ -1,6 +1,13 @@
+# IMPORTANT
+**If you want to _DENY_ something, _REMOVE_ the permission line or add a `#` in front of the line.**
+*DO NOT* set the permission to `deny` or `denied` (denied doesn't even exist, yet people keep trying to use it) because this won't work like you expect it to do!!!!
+Also make sure you remove the `vMenu.<submenu>.All` permission node, because 9/10 times when you remove a permission, and after restarting the server it still seems enabled, you forgot to remove the wildcard permission. For example: to remove the player godmode from "everyone", add a `#` in front of `add_ace builtin.everyone "vMenu.PlayerOptions.God" allow` and also add an `#` in front of `add_ace builtin.everyone "vMenu.PlayerOptions.All" allow`.
+
+
 ## Features & Permissions List
 **Almost all features have custom permissions options. Some options without permissions are not listed below, however they are present in the menu itself.**
 >### ⚠ Please note that ALL permissions are `CaSeSeNSItIve`!
+
 
 ## Global Permissions
 **Notes:**
