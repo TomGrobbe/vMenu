@@ -234,6 +234,7 @@
         MSDeathNotifs,
         MSNightVision,
         MSThermalVision,
+        MSLocationBlips,
 
         // Voice Chat
         VCMenu,

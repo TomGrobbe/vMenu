@@ -25,6 +25,7 @@ namespace vMenuClient
         public bool JoinQuitNotifications { get; private set; } = UserDefaults.MiscJoinQuitNotifications;
         public bool LockCameraX { get; private set; } = false;
         public bool LockCameraY { get; private set; } = false;
+        public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
 
         /// <summary>
         /// Creates the menu.
@@ -76,6 +77,8 @@ namespace vMenuClient
             connectionSubmenu.AddItem(quitSession);
             connectionSubmenu.AddItem(quitGame);
             connectionSubmenu.AddItem(disconnectFromServer);
+
+            UIMenuCheckboxItem blips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map of some common locations.");
 
             MainMenu.Mp.Add(connectionSubmenu);
             connectionSubmenu.RefreshIndex();
@@ -132,6 +135,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.MSThermalVision))
             {
                 menu.AddItem(thermalVision);
+            }
+            if (cf.IsAllowed(Permission.MSLocationBlips))
+            {
+                menu.AddItem(blips);
             }
             if (cf.IsAllowed(Permission.MSClearArea))
             {
@@ -196,6 +203,11 @@ namespace vMenuClient
                 {
                     LockCameraY = _checked;
                 }
+                else if (item == blips)
+                {
+                    ToggleBlips(_checked);
+                    ShowLocationBlips = _checked;
+                }
             };
 
             // Handle button presses.
@@ -232,5 +244,54 @@ namespace vMenuClient
             }
             return menu;
         }
+
+        private struct Blip
+        {
+            readonly Vector3 Location;
+            readonly int Sprite;
+            readonly string Name;
+            readonly int Color;
+
+            public Blip(Vector3 Location, int Sprite, string Name)
+            {
+                this.Location = Location;
+                this.Sprite = Sprite;
+                this.Name = Name;
+                Color = 0;
+            }
+
+            public Blip(Vector3 Location, int Sprite, string Name, int Color)
+            {
+                this.Location = Location;
+                this.Sprite = Sprite;
+                this.Name = Name;
+                this.Color = Color;
+            }
+        }
+
+        private readonly List<Blip> blips = new List<Blip>()
+        {
+            // airports
+            new Blip(new Vector3(-1089f, -2791f, 50f), 90, GetLabelText("BRS_MCL_0")), // LSIA
+            new Blip(new Vector3(1728f, 3314f, 49f), 90, GetLabelText("VEX_LR_LOC1")), // sandy shores airfield
+            new Blip(new Vector3(2132f, 4785f, 40f), 90, GetLabelText("SM_LOC_MCK")), // mckenzie field
+            new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
+
+            // helicopter pad
+            new Blip(new Vector3(-735f, -1455f, 4f), 370, GetLabelText("ACCNA_HELIPAD")), // Helipad
+            // harbor / docks in La Puerta
+            new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
+
+
+        };
+
+        private void ToggleBlips(bool enable)
+        {
+            if (enable)
+            {
+
+            }
+        }
+
     }
 }

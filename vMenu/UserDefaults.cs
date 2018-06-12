@@ -74,8 +74,8 @@ namespace vMenuClient
         }
         public static bool VehicleSpecialGodMode
         {
-            get { return GetSettingsBool("VehicleSpecialGodMode"); }
-            set { SetSavedSettingsBool("VehicleSpecialGodMode", value); }
+            get { return GetSettingsBool("vehicleSpecialGodMode"); }
+            set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
         }
 
         public static bool VehicleEngineAlwaysOn
@@ -166,6 +166,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("miscShowLocation"); }
             set { SetSavedSettingsBool("miscShowLocation", value); }
+        }
+
+        public static bool MiscLocationBlips
+        {
+            get { return GetSettingsBool("miscLocationBlips"); }
+            set { SetSavedSettingsBool("miscLocationBlips", value); }
         }
         #endregion
 
@@ -316,6 +322,8 @@ namespace vMenuClient
 
                 MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
                 prefs.Add("MiscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
+                MiscLocationBlips = MainMenu.MiscSettingsMenu.ShowLocationBlips;
+                prefs.Add("miscLocationBlips", MainMenu.MiscSettingsMenu.ShowLocationBlips);
 
 
             }
