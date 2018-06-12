@@ -151,10 +151,10 @@ namespace vMenuClient
                 }
                 // Manage other stats.
                 StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
                 StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
                 StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
                 StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
 
                 // Manage Super jump.
