@@ -35,6 +35,7 @@
         POFunctions,
         POFreeze,
         POScenarios,
+        POUnlimitedStamina,
 
         // Vehicle Options
         VOMenu,

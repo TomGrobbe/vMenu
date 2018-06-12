@@ -141,9 +141,8 @@ namespace vMenuClient
                     (!cf.IsAllowed(Permission.POInvisible)), false);
 
                 // Manage Stamina
-                if (MainMenu.PlayerOptionsMenu.PlayerStamina)
+                if (MainMenu.PlayerOptionsMenu.PlayerStamina && cf.IsAllowed(Permission.POUnlimitedStamina))
                 {
-                    //ResetPlayerStamina(PlayerId());
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
                 }
                 else
@@ -801,7 +800,7 @@ namespace vMenuClient
                     Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo);
                 }
 
-                
+
                 /// THIS SOLUTION IS BUGGED AND CAUSES CRASHES
                 //// workaround for mk2 weapons (the infinite ammo doesn't seem to work all the time for mk2 weapons)
                 //if (MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo) && Game.PlayerPed.Weapons.Current.IsMk2 &&

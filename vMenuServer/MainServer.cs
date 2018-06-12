@@ -103,6 +103,7 @@ namespace vMenuServer
             "POFunctions",
             "POFreeze",
             "POScenarios",
+            "POUnlimitedStamina",
 
             // Vehicle Options
             "VOMenu",
