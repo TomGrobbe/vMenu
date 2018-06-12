@@ -214,9 +214,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications"
-                    || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted"
-                    || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "vehicleHighbeamsOnHonk")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -282,46 +280,47 @@ namespace vMenuClient
             if (MainMenu.PlayerOptionsMenu != null)
             {
                 EveryoneIgnorePlayer = MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
-                prefs.Add("EveryoneIgnorePlayer", MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
+                prefs.Add("everyoneIgnorePlayer", MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
 
                 FastRun = MainMenu.PlayerOptionsMenu.PlayerFastRun;
-                prefs.Add("FastRun", MainMenu.PlayerOptionsMenu.PlayerFastRun);
+                prefs.Add("fastRun", MainMenu.PlayerOptionsMenu.PlayerFastRun);
 
                 FastSwim = MainMenu.PlayerOptionsMenu.PlayerFastSwim;
-                prefs.Add("FastSwim", MainMenu.PlayerOptionsMenu.PlayerFastSwim);
+                prefs.Add("fastSwim", MainMenu.PlayerOptionsMenu.PlayerFastSwim);
 
                 NeverWanted = MainMenu.PlayerOptionsMenu.PlayerNeverWanted;
-                prefs.Add("NeverWanted", MainMenu.PlayerOptionsMenu.PlayerNeverWanted);
+                prefs.Add("neverWanted", MainMenu.PlayerOptionsMenu.PlayerNeverWanted);
 
                 NoRagdoll = MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
-                prefs.Add("NoRagdoll", MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                prefs.Add("noRagdoll", MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
 
                 PlayerGodMode = MainMenu.PlayerOptionsMenu.PlayerGodMode;
-                prefs.Add("PlayerGodMode", MainMenu.PlayerOptionsMenu.PlayerGodMode);
+                prefs.Add("playerGodMode", MainMenu.PlayerOptionsMenu.PlayerGodMode);
 
                 SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
-                prefs.Add("SuperJump", MainMenu.PlayerOptionsMenu.PlayerSuperJump);
+                prefs.Add("superJump", MainMenu.PlayerOptionsMenu.PlayerSuperJump);
 
                 UnlimitedStamina = MainMenu.PlayerOptionsMenu.PlayerStamina;
-                prefs.Add("UnlimitedStamina", MainMenu.PlayerOptionsMenu.PlayerStamina);
+                prefs.Add("unlimitedStamina", MainMenu.PlayerOptionsMenu.PlayerStamina);
             }
 
             if (MainMenu.MiscSettingsMenu != null)
             {
                 MiscDeathNotifications = MainMenu.MiscSettingsMenu.DeathNotifications;
-                prefs.Add("MiscDeathNotifications", MainMenu.MiscSettingsMenu.DeathNotifications);
+                prefs.Add("miscDeathNotifications", MainMenu.MiscSettingsMenu.DeathNotifications);
 
                 MiscJoinQuitNotifications = MainMenu.MiscSettingsMenu.JoinQuitNotifications;
-                prefs.Add("MiscJoinQuitNotifications", MainMenu.MiscSettingsMenu.JoinQuitNotifications);
+                prefs.Add("miscJoinQuitNotifications", MainMenu.MiscSettingsMenu.JoinQuitNotifications);
 
                 MiscSpeedKmh = MainMenu.MiscSettingsMenu.ShowSpeedoKmh;
-                prefs.Add("MiscSpeedKmh", MainMenu.MiscSettingsMenu.ShowSpeedoKmh);
+                prefs.Add("miscSpeedKmh", MainMenu.MiscSettingsMenu.ShowSpeedoKmh);
 
                 MiscSpeedMph = MainMenu.MiscSettingsMenu.ShowSpeedoMph;
-                prefs.Add("MiscSpeedMph", MainMenu.MiscSettingsMenu.ShowSpeedoMph);
+                prefs.Add("miscSpeedMph", MainMenu.MiscSettingsMenu.ShowSpeedoMph);
 
                 MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
-                prefs.Add("MiscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
+                prefs.Add("miscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
+
                 MiscLocationBlips = MainMenu.MiscSettingsMenu.ShowLocationBlips;
                 prefs.Add("miscLocationBlips", MainMenu.MiscSettingsMenu.ShowLocationBlips);
 
@@ -331,16 +330,16 @@ namespace vMenuClient
             if (MainMenu.VehicleOptionsMenu != null)
             {
                 VehicleEngineAlwaysOn = MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn;
-                prefs.Add("VehicleEngineAlwaysOn", MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn);
+                prefs.Add("vehicleEngineAlwaysOn", MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn);
 
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
-                prefs.Add("VehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
+                prefs.Add("vehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
 
                 VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
-                prefs.Add("VehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);
+                prefs.Add("vehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);
 
                 VehicleNoSiren = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
-                prefs.Add("VehicleNoSiren", MainMenu.VehicleOptionsMenu.VehicleNoSiren);
+                prefs.Add("vehicleNoSiren", MainMenu.VehicleOptionsMenu.VehicleNoSiren);
 
                 VehicleHighbeamsOnHonk = MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk;
                 prefs.Add("vehicleHighbeamsOnHonk", MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk);
@@ -349,28 +348,28 @@ namespace vMenuClient
             if (MainMenu.VehicleSpawnerMenu != null)
             {
                 VehicleSpawnerReplacePrevious = MainMenu.VehicleSpawnerMenu.ReplaceVehicle;
-                prefs.Add("VehicleSpawnerReplacePrevious", MainMenu.VehicleSpawnerMenu.ReplaceVehicle);
+                prefs.Add("vehicleSpawnerReplacePrevious", MainMenu.VehicleSpawnerMenu.ReplaceVehicle);
 
                 VehicleSpawnerSpawnInside = MainMenu.VehicleSpawnerMenu.SpawnInVehicle;
-                prefs.Add("VehicleSpawnerSpawnInside", MainMenu.VehicleSpawnerMenu.SpawnInVehicle);
+                prefs.Add("vehicleSpawnerSpawnInside", MainMenu.VehicleSpawnerMenu.SpawnInVehicle);
             }
 
             if (MainMenu.VoiceChatSettingsMenu != null)
             {
                 VoiceChatEnabled = MainMenu.VoiceChatSettingsMenu.EnableVoicechat;
-                prefs.Add("VoiceChatEnabled", MainMenu.VoiceChatSettingsMenu.EnableVoicechat);
+                prefs.Add("voiceChatEnabled", MainMenu.VoiceChatSettingsMenu.EnableVoicechat);
 
                 VoiceChatProximity = MainMenu.VoiceChatSettingsMenu.currentProximity;
-                prefs.Add("VoiceChatProximity", MainMenu.VoiceChatSettingsMenu.currentProximity);
+                prefs.Add("voiceChatProximity", MainMenu.VoiceChatSettingsMenu.currentProximity);
             }
 
             if (MainMenu.WeaponOptionsMenu != null)
             {
                 WeaponsNoReload = MainMenu.WeaponOptionsMenu.NoReload;
-                prefs.Add("WeaponsNoReload", MainMenu.WeaponOptionsMenu.NoReload);
+                prefs.Add("weaponsNoReload", MainMenu.WeaponOptionsMenu.NoReload);
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
-                prefs.Add("WeaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+                prefs.Add("weaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
             }
 
             Notify.Success("Your settings have been saved.");
