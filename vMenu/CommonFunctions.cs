@@ -769,7 +769,7 @@ namespace vMenuClient
                     SetVehicleMod(vehicle.Handle, 24, 0, vehicleInfo.customWheels);
                 }
                 ToggleVehicleMod(vehicle.Handle, 18, vehicleInfo.turbo);
-                SetVehicleTyreSmokeColor(vehicle.Handle, vehicleInfo.colors["tyresmokeR"], vehicleInfo.colors["tyresmokeB"], vehicleInfo.colors["tyresmokeG"]);
+                SetVehicleTyreSmokeColor(vehicle.Handle, vehicleInfo.colors["tyresmokeR"], vehicleInfo.colors["tyresmokeG"], vehicleInfo.colors["tyresmokeB"]);
                 ToggleVehicleMod(vehicle.Handle, 20, vehicleInfo.tyreSmoke);
                 ToggleVehicleMod(vehicle.Handle, 22, vehicleInfo.xenonHeadlights);
                 SetVehicleLivery(vehicle.Handle, vehicleInfo.livery);
