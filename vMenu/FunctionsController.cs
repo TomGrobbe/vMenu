@@ -36,6 +36,7 @@ namespace vMenuClient
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
+        private bool wasMenuJustOpen = false;
 
         /// <summary>
         /// Constructor.
@@ -76,12 +77,15 @@ namespace vMenuClient
             if (cf != null)
             {
                 // Check if the player has switched to a new vehicle.
-                var tmpVehicle = cf.GetVehicle();
-                if (DoesEntityExist(tmpVehicle) && tmpVehicle != LastVehicle)
+                if (IsPedInAnyVehicle(PlayerPedId(), true)) // added this for improved performance.
                 {
-                    // Set the last vehicle to the new vehicle entity.
-                    LastVehicle = tmpVehicle;
-                    SwitchedVehicle = true;
+                    var tmpVehicle = cf.GetVehicle();
+                    if (DoesEntityExist(tmpVehicle) && tmpVehicle != LastVehicle)
+                    {
+                        // Set the last vehicle to the new vehicle entity.
+                        LastVehicle = tmpVehicle;
+                        SwitchedVehicle = true;
+                    }
                 }
 
                 if (!MainMenu.DontOpenMenus && MainMenu.Mp.IsAnyMenuOpen())
@@ -89,10 +93,11 @@ namespace vMenuClient
                     lastOpenMenu = cf.GetOpenMenu();
                 }
                 // If any on-screen keyboard is visible, close any open menus and disable any menu from opening.
-                if (UpdateOnscreenKeyboard() == 0) // still editing aka the input box is visible.
+                if (UpdateOnscreenKeyboard() == 0 && (MainMenu.Mp.IsAnyMenuOpen() || wasMenuJustOpen)) // still editing aka the input box is visible.
                 {
                     MainMenu.DontOpenMenus = true;
                     MainMenu.DisableControls = true;
+                    wasMenuJustOpen = true; // added for extra check to make sure only vMenu gets re-opened if vMenu was already open.
                 }
                 // Otherwise, check if the "DontOpenMenus" option is (still) true.
                 else
@@ -103,17 +108,20 @@ namespace vMenuClient
                         MainMenu.DontOpenMenus = false;
 
                         // Check if the previous menu isn't null.
-                        if (lastOpenMenu != null)
+                        if (lastOpenMenu != null && wasMenuJustOpen)
                         {
                             // Re-open the last menu.
                             lastOpenMenu.Visible = true;
                             // Set the last menu to null.
                             lastOpenMenu = null;
+                            wasMenuJustOpen = false; // reset the justOpen state.
                         }
 
                         // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
                         await Delay(5);
                         MainMenu.DisableControls = false;
+
+
                     }
                 }
             }
