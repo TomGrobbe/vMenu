@@ -173,6 +173,12 @@ namespace vMenuClient
             get { return GetSettingsBool("miscLocationBlips"); }
             set { SetSavedSettingsBool("miscLocationBlips", value); }
         }
+
+        public static bool MiscShowPlayerBlips
+        {
+            get { return GetSettingsBool("miscShowPlayerBlips"); }
+            set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -324,7 +330,8 @@ namespace vMenuClient
                 MiscLocationBlips = MainMenu.MiscSettingsMenu.ShowLocationBlips;
                 prefs.Add("miscLocationBlips", MainMenu.MiscSettingsMenu.ShowLocationBlips);
 
-
+                MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
+                prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

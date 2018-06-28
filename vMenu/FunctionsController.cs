@@ -37,6 +37,7 @@ namespace vMenuClient
         private string crossingName = "";
         private string suffix = "";
         private bool wasMenuJustOpen = false;
+        private PlayerList blipsPlayerList = new PlayerList();
 
         /// <summary>
         /// Constructor.
@@ -63,6 +64,7 @@ namespace vMenuClient
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
             Tick += ManageCamera;
+            Tick += PlayerBlipsControl;
         }
 
         /// Task related
@@ -454,11 +456,6 @@ namespace vMenuClient
                 {
                     ShowLocation();
                 }
-                #endregion
-
-                #region Nightvision & Thermal vision
-                //SetNightvision(MainMenu.MiscSettingsMenu.NightVision);
-                //SetSeethrough(MainMenu.MiscSettingsMenu.ThermalVision);
                 #endregion
 
                 #region camera angle locking
@@ -919,6 +916,115 @@ namespace vMenuClient
             }
         }
         #endregion
+
+        private async Task PlayerBlipsControl()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
+
+                blipsPlayerList = new PlayerList();
+                foreach (Player p in blipsPlayerList)
+                {
+                    if (enabled)
+                    {
+                        if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
+                        {
+                            Debug.WriteLine("New blip added.");
+                            p.Character.AttachBlip();
+                        }
+                        p.Character.AttachedBlip.Color = BlipColor.White;
+                        //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
+                        ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
+                        p.Character.AttachedBlip.IsShortRange = true;
+                        p.Character.AttachedBlip.Name = p.Name;
+
+
+                        if (IsPedInAnyVehicle(p.Character.Handle, false))
+                        {
+                            Vehicle veh = new Vehicle(cf.GetVehicle(p.Handle, false));
+                            if (veh.Model.IsBoat)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = speed boat
+                            }
+                            else if (veh.Model.IsBicycle)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite
+                            }
+                            else if (veh.Model.IsBike)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite
+                            }
+                            else if (veh.Model.IsCar)
+                            {
+                                switch ((VehicleHash)veh.Model.Hash)
+                                {
+                                    case VehicleHash.Apc:
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                //if (veh.Model.Hash == VehicleHash.Apc)
+                                //p.Character.AttachedBlip.Sprite = BlipSprite
+                            }
+                            else if (veh.Model.IsHelicopter)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
+                            }
+                            else if (veh.Model.IsPlane)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite
+                            }
+                            else if (veh.Model.IsQuadbike)
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite.
+                            }
+                            else
+                            {
+                                p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
+                            }
+                            //if (p.Character.IsInBoat)
+                            //{
+                            //    p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = Speedboat
+                            //}
+                            //else if (p.Character.IsInPlane)
+                            //{
+
+                            //}
+                            //else if (p.Character.IsInHeli)
+                            //{
+
+                            //}
+                            //else if (p.Character.IsOnBike)
+                            //{
+
+                            //}
+
+                            veh = null;
+                        }
+                        else
+                        {
+                            p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
+                        }
+                    }
+                    else
+                    {
+                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
+                        {
+                            p.Character.AttachedBlip.Delete();
+                        }
+                    }
+
+
+                    await Delay(60); // wait 60 ticks before doing the next player.
+                }
+                await Delay(1000); // wait 1000 ticks before doing the next loop.
+            }
+            else
+            {
+                await Delay(1000);
+            }
+        }
 
 
         /// Not task related

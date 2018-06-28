@@ -26,6 +26,7 @@ namespace vMenuClient
         public bool LockCameraX { get; private set; } = false;
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
+        public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
 
         /// <summary>
         /// Creates the menu.
@@ -78,7 +79,8 @@ namespace vMenuClient
             connectionSubmenu.AddItem(quitGame);
             connectionSubmenu.AddItem(disconnectFromServer);
 
-            UIMenuCheckboxItem blips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map of some common locations.");
+            UIMenuCheckboxItem locationBlips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map for some common locations.");
+            UIMenuCheckboxItem playerBlips = new UIMenuCheckboxItem("Show Player Blips", ShowPlayerBlips, "Shows blips on the map for all players.");
 
             MainMenu.Mp.Add(connectionSubmenu);
             connectionSubmenu.RefreshIndex();
@@ -138,7 +140,17 @@ namespace vMenuClient
             }
             if (cf.IsAllowed(Permission.MSLocationBlips))
             {
-                menu.AddItem(blips);
+                menu.AddItem(locationBlips);
+                //if (!MainMenu.EnableExperimentalFeatures)
+                {
+                    locationBlips.Enabled = false;
+                    locationBlips.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    locationBlips.Description = "This experimental feature is not yet available, more details will be published on the forum thread soon.";
+                }
+            }
+            if (cf.IsAllowed(Permission.MSPlayerBlips))
+            {
+                menu.AddItem(playerBlips);
             }
             if (cf.IsAllowed(Permission.MSClearArea))
             {
@@ -203,10 +215,14 @@ namespace vMenuClient
                 {
                     LockCameraY = _checked;
                 }
-                else if (item == blips)
+                else if (item == locationBlips)
                 {
                     ToggleBlips(_checked);
                     ShowLocationBlips = _checked;
+                }
+                else if (item == playerBlips)
+                {
+                    ShowPlayerBlips = _checked;
                 }
             };
 

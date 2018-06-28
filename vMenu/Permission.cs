@@ -235,6 +235,7 @@
         MSNightVision,
         MSThermalVision,
         MSLocationBlips,
+        MSPlayerBlips,
 
         // Voice Chat
         VCMenu,
@@ -242,6 +243,5 @@
         VCEnable,
         VCShowSpeaker,
         VCStaffChannel,
-
     };
 }
