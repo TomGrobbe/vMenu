@@ -313,7 +313,7 @@ namespace vMenuServer
         /// </summary>
         public MainServer()
         {
-            RegisterCommand("vmenuserver", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            RegisterCommand("vmenuserver", new Action<int, List<object>, string>((int source, List<object> args, string rawCommand) =>
             {
                 if (args != null)
                 {
@@ -322,7 +322,7 @@ namespace vMenuServer
                         if (args[0].ToString().ToLower() == "debug")
                         {
                             DebugMode = !DebugMode;
-                            if (source == 0)
+                            if (source < 1)
                             {
                                 Debug.WriteLine($"Debug mode is now set to: {DebugMode}.");
                             }
@@ -330,13 +330,47 @@ namespace vMenuServer
                             {
                                 new PlayerList()[source].TriggerEvent("chatMessage", $"vMenu Debug mode is now set to: {DebugMode}.");
                             }
+                            return;
                         }
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                        else if (args[0].ToString().ToLower() == "unban" && (source < 1))
+                        {
+                            if (args.Count() > 1 && !string.IsNullOrEmpty(args[1].ToString()))
+                            {
+                                string name = args[1].ToString().Trim();
+                                name = name.Replace("\"", "");
+                                name = BanManager.GetSafePlayerName(name);
+                                var bans = BanManager.GetBanList();
+                                var banRecord = bans.Find(b => { return b.playerName == name; });
+                                if (banRecord.playerName != null)
+                                {
+                                    if (BanManager.RemoveBan(banRecord))
+                                    {
+                                        Debug.WriteLine("Player has been successfully unbanned.");
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Could not unban the player, are you sure this player is actually banned?");
+                                    }
+
+                                }
+                                else
+                                {
+                                    Debug.WriteLine($"Could not find a banned player by the name of '{name}'.");
+                                }
+                                bans = null;
+
+                            }
+                            else
+                            {
+                                Debug.WriteLine("You did not specify a player to unban, you must enter the FULL playername. Usage: vmenuserver unban \"playername\"");
+                            }
+                            return;
+                        }
+
                     }
                 }
+                Debug.WriteLine($"vMenu is currently running version: {Version}.");
+
             }), true);
 
             if (GetCurrentResourceName() != "vMenu")

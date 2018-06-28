@@ -16,7 +16,7 @@ namespace vMenuServer
         /// <summary>
         /// Struct used to store bans.
         /// </summary>
-        struct BanRecord
+        public struct BanRecord
         {
             public string playerName;
             public List<string> identifiers;
@@ -28,7 +28,7 @@ namespace vMenuServer
         /// <summary>
         /// List of ban records.
         /// </summary>
-        private static List<BanRecord> BannedPlayersList = new List<BanRecord>();
+        public static List<BanRecord> BannedPlayersList { get; private set; } = new List<BanRecord>();
 
         /// <summary>
         /// Constructor.
@@ -40,6 +40,7 @@ namespace vMenuServer
             EventHandlers.Add("playerConnecting", new Action<Player, string, CallbackDelegate>(CheckForBans));
             EventHandlers.Add("vMenu:RequestPlayerUnban", new Action<Player, string>(RemoveBanRecord));
             EventHandlers.Add("vMenu:RequestBanList", new Action<Player>(SendBanList));
+
             BannedPlayersList = GetBanList();
         }
 
@@ -57,7 +58,7 @@ namespace vMenuServer
         /// Gets the ban list from the bans.json file.
         /// </summary>
         /// <returns></returns>
-        private static List<BanRecord> GetBanList()
+        public static List<BanRecord> GetBanList()
         {
             var banList = new List<BanRecord>();
             string bansJson = LoadResourceFile(GetCurrentResourceName(), "bans.json");
@@ -356,7 +357,7 @@ namespace vMenuServer
         /// </summary>
         /// <param name="record"></param>
         /// <returns></returns>
-        private bool RemoveBan(BanRecord record)
+        public static bool RemoveBan(BanRecord record)
         {
             BannedPlayersList = GetBanList();
             List<int> itemsToRemove = new List<int>();
@@ -399,21 +400,30 @@ namespace vMenuServer
         /// <param name="banRecordJsonString"></param>
         private void RemoveBanRecord([FromSource]Player source, string banRecordJsonString)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban"))
+            if (source != null && !string.IsNullOrEmpty(source.Name) && source.Name.ToLower() != "**invalid**" && source.Name.ToLower() != "** invalid **")
             {
-                dynamic obj = JsonConvert.DeserializeObject(banRecordJsonString);
-                BanRecord ban = JsonToBanRecord(obj);
-                if (RemoveBan(ban))
+                if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban"))
                 {
-                    BanLog($"The following ban record has been removed (player unbanned). " +
-                        $"[Player: {ban.playerName} was banned by {ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.]");
-                    TriggerEvent("vMenu:UnbanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                    dynamic obj = JsonConvert.DeserializeObject(banRecordJsonString);
+                    BanRecord ban = JsonToBanRecord(obj);
+                    if (RemoveBan(ban))
+                    {
+                        BanLog($"The following ban record has been removed (player unbanned). " +
+                            $"[Player: {ban.playerName} was banned by {ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.]");
+                        TriggerEvent("vMenu:UnbanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                    }
+                }
+                else
+                {
+                    BanCheater(source);
+                    Debug.Write($"[vMenu] Player {JsonConvert.SerializeObject(source)} did not have the required permissions, but somehow triggered the unban event. Missing permissions: vMenu.OnlinePlayers.Unban (is ace allowed: {IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban")})\n");
                 }
             }
             else
             {
-                BanCheater(source);
+                Debug.WriteLine("[vMenu] Warning: the unban event was triggered, but no valid source was provided. Nobody has been unbanned.");
             }
+
         }
 
         /// <summary>
