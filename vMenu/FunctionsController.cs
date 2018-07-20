@@ -64,7 +64,7 @@ namespace vMenuClient
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
             Tick += ManageCamera;
-            Tick += PlayerBlipsControl;
+            //Tick += PlayerBlipsControl;
         }
 
         /// Task related
@@ -916,7 +916,7 @@ namespace vMenuClient
             }
         }
         #endregion
-
+/*
         private async Task PlayerBlipsControl()
         {
             if (MainMenu.MiscSettingsMenu != null)
@@ -1025,7 +1025,7 @@ namespace vMenuClient
                 await Delay(1000);
             }
         }
-
+*/
 
         /// Not task related
         #region Private ShowSpeed Functions
