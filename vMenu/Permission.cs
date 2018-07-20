@@ -35,6 +35,7 @@
         POFunctions,
         POFreeze,
         POScenarios,
+        POUnlimitedStamina,
 
         // Vehicle Options
         VOMenu,
@@ -233,6 +234,8 @@
         MSDeathNotifs,
         MSNightVision,
         MSThermalVision,
+        MSLocationBlips,
+        MSPlayerBlips,
 
         // Voice Chat
         VCMenu,
@@ -240,6 +243,5 @@
         VCEnable,
         VCShowSpeaker,
         VCStaffChannel,
-
     };
 }

@@ -77,10 +77,10 @@ namespace vMenuClient
             {
                 menu.AddItem(invisibleCheckbox);
             }
-
-            // Always allowed.
-            menu.AddItem(unlimitedStaminaCheckbox);
-
+            if (cf.IsAllowed(Permission.POUnlimitedStamina))
+            {
+                menu.AddItem(unlimitedStaminaCheckbox);
+            }
             if (cf.IsAllowed(Permission.POFastRun))
             {
                 menu.AddItem(fastRunCheckbox);
