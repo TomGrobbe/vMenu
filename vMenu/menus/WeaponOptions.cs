@@ -71,7 +71,7 @@ namespace vMenuClient
                 menu.AddItem(setAmmo);
                 menu.AddItem(refillMaxAmmo);
             }
-            if (cf.IsAllowed(Permission.WPSpawn))
+            if (cf.IsAllowed(Permission.WPSpawnByName))
             {
                 menu.AddItem(spawnByName);
             }

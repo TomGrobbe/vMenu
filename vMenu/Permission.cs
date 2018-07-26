@@ -130,6 +130,7 @@
         WPUnlimitedAmmo,
         WPNoReload,
         WPSpawn,
+        WPSpawnByName,
         WPSetAllAmmo,
 
         //Weapons Permissions
