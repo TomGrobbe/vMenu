@@ -696,7 +696,7 @@ namespace vMenuClient
             {
                 MiscSettingsMenu = new MiscSettings();
                 UIMenu menu = MiscSettingsMenu.GetMenu();
-                UIMenuItem button = new UIMenuItem("Misc Settings", "Change general settings.");
+                UIMenuItem button = new UIMenuItem("Misc Settings", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
             }
@@ -706,7 +706,7 @@ namespace vMenuClient
             // Add About Menu.
             AboutMenu = new About();
             UIMenu sub = AboutMenu.GetMenu();
-            UIMenuItem btn = new UIMenuItem("About vMenu", "Information about this menu and it's creators.");
+            UIMenuItem btn = new UIMenuItem("About vMenu", "Information about vMenu.");
             btn.SetRightLabel("→→→");
             AddMenu(sub, btn);
 
