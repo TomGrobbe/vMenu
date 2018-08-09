@@ -678,6 +678,16 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
+            // Add Voice Chat Menu.
+            if (Cf.IsAllowed(Permission.VCMenu))
+            {
+                VoiceChatSettingsMenu = new VoiceChat();
+                UIMenu menu = VoiceChatSettingsMenu.GetMenu();
+                UIMenuItem button = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
+                button.SetRightLabel("→→→");
+                AddMenu(menu, button);
+            }
+
             // Add misc settings menu.
             //if (Cf.IsAllowed(Permission.MSMenu))
             // removed the permissions check, because the misc menu should've never been restricted in the first place.
@@ -691,15 +701,7 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
-            // Add Voice Chat Menu.
-            if (Cf.IsAllowed(Permission.VCMenu))
-            {
-                VoiceChatSettingsMenu = new VoiceChat();
-                UIMenu menu = VoiceChatSettingsMenu.GetMenu();
-                UIMenuItem button = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
-                button.SetRightLabel("→→→");
-                AddMenu(menu, button);
-            }
+
 
             // Add About Menu.
             AboutMenu = new About();
