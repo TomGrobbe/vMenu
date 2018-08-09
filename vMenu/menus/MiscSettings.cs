@@ -140,17 +140,17 @@ namespace vMenuClient
             }
             //if (cf.IsAllowed(Permission.MSLocationBlips))
             //{
-                //menu.AddItem(locationBlips);
-                //if (!MainMenu.EnableExperimentalFeatures)
-                //{
-                    //locationBlips.Enabled = false;
-                    //locationBlips.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                    //locationBlips.Description = "This experimental feature is not yet available, more details will be published on the forum thread soon.";
-                //}
+            //menu.AddItem(locationBlips);
+            //if (!MainMenu.EnableExperimentalFeatures)
+            //{
+            //locationBlips.Enabled = false;
+            //locationBlips.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+            //locationBlips.Description = "This experimental feature is not yet available, more details will be published on the forum thread soon.";
+            //}
             //}
             //if (cf.IsAllowed(Permission.MSPlayerBlips))
             //{
-                //menu.AddItem(playerBlips);
+            //menu.AddItem(playerBlips);
             //}
             if (cf.IsAllowed(Permission.MSClearArea))
             {
@@ -217,12 +217,12 @@ namespace vMenuClient
                 }
                 //else if (item == locationBlips)
                 //{
-                    //ToggleBlips(_checked);
-                    //ShowLocationBlips = _checked;
+                //ToggleBlips(_checked);
+                //ShowLocationBlips = _checked;
                 //}
                 //else if (item == playerBlips)
                 //{
-                    //ShowPlayerBlips = _checked;
+                //ShowPlayerBlips = _checked;
                 //}
             };
 
@@ -285,29 +285,29 @@ namespace vMenuClient
             }
         }
 
-        private readonly List<Blip> blips = new List<Blip>()
-        {
-            // airports
-            new Blip(new Vector3(-1089f, -2791f, 50f), 90, GetLabelText("BRS_MCL_0")), // LSIA
-            new Blip(new Vector3(1728f, 3314f, 49f), 90, GetLabelText("VEX_LR_LOC1")), // sandy shores airfield
-            new Blip(new Vector3(2132f, 4785f, 40f), 90, GetLabelText("SM_LOC_MCK")), // mckenzie field
-            new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
+        //private readonly List<Blip> blips = new List<Blip>()
+        //{
+        //    // airports
+        //    new Blip(new Vector3(-1089f, -2791f, 50f), 90, GetLabelText("BRS_MCL_0")), // LSIA
+        //    new Blip(new Vector3(1728f, 3314f, 49f), 90, GetLabelText("VEX_LR_LOC1")), // sandy shores airfield
+        //    new Blip(new Vector3(2132f, 4785f, 40f), 90, GetLabelText("SM_LOC_MCK")), // mckenzie field
+        //    new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
 
-            // helicopter pad
-            new Blip(new Vector3(-735f, -1455f, 4f), 370, GetLabelText("ACCNA_HELIPAD")), // Helipad
-            // harbor / docks in La Puerta
-            new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
+        //    // helicopter pad
+        //    new Blip(new Vector3(-735f, -1455f, 4f), 370, GetLabelText("ACCNA_HELIPAD")), // Helipad
+        //    // harbor / docks in La Puerta
+        //    new Blip(new Vector3(-2198f, 2968f, 40f), 90, GetLabelText("PIM_MAGM206_1")), // fort zancudo
 
 
-        };
+        //};
 
-        private void ToggleBlips(bool enable)
-        {
-            if (enable)
-            {
+        //private void ToggleBlips(bool enable)
+        //{
+        //    if (enable)
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
     }
 }
