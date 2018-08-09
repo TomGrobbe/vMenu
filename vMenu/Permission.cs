@@ -64,6 +64,7 @@
         VOLights,
         VODelete,
         VOUnderglow,
+        VOFlashHighbeamsOnHonk,
 
 
         // Vehicle Spawner

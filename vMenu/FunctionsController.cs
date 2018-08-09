@@ -54,6 +54,7 @@ namespace vMenuClient
             Tick += GeneralTasks;
             Tick += PlayerOptions;
             Tick += VehicleOptions;
+            Tick += MoreVehicleOptions;
             Tick += VoiceChat;
             Tick += TimeOptions;
             Tick += _WeatherOptions;
@@ -63,7 +64,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            Tick += ManageCamera;
+            //Tick += ManageCamera;
             //Tick += PlayerBlipsControl;
         }
 
@@ -253,101 +254,93 @@ namespace vMenuClient
             if (MainMenu.VehicleOptionsMenu != null && cf.IsAllowed(Permission.VOMenu))
             {
                 // When the player is in a valid vehicle:
-                if (DoesEntityExist(cf.GetVehicle()))
+                if (IsPedInAnyVehicle(PlayerPedId(), true))
                 {
-                    // Create a new vehicle object.
-                    Vehicle vehicle = new Vehicle(cf.GetVehicle());
-
-                    // God mode
-                    bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
-                    vehicle.CanBeVisiblyDamaged = !god;
-                    vehicle.CanEngineDegrade = !god;
-                    vehicle.CanTiresBurst = !god;
-                    vehicle.CanWheelsBreak = !god;
-                    vehicle.IsAxlesStrong = god;
-                    vehicle.IsBulletProof = god;
-                    vehicle.IsCollisionProof = god;
-                    vehicle.IsExplosionProof = god;
-                    vehicle.IsFireProof = god;
-                    vehicle.IsInvincible = god;
-                    vehicle.IsMeleeProof = god;
-                    foreach (VehicleDoor vd in vehicle.Doors.GetAll())
+                    int veh = cf.GetVehicle();
+                    if (DoesEntityExist(veh))
                     {
-                        vd.CanBeBroken = !god;
-                    }
-                    bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && cf.IsAllowed(Permission.VOSpecialGod);
-                    if (specialgod && vehicle.EngineHealth < 1000)
-                    {
-                        vehicle.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
-                    }
+                        // Create a new vehicle object.
+                        Vehicle vehicle = new Vehicle(cf.GetVehicle());
 
-                    // Freeze Vehicle Position (if enabled).
-                    if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
-                    {
-                        FreezeEntityPosition(vehicle.Handle, true);
-                    }
-
-
-                    // If the torque multiplier is enabled and the player is allowed to use it.
-                    if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))
-                    {
-                        // Set the torque multiplier to the selected value by the player.
-                        // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
-                        SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
-                    }
-                    // If the player has switched to a new vehicle, and the vehicle engine power multiplier is turned on. Set the new value.
-                    if (SwitchedVehicle)
-                    {
-                        // Only needs to be set once.
-                        SwitchedVehicle = false;
-
-                        // Vehicle engine power multiplier. Enable it once the player switched vehicles.
-                        // Only do this if the option is enabled AND the player has permissions for it.
-                        if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
+                        // God mode
+                        bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
+                        vehicle.CanBeVisiblyDamaged = !god;
+                        vehicle.CanEngineDegrade = !god;
+                        vehicle.CanTiresBurst = !god;
+                        vehicle.CanWheelsBreak = !god;
+                        vehicle.IsAxlesStrong = god;
+                        vehicle.IsBulletProof = god;
+                        vehicle.IsCollisionProof = god;
+                        vehicle.IsExplosionProof = god;
+                        vehicle.IsFireProof = god;
+                        vehicle.IsInvincible = god;
+                        vehicle.IsMeleeProof = god;
+                        foreach (VehicleDoor vd in vehicle.Doors.GetAll())
                         {
-                            SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
+                            vd.CanBeBroken = !god;
                         }
-                        // If the player switched vehicles and the option is turned off or the player has no permissions for it
-                        // Then reset the power multiplier ONCE.
-                        else
+                        bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && cf.IsAllowed(Permission.VOSpecialGod);
+                        if (specialgod && vehicle.EngineHealth < 1000)
                         {
-                            SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
+                            vehicle.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
                         }
 
-                        // No Siren Toggle
-                        vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
-                    }
-
-                    // Manage "no helmet"
-                    var ped = new Ped(PlayerPedId());
-                    // If the no helmet feature is turned on, disalbe "ped can wear helmet"
-                    if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
-                    {
-                        ped.CanWearHelmet = false;
-                    }
-                    // otherwise, allow helmets.
-                    else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet || !cf.IsAllowed(Permission.VONoHelmet))
-                    {
-                        ped.CanWearHelmet = true;
-                    }
-                    // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.
-                    if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
-                    {
-                        ped.RemoveHelmet(true);
-                    }
-
-                    if (MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && vehicle.Driver == Game.PlayerPed && !IsPauseMenuActive())
-                    {
-                        // turn on high beams when honking.
-                        if (Game.IsControlPressed(0, Control.VehicleHorn))
+                        // Freeze Vehicle Position (if enabled).
+                        if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
                         {
-                            vehicle.AreHighBeamsOn = true;
+                            FreezeEntityPosition(vehicle.Handle, true);
                         }
-                        // turn high beams back off when just stopped honking.
-                        if (Game.IsControlJustReleased(0, Control.VehicleHorn))
+
+                        await Delay(0);
+                        // If the torque multiplier is enabled and the player is allowed to use it.
+                        if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))
                         {
-                            vehicle.AreHighBeamsOn = false;
+                            // Set the torque multiplier to the selected value by the player.
+                            // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
+                            SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
                         }
+                        // If the player has switched to a new vehicle, and the vehicle engine power multiplier is turned on. Set the new value.
+                        if (SwitchedVehicle)
+                        {
+                            // Only needs to be set once.
+                            SwitchedVehicle = false;
+
+                            // Vehicle engine power multiplier. Enable it once the player switched vehicles.
+                            // Only do this if the option is enabled AND the player has permissions for it.
+                            if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
+                            {
+                                SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
+                            }
+                            // If the player switched vehicles and the option is turned off or the player has no permissions for it
+                            // Then reset the power multiplier ONCE.
+                            else
+                            {
+                                SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
+                            }
+
+                            // No Siren Toggle
+                            vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
+                        }
+
+                        // Manage "no helmet"
+                        var ped = new Ped(PlayerPedId());
+                        // If the no helmet feature is turned on, disalbe "ped can wear helmet"
+                        if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
+                        {
+                            ped.CanWearHelmet = false;
+                        }
+                        // otherwise, allow helmets.
+                        else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet || !cf.IsAllowed(Permission.VONoHelmet))
+                        {
+                            ped.CanWearHelmet = true;
+                        }
+                        // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.
+                        if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
+                        {
+                            ped.RemoveHelmet(true);
+                        }
+
+                        await Delay(0);
                     }
                 }
                 // When the player is not inside a vehicle:
@@ -371,6 +364,8 @@ namespace vMenuClient
                     }
                 }
 
+                await Delay(1);
+
                 // Manage vehicle engine always on.
                 if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) &&
                     !IsPedInAnyVehicle(PlayerPedId(), false)) && (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
@@ -378,11 +373,49 @@ namespace vMenuClient
                     await Delay(100);
                     SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
                 }
+
             }
             else
             {
-                await Delay(0);
+                await Delay(1);
             }
+        }
+        private async Task MoreVehicleOptions()
+        {
+            if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(PlayerPedId(), true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk))
+            {
+                var veh = cf.GetVehicle();
+                if (DoesEntityExist(veh))
+                {
+                    Vehicle vehicle = new Vehicle(veh);
+                    if (vehicle.Driver == Game.PlayerPed && vehicle.IsEngineRunning && !IsPauseMenuActive())
+                    {
+                        // turn on high beams when honking.
+                        if (Game.IsControlPressed(0, Control.VehicleHorn))
+                        {
+                            vehicle.AreHighBeamsOn = true;
+                        }
+                        // turn high beams back off when just stopped honking.
+                        if (Game.IsControlJustReleased(0, Control.VehicleHorn))
+                        {
+                            vehicle.AreHighBeamsOn = false;
+                        }
+                    }
+                    else
+                    {
+                        await Delay(1);
+                    }
+                }
+                else
+                {
+                    await Delay(1);
+                }
+            }
+            else
+            {
+                await Delay(1);
+            }
+
         }
         #endregion
         #region Weather Options
@@ -527,6 +560,7 @@ namespace vMenuClient
                         }
                     }
                     playerList = pl;
+                    await Delay(100);
                 }
             }
         }
@@ -596,6 +630,7 @@ namespace vMenuClient
                             }
                         }
                     }
+                    await Delay(50);
                 }
             }
         }
@@ -637,7 +672,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    await Delay(0);
+                    await Delay(100);
                 }
             }
         }
@@ -916,116 +951,116 @@ namespace vMenuClient
             }
         }
         #endregion
-/*
-        private async Task PlayerBlipsControl()
-        {
-            if (MainMenu.MiscSettingsMenu != null)
-            {
-                bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
-
-                blipsPlayerList = new PlayerList();
-                foreach (Player p in blipsPlayerList)
+        /*
+                private async Task PlayerBlipsControl()
                 {
-                    if (enabled)
+                    if (MainMenu.MiscSettingsMenu != null)
                     {
-                        if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
-                        {
-                            Debug.WriteLine("New blip added.");
-                            p.Character.AttachBlip();
-                        }
-                        p.Character.AttachedBlip.Color = BlipColor.White;
-                        //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
-                        ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
-                        p.Character.AttachedBlip.IsShortRange = true;
-                        p.Character.AttachedBlip.Name = p.Name;
+                        bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
 
-
-                        if (IsPedInAnyVehicle(p.Character.Handle, false))
+                        blipsPlayerList = new PlayerList();
+                        foreach (Player p in blipsPlayerList)
                         {
-                            Vehicle veh = new Vehicle(cf.GetVehicle(p.Handle, false));
-                            if (veh.Model.IsBoat)
+                            if (enabled)
                             {
-                                p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = speed boat
-                            }
-                            else if (veh.Model.IsBicycle)
-                            {
-                                p.Character.AttachedBlip.Sprite = BlipSprite
-                            }
-                            else if (veh.Model.IsBike)
-                            {
-                                p.Character.AttachedBlip.Sprite = BlipSprite
-                            }
-                            else if (veh.Model.IsCar)
-                            {
-                                switch ((VehicleHash)veh.Model.Hash)
+                                if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
                                 {
-                                    case VehicleHash.Apc:
-                                        break;
-                                    default:
-                                        break;
+                                    Debug.WriteLine("New blip added.");
+                                    p.Character.AttachBlip();
                                 }
-                                //if (veh.Model.Hash == VehicleHash.Apc)
-                                //p.Character.AttachedBlip.Sprite = BlipSprite
-                            }
-                            else if (veh.Model.IsHelicopter)
-                            {
-                                p.Character.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
-                            }
-                            else if (veh.Model.IsPlane)
-                            {
-                                p.Character.AttachedBlip.Sprite = BlipSprite
-                            }
-                            else if (veh.Model.IsQuadbike)
-                            {
-                                p.Character.AttachedBlip.Sprite = BlipSprite.
+                                p.Character.AttachedBlip.Color = BlipColor.White;
+                                //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
+                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
+                                p.Character.AttachedBlip.IsShortRange = true;
+                                p.Character.AttachedBlip.Name = p.Name;
+
+
+                                if (IsPedInAnyVehicle(p.Character.Handle, false))
+                                {
+                                    Vehicle veh = new Vehicle(cf.GetVehicle(p.Handle, false));
+                                    if (veh.Model.IsBoat)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = speed boat
+                                    }
+                                    else if (veh.Model.IsBicycle)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite
+                                    }
+                                    else if (veh.Model.IsBike)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite
+                                    }
+                                    else if (veh.Model.IsCar)
+                                    {
+                                        switch ((VehicleHash)veh.Model.Hash)
+                                        {
+                                            case VehicleHash.Apc:
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        //if (veh.Model.Hash == VehicleHash.Apc)
+                                        //p.Character.AttachedBlip.Sprite = BlipSprite
+                                    }
+                                    else if (veh.Model.IsHelicopter)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
+                                    }
+                                    else if (veh.Model.IsPlane)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite
+                                    }
+                                    else if (veh.Model.IsQuadbike)
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite.
+                                    }
+                                    else
+                                    {
+                                        p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
+                                    }
+                                    //if (p.Character.IsInBoat)
+                                    //{
+                                    //    p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = Speedboat
+                                    //}
+                                    //else if (p.Character.IsInPlane)
+                                    //{
+
+                                    //}
+                                    //else if (p.Character.IsInHeli)
+                                    //{
+
+                                    //}
+                                    //else if (p.Character.IsOnBike)
+                                    //{
+
+                                    //}
+
+                                    veh = null;
+                                }
+                                else
+                                {
+                                    p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
+                                }
                             }
                             else
                             {
-                                p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
+                                if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
+                                {
+                                    p.Character.AttachedBlip.Delete();
+                                }
                             }
-                            //if (p.Character.IsInBoat)
-                            //{
-                            //    p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = Speedboat
-                            //}
-                            //else if (p.Character.IsInPlane)
-                            //{
 
-                            //}
-                            //else if (p.Character.IsInHeli)
-                            //{
 
-                            //}
-                            //else if (p.Character.IsOnBike)
-                            //{
-
-                            //}
-
-                            veh = null;
+                            await Delay(60); // wait 60 ticks before doing the next player.
                         }
-                        else
-                        {
-                            p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
-                        }
+                        await Delay(1000); // wait 1000 ticks before doing the next loop.
                     }
                     else
                     {
-                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
-                        {
-                            p.Character.AttachedBlip.Delete();
-                        }
+                        await Delay(1000);
                     }
-
-
-                    await Delay(60); // wait 60 ticks before doing the next player.
                 }
-                await Delay(1000); // wait 1000 ticks before doing the next loop.
-            }
-            else
-            {
-                await Delay(1000);
-            }
-        }
-*/
+        */
 
         /// Not task related
         #region Private ShowSpeed Functions

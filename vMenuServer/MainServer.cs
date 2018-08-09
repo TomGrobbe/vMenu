@@ -132,6 +132,7 @@ namespace vMenuServer
             "VOLights",
             "VODelete",
             "VOUnderglow",
+            "VOFlashHighbeamsOnHonk",
             
             // Vehicle Spawner
             "VSMenu",

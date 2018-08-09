@@ -294,8 +294,11 @@ namespace vMenuClient
             {
                 menu.AddItem(vehicleNoBikeHelmet);
             }
-            // always allowed.
-            menu.AddItem(highbeamsOnHonk);
+            if (cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk)) // FLASH HIGHBEAMS ON HONK
+            {
+                menu.AddItem(highbeamsOnHonk);
+            }
+
             if (cf.IsAllowed(Permission.VODelete)) // DELETE VEHICLE
             {
                 menu.AddItem(deleteBtn);
