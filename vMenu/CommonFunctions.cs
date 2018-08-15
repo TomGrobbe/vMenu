@@ -593,7 +593,7 @@ namespace vMenuClient
             if (vehicleName == "custom")
             {
                 // Get the result.
-                string result = await GetUserInput("Enter Vehicle Name", "Adder");
+                string result = await GetUserInput("Enter Vehicle Name", "");
                 // If the result was not invalid.
                 if (result != "NULL")
                 {
