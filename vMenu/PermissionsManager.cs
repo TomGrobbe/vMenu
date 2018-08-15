@@ -32,7 +32,7 @@ namespace vMenuClient
             //if (Permissions.Contains("Everything"))
             if (allowEverything)
             {
-                MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
+                //MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
                 return true;
             }
             else
@@ -40,7 +40,7 @@ namespace vMenuClient
                 //var allowed = false;
                 if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
                 {
-                    MainMenu.Cf.Log(".All was allowed.");
+                    //MainMenu.Cf.Log(".All was allowed.");
                     //allowed = true;
                     return true;
                 }

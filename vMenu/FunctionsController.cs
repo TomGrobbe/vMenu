@@ -37,7 +37,7 @@ namespace vMenuClient
         private string crossingName = "";
         private string suffix = "";
         private bool wasMenuJustOpen = false;
-        private PlayerList blipsPlayerList = new PlayerList();
+        //private PlayerList blipsPlayerList = new PlayerList();`
 
         /// <summary>
         /// Constructor.
@@ -51,20 +51,20 @@ namespace vMenuClient
             }
 
             // Add all tick events.
-            Tick += GeneralTasks;
-            Tick += PlayerOptions;
-            Tick += VehicleOptions;
-            Tick += MoreVehicleOptions;
-            Tick += VoiceChat;
-            Tick += TimeOptions;
-            Tick += _WeatherOptions;
-            Tick += WeaponOptions;
+            Tick += GeneralTasks;         // barely any / no memory leaks
+            Tick += PlayerOptions;        // big memory leaks
+            Tick += VehicleOptions;       // small memory leaks
+            Tick += MoreVehicleOptions;   // very small memory leaks, once every couple of seconds
+            Tick += VoiceChat;            // 
+            Tick += TimeOptions;          // 
+            Tick += _WeatherOptions;      // 
+            Tick += WeaponOptions;        // 
 
             Tick += MiscSettings;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            //Tick += ManageCamera;
+            Tick += ManageCamera;
             //Tick += PlayerBlipsControl;
         }
 
@@ -76,6 +76,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task GeneralTasks()
         {
+            //Debug.Write("Size: " + playerList.Count + "\n");
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
             if (cf != null)
             {
@@ -127,6 +128,7 @@ namespace vMenuClient
 
                     }
                 }
+                await Delay(0);
             }
             else
             {
@@ -141,15 +143,26 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task PlayerOptions()
         {
+            // perms
+            bool ignorePlayerAllowed = cf.IsAllowed(Permission.POIgnored);
+            bool godmodeAllowed = cf.IsAllowed(Permission.POGod);
+            bool playerInvisible = cf.IsAllowed(Permission.POInvisible);
+            bool noRagdollAllowed = cf.IsAllowed(Permission.PONoRagdoll);
+            bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
+            bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
+
+
+
+
             // Player options. Only run player options if the player options menu has actually been created.
             if (MainMenu.PlayerOptionsMenu != null && cf.IsAllowed(Permission.POMenu))
             {
                 // Manage Player God Mode
-                SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod));
+                SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
 
                 // Manage invisibility.
-                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && cf.IsAllowed(Permission.POInvisible)) ||
-                    (!cf.IsAllowed(Permission.POInvisible)), false);
+                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && playerInvisible) ||
+                    (!playerInvisible), false);
 
                 // Manage Stamina
                 if (MainMenu.PlayerOptionsMenu.PlayerStamina && cf.IsAllowed(Permission.POUnlimitedStamina))
@@ -175,28 +188,28 @@ namespace vMenuClient
                 }
 
                 // Manage PlayerNoRagdoll
-                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) ||
-                    (!cf.IsAllowed(Permission.PONoRagdoll)));
+                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ||
+                    (!noRagdollAllowed));
 
 
                 // Fall off bike / dragged out of car.
                 if (MainMenu.VehicleOptionsMenu != null)
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll))
-                        || (MainMenu.VehicleOptionsMenu.VehicleGodMode) && cf.IsAllowed(Permission.VOGod)) ? 1 : 0));
+                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed)
+                        || (MainMenu.VehicleOptionsMenu.VehicleGodMode) && vehicleGodModeAllowed) ? 1 : 0));
 
-                    SetPedCanBeDraggedOut(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
-                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod)) ||
-                        (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
+                    SetPedCanBeDraggedOut(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
+                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed) ||
+                        (MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed)));
 
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !((MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod)) ||
-                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod))));
+                    SetPedCanBeShotInVehicle(PlayerPedId(), !((MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed) ||
+                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed)));
                 }
                 else
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && cf.IsAllowed(Permission.PONoRagdoll)) ? 1 : 0));
-                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)));
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod)));
+                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ? 1 : 0));
+                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed));
+                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed));
                 }
 
                 // Manage never wanted.
@@ -206,26 +219,26 @@ namespace vMenuClient
                 }
 
                 // Manage player is ignored by everyone.
-                SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored));
+                SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed);
 
-                SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored));
+                SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed);
 
-                SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && cf.IsAllowed(Permission.POIgnored)) ||
-                    (MainMenu.PlayerOptionsMenu.PlayerGodMode && cf.IsAllowed(Permission.POGod))));
+                SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
+                    (MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed)));
 
                 if (MainMenu.NoClipMenu != null)
                 {
                     if (!MainMenu.NoClipEnabled)
                     {
                         // Manage player frozen.
-                        if (MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze))
+                        if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
                             FreezeEntityPosition(PlayerPedId(), true);
                     }
                 }
                 else
                 {
                     // Manage player frozen.
-                    if (MainMenu.PlayerOptionsMenu.PlayerFrozen && cf.IsAllowed(Permission.POFreeze))
+                    if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
                         FreezeEntityPosition(PlayerPedId(), true);
                 }
 

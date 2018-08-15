@@ -57,6 +57,7 @@ namespace vMenuClient
         public static Dictionary<string, string> MenuOptions { get; private set; }
 
         public static bool DisableControls { get; set; } = false;
+        private UIMenu currentMenu = null;
         #endregion
 
         /// <summary>
@@ -164,32 +165,36 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task ProcessMainButtons()
         {
-            UIMenu currentMenu = Cf.GetOpenMenu();
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
+            if (MainMenu.Mp.IsAnyMenuOpen())
             {
-                if (currentMenu.Visible && !DisableControls)
+                currentMenu = Cf.GetOpenMenu();
+                if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
-                    // Select / Enter
-                    if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
+                    if (currentMenu.Visible && !DisableControls)
                     {
-                        if (currentMenu.MenuItems.Count() > 0)
+                        // Select / Enter
+                        if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
                         {
-                            currentMenu.SelectItem();
+                            if (currentMenu.MenuItems.Count() > 0)
+                            {
+                                currentMenu.SelectItem();
+                            }
+                        }
+                        // Cancel / Go Back
+                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
+                        {
+                            // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
+                            await Delay(0);
+                            currentMenu.GoBack();
                         }
                     }
-                    // Cancel / Go Back
-                    else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
-                    {
-                        // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
-                        await Delay(0);
-                        currentMenu.GoBack();
-                    }
+                }
+                else
+                {
+                    await Delay(0);
                 }
             }
-            else
-            {
-                await Delay(0);
-            }
+
         }
 
         /// <summary>
@@ -379,6 +384,7 @@ namespace vMenuClient
                 CreateSubmenus();
             }
             #endregion
+
 
             // If the setup (permissions) is done, and it's not the first tick, then do this:
             if (permissionsSetupDone && optionsSetupDone && !firstTick)
