@@ -111,6 +111,15 @@ namespace vMenuClient
                             vehBtn.Description = "This model is not available on this server, if this is an addon vehicle or DLC vehicle, please make sure " +
                             "that it's being streamed on this server.";
                         }
+                        else
+                        {
+                            if (!VehicleSpawner.allowedCategories[GetVehicleClassFromName(savedVehicle.Value.model)])
+                            {
+                                vehBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                                vehBtn.Enabled = false;
+                                vehBtn.Description = "This vehicle is not available on this server because you do not have permissions for this vehicle class.";
+                            }
+                        }
                     }
 
                     // Sort the menu items (case IN-sensitive) by name.
