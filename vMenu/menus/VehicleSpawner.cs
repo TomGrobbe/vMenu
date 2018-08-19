@@ -18,36 +18,15 @@ namespace vMenuClient
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
-        public List<bool> allowedCategories;
+        public static List<bool> allowedCategories;
+
+        private static VehicleData vd = new VehicleData();
 
         private void CreateMenu()
         {
-            VehicleData vd = new VehicleData();
+            //VehicleData vd = new VehicleData();
             #region initial setup.
-            allowedCategories = new List<bool>(){
-                cf.IsAllowed(Permission.VSCompacts),
-                cf.IsAllowed(Permission.VSSedans),
-                cf.IsAllowed(Permission.VSSUVs),
-                cf.IsAllowed(Permission.VSCoupes),
-                cf.IsAllowed(Permission.VSMuscle),
-                cf.IsAllowed(Permission.VSSportsClassic),
-                cf.IsAllowed(Permission.VSSports),
-                cf.IsAllowed(Permission.VSSuper),
-                cf.IsAllowed(Permission.VSMotorcycles),
-                cf.IsAllowed(Permission.VSOffRoad),
-                cf.IsAllowed(Permission.VSIndustrial),
-                cf.IsAllowed(Permission.VSUtility),
-                cf.IsAllowed(Permission.VSVans),
-                cf.IsAllowed(Permission.VSCycles),
-                cf.IsAllowed(Permission.VSBoats),
-                cf.IsAllowed(Permission.VSHelicopters),
-                cf.IsAllowed(Permission.VSPlanes),
-                cf.IsAllowed(Permission.VSService),
-                cf.IsAllowed(Permission.VSEmergency),
-                cf.IsAllowed(Permission.VSMilitary),
-                cf.IsAllowed(Permission.VSCommercial),
-                cf.IsAllowed(Permission.VSTrains),
-            };
+
 
             // Create the menu.
             menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Spawner", true)

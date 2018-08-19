@@ -128,6 +128,31 @@ namespace vMenuClient
             Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
 
             permissionsSetupDone = true;
+            VehicleSpawner.allowedCategories = new List<bool>()
+            {
+                Cf.IsAllowed(Permission.VSCompacts),
+                Cf.IsAllowed(Permission.VSSedans),
+                Cf.IsAllowed(Permission.VSSUVs),
+                Cf.IsAllowed(Permission.VSCoupes),
+                Cf.IsAllowed(Permission.VSMuscle),
+                Cf.IsAllowed(Permission.VSSportsClassic),
+                Cf.IsAllowed(Permission.VSSports),
+                Cf.IsAllowed(Permission.VSSuper),
+                Cf.IsAllowed(Permission.VSMotorcycles),
+                Cf.IsAllowed(Permission.VSOffRoad),
+                Cf.IsAllowed(Permission.VSIndustrial),
+                Cf.IsAllowed(Permission.VSUtility),
+                Cf.IsAllowed(Permission.VSVans),
+                Cf.IsAllowed(Permission.VSCycles),
+                Cf.IsAllowed(Permission.VSBoats),
+                Cf.IsAllowed(Permission.VSHelicopters),
+                Cf.IsAllowed(Permission.VSPlanes),
+                Cf.IsAllowed(Permission.VSService),
+                Cf.IsAllowed(Permission.VSEmergency),
+                Cf.IsAllowed(Permission.VSMilitary),
+                Cf.IsAllowed(Permission.VSCommercial),
+                Cf.IsAllowed(Permission.VSTrains),
+            };
         }
         #endregion
 
@@ -165,7 +190,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task ProcessMainButtons()
         {
-            if (MainMenu.Mp.IsAnyMenuOpen())
+            if (Mp.IsAnyMenuOpen())
             {
                 currentMenu = Cf.GetOpenMenu();
                 if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)

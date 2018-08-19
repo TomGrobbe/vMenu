@@ -155,7 +155,15 @@ namespace vMenuClient
                 CommonFunctions.VehicleInfo vehInfo = SavedVehiclesDict["veh_" + item2.Text];
 
                 // Spawn a vehicle using the hash, and pass on the vehicleInfo dictionary containing all saved vehicle mods.
-                cf.SpawnVehicle(vehInfo.model, MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, false, vehicleInfo: vehInfo, saveName: item2.Text);
+                if (MainMenu.VehicleSpawnerMenu != null)
+                {
+                    cf.SpawnVehicle(vehInfo.model, MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, false, vehicleInfo: vehInfo, saveName: item2.Text);
+                }
+                else
+                {
+                    cf.SpawnVehicle(vehInfo.model, true, true, false, vehicleInfo: vehInfo, saveName: item2.Text);
+                }
+
             };
 
             // Handle vehicle deletions
