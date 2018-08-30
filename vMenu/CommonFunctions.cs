@@ -2328,5 +2328,21 @@ namespace vMenuClient
         #endregion
 
         #endregion
+
+        #region Set Correct Blip
+        public void SetCorrectBlipSprite(int ped, int blip)
+        {
+            if (IsPedInAnyVehicle(ped, false))
+            {
+                int vehicle = GetVehiclePedIsIn(ped, false);
+                int blipSprite = BlipInfo.GetBlipSpriteForVehicle(vehicle);
+                SetBlipSprite(blip, blipSprite);
+            }
+            else
+            {
+                SetBlipSprite(blip, 1);
+            }
+        }
+        #endregion
     }
 }

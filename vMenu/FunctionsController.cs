@@ -37,7 +37,8 @@ namespace vMenuClient
         private string crossingName = "";
         private string suffix = "";
         private bool wasMenuJustOpen = false;
-        //private PlayerList blipsPlayerList = new PlayerList();`
+        private PlayerList blipsPlayerList = new PlayerList();
+        private List<int> waypointPlayerIdsToRemove = new List<int>();
 
         /// <summary>
         /// Constructor.
@@ -51,21 +52,22 @@ namespace vMenuClient
             }
 
             // Add all tick events.
-            Tick += GeneralTasks;         // barely any / no memory leaks
-            Tick += PlayerOptions;        // big memory leaks
-            Tick += VehicleOptions;       // small memory leaks
-            Tick += MoreVehicleOptions;   // very small memory leaks, once every couple of seconds
-            Tick += VoiceChat;            // 
-            Tick += TimeOptions;          // 
-            Tick += _WeatherOptions;      // 
-            Tick += WeaponOptions;        // 
+            Tick += GeneralTasks;
+            Tick += PlayerOptions;
+            Tick += VehicleOptions;
+            Tick += MoreVehicleOptions;
+            Tick += VoiceChat;
+            Tick += TimeOptions;
+            Tick += _WeatherOptions;
+            Tick += WeaponOptions;
+            Tick += OnlinePlayersTasks;
 
             Tick += MiscSettings;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
             Tick += ManageCamera;
-            //Tick += PlayerBlipsControl;
+            Tick += PlayerBlipsControl;
         }
 
         /// Task related
@@ -964,98 +966,53 @@ namespace vMenuClient
             }
         }
         #endregion
-        /*
-                private async Task PlayerBlipsControl()
+
+        #region player blips tasks
+        private async Task PlayerBlipsControl()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
+
+                blipsPlayerList = new PlayerList();
+                foreach (Player p in blipsPlayerList)
                 {
-                    if (MainMenu.MiscSettingsMenu != null)
+                    if (enabled)
                     {
-                        bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
-
-                        blipsPlayerList = new PlayerList();
-                        foreach (Player p in blipsPlayerList)
+                        if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
                         {
-                            if (enabled)
-                            {
-                                if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
-                                {
-                                    Debug.WriteLine("New blip added.");
-                                    p.Character.AttachBlip();
-                                }
-                                p.Character.AttachedBlip.Color = BlipColor.White;
-                                //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
-                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
-                                p.Character.AttachedBlip.IsShortRange = true;
-                                p.Character.AttachedBlip.Name = p.Name;
+                            Debug.WriteLine("New blip added.");
+                            p.Character.AttachBlip();
+                        }
+                        p.Character.AttachedBlip.Color = BlipColor.White;
+                        //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
+                        ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
+                        p.Character.AttachedBlip.IsShortRange = true;
+                        p.Character.AttachedBlip.Name = p.Name;
+
+                        cf.SetCorrectBlipSprite(p.Character.Handle, p.Character.AttachedBlip.Handle);
+                    }
+                    else
+                    {
+                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
+                        {
+                            p.Character.AttachedBlip.Delete();
+                        }
+                    }
 
 
-                                if (IsPedInAnyVehicle(p.Character.Handle, false))
-                                {
-                                    Vehicle veh = new Vehicle(cf.GetVehicle(p.Handle, false));
-                                    if (veh.Model.IsBoat)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = speed boat
-                                    }
-                                    else if (veh.Model.IsBicycle)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite
-                                    }
-                                    else if (veh.Model.IsBike)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite
-                                    }
-                                    else if (veh.Model.IsCar)
-                                    {
-                                        switch ((VehicleHash)veh.Model.Hash)
-                                        {
-                                            case VehicleHash.Apc:
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                        //if (veh.Model.Hash == VehicleHash.Apc)
-                                        //p.Character.AttachedBlip.Sprite = BlipSprite
-                                    }
-                                    else if (veh.Model.IsHelicopter)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite.HelicopterAnimated;
-                                    }
-                                    else if (veh.Model.IsPlane)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite
-                                    }
-                                    else if (veh.Model.IsQuadbike)
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite.
-                                    }
-                                    else
-                                    {
-                                        p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
-                                    }
-                                    //if (p.Character.IsInBoat)
-                                    //{
-                                    //    p.Character.AttachedBlip.Sprite = BlipSprite.Speedboat; // 427 = Speedboat
-                                    //}
-                                    //else if (p.Character.IsInPlane)
-                                    //{
+                    await Delay(60); // wait 60 ticks before doing the next player.
+                }
+                await Delay(1000); // wait 1000 ticks before doing the next loop.
+            }
+            else
+            {
+                await Delay(1000);
+            }
+        }
 
-                                    //}
-                                    //else if (p.Character.IsInHeli)
-                                    //{
+        #endregion
 
-                                    //}
-                                    //else if (p.Character.IsOnBike)
-                                    //{
-
-                                    //}
-
-                                    veh = null;
-                                }
-                                else
-                                {
-                                    p.Character.AttachedBlip.Sprite = BlipSprite.Standard;
-                                }
-                            }
-                            else
                             {
                                 if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
                                 {

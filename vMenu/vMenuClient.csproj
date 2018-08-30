@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlipInfo.cs" />
     <Compile Include="CommonFunctions.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="EventManager.cs" />

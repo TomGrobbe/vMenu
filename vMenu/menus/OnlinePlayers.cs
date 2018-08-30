@@ -11,6 +11,8 @@ namespace vMenuClient
 {
     public class OnlinePlayers
     {
+        public List<int> PlayersWaypointList = new List<int>();
+
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
         private CommonFunctions cf = MainMenu.Cf;
