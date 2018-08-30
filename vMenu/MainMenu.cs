@@ -380,7 +380,7 @@ namespace vMenuClient
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
-                TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
 
                 // Wait until the data is received and the player's name is loaded correctly.
                 while (!permissionsSetupDone || !optionsSetupDone
@@ -609,7 +609,7 @@ namespace vMenuClient
             }
             if (Cf.IsAllowed(Permission.OPUnban))
             {
-                TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
                 BannedPlayersMenu = new BannedPlayers();
                 UIMenu menu = BannedPlayersMenu.GetMenu();
                 UIMenuItem button = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.");

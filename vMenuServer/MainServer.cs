@@ -315,7 +315,7 @@ namespace vMenuServer
         /// </summary>
         public MainServer()
         {
-            RegisterCommand("vmenuserver", new Action<int, List<object>, string>((int source, List<object> args, string rawCommand) =>
+            RegisterCommand("vmenuserver", new Action<int, List<object>, string>(async (int source, List<object> args, string rawCommand) =>
             {
                 if (args != null)
                 {
@@ -341,11 +341,11 @@ namespace vMenuServer
                                 string name = args[1].ToString().Trim();
                                 name = name.Replace("\"", "");
                                 name = BanManager.GetSafePlayerName(name);
-                                var bans = BanManager.GetBanList();
+                                var bans = await BanManager.GetBanList();
                                 var banRecord = bans.Find(b => { return b.playerName == name; });
                                 if (banRecord.playerName != null)
                                 {
-                                    if (BanManager.RemoveBan(banRecord))
+                                    if (await BanManager.RemoveBan(banRecord))
                                     {
                                         Debug.WriteLine("Player has been successfully unbanned.");
                                     }
