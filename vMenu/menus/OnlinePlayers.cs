@@ -81,7 +81,7 @@ namespace vMenuClient
                         // Create all player options buttons.
                         UIMenuItem teleportBtn = new UIMenuItem("Teleport To Player", "Teleport to this player.");
                         UIMenuItem teleportInVehBtn = new UIMenuItem("Teleport Into Vehicle", "Teleport into the player's vehicle.");
-                        UIMenuItem setWaypointBtn = new UIMenuItem("Set Waypoint", "Set a waypoint to this player.");
+                        UIMenuItem setWaypointBtn = new UIMenuItem("Toggle GPS Route", "Enables or disables drawing a GPS route to this player.");
                         UIMenuItem spectateBtn = new UIMenuItem("Spectate Player", "Spectate this player.");
                         UIMenuItem summonBtn = new UIMenuItem("Summon Player", "Bring this player to your location.");
                         summonBtn.SetRightBadge(UIMenuItem.BadgeStyle.Alert);
@@ -157,10 +157,55 @@ namespace vMenuClient
                             // Set waypoint button is pressed.
                             else if (item2 == setWaypointBtn)
                             {
-                                if (player.Handle != PlayerPedId())
-                                    World.WaypointPosition = GetEntityCoords(GetPlayerPed(player.Handle), true);
-                                else
-                                    Notify.Error("You can not set a waypoint to yourself.", true, true);
+                                bool selectedPedRouteAlreadyActive = false;
+                                if (PlayersWaypointList.Count > 0)
+                                {
+                                    if (PlayersWaypointList.Contains(player.Handle))
+                                    {
+                                        selectedPedRouteAlreadyActive = true;
+                                    }
+                                    foreach (int playerId in PlayersWaypointList)
+                                    {
+                                        int playerPed = GetPlayerPed(playerId);
+                                        if (DoesEntityExist(playerPed) && DoesBlipExist(GetBlipFromEntity(playerPed)))
+                                        {
+                                            int oldBlip = GetBlipFromEntity(playerPed);
+                                            SetBlipRoute(oldBlip, false);
+                                            RemoveBlip(ref oldBlip);
+                                            Notify.Custom($"~g~GPS route to ~s~<C>{GetPlayerName(playerId)}</C>~g~ is now disabled.");
+                                        }
+                                    }
+                                    PlayersWaypointList.Clear();
+                                }
+
+                                if (!selectedPedRouteAlreadyActive)
+                                {
+                                    if (player.Handle != PlayerId())
+                                    {
+                                        int ped = GetPlayerPed(player.Handle);
+                                        int blip = GetBlipFromEntity(ped);
+                                        if (DoesBlipExist(blip))
+                                        {
+                                            SetBlipColour(blip, 58);
+                                            SetBlipRouteColour(blip, 58);
+                                            SetBlipRoute(blip, true);
+                                        }
+                                        else
+                                        {
+                                            blip = AddBlipForEntity(ped);
+                                            SetBlipColour(blip, 58);
+                                            SetBlipRouteColour(blip, 58);
+                                            SetBlipRoute(blip, true);
+                                        }
+                                        PlayersWaypointList.Add(player.Handle);
+                                        Notify.Custom($"~g~GPS route to ~s~<C>{player.Name}</C>~g~ is now active, press the ~s~Toggle GPS Route~g~ button again to disable the route.");
+                                    }
+                                    else
+                                    {
+                                        Notify.Error("You can not set a waypoint to yourself.");
+                                    }
+                                }
+
                             }
                             // Spectate player button is pressed.
                             else if (item2 == spectateBtn)

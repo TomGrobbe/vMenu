@@ -1013,24 +1013,48 @@ namespace vMenuClient
 
         #endregion
 
-                            {
-                                if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
-                                {
-                                    p.Character.AttachedBlip.Delete();
-                                }
-                            }
-
-
-                            await Delay(60); // wait 60 ticks before doing the next player.
-                        }
-                        await Delay(1000); // wait 1000 ticks before doing the next loop.
+        #region Online Player Options Tasks
+        private async Task OnlinePlayersTasks()
+        {
+            await Delay(500);
+            if (MainMenu.OnlinePlayersMenu != null && MainMenu.OnlinePlayersMenu.PlayersWaypointList.Count > 0)
+            {
+                foreach (int playerId in MainMenu.OnlinePlayersMenu.PlayersWaypointList)
+                {
+                    if (!NetworkIsPlayerActive(playerId))
+                    {
+                        waypointPlayerIdsToRemove.Add(playerId);
                     }
                     else
                     {
-                        await Delay(1000);
+                        Vector3 pos1 = GetEntityCoords(GetPlayerPed(playerId), true);
+                        Vector3 pos2 = Game.PlayerPed.Position;
+                        if (Vdist2(pos1.X, pos1.Y, pos1.Z, pos2.X, pos2.Y, pos2.Z) < 20f)
+                        {
+                            int blip = GetBlipFromEntity(GetPlayerPed(playerId));
+                            if (DoesBlipExist(blip))
+                            {
+                                SetBlipRoute(blip, false);
+                                RemoveBlip(ref blip);
+                                waypointPlayerIdsToRemove.Add(playerId);
+                                Notify.Custom($"~g~You've reached ~s~<C>{GetPlayerName(playerId)}</C>'s~g~ location, disabling GPS route.");
+                            }
+                        }
                     }
+                    await Delay(10);
                 }
-        */
+                if (waypointPlayerIdsToRemove.Count > 0)
+                {
+                    foreach (int id in waypointPlayerIdsToRemove)
+                    {
+                        MainMenu.OnlinePlayersMenu.PlayersWaypointList.Remove(id);
+                    }
+                    await Delay(10);
+                }
+                waypointPlayerIdsToRemove.Clear();
+            }
+        }
+        #endregion
 
         /// Not task related
         #region Private ShowSpeed Functions
