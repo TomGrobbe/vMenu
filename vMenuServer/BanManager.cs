@@ -348,8 +348,8 @@ namespace vMenuServer
 
             BannedPlayersList.Add(ban);
 
-            var output = JsonConvert.SerializeObject(BannedPlayersList);
-            return SaveResourceFile(GetCurrentResourceName(), "bans.json", output, output.Length);
+            var output = JsonConvert.SerializeObject(BannedPlayersList, Formatting.Indented);
+            return SaveResourceFile(GetCurrentResourceName(), "bans.json", output, -1);
         }
 
         /// <summary>
@@ -389,8 +389,8 @@ namespace vMenuServer
                     BannedPlayersList.RemoveAt(i - 1);
                 }
             }
-            var output = JsonConvert.SerializeObject(BannedPlayersList);
-            return SaveResourceFile(GetCurrentResourceName(), "bans.json", output, output.Length);
+            var output = JsonConvert.SerializeObject(BannedPlayersList, Formatting.Indented);
+            return SaveResourceFile(GetCurrentResourceName(), "bans.json", output, -1);
         }
 
         /// <summary>
@@ -481,7 +481,7 @@ namespace vMenuServer
                     (date.Minute < 10 ? "0" : "") + date.Minute + ":" +
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
-                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, outputFile.Length);
+                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
                 Log(banActionMessage + "\n");
             }
         }

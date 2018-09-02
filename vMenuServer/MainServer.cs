@@ -823,7 +823,7 @@ namespace vMenuServer
                     (date.Minute < 10 ? "0" : "") + date.Minute + ":" +
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [KICK ACTION] {kickLogMesage}\n";
-                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, outputFile.Length);
+                SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
                 Debug.Write(kickLogMesage + "\n");
             }
         }

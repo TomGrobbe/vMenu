@@ -45,7 +45,7 @@ namespace vMenuServer
                 {
                     Guid uuid = Guid.NewGuid();
                     UUID = uuid.ToString();
-                    SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, UUID.Length);
+                    SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
                 }
                 // sets the UUID convar.
                 ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
