@@ -1016,9 +1016,9 @@ namespace vMenuClient
                     }
 
 
-                    await Delay(60); // wait 60 ticks before doing the next player.
+                    await Delay(0); // wait 0 ticks before doing the next player.
                 }
-                await Delay(1000); // wait 1000 ticks before doing the next loop.
+                await Delay(1); // wait 1 tick before doing the next loop.
             }
             else
             {
