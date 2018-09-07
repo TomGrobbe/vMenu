@@ -140,16 +140,16 @@ namespace vMenuClient
             {
                 menu.AddItem(thermalVision);
             }
-            if (cf.IsAllowed(Permission.MSLocationBlips))
-            {
-                menu.AddItem(locationBlips);
-                if (!MainMenu.EnableExperimentalFeatures)
-                {
-                    locationBlips.Enabled = false;
-                    locationBlips.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                    locationBlips.Description = "This experimental feature is not yet available, more details will be published on the forum thread soon.";
-                }
-            }
+            //if (cf.IsAllowed(Permission.MSLocationBlips))
+            //{
+            //    menu.AddItem(locationBlips);
+            //    if (!MainMenu.EnableExperimentalFeatures)
+            //    {
+            //        locationBlips.Enabled = false;
+            //        locationBlips.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+            //        locationBlips.Description = "This experimental feature is not yet available, more details will be published on the forum thread soon.";
+            //    }
+            //}
             if (cf.IsAllowed(Permission.MSPlayerBlips))
             {
                 menu.AddItem(playerBlips);

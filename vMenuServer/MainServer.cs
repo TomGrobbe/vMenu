@@ -286,7 +286,6 @@ namespace vMenuServer
             "WPSmokeGrenade",
 
             // Misc Settings
-            //"MSMenu", (removed because this menu should always be allowed).
             "MSAll",
             "MSClearArea",
             "MSTeleportToWp",
@@ -296,7 +295,7 @@ namespace vMenuServer
             "MSDeathNotifs",
             "MSNightVision",
             "MSThermalVision",
-            "MSLocationBlips",
+            //"MSLocationBlips", // not yet implemented
             "MSConnectionMenu",
 
             // Voice Chat
