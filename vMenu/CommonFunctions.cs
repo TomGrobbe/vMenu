@@ -798,8 +798,13 @@ namespace vMenuClient
 
             // Set the previous vehicle to the new vehicle.
             previousVehicle = vehicle;
-            vehicle.Speed = speed;
-            vehicle.CurrentRPM = rpm;
+            //vehicle.Speed = speed; // retarded feature that randomly breaks for no fucking reason
+            if (!vehicle.Model.IsTrain) // to be extra fucking safe
+            {
+                // workaround of retarded feature above:
+                SetVehicleForwardSpeed(vehicle.Handle, speed);
+            }
+            //vehicle.CurrentRPM = rpm; // probably breaks shit too in the future, might as well remove it now.
 
             // Discard the model.
             SetModelAsNoLongerNeeded(vehicleHash);
