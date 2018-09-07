@@ -2341,7 +2341,11 @@ namespace vMenuClient
             {
                 int vehicle = GetVehiclePedIsIn(ped, false);
                 int blipSprite = BlipInfo.GetBlipSpriteForVehicle(vehicle);
-                SetBlipSprite(blip, blipSprite);
+                if (GetBlipSprite(blip) != blipSprite)
+                {
+                    SetBlipSprite(blip, blipSprite);
+                }
+                
             }
             else
             {
