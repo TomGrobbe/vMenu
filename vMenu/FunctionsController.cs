@@ -979,18 +979,33 @@ namespace vMenuClient
                 {
                     if (enabled)
                     {
-                        if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
+                        if (p != Game.Player)
                         {
-                            Debug.WriteLine("New blip added.");
-                            p.Character.AttachBlip();
-                        }
-                        p.Character.AttachedBlip.Color = BlipColor.White;
-                        //Debug.Write(p.Character.AttachedBlip.Sprite.ToString());
-                        ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
-                        p.Character.AttachedBlip.IsShortRange = true;
-                        p.Character.AttachedBlip.Name = p.Name;
+                            if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
+                            {
+                                Debug.WriteLine("New blip added.");
+                                p.Character.AttachBlip();
+                            }
+                            p.Character.AttachedBlip.Color = BlipColor.White;
+                            if (!IsPedInAnyVehicle(PlayerPedId(), false))
+                            {
+                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
+                            }
+                            else
+                            {
+                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, false);
+                            }
 
-                        cf.SetCorrectBlipSprite(p.Character.Handle, p.Character.AttachedBlip.Handle);
+                            p.Character.AttachedBlip.IsShortRange = true;
+
+                            cf.SetCorrectBlipSprite(p.Character.Handle, p.Character.AttachedBlip.Handle);
+                            p.Character.AttachedBlip.Name = p.Name;
+
+                            if (!p.Character.IsInHeli)
+                            {
+                                p.Character.AttachedBlip.Rotation = (int)GetEntityHeading(p.Character.Handle);
+                            }
+                        }
                     }
                     else
                     {
