@@ -804,7 +804,7 @@ namespace vMenuClient
                 // workaround of retarded feature above:
                 SetVehicleForwardSpeed(vehicle.Handle, speed);
             }
-            //vehicle.CurrentRPM = rpm; // probably breaks shit too in the future, might as well remove it now.
+            vehicle.CurrentRPM = rpm;
 
             // Discard the model.
             SetModelAsNoLongerNeeded(vehicleHash);
