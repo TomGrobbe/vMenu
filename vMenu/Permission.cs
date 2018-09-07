@@ -238,6 +238,7 @@
         MSThermalVision,
         MSLocationBlips,
         MSPlayerBlips,
+        MSConnectionMenu,
 
         // Voice Chat
         VCMenu,

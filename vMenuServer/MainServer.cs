@@ -297,6 +297,7 @@ namespace vMenuServer
             "MSNightVision",
             "MSThermalVision",
             "MSLocationBlips",
+            "MSConnectionMenu",
 
             // Voice Chat
             "VCMenu",

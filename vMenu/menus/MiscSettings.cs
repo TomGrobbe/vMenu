@@ -112,8 +112,10 @@ namespace vMenuClient
             // Always allowed
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
-            menu.AddItem(connectionSubmenuBtn);
-
+            if (cf.IsAllowed(Permission.MSConnectionMenu))
+            {
+                menu.AddItem(connectionSubmenuBtn);
+            }
             if (cf.IsAllowed(Permission.MSShowCoordinates))
             {
                 menu.AddItem(coords);
