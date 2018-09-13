@@ -226,7 +226,21 @@ namespace vMenuClient
                     return true;
                 }
                 // All other options should be disabled by default:
-                else
+                else if (kvpString.Equals("vehicleNoSiren"))
+                {
+                    SetSavedSettingsBool(kvpString, false);
+                    int res = GetNumResources();
+                    for (int i =0; i < res; i++)
+                    {
+                        if (GetResourceByFindIndex(i).ToLower().Contains("els"))
+                        {
+                            SetSavedSettingsBool(kvpString, true);
+                            return true;
+                        }
+                    }
+                        return false;
+                }
+                else 
                 {
                     SetSavedSettingsBool(kvpString, false);
                     return false;
