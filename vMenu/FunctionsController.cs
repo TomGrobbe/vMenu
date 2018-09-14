@@ -1009,7 +1009,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()))
+                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()) && MainMenu.OnlinePlayersMenu != null && !MainMenu.OnlinePlayersMenu.PlayersWaypointList.Contains(p.Handle))
                         {
                             p.Character.AttachedBlip.Delete();
                         }
