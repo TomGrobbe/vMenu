@@ -505,7 +505,7 @@ namespace vMenuServer
         /// <param name="banActionMessage"></param>
         public static void BanLog(string banActionMessage)
         {
-            if (GetConvar("vMenuLogBanActions", "false") == "true")
+            if (GetConvar("vMenuLogBanActions", "true") == "true")
             {
                 string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
                 DateTime date = DateTime.Now;

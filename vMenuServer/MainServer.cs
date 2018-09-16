@@ -815,7 +815,7 @@ namespace vMenuServer
         /// <param name="kickLogMesage"></param>
         private static void KickLog(string kickLogMesage)
         {
-            if (GetConvar("vMenuLogKickActions", "false") == "true")
+            if (GetConvar("vMenuLogKickActions", "true") == "true")
             {
                 string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
                 DateTime date = DateTime.Now;
