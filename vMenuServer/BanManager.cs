@@ -428,7 +428,7 @@ namespace vMenuServer
         {
             if (source != null && !string.IsNullOrEmpty(source.Name) && source.Name.ToLower() != "**invalid**" && source.Name.ToLower() != "** invalid **")
             {
-                if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban"))
+                if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything"))
                 {
                     dynamic obj = JsonConvert.DeserializeObject(banRecordJsonString);
                     BanRecord ban = JsonToBanRecord(obj);
@@ -458,23 +458,27 @@ namespace vMenuServer
         /// <param name="source"></param>
         public static async void BanCheater(Player source)
         {
-            var ban = new BanRecord()
+            bool enabled = (GetConvar("vMenuBanCheaters", "false") ?? "false") == "true";
+            if (enabled)
             {
-                bannedBy = "vMenu Auto Ban",
-                bannedUntil = new DateTime(3000, 1, 1),
-                banReason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.",
-                identifiers = source.Identifiers.ToList(),
-                playerName = GetSafePlayerName(source.Name)
-            };
+                var ban = new BanRecord()
+                {
+                    bannedBy = "vMenu Auto Ban",
+                    bannedUntil = new DateTime(3000, 1, 1),
+                    banReason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.",
+                    identifiers = source.Identifiers.ToList(),
+                    playerName = GetSafePlayerName(source.Name)
+                };
 
-            if (await AddBan(ban))
-            {
-                TriggerEvent("vMenu:BanCheaterSuccessful", JsonConvert.SerializeObject(ban).ToString());
-                BanLog($"A cheater has been banned. {JsonConvert.SerializeObject(ban).ToString()}");
+                if (await AddBan(ban))
+                {
+                    TriggerEvent("vMenu:BanCheaterSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                    BanLog($"A cheater has been banned. {JsonConvert.SerializeObject(ban).ToString()}");
+                }
+
+                source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
+                Log("A cheater has been banned because they attempted to trigger a fake event.");
             }
-
-            source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
-            Log("A cheater has been banned because they attempted to trigger a fake event.");
         }
 
 
@@ -485,9 +489,14 @@ namespace vMenuServer
         /// <returns></returns>
         public static string GetSafePlayerName(string playerName)
         {
-            string safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
-            safeName = Regex.Replace(safeName, @"[^\u0000-\u007F]+", string.Empty);
-            return safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
+            if (!string.IsNullOrEmpty(playerName))
+            {
+                string safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
+                safeName = Regex.Replace(safeName, @"[^\u0000-\u007F]+", string.Empty);
+                return safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
+            }
+            return "InvalidPlayerName";
+
         }
 
         /// <summary>

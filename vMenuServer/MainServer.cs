@@ -650,7 +650,7 @@ namespace vMenuServer
             }
             else
             {
-                BanManager.BanCheater(new PlayerList()[target]);
+                BanManager.BanCheater(source);
             }
         }
 
@@ -675,7 +675,7 @@ namespace vMenuServer
             }
             else
             {
-                BanManager.BanCheater(new PlayerList()[target]);
+                BanManager.BanCheater(source);
             }
         }
 
@@ -700,7 +700,7 @@ namespace vMenuServer
             }
             else
             {
-                BanManager.BanCheater(new PlayerList()[target]);
+                BanManager.BanCheater(source);
             }
         }
         #endregion
