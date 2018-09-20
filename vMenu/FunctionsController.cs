@@ -492,7 +492,7 @@ namespace vMenuClient
                     DisplayRadar(false);
                 }
                 // Show radar (or hide it if the user disabled it in pausemenu > settings > display > show radar.
-                else
+                else if (!IsRadarHidden()) // this should allow other resources to still disable it
                 {
                     DisplayRadar(IsRadarPreferenceSwitchedOn());
                 }

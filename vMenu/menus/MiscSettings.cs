@@ -188,6 +188,10 @@ namespace vMenuClient
                 else if (item == hideRadar)
                 {
                     HideRadar = _checked;
+                    if (!_checked)
+                    {
+                        DisplayRadar(true);
+                    }
                 }
                 else if (item == showLocation)
                 {
