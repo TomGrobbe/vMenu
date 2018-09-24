@@ -5,6 +5,7 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
+      - $tgurl
 branches:
     only:
         - master
