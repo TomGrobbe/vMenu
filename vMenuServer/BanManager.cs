@@ -37,7 +37,7 @@ namespace vMenuServer
         /// </summary>
         public BanManager()
         {
-            EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int?, double, string>(BanPlayer));
+            EventHandlers.Add("vMenu:TempBanPlayer", new Action<Player, int, double, string>(BanPlayer));
             EventHandlers.Add("vMenu:PermBanPlayer", new Action<Player, int, string>(BanPlayer));
             EventHandlers.Add("playerConnecting", new Action<Player, string, CallbackDelegate>(CheckForBans));
             EventHandlers.Add("vMenu:RequestPlayerUnban", new Action<Player, string>(RemoveBanRecord));
@@ -242,16 +242,15 @@ namespace vMenuServer
         /// <param name="targetPlayer">Player who needs to be banned.</param>
         /// <param name="banDurationHours">Ban duration in hours.</param>
         /// <param name="banReason">Reason for the ban.</param>
-        private async void BanPlayer([FromSource] Player source, int? targetPlayer, double banDurationHours, string banReason)
+        private async void BanPlayer([FromSource] Player source, int targetPlayer, double banDurationHours, string banReason)
         {
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Log("Player is allowed to ban others.");
-                if (targetPlayer != null && new PlayerList().Any(p => (p.Handle == targetPlayer.ToString())))
+                Player target = new PlayerList()[targetPlayer];
+                if (target != null)
                 {
-                    Log("Target player (int) is not null and is still online.");
-                    Player target = new PlayerList()[(int)targetPlayer];
                     if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
                         Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban him.");
@@ -267,21 +266,17 @@ namespace vMenuServer
                         Log("Record created.");
                         if (await AddBan(ban))
                         {
-                            Log("banning was successfull.");
                             BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by " +
                                 $"{ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.");
                             TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
-                            TriggerClientEvent("chatMessage", "Banned");
+                            BannedPlayersList = await GetBanList();
+                            string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                            target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
                         }
                         else
                         {
                             Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
                         }
-                        BannedPlayersList = await GetBanList();
-                        string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                        target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
-
-                        Log("kicking of player would have occurred now.");
                     }
                     else
                     {
