@@ -236,7 +236,7 @@ namespace vMenuClient
                 if (currentMenu.Visible && !DisableControls)
                 {
                     // Check if the Go Up controls are pressed.
-                    if (Game.IsDisabledControlJustPressed(0, Control.Phone) || Game.IsControlJustPressed(0, Control.SniperZoomInSecondary))
+                    if (Game.IsDisabledControlJustPressed(0, (Control)188) || Game.IsControlJustPressed(0, (Control)188) || Game.IsControlJustPressed(0, (Control)181) || Game.IsDisabledControlJustPressed(0, (Control)181))
                     {
                         // Update the currently selected item to the new one.
                         currentMenu.GoUp();
@@ -248,7 +248,7 @@ namespace vMenuClient
                         var delay = 200;
 
                         // Do the following as long as the controls are being pressed.
-                        while (Game.IsDisabledControlPressed(0, Control.Phone) && Cf.GetOpenMenu() != null)
+                        while ((Game.IsDisabledControlPressed(0, (Control)188) || Game.IsControlPressed(0, (Control)188)) && Cf.GetOpenMenu() != null)
                         {
                             // Update the current menu.
                             currentMenu = Cf.GetOpenMenu();
@@ -327,14 +327,14 @@ namespace vMenuClient
                     }
 
                     // Check if the Go Down controls are pressed.
-                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneDown) || Game.IsControlJustPressed(0, Control.SniperZoomOutSecondary))
+                    else if (Game.IsDisabledControlJustPressed(0, (Control)187) || Game.IsControlJustPressed(0, (Control)187) || Game.IsControlJustPressed(0, (Control)180) || Game.IsDisabledControlJustPressed(0, (Control)180))
                     {
                         currentMenu.GoDown();
                         currentMenu.GoDownOverflow();
                         var time = GetGameTimer();
                         var times = 0;
                         var delay = 200;
-                        while (Game.IsDisabledControlPressed(0, Control.PhoneDown) && Cf.GetOpenMenu() != null)
+                        while ((Game.IsDisabledControlPressed(0, (Control)187) || Game.IsControlPressed(0, (Control)187) || Game.IsControlPressed(0, (Control)180) || Game.IsDisabledControlPressed(0, (Control)180)) && Cf.GetOpenMenu() != null)
                         {
                             currentMenu = Cf.GetOpenMenu();
                             if (GetGameTimer() - time > delay)
