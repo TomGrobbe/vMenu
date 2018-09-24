@@ -208,25 +208,26 @@ namespace vMenuServer
                         };
                         if (await AddBan(ban))
                         {
-                            BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by {ban.bannedBy} " +
-                                $"for {ban.banReason} until {ban.bannedUntil} (forever).");
+                            BanLog($"A new ban record has been added. Player: '{ban.playerName}' was banned by '{ban.bannedBy}' " +
+                                $"for '{ban.banReason}' until '{ban.bannedUntil}' (forever).");
                             target.Drop($"You have been permanently banned from this server. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
                             TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                            source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                             BannedPlayersList = await GetBanList();
                         }
                         else
                         {
-                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?\n");
+                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?\n", LogLevel.error);
                         }
                     }
                     else
                     {
-                        Log("Could not ban player because they are exempt from being banned.");
+                        Log("Could not ban player because they are exempt from being banned.", LogLevel.error);
                         source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
                     }
                     return;
                 }
-                Log("An error occurred while trying to ban someone. Error details: The specified target player is 'null', unknown reason.");
+                Log("An error occurred while trying to ban someone. Error details: The specified target player is 'null', unknown reason.", LogLevel.error);
                 TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
             }
             else
@@ -247,13 +248,14 @@ namespace vMenuServer
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                Log("Player is allowed to ban others.");
+                Log("Source player is allowed to ban others.", LogLevel.info);
                 Player target = new PlayerList()[targetPlayer];
                 if (target != null)
                 {
+                    Log("Target player is not null so moving on.", LogLevel.info);
                     if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
-                        Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban him.");
+                        Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban them.", LogLevel.info);
                         BanRecord ban = new BanRecord()
                         {
                             bannedBy = GetSafePlayerName(source.Name),
@@ -263,36 +265,38 @@ namespace vMenuServer
                             playerName = GetSafePlayerName(target.Name)
                         };
 
-                        Log("Record created.");
+                        Log("Ban record created.", LogLevel.info);
                         if (await AddBan(ban))
                         {
-                            BanLog($"A new ban record has been added. Player: {ban.playerName} was banned by " +
-                                $"{ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.");
+                            BanLog($"A new ban record has been added. Player: '{ban.playerName}' was banned by " +
+                                $"'{ban.bannedBy}' for '{ban.banReason}' until '{ban.bannedUntil}'.");
                             TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                             BannedPlayersList = await GetBanList();
                             string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
                             target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                            source.TriggerEvent("vMenu:Notify", "~g~Target player successfully temp banned.");
                         }
                         else
                         {
-                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?");
+                            Log("Saving of new ban failed. Reason: unknown. Maybe the file is broken?", LogLevel.error);
+                            source.TriggerEvent("vMenu:Notify", "~r~Could not ban the target player, reason: unknown.");
                         }
                     }
                     else
                     {
-                        Log("Player could not be banned because he is exempt from being banned.");
+                        Log("Player could not be banned because he is exempt from being banned.", LogLevel.error);
                         source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
                     }
                 }
                 else
                 {
-                    Log("Player is invalid (no longer online) and therefor the banning has failed.");
+                    Log("Player is invalid (no longer online) and therefor the banning has failed.", LogLevel.error);
                     source.TriggerEvent("vMenu:Notify", "Could not temp-ban this player because they already left the server.");
                 }
             }
             else
             {
-                Log("banning of cheater because original source is not allowed to ban.");
+                Log("If enabled, the source player will be banned now because they are cheating!", LogLevel.warning);
                 BanCheater(source);
             }
 
@@ -333,9 +337,9 @@ namespace vMenuServer
         private static async Task<bool> AddBan(BanRecord ban)
         {
 
-            Log("Refreshing banned players list.");
+            Log("Refreshing banned players list.", LogLevel.info);
             BannedPlayersList = await GetBanList();
-            var found = false;
+            bool found = false;
             foreach (BanRecord b in BannedPlayersList)
             {
                 b.identifiers.ForEach(i =>
@@ -351,7 +355,7 @@ namespace vMenuServer
                     break;
                 }
             }
-            Log("Player is found as already banned? : " + found.ToString());
+            Log("Player is found as already banned? : " + found.ToString(), found ? LogLevel.warning : LogLevel.info);
 
             BannedPlayersList.Add(ban);
 
@@ -437,12 +441,12 @@ namespace vMenuServer
                 else
                 {
                     BanCheater(source);
-                    Debug.Write($"[vMenu] Player {JsonConvert.SerializeObject(source)} did not have the required permissions, but somehow triggered the unban event. Missing permissions: vMenu.OnlinePlayers.Unban (is ace allowed: {IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban")})\n");
+                    Debug.WriteLine($"^3[vMenu] [WARNING] [BAN] ^0Player {JsonConvert.SerializeObject(source)} did not have the required permissions, but somehow triggered the unban event. Missing permissions: vMenu.OnlinePlayers.Unban (is ace allowed: {IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban")})\n");
                 }
             }
             else
             {
-                Debug.WriteLine("[vMenu] Warning: the unban event was triggered, but no valid source was provided. Nobody has been unbanned.");
+                Debug.WriteLine("^3[vMenu] [WARNING] ^0The unban event was triggered, but no valid source was provided. Nobody has been unbanned.");
             }
 
         }
@@ -472,7 +476,7 @@ namespace vMenuServer
                 }
 
                 source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
-                Log("A cheater has been banned because they attempted to trigger a fake event.");
+                Log("A cheater has been banned because they attempted to trigger a fake event.", LogLevel.warning);
             }
         }
 
@@ -512,7 +516,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
-                Log(banActionMessage + "\n");
+                Debug.WriteLine("^2[vMenu] [SUCCESS] [BAN]^0 " + banActionMessage);
             }
         }
     }

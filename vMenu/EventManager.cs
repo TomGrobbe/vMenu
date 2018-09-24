@@ -280,7 +280,7 @@ namespace vMenuClient
         /// <param name="message"></param>
         private void NotifyPlayer(string message)
         {
-            Notify.Custom(message, true, false);
+            Notify.Custom(message, true, true);
         }
 
         /// <summary>

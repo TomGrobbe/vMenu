@@ -15,15 +15,42 @@ namespace vMenuServer
 
     public static class DebugLog
     {
+        public enum LogLevel
+        {
+            error = 1,
+            success = 2,
+            info = 4,
+            warning = 3,
+            none = 0
+        }
+
         /// <summary>
         /// Global log data function, only logs when debugging is enabled.
         /// </summary>
         /// <param name="data"></param>
-        public static void Log(dynamic data)
+        public static void Log(dynamic data, LogLevel level = LogLevel.none)
         {
             if (MainServer.DebugMode)
             {
-                Debug.Write(data.ToString() + "\n");
+                string prefix = "[vMenu] ";
+                if (level == LogLevel.error)
+                {
+                    prefix = "^1[vMenu] [ERROR]^0 ";
+                }
+                else if (level == LogLevel.info)
+                {
+                    prefix = "^5[vMenu] [INFO]^0 ";
+                }
+                else if (level == LogLevel.success)
+                {
+                    prefix = "^2[vMenu] [SUCCESS]^0 ";
+                }
+                else if (level == LogLevel.warning)
+                {
+                    prefix = "^3[vMenu] [WARNING]^0 ";
+                }
+                Debug.WriteLine($"{prefix}[DEBUG LOG] {data.ToString()}");
+
             }
         }
     }
@@ -378,8 +405,8 @@ namespace vMenuServer
 
             if (GetCurrentResourceName() != "vMenu")
             {
-                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
-                    "Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
+                Exception InvalidNameException = new Exception("\r\n\r\n^1[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
+                    "Please change the folder name from '^3" + GetCurrentResourceName() + "^0' to '^2vMenu^0' (case sensitive) instead!\r\n\r\n\r\n^0");
                 try
                 {
                     throw InvalidNameException;
@@ -496,7 +523,7 @@ namespace vMenuServer
                     if (DebugMode)
                     {
                         long gameTimer2 = GetGameTimer();
-                        Log($"Duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
+                        Log($"Changing weather, last weather duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
                         gameTimer = gameTimer2;
                     }
                 }
@@ -827,7 +854,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [KICK ACTION] {kickLogMesage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
-                Debug.Write(kickLogMesage + "\n");
+                Debug.WriteLine("^3[vMenu] [KICK]^0 " + kickLogMesage + "\n");
             }
         }
     }

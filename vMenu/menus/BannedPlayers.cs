@@ -124,7 +124,7 @@ namespace vMenuClient
                         {
                             id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
                         }
-                        identifierstring += "~t~" + id2 + " ";
+                        identifierstring += "~o~" + id2 + " ";
                     }
                     else if (id.Contains("license:"))
                     {
@@ -133,7 +133,7 @@ namespace vMenuClient
                         {
                             id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
                         }
-                        identifierstring += "~c~" + id2 + " ";
+                        identifierstring += "~y~" + id2 + " ";
                     }
                     else if (id.Contains("ip:"))
                     {
@@ -142,7 +142,7 @@ namespace vMenuClient
                         {
                             id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
                         }
-                        identifierstring += "~s~" + id2 + " ";
+                        identifierstring += "~g~" + id2 + " ";
                     }
 
                 }
