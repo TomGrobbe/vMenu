@@ -41,7 +41,7 @@ namespace vMenuClient
             UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
             UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle,
                 "This will teleport you into the vehicle when you spawn it.");
-            UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", SpawnInVehicle,
+            UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", ReplaceVehicle,
                 "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
             // Add the items to the menu.
