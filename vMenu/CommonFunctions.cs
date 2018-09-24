@@ -708,17 +708,21 @@ namespace vMenuClient
 
             if (IsPedInAnyVehicle(PlayerPedId(), false) && (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious)))
             {
-                if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId() && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
+                if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())// && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
                 {
                     var tmpveh = GetVehicle();
                     SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
                     SetEntityAsMissionEntity(tmpveh, true, true);
 
                     if (previousVehicle != null)
+                    {
                         if (previousVehicle.Handle == tmpveh)
+                        {
                             previousVehicle = null;
-
+                        }
+                    }
                     DeleteVehicle(ref tmpveh);
+                    Notify.Info("Your old car was removed to prevent your new car from glitching inside it. Next time, get out of your vehicle before spawning a new one if you want to keep your old one.");
                 }
             }
 
