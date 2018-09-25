@@ -429,33 +429,39 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
 
                 string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
-                var json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
-
-                if (json.ContainsKey("vehicles"))
+                try
                 {
-                    foreach (var modelName in json["vehicles"])
+                    Dictionary<string, List<string>> json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+                    if (json.ContainsKey("vehicles"))
                     {
-                        Log("Addon vehicle loaded: " + modelName);
-                        addonVehicles.Add(modelName);
+                        foreach (var modelName in json["vehicles"])
+                        {
+                            Log("Addon vehicle loaded: " + modelName);
+                            addonVehicles.Add(modelName);
+                        }
+                    }
+
+                    if (json.ContainsKey("peds"))
+                    {
+                        foreach (var modelName in json["peds"])
+                        {
+                            Log("Addon ped loaded:" + modelName);
+                            addonPeds.Add(modelName);
+                        }
+                    }
+
+                    if (json.ContainsKey("weapons"))
+                    {
+                        foreach (var modelName in json["weapons"])
+                        {
+                            Log("Addon weapon loaded:" + modelName);
+                            addonWeapons.Add(modelName);
+                        }
                     }
                 }
-
-                if (json.ContainsKey("peds"))
+                catch (Newtonsoft.Json.JsonReaderException ex)
                 {
-                    foreach (var modelName in json["peds"])
-                    {
-                        Log("Addon ped loaded:" + modelName);
-                        addonPeds.Add(modelName);
-                    }
-                }
-
-                if (json.ContainsKey("weapons"))
-                {
-                    foreach (var modelName in json["weapons"])
-                    {
-                        Log("Addon weapon loaded:" + modelName);
-                        addonWeapons.Add(modelName);
-                    }
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^0Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
                 if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
