@@ -85,7 +85,8 @@ namespace vMenuClient
 
 
         #region vehicle related settings
-        public static bool keepSpawnedVehiclesPersistent = false;
+        // temporary solution (editable in resource.lua file)
+        public static bool keepSpawnedVehiclesPersistent = (GetResourceMetadata(GetCurrentResourceName(), "keep_spawned_vehicles_persistent", 0) ?? "false") == "true";
         #endregion
 
     }
