@@ -645,7 +645,7 @@ namespace vMenuClient
             if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
                 Vehicle tmpOldVehicle = new Vehicle(GetVehicle());
-                speed = tmpOldVehicle.Speed;
+                speed = GetEntitySpeedVector(tmpOldVehicle.Handle, true).Y; // get forward/backward speed only
                 rpm = tmpOldVehicle.CurrentRPM;
                 tmpOldVehicle = null;
             }
