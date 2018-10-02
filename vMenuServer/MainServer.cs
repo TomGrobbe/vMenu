@@ -9,6 +9,7 @@ using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
 using System.Dynamic;
 using static vMenuServer.DebugLog;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuServer
 {
@@ -68,7 +69,9 @@ namespace vMenuServer
         private string currentWeather = "CLEAR";
         private bool dynamicWeather = true;
         private bool blackout = false;
+        private bool resetBlackout = false;
         private bool freezeTime = false;
+        private int dynamicWeatherMinutes = 10;
         private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
         private long gameTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
@@ -101,6 +104,7 @@ namespace vMenuServer
             "Everything",
             "DontKickMe",
             "NoClip",
+            "Staff",
 
             // Online Players
             "OPMenu",
@@ -336,6 +340,24 @@ namespace vMenuServer
         public List<string> addonVehicles = new List<string>();
         public List<string> addonPeds = new List<string>();
         public List<string> addonWeapons = new List<string>();
+        private List<string> weatherTypes = new List<string>()
+        {
+            "EXTRASUNNY",
+            "CLEAR",
+            "NEUTRAL",
+            "SMOG",
+            "FOGGY",
+            "CLOUDS",
+            "OVERCAST",
+            "CLEARING",
+            "RAIN",
+            "THUNDER",
+            "BLIZZARD",
+            "SNOW",
+            "SNOWLIGHT",
+            "XMAS",
+            "HALLOWEEN"
+        };
 
         #region Constructor
         /// <summary>
@@ -418,6 +440,7 @@ namespace vMenuServer
             }
             else
             {
+                InitializeConfig();
                 // Add event handlers.
                 EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
                 EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
@@ -464,10 +487,34 @@ namespace vMenuServer
                     Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^0Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
-                if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
+                //if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
+                //{
+                //    dynamicWeather = false;
+                //}
+
+                dynamicWeather = GetSettingsBool(SettingsCategory.weather, Setting.enable_dynamic_weather);
+                if (GetSettingsInt(SettingsCategory.weather, Setting.dynamic_weather_timer) != -1)
                 {
-                    dynamicWeather = false;
+                    dynamicWeatherMinutes = GetSettingsInt(SettingsCategory.weather, Setting.dynamic_weather_timer);
+                    dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                 }
+
+
+                string defaultWeather = GetSettingsString(SettingsCategory.weather, Setting.default_weather);
+
+                if (!string.IsNullOrEmpty(defaultWeather))
+                {
+                    if (weatherTypes.Contains(defaultWeather))
+                    {
+                        currentWeather = defaultWeather;
+                    }
+                }
+
+                currentHours = GetSettingsInt(SettingsCategory.time, Setting.default_time_hour);
+                currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
+                currentMinutes = GetSettingsInt(SettingsCategory.time, Setting.default_time_min);
+                currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
+
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
@@ -491,24 +538,28 @@ namespace vMenuServer
         private async Task TimeLoop()
         {
             await Delay(4000);
-            if (freezeTime)
+            if (GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
-                TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
-            }
-            else
-            {
-                currentMinutes += 2;
-                if (currentMinutes > 59)
+                if (freezeTime)
                 {
-                    currentMinutes = 0;
-                    currentHours++;
+                    TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
                 }
-                if (currentHours > 23)
+                else
                 {
-                    currentHours = 0;
+                    currentMinutes += 2;
+                    if (currentMinutes > 59)
+                    {
+                        currentMinutes = 0;
+                        currentHours++;
+                    }
+                    if (currentHours > 23)
+                    {
+                        currentHours = 0;
+                    }
+                    TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
                 }
-                TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
             }
+
         }
 
         /// <summary>
@@ -518,27 +569,45 @@ namespace vMenuServer
         private async Task WeatherLoop()
         {
             await Delay(5000);
-            if (dynamicWeather)
-            {
-                dynamicWeatherTimeLeft -= 10;
-                if (dynamicWeatherTimeLeft < 10)
-                {
-                    dynamicWeatherTimeLeft = 5 * 12 * 10;
-                    RefreshWeather();
 
-                    if (DebugMode)
+            if (GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
+            {
+                if (dynamicWeather)
+                {
+                    dynamicWeatherTimeLeft -= 10;
+                    if (resetBlackout && dynamicWeatherTimeLeft < (5 * 12 * dynamicWeatherMinutes) - 60) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
                     {
-                        long gameTimer2 = GetGameTimer();
-                        Log($"Changing weather, last weather duration: {((gameTimer2 - gameTimer) / 100).ToString()}. New Weather Type: {currentWeather}");
-                        gameTimer = gameTimer2;
+                        resetBlackout = false;
+                        blackout = false;
+                    }
+                    if (dynamicWeatherTimeLeft < 10)
+                    {
+                        dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
+                        RefreshWeather();
+
+                        if (DebugMode)
+                        {
+                            long gameTimer2 = GetGameTimer();
+                            Log($"Changing weather, last weather duration: {((gameTimer2 - gameTimer) / 1000 / 60).ToString()} minutes. New Weather Type: {currentWeather}");
+                            gameTimer = gameTimer2;
+                        }
                     }
                 }
+                else
+                {
+                    dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
+                }
+                if (GetSettingsBool(SettingsCategory.weather, Setting.allow_random_blackout) && currentWeather == "THUNDER" && new Random().Next(5) == 1 && !blackout && !resetBlackout)
+                {
+                    blackout = true;
+                    resetBlackout = true;
+                }
+                if (blackout == false && resetBlackout)
+                {
+                    resetBlackout = false;
+                }
+                TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
             }
-            else
-            {
-                dynamicWeatherTimeLeft = 5 * 12 * 10;
-            }
-            TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
 
         /// <summary>
@@ -745,10 +814,6 @@ namespace vMenuServer
         /// <param name="player"></param>
         private async void SendPermissionsAsync([FromSource] Player player)
         {
-            // First send the vehicle & ped addons list
-            TriggerClientEvent(player, "vMenu:SetupAddonCars", "vehicles", addonVehicles);
-            TriggerClientEvent(player, "vMenu:SetupAddonPeds", "peds", addonPeds);
-            TriggerClientEvent(player, "vMenu:SetupAddonWeapons", "weapons", addonWeapons);
 
             // Get Permissions
             Dictionary<string, bool> perms = new Dictionary<string, bool>();
@@ -759,20 +824,23 @@ namespace vMenuServer
                 perms.Add(ace, allowed);
             }
 
-            // Get Settings
-            Dictionary<string, string> options = new Dictionary<string, string>
-            {
-                { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
-                { "noclipKey", GetConvarInt("vMenuNoClipKey", 289).ToString() ?? "289" },
-                { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
-            };
+            //// Get Settings
+            //Dictionary<string, string> options = new Dictionary<string, string>
+            //{
+            //    { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
+            //    { "noclipKey", GetConvarInt("vMenuNoClipKey", 289).ToString() ?? "289" },
+            //    { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
+            //};
+
+            player.TriggerEvent("vMenu:ConfigureClient", addonVehicles, addonPeds, addonWeapons, perms);
 
             // Send Permissions
-            TriggerClientEvent(player, "vMenu:SetPermissions", perms);
+            //TriggerClientEvent(player, "vMenu:SetPermissions", perms);
 
-            // Send Settings
-            await Delay(50);
-            TriggerClientEvent(player, "vMenu:SetOptions", options);
+            //// Send Settings
+            //await Delay(50);
+            ////TriggerClientEvent(player, "vMenu:SetOptions", options);
+
             while (!UpdateChecker.CheckedForUpdates)
             {
                 await Delay(0);
@@ -848,7 +916,8 @@ namespace vMenuServer
         /// <param name="kickLogMesage"></param>
         private static void KickLog(string kickLogMesage)
         {
-            if (GetConvar("vMenuLogKickActions", "true") == "true")
+            //if (GetConvar("vMenuLogKickActions", "true") == "true")
+            if (GetSettingsBool(SettingsCategory.system, Setting.log_kick_actions))
             {
                 string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
                 DateTime date = DateTime.Now;

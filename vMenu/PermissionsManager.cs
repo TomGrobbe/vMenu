@@ -28,29 +28,40 @@ namespace vMenuClient
 
         public static bool IsAllowed(Permission permission)
         {
-
-            //if (Permissions.Contains("Everything"))
-            if (allowEverything)
+            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.permissions, vMenuShared.ConfigManager.Setting.use_permissions))
             {
-                //MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
-                return true;
-            }
-            else
-            {
-                //var allowed = false;
-                if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
+                //if (Permissions.Contains("Everything"))
+                if (allowEverything)
                 {
-                    //MainMenu.Cf.Log(".All was allowed.");
-                    //allowed = true;
+                    //MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
                     return true;
                 }
-                //if (!allowed)
-                //{
-                //allowed = Permissions.Contains(permission.ToString());
-                //}
-                //return allowed;
-                return Permissions.Contains(permission.ToString());
+                else
+                {
+                    //var allowed = false;
+                    if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
+                    {
+                        //MainMenu.Cf.Log(".All was allowed.");
+                        //allowed = true;
+                        return true;
+                    }
+                    //if (!allowed)
+                    //{
+                    //allowed = Permissions.Contains(permission.ToString());
+                    //}
+                    //return allowed;
+                    return Permissions.Contains(permission.ToString());
+                }
             }
+            else // if permissions are not used...
+            {   // then check for .everything and some specific admin stuff and disable that, but for everything else return true (allowed)
+                if (permission == Permission.Everything || permission == Permission.OPAll || permission == Permission.OPKick || permission == Permission.OPKill || permission == Permission.OPPermBan || permission == Permission.OPTempBan)
+                {
+                    return false;
+                }
+                return true;
+            }
+
         }
     }
 }

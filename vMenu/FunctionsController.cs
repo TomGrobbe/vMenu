@@ -333,8 +333,13 @@ namespace vMenuClient
                                 SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
                             }
 
-                            // No Siren Toggle
-                            vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
+                            // disable this if els compatibility is turned on.
+                            if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.external, vMenuShared.ConfigManager.Setting.use_els_compatibility_mode))
+                            {
+                                // No Siren Toggle
+                                vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
+                            }
+                            
                         }
 
                         // Manage "no helmet"
@@ -780,8 +785,8 @@ namespace vMenuClient
                         PlayerList pl = new PlayerList();
                         var i = 1;
                         var currentlyTalking = false;
-                        //cf.DrawTextOnScreen($"~b~Debugging", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
-                        //i++;
+                        // cf.DrawTextOnScreen($"~b~Debugging", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
+                        // i++;
                         foreach (Player p in pl)
                         {
                             if (NetworkIsPlayerTalking(p.Handle))

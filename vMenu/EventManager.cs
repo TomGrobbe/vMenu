@@ -29,17 +29,18 @@ namespace vMenuClient
         {
             // Add event handlers.
             // Handle the SetPermissions event.
-            EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(UpdatePermissions));
+            EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
+            //EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(UpdatePermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
-            EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
-            EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
-            EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
-            EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
+            //EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
+            //EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
+            //EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
+            //EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
@@ -48,16 +49,68 @@ namespace vMenuClient
             Tick += TimeSync;
         }
 
+        private void ConfigureClient(dynamic addonVehicles, dynamic addonPeds, dynamic addonWeapons, dynamic perms)
+        {
+            MainMenu.SetPermissions(perms);
+
+            //Dictionary<string, uint> models = new Dictionary<string, uint>();
+            VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
+            foreach (var addon in addonVehicles)
+            {
+                string modelName = addon.ToString();
+                uint modelHash = (uint)GetHashKey(modelName);
+                cf.Log(modelName + " (a) " + modelHash.ToString());
+
+                if (!VehicleSpawner.AddonVehicles.ContainsKey(modelName))
+                {
+                    VehicleSpawner.AddonVehicles.Add(modelName, modelHash);
+                }
+            }
+            //= models.ToDictionary<string, uint>;
+            //models.Clear();
+            //cf.Log(VehicleSpawner.AddonVehicles.Count.ToString());
+            PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
+            foreach (var addon in addonPeds)
+            {
+                string modelName = addon.ToString();
+                uint modelHash = (uint)GetHashKey(modelName);
+
+                if (!PlayerAppearance.AddonPeds.ContainsKey(modelName))
+                {
+                    PlayerAppearance.AddonPeds.Add(modelName, modelHash);
+                }
+            }
+            //PlayerAppearance.AddonPeds = PlayerAppearance.AddonPeds;
+            //models.Clear();
+            WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
+            foreach (var addon in addonWeapons)
+            {
+                string modelName = addon.ToString();
+                uint modelHash = (uint)GetHashKey(modelName);
+
+                if (!WeaponOptions.AddonWeapons.ContainsKey(modelName))
+                {
+                    WeaponOptions.AddonWeapons.Add(modelName, modelHash);
+                }
+            }
+            //WeaponOptions.AddonWeapons = models;
+            //models.Clear();
+
+            MainMenu.PreSetupComplete = true;
+        }
+
         /// <summary>
         /// Notifies the player that the current version of vMenu is outdated.
         /// </summary>
         private async void NotifyOutdatedVersion()
         {
-            Debug.Write("vMenu is outdated, please update asap.\n");
+            Debug.Write("\n\n\n\n[vMenu] vMenu is outdated, please update asap.\n\n\n\n");
             await Delay(5000);
             cf.Log("Sending alert now.");
-            Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
-
+            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.system, vMenuShared.ConfigManager.Setting.oudated_version_notify_players))
+            {
+                Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
+            }
         }
 
         /// <summary>
@@ -79,62 +132,62 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
-        /// <summary>
-        /// Triggers a settings update.
-        /// </summary>
-        /// <param name="options"></param>
-        private void UpdateSettings(dynamic options)
-        {
-            cf.Log("Options are being updated.");
-            MainMenu.SetOptions(options);
-        }
+        ///// <summary>
+        ///// Triggers a settings update.
+        ///// </summary>
+        ///// <param name="options"></param>
+        //private void UpdateSettings(dynamic options)
+        //{
+        //    cf.Log("Options are being updated.");
+        //    MainMenu.SetOptions(options);
+        //}
 
-        /// <summary>
-        /// Triggers a permissions update.
-        /// </summary>
-        /// <param name="permissions"></param>
-        private void UpdatePermissions(dynamic permissions)
-        {
-            cf.Log("Permissions are being updated.");
-            MainMenu.SetPermissions(permissions);
-        }
+        ///// <summary>
+        ///// Triggers a permissions update.
+        ///// </summary>
+        ///// <param name="permissions"></param>
+        //private void UpdatePermissions(dynamic permissions)
+        //{
+        //    cf.Log("Permissions are being updated.");
+        //    MainMenu.SetPermissions(permissions);
+        //}
 
-        /// <summary>
-        /// Triggers a addons list update.
-        /// </summary>
-        /// <param name="addonType"></param>
-        /// <param name="addons"></param>
-        private void SetAddonModels(string addonType, dynamic addons)
-        {
-            cf.Log($"Addon models are being loaded. Addon type: {addonType}.");
-            Dictionary<string, uint> models = new Dictionary<string, uint>();
-            foreach (var addon in addons)
-            {
-                string modelName = addon.ToString();
-                uint modelHash = (uint)GetHashKey(modelName);
+        ///// <summary>
+        ///// Triggers a addons list update.
+        ///// </summary>
+        ///// <param name="addonType"></param>
+        ///// <param name="addons"></param>
+        //private void SetAddonModels(string addonType, dynamic addons)
+        //{
+        //    cf.Log($"Addon models are being loaded. Addon type: {addonType}.");
+        //    Dictionary<string, uint> models = new Dictionary<string, uint>();
+        //    foreach (var addon in addons)
+        //    {
+        //        string modelName = addon.ToString();
+        //        uint modelHash = (uint)GetHashKey(modelName);
 
-                if (!models.ContainsKey(modelName))
-                {
-                    models.Add(modelName, modelHash);
-                }
-            }
-            if (addonType == "vehicles")
-            {
-                VehicleSpawner.AddonVehicles = models;
-                MainMenu.addonCarsLoaded = true;
-            }
-            else if (addonType == "peds")
-            {
-                PlayerAppearance.AddonPeds = models;
-                MainMenu.addonPedsLoaded = true;
-            }
-            else if (addonType == "weapons")
-            {
-                WeaponOptions.AddonWeapons = models;
-                MainMenu.addonWeaponsLoaded = true;
-            }
+        //        if (!models.ContainsKey(modelName))
+        //        {
+        //            models.Add(modelName, modelHash);
+        //        }
+        //    }
+        //    if (addonType == "vehicles")
+        //    {
+        //        VehicleSpawner.AddonVehicles = models;
+        //        MainMenu.addonCarsLoaded = true;
+        //    }
+        //    else if (addonType == "peds")
+        //    {
+        //        PlayerAppearance.AddonPeds = models;
+        //        MainMenu.addonPedsLoaded = true;
+        //    }
+        //    else if (addonType == "weapons")
+        //    {
+        //        WeaponOptions.AddonWeapons = models;
+        //        MainMenu.addonWeaponsLoaded = true;
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// OnTick loop to keep the weather synced.

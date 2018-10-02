@@ -6,6 +6,7 @@
         Everything,
         DontKickMe,
         NoClip,
+        Staff,
 
         // Online Players
         OPMenu,

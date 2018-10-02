@@ -457,7 +457,8 @@ namespace vMenuServer
         /// <param name="source"></param>
         public static async void BanCheater(Player source)
         {
-            bool enabled = (GetConvar("vMenuBanCheaters", "false") ?? "false") == "true";
+            //bool enabled = (GetConvar("vMenuBanCheaters", "false") ?? "false") == "true";
+            bool enabled = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.system, vMenuShared.ConfigManager.Setting.auto_ban_cheaters);
             if (enabled)
             {
                 var ban = new BanRecord()
@@ -504,7 +505,8 @@ namespace vMenuServer
         /// <param name="banActionMessage"></param>
         public static void BanLog(string banActionMessage)
         {
-            if (GetConvar("vMenuLogBanActions", "true") == "true")
+            //if (GetConvar("vMenuLogBanActions", "true") == "true")
+            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.system, vMenuShared.ConfigManager.Setting.log_ban_actions))
             {
                 string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
                 DateTime date = DateTime.Now;

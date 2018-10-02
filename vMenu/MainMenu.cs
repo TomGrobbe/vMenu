@@ -8,6 +8,7 @@ using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
 using System.Dynamic;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -20,11 +21,12 @@ namespace vMenuClient
         public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        private static bool permissionsSetupDone = false;
-        private static bool optionsSetupDone = false;
-        public static bool addonCarsLoaded = false;
-        public static bool addonPedsLoaded = false;
-        public static bool addonWeaponsLoaded = false;
+        public static bool PreSetupComplete = false;
+        //private static bool permissionsSetupDone = false;
+        //private static bool optionsSetupDone = false;
+        //public static bool addonCarsLoaded = false;
+        //public static bool addonPedsLoaded = false;
+        //public static bool addonWeaponsLoaded = false;
 
         private static int MenuToggleKey = 244; // M by default (InteractionMenu)
         private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
@@ -54,7 +56,7 @@ namespace vMenuClient
         public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
-        public static Dictionary<string, string> MenuOptions { get; private set; }
+        //public static Dictionary<string, string> MenuOptions { get; private set; }
 
         public static bool DisableControls { get; set; } = false;
         private UIMenu currentMenu = null;
@@ -105,6 +107,14 @@ namespace vMenuClient
             }
             else
             {
+                if (InitializeConfig())
+                {
+                    Debug.WriteLine("[vMenu] Config initialized.");
+                }
+                else
+                {
+                    Debug.WriteLine("[vMenu] Config failed to load, using defaults.");
+                }
                 Tick += OnTick;
                 Tick += ProcessMainButtons;
                 Tick += ProcessDirectionalButtons;
@@ -127,7 +137,7 @@ namespace vMenuClient
             }
             Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
 
-            permissionsSetupDone = true;
+            //permissionsSetupDone = true;
             VehicleSpawner.allowedCategories = new List<bool>()
             {
                 Cf.IsAllowed(Permission.VSCompacts),
@@ -157,30 +167,30 @@ namespace vMenuClient
         #endregion
 
         #region set settings
-        /// <summary>
-        /// Sets the settings received from the server.
-        /// </summary>
-        /// <param name="options"></param>
-        public static void SetOptions(dynamic options)
-        {
-            MenuOptions = new Dictionary<string, string>();
-            foreach (dynamic option in options)
-            {
-                MenuOptions.Add(option.Key.ToString(), option.Value.ToString());
-            }
-            Cf.Log($"Settings loaded: {JsonConvert.SerializeObject(MenuOptions)}");
+        ///// <summary>
+        ///// Sets the settings received from the server.
+        ///// </summary>
+        ///// <param name="options"></param>
+        //public static void SetOptions(dynamic options)
+        //{
+        //    //MenuOptions = new Dictionary<string, string>();
+        //    //foreach (dynamic option in options)
+        //    //{
+        //    //    MenuOptions.Add(option.Key.ToString(), option.Value.ToString());
+        //    //}
+        //    //Cf.Log($"Settings loaded: {JsonConvert.SerializeObject(MenuOptions)}");
 
-            MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
-            NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
-            optionsSetupDone = true;
-            if (MenuOptions.ContainsKey("disableSync"))
-            {
-                if (MenuOptions["disableSync"] == "true")
-                {
-                    EventManager.enableSync = false;
-                }
-            }
-        }
+        //    //MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
+        //    //NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
+        //    //optionsSetupDone = true;
+        //    //if (MenuOptions.ContainsKey("disableSync"))
+        //    //{
+        //    //    if (MenuOptions["disableSync"] == "true")
+        //    //    {
+        //    //        EventManager.enableSync = false;
+        //    //    }
+        //    //}
+        //}
         #endregion
 
         #region Process Menu Buttons
@@ -383,36 +393,44 @@ namespace vMenuClient
                 //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
 
                 // Wait until the data is received and the player's name is loaded correctly.
-                while (!permissionsSetupDone || !optionsSetupDone
-                    || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **" ||
-                    !addonCarsLoaded || !addonPedsLoaded || !addonWeaponsLoaded)
+                while (!PreSetupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
                 {
                     await Delay(0);
                 }
-
-                // Create the main menu.
-                Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
+                if ((Cf.IsAllowed(Permission.Staff) && GetSettingsBool(SettingsCategory.permissions, Setting.menu_staff_only)) || GetSettingsBool(SettingsCategory.permissions, Setting.menu_staff_only) == false)
                 {
-                    ScaleWithSafezone = false,
-                    MouseControlsEnabled = false,
-                    MouseEdgeEnabled = false,
-                    ControlDisablingEnabled = false
-                };
+                    if (GetSettingsInt(SettingsCategory.general, Setting.menu_toggle_key) != -1)
+                    {
+                        MenuToggleKey = GetSettingsInt(SettingsCategory.general, Setting.menu_toggle_key);
+                    }
+                    if (GetSettingsInt(SettingsCategory.general, Setting.noclip_toggle_key) != -1)
+                    {
+                        NoClipKey = GetSettingsInt(SettingsCategory.general, Setting.noclip_toggle_key);
+                    }
+                    // Create the main menu.
+                    Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
+                    {
+                        ScaleWithSafezone = false,
+                        MouseControlsEnabled = false,
+                        MouseEdgeEnabled = false,
+                        ControlDisablingEnabled = false
+                    };
 
-                // Add the main menu to the menu pool.
-                Mp.Add(Menu);
+                    // Add the main menu to the menu pool.
+                    Mp.Add(Menu);
 
-                Menu.RefreshIndex();
-                Menu.UpdateScaleform();
+                    Menu.RefreshIndex();
+                    Menu.UpdateScaleform();
 
-                // Create all (sub)menus.
-                CreateSubmenus();
+                    // Create all (sub)menus.
+                    CreateSubmenus();
+                }
             }
             #endregion
 
 
             // If the setup (permissions) is done, and it's not the first tick, then do this:
-            if (permissionsSetupDone && optionsSetupDone && !firstTick)
+            if (PreSetupComplete && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
                 // If menus can be opened.
@@ -679,7 +697,7 @@ namespace vMenuClient
 
             // Add the time options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.TOMenu) && MenuOptions["disableSync"] != "true")
+            if (Cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
                 TimeOptionsMenu = new TimeOptions();
                 UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -690,7 +708,7 @@ namespace vMenuClient
 
             // Add the weather options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.WOMenu) && MenuOptions["disableSync"] != "true")
+            if (Cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 UIMenu menu = WeatherOptionsMenu.GetMenu();
