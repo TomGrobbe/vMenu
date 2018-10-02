@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{897C1141-8CD6-4609-A692-53DAFF9BCBBE}</ProjectGuid>
+    <ProjectGuid>{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vMenuServer</RootNamespace>
-    <AssemblyName>vMenuServer.net</AssemblyName>
+    <RootNamespace>vMenuShared</RootNamespace>
+    <AssemblyName>vMenuShared.net</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,26 +23,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>embedded</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core">
-      <HintPath>.\CitizenFX.Core.dll</HintPath>
+    <Reference Include="CitizenFX.Core.Client">
+      <HintPath>.\CitizenFX.Core.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CitizenFX.Core.Server">
+      <HintPath>.\CitizenFX.Core.Server.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,41 +55,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="vMenuShared.net">
-      <HintPath>..\vMenuShared.net.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BanManager.cs" />
-    <Compile Include="MainServer.cs" />
-    <Compile Include="HttpHelper.cs" />
+    <Compile Include="ConfigManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UpdateChecker.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config\addons.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="config\permissions.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CustomToolNamespace>config</CustomToolNamespace>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="System.Numerics.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\System.Numerics.dll" "D:\FXserver\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\config.ini" "D:\FXserver\vMenu\config\"
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "$(TargetPath)" "$(SolutionDir)"
+copy /Y "$(TargetPath)" "D:\FXserver\vMenu\resources\vMenu\"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
