@@ -68,6 +68,9 @@
     <None Include="config\addons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="config\config.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="config\permissions.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CustomToolNamespace>config</CustomToolNamespace>
@@ -86,7 +89,7 @@
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
-copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\config.ini" "D:\FXserver\vMenu\config\"
-</PostBuildEvent>
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\config.ini" "D:\FXserver\vMenu\resources\vMenu\config\"
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
