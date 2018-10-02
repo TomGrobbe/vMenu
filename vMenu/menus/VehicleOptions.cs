@@ -286,7 +286,7 @@ namespace vMenuClient
             {
                 menu.AddItem(vehicleEngineAO);
             }
-            if (cf.IsAllowed(Permission.VONoSiren)) // DISABLE SIREN
+            if (cf.IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.external, vMenuShared.ConfigManager.Setting.use_els_compatibility_mode)) // DISABLE SIREN
             {
                 menu.AddItem(vehicleNoSiren);
             }
