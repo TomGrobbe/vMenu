@@ -16,6 +16,7 @@ namespace vMenuClient
         private CommonFunctions cf = MainMenu.Cf;
         public bool EnableVoicechat = UserDefaults.VoiceChatEnabled;
         public bool ShowCurrentSpeaker = UserDefaults.ShowCurrentSpeaker;
+        public bool ShowVoiceStatus = UserDefaults.ShowVoiceStatus;
         public float currentProximity = UserDefaults.VoiceChatProximity;
         public List<dynamic> channels = new List<dynamic>()
         {
@@ -38,6 +39,7 @@ namespace vMenuClient
             0f, // global
         };
 
+
         private void CreateMenu()
         {
             currentChannel = channels[0];
@@ -57,6 +59,7 @@ namespace vMenuClient
 
             UIMenuCheckboxItem voiceChatEnabled = new UIMenuCheckboxItem("Enable Voice Chat", EnableVoicechat, "Enable or disable voice chat.");
             UIMenuCheckboxItem showCurrentSpeaker = new UIMenuCheckboxItem("Show Current Speaker", ShowCurrentSpeaker, "Shows who is currently talking.");
+            UIMenuCheckboxItem showVoiceStatus = new UIMenuCheckboxItem("Show Microphone Status", ShowVoiceStatus, "Shows whether your microphone is open or muted.");
 
             List<dynamic> proximity = new List<dynamic>()
             {
@@ -85,6 +88,7 @@ namespace vMenuClient
 
                 menu.AddItem(voiceChatProximity);
                 menu.AddItem(voiceChatChannel);
+                menu.AddItem(showVoiceStatus);
             }
 
             menu.OnCheckboxChange += (sender, item, _checked) =>
@@ -96,6 +100,10 @@ namespace vMenuClient
                 else if (item == showCurrentSpeaker)
                 {
                     ShowCurrentSpeaker = _checked;
+                }
+                else if (item == showVoiceStatus)
+                {
+                    ShowVoiceStatus = _checked;
                 }
             };
 

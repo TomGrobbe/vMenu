@@ -39,6 +39,11 @@ namespace vMenuClient
         private bool wasMenuJustOpen = false;
         private PlayerList blipsPlayerList = new PlayerList();
         private List<int> waypointPlayerIdsToRemove = new List<int>();
+        private int voiceTimer = 0;
+        private int voiceCycle = 1;
+        private const float voiceIndicatorWidth = 0.02f;
+        private const float voiceIndicatorHeight = 0.041f;
+        private const float voiceIndicatorMutedWidth = voiceIndicatorWidth + 0.0021f;
 
         /// <summary>
         /// Constructor.
@@ -800,6 +805,36 @@ namespace vMenuClient
                                 i++;
                             }
                         }
+                    }
+                    if (MainMenu.VoiceChatSettingsMenu.ShowVoiceStatus)
+                    {
+
+                        if (GetGameTimer() - voiceTimer > 150)
+                        {
+                            voiceTimer = GetGameTimer();
+                            voiceCycle++;
+                            if (voiceCycle > 3)
+                            {
+                                voiceCycle = 1;
+                            }
+                        }
+                        if (!HasStreamedTextureDictLoaded("mpleaderboard"))
+                        {
+                            RequestStreamedTextureDict("mpleaderboard", false);
+                            while (!HasStreamedTextureDictLoaded("mpleaderboard"))
+                            {
+                                await Delay(0);
+                            }
+                        }
+                        if (NetworkIsPlayerTalking(PlayerId()))
+                        {
+                            DrawSprite("mpleaderboard", $"leaderboard_audio_{voiceCycle}", 0.008f, 0.985f, voiceIndicatorWidth, voiceIndicatorHeight, 0f, 255, 55, 0, 255);
+                        }
+                        else
+                        {
+                            DrawSprite("mpleaderboard", "leaderboard_audio_mute", 0.008f, 0.985f, voiceIndicatorMutedWidth, voiceIndicatorHeight, 0f, 255, 55, 0, 255);
+                        }
+
                     }
                 }
                 else
