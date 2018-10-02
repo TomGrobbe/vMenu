@@ -4,8 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMenuClient", "vMenu\vMenuClient.csproj", "{58FE5D89-E729-4246-B527-6EDA2A1AF04D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D} = {CFE8E7CD-EAB0-48A1-A22F-566B048F110D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMenuServer", "vMenuServer\vMenuServer.csproj", "{897C1141-8CD6-4609-A692-53DAFF9BCBBE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D} = {CFE8E7CD-EAB0-48A1-A22F-566B048F110D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMenuShared", "vMenuShared\vMenuShared.csproj", "{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,10 @@ Global
 		{897C1141-8CD6-4609-A692-53DAFF9BCBBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{897C1141-8CD6-4609-A692-53DAFF9BCBBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{897C1141-8CD6-4609-A692-53DAFF9BCBBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
