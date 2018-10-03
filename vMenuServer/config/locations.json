@@ -1,0 +1,25 @@
+{
+    "teleports": [
+        {
+            "name": "Example Location",
+            "coordinates": {
+                "x": 472.94,
+                "y": -3035.96,
+                "z": 6.2
+            },
+            "heading": 356.1
+        }
+    ],
+    "blips": [
+        {
+            "name": "Example Blip",
+            "coordinates": {
+                "x": 472.94,
+                "y": -3035.96,
+                "z": 6.2
+            },
+            "spriteID": 1,
+            "color": 1
+        }
+    ]
+}

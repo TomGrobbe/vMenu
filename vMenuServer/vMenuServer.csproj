@@ -71,6 +71,9 @@
     <None Include="config\config.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="config\locations.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="config\permissions.cfg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CustomToolNamespace>config</CustomToolNamespace>
