@@ -36,7 +36,7 @@ namespace vMenuShared
             auto_ban_cheaters,
             log_ban_actions,
             log_kick_actions,
-            oudated_version_notify_players,
+            outdated_version_notify_players,
 
             use_els_compatibility_mode
         }

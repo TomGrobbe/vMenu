@@ -108,7 +108,7 @@ namespace vMenuClient
             Debug.Write("\n\n\n\n[vMenu] vMenu is outdated, please update asap.\n\n\n\n");
             await Delay(5000);
             cf.Log("Sending alert now.");
-            if (GetSettingsBool(SettingsCategory.system, Setting.oudated_version_notify_players))
+            if (GetSettingsBool(SettingsCategory.system, Setting.outdated_version_notify_players))
             {
                 Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
             }
