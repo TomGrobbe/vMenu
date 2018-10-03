@@ -66,6 +66,9 @@ namespace vMenuServer
 
         private int currentHours = 9;
         private int currentMinutes = 0;
+        private int minuteClockSpeed = 2000;
+        private long minuteTimer = GetGameTimer();
+        private long timeSyncCooldown = GetGameTimer();
         private string currentWeather = "CLEAR";
         private bool dynamicWeather = true;
         private bool blackout = false;
@@ -511,6 +514,10 @@ namespace vMenuServer
                 currentMinutes = GetSettingsInt(SettingsCategory.time, Setting.default_time_min);
                 currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
 
+
+                minuteClockSpeed = GetSettingsInt(SettingsCategory.time, Setting.ingame_minute_duration);
+                minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
+
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
@@ -533,16 +540,18 @@ namespace vMenuServer
         /// <returns></returns>
         private async Task TimeLoop()
         {
-            await Delay(4000);
             if (GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
-                if (freezeTime)
+                await Delay(5);
+                if (!freezeTime)
                 {
-                    TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
-                }
-                else
-                {
-                    currentMinutes += 2;
+                    // only add a minute if the timer has reached the configured duration (2000ms (2s) by default).
+                    if (GetGameTimer() - minuteTimer > minuteClockSpeed)
+                    {
+                        currentMinutes++;
+                        minuteTimer = GetGameTimer();
+                    }
+
                     if (currentMinutes > 59)
                     {
                         currentMinutes = 0;
@@ -552,7 +561,12 @@ namespace vMenuServer
                     {
                         currentHours = 0;
                     }
+                }
+
+                if (GetGameTimer() - timeSyncCooldown > 5000)
+                {
                     TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
+                    timeSyncCooldown = GetGameTimer();
                 }
             }
 

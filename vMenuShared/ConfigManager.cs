@@ -31,6 +31,7 @@ namespace vMenuShared
             enable_time_sync,
             default_time_hour,
             default_time_min,
+            ingame_minute_duration,
 
             auto_ban_cheaters,
             log_ban_actions,
@@ -101,8 +102,7 @@ namespace vMenuShared
                         }
                     }
                 }
-                Debug.Write(Newtonsoft.Json.JsonConvert.SerializeObject(Config ?? new Dictionary<string, Dictionary<string, string>>(), Newtonsoft.Json.Formatting.Indented) + "\n");
-
+                //Debug.Write(Newtonsoft.Json.JsonConvert.SerializeObject(Config ?? new Dictionary<string, Dictionary<string, string>>(), Newtonsoft.Json.Formatting.Indented) + "\n");
                 return true;
             }
 

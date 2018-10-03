@@ -20,6 +20,8 @@ namespace vMenuClient
         public static int currentHours = 9;
         public static int currentMinutes = 0;
         public static bool freezeTime = false;
+        private int minuteTimer = GetGameTimer();
+        private int minuteClockSpeed = 8000;
 
         /// <summary>
         /// Constructor.
@@ -29,17 +31,12 @@ namespace vMenuClient
             // Add event handlers.
             // Handle the SetPermissions event.
             EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
-            //EventHandlers.Add("vMenu:SetPermissions", new Action<dynamic>(UpdatePermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
-            //EventHandlers.Add("vMenu:SetOptions", new Action<dynamic>(UpdateSettings));
-            //EventHandlers.Add("vMenu:SetupAddonPeds", new Action<string, dynamic>(SetAddonModels));
-            //EventHandlers.Add("vMenu:SetupAddonCars", new Action<string, dynamic>(SetAddonModels));
-            //EventHandlers.Add("vMenu:SetupAddonWeapons", new Action<string, dynamic>(SetAddonModels));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
@@ -94,6 +91,9 @@ namespace vMenuClient
             currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
             currentMinutes = GetSettingsInt(SettingsCategory.time, Setting.default_time_min);
             currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
+
+            minuteClockSpeed = GetSettingsInt(SettingsCategory.time, Setting.ingame_minute_duration);
+            minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
 
             MainMenu.PreSetupComplete = true;
         }
@@ -209,9 +209,14 @@ namespace vMenuClient
                 // Otherwise...
                 else
                 {
-                    // Time is synced every 2 seconds (which equals 1 in-game minute).
-                    await Delay(2000);
-                    currentMinutes++;
+                    await Delay(5);
+                    // only add a minute if the timer has reached the configured duration (2000ms (2s) by default).
+                    if (GetGameTimer() - minuteTimer > minuteClockSpeed)
+                    {
+                        currentMinutes++;
+                        minuteTimer = GetGameTimer();
+                    }
+                    
                     if (currentMinutes > 59)
                     {
                         currentMinutes = 0;
