@@ -23,10 +23,10 @@ before_deploy:
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/addons.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/config.ini /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/locations.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuShared/bin/Release/vMenuShared.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/PERMISSIONS.md /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/README.md /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/LICENSE.md /home/travis/build/TomGrobbe/release/vMenu/builds/
     - version=`curl -s https://vespura.com/vmenu/__resource.lua | grep "version " | tail -n 1 | cut -d ' ' -f 2 | cut -c 2- | rev | cut -c 3- | rev`

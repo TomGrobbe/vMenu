@@ -31,12 +31,7 @@ Click [here](https://github.com/TomGrobbe/vMenu/releases) to go to the releases 
 --------
 
 ## Installation
-1. Download the latest release [HERE](https://github.com/TomGrobbe/vMenu/releases) (under "Assets", click vMenu-`{version}`.zip)
-2. Extract the folder `vMenu` and place it inside your `/resources/` folder (THE FOLDER NAME IS CASE SENSITIVE, THE RESOURCE WILL BREAK IF YOU FAIL TO NAME IT CORRECTLY). If you did it correctly, you'll end up with the `__resource.lua` file being right here: `/resources/vMenu/__resource.lua`.
-3. Next, copy the `permissions.cfg` file from `/resources/vMenu/config/permissions.cfg` to the same folder where your `server.cfg` file is located.
-4. Then open your `server.cfg` file and add this to the very top of the file: `exec permissions.cfg`. If you're updating from an older version of vMenu (before v1.1.5) then make sure to add `add_ace resource.vMenu command.sets allow` to the bottom of your `permissions.cfg` file.
-5. While still having the `server.cfg` file open, go to wherever you want your resources to start, and add `start vMenu` on a new line.
-6. Restart the server and you should be able to use all basic functions. For more advanced configuration options, checkout the [configuration wiki page](https://github.com/TomGrobbe/vMenu/wiki/Configuration). For info on how to setup the permissions, checkout the `PERMISSIONS.md` file inside the downloaded vMenu zip file, or checkout the [Permissions wiki page](https://github.com/TomGrobbe/vMenu/wiki/Permissions).
+Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/installation)
 
 ## Zap Hosting
 If you're using Zap Hosting, you may find that moving the `permissions.cfg` file to the same folder as your `server.cfg` file may not work correctly (it could get reset every time you restart your server).
@@ -45,8 +40,11 @@ If this is the case, leave your `permissions.cfg` file here: `/resources/vMenu/c
 
 --------
 
-## Permissions & Configuration
-Checkout the [vMenu wiki](https://github.com/TomGrobbe/vMenu/wiki/) for more information about setting up permissions and configuring options for this menu.
+## Permissions 
+Click [here](https://docs.vespura.com/vmenu/permissions-ref) for permissions information.
+
+## Configuration
+Click [here](https://docs.vespura.com/vmenu/configuration) for configuration options information.
 
 
 --------
