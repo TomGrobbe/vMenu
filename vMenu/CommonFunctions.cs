@@ -293,13 +293,13 @@ namespace vMenuClient
                         SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
                 }
             }
-            else
-            {
-                if (inCar)
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ + 2f);
-                else
-                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ + 2f, false, false, false, true);
-            }
+            //else
+            //{
+            //    if (inCar)
+            //        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ + 0.1f);
+            //    else
+            //        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ + 0.1f, false, false, false, true);
+            //}
         }
 
         /// <summary>

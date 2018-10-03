@@ -239,6 +239,7 @@
         MSThermalVision,
         MSLocationBlips,
         MSPlayerBlips,
+        MSTeleportLocations,
         MSConnectionMenu,
 
         // Voice Chat

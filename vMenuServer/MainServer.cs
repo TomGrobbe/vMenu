@@ -331,6 +331,7 @@ namespace vMenuServer
             "MSThermalVision",
             //"MSLocationBlips", // not yet implemented
             "MSPlayerBlips",
+            "MSTeleportLocations",
             "MSConnectionMenu",
 
             // Voice Chat

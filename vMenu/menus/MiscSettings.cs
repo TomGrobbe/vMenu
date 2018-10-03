@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using Newtonsoft.Json;
 
 namespace vMenuClient
 {
@@ -27,6 +28,8 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        private List<Vector3> tpLocations = new List<Vector3>();
+        private List<float> tpLocationsHeading = new List<float>();
 
         /// <summary>
         /// Creates the menu.
@@ -42,6 +45,17 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
+
+            UIMenu teleportMenu = new UIMenu(GetPlayerName(PlayerId()), "Teleport Locations", true)
+            {
+                ScaleWithSafezone = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ControlDisablingEnabled = false
+            };
+            UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
+            MainMenu.Mp.Add(teleportMenu);
 
             // Create the menu items.
             UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
@@ -115,6 +129,7 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.MSConnectionMenu))
             {
                 menu.AddItem(connectionSubmenuBtn);
+                connectionSubmenuBtn.SetRightLabel("→→→");
             }
             if (cf.IsAllowed(Permission.MSShowCoordinates))
             {
@@ -153,6 +168,43 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.MSPlayerBlips))
             {
                 menu.AddItem(playerBlips);
+            }
+            if (cf.IsAllowed(Permission.MSTeleportLocations))
+            {
+                menu.AddItem(teleportMenuBtn);
+                teleportMenuBtn.SetRightLabel("→→→");
+
+                string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+                if (string.IsNullOrEmpty(json))
+                {
+                    Notify.Error("An error occurred while loading the locations file.");
+                }
+                else
+                {
+                    try
+                    {
+                        Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
+                        foreach (Newtonsoft.Json.Linq.JToken teleport in data["teleports"])
+                        {
+                            string name = teleport["name"].ToString();
+                            float heading = (float)teleport["heading"];
+                            Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
+                            UIMenuItem tpBtn = new UIMenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
+                            teleportMenu.AddItem(tpBtn);
+                            tpLocations.Add(coordinates);
+                            tpLocationsHeading.Add(heading);
+                        }
+                        teleportMenu.OnItemSelect += async (sender, item, index) =>
+                        {
+                            await cf.TeleportToCoords(tpLocations[index]);
+                            SetEntityHeading(PlayerPedId(), tpLocationsHeading[index]);
+                        };
+                    }
+                    catch (JsonReaderException ex)
+                    {
+                        Debug.Write($"\n[vMenu] An error occurred whie loading the teleport locations!\nReport the following error details to the server owner:\n{ex.Message}.\n");
+                    }
+                }
             }
             if (cf.IsAllowed(Permission.MSClearArea))
             {
@@ -252,6 +304,10 @@ namespace vMenuClient
                     ClearAreaOfEverything(pos.X, pos.Y, pos.Z, 100f, false, false, false, false);
                 }
             };
+
+
+
+
         }
 
         /// <summary>
