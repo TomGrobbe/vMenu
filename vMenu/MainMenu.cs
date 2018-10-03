@@ -767,6 +767,11 @@ namespace vMenuClient
             Mp.ControlDisablingEnabled = false;
             // Globally disable the "mouse edge" feature.
             Mp.MouseEdgeEnabled = false;
+
+            if (!GetSettingsBool(SettingsCategory.permissions, Setting.use_permissions))
+            {
+                Notify.Info("vMenu is set up to ignore permissions.");
+            }
         }
         #endregion
     }
