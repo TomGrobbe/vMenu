@@ -93,6 +93,7 @@ copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\Newtonsoft.Json.dll" "
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
 copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\config.ini" "D:\FXserver\vMenu\resources\vMenu\config\"
+copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\config\locations.json" "D:\FXserver\vMenu\resources\vMenu\config\"
     </PostBuildEvent>
   </PropertyGroup>
 </Project>
