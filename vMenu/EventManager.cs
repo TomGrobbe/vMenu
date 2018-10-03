@@ -52,7 +52,7 @@ namespace vMenuClient
         {
             MainMenu.SetPermissions(perms);
 
-            //Dictionary<string, uint> models = new Dictionary<string, uint>();
+            
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             foreach (var addon in addonVehicles)
             {
@@ -65,9 +65,7 @@ namespace vMenuClient
                     VehicleSpawner.AddonVehicles.Add(modelName, modelHash);
                 }
             }
-            //= models.ToDictionary<string, uint>;
-            //models.Clear();
-            //cf.Log(VehicleSpawner.AddonVehicles.Count.ToString());
+
             PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
             foreach (var addon in addonPeds)
             {
@@ -79,8 +77,7 @@ namespace vMenuClient
                     PlayerAppearance.AddonPeds.Add(modelName, modelHash);
                 }
             }
-            //PlayerAppearance.AddonPeds = PlayerAppearance.AddonPeds;
-            //models.Clear();
+
             WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
             foreach (var addon in addonWeapons)
             {
@@ -92,8 +89,11 @@ namespace vMenuClient
                     WeaponOptions.AddonWeapons.Add(modelName, modelHash);
                 }
             }
-            //WeaponOptions.AddonWeapons = models;
-            //models.Clear();
+
+            currentHours = GetSettingsInt(SettingsCategory.time, Setting.default_time_hour);
+            currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
+            currentMinutes = GetSettingsInt(SettingsCategory.time, Setting.default_time_min);
+            currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
 
             MainMenu.PreSetupComplete = true;
         }
@@ -106,7 +106,7 @@ namespace vMenuClient
             Debug.Write("\n\n\n\n[vMenu] vMenu is outdated, please update asap.\n\n\n\n");
             await Delay(5000);
             cf.Log("Sending alert now.");
-            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.system, vMenuShared.ConfigManager.Setting.oudated_version_notify_players))
+            if (GetSettingsBool(SettingsCategory.system, Setting.oudated_version_notify_players))
             {
                 Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
             }
@@ -131,63 +131,7 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
-        ///// <summary>
-        ///// Triggers a settings update.
-        ///// </summary>
-        ///// <param name="options"></param>
-        //private void UpdateSettings(dynamic options)
-        //{
-        //    cf.Log("Options are being updated.");
-        //    MainMenu.SetOptions(options);
-        //}
-
-        ///// <summary>
-        ///// Triggers a permissions update.
-        ///// </summary>
-        ///// <param name="permissions"></param>
-        //private void UpdatePermissions(dynamic permissions)
-        //{
-        //    cf.Log("Permissions are being updated.");
-        //    MainMenu.SetPermissions(permissions);
-        //}
-
-        ///// <summary>
-        ///// Triggers a addons list update.
-        ///// </summary>
-        ///// <param name="addonType"></param>
-        ///// <param name="addons"></param>
-        //private void SetAddonModels(string addonType, dynamic addons)
-        //{
-        //    cf.Log($"Addon models are being loaded. Addon type: {addonType}.");
-        //    Dictionary<string, uint> models = new Dictionary<string, uint>();
-        //    foreach (var addon in addons)
-        //    {
-        //        string modelName = addon.ToString();
-        //        uint modelHash = (uint)GetHashKey(modelName);
-
-        //        if (!models.ContainsKey(modelName))
-        //        {
-        //            models.Add(modelName, modelHash);
-        //        }
-        //    }
-        //    if (addonType == "vehicles")
-        //    {
-        //        VehicleSpawner.AddonVehicles = models;
-        //        MainMenu.addonCarsLoaded = true;
-        //    }
-        //    else if (addonType == "peds")
-        //    {
-        //        PlayerAppearance.AddonPeds = models;
-        //        MainMenu.addonPedsLoaded = true;
-        //    }
-        //    else if (addonType == "weapons")
-        //    {
-        //        WeaponOptions.AddonWeapons = models;
-        //        MainMenu.addonWeaponsLoaded = true;
-        //    }
-
-        //}
-
+       
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -350,7 +294,6 @@ namespace vMenuClient
         /// <param name="targetPlayer"></param>
         private void SummonPlayer(string targetPlayer)
         {
-            //MainMenu.Notification.Error(targetPlayer);
             cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
         }
     }

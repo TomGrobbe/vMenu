@@ -482,15 +482,11 @@ namespace vMenuServer
                         }
                     }
                 }
-                catch (Newtonsoft.Json.JsonReaderException ex)
+                catch (JsonReaderException ex)
                 {
                     Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^0Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
-                //if ((GetConvar("vMenuDisableDynamicWeather", "false") ?? "false").ToLower() == "true")
-                //{
-                //    dynamicWeather = false;
-                //}
 
                 dynamicWeather = GetSettingsBool(SettingsCategory.weather, Setting.enable_dynamic_weather);
                 if (GetSettingsInt(SettingsCategory.weather, Setting.dynamic_weather_timer) != -1)
@@ -824,22 +820,9 @@ namespace vMenuServer
                 perms.Add(ace, allowed);
             }
 
-            //// Get Settings
-            //Dictionary<string, string> options = new Dictionary<string, string>
-            //{
-            //    { "menuKey", GetConvarInt("vMenuToggleMenuKey", 244).ToString() ?? "244" },
-            //    { "noclipKey", GetConvarInt("vMenuNoClipKey", 289).ToString() ?? "289" },
-            //    { "disableSync", GetConvar("vMenuDisableTimeAndWeatherSync", "false") ?? "false"}
-            //};
 
             player.TriggerEvent("vMenu:ConfigureClient", addonVehicles, addonPeds, addonWeapons, perms);
 
-            // Send Permissions
-            //TriggerClientEvent(player, "vMenu:SetPermissions", perms);
-
-            //// Send Settings
-            //await Delay(50);
-            ////TriggerClientEvent(player, "vMenu:SetOptions", options);
 
             while (!UpdateChecker.CheckedForUpdates)
             {

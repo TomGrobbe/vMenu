@@ -340,7 +340,7 @@ namespace vMenuClient
                             }
 
                             // disable this if els compatibility is turned on.
-                            if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.external, vMenuShared.ConfigManager.Setting.use_els_compatibility_mode))
+                            if (!GetSettingsBool(SettingsCategory.external, Setting.use_els_compatibility_mode))
                             {
                                 // No Siren Toggle
                                 vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
