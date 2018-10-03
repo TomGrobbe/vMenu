@@ -55,7 +55,7 @@ namespace vMenuClient
             }
             else // if permissions are not used...
             {   // then check for .everything and some specific admin stuff and disable that, but for everything else return true (allowed)
-                if (permission == Permission.Everything || permission == Permission.OPAll || permission == Permission.OPKick || permission == Permission.OPKill || permission == Permission.OPPermBan || permission == Permission.OPTempBan)
+                if (permission == Permission.Everything || permission == Permission.OPAll || permission == Permission.OPKick || permission == Permission.OPKill || permission == Permission.OPPermBan || permission == Permission.OPTempBan || permission == Permission.OPUnban)
                 {
                     return false;
                 }
