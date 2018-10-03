@@ -329,7 +329,7 @@ namespace vMenuServer
             "MSDeathNotifs",
             "MSNightVision",
             "MSThermalVision",
-            //"MSLocationBlips", // not yet implemented
+            "MSLocationBlips",
             "MSPlayerBlips",
             "MSTeleportLocations",
             "MSConnectionMenu",
