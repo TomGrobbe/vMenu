@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -19,8 +20,6 @@ namespace vMenuClient
         public static int currentHours = 9;
         public static int currentMinutes = 0;
         public static bool freezeTime = false;
-
-        public static bool enableSync = true;
 
         /// <summary>
         /// Constructor.
@@ -195,7 +194,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-            if (enableSync)
+            if (GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
             {
                 // Weather is set every 500ms, if it's changed, then it will transition to the new phase within 20 seconds.
                 await Delay(500);
@@ -254,7 +253,7 @@ namespace vMenuClient
         private async Task TimeSync()
         {
             // Check if the time sync should be disabled.
-            if (enableSync)
+            if (GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
                 // If time is frozen...
                 if (freezeTime)

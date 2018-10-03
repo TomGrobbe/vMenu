@@ -7,6 +7,7 @@ using CitizenFX.Core;
 using CitizenFX.Core.UI;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -447,7 +448,7 @@ namespace vMenuClient
         private async Task _WeatherOptions()
         {
             await Delay(1000);
-            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu))
+            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
@@ -856,7 +857,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task TimeOptions()
         {
-            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu))
+            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
                 if ((MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible) && cf.IsAllowed(Permission.TOFreezeTime))
                 {
