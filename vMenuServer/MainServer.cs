@@ -499,6 +499,7 @@ namespace vMenuServer
                 }
 
 
+
                 string defaultWeather = GetSettingsString(SettingsCategory.weather, Setting.default_weather);
 
                 if (!string.IsNullOrEmpty(defaultWeather))

@@ -55,7 +55,7 @@ namespace vMenuClient
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
-                cf.Log(modelName + " (a) " + modelHash.ToString());
+                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!VehicleSpawner.AddonVehicles.ContainsKey(modelName))
                 {
@@ -68,6 +68,7 @@ namespace vMenuClient
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
+                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!PlayerAppearance.AddonPeds.ContainsKey(modelName))
                 {
@@ -80,6 +81,7 @@ namespace vMenuClient
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
+                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!WeaponOptions.AddonWeapons.ContainsKey(modelName))
                 {
