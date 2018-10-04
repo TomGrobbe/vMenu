@@ -49,7 +49,7 @@ namespace vMenuClient
         {
             MainMenu.SetPermissions(perms);
 
-            
+
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             foreach (var addon in addonVehicles)
             {
@@ -133,7 +133,7 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
-       
+
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -211,14 +211,14 @@ namespace vMenuClient
                 // Otherwise...
                 else
                 {
-                    await Delay(5);
+                    await Delay(minuteClockSpeed);
                     // only add a minute if the timer has reached the configured duration (2000ms (2s) by default).
                     if (GetGameTimer() - minuteTimer > minuteClockSpeed)
                     {
                         currentMinutes++;
                         minuteTimer = GetGameTimer();
                     }
-                    
+
                     if (currentMinutes > 59)
                     {
                         currentMinutes = 0;

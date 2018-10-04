@@ -56,8 +56,27 @@ namespace vMenuShared
 
         private static bool initialized = false;
 
+        private static void SetConvarReplicated(string key, string value)
+        {
+            //CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xF292858C, key, value);
+        }
+
+        public static void AddConvarSync(string key, string value)
+        {
+            if (IsDuplicityVersion())
+            {
+                SetConvarReplicated(key ?? "vMenu_some_key", value ?? "vMenu_some_value");
+            }
+            else
+            {
+                Debug.WriteLine("Sorry, cannot set this from the client!");
+            }
+
+        }
+
         public static bool InitializeConfig()
         {
+            //AddConvarSync("sv_vMenu_test", "vMenu_test_value");
             if (!initialized)
             {
                 string file = LoadResourceFile("vMenu", "config/config.ini");
