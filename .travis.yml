@@ -7,7 +7,7 @@ notifications:
       - https://vespura.com/travis-ci.php
 branches:
     only:
-        - master
+        # - master
         - production
         - development
 before_deploy:
