@@ -544,7 +544,14 @@ namespace vMenuServer
         {
             if (GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
             {
-                await Delay(5);
+                if (minuteClockSpeed > 2000)
+                {
+                    await Delay(2000);
+                }
+                else
+                {
+                    await Delay(minuteClockSpeed);
+                }
                 if (!freezeTime)
                 {
                     // only add a minute if the timer has reached the configured duration (2000ms (2s) by default).
@@ -565,7 +572,7 @@ namespace vMenuServer
                     }
                 }
 
-                if (GetGameTimer() - timeSyncCooldown > 5000)
+                if (GetGameTimer() - timeSyncCooldown > 6000)
                 {
                     TriggerClientEvent("vMenu:SetTime", currentHours, currentMinutes, freezeTime);
                     timeSyncCooldown = GetGameTimer();

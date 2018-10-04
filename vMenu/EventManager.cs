@@ -211,7 +211,14 @@ namespace vMenuClient
                 // Otherwise...
                 else
                 {
-                    await Delay(minuteClockSpeed);
+                    if (minuteClockSpeed > 2000)
+                    {
+                        await Delay(2000);
+                    }
+                    else
+                    {
+                        await Delay(minuteClockSpeed);
+                    }
                     // only add a minute if the timer has reached the configured duration (2000ms (2s) by default).
                     if (GetGameTimer() - minuteTimer > minuteClockSpeed)
                     {
