@@ -22,7 +22,6 @@ before_deploy:
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/addons.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/config.ini /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/locations.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
     - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
