@@ -75,8 +75,9 @@ namespace vMenuServer
         private bool resetBlackout = false;
         private bool freezeTime = false;
         private int dynamicWeatherMinutes = 10;
-        private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
+        //private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
         private long gameTimer = GetGameTimer();
+        private long weatherTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
         {
             "Cloudy 01",
@@ -496,7 +497,7 @@ namespace vMenuServer
                 if (GetSettingsInt(Setting.vmenu_dynamic_weather_timer) != -1)
                 {
                     dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
-                    dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
+                    //dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                 }
 
 
@@ -593,30 +594,28 @@ namespace vMenuServer
             {
                 if (dynamicWeather)
                 {
-                    dynamicWeatherTimeLeft -= 10;
-                    if (resetBlackout && dynamicWeatherTimeLeft < (5 * 12 * dynamicWeatherMinutes) - 60) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
+                    if (resetBlackout && GetGameTimer() - weatherTimer > 60000) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
                     {
                         resetBlackout = false;
                         blackout = false;
                     }
-                    if (dynamicWeatherTimeLeft < 10)
+                    if (GetGameTimer() - weatherTimer > (dynamicWeatherMinutes * 60000))
                     {
-                        dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                         RefreshWeather();
-
                         if (DebugMode)
                         {
                             long gameTimer2 = GetGameTimer();
-                            Log($"Changing weather, last weather duration: {((gameTimer2 - gameTimer) / 1000 / 60).ToString()} minutes. New Weather Type: {currentWeather}");
+                            Log($"Changing weather, last weather duration: {(int)((GetGameTimer() - weatherTimer) / 60000)} minutes. New Weather Type: {currentWeather}");
                             gameTimer = gameTimer2;
                         }
+                        weatherTimer = GetGameTimer();
                     }
                 }
                 else
                 {
-                    dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
+                    weatherTimer = GetGameTimer();
                 }
-                if (GetSettingsBool(Setting.vmenu_allow_random_blackout) && currentWeather == "THUNDER" && new Random().Next(5) == 1 && !blackout && !resetBlackout)
+                if (GetSettingsBool(Setting.vmenu_allow_random_blackout) && (currentWeather == "THUNDER" || currentWeather == "HALLOWHEEN") && new Random().Next(5) == 1 && !blackout && !resetBlackout)
                 {
                     blackout = true;
                     resetBlackout = true;
