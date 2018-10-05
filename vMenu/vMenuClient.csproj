@@ -70,6 +70,7 @@
     <Compile Include="menus\MiscSettings.cs" />
     <Compile Include="menus\OnlinePlayers.cs" />
     <Compile Include="menus\PlayerAppearance.cs" />
+    <Compile Include="menus\Recording.cs" />
     <Compile Include="menus\SavedVehicles.cs" />
     <Compile Include="menus\TimeOptions.cs" />
     <Compile Include="menus\VehicleOptions.cs" />

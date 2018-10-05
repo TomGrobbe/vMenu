@@ -42,6 +42,7 @@ namespace vMenuClient
         public static TimeOptions TimeOptionsMenu { get; private set; }
         public static WeatherOptions WeatherOptionsMenu { get; private set; }
         public static WeaponOptions WeaponOptionsMenu { get; private set; }
+        public static Recording RecordingMenu { get; private set; }
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
@@ -725,6 +726,14 @@ namespace vMenuClient
                 VoiceChatSettingsMenu = new VoiceChat();
                 UIMenu menu = VoiceChatSettingsMenu.GetMenu();
                 UIMenuItem button = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
+                button.SetRightLabel("→→→");
+                AddMenu(menu, button);
+            }
+
+            {
+                RecordingMenu = new Recording();
+                UIMenu menu = RecordingMenu.GetMenu();
+                UIMenuItem button = new UIMenuItem("Recording Options", "In-game recording options.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
             }
