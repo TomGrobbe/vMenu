@@ -17,7 +17,7 @@ namespace vMenuClient
 
         public static Dictionary<string, UIMenuItem> weatherHashMenuIndex = new Dictionary<string, UIMenuItem>();
 
-        public bool DynamicWeatherEnabled { get; private set; } = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.weather, vMenuShared.ConfigManager.Setting.enable_dynamic_weather);
+        public bool DynamicWeatherEnabled { get; private set; } = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_enable_dynamic_weather);
 
         private void CreateMenu()
         {

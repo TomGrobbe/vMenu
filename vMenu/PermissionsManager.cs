@@ -28,7 +28,7 @@ namespace vMenuClient
 
         public static bool IsAllowed(Permission permission)
         {
-            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.permissions, vMenuShared.ConfigManager.Setting.use_permissions))
+            if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_permissions))
             {
                 //if (Permissions.Contains("Everything"))
                 if (allowEverything)

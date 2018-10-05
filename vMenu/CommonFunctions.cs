@@ -694,7 +694,7 @@ namespace vMenuClient
                     // Otherwise
                     else
                     {
-                        if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.SettingsCategory.vehicles, vMenuShared.ConfigManager.Setting.keep_spawned_vehicles_persistent))
+                        if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_keep_spawned_vehicles_persistent))
                         {
                             // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
                             previousVehicle.IsPersistent = false;

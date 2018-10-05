@@ -340,7 +340,7 @@ namespace vMenuClient
                             }
 
                             // disable this if els compatibility is turned on.
-                            if (!GetSettingsBool(SettingsCategory.external, Setting.use_els_compatibility_mode))
+                            if (!GetSettingsBool(Setting.vmenu_use_els_compatibility_mode))
                             {
                                 // No Siren Toggle
                                 vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
@@ -448,7 +448,7 @@ namespace vMenuClient
         private async Task _WeatherOptions()
         {
             await Delay(1000);
-            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
+            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
@@ -857,7 +857,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task TimeOptions()
         {
-            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
+            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
                 if ((MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible) && cf.IsAllowed(Permission.TOFreezeTime))
                 {

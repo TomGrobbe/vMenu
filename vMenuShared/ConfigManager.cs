@@ -13,176 +13,137 @@ namespace vMenuShared
 
         public enum Setting
         {
-            use_permissions,
-            menu_staff_only,
+            vmenu_use_permissions,
+            vmenu_menu_staff_only,
 
-            menu_toggle_key,
-            noclip_toggle_key,
+            vmenu_menu_toggle_key,
+            vmenu_noclip_toggle_key,
 
-            keep_spawned_vehicles_persistent,
+            vmenu_keep_spawned_vehicles_persistent,
 
-            enable_weather_sync,
-            enable_dynamic_weather,
+            vmenu_enable_weather_sync,
+            vmenu_enable_dynamic_weather,
 
-            dynamic_weather_timer,
-            default_weather,
-            allow_random_blackout,
+            vmenu_dynamic_weather_timer,
+            vmenu_default_weather,
+            vmenu_allow_random_blackout,
 
-            enable_time_sync,
-            default_time_hour,
-            default_time_min,
-            ingame_minute_duration,
+            vmenu_enable_time_sync,
+            vmenu_default_time_hour,
+            vmenu_default_time_min,
+            vmenu_ingame_minute_duration,
 
-            auto_ban_cheaters,
-            log_ban_actions,
-            log_kick_actions,
-            outdated_version_notify_players,
+            vmenu_auto_ban_cheaters,
+            vmenu_log_ban_actions,
+            vmenu_log_kick_actions,
+            vmenu_outdated_version_notify_players,
 
-            use_els_compatibility_mode
+            vmenu_use_els_compatibility_mode
         }
 
-        public enum SettingsCategory
+
+        //private static Dictionary<string, Dictionary<string, string>> Config = new Dictionary<string, Dictionary<string, string>>();
+
+        //private static bool initialized = false;
+
+        //public static bool InitializeConfig()
+        //{
+        //    if (!initialized)
+        //    {
+        //        string file = LoadResourceFile("vMenu", "config/config.ini");
+        //        if (!string.IsNullOrEmpty(file))
+        //        {
+        //            initialized = true;
+        //            return ParseConfig(file);
+        //        }
+        //        SendErrorMessage("File could not be found or it's empty.");
+        //    }
+        //    initialized = true;
+        //    return false;
+        //}
+
+        //private static bool ParseConfig(string config)
+        //{
+        //    if (!string.IsNullOrEmpty(config))
+        //    {
+        //        config = config.Replace("\r", "");
+        //        string lastKey = "";
+        //        foreach (string line in config.Split('\n'))
+        //        {
+        //            if (!(string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) && !line.StartsWith(";") && !line.StartsWith("#"))
+        //            {
+        //                if (line.StartsWith("[") && line.EndsWith("]"))
+        //                {
+        //                    lastKey = line.Replace("[", "").Replace("]", "");
+        //                    Config[lastKey] = new Dictionary<string, string>();
+        //                }
+        //                else
+        //                {
+        //                    if (!string.IsNullOrEmpty(lastKey) && Config[lastKey] != null)
+        //                    {
+        //                        string key = line.Split('=')[0];
+        //                        string value = line.Split('=')[1];
+
+        //                        if (key != null && value != null)
+        //                        {
+        //                            Config[lastKey].Add(key, value);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return true;
+        //    }
+
+        //    SendErrorMessage("The config was empty or the file does not exist.");
+        //    return false;
+        //}
+
+
+        //private static void SendErrorMessage(string details)
+        //{
+        //    if (IsDuplicityVersion())
+        //    {
+        //        Debug.Write("^1[vMenu] [ERROR] ^0" + details + "^0\n");
+        //    }
+        //    else
+        //    {
+        //        Debug.Write("[vMenu] " + details + "\n");
+        //    }
+
+        //}
+
+
+        public static bool GetSettingsBool(Setting setting)
         {
-            permissions,
-            general,
-            vehicles,
-            weather,
-            time,
-            system,
-            external
+            return GetConvar(setting.ToString(), "false") == "true";
         }
 
-        private static Dictionary<string, Dictionary<string, string>> Config = new Dictionary<string, Dictionary<string, string>>();
-
-        private static bool initialized = false;
-
-        private static void SetConvarReplicated(string key, string value)
+        public static int GetSettingsInt(Setting setting)
         {
-            //CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xF292858C, key, value);
-        }
-
-        public static void AddConvarSync(string key, string value)
-        {
-            if (IsDuplicityVersion())
+            int convarInt = GetConvarInt(setting.ToString(), -1);
+            if (convarInt == -1)
             {
-                SetConvarReplicated(key ?? "vMenu_some_key", value ?? "vMenu_some_value");
-            }
-            else
-            {
-                Debug.WriteLine("Sorry, cannot set this from the client!");
-            }
-
-        }
-
-        public static bool InitializeConfig()
-        {
-            //AddConvarSync("sv_vMenu_test", "vMenu_test_value");
-            if (!initialized)
-            {
-                string file = LoadResourceFile("vMenu", "config/config.ini");
-                if (!string.IsNullOrEmpty(file))
+                if (int.TryParse(GetConvar(setting.ToString(), "-1"), out int convarIntAlt))
                 {
-                    initialized = true;
-                    return ParseConfig(file);
-                }
-                SendErrorMessage("File could not be found or it's empty.");
-            }
-            initialized = true;
-            return false;
-        }
-
-        private static bool ParseConfig(string config)
-        {
-            if (!string.IsNullOrEmpty(config))
-            {
-                config = config.Replace("\r", "");
-                string lastKey = "";
-                foreach (string line in config.Split('\n'))
-                {
-                    if (!(string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) && !line.StartsWith(";") && !line.StartsWith("#"))
-                    {
-                        if (line.StartsWith("[") && line.EndsWith("]"))
-                        {
-                            lastKey = line.Replace("[", "").Replace("]", "");
-                            Config[lastKey] = new Dictionary<string, string>();
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(lastKey) && Config[lastKey] != null)
-                            {
-                                string key = line.Split('=')[0];
-                                string value = line.Split('=')[1];
-
-                                if (key != null && value != null)
-                                {
-                                    Config[lastKey].Add(key, value);
-                                }
-                            }
-                        }
-                    }
-                }
-                //Debug.Write(Newtonsoft.Json.JsonConvert.SerializeObject(Config ?? new Dictionary<string, Dictionary<string, string>>(), Newtonsoft.Json.Formatting.Indented) + "\n");
-                return true;
-            }
-
-            SendErrorMessage("The config was empty or the file does not exist.");
-            return false;
-        }
-
-
-        private static void SendErrorMessage(string details = null)
-        {
-            if (string.IsNullOrEmpty(details))
-            {
-                Debug.WriteLine("\n\n[vMenu] Error loading config file! Please notify the server owner if you see this.\n\n");
-            }
-            else
-            {
-                Debug.WriteLine($"\n\n[vMenu] Error loading config file! Please notify the server owner if you see this.\n\nError details: {details}\n\n");
-            }
-        }
-
-
-        public static bool GetSettingsBool(SettingsCategory cat, Setting setting)
-        {
-            if (Config.ContainsKey(cat.ToString()) && Config[cat.ToString()].ContainsKey(setting.ToString()))
-            {
-                return Config[cat.ToString()][setting.ToString()].ToLower() == "true";
-            }
-            return false;
-        }
-
-        public static int GetSettingsInt(SettingsCategory cat, Setting setting)
-        {
-            if (Config.ContainsKey(cat.ToString()) && Config[cat.ToString()].ContainsKey(setting.ToString()))
-            {
-                if (int.TryParse(Config[cat.ToString()][setting.ToString()], out int result))
-                {
-                    return result;
+                    return convarIntAlt;
                 }
             }
-            return -1;
+            return convarInt;
         }
 
-        public static float GetSettingsFloat(SettingsCategory cat, Setting setting)
+        public static float GetSettingsFloat(Setting setting)
         {
-            if (Config.ContainsKey(cat.ToString()) && Config[cat.ToString()].ContainsKey(setting.ToString()))
+            if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out float result))
             {
-                if (float.TryParse(Config[cat.ToString()][setting.ToString()], out float result))
-                {
-                    return result;
-                }
+                return result;
             }
             return -1f;
         }
 
-        public static string GetSettingsString(SettingsCategory cat, Setting setting)
+        public static string GetSettingsString(Setting setting)
         {
-            if (Config.ContainsKey(cat.ToString()) && Config[cat.ToString()].ContainsKey(setting.ToString()))
-            {
-                return Config[cat.ToString()][setting.ToString()];
-            }
-            return null;
+            return GetConvar(setting.ToString(), "");
         }
     }
 }

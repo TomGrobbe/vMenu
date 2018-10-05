@@ -444,7 +444,7 @@ namespace vMenuServer
             }
             else
             {
-                InitializeConfig();
+                //InitializeConfig();
                 // Add event handlers.
                 EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
                 EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
@@ -492,16 +492,16 @@ namespace vMenuServer
                 }
 
 
-                dynamicWeather = GetSettingsBool(SettingsCategory.weather, Setting.enable_dynamic_weather);
-                if (GetSettingsInt(SettingsCategory.weather, Setting.dynamic_weather_timer) != -1)
+                dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
+                if (GetSettingsInt(Setting.vmenu_dynamic_weather_timer) != -1)
                 {
-                    dynamicWeatherMinutes = GetSettingsInt(SettingsCategory.weather, Setting.dynamic_weather_timer);
+                    dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
                     dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                 }
 
 
 
-                string defaultWeather = GetSettingsString(SettingsCategory.weather, Setting.default_weather);
+                string defaultWeather = GetSettingsString(Setting.vmenu_default_weather);
 
                 if (!string.IsNullOrEmpty(defaultWeather))
                 {
@@ -511,13 +511,13 @@ namespace vMenuServer
                     }
                 }
 
-                currentHours = GetSettingsInt(SettingsCategory.time, Setting.default_time_hour);
+                currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
                 currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
-                currentMinutes = GetSettingsInt(SettingsCategory.time, Setting.default_time_min);
+                currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
                 currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
 
 
-                minuteClockSpeed = GetSettingsInt(SettingsCategory.time, Setting.ingame_minute_duration);
+                minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
                 minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
 
                 Tick += WeatherLoop;
@@ -542,7 +542,7 @@ namespace vMenuServer
         /// <returns></returns>
         private async Task TimeLoop()
         {
-            if (GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
+            if (GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
                 if (minuteClockSpeed > 2000)
                 {
@@ -589,7 +589,7 @@ namespace vMenuServer
         {
             await Delay(5000);
 
-            if (GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
+            if (GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
                 if (dynamicWeather)
                 {
@@ -616,7 +616,7 @@ namespace vMenuServer
                 {
                     dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                 }
-                if (GetSettingsBool(SettingsCategory.weather, Setting.allow_random_blackout) && currentWeather == "THUNDER" && new Random().Next(5) == 1 && !blackout && !resetBlackout)
+                if (GetSettingsBool(Setting.vmenu_allow_random_blackout) && currentWeather == "THUNDER" && new Random().Next(5) == 1 && !blackout && !resetBlackout)
                 {
                     blackout = true;
                     resetBlackout = true;
@@ -923,7 +923,7 @@ namespace vMenuServer
         private static void KickLog(string kickLogMesage)
         {
             //if (GetConvar("vMenuLogKickActions", "true") == "true")
-            if (GetSettingsBool(SettingsCategory.system, Setting.log_kick_actions))
+            if (GetSettingsBool(Setting.vmenu_log_kick_actions))
             {
                 string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
                 DateTime date = DateTime.Now;

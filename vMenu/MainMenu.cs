@@ -107,14 +107,6 @@ namespace vMenuClient
             }
             else
             {
-                if (InitializeConfig())
-                {
-                    Debug.WriteLine("[vMenu] Config initialized.");
-                }
-                else
-                {
-                    Debug.WriteLine("[vMenu] Config failed to load, using defaults.");
-                }
                 Tick += OnTick;
                 Tick += ProcessMainButtons;
                 Tick += ProcessDirectionalButtons;
@@ -397,15 +389,15 @@ namespace vMenuClient
                 {
                     await Delay(0);
                 }
-                if ((Cf.IsAllowed(Permission.Staff) && GetSettingsBool(SettingsCategory.permissions, Setting.menu_staff_only)) || GetSettingsBool(SettingsCategory.permissions, Setting.menu_staff_only) == false)
+                if ((Cf.IsAllowed(Permission.Staff) && GetSettingsBool(Setting.vmenu_menu_staff_only)) || GetSettingsBool(Setting.vmenu_menu_staff_only) == false)
                 {
-                    if (GetSettingsInt(SettingsCategory.general, Setting.menu_toggle_key) != -1)
+                    if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
                     {
-                        MenuToggleKey = GetSettingsInt(SettingsCategory.general, Setting.menu_toggle_key);
+                        MenuToggleKey = GetSettingsInt(Setting.vmenu_menu_toggle_key);
                     }
-                    if (GetSettingsInt(SettingsCategory.general, Setting.noclip_toggle_key) != -1)
+                    if (GetSettingsInt(Setting.vmenu_noclip_toggle_key) != -1)
                     {
-                        NoClipKey = GetSettingsInt(SettingsCategory.general, Setting.noclip_toggle_key);
+                        NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
                     }
                     // Create the main menu.
                     Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
@@ -697,7 +689,7 @@ namespace vMenuClient
 
             // Add the time options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(SettingsCategory.time, Setting.enable_time_sync))
+            if (Cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
                 TimeOptionsMenu = new TimeOptions();
                 UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -708,7 +700,7 @@ namespace vMenuClient
 
             // Add the weather options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(SettingsCategory.weather, Setting.enable_weather_sync))
+            if (Cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 UIMenu menu = WeatherOptionsMenu.GetMenu();
@@ -768,7 +760,7 @@ namespace vMenuClient
             // Globally disable the "mouse edge" feature.
             Mp.MouseEdgeEnabled = false;
 
-            if (!GetSettingsBool(SettingsCategory.permissions, Setting.use_permissions))
+            if (!GetSettingsBool(Setting.vmenu_use_permissions))
             {
                 Notify.Info("vMenu is set up to ignore permissions.");
             }
