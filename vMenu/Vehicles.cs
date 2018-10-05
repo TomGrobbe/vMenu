@@ -11,7 +11,7 @@ namespace vMenuClient
         #region Vehicle List Per Class
 
         #region Compacts
-        public static List<String> Compacts { get; } = new List<String>()
+        public static List<string> Compacts { get; } = new List<string>()
         {
             "BLISTA",
             "BRIOSO",
@@ -25,7 +25,7 @@ namespace vMenuClient
         };
         #endregion
         #region Sedans
-        public static List<String> Sedans { get; } = new List<String>()
+        public static List<string> Sedans { get; } = new List<string>()
         {
             "ASEA",
             "ASEA2",
@@ -50,6 +50,7 @@ namespace vMenuClient
             "SCHAFTER2",
             "SCHAFTER5",
             "SCHAFTER6",
+            "STAFFORD",
             "STANIER",
             "STRATUM",
             "STRETCH",
@@ -61,7 +62,7 @@ namespace vMenuClient
         };
         #endregion
         #region SUVs
-        public static List<String> SUVs { get; } = new List<String>()
+        public static List<string> SUVs { get; } = new List<string>()
         {
             "BALLER",
             "BALLER2",
@@ -84,6 +85,7 @@ namespace vMenuClient
             "MESA",
             "MESA2",
             "PATRIOT",
+            "PATRIOT2",
             "RADI",
             "ROCOTO",
             "SEMINOLE",
@@ -93,7 +95,7 @@ namespace vMenuClient
         };
         #endregion
         #region Coupes
-        public static List<String> Coupes { get; } = new List<String>()
+        public static List<string> Coupes { get; } = new List<string>()
         {
             "COGCABRIO",
             "EXEMPLAR",
@@ -112,7 +114,7 @@ namespace vMenuClient
         };
         #endregion
         #region Muscle
-        public static List<String> Muscle { get; } = new List<String>()
+        public static List<string> Muscle { get; } = new List<string>()
         {
             "BLADE",
             "BUCCANEER",
@@ -133,6 +135,7 @@ namespace vMenuClient
             "GAUNTLET2",
             "HERMES",
             "HOTKNIFE",
+            "HUSTLER",
             "LURCHER",
             "MOONBEAM",
             "MOONBEAM2",
@@ -163,7 +166,7 @@ namespace vMenuClient
         };
         #endregion
         #region SportsClassics
-        public static List<String> SportsClassics { get; } = new List<String>()
+        public static List<string> SportsClassics { get; } = new List<string>()
         {
             "ARDENT",
             "BTYPE",
@@ -201,11 +204,12 @@ namespace vMenuClient
             "TORNADO6",
             "TURISMO2",
             "VISERIS",
+            "Z190",
             "ZTYPE",
         };
         #endregion
         #region Sports
-        public static List<String> Sports { get; } = new List<String>()
+        public static List<string> Sports { get; } = new List<string>()
         {
             "ALPHA",
             "BANSHEE",
@@ -266,7 +270,7 @@ namespace vMenuClient
         };
         #endregion
         #region Super
-        public static List<String> Super { get; } = new List<String>()
+        public static List<string> Super { get; } = new List<string>()
         {
             "ADDER",
             "AUTARCH",
@@ -290,6 +294,7 @@ namespace vMenuClient
             "PROTOTIPO",
             "REAPER",
             "SC1",
+            "SCRAMJET",
             "SHEAVA", // ETR1
             "SULTANRS",
             "T20",
@@ -310,7 +315,7 @@ namespace vMenuClient
         };
         #endregion
         #region Motorcycles
-        public static List<String> Motorcycles { get; } = new List<String>()
+        public static List<string> Motorcycles { get; } = new List<string>()
         {
             "AKUMA",
             "AVARUS",
@@ -362,7 +367,7 @@ namespace vMenuClient
         };
         #endregion
         #region OffRoad
-        public static List<String> OffRoad { get; } = new List<String>()
+        public static List<string> OffRoad { get; } = new List<string>()
         {
             "BFINJECTION",
             "BIFTA",
@@ -381,12 +386,14 @@ namespace vMenuClient
             "DUNE3",
             "DUNE4",
             "DUNE5",
+            "FREECRAWLER",
             "INSURGENT",
             "INSURGENT2",
             "INSURGENT3",
             "KALAHARI",
             "KAMACHO",
             "MARSHALL",
+            "MENACER",
             "MESA3",
             "MONSTER",
             "NIGHTSHARK",
@@ -405,7 +412,7 @@ namespace vMenuClient
         };
         #endregion
         #region Industrial
-        public static List<String> Industrial { get; } = new List<String>()
+        public static List<string> Industrial { get; } = new List<string>()
         {
             "BULLDOZER",
             "CUTTER",
@@ -421,7 +428,7 @@ namespace vMenuClient
         };
         #endregion
         #region Utility
-        public static List<String> Utility { get; } = new List<String>()
+        public static List<string> Utility { get; } = new List<string>()
         {
             "AIRTUG",
             "CADDY",
@@ -450,6 +457,7 @@ namespace vMenuClient
             "ARMYTRAILER2", // Civillian
             "FREIGHTTRAILER", // Extended
             "ARMYTANKER", // Army Tanker
+            "TRAILERLARGE", // Mobile Operations Center
             
             /// Large Trailers
             "DOCKTRAILER", // Shipping Container Trailer
@@ -480,7 +488,7 @@ namespace vMenuClient
         };
         #endregion
         #region Vans
-        public static List<String> Vans { get; } = new List<String>()
+        public static List<string> Vans { get; } = new List<string>()
         {
             "BISON",
             "BISON2",
@@ -510,6 +518,7 @@ namespace vMenuClient
             "RUMPO3",
             "SPEEDO",
             "SPEEDO2",
+            "SPEEDO4",
             "SURFER",
             "SURFER2",
             "TACO",
@@ -518,7 +527,7 @@ namespace vMenuClient
         };
         #endregion
         #region Cycles
-        public static List<String> Cycles { get; } = new List<String>()
+        public static List<string> Cycles { get; } = new List<string>()
         {
             "BMX",
             "CRUISER",
@@ -530,7 +539,7 @@ namespace vMenuClient
         };
         #endregion
         #region Boats
-        public static List<String> Boats { get; } = new List<String>()
+        public static List<string> Boats { get; } = new List<string>()
         {
             "DINGHY",
             "DINGHY2",
@@ -556,7 +565,7 @@ namespace vMenuClient
         };
         #endregion
         #region Helicopters
-        public static List<String> Helicopters { get; } = new List<String>()
+        public static List<string> Helicopters { get; } = new List<string>()
         {
             "AKULA",
             "ANNIHILATOR",
@@ -585,7 +594,7 @@ namespace vMenuClient
         };
         #endregion
         #region Planes
-        public static List<String> Planes { get; } = new List<String>()
+        public static List<string> Planes { get; } = new List<string>()
         {
             "ALPHAZ1",
             "AVENGER",
@@ -593,6 +602,7 @@ namespace vMenuClient
             "BESRA",
             "BLIMP",
             "BLIMP2",
+            "BLIMP3",
             "BOMBUSHKA",
             "CARGOPLANE",
             "CUBAN800",
@@ -616,6 +626,7 @@ namespace vMenuClient
             "SEABREEZE",
             "SHAMAL",
             "STARLING",
+            "STRIKEFORCE",
             "STUNT",
             "TITAN",
             "TULA",
@@ -626,7 +637,7 @@ namespace vMenuClient
         };
         #endregion
         #region Service
-        public static List<String> Service { get; } = new List<String>()
+        public static List<string> Service { get; } = new List<string>()
         {
             "AIRBUS",
             "BRICKADE",
@@ -642,7 +653,7 @@ namespace vMenuClient
         };
         #endregion
         #region Emergency
-        public static List<String> Emergency { get; } = new List<String>()
+        public static List<string> Emergency { get; } = new List<string>()
         {
             "AMBULANCE",
             "FBI",
@@ -668,7 +679,7 @@ namespace vMenuClient
         };
         #endregion
         #region Military
-        public static List<String> Military { get; } = new List<String>()
+        public static List<string> Military { get; } = new List<string>()
         {
             "APC",
             "BARRACKS",
@@ -682,11 +693,10 @@ namespace vMenuClient
             "RHINO",
             "THRUSTER", // Jetpack
             "TRAILERSMALL2", // Anti Aircraft Trailer
-            "TRAILERLARGE", // Mobile Operations Center
         };
         #endregion
         #region Commercial
-        public static List<String> Commercial { get; } = new List<String>()
+        public static List<string> Commercial { get; } = new List<string>()
         {
             "BENSON",
             "BIFF",
@@ -700,12 +710,14 @@ namespace vMenuClient
             "PHANTOM2",
             "PHANTOM3",
             "POUNDER",
+            "POUNDER2",
             "STOCKADE",
             "STOCKADE3",
+            "TERBYTE",
         };
         #endregion
         #region Trains
-        public static List<String> Trains { get; } = new List<String>()
+        public static List<string> Trains { get; } = new List<string>()
         {
             "CABLECAR",
             "FREIGHT",
