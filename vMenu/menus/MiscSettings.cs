@@ -356,24 +356,28 @@ namespace vMenuClient
                     try
                     {
                         Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
-                        foreach (Newtonsoft.Json.Linq.JToken blip in data["blips"])
+                        if (data != null && data["blips"] != null && data["blips"].Count() > 0)
                         {
-                            string name = blip["name"].ToString();
-                            int color = (int)blip["color"];
-                            int spriteID = (int)blip["spriteID"];
-                            Vector3 coords = new Vector3((float)blip["coordinates"]["x"], (float)blip["coordinates"]["y"], (float)blip["coordinates"]["z"]);
-                            int blipID = AddBlipForCoord(coords.X, coords.Y, coords.Z);
-                            SetBlipSprite(blipID, spriteID);
-                            BeginTextCommandSetBlipName("STRING");
-                            AddTextComponentSubstringPlayerName(name);
-                            EndTextCommandSetBlipName(blipID);
-                            SetBlipColour(blipID, color);
-                            SetBlipAsShortRange(blipID, true);
+                            foreach (Newtonsoft.Json.Linq.JToken blip in data["blips"])
+                            {
+                                string name = blip["name"].ToString();
+                                int color = (int)blip["color"];
+                                int spriteID = (int)blip["spriteID"];
+                                Vector3 coords = new Vector3((float)blip["coordinates"]["x"], (float)blip["coordinates"]["y"], (float)blip["coordinates"]["z"]);
+                                int blipID = AddBlipForCoord(coords.X, coords.Y, coords.Z);
+                                SetBlipSprite(blipID, spriteID);
+                                BeginTextCommandSetBlipName("STRING");
+                                AddTextComponentSubstringPlayerName(name);
+                                EndTextCommandSetBlipName(blipID);
+                                SetBlipColour(blipID, color);
+                                SetBlipAsShortRange(blipID, true);
 
 
-                            Blip b = new Blip(coords, spriteID, name, color, blipID);
-                            blips.Add(b);
+                                Blip b = new Blip(coords, spriteID, name, color, blipID);
+                                blips.Add(b);
+                            }
                         }
+
                     }
                     catch (JsonReaderException ex)
                     {
