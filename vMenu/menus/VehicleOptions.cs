@@ -1098,6 +1098,7 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Components Submenu
+            // when the components menu is opened.
             menu.OnItemSelect += (sender, item, index) =>
             {
                 // If the components menu is opened.
@@ -1114,6 +1115,7 @@ namespace vMenuClient
 
                     // Get the vehicle.
                     int veh = cf.GetVehicle();
+
                     // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
                     if (DoesEntityExist(veh) && !IsEntityDead(veh) && IsEntityAVehicle(veh) && GetPedInVehicleSeat(veh, -1) == PlayerPedId())
                     {
@@ -1140,20 +1142,7 @@ namespace vMenuClient
                             }
                         }
 
-                        // When a checkbox is checked/unchecked, get the selected checkbox item index and use that to get the component ID from the list.
-                        VehicleComponentsMenu.OnCheckboxChange += (sender2, item2, _checked) =>
-                        {
-                            // Then toggle that extra.
-                            //vehicle.ToggleExtra(extraIds[sender2.CurrentSelection], _checked);
-                            if (vehicleExtras.TryGetValue(item2, out int extra))
-                            {
-                                vehicle.ToggleExtra(extra, _checked);
-                            }
-                            //if (vehicleExtras.ContainsKey(item2))
-                            //{
-                            //    int extra = 
-                            //}
-                        };
+
 
                         if (vehicleExtras.Count > 0)
                         {
@@ -1179,6 +1168,17 @@ namespace vMenuClient
                         VehicleComponentsMenu.UpdateScaleform();
 
                     }
+                }
+            };
+            // when a checkbox in the components menu changes
+            VehicleComponentsMenu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                // When a checkbox is checked/unchecked, get the selected checkbox item index and use that to get the component ID from the list.
+                // Then toggle that extra.
+                if (vehicleExtras.TryGetValue(item, out int extra))
+                {
+                    Vehicle veh = new Vehicle(cf.GetVehicle());
+                    veh.ToggleExtra(extra, _checked);
                 }
             };
             #endregion
