@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>vMenuShared</RootNamespace>
     <AssemblyName>vMenuShared.net</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -31,6 +31,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -38,7 +40,6 @@
   <ItemGroup>
     <Reference Include="CitizenFX.Core.Client">
       <HintPath>..\CitizenFX.Core.Client.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="CitizenFX.Core.Server">
       <HintPath>..\CitizenFX.Core.Server.dll</HintPath>
