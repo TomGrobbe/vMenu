@@ -191,7 +191,7 @@ namespace vMenuClient
                         }
                         teleportMenu.OnItemSelect += async (sender, item, index) =>
                         {
-                            await cf.TeleportToCoords(tpLocations[index]);
+                            await cf.TeleportToCoords(tpLocations[index], true);
                             SetEntityHeading(PlayerPedId(), tpLocationsHeading[index]);
                         };
                     }

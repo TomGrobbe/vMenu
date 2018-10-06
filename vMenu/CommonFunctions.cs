@@ -237,62 +237,77 @@ namespace vMenuClient
         /// Teleport the player to a specific location.
         /// </summary>
         /// <param name="pos">These are the target coordinates to teleport to.</param>
-        public async Task TeleportToCoords(Vector3 pos)
+        public async Task TeleportToCoords(Vector3 pos, bool safeModeDisabled = false)
         {
-            RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
-            bool inCar = IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId();
-            if (inCar)
-                SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
-            else
-                SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
-
-            int timer = GetGameTimer();
-            bool failed = false;
-            float outputZ = pos.Z;
-            await Delay(100);
-            var z = 0f;
-            while (!GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
+            if (!safeModeDisabled)
             {
-                await Delay(0);
-                if (GetGameTimer() - timer > 5000)
-                {
-                    failed = true;
-                    break;
-                }
-                z = z < 900f ? z + 10f : 0f;
-            }
-            if (!failed)
-            {
+                RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
+                bool inCar = IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId();
                 if (inCar)
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ);
+                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
                 else
-                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ, false, false, false, true);
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
+
+                int timer = GetGameTimer();
+                bool failed = false;
+                float outputZ = pos.Z;
+                await Delay(100);
+                var z = 0f;
+                while (!GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
+                {
+                    await Delay(0);
+                    if (GetGameTimer() - timer > 5000)
+                    {
+                        failed = true;
+                        break;
+                    }
+                    z = z < 900f ? z + 10f : 0f;
+                }
+                if (!failed)
+                {
+                    if (inCar)
+                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ);
+                    else
+                        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ, false, false, false, true);
+                }
+                await Delay(200);
+                failed = (IsEntityInWater(PlayerPedId()) || GetEntityHeightAboveGround(PlayerPedId()) > 50f) ? true : failed;
+                if (failed)
+                {
+                    GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                    Vector3 safePos = pos;
+                    safePos.Z = 810f;
+                    var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
+                    if (foundSafeSpot)
+                    {
+                        Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.", true);
+                        if (inCar)
+                            SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                        else
+                            SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                    }
+                    else
+                    {
+                        Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!", true);
+                        if (inCar)
+                            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                        else
+                            SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
+                    }
+                }
             }
-            await Delay(200);
-            failed = (IsEntityInWater(PlayerPedId()) || GetEntityHeightAboveGround(PlayerPedId()) > 50f) ? true : failed;
-            if (failed)
+            else
             {
-                GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
-                Vector3 safePos = pos;
-                safePos.Z = 810f;
-                var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
-                if (foundSafeSpot)
+                if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
                 {
-                    Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.", true);
-                    if (inCar)
-                        SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
-                    else
-                        SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                    SetEntityCoords(GetVehicle(), pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
                 else
                 {
-                    Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!", true);
-                    if (inCar)
-                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
-                    else
-                        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
+                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
             }
+            
             //else
             //{
             //    if (inCar)
