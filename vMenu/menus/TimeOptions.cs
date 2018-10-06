@@ -49,6 +49,19 @@ namespace vMenuClient
             UIMenuItem night = new UIMenuItem("Night", "Set the time to 03:00.");
             night.SetRightLabel("03:00");
 
+            List<dynamic> hours = new List<dynamic>() { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09" };
+            List<dynamic> minutes = new List<dynamic>() { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09" };
+            for (var i = 10; i < 60; i++)
+            {
+                if (i < 24)
+                {
+                    hours.Add(i.ToString());
+                }
+                minutes.Add(i.ToString());
+            }
+            UIMenuListItem manualHour = new UIMenuListItem("Set Custom Hour", hours, 0);
+            UIMenuListItem manualMinute = new UIMenuListItem("Set Custom Minute", minutes, 0);
+
             // Add all menu items to the menu.
             if (cf.IsAllowed(Permission.TOFreezeTime))
             {
@@ -64,6 +77,8 @@ namespace vMenuClient
                 menu.AddItem(evening);
                 menu.AddItem(midnight);
                 menu.AddItem(night);
+                menu.AddItem(manualHour);
+                menu.AddItem(manualMinute);
             }
 
             // Handle button presses.
@@ -95,6 +110,25 @@ namespace vMenuClient
                         $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~s~.", prefix: "Info:");
                     cf.UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
                 }
+
+            };
+
+            menu.OnListSelect += (sender, item, index) =>
+            {
+                int newHour = EventManager.currentHours;
+                int newMinute = EventManager.currentMinutes;
+                if (item == manualHour)
+                {
+                    newHour = item.Index;
+                }
+                else if (item == manualMinute)
+                {
+                    newMinute = item.Index;
+                }
+
+                Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~s~:~y~" +
+                        $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~s~.", prefix: "Info:");
+                cf.UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
             };
         }
 
