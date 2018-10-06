@@ -11,32 +11,34 @@ branches:
         - production
         - development
 before_deploy:
-    - mkdir /home/travis/build/TomGrobbe/release/
-    - mkdir /home/travis/build/TomGrobbe/release/vMenu/
-    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds
-    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/config
-    - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/src
-    - cp /home/travis/build/TomGrobbe/vMenu/ /home/travis/build/TomGrobbe/release/vMenu/builds/src/ -rf
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/release/vMenu/builds/config/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/addons.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/locations.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/vMenuShared/bin/Release/vMenuShared.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/README.md /home/travis/build/TomGrobbe/release/vMenu/builds/
-    - cp /home/travis/build/TomGrobbe/vMenu/LICENSE.md /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - mkdir /home/travis/build/TomGrobbe/release/
+    # - mkdir /home/travis/build/TomGrobbe/release/vMenu/
+    # - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds
+    # - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/config
+    # - mkdir /home/travis/build/TomGrobbe/release/vMenu/builds/src
+    # - cp /home/travis/build/TomGrobbe/vMenu/ /home/travis/build/TomGrobbe/release/vMenu/builds/src/ -rf
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/vMenuClient.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenu/bin/Release/NativeUI.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/Newtonsoft.Json.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/permissions.cfg /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/addons.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/config/locations.json /home/travis/build/TomGrobbe/release/vMenu/builds/config/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/System.Numerics.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuServer/bin/Release/vMenuServer.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/vMenuShared/bin/Release/vMenuShared.net.dll /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/README.md /home/travis/build/TomGrobbe/release/vMenu/builds/
+    # - cp /home/travis/build/TomGrobbe/vMenu/LICENSE.md /home/travis/build/TomGrobbe/release/vMenu/builds/
     - version=`curl -s https://vespura.com/vmenu/__resource.lua | grep "version " | tail -n 1 | cut -d ' ' -f 2 | cut -c 2- | rev | cut -c 3- | rev`
-    - cd /home/travis/build/TomGrobbe/release/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-$version.zip * -x src/\*
+    # - cd /home/travis/build/TomGrobbe/release/vMenu/builds && wget https://vespura.com/vmenu/__resource.lua && zip -r vMenu-$version.zip * -x src/\*
+    - cd /home/travis/build/TomGrobbe/vMenu/ && zip -r vMenu-$version.zip *
     - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura"
     - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
     - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
-    file: "/home/travis/build/TomGrobbe/release/vMenu/builds/vMenu-$version.zip"
+    # file: "/home/travis/build/TomGrobbe/release/vMenu/builds/vMenu-$version.zip"
+    file: "/home/travis/build/TomGrobbe/vMenu/vMenu-$version.zip"
     skip_cleanup: true
     prerelease: false
     draft: true
