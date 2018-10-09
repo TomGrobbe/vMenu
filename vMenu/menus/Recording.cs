@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using NativeUI;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -58,14 +59,19 @@ namespace vMenuClient
                 }
                 else if (item == openEditor)
                 {
+                    if (GetSettingsBool(Setting.vmenu_quit_session_in_rockstar_editor))
+                    {
+                        MainMenu.Cf.QuitSession();
+                    }
                     ActivateRockstarEditor();
                     // wait for the editor to be closed again.
                     while (IsPauseMenuActive())
                     {
                         await BaseScript.Delay(0);
-                    } 
+                    }
                     // then fade in the screen.
                     DoScreenFadeIn(1);
+                    Notify.Alert("You left your previous session before entering the Rockstar Editor. Restart the game to be able to rejoin the server's main session.", true, true);
                 }
             };
 
