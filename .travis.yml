@@ -5,11 +5,11 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
-branches:
-    only:
-        # - master
-        - production
-        - development
+# branches:
+    # only:
+        # # - master
+        # - production
+        # - development
 before_deploy:
     - cd /home/travis/build/TomGrobbe/build/ && rm *.pdb
     - cp ../vMenu/*.md ./
