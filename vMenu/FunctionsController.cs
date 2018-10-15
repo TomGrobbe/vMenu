@@ -345,7 +345,7 @@ namespace vMenuClient
                                 // No Siren Toggle
                                 vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
                             }
-                            
+
                         }
 
                         // Manage "no helmet"
@@ -1018,46 +1018,54 @@ namespace vMenuClient
                 blipsPlayerList = new PlayerList();
                 foreach (Player p in blipsPlayerList)
                 {
-                    if (enabled)
+                    if (p != null && NetworkIsPlayerActive(p.Handle) && p.Character != null && p.Character.Exists())
                     {
-                        if (p != Game.Player)
+                        if (enabled)
                         {
-                            if (p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists())
+                            if (p != Game.Player)
                             {
-                                Debug.WriteLine("New blip added.");
-                                p.Character.AttachBlip();
-                            }
-                            p.Character.AttachedBlip.Color = BlipColor.White;
-                            if (!IsPedInAnyVehicle(PlayerPedId(), false))
-                            {
-                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, true);
-                            }
-                            else
-                            {
-                                ShowHeadingIndicatorOnBlip(p.Character.AttachedBlip.Handle, false);
-                            }
+                                int ped = p.Character.Handle;
+                                int blip = GetBlipFromEntity(ped);
 
-                            p.Character.AttachedBlip.IsShortRange = true;
+                                if (blip == 0 || blip == -1)
+                                {
+                                    cf.Log("New Player blip created (1/2).");
+                                    blip = AddBlipForEntity(ped);
+                                    cf.Log("New Player blip attached to player (2/2).");
+                                }
 
-                            cf.SetCorrectBlipSprite(p.Character.Handle, p.Character.AttachedBlip.Handle);
-                            p.Character.AttachedBlip.Name = p.Name;
+                                SetBlipColour(blip, 0);
 
-                            if (!p.Character.IsInHeli)
+                                if (!IsPedInAnyVehicle(ped, false))
+                                {
+                                    ShowHeadingIndicatorOnBlip(blip, true);
+                                }
+                                else
+                                {
+                                    ShowHeadingIndicatorOnBlip(blip, false);
+                                }
+
+                                cf.SetCorrectBlipSprite(ped, blip);
+                                SetBlipNameToPlayerName(blip, p.Handle);
+
+                                // thanks lambda menu for hiding this great feature in their source code!
+                                // sets the blip category to 7, which makes the blips group under "Other Players:"
+                                SetBlipCategory(blip, 7);
+
+                                if (p.Character.IsInVehicle() && !p.Character.IsInHeli)
+                                {
+                                    SetBlipRotation(blip, (int)GetEntityHeading(ped));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()) && MainMenu.OnlinePlayersMenu != null && !MainMenu.OnlinePlayersMenu.PlayersWaypointList.Contains(p.Handle))
                             {
-                                p.Character.AttachedBlip.Rotation = (int)GetEntityHeading(p.Character.Handle);
+                                p.Character.AttachedBlip.Delete();
                             }
                         }
                     }
-                    else
-                    {
-                        if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()) && MainMenu.OnlinePlayersMenu != null && !MainMenu.OnlinePlayersMenu.PlayersWaypointList.Contains(p.Handle))
-                        {
-                            p.Character.AttachedBlip.Delete();
-                        }
-                    }
-
-
-                    await Delay(0); // wait 0 ticks before doing the next player.
                 }
                 await Delay(1); // wait 1 tick before doing the next loop.
             }
