@@ -5,7 +5,7 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
-  branches:
+branches:
     except:
         - development
 before_deploy:
