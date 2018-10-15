@@ -16,9 +16,9 @@ before_deploy:
     - wget https://vespura.com/vmenu/__resource.lua
     - version=`cat __resource.lua | grep "version " | tail -n 1 | cut -d ' ' -f 2 | cut -c 2- | rev | cut -c 3- | rev`
     - zip -r vMenu-$version.zip *
-    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura"
-    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
-    - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
+    # - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura"
+    # - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
+    # - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
