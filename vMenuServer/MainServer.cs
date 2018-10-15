@@ -423,10 +423,59 @@ namespace vMenuServer
                             }
                             return;
                         }
+                        else if (args[0].ToString().ToLower() == "weather")
+                        {
+                            if (args.Count < 2 || string.IsNullOrEmpty(args[1].ToString()))
+                            {
+                                Debug.WriteLine("[vMenu] Invalid command syntax. Use 'vmenuserver weather <weatherType>' instead.");
+                            }
+                            else
+                            {
+                                string wtype = args[1].ToString().ToUpper();
+                                if (weatherTypes.Contains(wtype))
+                                {
+                                    TriggerEvent("UpdateServerWeather", wtype, blackout, dynamicWeather);
+                                    Debug.WriteLine($"[vMenu] Weather is now set to: {wtype}");
+                                }
+                                else if (wtype.ToLower() == "dynamic")
+                                {
+                                    if (args.Count == 3 && !string.IsNullOrEmpty(args[2].ToString()))
+                                    {
+                                        if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "true")
+                                        {
+                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, true);
+                                            Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
+                                        }
+                                        else if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "false")
+                                        {
+                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, false);
+                                            Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
+                                        }
+                                        else
+                                        {
+                                            Debug.WriteLine("[vMenu] Invalid command usage. Correct syntax: vmenuserver weather dynamic <true|false>");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("[vMenu] Invalid command usage. Correct syntax: vmenuserver weather dynamic <true|false>");
+                                    }
+
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("[vMenu] This weather type is not valid!");
+                                }
+                            }
+                        }
 
                     }
                 }
-                Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                else
+                {
+                    Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                }
+
 
             }), true);
 
@@ -497,7 +546,6 @@ namespace vMenuServer
                 if (GetSettingsInt(Setting.vmenu_dynamic_weather_timer) != -1)
                 {
                     dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
-                    //dynamicWeatherTimeLeft = 5 * 12 * dynamicWeatherMinutes;
                 }
 
 
