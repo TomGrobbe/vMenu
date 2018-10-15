@@ -96,7 +96,7 @@ namespace vMenuClient
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveToWp()
+        public void DriveToWp(int style = 1074528293)
         {
             if (driveWanderTaskActive || driveToWpTaskActive)
             {
@@ -110,17 +110,17 @@ namespace vMenuClient
                 var waypoint = World.WaypointPosition;
                 var veh = GetVehicle();
                 var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAbility(PlayerPedId(), 1000f);
                 SetDriverAggressiveness(PlayerPedId(), 0f);
                 //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
-                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 1074528293, 10f);
+                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
             }
         }
 
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveWander()
+        public void DriveWander(int style = 1074528293)
         {
             if (driveWanderTaskActive || driveToWpTaskActive)
             {
@@ -133,9 +133,9 @@ namespace vMenuClient
                 driveWanderTaskActive = true;
                 var veh = GetVehicle();
                 var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 100f);
+                SetDriverAbility(PlayerPedId(), 1000f);
                 SetDriverAggressiveness(PlayerPedId(), 0f);
-                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), 1074528293);
+                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
             }
         }
         #endregion
@@ -307,7 +307,7 @@ namespace vMenuClient
                     SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
             }
-            
+
             //else
             //{
             //    if (inCar)

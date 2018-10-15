@@ -61,6 +61,8 @@ namespace vMenuClient
             // Player options
             List<dynamic> playerOptionsList = new List<dynamic> { "Max Health", "Max Armor", "Clean Player Clothes", "Player Dry", "Player Wet", "~r~Commit Suicide", "Drive To Waypoint", "Drive Around Randomly" };
             UIMenuListItem playerFunctions = new UIMenuListItem("Player Functions", playerOptionsList, 0, "Select an option and press enter to run/stop it.");
+            List<dynamic> drivingStyles = new List<dynamic>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse" };
+            UIMenuListItem drivingStyle = new UIMenuListItem("Driving Style", drivingStyles, 0, "Set the driving style that is used for the Drive to Waypoint and Drive Around Randomly functions.");
 
             // Scenarios (list can be found in the PedScenarios class)
             UIMenuListItem playerScenarios = new UIMenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
@@ -112,6 +114,7 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.POFunctions))
             {
                 menu.AddItem(playerFunctions);
+                menu.AddItem(drivingStyle);
             }
             if (cf.IsAllowed(Permission.POFreeze))
             {
@@ -193,6 +196,12 @@ namespace vMenuClient
                     SetPlayerWantedLevel(PlayerId(), index, false);
                     SetPlayerWantedLevelNow(PlayerId(), false);
                 }
+                else if (listItem == drivingStyle)
+                {
+                    int style = GetStyleFromIndex(index);
+                    SetDriveTaskDrivingStyle(PlayerPedId(), style);
+                    Notify.Info($"Driving task style is now set to: ~r~{drivingStyles[index]}~s~.");
+                }
                 // Player options (healing, cleaning, armor, dry/wet, etc)
                 else if (listItem == playerFunctions)
                 {
@@ -201,76 +210,59 @@ namespace vMenuClient
                         // Max Health
                         case 0:
                             SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()));
-                            Subtitle.Info("Max ~g~health ~s~applied.", prefix: "Info:");
+                            Notify.Info("Max ~g~health ~s~applied.");
                             break;
                         // Max Armor
                         case 1:
                             SetPedArmour(PlayerPedId(), GetPlayerMaxArmour(PlayerId()));
-                            Subtitle.Info("Max ~b~armor ~s~applied.", prefix: "Info:");
+                            Notify.Info("Max ~b~armor ~s~applied.");
                             break;
                         // Clean Player Clothes
                         case 2:
                             ClearPedBloodDamage(PlayerPedId());
-                            Subtitle.Info("Cleaned player clothes.", prefix: "Info:");
+                            Notify.Info("Cleaned player clothes.");
                             break;
                         // Make Player Dry
                         case 3:
                             ClearPedWetness(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~c~dry~s~.", prefix: "Info:");
+                            Notify.Info("Player clothes are now ~c~dry~s~.");
                             break;
                         // Make Player Wet
                         case 4:
                             SetPedWetnessHeight(PlayerPedId(), 2f);
                             SetPedWetnessEnabledThisFrame(PlayerPedId());
-                            Subtitle.Info("Player clothes are now ~b~wet~s~.", prefix: "Info:");
+                            Notify.Info("Player clothes are now ~b~wet~s~.");
                             break;
                         // Kill Player
                         case 5:
                             cf.CommitSuicide();
-                            //SetEntityHealth(PlayerPedId(), 0);
-                            //Subtitle.Info("You ~r~killed ~s~yourself.", prefix: "Info:");
                             break;
                         // Drive To Waypoint
                         case 6:
                             if (!Game.IsWaypointActive)
                             {
-                                Subtitle.Error("You need to set a ~p~waypoint ~s~first!", prefix: "Error:");
+                                Notify.Error("You need to set a ~p~waypoint ~s~first!");
                             }
                             else if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                try
-                                {
-                                    cf.DriveToWp();
-                                }
-                                catch (NotImplementedException e)
-                                {
-                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
-                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
-                                }
+                                cf.DriveToWp(GetStyleFromIndex(drivingStyle.Index));
+                                Notify.Info("Player is now driving to the waypoint, press this option again to disable auto pilot.");
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                                Notify.Error("You need a ~r~vehicle ~s~first!");
                             }
                             break;
                         // Drive Around Randomly (wander)
                         case 7:
                             if (IsPedInAnyVehicle(PlayerPedId(), false))
                             {
-                                try
-                                {
-                                    cf.DriveWander();
-                                }
-                                catch (NotImplementedException e)
-                                {
-                                    cf.Log("\n\r[vMenu] Exception: " + e.Message + "\r\n");
-                                    Notify.Error(CommonErrors.UnknownError, placeholderValue: "This function is not implemented yet.");
-                                }
-
+                                cf.DriveWander(GetStyleFromIndex(drivingStyle.Index));
+                                Notify.Info("Player is now driving around randomly, press this option again to disable auto pilot.");
                             }
                             else
                             {
-                                Subtitle.Error("You need a ~r~vehicle ~s~first!", prefix: "Error:");
+                                Notify.Error("You need a ~r~vehicle ~s~first!");
                             }
                             break;
                         default:
@@ -297,6 +289,30 @@ namespace vMenuClient
             };
             #endregion
 
+        }
+
+        private int GetStyleFromIndex(int index)
+        {
+            int style = 0;
+            switch (index)
+            {
+                case 0:
+                    style = 443; // normal
+                    break;
+                case 1:
+                    style = 575; // rushed
+                    break;
+                case 2:
+                    style = 536871355; // Avoid highways
+                    break;
+                case 3:
+                    style = 1467; // Go in reverse
+                    break;
+                default:
+                    style = 0; // no style (impossible, but oh well)
+                    break;
+            }
+            return style;
         }
 
         /// <summary>
