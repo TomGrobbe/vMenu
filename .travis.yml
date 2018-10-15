@@ -7,13 +7,12 @@ notifications:
       - https://vespura.com/travis-ci.php
 branches:
     except:
-        # - development
+        - development
 before_deploy:
     - cd /home/travis/build/TomGrobbe/build/ && rm *.pdb
     - cp ../vMenu/*.md ./
     - wget https://vespura.com/vmenu/__resource.lua
     - zip -r vMenu-$TRAVIS_TAG.zip *
-    # - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura" && git config --local user.email "$GITHUB_EMAIL" && git tag $TRAVIS_TAG -f
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
