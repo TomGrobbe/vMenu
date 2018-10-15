@@ -5,21 +5,15 @@ notifications:
   webhooks:
     urls:
       - https://vespura.com/travis-ci.php
-# branches:
-    # only:
-        # # - master
-        # - production
-        # - development
+  branches:
+    except:
+        - development
 before_deploy:
     - cd /home/travis/build/TomGrobbe/build/ && rm *.pdb
     - cp ../vMenu/*.md ./
     - wget https://vespura.com/vmenu/__resource.lua
-    # - version=`cat __resource.lua | grep "version " | tail -n 1 | cut -d ' ' -f 2 | cut -c 2- | rev | cut -c 3- | rev`
-    # - zip -r vMenu-$version.zip *
     - zip -r vMenu-$TRAVIS_TAG.zip *
-    # - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura"
-    # - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.email "31419184+TomGrobbe@users.noreply.github.com"
-    # - cd /home/travis/build/TomGrobbe/vMenu/ && git tag $version
+    - cd /home/travis/build/TomGrobbe/vMenu/ && git config --local user.name "Vespura" && git config --local user.email "$GITHUB_EMAIL" && git tag $TRAVIS_TAG -f
 deploy:
     provider: releases
     api_key: $GITHUB_API_KEY
@@ -27,8 +21,6 @@ deploy:
     skip_cleanup: true
     prerelease: false
     draft: true
-    name: "[Release] vMenu $version"
+    name: "[Release] vMenu $TRAVIS_TAG"
     on:
-        # branch: 
-        # - production
         tags: true
