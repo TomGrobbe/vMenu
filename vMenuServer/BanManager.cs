@@ -441,12 +441,12 @@ namespace vMenuServer
                 else
                 {
                     BanCheater(source);
-                    Debug.WriteLine($"^3[vMenu] [WARNING] [BAN] ^0Player {JsonConvert.SerializeObject(source)} did not have the required permissions, but somehow triggered the unban event. Missing permissions: vMenu.OnlinePlayers.Unban (is ace allowed: {IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban")})\n");
+                    Debug.WriteLine($"^3[vMenu] [WARNING] [BAN] ^7Player {JsonConvert.SerializeObject(source)} did not have the required permissions, but somehow triggered the unban event. Missing permissions: vMenu.OnlinePlayers.Unban (is ace allowed: {IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban")})\n");
                 }
             }
             else
             {
-                Debug.WriteLine("^3[vMenu] [WARNING] ^0The unban event was triggered, but no valid source was provided. Nobody has been unbanned.");
+                Debug.WriteLine("^3[vMenu] [WARNING] ^7The unban event was triggered, but no valid source was provided. Nobody has been unbanned.");
             }
 
         }
@@ -518,7 +518,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
-                Debug.WriteLine("^2[vMenu] [SUCCESS] [BAN]^0 " + banActionMessage);
+                Debug.WriteLine("^2[vMenu] [SUCCESS] [BAN]^7 " + banActionMessage);
             }
         }
     }

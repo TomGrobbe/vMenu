@@ -2358,6 +2358,7 @@ namespace vMenuClient
                 }
             }
             // in case of an error, return an invalid character struct.
+            Debug.WriteLine("error");
             return new PlayerAppearance.MpCharacterStyle(false, false);
         }
         #endregion

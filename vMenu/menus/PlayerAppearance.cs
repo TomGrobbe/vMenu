@@ -192,13 +192,13 @@ namespace vMenuClient
             menu.AddItem(deleteSavedPed);
             menu.AddItem(walkingStyle);
 
-            // Bind items to the submenus.
-            //if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
-            //{
-            //    CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
-            //    menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
-            //}
-            //else
+            //Bind items to the submenus.
+            if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
+            {
+                CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
+                menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
+            }
+            else
             {
                 mpCharMenuBtn.Enabled = false;
                 mpCharMenuBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
@@ -622,7 +622,7 @@ namespace vMenuClient
 
             // mom
             List<dynamic> moms = new List<dynamic>();
-            for (var i = 0; i < 21; i++)
+            for (var i = 0; i < 22; i++)
             {
                 moms.Add($"Mom #{i}");
             }
@@ -631,7 +631,7 @@ namespace vMenuClient
 
             // dad
             List<dynamic> dads = new List<dynamic>();
-            for (var i = 0; i < 21; i++)
+            for (var i = 0; i < 24; i++)
             {
                 dads.Add($"Dad #{i}");
             }
@@ -690,8 +690,11 @@ namespace vMenuClient
 
             // female appearance menu
             femaleAppearanceMenu.AddItem(f_hair_style);
+            f_hair_style.Index = 4;
             femaleAppearanceMenu.AddItem(f_hair_colors);
+            f_hair_colors.Index = 59;
             femaleAppearanceMenu.AddItem(f_hair_hi_colors);
+            f_hair_hi_colors.Index = 3;
 
             // female features menu
             femaleFeaturesMenu.AddItem(f_noseWidth);
@@ -723,16 +726,13 @@ namespace vMenuClient
 
             // female heritage menu
             femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
             femaleHeritageMenu.AddItem(mom);
             femaleHeritageMenu.AddItem(dad);
             femaleHeritageMenu.AddItem(resemblance);
             femaleHeritageMenu.AddItem(skinTone);
-            femaleHeritageMenu.CurrentSelection = femaleHeritageMenu.MenuItems.Count - 5;
+            femaleHeritageMenu.UpdateScaleform();
+            femaleHeritageMenu.RefreshIndex();
+
             #endregion
 
 
@@ -749,6 +749,17 @@ namespace vMenuClient
             femaleMenu.BindMenuToItem(femaleAppearanceMenu, f_Appearance);
             femaleMenu.BindMenuToItem(femaleFeaturesMenu, f_Features);
             femaleMenu.BindMenuToItem(femaleHeritageMenu, f_Heritage);
+
+            femaleMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == f_Heritage)
+                {
+                    if (femaleHeritageMenu.CurrentSelection == 0)
+                    {
+                        femaleHeritageMenu.CurrentSelection++;
+                    }
+                }
+            };
 
             #endregion
 
@@ -779,8 +790,24 @@ namespace vMenuClient
                 }
                 foreach (var name in characterNames)
                 {
-                    UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
-                    loadCharacterMenu.AddItem(nameItem);
+                    var Character = cf.LoadMultiplayerCharacter(name.Substring(8, name.Length - 8));
+                    if (Character.Valid)
+                    {
+                        UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
+                        loadCharacterMenu.AddItem(nameItem);
+                        nameItem.SetRightLabel($"{(Character.IsMale ? "(male)" : "(female)")}");
+                    }
+                    else
+                    {
+                        UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
+                        loadCharacterMenu.AddItem(nameItem);
+                        nameItem.Enabled = false;
+                        nameItem.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        nameItem.Description = "This model is invalid or corrupted, sorry.";
+
+                    }
+
+
                 }
                 loadCharacterMenu.RefreshIndex();
                 loadCharacterMenu.UpdateScaleform();
@@ -840,13 +867,13 @@ namespace vMenuClient
             {
                 if (item == male)
                 {
-                    SetModel(true);
                     currentCharacter = new MpCharacterStyle(true, true);
+                    SetModel(true);
                 }
                 if (item == female)
                 {
-                    SetModel(false);
                     currentCharacter = new MpCharacterStyle(false, true);
+                    SetModel(false);
                 }
             };
 
@@ -1311,13 +1338,23 @@ namespace vMenuClient
         {
             float Resemblance = (currentCharacter.Resemblance + 1f) / 2f;
             float SkinTone = (currentCharacter.SkinTone + 1f) / 2f;
-            float thirdF = 0f;
+            //float thirdF = 0f;
             //float thirdF = (Resemblance + SkinTone) / 2f;
 
             int dad = currentCharacter.Dad;
             int mom = currentCharacter.Mom;
-            int third = 0;
-            SetPedHeadBlendData(PlayerPedId(), mom, dad, third, mom, dad, third, Resemblance, SkinTone, thirdF, false);
+            //int num = dad + mom;
+            //dad = (num < 20) ? (20 + dad) : (dad + mom + 2);
+            //SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, thirdF, false);
+            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01"))
+            {
+                SetPedHeadBlendData(PlayerPedId(), mom + 21, dad, 0, mom + 21, dad, 0, Resemblance, SkinTone, 0f, false);
+            }
+            else
+            {
+                SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, 0f, false);
+            }
+
         }
 
         private async void SetModel(bool male)
@@ -1336,7 +1373,24 @@ namespace vMenuClient
                 }
                 SetPlayerModel(PlayerId(), model);
                 SetPedDefaultComponentVariation(PlayerPedId());
-                SetPedHeadBlendData(PlayerPedId(), 0, 0, 0, 0, 0, 0, 0f, 0f, 0f, false);
+                SetPedHeadBlendData(PlayerPedId(), male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);
+                if (!male)
+                {
+                    currentCharacter.HairStyle = 4 + 25 + 13;
+                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    currentCharacter.HairColor = 59;
+                    currentCharacter.HairHighlightColor = 3;
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                }
+                else
+                {
+                    currentCharacter.HairStyle = 4 + 0 + 13;
+                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    currentCharacter.HairColor = 59;
+                    currentCharacter.HairHighlightColor = 3;
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                }
+
             }
 
         }

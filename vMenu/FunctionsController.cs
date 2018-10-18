@@ -72,7 +72,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            Tick += ManageCamera;
+            Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
         }
 
@@ -954,7 +954,7 @@ namespace vMenuClient
         }
         #endregion
         #region Player Appearance
-        private async Task ManageCamera()
+        private async Task ManagePlayerAppearanceCamera()
         {
             if (MainMenu.PlayerAppearanceMenu != null && MainMenu.PlayerAppearanceMenu.mpCharMenu != null)
             {
@@ -983,20 +983,32 @@ namespace vMenuClient
                         camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.7f));
                         camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         Game.PlayerPed.Task.ClearAll();
-                        float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
-
-                        if (input > 0.5f)
+                        if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
                             Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
                         }
-                        else if (input < -0.5f)
+                        else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
                             Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
                         }
                         else
                         {
-                            Game.PlayerPed.Task.LookAt(camera.Position);
+                            float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
+
+                            if (input > 0.5f)
+                            {
+                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                            }
+                            else if (input < -0.5f)
+                            {
+                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                            }
+                            else
+                            {
+                                Game.PlayerPed.Task.LookAt(camera.Position);
+                            }
                         }
+
                     }
                     RenderScriptCams(false, false, 0, false, false);
                     camera.Delete();
