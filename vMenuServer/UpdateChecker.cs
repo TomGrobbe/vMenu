@@ -56,7 +56,7 @@ namespace vMenuServer
                 RequestResponse result = await r.Http($"https://vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}");
 
 
-                Debug.WriteLine("\r\n^5[vMenu] Checking for updates.^0");
+                Debug.WriteLine("\r\n^5[vMenu] Checking for updates.^7");
 
                 // If the result status = 200 (status code OK) then continue.
                 switch (result.status)
@@ -65,32 +65,32 @@ namespace vMenuServer
                         dynamic UpdateData = JsonConvert.DeserializeObject(result.content);
                         if ((bool)UpdateData["up_to_date"])
                         {
-                            Debug.WriteLine("^2[vMenu] Your version of vMenu is up to date! Good job!^0\n");
+                            Debug.WriteLine("^2[vMenu] Your version of vMenu is up to date! Good job!^7\n");
                         }
                         else
                         {
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Your version of vMenu is OUTDATED!");
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Your version: " + MainServer.Version);
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Latest version: " + UpdateData["latest_version"]);
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Release date: " + UpdateData["release_date"]);
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Changelog summary: " + UpdateData["update_message"]);
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Please update as soon as possible!");
-                            Debug.WriteLine("^3[vMenu] WARNING:^0 Download: https://github.com/tomgrobbe/vMenu/releases/");
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Your version of vMenu is OUTDATED!");
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Your version: " + MainServer.Version);
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Latest version: " + UpdateData["latest_version"]);
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Release date: " + UpdateData["release_date"]);
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Changelog summary: " + UpdateData["update_message"]);
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Please update as soon as possible!");
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Download: https://github.com/tomgrobbe/vMenu/releases/");
                             Debug.WriteLine("\n");
                             MainServer.UpToDate = false;
                         }
                         break;
                     default:
-                        Debug.WriteLine("^3[vMenu] [WARNING] ^0An error occurred while checking for the latest version. This is not a problem, vMenu will still work correctly. Please check your version manually.");
-                        Debug.WriteLine($"^3[vMenu] [WARNING] ^0Error details: {result.content}.");
+                        Debug.WriteLine("^3[vMenu] [WARNING] ^7An error occurred while checking for the latest version. This is not a problem, vMenu will still work correctly. Please check your version manually.");
+                        Debug.WriteLine($"^3[vMenu] [WARNING] ^7Error details: {result.content}.");
                         break;
                 }
             }
             // Aw damn! An exception. :(
             catch (Exception e)
             {
-                Debug.WriteLine("^3[vMenu] [WARNING] ^0An error occurred while checking for the latest version. This is not a problem, vMenu will still work correctly. Please check your version manually.");
-                Debug.Write($"^3[vMenu] ^0Error info: {e.Message.ToString()}\r\n\r\n");
+                Debug.WriteLine("^3[vMenu] [WARNING] ^7An error occurred while checking for the latest version. This is not a problem, vMenu will still work correctly. Please check your version manually.");
+                Debug.Write($"^3[vMenu] ^7Error info: {e.Message.ToString()}\r\n\r\n");
             }
             CheckedForUpdates = true;
         }

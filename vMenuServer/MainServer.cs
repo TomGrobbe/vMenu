@@ -36,19 +36,19 @@ namespace vMenuServer
                 string prefix = "[vMenu] ";
                 if (level == LogLevel.error)
                 {
-                    prefix = "^1[vMenu] [ERROR]^0 ";
+                    prefix = "^1[vMenu] [ERROR]^7 ";
                 }
                 else if (level == LogLevel.info)
                 {
-                    prefix = "^5[vMenu] [INFO]^0 ";
+                    prefix = "^5[vMenu] [INFO]^7 ";
                 }
                 else if (level == LogLevel.success)
                 {
-                    prefix = "^2[vMenu] [SUCCESS]^0 ";
+                    prefix = "^2[vMenu] [SUCCESS]^7 ";
                 }
                 else if (level == LogLevel.warning)
                 {
-                    prefix = "^3[vMenu] [WARNING]^0 ";
+                    prefix = "^3[vMenu] [WARNING]^7 ";
                 }
                 Debug.WriteLine($"{prefix}[DEBUG LOG] {data.ToString()}");
 
@@ -482,7 +482,7 @@ namespace vMenuServer
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n^1[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
-                    "Please change the folder name from '^3" + GetCurrentResourceName() + "^1' to '^2vMenu^1' (case sensitive) instead!\r\n\r\n\r\n^0");
+                    "Please change the folder name from '^3" + GetCurrentResourceName() + "^1' to '^2vMenu^1' (case sensitive) instead!\r\n\r\n\r\n^7");
                 try
                 {
                     throw InvalidNameException;
@@ -538,7 +538,7 @@ namespace vMenuServer
                 }
                 catch (JsonReaderException ex)
                 {
-                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^0Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
 
@@ -982,7 +982,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [KICK ACTION] {kickLogMesage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
-                Debug.WriteLine("^3[vMenu] [KICK]^0 " + kickLogMesage + "\n");
+                Debug.WriteLine("^3[vMenu] [KICK]^7 " + kickLogMesage + "\n");
             }
         }
     }
