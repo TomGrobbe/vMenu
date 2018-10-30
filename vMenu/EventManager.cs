@@ -148,7 +148,7 @@ namespace vMenuClient
                 var justChanged = false;
                 if (currentWeatherType != lastWeather)
                 {
-                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}");
+                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
                     if (currentWeatherType == "XMAS")
                     {
                         RequestScriptAudioBank("ICE_FOOTSTEPS", false);
@@ -174,15 +174,15 @@ namespace vMenuClient
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
                     lastWeather = currentWeatherType;
-                    SetWeatherTypeOverTime(currentWeatherType, 15f);
+                    SetWeatherTypeOverTime(currentWeatherType, 45f);
                     int tmpTimer = GetGameTimer();
-                    while (GetGameTimer() - tmpTimer < 15500) // wait 15.5 _real_ seconds
+                    while (GetGameTimer() - tmpTimer < 45500) // wait 45.5 _real_ seconds
                     {
                         await Delay(0);
                     }
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
-                    cf.Log("done changing weather type.");
+                    cf.Log("done changing weather type (duration: 45.5 seconds)");
                 }
                 if (!justChanged)
                 {

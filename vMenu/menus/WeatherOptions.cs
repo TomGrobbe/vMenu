@@ -130,18 +130,18 @@ namespace vMenuClient
                 // A weather type is selected.
                 if (index >= 2 && index <= 16)
                 {
-                    Notify.Custom($"The almighty ~g~Snail~s~ will change the weather to ~y~{weatherTypes[index - 2]}~s~.");
+                    Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 45 seconds.");
                     cf.UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
 
                 if (item == blackout)
                 {
-                    Notify.Custom($"The almighty ~g~Snail~s~ will ~y~{(!EventManager.blackoutMode ? "enable" : "disable")}~s~ blackout mode.");
+                    Notify.Custom($"Blackout mode is now {(!EventManager.blackoutMode ? "~g~enabled" : "~r~disabled")}~s~.");
                     cf.UpdateServerWeather(EventManager.currentWeatherType, !EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
                 else if (item == dynamicWeatherEnabled)
                 {
-                    Notify.Custom($"The almighty ~g~Snail~s~ will ~y~{(!EventManager.dynamicWeather ? "enable" : "disable")}~s~ dynamic weather changes.");
+                    Notify.Custom($"Dynamic weather changes are now {(!EventManager.dynamicWeather ? "~g~enabled" : "~r~disabled")}~s~.");
                     cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, !EventManager.dynamicWeather);
                 }
                 else if (item == removeclouds)
