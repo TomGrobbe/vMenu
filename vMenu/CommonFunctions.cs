@@ -1706,25 +1706,32 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
+        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions)
+        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
         {
             //uint model = modelHash;
             //Debug.Write(modelHash.ToString() + "\n");
             if (IsModelInCdimage(modelHash))
             {
-                await SaveWeaponLoadout();
+                if (keepWeapons)
+                {
+                    await SaveWeaponLoadout();
+                }
                 RequestModel(modelHash);
                 while (!HasModelLoaded(modelHash))
                 {
                     await Delay(0);
                 }
-                SetPlayerModel(PlayerId(), modelHash);
+
+                if ((uint)GetEntityModel(PlayerPedId()) != modelHash) // only change skins if the player is not yet using the new skin.
+                {
+                    SetPlayerModel(PlayerId(), modelHash);
+                }
                 SetPedDefaultComponentVariation(PlayerPedId());
 
                 if (pedCustomizationOptions.version == 1)
@@ -1759,7 +1766,10 @@ namespace vMenuClient
                     // notify user of unsupported version
                     Notify.Error("This is an unsupported saved ped version. Cannot restore appearance. :(");
                 }
-                RestoreWeaponLoadout();
+                if (keepWeapons)
+                {
+                    RestoreWeaponLoadout();
+                }
             }
             else
             {
@@ -1788,10 +1798,15 @@ namespace vMenuClient
         /// <summary>
         /// Saves the current player ped.
         /// </summary>
-        public async void SavePed()
+        public async void SavePed(string forceName = null)
         {
-            // Get the save name.
-            string name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
+            string name = forceName;
+            if (string.IsNullOrEmpty(name))
+            {
+                // Get the save name.
+                name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
+            }
+
             // If the save name is not invalid.
             if (name != "" && name != null && name != "NULL")
             {
@@ -1838,18 +1853,31 @@ namespace vMenuClient
 
                 // Try to save the data, and save the result in a variable.
                 //bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
-                bool saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
-
-                // If the save was successfull.
-                if (saveSuccessful)
+                bool saveSuccessful = false;
+                if (name == "vMenu_tmp_saved_ped")
                 {
-                    Notify.Success("Ped saved.");
+                    saveSuccessful = sm.SavePedInfo(name, data, true);
                 }
-                // Save was not successfull.
                 else
                 {
-                    Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                    saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
                 }
+
+
+                if (name != "vMenu_tmp_saved_ped") // only send a notification if the save wasn't triggered because the player died.
+                {
+                    // If the save was successfull.
+                    if (saveSuccessful)
+                    {
+                        Notify.Success("Ped saved.");
+                    }
+                    // Save was not successfull.
+                    else
+                    {
+                        Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                    }
+                }
+
             }
             // User cancelled the saving or they did not enter a valid name.
             else
@@ -1864,10 +1892,30 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public void LoadSavedPed(string savedName)
+        public void LoadSavedPed(string savedName, bool restoreWeapons)
         {
-            PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
-            SetPlayerSkin(pi.model, pi);
+            if (savedName != "vMenu_tmp_saved_ped")
+            {
+                PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+                SetPlayerSkin(pi.model, pi, restoreWeapons);
+            }
+            else
+            {
+                PedInfo pi = sm.GetSavedPedInfo(savedName);
+                SetPlayerSkin(pi.model, pi, restoreWeapons);
+                DeleteResourceKvp("vMenu_tmp_saved_ped");
+            }
+
+        }
+
+
+        public bool GetPedInfoFromBeforeDeath()
+        {
+            if (!string.IsNullOrEmpty(GetResourceKvpString("vMenu_tmp_saved_ped")))
+            {
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -1977,9 +2025,9 @@ namespace vMenuClient
         /// </summary>
         public async Task SaveWeaponLoadout()
         {
-            await Delay(1);
+            //await Delay(1);
             weaponsList.Clear();
-            await Delay(1);
+            //await Delay(1);
             foreach (var vw in ValidWeapons.Weapons)
             {
                 if (HasPedGotWeapon(PlayerPedId(), vw.Value, false))
@@ -2004,7 +2052,7 @@ namespace vMenuClient
                     });
                 }
             }
-            await Delay(1);
+            await Delay(0);
         }
 
         /// <summary>

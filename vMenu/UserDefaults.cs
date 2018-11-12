@@ -179,6 +179,18 @@ namespace vMenuClient
             get { return GetSettingsBool("miscShowPlayerBlips"); }
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
         }
+
+        public static bool MiscRestorePlayerAppearance
+        {
+            get { return GetSettingsBool("miscRestorePlayerAppearance"); }
+            set { SetSavedSettingsBool("miscRestorePlayerAppearance", value); }
+        }
+
+        public static bool MiscRestorePlayerWeapons
+        {
+            get { return GetSettingsBool("miscRestorePlayerWeapons"); }
+            set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -226,7 +238,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -338,6 +350,12 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
+
+                MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
+                prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);
+
+                MiscRestorePlayerWeapons = MainMenu.MiscSettingsMenu.RestorePlayerWeapons;
+                prefs.Add("miscRestorePlayerWeapons", MainMenu.MiscSettingsMenu.RestorePlayerWeapons);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

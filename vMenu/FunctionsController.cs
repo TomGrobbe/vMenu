@@ -74,6 +74,7 @@ namespace vMenuClient
             Tick += UpdateLocation;
             Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
+            Tick += RestorePlayerAfterBeingDead;
         }
 
         /// Task related
@@ -1016,6 +1017,44 @@ namespace vMenuClient
                     Game.PlayerPed.Task.ClearLookAt();
                     FreezeEntityPosition(PlayerPedId(), false);
                 }
+            }
+        }
+        #endregion
+        #region Restore player skin & weapons after respawning.
+        private async Task RestorePlayerAfterBeingDead()
+        {
+            if (Game.PlayerPed.IsDead)
+            {
+
+
+                if (MainMenu.MiscSettingsMenu != null)
+                {
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance)
+                    {
+                        cf.SavePed("vMenu_tmp_saved_ped");
+                    }
+
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons)
+                    {
+                        await cf.SaveWeaponLoadout();
+                    }
+
+                    while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
+                    {
+                        await Delay(0);
+                    }
+
+                    if (cf.GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance)
+                    {
+                        cf.LoadSavedPed("vMenu_tmp_saved_ped", false);
+                    }
+                    //await Delay(1500);
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons)
+                    {
+                        cf.RestoreWeaponLoadout();
+                    }
+                }
+
             }
         }
         #endregion
