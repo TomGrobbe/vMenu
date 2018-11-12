@@ -97,6 +97,8 @@ namespace vMenuClient
 
             UIMenuCheckboxItem locationBlips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map for some common locations.");
             UIMenuCheckboxItem playerBlips = new UIMenuCheckboxItem("Show Player Blips", ShowPlayerBlips, "Shows blips on the map for all players.");
+            UIMenuCheckboxItem restorePlayerAppearance = new UIMenuCheckboxItem("Restore Player Appearance", RestorePlayerAppearance, "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.");
+            UIMenuCheckboxItem restorePlayerWeapons = new UIMenuCheckboxItem("Restore Player Weapons", RestorePlayerWeapons, "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.");
 
             MainMenu.Mp.Add(connectionSubmenu);
             connectionSubmenu.RefreshIndex();
@@ -207,6 +209,15 @@ namespace vMenuClient
             {
                 menu.AddItem(clearArea);
             }
+            if (cf.IsAllowed(Permission.MSRestoreAppearance))
+            {
+                menu.AddItem(restorePlayerAppearance);
+            }
+            if (cf.IsAllowed(Permission.MSRestoreWeapons))
+            {
+                menu.AddItem(restorePlayerWeapons);
+            }
+
 
             // Always allowed
             menu.AddItem(hideRadar);
@@ -278,6 +289,14 @@ namespace vMenuClient
                 else if (item == playerBlips)
                 {
                     ShowPlayerBlips = _checked;
+                }
+                else if (item == restorePlayerAppearance)
+                {
+                    RestorePlayerAppearance = _checked;
+                }
+                else if (item == restorePlayerWeapons)
+                {
+                    RestorePlayerWeapons = _checked;
                 }
             };
 

@@ -370,7 +370,6 @@ namespace vMenuClient
             {
                 var name = item.Text.ToString();
                 cf.LoadSavedPed(name, true);
-
             };
 
             #region ped drawable list changes

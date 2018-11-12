@@ -1025,16 +1025,14 @@ namespace vMenuClient
         {
             if (Game.PlayerPed.IsDead)
             {
-
-
                 if (MainMenu.MiscSettingsMenu != null)
                 {
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance)
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
                     {
                         cf.SavePed("vMenu_tmp_saved_ped");
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons)
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
                     {
                         await cf.SaveWeaponLoadout();
                     }
@@ -1044,12 +1042,11 @@ namespace vMenuClient
                         await Delay(0);
                     }
 
-                    if (cf.GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance)
+                    if (cf.GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
                     {
                         cf.LoadSavedPed("vMenu_tmp_saved_ped", false);
                     }
-                    //await Delay(1500);
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons)
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
                     {
                         cf.RestoreWeaponLoadout();
                     }

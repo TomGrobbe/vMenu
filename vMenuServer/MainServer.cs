@@ -334,6 +334,8 @@ namespace vMenuServer
             "MSPlayerBlips",
             "MSTeleportLocations",
             "MSConnectionMenu",
+            "MSRestoreAppearance",
+            "MSRestoreWeapons",
 
             // Voice Chat
             "VCMenu",
