@@ -504,6 +504,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
                 EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
+                EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
 
                 string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
@@ -573,6 +574,19 @@ namespace vMenuServer
                 Tick += TimeLoop;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Clear the area near this point for all players.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        private void ClearAreaNearPos(float x, float y, float z)
+        {
+            TriggerClientEvent("vMenu:ClearArea", x, y, z);
+        }
+
 
         /// <summary>
         /// Disconnect the source player because they used the disconnect menu button.
@@ -582,8 +596,6 @@ namespace vMenuServer
         {
             src.Drop("You disconnected yourself.");
         }
-        #endregion
-
         #region Manage weather and time changes.
         /// <summary>
         /// Loop used for syncing and keeping track of the time in-game.

@@ -40,6 +40,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
+            EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
 
             Tick += WeatherSync;
             Tick += TimeSync;
@@ -132,7 +133,6 @@ namespace vMenuClient
             cf.Log("fuck you.");
             ForceSocialClubUpdate();
         }
-
 
         /// <summary>
         /// OnTick loop to keep the weather synced.
@@ -309,6 +309,18 @@ namespace vMenuClient
         private void SummonPlayer(string targetPlayer)
         {
             cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
+        }
+
+        /// <summary>
+        /// Clear the area around the provided x, y, z coordinates. Clears everything like (destroyed) objects, peds, (ai) vehicles, etc.
+        /// Also restores broken streetlights, etc.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        private void ClearAreaNearPos(float x, float y, float z)
+        {
+            ClearAreaOfEverything(x, y, z, 100f, false, false, false, false);
         }
     }
 }
