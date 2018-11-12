@@ -63,7 +63,6 @@ namespace vMenuClient
         /// <param name="modelName">The model name</param>
         /// <returns></returns>
         public bool DoesModelExist(string modelName) => DoesModelExist((uint)GetHashKey(modelName));
-
         /// <summary>
         /// Does this model exist?
         /// </summary>
@@ -466,25 +465,38 @@ namespace vMenuClient
             // If we take the pill, remove any weapons in our hands.
             if (takePill)
             {
-                SetPedCurrentWeaponVisible(PlayerPedId(), false, true, false, false);
-                await Delay(500);
+                SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_unarmed"), true);
             }
-
             // Otherwise, give the ped a gun.
             else
             {
-                GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("WEAPON_PISTOL"), 1, false, true);
-                await Delay(500);
+                GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
+                SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), true);
                 SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
             }
+
             // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
-            TaskPlayAnim(PlayerPedId(), "mp_suicide", (takePill ? "pill" : "pistol"), 8.0f, 0f, -1, 0, 0.0f, false, false, false);
+            ClearPedTasks(PlayerPedId());
+            TaskPlayAnim(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
 
-            // Wait before killing the player (1700 ms for the gun animation, and 5000 ms for the pil animation to finish).
-            await Delay(takePill ? 5000 : 1700);
-
-            // Kill the player.
-            SetEntityHealth(PlayerPedId(), 0);
+            bool shot = false;
+            while (true)
+            {
+                float time = GetEntityAnimCurrentTime(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"));
+                if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
+                {
+                    SetPedShootsAtCoord(PlayerPedId(), 0f, 0f, 0f, false);
+                    shot = true;
+                }
+                if (time > (takePill ? 0.536f : 0.365f))
+                {
+                    // Kill the player.
+                    ClearEntityLastDamageEntity(PlayerPedId());
+                    SetEntityHealth(PlayerPedId(), 0);
+                    break;
+                }
+                await Delay(0);
+            }
 
         }
         #endregion
