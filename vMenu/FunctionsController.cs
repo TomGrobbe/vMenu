@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -837,6 +837,13 @@ namespace vMenuClient
                             DrawSprite("mpleaderboard", "leaderboard_audio_mute", 0.008f, 0.985f, voiceIndicatorMutedWidth, voiceIndicatorHeight, 0f, 255, 55, 0, 255);
                         }
 
+                    }
+                    else
+                    {
+                        if (HasStreamedTextureDictLoaded("mpleaderboard"))
+                        {
+                            SetStreamedTextureDictAsNoLongerNeeded("mpleaderboard");
+                        }
                     }
                 }
                 else

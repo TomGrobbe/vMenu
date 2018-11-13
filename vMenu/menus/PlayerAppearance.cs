@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1440,6 +1440,7 @@ namespace vMenuClient
                     await BaseScript.Delay(0);
                 }
                 SetPlayerModel(PlayerId(), model);
+                SetModelAsNoLongerNeeded((uint)model);
                 SetPedDefaultComponentVariation(PlayerPedId());
                 SetPedHeadBlendData(PlayerPedId(), male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);
                 if (!male)

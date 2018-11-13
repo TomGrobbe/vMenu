@@ -497,6 +497,8 @@ namespace vMenuClient
                 }
                 await Delay(0);
             }
+            Log("cleanup");
+            RemoveAnimDict("mp_suicide");
 
         }
         #endregion
@@ -1778,6 +1780,7 @@ namespace vMenuClient
                 {
                     RestoreWeaponLoadout();
                 }
+                SetModelAsNoLongerNeeded(modelHash);
             }
             else
             {
