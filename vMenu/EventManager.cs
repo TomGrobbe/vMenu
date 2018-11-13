@@ -13,15 +13,15 @@ namespace vMenuClient
     {
         // common functions.
         private CommonFunctions cf = MainMenu.Cf;
-        public static string currentWeatherType = "CLEAR";
+        public static string currentWeatherType = GetSettingsString(Setting.vmenu_default_weather);
         public static bool blackoutMode = false;
-        public static bool dynamicWeather = true;
+        public static bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private string lastWeather = currentWeatherType;
-        public static int currentHours = 9;
-        public static int currentMinutes = 0;
-        public static bool freezeTime = false;
+        public static int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
+        public static int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
+        public static bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
         private int minuteTimer = GetGameTimer();
-        private int minuteClockSpeed = 8000;
+        private int minuteClockSpeed = 2000;
 
         /// <summary>
         /// Constructor.

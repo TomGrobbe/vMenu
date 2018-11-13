@@ -64,18 +64,17 @@ namespace vMenuServer
 
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
-        private int currentHours = 9;
-        private int currentMinutes = 0;
-        private int minuteClockSpeed = 2000;
+        private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
+        private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
+        private int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
         private long minuteTimer = GetGameTimer();
         private long timeSyncCooldown = GetGameTimer();
-        private string currentWeather = "CLEAR";
-        private bool dynamicWeather = true;
+        private string currentWeather = GetSettingsString(Setting.vmenu_default_weather);
+        private bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private bool blackout = false;
         private bool resetBlackout = false;
-        private bool freezeTime = false;
-        private int dynamicWeatherMinutes = 10;
-        //private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
+        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
+        private int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
         private long gameTimer = GetGameTimer();
         private long weatherTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
@@ -100,6 +99,24 @@ namespace vMenuServer
             "Stripey",
             "horsey",
             "shower",
+        };
+        private List<string> weatherTypes = new List<string>()
+        {
+            "EXTRASUNNY",
+            "CLEAR",
+            "NEUTRAL",
+            "SMOG",
+            "FOGGY",
+            "CLOUDS",
+            "OVERCAST",
+            "CLEARING",
+            "RAIN",
+            "THUNDER",
+            "BLIZZARD",
+            "SNOW",
+            "SNOWLIGHT",
+            "XMAS",
+            "HALLOWEEN"
         };
 
         public List<string> aceNames = new List<string>()
@@ -347,24 +364,6 @@ namespace vMenuServer
         public List<string> addonVehicles = new List<string>();
         public List<string> addonPeds = new List<string>();
         public List<string> addonWeapons = new List<string>();
-        private List<string> weatherTypes = new List<string>()
-        {
-            "EXTRASUNNY",
-            "CLEAR",
-            "NEUTRAL",
-            "SMOG",
-            "FOGGY",
-            "CLOUDS",
-            "OVERCAST",
-            "CLEARING",
-            "RAIN",
-            "THUNDER",
-            "BLIZZARD",
-            "SNOW",
-            "SNOWLIGHT",
-            "XMAS",
-            "HALLOWEEN"
-        };
 
         #region Constructor
         /// <summary>
