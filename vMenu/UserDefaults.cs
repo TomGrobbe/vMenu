@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -291,6 +291,19 @@ namespace vMenuClient
         private static void SetSavedSettingsFloat(string kvpString, float newValue)
         {
             SetResourceKvpFloat(SETTINGS_PREFIX + kvpString, newValue);
+        }
+
+
+        private static int GetSettingsInt(string kvpString)
+        {
+            // Get the current value.
+            int savedValue = GetResourceKvpInt($"{SETTINGS_PREFIX}{kvpString}");
+            return savedValue;
+        }
+
+        private static void SetSavedSettingsInt(string kvpString, int newValue)
+        {
+            SetResourceKvpInt(SETTINGS_PREFIX + kvpString, newValue);
         }
         #endregion
 
