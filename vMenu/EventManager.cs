@@ -191,6 +191,9 @@ namespace vMenuClient
                     SetWeatherTypeNowPersist(currentWeatherType);
                 }
                 SetBlackout(blackoutMode);
+                SetWind(0f);
+                SetWindDirection(0f);
+                SetWindSpeed(0f);
             }
         }
 
