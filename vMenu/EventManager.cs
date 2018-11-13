@@ -41,7 +41,6 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
             EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
-
             Tick += WeatherSync;
             Tick += TimeSync;
         }

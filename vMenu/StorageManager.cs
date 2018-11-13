@@ -90,7 +90,7 @@ namespace vMenuClient
         /// <param name="vehicleInfo"></param>
         /// <param name="overrideOldVersion"></param>
         /// <returns></returns>
-        public bool SaveVehicleInfo(string saveName, CommonFunctions.VehicleInfo vehicleInfo, bool overrideOldVersion)
+        public static bool SaveVehicleInfo(string saveName, CommonFunctions.VehicleInfo vehicleInfo, bool overrideOldVersion)
         {
             if ((GetResourceKvpString(saveName) ?? "NULL") == "NULL" || overrideOldVersion)
             {
@@ -104,6 +104,8 @@ namespace vMenuClient
 
                     // save
                     SetResourceKvp(saveName, json);
+                    //Debug.WriteLine(GetResourceKvpString(saveName).ToString());
+                    //Debug.WriteLine(saveName);
 
                     // confirm
                     return GetResourceKvpString(saveName) == json;
@@ -125,7 +127,7 @@ namespace vMenuClient
             dynamic data = JsonConvert.DeserializeObject(json);
             if (data.ContainsKey("version"))
             {
-                MainMenu.Cf.Log("New Version: " + data["version"] + "\n");
+                //MainMenu.Cf.Log("New Version: " + data["version"] + "\n");
                 var colors = new Dictionary<string, int>();
                 foreach (Newtonsoft.Json.Linq.JProperty c in data["colors"])
                 {
@@ -163,7 +165,7 @@ namespace vMenuClient
             }
             else
             {
-                MainMenu.Cf.Log("Old: " + json + "\n");
+                //MainMenu.Cf.Log("Old: " + json + "\n");
                 var dict = MainMenu.Cf.JsonToDictionary(json);
                 var colors = new Dictionary<string, int>()
                 {
@@ -227,7 +229,7 @@ namespace vMenuClient
                 vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
                 SaveVehicleInfo(saveName, vi, true);
             }
-            MainMenu.Cf.Log(json + "\n");
+            //MainMenu.Cf.Log(json + "\n");
             return vi;
         }
 

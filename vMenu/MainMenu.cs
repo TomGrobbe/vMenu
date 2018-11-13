@@ -139,7 +139,6 @@ namespace vMenuClient
             }
             Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
 
-            //permissionsSetupDone = true;
             VehicleSpawner.allowedCategories = new List<bool>()
             {
                 Cf.IsAllowed(Permission.VSCompacts),
@@ -168,32 +167,6 @@ namespace vMenuClient
         }
         #endregion
 
-        #region set settings
-        ///// <summary>
-        ///// Sets the settings received from the server.
-        ///// </summary>
-        ///// <param name="options"></param>
-        //public static void SetOptions(dynamic options)
-        //{
-        //    //MenuOptions = new Dictionary<string, string>();
-        //    //foreach (dynamic option in options)
-        //    //{
-        //    //    MenuOptions.Add(option.Key.ToString(), option.Value.ToString());
-        //    //}
-        //    //Cf.Log($"Settings loaded: {JsonConvert.SerializeObject(MenuOptions)}");
-
-        //    //MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
-        //    //NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
-        //    //optionsSetupDone = true;
-        //    //if (MenuOptions.ContainsKey("disableSync"))
-        //    //{
-        //    //    if (MenuOptions["disableSync"] == "true")
-        //    //    {
-        //    //        EventManager.enableSync = false;
-        //    //    }
-        //    //}
-        //}
-        #endregion
 
         #region Process Menu Buttons
         /// <summary>
@@ -703,6 +676,13 @@ namespace vMenuClient
                 UIMenuItem button = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
+                Menu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == button)
+                    {
+                        SavedVehiclesMenu.UpdateMenuAvailableCategories();
+                    }
+                };
             }
 
             // Add the player appearance menu.

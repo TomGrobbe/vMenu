@@ -984,7 +984,7 @@ namespace vMenuClient
                         {
                             // Save everything from the dictionary into the client's kvp storage.
                             // If the save was successfull:
-                            if (sm.SaveVehicleInfo("veh_" + saveName, vi, false))
+                            if (StorageManager.SaveVehicleInfo("veh_" + saveName, vi, false))
                             {
                                 Notify.Success($"Vehicle {saveName} saved.");
                             }
@@ -1003,7 +1003,7 @@ namespace vMenuClient
                     // We need to update an existing slot.
                     else
                     {
-                        sm.SaveVehicleInfo("veh_" + updateExistingSavedVehicleName, vi, true);
+                        StorageManager.SaveVehicleInfo("veh_" + updateExistingSavedVehicleName, vi, true);
                     }
 
                 }
@@ -1018,6 +1018,13 @@ namespace vMenuClient
             {
                 Notify.Error(CommonErrors.NoVehicle);
             }
+
+            // update the saved vehicles menu list to reflect the new saved car.
+            if (MainMenu.SavedVehiclesMenu != null)
+            {
+                MainMenu.SavedVehiclesMenu.UpdateMenuAvailableCategories();
+            }
+
         }
         #endregion
 
@@ -1050,6 +1057,7 @@ namespace vMenuClient
                 // If it exists then the key to the list.
                 if (vehString != "" && vehString != null && vehString != "NULL")
                 {
+                    //Debug.WriteLine(vehString);
                     savedVehicleNames.Add(vehString);
                 }
                 // Otherwise stop.
@@ -1481,7 +1489,7 @@ namespace vMenuClient
                 vi.windowTint = int.Parse(dict["windowTint"]);
                 vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
 
-                sm.SaveVehicleInfo(saveName, vi, true);
+                StorageManager.SaveVehicleInfo(saveName, vi, true);
             }
             else
             {
