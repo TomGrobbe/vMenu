@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -2549,7 +2549,7 @@ namespace vMenuClient
                     }
 
 
-                    UIMenuListItem propTextures = new UIMenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                    UIMenuListItem propTextures = new UIMenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                     propsMenuListItems.Add(propTextures, realProp);
                     pedTextures.AddItem(propTextures);
 
