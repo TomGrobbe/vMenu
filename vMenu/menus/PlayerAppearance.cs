@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,7 @@ namespace vMenuClient
         public static Dictionary<string, uint> AddonPeds;
 
         public List<UIMenu> mpCharMenus = new List<UIMenu>();
-        public static int ClothingAnimationType { get; private set; } = 0;
+        public static int ClothingAnimationType { get; private set; } = UserDefaults.PAClothingAnimationType;
 
         #region Mp character struct
         public struct MpCharacterStyle
@@ -185,7 +185,7 @@ namespace vMenuClient
             UIMenuListItem walkingStyle = new UIMenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
                 "You need to re-apply this each time you change player model or load a saved ped.");
             List<dynamic> clothingGlowAnimations = new List<dynamic>() { "On", "Off", "Fade", "Flash" };
-            UIMenuListItem clothingGlowType = new UIMenuListItem("Illuminated Clothing Style", clothingGlowAnimations, 0, "Set the style of the animation used on your player's illuminated clothing items.");
+            UIMenuListItem clothingGlowType = new UIMenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType, "Set the style of the animation used on your player's illuminated clothing items.");
 
             // Add items to the mneu.
             menu.AddItem(mpCharMenuBtn);

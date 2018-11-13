@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -219,6 +219,13 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Player Appearance
+        public static int PAClothingAnimationType
+        {
+            get { return GetSettingsInt("clothingAnimationType"); }
+            set { SetSavedSettingsInt("clothingAnimationType", value >= 0 ? value : 0); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -420,6 +427,12 @@ namespace vMenuClient
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
                 prefs.Add("weaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+            }
+
+            if (PlayerAppearance.ClothingAnimationType >= 0)
+            {
+                PAClothingAnimationType = PlayerAppearance.ClothingAnimationType;
+                prefs.Add("clothingAnimationType", PlayerAppearance.ClothingAnimationType);
             }
 
             Notify.Success("Your settings have been saved.");
