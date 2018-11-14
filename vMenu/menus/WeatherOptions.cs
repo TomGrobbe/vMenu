@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,8 +29,8 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            UIMenuItem dynamicWeatherEnabled = new UIMenuItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.");
-            UIMenuItem blackout = new UIMenuItem("Toggle Blackout", "This disables or enables all lights across the map. Regardless of this setting, there will always be a very rare chance during thunder storms that the \"power\" will cut out (only lasting 2 minutes max).");
+            dynamicWeatherEnabled = new UIMenuCheckboxItem("Toggle Dynamic Weather", EventManager.dynamicWeather, "Enable or disable dynamic weather changes.");
+            blackout = new UIMenuCheckboxItem("Toggle Blackout", EventManager.blackoutMode, "This disables or enables all lights across the map.");
             UIMenuItem extrasunny = new UIMenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!");
             UIMenuItem clear = new UIMenuItem("Clear", "Set the weather to ~y~clear~s~!");
             UIMenuItem neutral = new UIMenuItem("Neutral", "Set the weather to ~y~neutral~s~!");
@@ -132,18 +132,7 @@ namespace vMenuClient
                     Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 45 seconds.");
                     cf.UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
-
-                if (item == blackout)
-                {
-                    Notify.Custom($"Blackout mode is now {(!EventManager.blackoutMode ? "~g~enabled" : "~r~disabled")}~s~.");
-                    cf.UpdateServerWeather(EventManager.currentWeatherType, !EventManager.blackoutMode, EventManager.dynamicWeather);
-                }
-                else if (item == dynamicWeatherEnabled)
-                {
-                    Notify.Custom($"Dynamic weather changes are now {(!EventManager.dynamicWeather ? "~g~enabled" : "~r~disabled")}~s~.");
-                    cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, !EventManager.dynamicWeather);
-                }
-                else if (item == removeclouds)
+                if (item == removeclouds)
                 {
                     cf.ModifyClouds(true);
                 }
@@ -151,10 +140,26 @@ namespace vMenuClient
                 {
                     cf.ModifyClouds(false);
                 }
-
             };
 
+            menu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                if (item == dynamicWeatherEnabled)
+                {
+                    EventManager.dynamicWeather = _checked;
+                    Notify.Custom($"Dynamic weather changes are now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
+                    cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, _checked);
+                }
+                else if (item == blackout)
+                {
+                    EventManager.blackoutMode = _checked;
+                    Notify.Custom($"Blackout mode is now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
+                    cf.UpdateServerWeather(EventManager.currentWeatherType, _checked, EventManager.dynamicWeather);
+                }
+            };
         }
+
+
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.

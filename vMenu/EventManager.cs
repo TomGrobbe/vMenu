@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -270,6 +270,11 @@ namespace vMenuClient
             currentWeatherType = newWeather;
             blackoutMode = blackoutEnabled;
             dynamicWeather = dynamicChanges;
+            if (MainMenu.WeatherOptionsMenu != null)
+            {
+                MainMenu.WeatherOptionsMenu.dynamicWeatherEnabled.Checked = dynamicChanges;
+                MainMenu.WeatherOptionsMenu.blackout.Checked = blackoutEnabled;
+            }
         }
 
         /// <summary>

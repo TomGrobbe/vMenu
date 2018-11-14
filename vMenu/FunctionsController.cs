@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -457,9 +457,26 @@ namespace vMenuClient
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
-                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
+                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { if (mi.GetType() != typeof(UIMenuCheckboxItem)) mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
                     var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
                     item.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+                    if (cf.IsAllowed(Permission.WODynamic))
+                    {
+                        UIMenuCheckboxItem dynWeatherTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        dynWeatherTmp.Checked = EventManager.dynamicWeather;
+                        if (cf.IsAllowed(Permission.WOBlackout))
+                        {
+                            UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[1];
+                            blackoutTmp.Checked = EventManager.blackoutMode;
+                        }
+                    }
+                    else if (cf.IsAllowed(Permission.WOBlackout))
+                    {
+                        UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        blackoutTmp.Checked = EventManager.blackoutMode;
+                    }
+
+
                 }
             }
         }
