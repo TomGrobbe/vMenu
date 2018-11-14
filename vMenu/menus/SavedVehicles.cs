@@ -124,6 +124,7 @@ namespace vMenuClient
 
             selectedVehicleMenu.OnMenuClose += (sender) =>
             {
+                selectedVehicleMenu.RefreshIndex();
                 MainMenu.Mp.CloseAllMenus();
                 if (lastMenu != null)
                 {
