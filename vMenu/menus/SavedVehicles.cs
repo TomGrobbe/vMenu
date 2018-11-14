@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -281,7 +281,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    UIMenuItem missingVehItem = new UIMenuItem(sv.Key.Substring(4), "This model could no be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.");
+                    UIMenuItem missingVehItem = new UIMenuItem(sv.Key.Substring(4), "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.");
                     missingVehItem.SetRightLabel("(" + sv.Value.name + ")");
                     missingVehItem.Enabled = false;
                     missingVehItem.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
