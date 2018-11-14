@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1115,7 +1115,7 @@ namespace vMenuClient
                                     result = 1f;
                                 }
                             }
-                            
+
                             this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
                         }
                     }

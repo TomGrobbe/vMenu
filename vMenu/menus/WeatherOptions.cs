@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,10 +14,9 @@ namespace vMenuClient
         // Variables
         private UIMenu menu;
         private CommonFunctions cf = MainMenu.Cf;
-
         public static Dictionary<string, UIMenuItem> weatherHashMenuIndex = new Dictionary<string, UIMenuItem>();
-
-        public bool DynamicWeatherEnabled { get; private set; } = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_enable_dynamic_weather);
+        public UIMenuCheckboxItem dynamicWeatherEnabled;
+        public UIMenuCheckboxItem blackout;
 
         private void CreateMenu()
         {

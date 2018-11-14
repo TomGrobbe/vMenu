@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -150,8 +150,6 @@ namespace vMenuClient
                     cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
                     if (currentWeatherType == "XMAS")
                     {
-                        //RequestScriptAudioBank("ICE_FOOTSTEPS", false);
-                        //RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
                         if (!HasNamedPtfxAssetLoaded("core_snow"))
                         {
                             RequestNamedPtfxAsset("core_snow");
@@ -169,8 +167,6 @@ namespace vMenuClient
                         SetForceVehicleTrails(false);
                         SetForcePedFootstepsTracks(false);
                         RemoveNamedPtfxAsset("core_snow");
-                        //ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
-                        //ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
                     }
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();

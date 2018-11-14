@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,11 +22,6 @@ namespace vMenuClient
 
         private bool firstTick = true;
         public static bool PreSetupComplete = false;
-        //private static bool permissionsSetupDone = false;
-        //private static bool optionsSetupDone = false;
-        //public static bool addonCarsLoaded = false;
-        //public static bool addonPedsLoaded = false;
-        //public static bool addonWeaponsLoaded = false;
 
         private static int MenuToggleKey = 244; // M by default (InteractionMenu)
         private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
@@ -56,8 +51,6 @@ namespace vMenuClient
         public static bool EnableExperimentalFeatures = true;//(GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
         public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
-
-        //public static Dictionary<string, string> MenuOptions { get; private set; }
 
         public static bool DisableControls { get; set; } = false;
         private UIMenu currentMenu = null;
@@ -383,7 +376,6 @@ namespace vMenuClient
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
-                //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
 
                 // Wait until the data is received and the player's name is loaded correctly.
                 while (!PreSetupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
