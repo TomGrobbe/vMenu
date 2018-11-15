@@ -919,7 +919,8 @@ namespace vMenuClient
                 if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && cf.IsAllowed(Permission.WPNoReload))
                 {
                     // Disable reloading.
-                    PedSkipNextReloading(PlayerPedId());
+                    //PedSkipNextReloading(PlayerPedId());
+                    SetAmmoInClip(PlayerPedId(), (uint)Game.PlayerPed.Weapons.Current.Hash, 5);
                 }
 
                 // Enable/disable infinite ammo.

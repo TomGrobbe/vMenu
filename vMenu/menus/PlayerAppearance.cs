@@ -1008,6 +1008,7 @@ namespace vMenuClient
                 {
                     SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, index);
                     currentCharacter.HairHighlightColor = index;
+                    
                 }
             };
             #endregion
