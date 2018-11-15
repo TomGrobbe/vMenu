@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1908,11 +1908,13 @@ namespace vMenuClient
             if (savedName != "vMenu_tmp_saved_ped")
             {
                 PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+                Log(JsonConvert.SerializeObject(pi));
                 SetPlayerSkin(pi.model, pi, restoreWeapons);
             }
             else
             {
                 PedInfo pi = sm.GetSavedPedInfo(savedName);
+                Log(JsonConvert.SerializeObject(pi));
                 SetPlayerSkin(pi.model, pi, restoreWeapons);
                 DeleteResourceKvp("vMenu_tmp_saved_ped");
             }
