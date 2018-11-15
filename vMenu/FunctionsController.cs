@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -513,11 +513,12 @@ namespace vMenuClient
                         $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(PlayerPedId()), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
                 }
 
-                // Hide hud.
-                if (MainMenu.MiscSettingsMenu.HideHud)
-                {
-                    HideHudAndRadarThisFrame();
-                }
+                //// Hide hud.
+                //if (MainMenu.MiscSettingsMenu.HideHud)
+                //{
+                //    //HideHudAndRadarThisFrame();
+                //    DisplayHud(false);
+                //}
 
                 // Hide radar.
                 if (MainMenu.MiscSettingsMenu.HideRadar)
@@ -732,57 +733,60 @@ namespace vMenuClient
         /// </summary>
         private void ShowLocation()
         {
-            // Create the default prefix.
-            var prefix = "~s~";
-
-            // If the vehicle node is further away than 1400f, then the player is not near a valid road.
-            // So we set the prefix to "Near " (<streetname>).
-            if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+            if (!IsPauseMenuActive() && !IsPauseMenuRestarting() && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsWarningMessageActive() && !IsHudHidden())
             {
-                prefix = "~m~Near ~s~";
-            }
+                // Create the default prefix.
+                var prefix = "~s~";
 
-            string headingCharacter = "";
+                // If the vehicle node is further away than 1400f, then the player is not near a valid road.
+                // So we set the prefix to "Near " (<streetname>).
+                if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+                {
+                    prefix = "~m~Near ~s~";
+                }
 
-            // Heading Facing North
-            if (heading > 320 || heading < 45)
-            {
-                headingCharacter = "N";
-            }
-            // Heading Facing West
-            else if (heading >= 45 && heading <= 135)
-            {
-                headingCharacter = "W";
-            }
-            // Heading Facing South
-            else if (heading > 135 && heading < 225)
-            {
-                headingCharacter = "S";
-            }
-            // Heading Facing East
-            else
-            {
-                headingCharacter = "E";
-            }
+                string headingCharacter = "";
 
-            // Draw the street name + crossing.
-            cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
-            // Draw the zone name.
-            cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
+                // Heading Facing North
+                if (heading > 320 || heading < 45)
+                {
+                    headingCharacter = "N";
+                }
+                // Heading Facing West
+                else if (heading >= 45 && heading <= 135)
+                {
+                    headingCharacter = "W";
+                }
+                // Heading Facing South
+                else if (heading > 135 && heading < 225)
+                {
+                    headingCharacter = "S";
+                }
+                // Heading Facing East
+                else
+                {
+                    headingCharacter = "E";
+                }
 
-            // Draw the left border for the heading character.
-            cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
-            // Draw the heading character.
-            cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
-            // Draw the right border for the heading character.
-            cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+                // Draw the street name + crossing.
+                cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
+                // Draw the zone name.
+                cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
 
-            // Get and draw the time.
-            var tth = GetClockHours();
-            var ttm = GetClockMinutes();
-            var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
-            var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-            cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+                // Draw the left border for the heading character.
+                cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
+                // Draw the heading character.
+                cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
+                // Draw the right border for the heading character.
+                cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+
+                // Get and draw the time.
+                var tth = GetClockHours();
+                var ttm = GetClockMinutes();
+                var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
+                var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
+                cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+            }
         }
         #endregion
         #endregion

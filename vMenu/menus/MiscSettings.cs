@@ -244,6 +244,7 @@ namespace vMenuClient
                 else if (item == hideHud)
                 {
                     HideHud = _checked;
+                    DisplayHud(!_checked);
                 }
                 else if (item == hideRadar)
                 {
