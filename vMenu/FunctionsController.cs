@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1098,75 +1098,76 @@ namespace vMenuClient
             else
             {
                 DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
-            }
 
-            foreach (Player player in new PlayerList())
-            {
-                Ped p = player.Character;
-                if (p != null && p.Exists() && !p.IsDead)
+                foreach (Player player in new PlayerList())
                 {
-                    if (DecorExistOn(p.Handle, clothingAnimationDecor))
+                    Ped p = player.Character;
+                    if (p != null && p.Exists() && !p.IsDead)
                     {
-                        int decorVal = DecorGetInt(p.Handle, clothingAnimationDecor);
-                        if (decorVal == 0) // on solid/no animation.
+                        if (DecorExistOn(p.Handle, clothingAnimationDecor))
                         {
-                            this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 1f);
-                        }
-                        else if (decorVal == 1) // off.
-                        {
-                            this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 0f);
-                        }
-                        else if (decorVal == 2) // fade.
-                        {
-                            this.SetPedIlluminatedClothingGlowIntensity(p.Handle, clothingOpacity);
-                        }
-                        else if (decorVal == 3) // flash.
-                        {
-                            float result = 0f;
-                            if (clothingAnimationReverse)
+                            int decorVal = DecorGetInt(p.Handle, clothingAnimationDecor);
+                            if (decorVal == 0) // on solid/no animation.
                             {
-                                if ((clothingOpacity >= 0f && clothingOpacity <= 0.25f) || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
-                                {
-                                    result = 1f;
-                                }
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 1f);
                             }
-                            else
+                            else if (decorVal == 1) // off.
                             {
-                                if ((clothingOpacity >= 0.25f && clothingOpacity <= 0.5f) || (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
-                                {
-                                    result = 1f;
-                                }
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 0f);
                             }
-
-                            this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
+                            else if (decorVal == 2) // fade.
+                            {
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, clothingOpacity);
+                            }
+                            else if (decorVal == 3) // flash.
+                            {
+                                float result = 0f;
+                                if (clothingAnimationReverse)
+                                {
+                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.25f) || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
+                                    {
+                                        result = 1f;
+                                    }
+                                }
+                                else
+                                {
+                                    if ((clothingOpacity >= 0.25f && clothingOpacity <= 0.5f) || (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
+                                    {
+                                        result = 1f;
+                                    }
+                                }
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
+                            }
                         }
                     }
                 }
-            }
-
-
-
-
-            if (clothingAnimationReverse)
-            {
-                clothingOpacity -= 0.05f;
-                if (clothingOpacity < 0f)
+                if (clothingAnimationReverse)
                 {
-                    clothingOpacity = 0f;
-                    clothingAnimationReverse = false;
+                    clothingOpacity -= 0.05f;
+                    if (clothingOpacity < 0f)
+                    {
+                        clothingOpacity = 0f;
+                        clothingAnimationReverse = false;
+                    }
+                }
+                else
+                {
+                    clothingOpacity += 0.05f;
+                    if (clothingOpacity > 1f)
+                    {
+                        clothingOpacity = 1f;
+                        clothingAnimationReverse = true;
+                    }
+                }
+                int timer = GetGameTimer();
+                while (GetGameTimer() - timer < 100)
+                {
+                    await Delay(0);
                 }
             }
-            else
-            {
-                clothingOpacity += 0.05f;
-                if (clothingOpacity > 1f)
-                {
-                    clothingOpacity = 1f;
-                    clothingAnimationReverse = true;
-                }
-            }
-            await Delay(100);
         }
+
+
         private void SetPedIlluminatedClothingGlowIntensity(int ped, float intensity)
         {
             CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x4E90D746056E273D, ped, intensity);
