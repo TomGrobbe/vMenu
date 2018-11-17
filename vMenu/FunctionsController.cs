@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -646,13 +646,46 @@ namespace vMenuClient
                                 {
                                     if (killer.Exists())
                                     {
-                                        foreach (Player playerKiller in pl)
+                                        if (killer.Model.IsPed)
                                         {
-                                            if (playerKiller.Character.Handle == killer.Handle)
+                                            bool found = false;
+                                            foreach (Player playerKiller in pl)
                                             {
-                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
-                                                break;
+                                                if (playerKiller.Character.Handle == killer.Handle)
+                                                {
+                                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                    found = true;
+                                                    break;
+                                                }
                                             }
+                                            if (!found)
+                                            {
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                            }
+                                        }
+                                        else if (killer.Model.IsVehicle)
+                                        {
+                                            bool found = false;
+                                            foreach (Player playerKiller in pl)
+                                            {
+                                                if (playerKiller.Character.IsInVehicle())
+                                                {
+                                                    if (playerKiller.Character.CurrentVehicle.Handle == killer.Handle)
+                                                    {
+                                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if (!found)
+                                            {
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
                                         }
                                     }
                                     else
