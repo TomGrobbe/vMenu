@@ -915,6 +915,8 @@ namespace vMenuServer
             {
                 TriggerClientEvent(player, "vMenu:OutdatedResource");
             }
+            await Delay(8000);
+            TriggerClientEvent("vMenu:updatePedDecors");
         }
 
         private string GetRealAceName(string inputString)

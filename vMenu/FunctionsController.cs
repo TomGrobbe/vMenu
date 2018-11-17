@@ -45,7 +45,7 @@ namespace vMenuClient
         private const float voiceIndicatorWidth = 0.02f;
         private const float voiceIndicatorHeight = 0.041f;
         private const float voiceIndicatorMutedWidth = voiceIndicatorWidth + 0.0021f;
-        private const string clothingAnimationDecor = "clothing_animation_type";
+        public const string clothingAnimationDecor = "clothing_animation_type";
         private bool clothingAnimationReverse = false;
         private float clothingOpacity = 1f;
 
@@ -1100,12 +1100,13 @@ namespace vMenuClient
             else
             {
                 DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
-
                 foreach (Player player in new PlayerList())
                 {
+
                     Ped p = player.Character;
                     if (p != null && p.Exists() && !p.IsDead)
                     {
+                        //cf.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
                         if (DecorExistOn(p.Handle, clothingAnimationDecor))
                         {
                             int decorVal = DecorGetInt(p.Handle, clothingAnimationDecor);
@@ -1126,14 +1127,14 @@ namespace vMenuClient
                                 float result = 0f;
                                 if (clothingAnimationReverse)
                                 {
-                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.25f) || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
+                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.5f))// || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
                                     {
                                         result = 1f;
                                     }
                                 }
                                 else
                                 {
-                                    if ((clothingOpacity >= 0.25f && clothingOpacity <= 0.5f) || (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
+                                    if ((clothingOpacity >= 0.5f && clothingOpacity <= 1.0f))//|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
                                     {
                                         result = 1f;
                                     }
@@ -1141,6 +1142,14 @@ namespace vMenuClient
                                 this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
                             }
                         }
+                        //else
+                        //{
+                        //    DecorRemove(p.Handle, clothingAnimationDecor);
+                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
+                        //    await Delay(0);
+                        //    DecorRemove(p.Handle, clothingAnimationDecor);
+                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
+                        //}
                     }
                 }
                 if (clothingAnimationReverse)
@@ -1162,11 +1171,12 @@ namespace vMenuClient
                     }
                 }
                 int timer = GetGameTimer();
-                while (GetGameTimer() - timer < 100)
+                while (GetGameTimer() - timer < 25)
                 {
                     await Delay(0);
                 }
             }
+            DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
         }
 
 

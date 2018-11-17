@@ -41,6 +41,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
             EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
+            EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
@@ -327,6 +328,15 @@ namespace vMenuClient
         private void ClearAreaNearPos(float x, float y, float z)
         {
             ClearAreaOfEverything(x, y, z, 100f, false, false, false, false);
+        }
+
+        private async void UpdatePedDecors()
+        {
+            await Delay(1000);
+            int backup = PlayerAppearance.ClothingAnimationType;
+            PlayerAppearance.ClothingAnimationType = -1;
+            await Delay(100);
+            PlayerAppearance.ClothingAnimationType = backup;
         }
     }
 }

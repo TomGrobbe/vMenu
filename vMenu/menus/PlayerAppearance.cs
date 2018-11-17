@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,6 @@ namespace vMenuClient
         public static Dictionary<string, uint> AddonPeds;
 
         public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
-        public static int ClothingAnimationType { get; private set; } = UserDefaults.PAClothingAnimationType;
 
         /*
         
