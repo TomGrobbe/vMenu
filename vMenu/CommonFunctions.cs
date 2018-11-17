@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,47 +95,40 @@ namespace vMenuClient
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveToWp(int style = 1074528293)
+        public void DriveToWp(int style = 0)
         {
-            if (driveWanderTaskActive || driveToWpTaskActive)
-            {
-                ClearPedTasks(PlayerPedId());
-                driveWanderTaskActive = false;
-                driveToWpTaskActive = false;
-            }
-            else
-            {
-                driveToWpTaskActive = true;
-                var waypoint = World.WaypointPosition;
-                var veh = GetVehicle();
-                var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 1000f);
-                SetDriverAggressiveness(PlayerPedId(), 0f);
-                //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
-                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
-            }
+
+            ClearPedTasks(PlayerPedId());
+            driveWanderTaskActive = false;
+            driveToWpTaskActive = true;
+
+            var waypoint = World.WaypointPosition;
+
+            var veh = GetVehicle();
+            var model = (uint)GetEntityModel(veh);
+
+            SetDriverAbility(PlayerPedId(), 1f);
+            SetDriverAggressiveness(PlayerPedId(), 0f);
+
+            TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
         }
 
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveWander(int style = 1074528293)
+        public void DriveWander(int style = 0)
         {
-            if (driveWanderTaskActive || driveToWpTaskActive)
-            {
-                ClearPedTasks(PlayerPedId());
-                driveWanderTaskActive = false;
-                driveToWpTaskActive = false;
-            }
-            else
-            {
-                driveWanderTaskActive = true;
-                var veh = GetVehicle();
-                var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 1000f);
-                SetDriverAggressiveness(PlayerPedId(), 0f);
-                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
-            }
+            ClearPedTasks(PlayerPedId());
+            driveWanderTaskActive = true;
+            driveToWpTaskActive = false;
+
+            var veh = GetVehicle();
+            var model = (uint)GetEntityModel(veh);
+
+            SetDriverAbility(PlayerPedId(), 1f);
+            SetDriverAggressiveness(PlayerPedId(), 0f);
+
+            TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
         }
         #endregion
 
