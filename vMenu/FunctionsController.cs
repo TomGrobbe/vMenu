@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -75,7 +75,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            Tick += ManagePlayerAppearanceCamera;
+            //Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
@@ -988,6 +988,7 @@ namespace vMenuClient
         }
         #endregion
         #region Player Appearance
+        /*
         private async Task ManagePlayerAppearanceCamera()
         {
             if (MainMenu.PlayerAppearanceMenu != null && MainMenu.PlayerAppearanceMenu.mpCharMenu != null)
@@ -1052,6 +1053,7 @@ namespace vMenuClient
                 }
             }
         }
+        */
         #endregion
         #region Restore player skin & weapons after respawning.
         private async Task RestorePlayerAfterBeingDead()
