@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -446,52 +446,105 @@ namespace vMenuClient
         /// </summary>
         public async void CommitSuicide()
         {
-            // Get the suicide animations ready.
-            RequestAnimDict("mp_suicide");
-            while (!HasAnimDictLoaded("mp_suicide"))
+            if (!Game.PlayerPed.IsInVehicle())
             {
-                await Delay(0);
-            }
-            // Decide if the death should be using a pill or a gun (randomly).
-            bool takePill = new Random().Next(0, 2) == 0;
+                // Get the suicide animations ready.
+                RequestAnimDict("mp_suicide");
+                while (!HasAnimDictLoaded("mp_suicide"))
+                {
+                    await Delay(0);
+                }
+                // Decide if the death should be using a pill or a gun (randomly).
+                uint? weaponHash = null;
+                bool takePill = false;
 
-            // If we take the pill, remove any weapons in our hands.
-            if (takePill)
-            {
-                SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_unarmed"), true);
+
+                if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.PistolMk2))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL_MK2");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.CombatPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_COMBATPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.Pistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon((WeaponHash)(uint)GetHashKey("WEAPON_SNSPISTOL_MK2")))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_SNSPISTOL_MK2");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.SNSPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_SNSPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.Pistol50))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL50");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.HeavyPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_HEAVYPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.VintagePistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_VINTAGEPISTOL");
+                }
+                else
+                {
+                    takePill = true;
+                }
+
+
+                // If we take the pill, remove any weapons in our hands.
+                if (takePill)
+                {
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_unarmed"), true);
+                }
+                // Otherwise, give the ped a gun.
+                else if (weaponHash != null)
+                {
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)weaponHash, true);
+                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                }
+                else
+                {
+                    GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), true);
+                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                }
+
+                // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
+                ClearPedTasks(PlayerPedId());
+                TaskPlayAnim(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
+
+                bool shot = false;
+                while (true)
+                {
+                    float time = GetEntityAnimCurrentTime(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"));
+                    if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
+                    {
+                        ClearEntityLastDamageEntity(PlayerPedId());
+                        SetPedShootsAtCoord(PlayerPedId(), 0f, 0f, 0f, false);
+                        shot = true;
+                    }
+                    if (time > (takePill ? 0.536f : 0.365f))
+                    {
+                        // Kill the player.
+                        ClearEntityLastDamageEntity(PlayerPedId());
+                        SetEntityHealth(PlayerPedId(), 0);
+                        break;
+                    }
+                    await Delay(0);
+                }
+                RemoveAnimDict("mp_suicide");
             }
-            // Otherwise, give the ped a gun.
             else
             {
-                GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
-                SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), true);
-                SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                SetEntityHealth(Game.PlayerPed.Handle, 0);
             }
 
-            // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
-            ClearPedTasks(PlayerPedId());
-            TaskPlayAnim(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
-
-            bool shot = false;
-            while (true)
-            {
-                float time = GetEntityAnimCurrentTime(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"));
-                if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
-                {
-                    SetPedShootsAtCoord(PlayerPedId(), 0f, 0f, 0f, false);
-                    shot = true;
-                }
-                if (time > (takePill ? 0.536f : 0.365f))
-                {
-                    // Kill the player.
-                    ClearEntityLastDamageEntity(PlayerPedId());
-                    SetEntityHealth(PlayerPedId(), 0);
-                    break;
-                }
-                await Delay(0);
-            }
-            Log("cleanup");
-            RemoveAnimDict("mp_suicide");
 
         }
         #endregion
