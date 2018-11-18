@@ -38,14 +38,14 @@ build:
 
   # MSBuild verbosity level
   verbosity: minimal
+  
+after_build:
+  - powershell [IO.Compression.ZipFile]::CreateFromDirectory("vMenu", "vMenu.zip")
 
 #---------------------------------#
 #      artifacts configuration    #
 #---------------------------------#
 
 artifacts:
-
   # pushing all *.nupkg files in build directory recursively
-  - path: '**\*.dll'
-  - path: '**\*.cfg'
-  - path: '**\*.json'
+  - path: vMenu.zip
