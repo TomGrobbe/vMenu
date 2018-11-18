@@ -1,9 +1,16 @@
 #### Latest Builds
 
+**Latest Traivs builds**
+
 |Master (Beta)|Development (Alpha/Latest)|Production (Stable)|
 |:-:|:-:|:-:|
 |[![Build Status](https://travis-ci.org/TomGrobbe/vMenu.svg?branch=master)](https://travis-ci.org/TomGrobbe/vMenu) | [![Build Status](https://travis-ci.org/TomGrobbe/vMenu.svg?branch=development)](https://travis-ci.org/TomGrobbe/vMenu) | [![Build Status](https://travis-ci.org/TomGrobbe/vMenu.svg?branch=production)](https://travis-ci.org/TomGrobbe/vMenu) |
 
+**Latest AppVeyor build**
+
+|Build|
+|:-:|
+|[![Build status](https://ci.appveyor.com/api/projects/status/inf2kinljmp8a5ul?svg=true)](https://ci.appveyor.com/project/TomGrobbe/vmenu)|
 
 --------
 
