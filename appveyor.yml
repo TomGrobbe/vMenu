@@ -1,0 +1,20 @@
+version: 1.4.{build}
+pull_requests:
+  do_not_increment_build_number: false
+# branches:
+  # only:
+  # - appveyor-test
+image: Visual Studio 2017
+configuration: Release
+build:
+  parallel: true                  # enable MSBuild parallel builds
+  project: vMenu.sln              # path to Visual Studio solution or project
+  include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+  verbosity: minimal
+after_build:
+  - copy README.md ..\build\README.md
+  - copy LICENSE.md ..\build\LICENSE.md
+  - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
+  - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', 'vMenu.zip'); }"
+artifacts:
+  - path: vMenu.zip
