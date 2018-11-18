@@ -40,7 +40,7 @@ build:
   verbosity: minimal
   
 after_build:
-  - powershell [IO.Compression.ZipFile]::CreateFromDirectory("vMenu", "vMenu.zip")
+  - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('vMenu', 'vMenu.zip'); }"
 
 #---------------------------------#
 #      artifacts configuration    #
