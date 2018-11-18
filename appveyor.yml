@@ -40,6 +40,7 @@ build:
   verbosity: minimal
   
 after_build:
+  - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
   - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', 'vMenu.zip'); }"
 
 #---------------------------------#
