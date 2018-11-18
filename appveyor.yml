@@ -1,54 +1,20 @@
-# Notes:
-#   - Minimal appveyor.yml file is an empty file. All sections are optional.
-#   - Indent each level of configuration with 2 spaces. Do not use tabs!
-#   - All section names are case-sensitive.
-#   - Section names should be unique on each level.
-
-#---------------------------------#
-#      general configuration      #
-#---------------------------------#
-
-version: 1.0.{build}
-
+version: 1.4.{build}
 pull_requests:
-  do_not_increment_build_number: true
-
-branches:
-  only:
-  - appveyor-test
-
-# Build worker image (VM template)
+  do_not_increment_build_number: false
+# branches:
+  # only:
+  # - appveyor-test
 image: Visual Studio 2017
-
-
-# build Configuration, i.e. Debug, Release, etc.
 configuration: Release
-
-# to add several configurations to build matrix:
-#configuration:
-#  - Debug
-#  - Release
-
-# Build settings, not to be confused with "before_build" and "after_build".
-# "project" is relative to the original build directory and not influenced by directory changes in "before_build".
 build:
   parallel: true                  # enable MSBuild parallel builds
   project: vMenu.sln              # path to Visual Studio solution or project
   include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
-
-  # MSBuild verbosity level
   verbosity: minimal
-  
 after_build:
   - copy README.md ..\build\README.md
   - copy LICENSE.md ..\build\LICENSE.md
   - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
   - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', 'vMenu.zip'); }"
-
-#---------------------------------#
-#      artifacts configuration    #
-#---------------------------------#
-
 artifacts:
-  # pushing all *.nupkg files in build directory recursively
   - path: vMenu.zip
