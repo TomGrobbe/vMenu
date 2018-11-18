@@ -37,4 +37,15 @@ build:
   include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
 
   # MSBuild verbosity level
-  verbosity: detailed
+  verbosity: minimal
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+artifacts:
+
+  # pushing all *.nupkg files in build directory recursively
+  - path: '**\*.dll'
+  - path: '**\*.cfg'
+  - path: '**\*.json'
