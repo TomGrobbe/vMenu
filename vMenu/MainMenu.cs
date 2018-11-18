@@ -22,11 +22,6 @@ namespace vMenuClient
 
         private bool firstTick = true;
         public static bool PreSetupComplete = false;
-        //private static bool permissionsSetupDone = false;
-        //private static bool optionsSetupDone = false;
-        //public static bool addonCarsLoaded = false;
-        //public static bool addonPedsLoaded = false;
-        //public static bool addonWeaponsLoaded = false;
 
         private static int MenuToggleKey = 244; // M by default (InteractionMenu)
         private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
@@ -53,11 +48,9 @@ namespace vMenuClient
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
 
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
-        public static bool EnableExperimentalFeatures = true;//(GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
+        public static bool EnableExperimentalFeatures = /*true;*/ (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
         public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
-
-        //public static Dictionary<string, string> MenuOptions { get; private set; }
 
         public static bool DisableControls { get; set; } = false;
         private UIMenu currentMenu = null;
@@ -78,6 +71,15 @@ namespace vMenuClient
                         {
                             DebugMode = !DebugMode;
                             Notify.Custom($"Debug mode is now set to: {DebugMode}.");
+                            // Set discord rich precense once, allowing it to be overruled by other resources once those load.
+                            if (DebugMode)
+                            {
+                                SetRichPresence($"Debugging vMenu {Version}!");
+                            }
+                            else
+                            {
+                                SetRichPresence($"Enjoying FiveM!");
+                            }
                         }
                     }
                     else
@@ -130,7 +132,6 @@ namespace vMenuClient
             }
             Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
 
-            //permissionsSetupDone = true;
             VehicleSpawner.allowedCategories = new List<bool>()
             {
                 Cf.IsAllowed(Permission.VSCompacts),
@@ -159,32 +160,6 @@ namespace vMenuClient
         }
         #endregion
 
-        #region set settings
-        ///// <summary>
-        ///// Sets the settings received from the server.
-        ///// </summary>
-        ///// <param name="options"></param>
-        //public static void SetOptions(dynamic options)
-        //{
-        //    //MenuOptions = new Dictionary<string, string>();
-        //    //foreach (dynamic option in options)
-        //    //{
-        //    //    MenuOptions.Add(option.Key.ToString(), option.Value.ToString());
-        //    //}
-        //    //Cf.Log($"Settings loaded: {JsonConvert.SerializeObject(MenuOptions)}");
-
-        //    //MenuToggleKey = int.Parse(MenuOptions["menuKey"].ToString());
-        //    //NoClipKey = int.Parse(MenuOptions["noclipKey"].ToString());
-        //    //optionsSetupDone = true;
-        //    //if (MenuOptions.ContainsKey("disableSync"))
-        //    //{
-        //    //    if (MenuOptions["disableSync"] == "true")
-        //    //    {
-        //    //        EventManager.enableSync = false;
-        //    //    }
-        //    //}
-        //}
-        #endregion
 
         #region Process Menu Buttons
         /// <summary>
@@ -401,7 +376,6 @@ namespace vMenuClient
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
-                //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
 
                 // Wait until the data is received and the player's name is loaded correctly.
                 while (!PreSetupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
@@ -694,6 +668,13 @@ namespace vMenuClient
                 UIMenuItem button = new UIMenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
+                Menu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == button)
+                    {
+                        SavedVehiclesMenu.UpdateMenuAvailableCategories();
+                    }
+                };
             }
 
             // Add the player appearance menu.

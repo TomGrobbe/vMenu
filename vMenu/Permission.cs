@@ -33,7 +33,12 @@
         PONeverWanted,
         POSetWanted,
         POIgnored,
-        POFunctions,
+        POMaxHealth,
+        POMaxArmor,
+        POCleanPlayer,
+        PODryPlayer,
+        POWetPlayer,
+        POVehicleAutoPilotMenu,
         POFreeze,
         POScenarios,
         POUnlimitedStamina,
@@ -241,6 +246,8 @@
         MSPlayerBlips,
         MSTeleportLocations,
         MSConnectionMenu,
+        MSRestoreAppearance,
+        MSRestoreWeapons,
 
         // Voice Chat
         VCMenu,

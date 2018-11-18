@@ -23,12 +23,12 @@ namespace vMenuShared
 
             vmenu_enable_weather_sync,
             vmenu_enable_dynamic_weather,
-
             vmenu_dynamic_weather_timer,
             vmenu_default_weather,
             vmenu_allow_random_blackout,
 
             vmenu_enable_time_sync,
+            vmenu_freeze_time,
             vmenu_default_time_hour,
             vmenu_default_time_min,
             vmenu_ingame_minute_duration,
