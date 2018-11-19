@@ -593,7 +593,6 @@ namespace vMenuClient
         /// </summary>
         private void CreateSubmenus()
         {
-            new MpPedCustomization().GetMenu();
             // Add the online players menu.
             if (Cf.IsAllowed(Permission.OPMenu))
             {
@@ -614,7 +613,6 @@ namespace vMenuClient
             }
             if (Cf.IsAllowed(Permission.OPUnban))
             {
-                //TriggerServerEvent("vMenu:RequestBanList", PlayerId());
                 BannedPlayersMenu = new BannedPlayers();
                 UIMenu menu = BannedPlayersMenu.GetMenu();
                 UIMenuItem button = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.");

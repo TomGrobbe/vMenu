@@ -15,8 +15,6 @@ namespace vMenuClient
         {
             string data = Exports["vMenu"].Export_GetPedHeadBlendData();
             dynamic dataObj = JsonConvert.DeserializeObject(data);
-            Debug.WriteLine(data);
-            Debug.WriteLine(JsonConvert.SerializeObject(dataObj));
             int shape1 = int.Parse(dataObj["0"].ToString());
             int shape2 = int.Parse(dataObj["2"].ToString());
             int skin1 = int.Parse(dataObj["6"].ToString());

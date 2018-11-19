@@ -41,7 +41,7 @@ namespace vMenuClient
             {
                 CreateMenu();
             }
-            Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(cf.MpPedDataManager.GetHeadBlendData()));
+            //Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(cf.MpPedDataManager.GetHeadBlendData()));
             return menu;
         }
 
