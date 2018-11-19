@@ -47,7 +47,9 @@ namespace vMenuClient
             UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
             UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
             UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", PlayerFastRun, "Get ~g~Snail~s~ powers and run very fast!");
+            SetRunSprintMultiplierForPlayer(PlayerId(), (PlayerFastRun ? 1.49f : 1f));
             UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", PlayerFastSwim, "Get ~g~Snail 2.0~s~ powers and swim super fast!");
+            SetSwimMultiplierForPlayer(PlayerId(), (PlayerFastSwim ? 1.49f : 1f));
             UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
             UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
             UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
@@ -182,9 +184,17 @@ namespace vMenuClient
                             {
                                 if (item == startDrivingWaypoint)
                                 {
-                                    int style = GetStyleFromIndex(drivingStyle.Index);
-                                    cf.DriveToWp(style);
-                                    Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button. The vehicle will stop when it has reached the destination.");
+                                    if (IsWaypointActive())
+                                    {
+                                        int style = GetStyleFromIndex(drivingStyle.Index);
+                                        cf.DriveToWp(style);
+                                        Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button. The vehicle will stop when it has reached the destination.");
+                                    }
+                                    else
+                                    {
+                                        Notify.Error("You need a waypoint before you can drive to it!");
+                                    }
+                                    
                                 }
                                 else if (item == startDrivingRandomly)
                                 {
