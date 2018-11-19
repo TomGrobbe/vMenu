@@ -474,15 +474,72 @@ namespace vMenuServer
                                 }
                             }
                         }
-
+                        else if (args[0].ToString().ToLower() == "time")
+                        {
+                            if (args.Count == 2)
+                            {
+                                if (args[1].ToString().ToLower() == "freeze")
+                                {
+                                    TriggerEvent("vMenu:UpdateServerTime", currentHours, currentMinutes, !freezeTime);
+                                    Debug.WriteLine($"Time is now {(freezeTime ? "frozen" : "not frozen")}.");
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                }
+                            }
+                            else if (args.Count > 2)
+                            {
+                                if (int.TryParse(args[1].ToString(), out int hour))
+                                {
+                                    if (int.TryParse(args[2].ToString(), out int minute))
+                                    {
+                                        if (hour >= 0 && hour < 24)
+                                        {
+                                            if (minute >= 0 && minute < 60)
+                                            {
+                                                TriggerEvent("vMenu:UpdateServerTime", hour, minute, freezeTime);
+                                                Debug.WriteLine($"Time is now {(hour < 10 ? ("0" + hour.ToString()) : hour.ToString())}:{(minute < 10 ? ("0" + minute.ToString()) : minute.ToString())}.");
+                                            }
+                                            else
+                                            {
+                                                Debug.WriteLine("Invalid minute provided. Value must be between 0 and 59.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.WriteLine("Invalid hour provided. Value must be between 0 and 23.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
                     }
                 }
                 else
                 {
                     Debug.WriteLine($"vMenu is currently running version: {Version}.");
                 }
-
-
             }), true);
 
             if (GetCurrentResourceName() != "vMenu")
