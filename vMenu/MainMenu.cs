@@ -44,6 +44,7 @@ namespace vMenuClient
         public static UIMenu NoClipMenu { get; } = new NoclipMenu().GetMenu();
         public static bool NoClipEnabled { get; set; } = false;
 
+
         // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
 
@@ -592,6 +593,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateSubmenus()
         {
+            new MpPedCustomization().GetMenu();
             // Add the online players menu.
             if (Cf.IsAllowed(Permission.OPMenu))
             {

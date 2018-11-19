@@ -13,12 +13,10 @@ namespace vMenuClient
     public class CommonFunctions : BaseScript
     {
         #region Variables
-        // Variables
-        //private readonly Notification Notify = MainMenu.Notify;
-        //private readonly Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
         private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
+        public MpPedDataManager MpPedDataManager = new MpPedDataManager();
 
         public bool driveToWpTaskActive = false;
         public bool driveWanderTaskActive = false;
