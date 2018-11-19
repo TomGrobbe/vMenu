@@ -161,18 +161,20 @@ namespace vMenuClient
 
                 UIMenuItem startDrivingWaypoint = new UIMenuItem("Drive To Waypoint", "Make your player ped drive your vehicle to your waypoint.");
                 UIMenuItem startDrivingRandomly = new UIMenuItem("Drive Around Randomly", "Make your player ped drive your vehicle randomly around the map.");
-                UIMenuItem stopDriving = new UIMenuItem("Stop Driving", "This will stop any driving task that is currently active.");
+                UIMenuItem stopDriving = new UIMenuItem("Stop Driving", "The player ped will find a suitable place to stop the vehicle. The task will be stopped once the vehicle has reached the suitable stop location.");
+                UIMenuItem forceStopDriving = new UIMenuItem("Force Stop Driving", "This will stop the driving task immediately without finding a suitable place to stop.");
 
                 vehicleAutoPilot.AddItem(startDrivingWaypoint);
                 vehicleAutoPilot.AddItem(startDrivingRandomly);
                 vehicleAutoPilot.AddItem(stopDriving);
+                vehicleAutoPilot.AddItem(forceStopDriving);
 
                 vehicleAutoPilot.RefreshIndex();
                 vehicleAutoPilot.UpdateScaleform();
 
                 vehicleAutoPilot.OnItemSelect += async (sender, item, index) =>
                 {
-                    if (Game.PlayerPed.IsInVehicle() && item != stopDriving)
+                    if (Game.PlayerPed.IsInVehicle() && item != stopDriving && item != forceStopDriving)
                     {
                         if (Game.PlayerPed.CurrentVehicle != null && Game.PlayerPed.CurrentVehicle.Exists() && !Game.PlayerPed.CurrentVehicle.IsDead && Game.PlayerPed.CurrentVehicle.IsDriveable)
                         {
@@ -201,7 +203,7 @@ namespace vMenuClient
                             Notify.Error("Your vehicle is broken or it does not exist!");
                         }
                     }
-                    else if (item != stopDriving)
+                    else if (item != stopDriving && item != forceStopDriving)
                     {
                         Notify.Error("You need to be in a vehicle first!");
                     }
@@ -229,6 +231,11 @@ namespace vMenuClient
                             ClearPedTasks(PlayerPedId());
                             Notify.Alert("Your ped is not in any vehicle.");
                         }
+                    }
+                    else if (item == forceStopDriving)
+                    {
+                        ClearPedTasks(PlayerPedId());
+                        Notify.Info("Driving task cancelled.");
                     }
                 };
 
