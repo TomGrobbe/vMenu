@@ -58,5 +58,34 @@ namespace vMenuClient
                 this.isParent = isParent;
             }
         }
+
+        public struct CharacterComponents
+        {
+        }
+
+        public struct FaceFeatures
+        {
+        }
+
+        public struct PedHair
+        {
+        }
+
+        public struct PedMakeup
+        {
+        }
+
+        public struct MultiplayerPedData
+        {
+            public HeadBlendData PedHeadBlendData;
+            public CharacterComponents CharacterComponentsData;
+            public FaceFeatures FaceFeaturesData;
+            public PedHair PedHairData;
+            public PedMakeup PedMakeupData;
+            public bool IsMale;
+            public uint ModelHash;
+            public string SaveName;
+            public int Version;
+        }
     }
 }
