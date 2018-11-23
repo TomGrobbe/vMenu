@@ -34,6 +34,7 @@ namespace vMenuClient
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
         public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
         public static PlayerAppearance PlayerAppearanceMenu { get; private set; }
+        public static MpPedCustomization MpPedCustomizationMenu { get; private set; }
         public static TimeOptions TimeOptionsMenu { get; private set; }
         public static WeatherOptions WeatherOptionsMenu { get; private set; }
         public static WeaponOptions WeaponOptionsMenu { get; private set; }
@@ -43,7 +44,6 @@ namespace vMenuClient
         public static About AboutMenu { get; private set; }
         public static UIMenu NoClipMenu { get; } = new NoclipMenu().GetMenu();
         public static bool NoClipEnabled { get; set; } = false;
-
 
         // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
@@ -198,7 +198,6 @@ namespace vMenuClient
                     await Delay(0);
                 }
             }
-
         }
 
         /// <summary>
@@ -685,6 +684,12 @@ namespace vMenuClient
                 UIMenuItem button = new UIMenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.");
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
+
+                MpPedCustomizationMenu = new MpPedCustomization();
+                UIMenu menu2 = MpPedCustomizationMenu.GetMenu();
+                UIMenuItem button2 = new UIMenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.");
+                button2.SetRightLabel("→→→");
+                AddMenu(menu2, button2);
             }
 
             // Add the time options menu.
