@@ -75,7 +75,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            //Tick += ManagePlayerAppearanceCamera;
+            Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
@@ -1021,13 +1021,12 @@ namespace vMenuClient
         }
         #endregion
         #region Player Appearance
-        /*
         private async Task ManagePlayerAppearanceCamera()
         {
-            if (MainMenu.PlayerAppearanceMenu != null && MainMenu.PlayerAppearanceMenu.mpCharMenu != null)
+            if (MainMenu.MpPedCustomizationMenu != null)
             {
-                //foreach (UIMenu m in )
-                bool open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+                var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
+                bool open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
                 if (open)
                 {
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
@@ -1037,9 +1036,9 @@ namespace vMenuClient
                     while (open)
                     {
                         await Delay(0);
-                        open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+                        open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
 
-                        //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
+                        SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
                         SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
 
                         RenderScriptCams(true, false, 0, true, false);
@@ -1086,7 +1085,6 @@ namespace vMenuClient
                 }
             }
         }
-        */
         #endregion
         #region Restore player skin & weapons after respawning.
         private async Task RestorePlayerAfterBeingDead()
