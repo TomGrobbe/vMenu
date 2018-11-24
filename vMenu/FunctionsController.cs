@@ -292,7 +292,7 @@ namespace vMenuClient
                         bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
                         vehicle.CanBeVisiblyDamaged = !god;
                         vehicle.CanEngineDegrade = !god;
-                        vehicle.CanTiresBurst = !god;
+                        // vehicle.CanTiresBurst = !god;
                         vehicle.CanWheelsBreak = !god;
                         vehicle.IsAxlesStrong = god;
                         vehicle.IsBulletProof = god;
