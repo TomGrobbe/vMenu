@@ -182,7 +182,7 @@ namespace vMenuClient
                     {
                         if (item.Description == "Are you sure?")
                         {
-                            Notify.Custom($"Player {banlist[menu.MenuItems.IndexOf(player)].playerName} has been unbanned.");
+                            Notify.Custom($"Player ~o~<C>{banlist[menu.MenuItems.IndexOf(player)].playerName}</C>~s~ has been ~g~unbanned~s~.");
                             UnbanPlayer(menu.MenuItems.IndexOf(player));
                             bannedPlayer.UpdateScaleform();
                             bannedPlayer.GoBack();

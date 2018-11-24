@@ -50,7 +50,7 @@ namespace vMenuClient
             "SCHAFTER2",
             "SCHAFTER5",
             "SCHAFTER6",
-            "STAFFORD",
+            "STAFFORD", // dlc (mpbattle)
             "STANIER",
             "STRATUM",
             "STRETCH",
@@ -85,7 +85,7 @@ namespace vMenuClient
             "MESA",
             "MESA2",
             "PATRIOT",
-            "PATRIOT2",
+            "PATRIOT2", // dlc (mpbattle)
             "RADI",
             "ROCOTO",
             "SEMINOLE",
@@ -195,6 +195,7 @@ namespace vMenuClient
             "STINGER",
             "STINGERGT",
             "STROMBERG",
+            "SWINGER", // dlc (mpbattle)
             "TORERO",
             "TORNADO",
             "TORNADO2",
@@ -294,7 +295,7 @@ namespace vMenuClient
             "PROTOTIPO",
             "REAPER",
             "SC1",
-            "SCRAMJET",
+            "SCRAMJET", // dlc (mpbattle)
             "SHEAVA", // ETR1
             "SULTANRS",
             "T20",
@@ -349,6 +350,7 @@ namespace vMenuClient
             "NEMESIS",
             "NIGHTBLADE",
             "OPPRESSOR",
+            "OPPRESSOR2", // dlc (mpbattle)
             "PCJ",
             "RATBIKE",
             "RUFFIAN",
@@ -386,14 +388,14 @@ namespace vMenuClient
             "DUNE3",
             "DUNE4",
             "DUNE5",
-            "FREECRAWLER",
+            "FREECRAWLER", // dlc (mpbattle)
             "INSURGENT",
             "INSURGENT2",
             "INSURGENT3",
             "KALAHARI",
             "KAMACHO",
             "MARSHALL",
-            "MENACER",
+            "MENACER", // dlc (mpbattle)
             "MESA3",
             "MONSTER",
             "NIGHTSHARK",
@@ -518,7 +520,7 @@ namespace vMenuClient
             "RUMPO3",
             "SPEEDO",
             "SPEEDO2",
-            "SPEEDO4",
+            "SPEEDO4", // dlc (mpbattle)
             "SURFER",
             "SURFER2",
             "TACO",
@@ -602,7 +604,7 @@ namespace vMenuClient
             "BESRA",
             "BLIMP",
             "BLIMP2",
-            "BLIMP3",
+            "BLIMP3", // dlc (mpbattle)
             "BOMBUSHKA",
             "CARGOPLANE",
             "CUBAN800",
@@ -626,7 +628,7 @@ namespace vMenuClient
             "SEABREEZE",
             "SHAMAL",
             "STARLING",
-            "STRIKEFORCE",
+            "STRIKEFORCE", // dlc (mpbattle)
             "STUNT",
             "TITAN",
             "TULA",
@@ -643,6 +645,7 @@ namespace vMenuClient
             "BRICKADE",
             "BUS",
             "COACH",
+            "PBUS2", // dlc (mpbattle)
             "RALLYTRUCK",
             "RENTALBUS",
             "TAXI",
@@ -705,15 +708,16 @@ namespace vMenuClient
             "MULE",
             "MULE2",
             "MULE3",
+            "MULE4", // dlc (mpbattle)
             "PACKER",
             "PHANTOM",
             "PHANTOM2",
             "PHANTOM3",
             "POUNDER",
-            "POUNDER2",
+            "POUNDER2", // dlc (mpbattle)
             "STOCKADE",
             "STOCKADE3",
-            "TERBYTE",
+            "TERBYTE", // dlc (mpbattle)
         };
         #endregion
         #region Trains

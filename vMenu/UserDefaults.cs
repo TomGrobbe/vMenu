@@ -179,6 +179,18 @@ namespace vMenuClient
             get { return GetSettingsBool("miscShowPlayerBlips"); }
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
         }
+
+        public static bool MiscRestorePlayerAppearance
+        {
+            get { return GetSettingsBool("miscRestorePlayerAppearance"); }
+            set { SetSavedSettingsBool("miscRestorePlayerAppearance", value); }
+        }
+
+        public static bool MiscRestorePlayerWeapons
+        {
+            get { return GetSettingsBool("miscRestorePlayerWeapons"); }
+            set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -207,6 +219,13 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Player Appearance
+        public static int PAClothingAnimationType
+        {
+            get { return GetSettingsInt("clothingAnimationType"); }
+            set { SetSavedSettingsInt("clothingAnimationType", value >= 0 ? value : 0); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -226,7 +245,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -279,6 +298,19 @@ namespace vMenuClient
         private static void SetSavedSettingsFloat(string kvpString, float newValue)
         {
             SetResourceKvpFloat(SETTINGS_PREFIX + kvpString, newValue);
+        }
+
+
+        private static int GetSettingsInt(string kvpString)
+        {
+            // Get the current value.
+            int savedValue = GetResourceKvpInt($"{SETTINGS_PREFIX}{kvpString}");
+            return savedValue;
+        }
+
+        private static void SetSavedSettingsInt(string kvpString, int newValue)
+        {
+            SetResourceKvpInt(SETTINGS_PREFIX + kvpString, newValue);
         }
         #endregion
 
@@ -338,6 +370,12 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
+
+                MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
+                prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);
+
+                MiscRestorePlayerWeapons = MainMenu.MiscSettingsMenu.RestorePlayerWeapons;
+                prefs.Add("miscRestorePlayerWeapons", MainMenu.MiscSettingsMenu.RestorePlayerWeapons);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
@@ -389,6 +427,12 @@ namespace vMenuClient
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
                 prefs.Add("weaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+            }
+
+            if (PlayerAppearance.ClothingAnimationType >= 0)
+            {
+                PAClothingAnimationType = PlayerAppearance.ClothingAnimationType;
+                prefs.Add("clothingAnimationType", PlayerAppearance.ClothingAnimationType);
             }
 
             Notify.Success("Your settings have been saved.");

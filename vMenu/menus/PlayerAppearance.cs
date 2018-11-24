@@ -16,17 +16,19 @@ namespace vMenuClient
         private StorageManager sm = new StorageManager();
 
         private UIMenu menu;
-        public UIMenu mpCharMenu;
+        //public UIMenu mpCharMenu;
 
-        private UIMenu pedTextures;
+        private UIMenu pedCustomizationMenu;
         private UIMenu spawnSavedPedMenu;
         private UIMenu deleteSavedPedMenu;
 
         public static Dictionary<string, uint> AddonPeds;
 
+        public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
 
-
-        public List<UIMenu> mpCharMenus = new List<UIMenu>();
+        /*
+        
+        //public List<UIMenu> mpCharMenus = new List<UIMenu>();
 
         #region Mp character struct
         public struct MpCharacterStyle
@@ -109,9 +111,12 @@ namespace vMenuClient
             }
         }
         #endregion
+        
+        //MpCharacterStyle currentCharacter = new MpCharacterStyle(false, false);
+        */
 
-        MpCharacterStyle currentCharacter = new MpCharacterStyle(false, false);
-
+        private Dictionary<UIMenuListItem, int> drawablesMenuListItems = new Dictionary<UIMenuListItem, int>();
+        private Dictionary<UIMenuListItem, int> propsMenuListItems = new Dictionary<UIMenuListItem, int>();
 
         #region create the menu
         /// <summary>
@@ -128,16 +133,16 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            //Create the submenus.
-            mpCharMenu = new UIMenu(GetPlayerName(PlayerId()), "Multiplayer Ped Customization", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            mpCharMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right"));
-            mpCharMenus.Add(mpCharMenu);
+            ////Create the submenus.
+            //mpCharMenu = new UIMenu(GetPlayerName(PlayerId()), "Multiplayer Ped Customization", true)
+            //{
+            //    ScaleWithSafezone = false,
+            //    MouseControlsEnabled = false,
+            //    MouseEdgeEnabled = false,
+            //    ControlDisablingEnabled = false
+            //};
+            //mpCharMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right"));
+            //mpCharMenus.Add(mpCharMenu);
 
             spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn Saved Ped", true)
             {
@@ -153,7 +158,7 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            pedTextures = new UIMenu("Ped Customization", "Customize Saved Ped", true)
+            pedCustomizationMenu = new UIMenu("Ped Customization", "Customize Saved Ped", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -162,14 +167,14 @@ namespace vMenuClient
             };
 
             // Add the (submenus) to the menu pool.
-            MainMenu.Mp.Add(mpCharMenu);
-            MainMenu.Mp.Add(pedTextures);
+            //MainMenu.Mp.Add(mpCharMenu);
+            MainMenu.Mp.Add(pedCustomizationMenu);
             MainMenu.Mp.Add(spawnSavedPedMenu);
             MainMenu.Mp.Add(deleteSavedPedMenu);
 
             // Create the menu items.
-            UIMenuItem mpCharMenuBtn = new UIMenuItem("MP Character Customization", "All multiplayer (freemode character) ped customization options.");
-            mpCharMenuBtn.SetRightLabel("→→→");
+            //UIMenuItem mpCharMenuBtn = new UIMenuItem("MP Character Customization", "All multiplayer (freemode character) ped customization options.");
+            //mpCharMenuBtn.SetRightLabel("→→→");
             UIMenuItem pedCustomization = new UIMenuItem("Ped Customization", "Modify your ped's appearance.");
             pedCustomization.SetRightLabel("→→→");
             UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your current ped and clothes.");
@@ -183,33 +188,37 @@ namespace vMenuClient
             List<dynamic> walkstyles = new List<dynamic>() { "Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster" };
             UIMenuListItem walkingStyle = new UIMenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
                 "You need to re-apply this each time you change player model or load a saved ped.");
+            List<dynamic> clothingGlowAnimations = new List<dynamic>() { "On", "Off", "Fade", "Flash" };
+            UIMenuListItem clothingGlowType = new UIMenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType, "Set the style of the animation used on your player's illuminated clothing items.");
 
             // Add items to the mneu.
-            menu.AddItem(mpCharMenuBtn);
+            //menu.AddItem(mpCharMenuBtn);
             menu.AddItem(pedCustomization);
             menu.AddItem(savePed);
             menu.AddItem(spawnSavedPed);
             menu.AddItem(deleteSavedPed);
             menu.AddItem(walkingStyle);
+            menu.AddItem(clothingGlowType);
 
-            // Bind items to the submenus.
+            // old mp character stuff
+            /*
+            ////Bind items to the submenus.
             //if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
             //{
             //    CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
             //    menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
             //}
             //else
-            {
-                mpCharMenuBtn.Enabled = false;
-                mpCharMenuBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                //mpCharMenuBtn.Description = "~r~The options in this submenu are restricted because they are still experimental features. The server owner can enable this if they want to, but you have been warned because it may cause dataloss for users and could be buggy.";
-
-                mpCharMenuBtn.Description = "This will be added in the near future. It does not work, so don't even try to enable it, it WILL currently delete all your saved peds/vehicles if you do so.";
-            }
+            //{
+            //    mpCharMenuBtn.Enabled = false;
+            //    mpCharMenuBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+            //    mpCharMenuBtn.Description = "This will be added in the near future. It does not work, so don't even try to enable it, it WILL currently delete all your saved peds/vehicles if you do so.";
+            //}
+            */
 
             if (cf.IsAllowed(Permission.PACustomize))
             {
-                menu.BindMenuToItem(pedTextures, pedCustomization);
+                menu.BindMenuToItem(pedCustomizationMenu, pedCustomization);
             }
             else
             {
@@ -293,30 +302,7 @@ namespace vMenuClient
             // Add the spawn by name button after the addon peds menu item.
             menu.AddItem(spawnByName);
 
-            // Handle button presses.
-            menu.OnItemSelect += (sender, item, index) =>
-            {
-                if (item == pedCustomization)
-                {
-                    RefreshCustomizationMenu();
-                }
-                else if (item == spawnSavedPed)
-                {
-                    RefreshSpawnSavedPedMenu();
-                }
-                else if (item == deleteSavedPed)
-                {
-                    RefreshDeleteSavedPedMenu();
-                }
-                else if (item == savePed)
-                {
-                    cf.SavePed();
-                }
-                else if (item == spawnByName)
-                {
-                    cf.SpawnPedByName();
-                }
-            };
+
 
             // Loop through all the modelNames and create lists of max 50 ped names each.
             for (int i = 0; i < (modelNames.Count / 50) + 1; i++)
@@ -351,6 +337,10 @@ namespace vMenuClient
                     Subtitle.Custom("Ped is: " + IsPedMale(PlayerPedId()));
                     cf.SetWalkingStyle(walkstyles[index].ToString());
                 }
+                else if (item == clothingGlowType)
+                {
+                    ClothingAnimationType = item.Index;
+                }
                 else
                 {
                     int i = ((sender.CurrentSelection - 8) * 50) + index;
@@ -362,6 +352,94 @@ namespace vMenuClient
                 }
 
             };
+
+            // Handle button presses.
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == pedCustomization)
+                {
+                    RefreshCustomizationMenu();
+                }
+                else if (item == spawnSavedPed)
+                {
+                    RefreshSpawnSavedPedMenu();
+                }
+                else if (item == deleteSavedPed)
+                {
+                    RefreshDeleteSavedPedMenu();
+                }
+                else if (item == savePed)
+                {
+                    cf.SavePed();
+                }
+                else if (item == spawnByName)
+                {
+                    cf.SpawnPedByName();
+                }
+            };
+
+            // Handle saved ped spawning.
+            spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
+            {
+                var name = item.Text.ToString();
+                cf.LoadSavedPed(name, true);
+            };
+
+            #region ped drawable list changes
+            // Manage list changes.
+            pedCustomizationMenu.OnListChange += (sender, item, index) =>
+            {
+                //SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, 0, 0);
+
+                if (drawablesMenuListItems.ContainsKey(item))
+                {
+                    int drawableID = drawablesMenuListItems[item];
+                    SetPedComponentVariation(PlayerPedId(), drawableID, index, 0, 0);
+                }
+                else if (propsMenuListItems.ContainsKey(item))
+                {
+                    int propID = propsMenuListItems[item];
+                    if (index == 0)
+                    {
+                        SetPedPropIndex(PlayerPedId(), propID, index - 1, 0, false);
+                        ClearPedProp(PlayerPedId(), propID);
+                    }
+                    else
+                    {
+                        SetPedPropIndex(PlayerPedId(), propID, index - 1, 0, true);
+                    }
+
+                }
+            };
+
+            // Manage list selections.
+            pedCustomizationMenu.OnListSelect += (sender, item, index) =>
+            {
+                if (drawablesMenuListItems.ContainsKey(item)) // drawable
+                {
+                    int currentDrawableID = drawablesMenuListItems[item];
+                    int currentTextureIndex = GetPedTextureVariation(PlayerPedId(), currentDrawableID);
+                    int maxDrawableTextures = GetNumberOfPedTextureVariations(PlayerPedId(), currentDrawableID, index) - 1;
+
+                    if (currentTextureIndex == -1)
+                        currentTextureIndex = 0;
+
+                    int newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
+
+                    SetPedComponentVariation(PlayerPedId(), currentDrawableID, index, newTexture, 0);
+                }
+                else if (propsMenuListItems.ContainsKey(item)) // prop
+                {
+                    int currentPropIndex = propsMenuListItems[item];
+                    int currentPropVariationIndex = GetPedPropIndex(PlayerPedId(), currentPropIndex);
+                    int currentPropTextureVariation = GetPedPropTextureIndex(PlayerPedId(), currentPropIndex);
+                    int maxPropTextureVariations = GetNumberOfPedPropTextureVariations(PlayerPedId(), currentPropIndex, currentPropVariationIndex) - 1;
+
+                    int newPropTextureVariationIndex = currentPropTextureVariation < maxPropTextureVariations ? currentPropTextureVariation + 1 : 0;
+                    SetPedPropIndex(PlayerPedId(), currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
+                }
+            };
+            #endregion
         }
         #endregion
 
@@ -380,1156 +458,70 @@ namespace vMenuClient
         }
         #endregion
 
-
-        #region Multiplayer ped customization
-        /// <summary>
-        /// Creates the multiplayer ped customization submenu.
-        /// </summary>
-        /// <param name="mpMenu"></param>
-        public void CreateMpPedMenu(UIMenu mpMenu)
-        {
-            #region create submenus
-            // create new model
-            UIMenu newCharacterMenu = new UIMenu("New Character", "Create a new character", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // load existing model
-            UIMenu loadCharacterMenu = new UIMenu("Load Character", "Load an existing character", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // create new male model
-            UIMenu maleMenu = new UIMenu("New Character", "Create a new male character", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // create new female model
-            UIMenu femaleMenu = new UIMenu("New Character", "Create a new female character", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // male appearance
-            UIMenu maleAppearanceMenu = new UIMenu("Male Appearance", "Appearance", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // female appearance
-            UIMenu femaleAppearanceMenu = new UIMenu("Female Appearance", "Appearance", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // male features
-            UIMenu maleFeaturesMenu = new UIMenu("Male Features", "Features", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // female features
-            UIMenu femaleFeaturesMenu = new UIMenu("Female Features", "Features", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // male heritage
-            UIMenu maleHeritageMenu = new UIMenu("Male Heritage", "Heritage", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // female heritage
-            UIMenu femaleHeritageMenu = new UIMenu("Female Heritage", "Features", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // male style
-            UIMenu maleStyleMenu = new UIMenu("Male Style", "Facial and Body Style", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // female style
-            UIMenu femaleStyleMenu = new UIMenu("Female Style", "Facial and Body Style", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            #endregion
-
-
-            #region add submenus to menu pool
-            MainMenu.Mp.Add(newCharacterMenu); // new character menu
-            MainMenu.Mp.Add(loadCharacterMenu); // load character menu
-            MainMenu.Mp.Add(maleMenu); // new male character
-            MainMenu.Mp.Add(femaleMenu); // new female character
-            MainMenu.Mp.Add(maleAppearanceMenu); // male appearance
-            MainMenu.Mp.Add(femaleAppearanceMenu); // female appearance
-            MainMenu.Mp.Add(maleFeaturesMenu); // female features
-            MainMenu.Mp.Add(femaleFeaturesMenu); // female features
-            MainMenu.Mp.Add(femaleHeritageMenu); // female heritage
-            MainMenu.Mp.Add(maleHeritageMenu); // male heritage
-            MainMenu.Mp.Add(femaleStyleMenu); // female style
-            MainMenu.Mp.Add(maleStyleMenu); // male style
-            #endregion
-
-
-            #region add instructional buttons
-            newCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new character
-            loadCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // load character
-            maleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new male character
-            femaleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new female character
-            maleAppearanceMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male appearance
-            femaleAppearanceMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female appearance
-            femaleFeaturesMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female features
-            maleFeaturesMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male features
-            maleHeritageMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male heritage
-            femaleHeritageMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female heritage
-            maleStyleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male style
-            femaleStyleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female style
-            #endregion
-
-
-            #region add menus to list
-            mpCharMenus.Add(newCharacterMenu); // new char
-            mpCharMenus.Add(loadCharacterMenu); // load char
-            mpCharMenus.Add(maleMenu); // new male char
-            mpCharMenus.Add(femaleMenu); // new female char
-            mpCharMenus.Add(maleAppearanceMenu); // male appearance
-            mpCharMenus.Add(femaleAppearanceMenu); // female appearance
-            mpCharMenus.Add(maleFeaturesMenu); // male features
-            mpCharMenus.Add(femaleFeaturesMenu); // female features
-            mpCharMenus.Add(maleHeritageMenu); // male heritage
-            mpCharMenus.Add(femaleHeritageMenu); // female heritage
-            mpCharMenus.Add(maleStyleMenu); // male style
-            mpCharMenus.Add(femaleStyleMenu); // female style
-            #endregion
-
-
-            #region create menu items
-            // character customization menu
-            UIMenuItem newCharBtn = new UIMenuItem("New Character", "Create a new multiplayer character.");
-            UIMenuItem loadCharBtn = new UIMenuItem("Load Existing Character", "Load an existing (saved) multiplayer character.");
-
-            // new character menu
-            UIMenuItem male = new UIMenuItem("Create Male Character", "Create a new male multiplayer character.");
-            UIMenuItem female = new UIMenuItem("Create Female Character", "Create a new female multiplayer character.");
-
-            // new male menu (TODO)
-
-            // new female menu
-            UIMenuItem f_Appearance = new UIMenuItem("Appearance", "Make changes to your Appearance.");
-            UIMenuItem f_Features = new UIMenuItem("Features", "Make changes to your Features.");
-            UIMenuItem f_Heritage = new UIMenuItem("Heritage", "Make changes to your Heritage.");
-            UIMenuItem f_Styles = new UIMenuItem("Styles", "Make changes to your Face and Body Style.");
-
-
-            #region female appearance menu.
-            // hair styles 
-            List<dynamic> f_hair_styles = new List<dynamic>() { };
-            for (int i = 0; i < 24; i++)
-            {
-                f_hair_styles.Add(GetLabelText($"CC_F_HS_{i}"));
-            }
-            UIMenuListItem f_hair_style = new UIMenuListItem("Hair Style", f_hair_styles, 0);
-
-            List<dynamic> hair_colors = new List<dynamic>();
-            for (int i = 0; i < 64; i++)
-            {
-                hair_colors.Add($"Hair Color #{i + 1}/64");
-            }
-            UIMenuListItem f_hair_colors = new UIMenuListItem("Hair Color", hair_colors, 0);
-            UIMenuListItem f_hair_hi_colors = new UIMenuListItem("Hair Highlight Color", hair_colors, 0);
-
-
-            // features
-
-            List<dynamic> features_range = new List<dynamic>() { -1f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
-            UIMenuSliderItem f_noseWidth = new UIMenuSliderItem("Nose Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_noseHeight = new UIMenuSliderItem("Nose Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_noseLength = new UIMenuSliderItem("Nose Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_noseLowering = new UIMenuSliderItem("Nose Lowering", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_noseBoneTwist = new UIMenuSliderItem("Nose Bone Twist", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_eyebrowHeight = new UIMenuSliderItem("Eybebrows Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_eyebrowForward = new UIMenuSliderItem("Eyebrows Depth", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_cheeksboneHeight = new UIMenuSliderItem("Cheekbones Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_cheeksboneWidth = new UIMenuSliderItem("Cheekbones Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_cheeksWidth = new UIMenuSliderItem("Cheeks Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_eyesOpening = new UIMenuSliderItem("Eyes Opening", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_lipsThickness = new UIMenuSliderItem("Lips Thickness", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_jawBoneWidth = new UIMenuSliderItem("Jaw Bone Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_jawBoneBackLength = new UIMenuSliderItem("Jaw Bone Back Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_chinBoneLowering = new UIMenuSliderItem("Chin Bone Lowering", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_chinBoneLength = new UIMenuSliderItem("Chin Bone Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_chinBoneWidth = new UIMenuSliderItem("Chin Bone Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            UIMenuSliderItem f_chinHole = new UIMenuSliderItem("Chin Hole", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-
-            UIMenuSliderItem f_neckThickness = new UIMenuSliderItem("Neck Thickness", features_range, features_range.Count / 2, "Make changes to your Features.", true);
-            #endregion
-
-            #region female heritage menu
-            //UIMenuSliderItem 
-            UIMenuHeritageCardItem heritageCard = new UIMenuHeritageCardItem(0, 0);
-
-
-            // mom
-            List<dynamic> moms = new List<dynamic>();
-            for (var i = 0; i < 21; i++)
-            {
-                moms.Add($"Mom #{i}");
-            }
-            UIMenuListItem mom = new UIMenuListItem("Mom", moms, currentCharacter.Mom);
-
-
-            // dad
-            List<dynamic> dads = new List<dynamic>();
-            for (var i = 0; i < 21; i++)
-            {
-                dads.Add($"Dad #{i}");
-            }
-            UIMenuListItem dad = new UIMenuListItem("Dad", dads, currentCharacter.Dad);
-
-
-            // resemblance
-            UIMenuSliderItem resemblance = new UIMenuSliderItem("Resemblance", features_range, features_range.Count / 2, "Select if your features are influenced more by your Mother or Father.", true);
-            UIMenuSliderItem skinTone = new UIMenuSliderItem("Skin Tone", features_range, features_range.Count / 2, "Select if your skin tone is influenced more by your Mother or Father.", true);
-
-            #endregion
-
-            #region female style menu buttons
-            List<dynamic> blemishes = new List<dynamic>() { "1", "2" };
-            UIMenuListItem f_blemishes = new UIMenuListItem("Blemishes", blemishes, 0); // id == 0
-
-            List<dynamic> eyebrows = new List<dynamic>() { "1", "2" };
-            UIMenuListItem f_eyebrows = new UIMenuListItem("Eyebrows", eyebrows, 0); // id == 2
-
-            List<dynamic> ageing = new List<dynamic>() { "1", "2" };
-            UIMenuListItem f_ageing = new UIMenuListItem("Ageing", ageing, 0); // id == 3
-
-            List<dynamic> blush = new List<dynamic>() { "1", "2" };
-            //UIMenuListItem
-
-            List<dynamic> makeup = new List<dynamic>();
-            for (int i = 0; i < 22; i++)
-            {
-                makeup.Add(GetLabelText("CC_MKUP_11"));
-            }
-            UIMenuListItem f_makeup = new UIMenuListItem("Makeup", makeup, 0); // id == 4
-            #endregion
-
-            // save character buttons
-            UIMenuItem f_saveChar = new UIMenuItem("Save Character", "Save your character, if you don't save your character now, you won't be able to load or edit it later. You also won't be able to save this ped in the 'Saved Peds' menu.");
-            UIMenuItem m_saveChar = new UIMenuItem("Save Character", "Save your character, if you don't save your character now, you won't be able to load or edit it later. You also won't be able to save this ped in the 'Saved Peds' menu.");
-            #endregion
-
-
-
-            #region add items to menus
-            // character customization menu
-            mpMenu.AddItem(newCharBtn);
-            mpMenu.AddItem(loadCharBtn);
-
-            // new character menu
-            newCharacterMenu.AddItem(male);
-            newCharacterMenu.AddItem(female);
-
-            // new female char menu
-            femaleMenu.AddItem(f_Heritage);
-            femaleMenu.AddItem(f_Features);
-            femaleMenu.AddItem(f_Appearance);
-            femaleMenu.AddItem(f_Styles);
-            femaleMenu.AddItem(f_saveChar);
-
-            // female appearance menu
-            femaleAppearanceMenu.AddItem(f_hair_style);
-            femaleAppearanceMenu.AddItem(f_hair_colors);
-            femaleAppearanceMenu.AddItem(f_hair_hi_colors);
-
-            // female features menu
-            femaleFeaturesMenu.AddItem(f_noseWidth);
-            femaleFeaturesMenu.AddItem(f_noseHeight);
-            femaleFeaturesMenu.AddItem(f_noseLength);
-            femaleFeaturesMenu.AddItem(f_noseLowering);
-            femaleFeaturesMenu.AddItem(f_noseBoneTwist);
-
-            femaleFeaturesMenu.AddItem(f_eyebrowHeight);
-            femaleFeaturesMenu.AddItem(f_eyebrowForward);
-
-            femaleFeaturesMenu.AddItem(f_cheeksboneHeight);
-            femaleFeaturesMenu.AddItem(f_cheeksboneWidth);
-            femaleFeaturesMenu.AddItem(f_cheeksWidth);
-
-            femaleFeaturesMenu.AddItem(f_eyesOpening);
-
-            femaleFeaturesMenu.AddItem(f_lipsThickness);
-
-            femaleFeaturesMenu.AddItem(f_jawBoneWidth);
-            femaleFeaturesMenu.AddItem(f_jawBoneBackLength);
-
-            femaleFeaturesMenu.AddItem(f_chinBoneLowering);
-            femaleFeaturesMenu.AddItem(f_chinBoneLength);
-            femaleFeaturesMenu.AddItem(f_chinBoneWidth);
-            femaleFeaturesMenu.AddItem(f_chinHole);
-
-            femaleFeaturesMenu.AddItem(f_neckThickness);
-
-            // female heritage menu
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(heritageCard);
-            femaleHeritageMenu.AddItem(mom);
-            femaleHeritageMenu.AddItem(dad);
-            femaleHeritageMenu.AddItem(resemblance);
-            femaleHeritageMenu.AddItem(skinTone);
-            femaleHeritageMenu.CurrentSelection = femaleHeritageMenu.MenuItems.Count - 5;
-            #endregion
-
-
-            #region bind menus to menu items
-            // character customization menu
-            mpMenu.BindMenuToItem(newCharacterMenu, newCharBtn);
-            mpMenu.BindMenuToItem(loadCharacterMenu, loadCharBtn);
-
-            // new character menu
-            newCharacterMenu.BindMenuToItem(maleMenu, male);
-            newCharacterMenu.BindMenuToItem(femaleMenu, female);
-
-            // female char menu
-            femaleMenu.BindMenuToItem(femaleAppearanceMenu, f_Appearance);
-            femaleMenu.BindMenuToItem(femaleFeaturesMenu, f_Features);
-            femaleMenu.BindMenuToItem(femaleHeritageMenu, f_Heritage);
-
-            #endregion
-
-            //DeleteResourceKvp("mp_char_some cool name");
-
-            #region item select events
-            mpCharMenu.OnItemSelect += async (sender, item, index) =>
-            {
-                if (item == loadCharBtn)
-                {
-                    loadCharacterMenu.Clear();
-                }
-
-                int searchHandle = StartFindKvp("mp_char_");
-                List<string> characterNames = new List<string>();
-                while (true)
-                {
-                    var foundItem = FindKvp(searchHandle);
-                    if (string.IsNullOrEmpty(foundItem))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        characterNames.Add(foundItem);
-                    }
-                    await BaseScript.Delay(0);
-                }
-                foreach (var name in characterNames)
-                {
-                    UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
-                    loadCharacterMenu.AddItem(nameItem);
-                }
-                loadCharacterMenu.RefreshIndex();
-                loadCharacterMenu.UpdateScaleform();
-            };
-
-            loadCharacterMenu.OnItemSelect += (sender, item, index) =>
-            {
-                var Character = cf.LoadMultiplayerCharacter(item.Text.ToString());
-                if (Character.Valid)
-                {
-                    Notify.Success("Multiplayer character has been loaded.");
-                    SetModel(Character.IsMale);
-                    currentCharacter = Character;
-
-                    // heritage features.
-                    SetPedHeritage();
-                    // hair style.
-                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
-                    // hair colors.
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
-                    // eye color.
-                    SetPedEyeColor(PlayerPedId(), currentCharacter.EyeColor);
-
-                    // facial features.
-                    SetPedFaceFeature(PlayerPedId(), 0, currentCharacter.NoseWidth);
-                    SetPedFaceFeature(PlayerPedId(), 1, currentCharacter.NosePeakHeight);
-                    SetPedFaceFeature(PlayerPedId(), 2, currentCharacter.NosePeakLength);
-                    SetPedFaceFeature(PlayerPedId(), 3, currentCharacter.NosePeakLowering);
-                    SetPedFaceFeature(PlayerPedId(), 4, currentCharacter.NoseBoneTwist);
-                    SetPedFaceFeature(PlayerPedId(), 5, currentCharacter.EyebrowHeight);
-                    SetPedFaceFeature(PlayerPedId(), 6, currentCharacter.EyebrowForward);
-                    SetPedFaceFeature(PlayerPedId(), 7, currentCharacter.CheeksBoneHeight);
-                    SetPedFaceFeature(PlayerPedId(), 8, currentCharacter.CheeksBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 9, currentCharacter.CheeksWidth);
-                    SetPedFaceFeature(PlayerPedId(), 10, currentCharacter.EyesOpening);
-                    SetPedFaceFeature(PlayerPedId(), 11, currentCharacter.LipsThickness);
-                    SetPedFaceFeature(PlayerPedId(), 12, currentCharacter.JawBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 13, currentCharacter.JawBoneBackLength);
-                    SetPedFaceFeature(PlayerPedId(), 14, currentCharacter.ChinBoneLowering);
-                    SetPedFaceFeature(PlayerPedId(), 15, currentCharacter.ChinBoneLength);
-                    SetPedFaceFeature(PlayerPedId(), 16, currentCharacter.ChinBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 17, currentCharacter.ChinHole);
-                    SetPedFaceFeature(PlayerPedId(), 18, currentCharacter.NeckThickness);
-
-                    // facial appearance
-
-
-                    //SetPedFaceFeature(PlayerPedId(), 0, )
-                }
-                else
-                {
-                    Notify.Error("Failed to load.", true, true);
-                }
-            };
-
-            newCharacterMenu.OnItemSelect += (sender, item, index) =>
-            {
-                if (item == male)
-                {
-                    SetModel(true);
-                    currentCharacter = new MpCharacterStyle(true, true);
-                }
-                if (item == female)
-                {
-                    SetModel(false);
-                    currentCharacter = new MpCharacterStyle(false, true);
-                }
-            };
-
-            femaleMenu.OnItemSelect += (sender, item, index) =>
-            {
-                if (item == f_saveChar)
-                {
-                    cf.SaveMultiplayerCharacter(currentCharacter);
-                }
-            };
-            #endregion
-
-
-            #region checkbox events
-
-            #endregion
-
-
-            #region list events
-            femaleHeritageMenu.OnListChange += (sender, item, index) =>
-            {
-                if (item == mom)
-                {
-                    heritageCard.Mom = index;
-                    currentCharacter.Mom = index;
-                    SetPedHeritage();
-                }
-                else if (item == dad)
-                {
-                    heritageCard.Dad = index;
-                    currentCharacter.Dad = index;
-                    SetPedHeritage();
-                }
-            };
-
-            femaleAppearanceMenu.OnListChange += (sender, item, index) =>
-            {
-                if (item == f_hair_style)
-                {
-                    if (index == 0)
-                    {
-                        SetPedComponentVariation(PlayerPedId(), 2, 0, 0, 0);
-                        currentCharacter.HairStyle = 0;
-                    }
-                    else
-                    {
-                        SetPedComponentVariation(PlayerPedId(), 2, index + 25 + 13, 0, 0);
-                        currentCharacter.HairStyle = index + 25 + 13;
-                    }
-                }
-                else if (item == f_hair_colors)
-                {
-                    SetPedHairColor(PlayerPedId(), index, currentCharacter.HairHighlightColor);
-                    currentCharacter.HairColor = index;
-                }
-                else if (item == f_hair_hi_colors)
-                {
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, index);
-                    currentCharacter.HairHighlightColor = index;
-                }
-            };
-            #endregion
-
-
-            #region slider events
-            femaleFeaturesMenu.OnSliderChange += (sender, item, index) =>
-            {
-                SetPedFaceFeature(PlayerPedId(), sender.MenuItems.IndexOf(item), features_range[index]);
-                //currentCharacter.
-            };
-
-            femaleHeritageMenu.OnSliderChange += (sender, item, index) =>
-            {
-                if (item == resemblance)
-                {
-                    currentCharacter.Resemblance = features_range[index];
-                    SetPedHeritage();
-                }
-                else if (item == skinTone)
-                {
-                    currentCharacter.SkinTone = features_range[index];
-                    SetPedHeritage();
-                }
-            };
-            #endregion
-
-
-
-            #region (working, but unused)
-            //var nose = new List<dynamic>() { -1.0f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
-            //UIMenuSliderItem testItem = new UIMenuSliderItem("Nose", nose, 0, "Nose feature", true);
-            //mpMenu.AddItem(testItem);
-            //menu.OnMenuChange += (sender, newMenu, forward) =>
-            //{
-            //    if (newMenu == mpMenu)
-            //    {
-
-            //    }
-            //};
-            //mpMenu.OnSliderChange += (sender, item, index) =>
-            //{
-            //    //Debug.WriteLine(index.ToString());
-            //    Debug.WriteLine(nose[index].ToString());
-
-
-            //    SetPedFaceFeature(PlayerPedId(), 0, nose[index]);
-            //    //var data = 0;
-            //    //GetPedHeadBlendData(PlayerPedId(), ref data);
-            //    //var dat = CitizenFX.Core.Native.Function.Call<dynamic>((CitizenFX.Core.Native.Hash)0x2746BD9D88C5C5D0, PlayerPedId());
-            //    //Debug.WriteLine(dat.ToString());
-            //    //GetPedHeadBlendData()
-            //};
-
-            /*
-            #region tattoo stuff
-            // create submenu.
-            UIMenu tattooMenu = new UIMenu(GetPlayerName(PlayerId()), "MP Character Tattoo Options", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            // create tattoo items. + tattoo menu bind item
-            UIMenuItem tattooMenuBtn = new UIMenuItem("Tattoo Options", "Add or remove a tattoo.");
-            mpMenu.AddItem(tattooMenuBtn);
-            mpMenu.BindMenuToItem(tattooMenu, tattooMenuBtn);
-
-            // add submenu to menu pool.
-            MainMenu.Mp.Add(tattooMenu);
-
-
-
-
-            // create tattoo-submenu submenus.
-
-            #region male tattoos
-            UIMenu maleTattooMenu = new UIMenu("Male Tattoos", "Male Tattoo Options", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            UIMenu maleHead = new UIMenu("Male Tattoos", "Male Head Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu maleLeftArm = new UIMenu("Male Tattoos", "Male Left Arm Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu maleRightArm = new UIMenu("Male Tattoos", "Male Right Arm Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu maleLeftLeg = new UIMenu("Male Tattoos", "Male Left Leg Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu maleRightLeg = new UIMenu("Male Tattoos", "Male Right Leg Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu maleTorso = new UIMenu("Male Tattoos", "Male Torso Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            #endregion
-
-            #region female tattoos
-            UIMenu femaleTattooMenu = new UIMenu("Female Tattoos", "Female Tattoo Options", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-
-            UIMenu femaleHead = new UIMenu("Female Tattoos", "Female Head Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu femaleLeftArm = new UIMenu("Female Tattoos", "Female Left Arm Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu femaleRightArm = new UIMenu("Female Tattoos", "Female Right Arm Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu femaleLeftLeg = new UIMenu("Female Tattoos", "Female Left Leg Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu femaleRightLeg = new UIMenu("Female Tattoos", "Female Right Leg Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            UIMenu femaleTorso = new UIMenu("Female Tattoos", "Female Torso Tattoos", true)
-            {
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ScaleWithSafezone = false
-            };
-            #endregion
-
-
-
-            MainMenu.Mp.Add(maleTattooMenu);
-
-            MainMenu.Mp.Add(maleHead);
-            MainMenu.Mp.Add(maleLeftArm);
-            MainMenu.Mp.Add(maleRightArm);
-            MainMenu.Mp.Add(maleLeftLeg);
-            MainMenu.Mp.Add(maleRightLeg);
-            MainMenu.Mp.Add(maleTorso);
-
-
-            MainMenu.Mp.Add(femaleTattooMenu);
-
-            MainMenu.Mp.Add(femaleHead);
-            MainMenu.Mp.Add(femaleLeftArm);
-            MainMenu.Mp.Add(femaleRightArm);
-            MainMenu.Mp.Add(femaleLeftLeg);
-            MainMenu.Mp.Add(femaleRightLeg);
-            MainMenu.Mp.Add(femaleTorso);
-
-
-
-            UIMenuItem maleTattooMenuBtn = new UIMenuItem("Male Tattoos", "Male tattoo options.");
-            tattooMenu.AddItem(maleTattooMenuBtn);
-            tattooMenu.BindMenuToItem(maleTattooMenu, maleTattooMenuBtn);
-
-
-            UIMenuItem femaleTattooMenuBtn = new UIMenuItem("Female Tattoos", "Female tattoo options.");
-            tattooMenu.AddItem(femaleTattooMenuBtn);
-            tattooMenu.BindMenuToItem(femaleTattooMenu, femaleTattooMenuBtn);
-
-            // male tattoo categories
-            UIMenuItem maleHeadBtn = new UIMenuItem("Head");
-            maleTattooMenu.AddItem(maleHeadBtn);
-            maleTattooMenu.BindMenuToItem(maleHead, maleHeadBtn);
-            UIMenuItem maleLeftArmBtn = new UIMenuItem("Left Arm");
-            maleTattooMenu.AddItem(maleLeftArmBtn);
-            maleTattooMenu.BindMenuToItem(maleLeftArm, maleLeftArmBtn);
-            UIMenuItem maleRightArmBtn = new UIMenuItem("Right Arm");
-            maleTattooMenu.AddItem(maleRightArmBtn);
-            maleTattooMenu.BindMenuToItem(maleRightArm, maleRightArmBtn);
-            UIMenuItem maleLeftLegBtn = new UIMenuItem("Left Leg");
-            maleTattooMenu.AddItem(maleLeftLegBtn);
-            maleTattooMenu.BindMenuToItem(maleLeftLeg, maleLeftLegBtn);
-            UIMenuItem maleRightLegBtn = new UIMenuItem("Right Leg");
-            maleTattooMenu.AddItem(maleRightLegBtn);
-            maleTattooMenu.BindMenuToItem(maleRightLeg, maleRightLegBtn);
-            UIMenuItem maleTorsoBtn = new UIMenuItem("Torso");
-            maleTattooMenu.AddItem(maleTorsoBtn);
-            maleTattooMenu.BindMenuToItem(maleTorso, maleTorsoBtn);
-
-
-            // female tattoo categories
-            UIMenuItem femaleHeadBtn = new UIMenuItem("Head");
-            femaleTattooMenu.AddItem(femaleHeadBtn);
-            femaleTattooMenu.BindMenuToItem(femaleHead, femaleHeadBtn);
-            UIMenuItem femaleLeftArmBtn = new UIMenuItem("Left Arm");
-            femaleTattooMenu.AddItem(femaleLeftArmBtn);
-            femaleTattooMenu.BindMenuToItem(femaleLeftArm, femaleLeftArmBtn);
-            UIMenuItem femaleRightArmBtn = new UIMenuItem("Right Arm");
-            femaleTattooMenu.AddItem(femaleRightArmBtn);
-            femaleTattooMenu.BindMenuToItem(femaleRightArm, femaleRightArmBtn);
-            UIMenuItem femaleLeftLegBtn = new UIMenuItem("Left Leg");
-            femaleTattooMenu.AddItem(femaleLeftLegBtn);
-            femaleTattooMenu.BindMenuToItem(femaleLeftLeg, femaleLeftLegBtn);
-            UIMenuItem femaleRightLegBtn = new UIMenuItem("Right Leg");
-            femaleTattooMenu.AddItem(femaleRightLegBtn);
-            femaleTattooMenu.BindMenuToItem(femaleRightLeg, femaleRightLegBtn);
-            UIMenuItem femaleTorsoBtn = new UIMenuItem("Torso");
-            femaleTattooMenu.AddItem(femaleTorsoBtn);
-            femaleTattooMenu.BindMenuToItem(femaleTorso, femaleTorsoBtn);
-
-
-            foreach (var tattoo in tattoosList)
-            {
-                UIMenuItem item = new UIMenuItem($"{GetLabelText(tattoo.displayName)}", tattoo.name);
-                switch (tattoo.gender)
-                {
-                    case PedGender.FEMALE:
-                        switch (tattoo.zone)
-                        {
-                            case "HEAD":
-                                femaleHead.AddItem(item);
-                                break;
-                            case "LEFT_ARM":
-                                femaleLeftArm.AddItem(item);
-                                break;
-                            case "RIGHT_ARM":
-                                femaleRightArm.AddItem(item);
-                                break;
-                            case "LEFT_LEG":
-                                femaleLeftLeg.AddItem(item);
-                                break;
-                            case "RIGHT_LEG":
-                                femaleRightLeg.AddItem(item);
-                                break;
-                            case "TORSO":
-                                femaleTorso.AddItem(item);
-                                break;
-                            default: break;
-                        }
-                        break;
-                    case PedGender.MALE:
-                        switch (tattoo.zone)
-                        {
-                            case "HEAD":
-                                maleHead.AddItem(item);
-                                break;
-                            case "LEFT_ARM":
-                                maleLeftArm.AddItem(item);
-                                break;
-                            case "RIGHT_ARM":
-                                maleRightArm.AddItem(item);
-                                break;
-                            case "LEFT_LEG":
-                                maleLeftLeg.AddItem(item);
-                                break;
-                            case "RIGHT_LEG":
-                                maleRightLeg.AddItem(item);
-                                break;
-                            case "TORSO":
-                                maleTorso.AddItem(item);
-                                break;
-                            default: break;
-                        }
-                        break;
-                    default: break;
-                }
-            }
-
-            maleTorso.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            maleLeftArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            maleRightArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            maleLeftLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            maleRightLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            maleHead.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-
-            femaleTorso.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            femaleLeftArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            femaleRightArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            femaleLeftLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            femaleRightLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-            femaleHead.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
-
-            maleTorso.RefreshIndex();
-            maleTorso.UpdateScaleform();
-            maleLeftArm.RefreshIndex();
-            maleLeftArm.UpdateScaleform();
-            maleRightArm.RefreshIndex();
-            maleRightArm.UpdateScaleform();
-            maleLeftLeg.RefreshIndex();
-            maleLeftLeg.UpdateScaleform();
-            maleRightLeg.RefreshIndex();
-            maleRightLeg.UpdateScaleform();
-            maleHead.RefreshIndex();
-            maleHead.UpdateScaleform();
-
-            femaleTorso.RefreshIndex();
-            femaleTorso.UpdateScaleform();
-            femaleLeftArm.RefreshIndex();
-            femaleLeftArm.UpdateScaleform();
-            femaleRightArm.RefreshIndex();
-            femaleRightArm.UpdateScaleform();
-            femaleLeftLeg.RefreshIndex();
-            femaleLeftLeg.UpdateScaleform();
-            femaleRightLeg.RefreshIndex();
-            femaleRightLeg.UpdateScaleform();
-            femaleHead.RefreshIndex();
-            femaleHead.UpdateScaleform();
-
-            //update the menu.
-            tattooMenu.RefreshIndex();
-            tattooMenu.UpdateScaleform();
-            #endregion
-
-            // create items.
-            UIMenuItem backBtn = new UIMenuItem("Back", "Go back to the previous menu.");
-
-
-            // add items to the submenu.
-
-            mpMenu.AddItem(backBtn);
-
-
-            // add event listener for slider changes.
-
-            // add event listener for checkbox changes.
-
-            // add event listener for list changes.
-
-            // add event listener for list selection events.
-
-
-
-
-
-            // add event listener for item select events.
-            mpMenu.OnItemSelect += (sender, item, index) =>
-            {
-                // go back.
-                if (item == backBtn)
-                {
-                    mpMenu.GoBack();
-                }
-            };
-
-            // update stuff.
-            mpMenu.RefreshIndex();
-            mpMenu.UpdateScaleform();
-            
-            */
-
-            #endregion
-        }
-        #endregion
-
-        private void SetPedHeritage()
-        {
-            float Resemblance = (currentCharacter.Resemblance + 1f) / 2f;
-            float SkinTone = (currentCharacter.SkinTone + 1f) / 2f;
-            float thirdF = 0f;
-            //float thirdF = (Resemblance + SkinTone) / 2f;
-
-            int dad = currentCharacter.Dad;
-            int mom = currentCharacter.Mom;
-            int third = 0;
-            SetPedHeadBlendData(PlayerPedId(), mom, dad, third, mom, dad, third, Resemblance, SkinTone, thirdF, false);
-        }
-
-        private async void SetModel(bool male)
-        {
-            uint model = male ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01");
-
-            if (IsModelInCdimage(model))
-            {
-                if (!HasModelLoaded(model))
-                {
-                    RequestModel(model);
-                }
-                while (!HasModelLoaded(model))
-                {
-                    await BaseScript.Delay(0);
-                }
-                SetPlayerModel(PlayerId(), model);
-                SetPedDefaultComponentVariation(PlayerPedId());
-                SetPedHeadBlendData(PlayerPedId(), 0, 0, 0, 0, 0, 0, 0f, 0f, 0f, false);
-            }
-
-        }
-
-        #region Enable Tattoo function
-        /// <summary>
-        /// Enables the tattoo overlay.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="item"></param>
-        /// <param name="index"></param>
-        private void EnableTattoo(UIMenu sender, UIMenuItem item, int index)
-        {
-            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_m_freemode_01")) // ped is male.
-            {
-                Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
-                if (tat.gender == PedGender.MALE || tat.gender == PedGender.UNISEX)
-                {
-                    ClearPedDecorations(PlayerPedId());
-                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
-                }
-                else
-                {
-                    Notify.Error("This tattoo is not available for male peds.");
-                }
-            }
-            else if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01")) // ped is female.
-            {
-                Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
-                if (tat.gender == PedGender.FEMALE || tat.gender == PedGender.UNISEX)
-                {
-                    ClearPedDecorations(PlayerPedId());
-                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
-                }
-                else
-                {
-                    Notify.Error("This tattoo is not available for female peds.");
-                }
-
-            }
-        }
-        #endregion
-
         #region Ped Customization Menu
-        /// <summary>
-        /// Refresh/create the ped customization menu.
-        /// </summary>
+        ///// <summary>
+        ///// Refresh/create the ped customization menu.
+        ///// </summary>
         private void RefreshCustomizationMenu()
         {
-            // Remove any old items.
-            pedTextures.MenuItems.Clear();
+            drawablesMenuListItems.Clear();
+            propsMenuListItems.Clear();
+            pedCustomizationMenu.Clear();
 
-            #region Loop through all ped drawable variations and all ped props.
-            for (var i = 0; i < 17; i++)
+            #region Ped Drawables
+            for (int drawable = 0; drawable < 12; drawable++)
             {
-                #region Ped Drawable Variations
-                //if (i < 12)
-                if (i < 12)
+                int currentDrawable = GetPedDrawableVariation(PlayerPedId(), drawable);
+                int maxVariations = GetNumberOfPedDrawableVariations(PlayerPedId(), drawable);
+                int maxTextures = GetNumberOfPedTextureVariations(PlayerPedId(), drawable, currentDrawable);
+
+                if (maxVariations > 0)
                 {
-                    // Get the drawable information.
-                    var currentDrawable = GetPedDrawableVariation(PlayerPedId(), i);
-                    var variations = GetNumberOfPedDrawableVariations(PlayerPedId(), i);
-                    var textures = GetNumberOfPedTextureVariations(PlayerPedId(), i, currentDrawable);
-                    // If there are any variations.
-                    if (variations > 0)
+                    List<dynamic> drawableTexturesList = new List<dynamic>();
+
+                    for (int i = 0; i < maxVariations; i++)
                     {
-                        // Loop through all of them and add them to the list.
-                        var textureList = new List<dynamic>();
-                        for (var x = 0; x < variations; x++)
-                        {
-                            textureList.Add("Item #" + x.ToString());
-                        }
-                        UIMenuListItem listItem = new UIMenuListItem($"{textureNames[i]}", textureList, currentDrawable,
-                            $"Use ← & → to select a ~o~{textureNames[i]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
-                        pedTextures.AddItem(listItem);
-
-                        // Manage list changes.
-                        pedTextures.OnListChange += (sender2, item2, index2) =>
-                        {
-                            if (item2 == listItem)
-                            {
-                                SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, 0, 0);
-                            }
-                        };
-
-                        // Manage list selections.
-                        pedTextures.OnListSelect += (sender2, item2, index2) =>
-                        {
-                            if (item2 == listItem)
-                            {
-                                var currentTexture = GetPedTextureVariation(PlayerPedId(), sender2.CurrentSelection);
-                                currentTexture = currentTexture == -1 ? 0 : currentTexture;
-                                var totalTextures = GetNumberOfPedTextureVariations(PlayerPedId(), sender2.CurrentSelection, index2) - 1;
-
-                                SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, (currentTexture < totalTextures ? currentTexture + 1 : 0), 0);
-                            }
-                        };
+                        drawableTexturesList.Add($"Drawable #{i + 1} (of {maxVariations})");
                     }
-                    else
-                    {
-                        UIMenuItem placeholder = new UIMenuItem($"{textureNames[i]}");
-                        placeholder.SetRightLabel("None");
-                        placeholder.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                        placeholder.Enabled = false;
-                        pedTextures.AddItem(placeholder);
-                    }
+
+                    UIMenuListItem drawableTextures = new UIMenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentDrawable, $"Use ← & → to select a ~o~{textureNames[drawable]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                    drawablesMenuListItems.Add(drawableTextures, drawable);
+                    pedCustomizationMenu.AddItem(drawableTextures);
                 }
-                #endregion
-                #region Ped Props
-                else
-                {
-                    // Variables setup.
-                    var ii = i - 12;// 20;
-                    if (ii > 2)
-                    {
-                        ii += 3;
-                    }
-                    var currentProp = GetPedPropIndex(PlayerPedId(), ii);
-                    var props = GetNumberOfPedPropDrawableVariations(PlayerPedId(), ii);
-                    // If there are any props.
-                    if (props > 0)
-                    {
-                        // Loop through all of them and add them to lists.
-                        var propsList = new List<dynamic>();
-                        for (var x = 0; x < props; x++)
-                        {
-                            propsList.Add("Item #" + x.ToString());
-                        }
-
-                        // Add an "off" item to the list to allow the prop to be turned off.
-                        propsList.Add("Off");
-
-                        // Create and add the list item to the menu.
-                        UIMenuListItem listItem = new UIMenuListItem($"{propNames[ii > 2 ? ii - 3 : ii]}", propsList, currentProp,
-                            $"Use ← & → to select a ~o~{propNames[ii > 2 ? ii - 3 : ii]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
-
-                        pedTextures.AddItem(listItem);
-
-                        // Handle list changes.
-                        pedTextures.OnListChange += (sender2, item2, index2) =>
-                        {
-                            if (item2 == listItem)
-                            {
-                                if (index2 == propsList.Count - 1)
-                                {
-                                    ClearPedProp(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
-                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
-                                }
-                                else
-                                {
-                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
-                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2, 0, true);
-                                }
-                            }
-                        };
-
-                        // Handle list selections.
-                        pedTextures.OnListSelect += (sender2, item2, index2) =>
-                        {
-                            if (item2 == listItem)
-                            {
-                                if (index2 != propsList.Count - 1)
-                                {
-                                    var propTextureCount = GetNumberOfPedPropTextureVariations(PlayerPedId(),
-                                        (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2);
-                                    var propCurrentTexture = GetPedPropTextureIndex(PlayerPedId(),
-                                        (sender2.CurrentSelection - textureNames.Count) + ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0));
-                                    SetPedPropIndex(PlayerPedId(), (sender2.CurrentSelection - textureNames.Count) +
-                                        ((sender2.CurrentSelection - textureNames.Count) > 2 ? 3 : 0), index2,
-                                        (propCurrentTexture + 1 < propTextureCount ? propCurrentTexture + 1 : 0), true);
-                                }
-                            }
-                        };
-                    }
-                    // If there's not enough variations available (none at all) then add a placeholder to let them know this option is unavailable.
-                    else
-                    {
-                        UIMenuItem placeholder = new UIMenuItem($"{propNames[ii > 2 ? ii - 3 : ii]}");
-                        placeholder.SetRightLabel("None");
-                        placeholder.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                        placeholder.Enabled = false;
-                        pedTextures.AddItem(placeholder);
-                    }
-                }
-                #endregion
             }
             #endregion
 
-            // Refresh index and update scaleform to make everything pretty.
-            pedTextures.RefreshIndex();
-            pedTextures.UpdateScaleform();
+            #region Ped Props
+            for (int tmpProp = 0; tmpProp < 5; tmpProp++)
+            {
+                int realProp = tmpProp > 2 ? tmpProp + 3 : tmpProp;
 
+                int currentProp = GetPedPropIndex(PlayerPedId(), realProp);
+                int maxPropVariations = GetNumberOfPedPropDrawableVariations(PlayerPedId(), realProp);
+
+                if (maxPropVariations > 0)
+                {
+                    List<dynamic> propTexturesList = new List<dynamic>();
+
+                    propTexturesList.Add($"Prop #1 (of {maxPropVariations + 1})");
+                    for (int i = 0; i < maxPropVariations; i++)
+                    {
+                        propTexturesList.Add($"Prop #{i + 2} (of {maxPropVariations + 1})");
+                    }
+
+
+                    UIMenuListItem propTextures = new UIMenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                    propsMenuListItems.Add(propTextures, realProp);
+                    pedCustomizationMenu.AddItem(propTextures);
+
+                }
+            }
+            pedCustomizationMenu.RefreshIndex();
+            pedCustomizationMenu.UpdateScaleform();
+            menu.UpdateScaleform();
+            #endregion
         }
+        #endregion
 
         #region Textures & Props
         private List<string> textureNames = new List<string>()
@@ -1556,7 +548,6 @@ namespace vMenuClient
             "Watches", // id 6
             "Bracelets", // id 7
         };
-        #endregion
         #endregion
 
         #region saved peds menus
@@ -1601,13 +592,6 @@ namespace vMenuClient
 
             // Sort the menu items (case IN-sensitive) by name.
             spawnSavedPedMenu.MenuItems.Sort((pair1, pair2) => pair1.Text.ToString().ToLower().CompareTo(pair2.Text.ToString().ToLower()));
-
-            spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
-            {
-                var name = item.Text.ToString();
-                cf.LoadSavedPed(name);
-
-            };
 
             spawnSavedPedMenu.RefreshIndex();
             spawnSavedPedMenu.UpdateScaleform();
@@ -2226,6 +1210,1065 @@ namespace vMenuClient
             "u_m_y_zombie_01"
         };
         #endregion
+
+        #region old mp character stuff
+        /*
+        #region Multiplayer ped customization
+        /// <summary>
+        /// Creates the multiplayer ped customization submenu.
+        /// </summary>
+        /// <param name="mpMenu"></param>
+        public void CreateMpPedMenu(UIMenu mpMenu)
+        {
+            #region create submenus
+            // create new model
+            UIMenu newCharacterMenu = new UIMenu("New Character", "Create a new character", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // load existing model
+            UIMenu loadCharacterMenu = new UIMenu("Load Character", "Load an existing character", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // create new male model
+            UIMenu maleMenu = new UIMenu("New Character", "Create a new male character", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // create new female model
+            UIMenu femaleMenu = new UIMenu("New Character", "Create a new female character", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // male appearance
+            UIMenu maleAppearanceMenu = new UIMenu("Male Appearance", "Appearance", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // female appearance
+            UIMenu femaleAppearanceMenu = new UIMenu("Female Appearance", "Appearance", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // male features
+            UIMenu maleFeaturesMenu = new UIMenu("Male Features", "Features", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // female features
+            UIMenu femaleFeaturesMenu = new UIMenu("Female Features", "Features", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // male heritage
+            UIMenu maleHeritageMenu = new UIMenu("Male Heritage", "Heritage", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // female heritage
+            UIMenu femaleHeritageMenu = new UIMenu("Female Heritage", "Features", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // male style
+            UIMenu maleStyleMenu = new UIMenu("Male Style", "Facial and Body Style", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // female style
+            UIMenu femaleStyleMenu = new UIMenu("Female Style", "Facial and Body Style", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            #endregion
+
+
+            #region add submenus to menu pool
+            MainMenu.Mp.Add(newCharacterMenu); // new character menu
+            MainMenu.Mp.Add(loadCharacterMenu); // load character menu
+            MainMenu.Mp.Add(maleMenu); // new male character
+            MainMenu.Mp.Add(femaleMenu); // new female character
+            MainMenu.Mp.Add(maleAppearanceMenu); // male appearance
+            MainMenu.Mp.Add(femaleAppearanceMenu); // female appearance
+            MainMenu.Mp.Add(maleFeaturesMenu); // female features
+            MainMenu.Mp.Add(femaleFeaturesMenu); // female features
+            MainMenu.Mp.Add(femaleHeritageMenu); // female heritage
+            MainMenu.Mp.Add(maleHeritageMenu); // male heritage
+            MainMenu.Mp.Add(femaleStyleMenu); // female style
+            MainMenu.Mp.Add(maleStyleMenu); // male style
+            #endregion
+
+
+            #region add instructional buttons
+            newCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new character
+            loadCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // load character
+            maleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new male character
+            femaleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // new female character
+            maleAppearanceMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male appearance
+            femaleAppearanceMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female appearance
+            femaleFeaturesMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female features
+            maleFeaturesMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male features
+            maleHeritageMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male heritage
+            femaleHeritageMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female heritage
+            maleStyleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // male style
+            femaleStyleMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right")); // female style
+            #endregion
+
+
+            #region add menus to list
+            mpCharMenus.Add(newCharacterMenu); // new char
+            mpCharMenus.Add(loadCharacterMenu); // load char
+            mpCharMenus.Add(maleMenu); // new male char
+            mpCharMenus.Add(femaleMenu); // new female char
+            mpCharMenus.Add(maleAppearanceMenu); // male appearance
+            mpCharMenus.Add(femaleAppearanceMenu); // female appearance
+            mpCharMenus.Add(maleFeaturesMenu); // male features
+            mpCharMenus.Add(femaleFeaturesMenu); // female features
+            mpCharMenus.Add(maleHeritageMenu); // male heritage
+            mpCharMenus.Add(femaleHeritageMenu); // female heritage
+            mpCharMenus.Add(maleStyleMenu); // male style
+            mpCharMenus.Add(femaleStyleMenu); // female style
+            #endregion
+
+
+            #region create menu items
+            // character customization menu
+            UIMenuItem newCharBtn = new UIMenuItem("New Character", "Create a new multiplayer character.");
+            UIMenuItem loadCharBtn = new UIMenuItem("Load Existing Character", "Load an existing (saved) multiplayer character.");
+
+            // new character menu
+            UIMenuItem male = new UIMenuItem("Create Male Character", "Create a new male multiplayer character.");
+            UIMenuItem female = new UIMenuItem("Create Female Character", "Create a new female multiplayer character.");
+
+            // new male menu (TODO)
+
+            // new female menu
+            UIMenuItem f_Appearance = new UIMenuItem("Appearance", "Make changes to your Appearance.");
+            UIMenuItem f_Features = new UIMenuItem("Features", "Make changes to your Features.");
+            UIMenuItem f_Heritage = new UIMenuItem("Heritage", "Make changes to your Heritage.");
+            UIMenuItem f_Styles = new UIMenuItem("Styles", "Make changes to your Face and Body Style.");
+
+
+            #region female appearance menu.
+            // hair styles 
+            List<dynamic> f_hair_styles = new List<dynamic>() { };
+            for (int i = 0; i < 24; i++)
+            {
+                f_hair_styles.Add(GetLabelText($"CC_F_HS_{i}"));
+            }
+            UIMenuListItem f_hair_style = new UIMenuListItem("Hair Style", f_hair_styles, 0);
+
+            List<dynamic> hair_colors = new List<dynamic>();
+            for (int i = 0; i < 64; i++)
+            {
+                hair_colors.Add($"Hair Color #{i + 1}/64");
+            }
+            UIMenuListItem f_hair_colors = new UIMenuListItem("Hair Color", hair_colors, 0);
+            UIMenuListItem f_hair_hi_colors = new UIMenuListItem("Hair Highlight Color", hair_colors, 0);
+
+
+            // features
+
+            List<dynamic> features_range = new List<dynamic>() { -1f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
+            UIMenuSliderItem f_noseWidth = new UIMenuSliderItem("Nose Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_noseHeight = new UIMenuSliderItem("Nose Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_noseLength = new UIMenuSliderItem("Nose Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_noseLowering = new UIMenuSliderItem("Nose Lowering", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_noseBoneTwist = new UIMenuSliderItem("Nose Bone Twist", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_eyebrowHeight = new UIMenuSliderItem("Eybebrows Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_eyebrowForward = new UIMenuSliderItem("Eyebrows Depth", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_cheeksboneHeight = new UIMenuSliderItem("Cheekbones Height", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_cheeksboneWidth = new UIMenuSliderItem("Cheekbones Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_cheeksWidth = new UIMenuSliderItem("Cheeks Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_eyesOpening = new UIMenuSliderItem("Eyes Opening", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_lipsThickness = new UIMenuSliderItem("Lips Thickness", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_jawBoneWidth = new UIMenuSliderItem("Jaw Bone Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_jawBoneBackLength = new UIMenuSliderItem("Jaw Bone Back Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_chinBoneLowering = new UIMenuSliderItem("Chin Bone Lowering", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_chinBoneLength = new UIMenuSliderItem("Chin Bone Length", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_chinBoneWidth = new UIMenuSliderItem("Chin Bone Width", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            UIMenuSliderItem f_chinHole = new UIMenuSliderItem("Chin Hole", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+
+            UIMenuSliderItem f_neckThickness = new UIMenuSliderItem("Neck Thickness", features_range, features_range.Count / 2, "Make changes to your Features.", true);
+            #endregion
+
+            #region female heritage menu
+            //UIMenuSliderItem 
+            UIMenuHeritageCardItem heritageCard = new UIMenuHeritageCardItem(0, 0);
+
+
+            // mom
+            List<dynamic> moms = new List<dynamic>();
+            for (var i = 0; i < 22; i++)
+            {
+                moms.Add($"Mom #{i}");
+            }
+            UIMenuListItem mom = new UIMenuListItem("Mom", moms, currentCharacter.Mom);
+
+
+            // dad
+            List<dynamic> dads = new List<dynamic>();
+            for (var i = 0; i < 24; i++)
+            {
+                dads.Add($"Dad #{i}");
+            }
+            UIMenuListItem dad = new UIMenuListItem("Dad", dads, currentCharacter.Dad);
+
+
+            // resemblance
+            UIMenuSliderItem resemblance = new UIMenuSliderItem("Resemblance", features_range, features_range.Count / 2, "Select if your features are influenced more by your Mother or Father.", true);
+            UIMenuSliderItem skinTone = new UIMenuSliderItem("Skin Tone", features_range, features_range.Count / 2, "Select if your skin tone is influenced more by your Mother or Father.", true);
+
+            #endregion
+
+            #region female style menu buttons
+            List<dynamic> blemishes = new List<dynamic>() { "1", "2" };
+            UIMenuListItem f_blemishes = new UIMenuListItem("Blemishes", blemishes, 0); // id == 0
+
+            List<dynamic> eyebrows = new List<dynamic>() { "1", "2" };
+            UIMenuListItem f_eyebrows = new UIMenuListItem("Eyebrows", eyebrows, 0); // id == 2
+
+            List<dynamic> ageing = new List<dynamic>() { "1", "2" };
+            UIMenuListItem f_ageing = new UIMenuListItem("Ageing", ageing, 0); // id == 3
+
+            List<dynamic> blush = new List<dynamic>() { "1", "2" };
+            //UIMenuListItem
+
+            List<dynamic> makeup = new List<dynamic>();
+            for (int i = 0; i < 22; i++)
+            {
+                makeup.Add(GetLabelText("CC_MKUP_11"));
+            }
+            UIMenuListItem f_makeup = new UIMenuListItem("Makeup", makeup, 0); // id == 4
+            #endregion
+
+            // save character buttons
+            UIMenuItem f_saveChar = new UIMenuItem("Save Character", "Save your character, if you don't save your character now, you won't be able to load or edit it later. You also won't be able to save this ped in the 'Saved Peds' menu.");
+            UIMenuItem m_saveChar = new UIMenuItem("Save Character", "Save your character, if you don't save your character now, you won't be able to load or edit it later. You also won't be able to save this ped in the 'Saved Peds' menu.");
+            #endregion
+
+
+
+            #region add items to menus
+            // character customization menu
+            mpMenu.AddItem(newCharBtn);
+            mpMenu.AddItem(loadCharBtn);
+
+            // new character menu
+            newCharacterMenu.AddItem(male);
+            newCharacterMenu.AddItem(female);
+
+            // new female char menu
+            femaleMenu.AddItem(f_Heritage);
+            femaleMenu.AddItem(f_Features);
+            femaleMenu.AddItem(f_Appearance);
+            femaleMenu.AddItem(f_Styles);
+            femaleMenu.AddItem(f_saveChar);
+
+            // female appearance menu
+            femaleAppearanceMenu.AddItem(f_hair_style);
+            f_hair_style.Index = 4;
+            femaleAppearanceMenu.AddItem(f_hair_colors);
+            f_hair_colors.Index = 59;
+            femaleAppearanceMenu.AddItem(f_hair_hi_colors);
+            f_hair_hi_colors.Index = 3;
+
+            // female features menu
+            femaleFeaturesMenu.AddItem(f_noseWidth);
+            femaleFeaturesMenu.AddItem(f_noseHeight);
+            femaleFeaturesMenu.AddItem(f_noseLength);
+            femaleFeaturesMenu.AddItem(f_noseLowering);
+            femaleFeaturesMenu.AddItem(f_noseBoneTwist);
+
+            femaleFeaturesMenu.AddItem(f_eyebrowHeight);
+            femaleFeaturesMenu.AddItem(f_eyebrowForward);
+
+            femaleFeaturesMenu.AddItem(f_cheeksboneHeight);
+            femaleFeaturesMenu.AddItem(f_cheeksboneWidth);
+            femaleFeaturesMenu.AddItem(f_cheeksWidth);
+
+            femaleFeaturesMenu.AddItem(f_eyesOpening);
+
+            femaleFeaturesMenu.AddItem(f_lipsThickness);
+
+            femaleFeaturesMenu.AddItem(f_jawBoneWidth);
+            femaleFeaturesMenu.AddItem(f_jawBoneBackLength);
+
+            femaleFeaturesMenu.AddItem(f_chinBoneLowering);
+            femaleFeaturesMenu.AddItem(f_chinBoneLength);
+            femaleFeaturesMenu.AddItem(f_chinBoneWidth);
+            femaleFeaturesMenu.AddItem(f_chinHole);
+
+            femaleFeaturesMenu.AddItem(f_neckThickness);
+
+            // female heritage menu
+            femaleHeritageMenu.AddItem(heritageCard);
+            femaleHeritageMenu.AddItem(mom);
+            femaleHeritageMenu.AddItem(dad);
+            femaleHeritageMenu.AddItem(resemblance);
+            femaleHeritageMenu.AddItem(skinTone);
+            femaleHeritageMenu.UpdateScaleform();
+            femaleHeritageMenu.RefreshIndex();
+
+            #endregion
+
+
+            #region bind menus to menu items
+            // character customization menu
+            mpMenu.BindMenuToItem(newCharacterMenu, newCharBtn);
+            mpMenu.BindMenuToItem(loadCharacterMenu, loadCharBtn);
+
+            // new character menu
+            newCharacterMenu.BindMenuToItem(maleMenu, male);
+            newCharacterMenu.BindMenuToItem(femaleMenu, female);
+
+            // female char menu
+            femaleMenu.BindMenuToItem(femaleAppearanceMenu, f_Appearance);
+            femaleMenu.BindMenuToItem(femaleFeaturesMenu, f_Features);
+            femaleMenu.BindMenuToItem(femaleHeritageMenu, f_Heritage);
+
+            femaleMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == f_Heritage)
+                {
+                    if (femaleHeritageMenu.CurrentSelection == 0)
+                    {
+                        femaleHeritageMenu.CurrentSelection++;
+                    }
+                }
+            };
+
+            #endregion
+
+            //DeleteResourceKvp("mp_char_some cool name");
+
+            #region item select events
+            mpCharMenu.OnItemSelect += async (sender, item, index) =>
+            {
+                if (item == loadCharBtn)
+                {
+                    loadCharacterMenu.Clear();
+                }
+
+                int searchHandle = StartFindKvp("mp_char_");
+                List<string> characterNames = new List<string>();
+                while (true)
+                {
+                    var foundItem = FindKvp(searchHandle);
+                    if (string.IsNullOrEmpty(foundItem))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        characterNames.Add(foundItem);
+                    }
+                    await BaseScript.Delay(0);
+                }
+                foreach (var name in characterNames)
+                {
+                    var Character = cf.LoadMultiplayerCharacter(name.Substring(8, name.Length - 8));
+                    if (Character.Valid)
+                    {
+                        UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
+                        loadCharacterMenu.AddItem(nameItem);
+                        nameItem.SetRightLabel($"{(Character.IsMale ? "(male)" : "(female)")}");
+                    }
+                    else
+                    {
+                        UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
+                        loadCharacterMenu.AddItem(nameItem);
+                        nameItem.Enabled = false;
+                        nameItem.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        nameItem.Description = "This model is invalid or corrupted, sorry.";
+
+                    }
+
+
+                }
+                loadCharacterMenu.RefreshIndex();
+                loadCharacterMenu.UpdateScaleform();
+            };
+
+            loadCharacterMenu.OnItemSelect += (sender, item, index) =>
+            {
+                var Character = cf.LoadMultiplayerCharacter(item.Text.ToString());
+                if (Character.Valid)
+                {
+                    Notify.Success("Multiplayer character has been loaded.");
+                    SetModel(Character.IsMale);
+                    currentCharacter = Character;
+
+                    // heritage features.
+                    SetPedHeritage();
+                    // hair style.
+                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    // hair colors.
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                    // eye color.
+                    SetPedEyeColor(PlayerPedId(), currentCharacter.EyeColor);
+
+                    // facial features.
+                    SetPedFaceFeature(PlayerPedId(), 0, currentCharacter.NoseWidth);
+                    SetPedFaceFeature(PlayerPedId(), 1, currentCharacter.NosePeakHeight);
+                    SetPedFaceFeature(PlayerPedId(), 2, currentCharacter.NosePeakLength);
+                    SetPedFaceFeature(PlayerPedId(), 3, currentCharacter.NosePeakLowering);
+                    SetPedFaceFeature(PlayerPedId(), 4, currentCharacter.NoseBoneTwist);
+                    SetPedFaceFeature(PlayerPedId(), 5, currentCharacter.EyebrowHeight);
+                    SetPedFaceFeature(PlayerPedId(), 6, currentCharacter.EyebrowForward);
+                    SetPedFaceFeature(PlayerPedId(), 7, currentCharacter.CheeksBoneHeight);
+                    SetPedFaceFeature(PlayerPedId(), 8, currentCharacter.CheeksBoneWidth);
+                    SetPedFaceFeature(PlayerPedId(), 9, currentCharacter.CheeksWidth);
+                    SetPedFaceFeature(PlayerPedId(), 10, currentCharacter.EyesOpening);
+                    SetPedFaceFeature(PlayerPedId(), 11, currentCharacter.LipsThickness);
+                    SetPedFaceFeature(PlayerPedId(), 12, currentCharacter.JawBoneWidth);
+                    SetPedFaceFeature(PlayerPedId(), 13, currentCharacter.JawBoneBackLength);
+                    SetPedFaceFeature(PlayerPedId(), 14, currentCharacter.ChinBoneLowering);
+                    SetPedFaceFeature(PlayerPedId(), 15, currentCharacter.ChinBoneLength);
+                    SetPedFaceFeature(PlayerPedId(), 16, currentCharacter.ChinBoneWidth);
+                    SetPedFaceFeature(PlayerPedId(), 17, currentCharacter.ChinHole);
+                    SetPedFaceFeature(PlayerPedId(), 18, currentCharacter.NeckThickness);
+
+                    // facial appearance
+
+
+                    //SetPedFaceFeature(PlayerPedId(), 0, )
+                }
+                else
+                {
+                    Notify.Error("Failed to load.", true, true);
+                }
+            };
+
+            newCharacterMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == male)
+                {
+                    currentCharacter = new MpCharacterStyle(true, true);
+                    SetModel(true);
+                }
+                if (item == female)
+                {
+                    currentCharacter = new MpCharacterStyle(false, true);
+                    SetModel(false);
+                }
+            };
+
+            femaleMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == f_saveChar)
+                {
+                    cf.SaveMultiplayerCharacter(currentCharacter);
+                }
+            };
+            #endregion
+
+
+            #region checkbox events
+
+            #endregion
+
+
+            #region list events
+            femaleHeritageMenu.OnListChange += (sender, item, index) =>
+            {
+                if (item == mom)
+                {
+                    heritageCard.Mom = index;
+                    currentCharacter.Mom = index;
+                    SetPedHeritage();
+                }
+                else if (item == dad)
+                {
+                    heritageCard.Dad = index;
+                    currentCharacter.Dad = index;
+                    SetPedHeritage();
+                }
+            };
+
+            femaleAppearanceMenu.OnListChange += (sender, item, index) =>
+            {
+                if (item == f_hair_style)
+                {
+                    if (index == 0)
+                    {
+                        SetPedComponentVariation(PlayerPedId(), 2, 0, 0, 0);
+                        currentCharacter.HairStyle = 0;
+                    }
+                    else
+                    {
+                        SetPedComponentVariation(PlayerPedId(), 2, index + 25 + 13, 0, 0);
+                        currentCharacter.HairStyle = index + 25 + 13;
+                    }
+                }
+                else if (item == f_hair_colors)
+                {
+                    SetPedHairColor(PlayerPedId(), index, currentCharacter.HairHighlightColor);
+                    currentCharacter.HairColor = index;
+                }
+                else if (item == f_hair_hi_colors)
+                {
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, index);
+                    currentCharacter.HairHighlightColor = index;
+                    
+                }
+            };
+            #endregion
+
+
+            #region slider events
+            femaleFeaturesMenu.OnSliderChange += (sender, item, index) =>
+            {
+                SetPedFaceFeature(PlayerPedId(), sender.MenuItems.IndexOf(item), features_range[index]);
+                //currentCharacter.
+            };
+
+            femaleHeritageMenu.OnSliderChange += (sender, item, index) =>
+            {
+                if (item == resemblance)
+                {
+                    currentCharacter.Resemblance = features_range[index];
+                    SetPedHeritage();
+                }
+                else if (item == skinTone)
+                {
+                    currentCharacter.SkinTone = features_range[index];
+                    SetPedHeritage();
+                }
+            };
+            #endregion
+
+
+
+            #region (working, but unused)
+            //var nose = new List<dynamic>() { -1.0f, -0.9f, -0.8f, -0.7f, -0.6f, -0.5f, -0.4f, -0.3f, -0.2f, -0.1f, 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
+            //UIMenuSliderItem testItem = new UIMenuSliderItem("Nose", nose, 0, "Nose feature", true);
+            //mpMenu.AddItem(testItem);
+            //menu.OnMenuChange += (sender, newMenu, forward) =>
+            //{
+            //    if (newMenu == mpMenu)
+            //    {
+
+            //    }
+            //};
+            //mpMenu.OnSliderChange += (sender, item, index) =>
+            //{
+            //    //Debug.WriteLine(index.ToString());
+            //    Debug.WriteLine(nose[index].ToString());
+
+
+            //    SetPedFaceFeature(PlayerPedId(), 0, nose[index]);
+            //    //var data = 0;
+            //    //GetPedHeadBlendData(PlayerPedId(), ref data);
+            //    //var dat = CitizenFX.Core.Native.Function.Call<dynamic>((CitizenFX.Core.Native.Hash)0x2746BD9D88C5C5D0, PlayerPedId());
+            //    //Debug.WriteLine(dat.ToString());
+            //    //GetPedHeadBlendData()
+            //};
+
+            /*
+            #region tattoo stuff
+            // create submenu.
+            UIMenu tattooMenu = new UIMenu(GetPlayerName(PlayerId()), "MP Character Tattoo Options", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            // create tattoo items. + tattoo menu bind item
+            UIMenuItem tattooMenuBtn = new UIMenuItem("Tattoo Options", "Add or remove a tattoo.");
+            mpMenu.AddItem(tattooMenuBtn);
+            mpMenu.BindMenuToItem(tattooMenu, tattooMenuBtn);
+
+            // add submenu to menu pool.
+            MainMenu.Mp.Add(tattooMenu);
+
+
+
+
+            // create tattoo-submenu submenus.
+
+            #region male tattoos
+            UIMenu maleTattooMenu = new UIMenu("Male Tattoos", "Male Tattoo Options", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            UIMenu maleHead = new UIMenu("Male Tattoos", "Male Head Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu maleLeftArm = new UIMenu("Male Tattoos", "Male Left Arm Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu maleRightArm = new UIMenu("Male Tattoos", "Male Right Arm Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu maleLeftLeg = new UIMenu("Male Tattoos", "Male Left Leg Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu maleRightLeg = new UIMenu("Male Tattoos", "Male Right Leg Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu maleTorso = new UIMenu("Male Tattoos", "Male Torso Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            #endregion
+
+            #region female tattoos
+            UIMenu femaleTattooMenu = new UIMenu("Female Tattoos", "Female Tattoo Options", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+
+            UIMenu femaleHead = new UIMenu("Female Tattoos", "Female Head Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu femaleLeftArm = new UIMenu("Female Tattoos", "Female Left Arm Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu femaleRightArm = new UIMenu("Female Tattoos", "Female Right Arm Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu femaleLeftLeg = new UIMenu("Female Tattoos", "Female Left Leg Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu femaleRightLeg = new UIMenu("Female Tattoos", "Female Right Leg Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            UIMenu femaleTorso = new UIMenu("Female Tattoos", "Female Torso Tattoos", true)
+            {
+                ControlDisablingEnabled = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                ScaleWithSafezone = false
+            };
+            #endregion
+
+
+
+            MainMenu.Mp.Add(maleTattooMenu);
+
+            MainMenu.Mp.Add(maleHead);
+            MainMenu.Mp.Add(maleLeftArm);
+            MainMenu.Mp.Add(maleRightArm);
+            MainMenu.Mp.Add(maleLeftLeg);
+            MainMenu.Mp.Add(maleRightLeg);
+            MainMenu.Mp.Add(maleTorso);
+
+
+            MainMenu.Mp.Add(femaleTattooMenu);
+
+            MainMenu.Mp.Add(femaleHead);
+            MainMenu.Mp.Add(femaleLeftArm);
+            MainMenu.Mp.Add(femaleRightArm);
+            MainMenu.Mp.Add(femaleLeftLeg);
+            MainMenu.Mp.Add(femaleRightLeg);
+            MainMenu.Mp.Add(femaleTorso);
+
+
+
+            UIMenuItem maleTattooMenuBtn = new UIMenuItem("Male Tattoos", "Male tattoo options.");
+            tattooMenu.AddItem(maleTattooMenuBtn);
+            tattooMenu.BindMenuToItem(maleTattooMenu, maleTattooMenuBtn);
+
+
+            UIMenuItem femaleTattooMenuBtn = new UIMenuItem("Female Tattoos", "Female tattoo options.");
+            tattooMenu.AddItem(femaleTattooMenuBtn);
+            tattooMenu.BindMenuToItem(femaleTattooMenu, femaleTattooMenuBtn);
+
+            // male tattoo categories
+            UIMenuItem maleHeadBtn = new UIMenuItem("Head");
+            maleTattooMenu.AddItem(maleHeadBtn);
+            maleTattooMenu.BindMenuToItem(maleHead, maleHeadBtn);
+            UIMenuItem maleLeftArmBtn = new UIMenuItem("Left Arm");
+            maleTattooMenu.AddItem(maleLeftArmBtn);
+            maleTattooMenu.BindMenuToItem(maleLeftArm, maleLeftArmBtn);
+            UIMenuItem maleRightArmBtn = new UIMenuItem("Right Arm");
+            maleTattooMenu.AddItem(maleRightArmBtn);
+            maleTattooMenu.BindMenuToItem(maleRightArm, maleRightArmBtn);
+            UIMenuItem maleLeftLegBtn = new UIMenuItem("Left Leg");
+            maleTattooMenu.AddItem(maleLeftLegBtn);
+            maleTattooMenu.BindMenuToItem(maleLeftLeg, maleLeftLegBtn);
+            UIMenuItem maleRightLegBtn = new UIMenuItem("Right Leg");
+            maleTattooMenu.AddItem(maleRightLegBtn);
+            maleTattooMenu.BindMenuToItem(maleRightLeg, maleRightLegBtn);
+            UIMenuItem maleTorsoBtn = new UIMenuItem("Torso");
+            maleTattooMenu.AddItem(maleTorsoBtn);
+            maleTattooMenu.BindMenuToItem(maleTorso, maleTorsoBtn);
+
+
+            // female tattoo categories
+            UIMenuItem femaleHeadBtn = new UIMenuItem("Head");
+            femaleTattooMenu.AddItem(femaleHeadBtn);
+            femaleTattooMenu.BindMenuToItem(femaleHead, femaleHeadBtn);
+            UIMenuItem femaleLeftArmBtn = new UIMenuItem("Left Arm");
+            femaleTattooMenu.AddItem(femaleLeftArmBtn);
+            femaleTattooMenu.BindMenuToItem(femaleLeftArm, femaleLeftArmBtn);
+            UIMenuItem femaleRightArmBtn = new UIMenuItem("Right Arm");
+            femaleTattooMenu.AddItem(femaleRightArmBtn);
+            femaleTattooMenu.BindMenuToItem(femaleRightArm, femaleRightArmBtn);
+            UIMenuItem femaleLeftLegBtn = new UIMenuItem("Left Leg");
+            femaleTattooMenu.AddItem(femaleLeftLegBtn);
+            femaleTattooMenu.BindMenuToItem(femaleLeftLeg, femaleLeftLegBtn);
+            UIMenuItem femaleRightLegBtn = new UIMenuItem("Right Leg");
+            femaleTattooMenu.AddItem(femaleRightLegBtn);
+            femaleTattooMenu.BindMenuToItem(femaleRightLeg, femaleRightLegBtn);
+            UIMenuItem femaleTorsoBtn = new UIMenuItem("Torso");
+            femaleTattooMenu.AddItem(femaleTorsoBtn);
+            femaleTattooMenu.BindMenuToItem(femaleTorso, femaleTorsoBtn);
+
+
+            foreach (var tattoo in tattoosList)
+            {
+                UIMenuItem item = new UIMenuItem($"{GetLabelText(tattoo.displayName)}", tattoo.name);
+                switch (tattoo.gender)
+                {
+                    case PedGender.FEMALE:
+                        switch (tattoo.zone)
+                        {
+                            case "HEAD":
+                                femaleHead.AddItem(item);
+                                break;
+                            case "LEFT_ARM":
+                                femaleLeftArm.AddItem(item);
+                                break;
+                            case "RIGHT_ARM":
+                                femaleRightArm.AddItem(item);
+                                break;
+                            case "LEFT_LEG":
+                                femaleLeftLeg.AddItem(item);
+                                break;
+                            case "RIGHT_LEG":
+                                femaleRightLeg.AddItem(item);
+                                break;
+                            case "TORSO":
+                                femaleTorso.AddItem(item);
+                                break;
+                            default: break;
+                        }
+                        break;
+                    case PedGender.MALE:
+                        switch (tattoo.zone)
+                        {
+                            case "HEAD":
+                                maleHead.AddItem(item);
+                                break;
+                            case "LEFT_ARM":
+                                maleLeftArm.AddItem(item);
+                                break;
+                            case "RIGHT_ARM":
+                                maleRightArm.AddItem(item);
+                                break;
+                            case "LEFT_LEG":
+                                maleLeftLeg.AddItem(item);
+                                break;
+                            case "RIGHT_LEG":
+                                maleRightLeg.AddItem(item);
+                                break;
+                            case "TORSO":
+                                maleTorso.AddItem(item);
+                                break;
+                            default: break;
+                        }
+                        break;
+                    default: break;
+                }
+            }
+
+            maleTorso.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            maleLeftArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            maleRightArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            maleLeftLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            maleRightLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            maleHead.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+
+            femaleTorso.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            femaleLeftArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            femaleRightArm.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            femaleLeftLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            femaleRightLeg.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+            femaleHead.OnItemSelect += (sender, item, index) => EnableTattoo(sender, item, index);
+
+            maleTorso.RefreshIndex();
+            maleTorso.UpdateScaleform();
+            maleLeftArm.RefreshIndex();
+            maleLeftArm.UpdateScaleform();
+            maleRightArm.RefreshIndex();
+            maleRightArm.UpdateScaleform();
+            maleLeftLeg.RefreshIndex();
+            maleLeftLeg.UpdateScaleform();
+            maleRightLeg.RefreshIndex();
+            maleRightLeg.UpdateScaleform();
+            maleHead.RefreshIndex();
+            maleHead.UpdateScaleform();
+
+            femaleTorso.RefreshIndex();
+            femaleTorso.UpdateScaleform();
+            femaleLeftArm.RefreshIndex();
+            femaleLeftArm.UpdateScaleform();
+            femaleRightArm.RefreshIndex();
+            femaleRightArm.UpdateScaleform();
+            femaleLeftLeg.RefreshIndex();
+            femaleLeftLeg.UpdateScaleform();
+            femaleRightLeg.RefreshIndex();
+            femaleRightLeg.UpdateScaleform();
+            femaleHead.RefreshIndex();
+            femaleHead.UpdateScaleform();
+
+            //update the menu.
+            tattooMenu.RefreshIndex();
+            tattooMenu.UpdateScaleform();
+            #endregion
+
+            // create items.
+            UIMenuItem backBtn = new UIMenuItem("Back", "Go back to the previous menu.");
+
+
+            // add items to the submenu.
+
+            mpMenu.AddItem(backBtn);
+
+
+            // add event listener for slider changes.
+
+            // add event listener for checkbox changes.
+
+            // add event listener for list changes.
+
+            // add event listener for list selection events.
+
+
+
+
+
+            // add event listener for item select events.
+            mpMenu.OnItemSelect += (sender, item, index) =>
+            {
+                // go back.
+                if (item == backBtn)
+                {
+                    mpMenu.GoBack();
+                }
+            };
+
+            // update stuff.
+            mpMenu.RefreshIndex();
+            mpMenu.UpdateScaleform();
+            
+            
+
+            #endregion
+        }
+
+
+
+        private void SetPedHeritage()
+        {
+            float Resemblance = (currentCharacter.Resemblance + 1f) / 2f;
+            float SkinTone = (currentCharacter.SkinTone + 1f) / 2f;
+            //float thirdF = 0f;
+            //float thirdF = (Resemblance + SkinTone) / 2f;
+
+            int dad = currentCharacter.Dad;
+            int mom = currentCharacter.Mom;
+            //int num = dad + mom;
+            //dad = (num < 20) ? (20 + dad) : (dad + mom + 2);
+            //SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, thirdF, false);
+            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01"))
+            {
+                SetPedHeadBlendData(PlayerPedId(), mom + 21, dad, 0, mom + 21, dad, 0, Resemblance, SkinTone, 0f, false);
+            }
+            else
+            {
+                SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, 0f, false);
+            }
+
+        }
+
+        private async void SetModel(bool male)
+        {
+            uint model = male ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01");
+
+            if (IsModelInCdimage(model))
+            {
+                if (!HasModelLoaded(model))
+                {
+                    RequestModel(model);
+                }
+                while (!HasModelLoaded(model))
+                {
+                    await BaseScript.Delay(0);
+                }
+                SetPlayerModel(PlayerId(), model);
+                SetModelAsNoLongerNeeded((uint)model);
+                SetPedDefaultComponentVariation(PlayerPedId());
+                SetPedHeadBlendData(PlayerPedId(), male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);
+                if (!male)
+                {
+                    currentCharacter.HairStyle = 4 + 25 + 13;
+                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    currentCharacter.HairColor = 59;
+                    currentCharacter.HairHighlightColor = 3;
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                }
+                else
+                {
+                    currentCharacter.HairStyle = 4 + 0 + 13;
+                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    currentCharacter.HairColor = 59;
+                    currentCharacter.HairHighlightColor = 3;
+                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                }
+
+            }
+
+        }
+
+        #region Enable Tattoo function
+        /// <summary>
+        /// Enables the tattoo overlay.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="item"></param>
+        /// <param name="index"></param>
+        private void EnableTattoo(UIMenu sender, UIMenuItem item, int index)
+        {
+            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_m_freemode_01")) // ped is male.
+            {
+                Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
+                if (tat.gender == PedGender.MALE || tat.gender == PedGender.UNISEX)
+                {
+                    ClearPedDecorations(PlayerPedId());
+                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
+                }
+                else
+                {
+                    Notify.Error("This tattoo is not available for male peds.");
+                }
+            }
+            else if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01")) // ped is female.
+            {
+                Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
+                if (tat.gender == PedGender.FEMALE || tat.gender == PedGender.UNISEX)
+                {
+                    ClearPedDecorations(PlayerPedId());
+                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
+                }
+                else
+                {
+                    Notify.Error("This tattoo is not available for female peds.");
+                }
+
+            }
+        }
+        #endregion
+
 
         #region tattoos
         private enum PedGender { MALE, FEMALE, UNISEX };
@@ -3208,5 +3251,9 @@ namespace vMenuClient
         //};
         #endregion
         #endregion
+        #endregion
+        */
+        #endregion
+
     }
 }

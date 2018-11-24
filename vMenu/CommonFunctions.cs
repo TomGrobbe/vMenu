@@ -13,12 +13,10 @@ namespace vMenuClient
     public class CommonFunctions : BaseScript
     {
         #region Variables
-        // Variables
-        //private readonly Notification Notify = MainMenu.Notify;
-        //private readonly Subtitles Subtitle = MainMenu.Subtitle;
         private string currentScenario = "";
         private Vehicle previousVehicle;
         private StorageManager sm = new StorageManager();
+        public MpPedDataManager MpPedDataManager = new MpPedDataManager();
 
         public bool driveToWpTaskActive = false;
         public bool driveWanderTaskActive = false;
@@ -63,7 +61,6 @@ namespace vMenuClient
         /// <param name="modelName">The model name</param>
         /// <returns></returns>
         public bool DoesModelExist(string modelName) => DoesModelExist((uint)GetHashKey(modelName));
-
         /// <summary>
         /// Does this model exist?
         /// </summary>
@@ -96,47 +93,40 @@ namespace vMenuClient
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveToWp(int style = 1074528293)
+        public void DriveToWp(int style = 0)
         {
-            if (driveWanderTaskActive || driveToWpTaskActive)
-            {
-                ClearPedTasks(PlayerPedId());
-                driveWanderTaskActive = false;
-                driveToWpTaskActive = false;
-            }
-            else
-            {
-                driveToWpTaskActive = true;
-                var waypoint = World.WaypointPosition;
-                var veh = GetVehicle();
-                var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 1000f);
-                SetDriverAggressiveness(PlayerPedId(), 0f);
-                //TaskVehicleDriveToCoord(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), 0, model, 1074528293, 12f, 0f);
-                TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
-            }
+
+            ClearPedTasks(PlayerPedId());
+            driveWanderTaskActive = false;
+            driveToWpTaskActive = true;
+
+            var waypoint = World.WaypointPosition;
+
+            var veh = GetVehicle();
+            var model = (uint)GetEntityModel(veh);
+
+            SetDriverAbility(PlayerPedId(), 1f);
+            SetDriverAggressiveness(PlayerPedId(), 0f);
+
+            TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
         }
 
         /// <summary>
         /// Todo
         /// </summary>
-        public void DriveWander(int style = 1074528293)
+        public void DriveWander(int style = 0)
         {
-            if (driveWanderTaskActive || driveToWpTaskActive)
-            {
-                ClearPedTasks(PlayerPedId());
-                driveWanderTaskActive = false;
-                driveToWpTaskActive = false;
-            }
-            else
-            {
-                driveWanderTaskActive = true;
-                var veh = GetVehicle();
-                var model = (uint)GetEntityModel(veh);
-                SetDriverAbility(PlayerPedId(), 1000f);
-                SetDriverAggressiveness(PlayerPedId(), 0f);
-                TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
-            }
+            ClearPedTasks(PlayerPedId());
+            driveWanderTaskActive = true;
+            driveToWpTaskActive = false;
+
+            var veh = GetVehicle();
+            var model = (uint)GetEntityModel(veh);
+
+            SetDriverAbility(PlayerPedId(), 1f);
+            SetDriverAggressiveness(PlayerPedId(), 0f);
+
+            TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
         }
         #endregion
 
@@ -454,37 +444,105 @@ namespace vMenuClient
         /// </summary>
         public async void CommitSuicide()
         {
-            // Get the suicide animations ready.
-            RequestAnimDict("mp_suicide");
-            while (!HasAnimDictLoaded("mp_suicide"))
+            if (!Game.PlayerPed.IsInVehicle())
             {
-                await Delay(0);
-            }
-            // Decide if the death should be using a pill or a gun (randomly).
-            bool takePill = new Random().Next(0, 2) == 0;
+                // Get the suicide animations ready.
+                RequestAnimDict("mp_suicide");
+                while (!HasAnimDictLoaded("mp_suicide"))
+                {
+                    await Delay(0);
+                }
+                // Decide if the death should be using a pill or a gun (randomly).
+                uint? weaponHash = null;
+                bool takePill = false;
 
-            // If we take the pill, remove any weapons in our hands.
-            if (takePill)
-            {
-                SetPedCurrentWeaponVisible(PlayerPedId(), false, true, false, false);
-                await Delay(500);
-            }
 
-            // Otherwise, give the ped a gun.
+                if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.PistolMk2))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL_MK2");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.CombatPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_COMBATPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.Pistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon((WeaponHash)(uint)GetHashKey("WEAPON_SNSPISTOL_MK2")))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_SNSPISTOL_MK2");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.SNSPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_SNSPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.Pistol50))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_PISTOL50");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.HeavyPistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_HEAVYPISTOL");
+                }
+                else if (Game.PlayerPed.Weapons.HasWeapon(WeaponHash.VintagePistol))
+                {
+                    weaponHash = (uint)GetHashKey("WEAPON_VINTAGEPISTOL");
+                }
+                else
+                {
+                    takePill = true;
+                }
+
+
+                // If we take the pill, remove any weapons in our hands.
+                if (takePill)
+                {
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_unarmed"), true);
+                }
+                // Otherwise, give the ped a gun.
+                else if (weaponHash != null)
+                {
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)weaponHash, true);
+                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                }
+                else
+                {
+                    GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
+                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), true);
+                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                }
+
+                // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
+                ClearPedTasks(PlayerPedId());
+                TaskPlayAnim(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
+
+                bool shot = false;
+                while (true)
+                {
+                    float time = GetEntityAnimCurrentTime(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"));
+                    if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
+                    {
+                        ClearEntityLastDamageEntity(PlayerPedId());
+                        SetPedShootsAtCoord(PlayerPedId(), 0f, 0f, 0f, false);
+                        shot = true;
+                    }
+                    if (time > (takePill ? 0.536f : 0.365f))
+                    {
+                        // Kill the player.
+                        ClearEntityLastDamageEntity(PlayerPedId());
+                        SetEntityHealth(PlayerPedId(), 0);
+                        break;
+                    }
+                    await Delay(0);
+                }
+                RemoveAnimDict("mp_suicide");
+            }
             else
             {
-                GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("WEAPON_PISTOL"), 1, false, true);
-                await Delay(500);
-                SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                SetEntityHealth(Game.PlayerPed.Handle, 0);
             }
-            // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
-            TaskPlayAnim(PlayerPedId(), "mp_suicide", (takePill ? "pill" : "pistol"), 8.0f, 0f, -1, 0, 0.0f, false, false, false);
 
-            // Wait before killing the player (1700 ms for the gun animation, and 5000 ms for the pil animation to finish).
-            await Delay(takePill ? 5000 : 1700);
-
-            // Kill the player.
-            SetEntityHealth(PlayerPedId(), 0);
 
         }
         #endregion
@@ -972,7 +1030,7 @@ namespace vMenuClient
                         {
                             // Save everything from the dictionary into the client's kvp storage.
                             // If the save was successfull:
-                            if (sm.SaveVehicleInfo("veh_" + saveName, vi, false))
+                            if (StorageManager.SaveVehicleInfo("veh_" + saveName, vi, false))
                             {
                                 Notify.Success($"Vehicle {saveName} saved.");
                             }
@@ -991,7 +1049,7 @@ namespace vMenuClient
                     // We need to update an existing slot.
                     else
                     {
-                        sm.SaveVehicleInfo("veh_" + updateExistingSavedVehicleName, vi, true);
+                        StorageManager.SaveVehicleInfo("veh_" + updateExistingSavedVehicleName, vi, true);
                     }
 
                 }
@@ -1006,6 +1064,13 @@ namespace vMenuClient
             {
                 Notify.Error(CommonErrors.NoVehicle);
             }
+
+            // update the saved vehicles menu list to reflect the new saved car.
+            if (MainMenu.SavedVehiclesMenu != null)
+            {
+                MainMenu.SavedVehiclesMenu.UpdateMenuAvailableCategories();
+            }
+
         }
         #endregion
 
@@ -1038,6 +1103,7 @@ namespace vMenuClient
                 // If it exists then the key to the list.
                 if (vehString != "" && vehString != null && vehString != "NULL")
                 {
+                    //Debug.WriteLine(vehString);
                     savedVehicleNames.Add(vehString);
                 }
                 // Otherwise stop.
@@ -1469,7 +1535,7 @@ namespace vMenuClient
                 vi.windowTint = int.Parse(dict["windowTint"]);
                 vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
 
-                sm.SaveVehicleInfo(saveName, vi, true);
+                StorageManager.SaveVehicleInfo(saveName, vi, true);
             }
             else
             {
@@ -1653,7 +1719,7 @@ namespace vMenuClient
         /// <param name="disableTextOutline">Disables the default text outline.</param>
         public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
         {
-            if (IsHudPreferenceSwitchedOn() && CitizenFX.Core.UI.Screen.Hud.IsVisible && !MainMenu.MiscSettingsMenu.HideHud)
+            if (IsHudPreferenceSwitchedOn() && CitizenFX.Core.UI.Screen.Hud.IsVisible && !MainMenu.MiscSettingsMenu.HideHud && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsPauseMenuActive() && !IsFrontendFading() && !IsPauseMenuRestarting() && !IsHudHidden())
             {
                 SetTextFont(font);
                 SetTextScale(1.0f, size);
@@ -1694,25 +1760,32 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions);
+        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions)
+        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
         {
             //uint model = modelHash;
             //Debug.Write(modelHash.ToString() + "\n");
             if (IsModelInCdimage(modelHash))
             {
-                await SaveWeaponLoadout();
+                if (keepWeapons)
+                {
+                    await SaveWeaponLoadout();
+                }
                 RequestModel(modelHash);
                 while (!HasModelLoaded(modelHash))
                 {
                     await Delay(0);
                 }
-                SetPlayerModel(PlayerId(), modelHash);
+
+                if ((uint)GetEntityModel(PlayerPedId()) != modelHash) // only change skins if the player is not yet using the new skin.
+                {
+                    SetPlayerModel(PlayerId(), modelHash);
+                }
                 SetPedDefaultComponentVariation(PlayerPedId());
 
                 if (pedCustomizationOptions.version == 1)
@@ -1747,7 +1820,11 @@ namespace vMenuClient
                     // notify user of unsupported version
                     Notify.Error("This is an unsupported saved ped version. Cannot restore appearance. :(");
                 }
-                RestoreWeaponLoadout();
+                if (keepWeapons)
+                {
+                    RestoreWeaponLoadout();
+                }
+                SetModelAsNoLongerNeeded(modelHash);
             }
             else
             {
@@ -1776,10 +1853,15 @@ namespace vMenuClient
         /// <summary>
         /// Saves the current player ped.
         /// </summary>
-        public async void SavePed()
+        public async void SavePed(string forceName = null)
         {
-            // Get the save name.
-            string name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
+            string name = forceName;
+            if (string.IsNullOrEmpty(name))
+            {
+                // Get the save name.
+                name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
+            }
+
             // If the save name is not invalid.
             if (name != "" && name != null && name != "NULL")
             {
@@ -1826,18 +1908,31 @@ namespace vMenuClient
 
                 // Try to save the data, and save the result in a variable.
                 //bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
-                bool saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
-
-                // If the save was successfull.
-                if (saveSuccessful)
+                bool saveSuccessful = false;
+                if (name == "vMenu_tmp_saved_ped")
                 {
-                    Notify.Success("Ped saved.");
+                    saveSuccessful = sm.SavePedInfo(name, data, true);
                 }
-                // Save was not successfull.
                 else
                 {
-                    Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                    saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
                 }
+
+
+                if (name != "vMenu_tmp_saved_ped") // only send a notification if the save wasn't triggered because the player died.
+                {
+                    // If the save was successfull.
+                    if (saveSuccessful)
+                    {
+                        Notify.Success("Ped saved.");
+                    }
+                    // Save was not successfull.
+                    else
+                    {
+                        Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                    }
+                }
+
             }
             // User cancelled the saving or they did not enter a valid name.
             else
@@ -1852,10 +1947,32 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public void LoadSavedPed(string savedName)
+        public void LoadSavedPed(string savedName, bool restoreWeapons)
         {
-            PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
-            SetPlayerSkin(pi.model, pi);
+            if (savedName != "vMenu_tmp_saved_ped")
+            {
+                PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+                Log(JsonConvert.SerializeObject(pi));
+                SetPlayerSkin(pi.model, pi, restoreWeapons);
+            }
+            else
+            {
+                PedInfo pi = sm.GetSavedPedInfo(savedName);
+                Log(JsonConvert.SerializeObject(pi));
+                SetPlayerSkin(pi.model, pi, restoreWeapons);
+                DeleteResourceKvp("vMenu_tmp_saved_ped");
+            }
+
+        }
+
+
+        public bool GetPedInfoFromBeforeDeath()
+        {
+            if (!string.IsNullOrEmpty(GetResourceKvpString("vMenu_tmp_saved_ped")))
+            {
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -1965,9 +2082,9 @@ namespace vMenuClient
         /// </summary>
         public async Task SaveWeaponLoadout()
         {
-            await Delay(1);
+            //await Delay(1);
             weaponsList.Clear();
-            await Delay(1);
+            //await Delay(1);
             foreach (var vw in ValidWeapons.Weapons)
             {
                 if (HasPedGotWeapon(PlayerPedId(), vw.Value, false))
@@ -1992,7 +2109,7 @@ namespace vMenuClient
                     });
                 }
             }
-            await Delay(1);
+            await Delay(0);
         }
 
         /// <summary>
@@ -2275,92 +2392,97 @@ namespace vMenuClient
         #region Multiplayer Characters
 
         #region Save MP Character
-        public async void SaveMultiplayerCharacter(PlayerAppearance.MpCharacterStyle currentCharacter)
-        {
-            string character = JsonConvert.SerializeObject(currentCharacter);
-            string saveName = await GetUserInput("Enter a save name", "", 20) ?? "NULL";
-            if (!string.IsNullOrEmpty(saveName) && saveName != "NULL")
-            {
-                if (!sm.SaveJsonData("mp_char_" + saveName, character, false))
-                {
-                    Notify.Error("Your character could not be saved, is the save name already taken?", true, true);
-                }
-                else
-                {
-                    Notify.Success($"Your character is now saved as <C>{saveName}</C>!");
-                }
-            }
-            else
-            {
-                Notify.Error("Your character could not be saved, the provided save name is invalid.", true, true);
-            }
-        }
+        //public async void SaveMultiplayerCharacter(PlayerAppearance.MpCharacterStyle currentCharacter)
+        //{
+        //    string character = JsonConvert.SerializeObject(currentCharacter);
+        //    string saveName = await GetUserInput("Enter a save name", "", 20) ?? "NULL";
+        //    if (!string.IsNullOrEmpty(saveName) && saveName != "NULL")
+        //    {
+        //        if (!sm.SaveJsonData("mp_char_" + saveName, character, false))
+        //        {
+        //            Notify.Error("Your character could not be saved, is the save name already taken?", true, true);
+        //        }
+        //        else
+        //        {
+        //            Notify.Success($"Your character is now saved as <C>{saveName}</C>!");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Notify.Error("Your character could not be saved, the provided save name is invalid.", true, true);
+        //    }
+        //}
 
-        public PlayerAppearance.MpCharacterStyle LoadMultiplayerCharacter(string saveName)
-        {
-            if (!string.IsNullOrEmpty(saveName))
-            {
-                //Debug.WriteLine(saveName);
-                string characterData = sm.GetJsonData("mp_char_" + saveName);
-                //Debug.Write(characterData.ToString() + "\n");
-                if (!string.IsNullOrEmpty(characterData))
-                {
-                    dynamic characterObj = JsonConvert.DeserializeObject(characterData);
-                    //Debug.Write(characterObj.ToString() + "\n");
-                    if (characterObj != null)
-                    {
+        //public PlayerAppearance.MpCharacterStyle LoadMultiplayerCharacter(string saveName)
+        //{
+        //    if (!string.IsNullOrEmpty(saveName))
+        //    {
+        //        //Debug.WriteLine(saveName);
+        //        string characterData = sm.GetJsonData("mp_char_" + saveName);
+        //        //Debug.Write(characterData.ToString() + "\n");
+        //        if (!string.IsNullOrEmpty(characterData))
+        //        {
+        //            dynamic characterObj = JsonConvert.DeserializeObject(characterData);
+        //            //Debug.Write(characterObj.ToString() + "\n");
+        //            if (characterObj != null)
+        //            {
 
-                        Debug.Write(characterObj.ToString() + "\n");
+        //                Debug.Write(characterObj.ToString() + "\n");
 
-                        bool IsMale = (bool)characterObj["IsMale"];
+        //                bool IsMale = (bool)characterObj["IsMale"];
 
-                        int HairStyle = (int)characterObj["HairStyle"];
-                        int HairColor = (int)characterObj["HairColor"];
-                        int HairHighlightColor = (int)characterObj["HairHighlightColor"];
+        //                int HairStyle = (int)characterObj["HairStyle"];
+        //                int HairColor = (int)characterObj["HairColor"];
+        //                int HairHighlightColor = (int)characterObj["HairHighlightColor"];
 
-                        int EyeColor = (int)characterObj["EyeColor"];
+        //                int EyeColor = (int)characterObj["EyeColor"];
 
-                        float NoseWidth = (float)characterObj["NoseWidth"];
-                        float NosePeakHeight = (float)characterObj["NosePeakHeight"];
-                        float NosePeakLength = (float)characterObj["NosePeakLength"];
-                        float NosePeakLowering = (float)characterObj["NosePeakLowering"];
-                        float NoseBoneTwist = (float)characterObj["NoseBoneTwist"];
+        //                float NoseWidth = (float)characterObj["NoseWidth"];
+        //                float NosePeakHeight = (float)characterObj["NosePeakHeight"];
+        //                float NosePeakLength = (float)characterObj["NosePeakLength"];
+        //                float NosePeakLowering = (float)characterObj["NosePeakLowering"];
+        //                float NoseBoneTwist = (float)characterObj["NoseBoneTwist"];
 
-                        float EyebrowHeight = (float)characterObj["EyebrowHeight"];
-                        float EyebrowForward = (float)characterObj["EyebrowForward"];
+        //                float EyebrowHeight = (float)characterObj["EyebrowHeight"];
+        //                float EyebrowForward = (float)characterObj["EyebrowForward"];
 
-                        float CheeksBoneHeight = (float)characterObj["CheeksBoneHeight"];
-                        float CheeksBoneWidth = (float)characterObj["CheeksBoneWidth"];
-                        float CheeksWidth = (float)characterObj["CheeksWidth"];
+        //                float CheeksBoneHeight = (float)characterObj["CheeksBoneHeight"];
+        //                float CheeksBoneWidth = (float)characterObj["CheeksBoneWidth"];
+        //                float CheeksWidth = (float)characterObj["CheeksWidth"];
 
-                        float EyesOpening = (float)characterObj["EyesOpening"];
+        //                float EyesOpening = (float)characterObj["EyesOpening"];
 
-                        float LipsThickness = (float)characterObj["LipsThickness"];
+        //                float LipsThickness = (float)characterObj["LipsThickness"];
 
-                        float JawBoneWidth = (float)characterObj["JawBoneWidth"];
-                        float JawBoneBackLength = (float)characterObj["JawBoneBackLength"];
+        //                float JawBoneWidth = (float)characterObj["JawBoneWidth"];
+        //                float JawBoneBackLength = (float)characterObj["JawBoneBackLength"];
 
-                        float ChinBoneLength = (float)characterObj["ChinBoneLength"];
-                        float ChinBoneWidth = (float)characterObj["ChinBoneWidth"];
-                        float ChinBoneLowering = (float)characterObj["ChinBoneLowering"];
-                        float ChinHole = (float)characterObj["ChinHole"];
+        //                float ChinBoneLength = (float)characterObj["ChinBoneLength"];
+        //                float ChinBoneWidth = (float)characterObj["ChinBoneWidth"];
+        //                float ChinBoneLowering = (float)characterObj["ChinBoneLowering"];
+        //                float ChinHole = (float)characterObj["ChinHole"];
 
-                        float NeckThickness = (float)characterObj["NeckThickness"];
+        //                float NeckThickness = (float)characterObj["NeckThickness"];
 
-                        int Mom = (int)characterObj["Mom"];
-                        int Dad = (int)characterObj["Dad"];
+        //                int Mom = (int)characterObj["Mom"];
+        //                int Dad = (int)characterObj["Dad"];
 
-                        float Resemblance = (float)characterObj["Resemblance"];
-                        float SkinTone = (float)characterObj["SkinTone"];
+        //                float Resemblance = (float)characterObj["Resemblance"];
+        //                float SkinTone = (float)characterObj["SkinTone"];
 
-                        return new PlayerAppearance.MpCharacterStyle(IsMale, true, HairStyle, HairColor, HairHighlightColor, EyeColor, NoseWidth, NosePeakHeight, NosePeakLength, NosePeakLowering, NoseBoneTwist, EyebrowHeight, EyebrowForward, CheeksBoneHeight, CheeksBoneWidth, CheeksWidth, EyesOpening, LipsThickness, JawBoneWidth, JawBoneBackLength, ChinBoneLowering, ChinBoneLength, ChinBoneWidth, ChinHole, NeckThickness, Mom, Dad, Resemblance, SkinTone);
-                    }
-                }
-            }
-            // in case of an error, return an invalid character struct.
-            return new PlayerAppearance.MpCharacterStyle(false, false);
-        }
+        //                return new PlayerAppearance.MpCharacterStyle(IsMale, true, HairStyle, HairColor, HairHighlightColor, EyeColor, NoseWidth, NosePeakHeight, NosePeakLength, NosePeakLowering, NoseBoneTwist, EyebrowHeight, EyebrowForward, CheeksBoneHeight, CheeksBoneWidth, CheeksWidth, EyesOpening, LipsThickness, JawBoneWidth, JawBoneBackLength, ChinBoneLowering, ChinBoneLength, ChinBoneWidth, ChinHole, NeckThickness, Mom, Dad, Resemblance, SkinTone);
+        //            }
+        //        }
+        //    }
+        //    // in case of an error, return an invalid character struct.
+        //    Debug.WriteLine("error");
+        //    return new PlayerAppearance.MpCharacterStyle(false, false);
+        //}
         #endregion
+        public async void SaveMpPed(bool isMale)
+        {
+            await Delay(0);
+        }
 
         #endregion
 

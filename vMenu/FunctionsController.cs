@@ -45,6 +45,9 @@ namespace vMenuClient
         private const float voiceIndicatorWidth = 0.02f;
         private const float voiceIndicatorHeight = 0.041f;
         private const float voiceIndicatorMutedWidth = voiceIndicatorWidth + 0.0021f;
+        public const string clothingAnimationDecor = "clothing_animation_type";
+        private bool clothingAnimationReverse = false;
+        private float clothingOpacity = 1f;
 
         /// <summary>
         /// Constructor.
@@ -72,8 +75,10 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            Tick += ManageCamera;
+            Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
+            Tick += RestorePlayerAfterBeingDead;
+            Tick += PlayerClothingAnimationsController;
         }
 
         /// Task related
@@ -287,7 +292,7 @@ namespace vMenuClient
                         bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
                         vehicle.CanBeVisiblyDamaged = !god;
                         vehicle.CanEngineDegrade = !god;
-                        vehicle.CanTiresBurst = !god;
+                        // vehicle.CanTiresBurst = !god;
                         vehicle.CanWheelsBreak = !god;
                         vehicle.IsAxlesStrong = god;
                         vehicle.IsBulletProof = god;
@@ -452,9 +457,26 @@ namespace vMenuClient
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
-                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
+                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { if (mi.GetType() != typeof(UIMenuCheckboxItem)) mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
                     var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
                     item.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+                    if (cf.IsAllowed(Permission.WODynamic))
+                    {
+                        UIMenuCheckboxItem dynWeatherTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        dynWeatherTmp.Checked = EventManager.dynamicWeather;
+                        if (cf.IsAllowed(Permission.WOBlackout))
+                        {
+                            UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[1];
+                            blackoutTmp.Checked = EventManager.blackoutMode;
+                        }
+                    }
+                    else if (cf.IsAllowed(Permission.WOBlackout))
+                    {
+                        UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        blackoutTmp.Checked = EventManager.blackoutMode;
+                    }
+
+
                 }
             }
         }
@@ -491,11 +513,12 @@ namespace vMenuClient
                         $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(PlayerPedId()), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
                 }
 
-                // Hide hud.
-                if (MainMenu.MiscSettingsMenu.HideHud)
-                {
-                    HideHudAndRadarThisFrame();
-                }
+                //// Hide hud.
+                //if (MainMenu.MiscSettingsMenu.HideHud)
+                //{
+                //    //HideHudAndRadarThisFrame();
+                //    DisplayHud(false);
+                //}
 
                 // Hide radar.
                 if (MainMenu.MiscSettingsMenu.HideRadar)
@@ -623,13 +646,46 @@ namespace vMenuClient
                                 {
                                     if (killer.Exists())
                                     {
-                                        foreach (Player playerKiller in pl)
+                                        if (killer.Model.IsPed)
                                         {
-                                            if (playerKiller.Character.Handle == killer.Handle)
+                                            bool found = false;
+                                            foreach (Player playerKiller in pl)
                                             {
-                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
-                                                break;
+                                                if (playerKiller.Character.Handle == killer.Handle)
+                                                {
+                                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                    found = true;
+                                                    break;
+                                                }
                                             }
+                                            if (!found)
+                                            {
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                            }
+                                        }
+                                        else if (killer.Model.IsVehicle)
+                                        {
+                                            bool found = false;
+                                            foreach (Player playerKiller in pl)
+                                            {
+                                                if (playerKiller.Character.IsInVehicle())
+                                                {
+                                                    if (playerKiller.Character.CurrentVehicle.Handle == killer.Handle)
+                                                    {
+                                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if (!found)
+                                            {
+                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
                                         }
                                     }
                                     else
@@ -710,57 +766,60 @@ namespace vMenuClient
         /// </summary>
         private void ShowLocation()
         {
-            // Create the default prefix.
-            var prefix = "~s~";
-
-            // If the vehicle node is further away than 1400f, then the player is not near a valid road.
-            // So we set the prefix to "Near " (<streetname>).
-            if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+            if (!IsPauseMenuActive() && !IsPauseMenuRestarting() && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsWarningMessageActive() && !IsHudHidden())
             {
-                prefix = "~m~Near ~s~";
-            }
+                // Create the default prefix.
+                var prefix = "~s~";
 
-            string headingCharacter = "";
+                // If the vehicle node is further away than 1400f, then the player is not near a valid road.
+                // So we set the prefix to "Near " (<streetname>).
+                if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+                {
+                    prefix = "~m~Near ~s~";
+                }
 
-            // Heading Facing North
-            if (heading > 320 || heading < 45)
-            {
-                headingCharacter = "N";
-            }
-            // Heading Facing West
-            else if (heading >= 45 && heading <= 135)
-            {
-                headingCharacter = "W";
-            }
-            // Heading Facing South
-            else if (heading > 135 && heading < 225)
-            {
-                headingCharacter = "S";
-            }
-            // Heading Facing East
-            else
-            {
-                headingCharacter = "E";
-            }
+                string headingCharacter = "";
 
-            // Draw the street name + crossing.
-            cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
-            // Draw the zone name.
-            cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
+                // Heading Facing North
+                if (heading > 320 || heading < 45)
+                {
+                    headingCharacter = "N";
+                }
+                // Heading Facing West
+                else if (heading >= 45 && heading <= 135)
+                {
+                    headingCharacter = "W";
+                }
+                // Heading Facing South
+                else if (heading > 135 && heading < 225)
+                {
+                    headingCharacter = "S";
+                }
+                // Heading Facing East
+                else
+                {
+                    headingCharacter = "E";
+                }
 
-            // Draw the left border for the heading character.
-            cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
-            // Draw the heading character.
-            cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
-            // Draw the right border for the heading character.
-            cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+                // Draw the street name + crossing.
+                cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
+                // Draw the zone name.
+                cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
 
-            // Get and draw the time.
-            var tth = GetClockHours();
-            var ttm = GetClockMinutes();
-            var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
-            var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-            cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+                // Draw the left border for the heading character.
+                cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
+                // Draw the heading character.
+                cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
+                // Draw the right border for the heading character.
+                cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+
+                // Get and draw the time.
+                var tth = GetClockHours();
+                var ttm = GetClockMinutes();
+                var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
+                var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
+                cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+            }
         }
         #endregion
         #endregion
@@ -837,6 +896,13 @@ namespace vMenuClient
                         }
 
                     }
+                    else
+                    {
+                        if (HasStreamedTextureDictLoaded("mpleaderboard"))
+                        {
+                            SetStreamedTextureDictAsNoLongerNeeded("mpleaderboard");
+                        }
+                    }
                 }
                 else
                 {
@@ -886,7 +952,8 @@ namespace vMenuClient
                 if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && cf.IsAllowed(Permission.WPNoReload))
                 {
                     // Disable reloading.
-                    PedSkipNextReloading(PlayerPedId());
+                    //PedSkipNextReloading(PlayerPedId());
+                    SetAmmoInClip(PlayerPedId(), (uint)Game.PlayerPed.Weapons.Current.Hash, 5);
                 }
 
                 // Enable/disable infinite ammo.
@@ -954,12 +1021,12 @@ namespace vMenuClient
         }
         #endregion
         #region Player Appearance
-        private async Task ManageCamera()
+        private async Task ManagePlayerAppearanceCamera()
         {
-            if (MainMenu.PlayerAppearanceMenu != null && MainMenu.PlayerAppearanceMenu.mpCharMenu != null)
+            if (MainMenu.MpPedCustomizationMenu != null)
             {
-                //foreach (UIMenu m in )
-                bool open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+                var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
+                bool open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
                 if (open)
                 {
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
@@ -969,9 +1036,9 @@ namespace vMenuClient
                     while (open)
                     {
                         await Delay(0);
-                        open = MainMenu.PlayerAppearanceMenu.mpCharMenus.Any(m => (m.Visible));
+                        open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
 
-                        //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
+                        SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
                         SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
 
                         RenderScriptCams(true, false, 0, true, false);
@@ -983,20 +1050,32 @@ namespace vMenuClient
                         camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.7f));
                         camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         Game.PlayerPed.Task.ClearAll();
-                        float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
-
-                        if (input > 0.5f)
+                        if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
                             Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
                         }
-                        else if (input < -0.5f)
+                        else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
                             Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
                         }
                         else
                         {
-                            Game.PlayerPed.Task.LookAt(camera.Position);
+                            float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
+
+                            if (input > 0.5f)
+                            {
+                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                            }
+                            else if (input < -0.5f)
+                            {
+                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                            }
+                            else
+                            {
+                                Game.PlayerPed.Task.LookAt(camera.Position);
+                            }
                         }
+
                     }
                     RenderScriptCams(false, false, 0, false, false);
                     camera.Delete();
@@ -1006,6 +1085,137 @@ namespace vMenuClient
                 }
             }
         }
+        #endregion
+        #region Restore player skin & weapons after respawning.
+        private async Task RestorePlayerAfterBeingDead()
+        {
+            if (Game.PlayerPed.IsDead)
+            {
+                if (MainMenu.MiscSettingsMenu != null)
+                {
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
+                    {
+                        cf.SavePed("vMenu_tmp_saved_ped");
+                    }
+
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
+                    {
+                        await cf.SaveWeaponLoadout();
+                    }
+
+                    while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
+                    {
+                        await Delay(0);
+                    }
+
+                    if (cf.GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
+                    {
+                        cf.LoadSavedPed("vMenu_tmp_saved_ped", false);
+                    }
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
+                    {
+                        cf.RestoreWeaponLoadout();
+                    }
+                }
+
+            }
+        }
+        #endregion
+        #region Player clothing animations controller.
+        private async Task PlayerClothingAnimationsController()
+        {
+            if (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
+            {
+                DecorRegister(clothingAnimationDecor, 3);
+            }
+            else
+            {
+                DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                foreach (Player player in new PlayerList())
+                {
+
+                    Ped p = player.Character;
+                    if (p != null && p.Exists() && !p.IsDead)
+                    {
+                        //cf.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
+                        if (DecorExistOn(p.Handle, clothingAnimationDecor))
+                        {
+                            int decorVal = DecorGetInt(p.Handle, clothingAnimationDecor);
+                            if (decorVal == 0) // on solid/no animation.
+                            {
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 1f);
+                            }
+                            else if (decorVal == 1) // off.
+                            {
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 0f);
+                            }
+                            else if (decorVal == 2) // fade.
+                            {
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, clothingOpacity);
+                            }
+                            else if (decorVal == 3) // flash.
+                            {
+                                float result = 0f;
+                                if (clothingAnimationReverse)
+                                {
+                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.5f))// || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
+                                    {
+                                        result = 1f;
+                                    }
+                                }
+                                else
+                                {
+                                    if ((clothingOpacity >= 0.5f && clothingOpacity <= 1.0f))//|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
+                                    {
+                                        result = 1f;
+                                    }
+                                }
+                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
+                            }
+                        }
+                        //else
+                        //{
+                        //    DecorRemove(p.Handle, clothingAnimationDecor);
+                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
+                        //    await Delay(0);
+                        //    DecorRemove(p.Handle, clothingAnimationDecor);
+                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
+                        //}
+                    }
+                }
+                if (clothingAnimationReverse)
+                {
+                    clothingOpacity -= 0.05f;
+                    if (clothingOpacity < 0f)
+                    {
+                        clothingOpacity = 0f;
+                        clothingAnimationReverse = false;
+                    }
+                }
+                else
+                {
+                    clothingOpacity += 0.05f;
+                    if (clothingOpacity > 1f)
+                    {
+                        clothingOpacity = 1f;
+                        clothingAnimationReverse = true;
+                    }
+                }
+                int timer = GetGameTimer();
+                while (GetGameTimer() - timer < 25)
+                {
+                    await Delay(0);
+                }
+            }
+            DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+        }
+
+
+        private void SetPedIlluminatedClothingGlowIntensity(int ped, float intensity)
+        {
+            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x4E90D746056E273D, ped, intensity);
+        }
+
         #endregion
 
         #region player blips tasks

@@ -36,19 +36,19 @@ namespace vMenuServer
                 string prefix = "[vMenu] ";
                 if (level == LogLevel.error)
                 {
-                    prefix = "^1[vMenu] [ERROR]^0 ";
+                    prefix = "^1[vMenu] [ERROR]^7 ";
                 }
                 else if (level == LogLevel.info)
                 {
-                    prefix = "^5[vMenu] [INFO]^0 ";
+                    prefix = "^5[vMenu] [INFO]^7 ";
                 }
                 else if (level == LogLevel.success)
                 {
-                    prefix = "^2[vMenu] [SUCCESS]^0 ";
+                    prefix = "^2[vMenu] [SUCCESS]^7 ";
                 }
                 else if (level == LogLevel.warning)
                 {
-                    prefix = "^3[vMenu] [WARNING]^0 ";
+                    prefix = "^3[vMenu] [WARNING]^7 ";
                 }
                 Debug.WriteLine($"{prefix}[DEBUG LOG] {data.ToString()}");
 
@@ -64,18 +64,17 @@ namespace vMenuServer
 
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
-        private int currentHours = 9;
-        private int currentMinutes = 0;
-        private int minuteClockSpeed = 2000;
+        private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
+        private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
+        private int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
         private long minuteTimer = GetGameTimer();
         private long timeSyncCooldown = GetGameTimer();
-        private string currentWeather = "CLEAR";
-        private bool dynamicWeather = true;
+        private string currentWeather = GetSettingsString(Setting.vmenu_default_weather);
+        private bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private bool blackout = false;
         private bool resetBlackout = false;
-        private bool freezeTime = false;
-        private int dynamicWeatherMinutes = 10;
-        //private int dynamicWeatherTimeLeft = 5 * 12 * 10; // 5 seconds * 12 (because the loop checks 12 times a minute) * 10 (10 minutes)
+        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
+        private int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
         private long gameTimer = GetGameTimer();
         private long weatherTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
@@ -100,6 +99,24 @@ namespace vMenuServer
             "Stripey",
             "horsey",
             "shower",
+        };
+        private List<string> weatherTypes = new List<string>()
+        {
+            "EXTRASUNNY",
+            "CLEAR",
+            "NEUTRAL",
+            "SMOG",
+            "FOGGY",
+            "CLOUDS",
+            "OVERCAST",
+            "CLEARING",
+            "RAIN",
+            "THUNDER",
+            "BLIZZARD",
+            "SNOW",
+            "SNOWLIGHT",
+            "XMAS",
+            "HALLOWEEN"
         };
 
         public List<string> aceNames = new List<string>()
@@ -135,7 +152,12 @@ namespace vMenuServer
             "PONeverWanted",
             "POSetWanted",
             "POIgnored",
-            "POFunctions",
+            "POMaxHealth",
+            "POMaxArmor",
+            "POCleanPlayer",
+            "PODryPlayer",
+            "POWetPlayer",
+            "POVehicleAutoPilotMenu",
             "POFreeze",
             "POScenarios",
             "POUnlimitedStamina",
@@ -334,6 +356,8 @@ namespace vMenuServer
             "MSPlayerBlips",
             "MSTeleportLocations",
             "MSConnectionMenu",
+            "MSRestoreAppearance",
+            "MSRestoreWeapons",
 
             // Voice Chat
             "VCMenu",
@@ -345,24 +369,6 @@ namespace vMenuServer
         public List<string> addonVehicles = new List<string>();
         public List<string> addonPeds = new List<string>();
         public List<string> addonWeapons = new List<string>();
-        private List<string> weatherTypes = new List<string>()
-        {
-            "EXTRASUNNY",
-            "CLEAR",
-            "NEUTRAL",
-            "SMOG",
-            "FOGGY",
-            "CLOUDS",
-            "OVERCAST",
-            "CLEARING",
-            "RAIN",
-            "THUNDER",
-            "BLIZZARD",
-            "SNOW",
-            "SNOWLIGHT",
-            "XMAS",
-            "HALLOWEEN"
-        };
 
         #region Constructor
         /// <summary>
@@ -468,21 +474,78 @@ namespace vMenuServer
                                 }
                             }
                         }
-
+                        else if (args[0].ToString().ToLower() == "time")
+                        {
+                            if (args.Count == 2)
+                            {
+                                if (args[1].ToString().ToLower() == "freeze")
+                                {
+                                    TriggerEvent("vMenu:UpdateServerTime", currentHours, currentMinutes, !freezeTime);
+                                    Debug.WriteLine($"Time is now {(freezeTime ? "frozen" : "not frozen")}.");
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                }
+                            }
+                            else if (args.Count > 2)
+                            {
+                                if (int.TryParse(args[1].ToString(), out int hour))
+                                {
+                                    if (int.TryParse(args[2].ToString(), out int minute))
+                                    {
+                                        if (hour >= 0 && hour < 24)
+                                        {
+                                            if (minute >= 0 && minute < 60)
+                                            {
+                                                TriggerEvent("vMenu:UpdateServerTime", hour, minute, freezeTime);
+                                                Debug.WriteLine($"Time is now {(hour < 10 ? ("0" + hour.ToString()) : hour.ToString())}:{(minute < 10 ? ("0" + minute.ToString()) : minute.ToString())}.");
+                                            }
+                                            else
+                                            {
+                                                Debug.WriteLine("Invalid minute provided. Value must be between 0 and 59.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.WriteLine("Invalid hour provided. Value must be between 0 and 23.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
                     }
                 }
                 else
                 {
                     Debug.WriteLine($"vMenu is currently running version: {Version}.");
                 }
-
-
             }), true);
 
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n^1[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
-                    "Please change the folder name from '^3" + GetCurrentResourceName() + "^1' to '^2vMenu^1' (case sensitive) instead!\r\n\r\n\r\n^0");
+                    "Please change the folder name from '^3" + GetCurrentResourceName() + "^1' to '^2vMenu^1' (case sensitive) instead!\r\n\r\n\r\n^7");
                 try
                 {
                     throw InvalidNameException;
@@ -504,6 +567,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
                 EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
+                EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
 
                 string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
@@ -538,7 +602,7 @@ namespace vMenuServer
                 }
                 catch (JsonReaderException ex)
                 {
-                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^0Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
 
@@ -573,6 +637,19 @@ namespace vMenuServer
                 Tick += TimeLoop;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Clear the area near this point for all players.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        private void ClearAreaNearPos(float x, float y, float z)
+        {
+            TriggerClientEvent("vMenu:ClearArea", x, y, z);
+        }
+
 
         /// <summary>
         /// Disconnect the source player because they used the disconnect menu button.
@@ -582,8 +659,6 @@ namespace vMenuServer
         {
             src.Drop("You disconnected yourself.");
         }
-        #endregion
-
         #region Manage weather and time changes.
         /// <summary>
         /// Loop used for syncing and keeping track of the time in-game.
@@ -902,6 +977,8 @@ namespace vMenuServer
             {
                 TriggerClientEvent(player, "vMenu:OutdatedResource");
             }
+            await Delay(8000);
+            TriggerClientEvent("vMenu:updatePedDecors");
         }
 
         private string GetRealAceName(string inputString)
@@ -982,7 +1059,7 @@ namespace vMenuServer
                     (date.Second < 10 ? "0" : "") + date.Second;
                 string outputFile = file + $"[\t{formattedDate}\t] [KICK ACTION] {kickLogMesage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
-                Debug.WriteLine("^3[vMenu] [KICK]^0 " + kickLogMesage + "\n");
+                Debug.WriteLine("^3[vMenu] [KICK]^7 " + kickLogMesage + "\n");
             }
         }
     }

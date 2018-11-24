@@ -13,15 +13,15 @@ namespace vMenuClient
     {
         // common functions.
         private CommonFunctions cf = MainMenu.Cf;
-        public static string currentWeatherType = "CLEAR";
+        public static string currentWeatherType = GetSettingsString(Setting.vmenu_default_weather);
         public static bool blackoutMode = false;
-        public static bool dynamicWeather = true;
+        public static bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private string lastWeather = currentWeatherType;
-        public static int currentHours = 9;
-        public static int currentMinutes = 0;
-        public static bool freezeTime = false;
+        public static int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
+        public static int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
+        public static bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
         private int minuteTimer = GetGameTimer();
-        private int minuteClockSpeed = 8000;
+        private int minuteClockSpeed = 2000;
 
         /// <summary>
         /// Constructor.
@@ -40,7 +40,8 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
-
+            EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
+            EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
@@ -133,7 +134,6 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
-
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -148,15 +148,16 @@ namespace vMenuClient
                 var justChanged = false;
                 if (currentWeatherType != lastWeather)
                 {
-                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}");
+                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
                     if (currentWeatherType == "XMAS")
                     {
-                        RequestScriptAudioBank("ICE_FOOTSTEPS", false);
-                        RequestScriptAudioBank("SNOW_FOOTSTEPS", false);
-                        RequestNamedPtfxAsset("core_snow");
-                        while (!HasNamedPtfxAssetLoaded("core_snow"))
+                        if (!HasNamedPtfxAssetLoaded("core_snow"))
                         {
-                            await Delay(0);
+                            RequestNamedPtfxAsset("core_snow");
+                            while (!HasNamedPtfxAssetLoaded("core_snow"))
+                            {
+                                await Delay(0);
+                            }
                         }
                         UseParticleFxAssetNextCall("core_snow");
                         SetForceVehicleTrails(true);
@@ -167,28 +168,29 @@ namespace vMenuClient
                         SetForceVehicleTrails(false);
                         SetForcePedFootstepsTracks(false);
                         RemoveNamedPtfxAsset("core_snow");
-                        ReleaseNamedScriptAudioBank("ICE_FOOTSTEPS");
-                        ReleaseNamedScriptAudioBank("SNOW_FOOTSTEPS");
                     }
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
                     lastWeather = currentWeatherType;
-                    SetWeatherTypeOverTime(currentWeatherType, 15f);
+                    SetWeatherTypeOverTime(currentWeatherType, 45f);
                     int tmpTimer = GetGameTimer();
-                    while (GetGameTimer() - tmpTimer < 15500) // wait 15.5 _real_ seconds
+                    while (GetGameTimer() - tmpTimer < 45500) // wait 45.5 _real_ seconds
                     {
                         await Delay(0);
                     }
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
-                    cf.Log("done changing weather type.");
+                    cf.Log("done changing weather type (duration: 45.5 seconds)");
                 }
                 if (!justChanged)
                 {
                     SetWeatherTypeNowPersist(currentWeatherType);
                 }
                 SetBlackout(blackoutMode);
+                SetWind(0f);
+                SetWindDirection(0f);
+                SetWindSpeed(0f);
             }
         }
 
@@ -269,6 +271,11 @@ namespace vMenuClient
             currentWeatherType = newWeather;
             blackoutMode = blackoutEnabled;
             dynamicWeather = dynamicChanges;
+            if (MainMenu.WeatherOptionsMenu != null)
+            {
+                MainMenu.WeatherOptionsMenu.dynamicWeatherEnabled.Checked = dynamicChanges;
+                MainMenu.WeatherOptionsMenu.blackout.Checked = blackoutEnabled;
+            }
         }
 
         /// <summary>
@@ -309,6 +316,27 @@ namespace vMenuClient
         private void SummonPlayer(string targetPlayer)
         {
             cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
+        }
+
+        /// <summary>
+        /// Clear the area around the provided x, y, z coordinates. Clears everything like (destroyed) objects, peds, (ai) vehicles, etc.
+        /// Also restores broken streetlights, etc.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        private void ClearAreaNearPos(float x, float y, float z)
+        {
+            ClearAreaOfEverything(x, y, z, 100f, false, false, false, false);
+        }
+
+        private async void UpdatePedDecors()
+        {
+            await Delay(1000);
+            int backup = PlayerAppearance.ClothingAnimationType;
+            PlayerAppearance.ClothingAnimationType = -1;
+            await Delay(100);
+            PlayerAppearance.ClothingAnimationType = backup;
         }
     }
 }
