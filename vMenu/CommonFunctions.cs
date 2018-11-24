@@ -2479,6 +2479,10 @@ namespace vMenuClient
         //    return new PlayerAppearance.MpCharacterStyle(false, false);
         //}
         #endregion
+        public async void SaveMpPed(bool isMale)
+        {
+            await Delay(0);
+        }
 
         #endregion
 

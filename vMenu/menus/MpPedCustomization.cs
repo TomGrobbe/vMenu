@@ -92,6 +92,15 @@ namespace vMenuClient
         /// </summary>
         private void CreateSavedPedsMenu()
         {
+            UIMenuItem back = new UIMenuItem("Back", "This menu is coming soon. Please check back later.");
+            savedCharactersMenu.AddItem(back);
+            savedCharactersMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == back)
+                {
+                    savedCharactersMenu.GoBack();
+                }
+            };
         }
 
         /// <summary>
@@ -99,6 +108,15 @@ namespace vMenuClient
         /// </summary>
         private void CreateFemaleCreatorMenu()
         {
+            UIMenuItem save = new UIMenuItem("Save", "Save the character, note if you do not save this character before exiting this menu you will lose all customization done to this character.");
+            createFemaleMenu.AddItem(save);
+            createFemaleMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == save)
+                {
+                    cf.SaveMpPed(isMale: false);
+                }
+            };
         }
 
         /// <summary>
@@ -106,6 +124,15 @@ namespace vMenuClient
         /// </summary>
         private void CreateMaleCreatorMenu()
         {
+            UIMenuItem save = new UIMenuItem("Save", "Save the character, note if you do not save this character before exiting this menu you will lose all customization done to this character.");
+            createMaleMenu.AddItem(save);
+            createMaleMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == save)
+                {
+                    cf.SaveMpPed(isMale: true);
+                }
+            };
         }
 
 
