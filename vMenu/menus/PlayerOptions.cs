@@ -194,7 +194,7 @@ namespace vMenuClient
                                     {
                                         Notify.Error("You need a waypoint before you can drive to it!");
                                     }
-                                    
+
                                 }
                                 else if (item == startDrivingRandomly)
                                 {
@@ -221,30 +221,35 @@ namespace vMenuClient
                     {
                         if (Game.PlayerPed.IsInVehicle())
                         {
-                            Vector3 outPos = new Vector3();
-                            if (GetNthClosestVehicleNode(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, 3, ref outPos, 0, 0, 0))
+                            Vehicle veh = cf.GetVehicle();
+                            if (veh != null && veh.Exists() && !veh.IsDead)
                             {
-                                Notify.Info("The player ped will find a suitable place to park the car and will then stop driving. Please wait.");
-                                ClearPedTasks(PlayerPedId());
-                                TaskVehiclePark(PlayerPedId(), cf.GetVehicle(), outPos.X, outPos.Y, outPos.Z, Game.PlayerPed.Heading, 3, 60f, true);
-                                while (Game.PlayerPed.Position.DistanceToSquared2D(outPos) > 3f)
+                                Vector3 outPos = new Vector3();
+                                if (GetNthClosestVehicleNode(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, 3, ref outPos, 0, 0, 0))
                                 {
-                                    await BaseScript.Delay(0);
+                                    Notify.Info("The player ped will find a suitable place to park the car and will then stop driving. Please wait.");
+                                    ClearPedTasks(Game.PlayerPed.Handle);
+                                    TaskVehiclePark(Game.PlayerPed.Handle, veh.Handle, outPos.X, outPos.Y, outPos.Z, Game.PlayerPed.Heading, 3, 60f, true);
+                                    while (Game.PlayerPed.Position.DistanceToSquared2D(outPos) > 3f)
+                                    {
+                                        await BaseScript.Delay(0);
+                                    }
+                                    SetVehicleHalt(veh.Handle, 3f, 0, false);
+                                    ClearPedTasks(Game.PlayerPed.Handle);
+                                    Notify.Info("The player ped has stopped driving.");
                                 }
-                                SetVehicleHalt(cf.GetVehicle(), 3f, 0, false);
-                                ClearPedTasks(PlayerPedId());
-                                Notify.Info("The player ped has stopped driving.");
                             }
+
                         }
                         else
                         {
-                            ClearPedTasks(PlayerPedId());
+                            ClearPedTasks(Game.PlayerPed.Handle);
                             Notify.Alert("Your ped is not in any vehicle.");
                         }
                     }
                     else if (item == forceStopDriving)
                     {
-                        ClearPedTasks(PlayerPedId());
+                        ClearPedTasks(Game.PlayerPed.Handle);
                         Notify.Info("Driving task cancelled.");
                     }
                 };
@@ -254,7 +259,7 @@ namespace vMenuClient
                     if (item == drivingStyle)
                     {
                         int style = GetStyleFromIndex(index);
-                        SetDriveTaskDrivingStyle(PlayerPedId(), style);
+                        SetDriveTaskDrivingStyle(Game.PlayerPed.Handle, style);
                         Notify.Info($"Driving task style is now set to: ~r~{drivingStyles[index]}~s~.");
                     }
                 };
@@ -327,7 +332,7 @@ namespace vMenuClient
                             {
                                 PlayerFrozen = _checked;
                                 if (!_checked)
-                                    FreezeEntityPosition(PlayerPedId(), false);
+                                    FreezeEntityPosition(Game.PlayerPed.Handle, false);
                             }
                         };
 

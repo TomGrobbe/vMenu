@@ -94,13 +94,13 @@ namespace vMenuClient
             if (cf != null)
             {
                 // Check if the player has switched to a new vehicle.
-                if (IsPedInAnyVehicle(PlayerPedId(), true)) // added this for improved performance.
+                if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
                 {
                     var tmpVehicle = cf.GetVehicle();
-                    if (DoesEntityExist(tmpVehicle) && tmpVehicle != LastVehicle)
+                    if (tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
                     {
                         // Set the last vehicle to the new vehicle entity.
-                        LastVehicle = tmpVehicle;
+                        LastVehicle = tmpVehicle.Handle;
                         SwitchedVehicle = true;
                     }
                 }
@@ -171,10 +171,10 @@ namespace vMenuClient
             if (MainMenu.PlayerOptionsMenu != null && cf.IsAllowed(Permission.POMenu))
             {
                 // Manage Player God Mode
-                SetEntityInvincible(PlayerPedId(), MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
+                SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
 
                 // Manage invisibility.
-                SetEntityVisible(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerInvisible && playerInvisible) ||
+                SetEntityVisible(Game.PlayerPed.Handle, (!MainMenu.PlayerOptionsMenu.PlayerInvisible && playerInvisible) ||
                     (!playerInvisible), false);
 
                 // Manage Stamina
@@ -201,28 +201,28 @@ namespace vMenuClient
                 }
 
                 // Manage PlayerNoRagdoll
-                SetPedCanRagdoll(PlayerPedId(), (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ||
+                SetPedCanRagdoll(Game.PlayerPed.Handle, (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ||
                     (!noRagdollAllowed));
 
 
                 // Fall off bike / dragged out of car.
                 if (MainMenu.VehicleOptionsMenu != null)
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed)
+                    SetPedCanBeKnockedOffVehicle(Game.PlayerPed.Handle, (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed)
                         || (MainMenu.VehicleOptionsMenu.VehicleGodMode) && vehicleGodModeAllowed) ? 1 : 0));
 
-                    SetPedCanBeDraggedOut(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
+                    SetPedCanBeDraggedOut(Game.PlayerPed.Handle, ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
                         (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed) ||
                         (MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed)));
 
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !((MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed) ||
+                    SetPedCanBeShotInVehicle(Game.PlayerPed.Handle, !((MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed) ||
                         (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed)));
                 }
                 else
                 {
-                    SetPedCanBeKnockedOffVehicle(PlayerPedId(), ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ? 1 : 0));
-                    SetPedCanBeDraggedOut(PlayerPedId(), (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed));
-                    SetPedCanBeShotInVehicle(PlayerPedId(), !(MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed));
+                    SetPedCanBeKnockedOffVehicle(Game.PlayerPed.Handle, ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ? 1 : 0));
+                    SetPedCanBeDraggedOut(Game.PlayerPed.Handle, (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed));
+                    SetPedCanBeShotInVehicle(Game.PlayerPed.Handle, !(MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed));
                 }
 
                 // Manage never wanted.
@@ -245,20 +245,20 @@ namespace vMenuClient
                     {
                         // Manage player frozen.
                         if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
-                            FreezeEntityPosition(PlayerPedId(), true);
+                            FreezeEntityPosition(Game.PlayerPed.Handle, true);
                     }
                 }
                 else
                 {
                     // Manage player frozen.
                     if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
-                        FreezeEntityPosition(PlayerPedId(), true);
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
                 }
 
 
                 if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
                 {
-                    ClearPedTasks(PlayerPedId());
+                    ClearPedTasks(Game.PlayerPed.Handle);
                     Notify.Custom("Destination reached, the car will now stop driving!");
                     MainMenu.Cf.driveToWpTaskActive = false;
                 }
@@ -280,41 +280,38 @@ namespace vMenuClient
             if (MainMenu.VehicleOptionsMenu != null && cf.IsAllowed(Permission.VOMenu))
             {
                 // When the player is in a valid vehicle:
-                if (IsPedInAnyVehicle(PlayerPedId(), true))
+                if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true))
                 {
-                    int veh = cf.GetVehicle();
-                    if (DoesEntityExist(veh))
+                    Vehicle veh = cf.GetVehicle();
+                    if (veh != null && veh.Exists())
                     {
-                        // Create a new vehicle object.
-                        Vehicle vehicle = new Vehicle(cf.GetVehicle());
-
                         // God mode
                         bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
-                        vehicle.CanBeVisiblyDamaged = !god;
-                        vehicle.CanEngineDegrade = !god;
+                        veh.CanBeVisiblyDamaged = !god;
+                        veh.CanEngineDegrade = !god;
                         // vehicle.CanTiresBurst = !god;
-                        vehicle.CanWheelsBreak = !god;
-                        vehicle.IsAxlesStrong = god;
-                        vehicle.IsBulletProof = god;
-                        vehicle.IsCollisionProof = god;
-                        vehicle.IsExplosionProof = god;
-                        vehicle.IsFireProof = god;
-                        vehicle.IsInvincible = god;
-                        vehicle.IsMeleeProof = god;
-                        foreach (VehicleDoor vd in vehicle.Doors.GetAll())
+                        veh.CanWheelsBreak = !god;
+                        veh.IsAxlesStrong = god;
+                        veh.IsBulletProof = god;
+                        veh.IsCollisionProof = god;
+                        veh.IsExplosionProof = god;
+                        veh.IsFireProof = god;
+                        veh.IsInvincible = god;
+                        veh.IsMeleeProof = god;
+                        foreach (VehicleDoor vd in veh.Doors.GetAll())
                         {
                             vd.CanBeBroken = !god;
                         }
                         bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && cf.IsAllowed(Permission.VOSpecialGod);
-                        if (specialgod && vehicle.EngineHealth < 1000)
+                        if (specialgod && veh.EngineHealth < 1000)
                         {
-                            vehicle.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
+                            veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
                         }
 
                         // Freeze Vehicle Position (if enabled).
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
                         {
-                            FreezeEntityPosition(vehicle.Handle, true);
+                            FreezeEntityPosition(veh.Handle, true);
                         }
 
                         await Delay(0);
@@ -323,7 +320,7 @@ namespace vMenuClient
                         {
                             // Set the torque multiplier to the selected value by the player.
                             // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
-                            SetVehicleEngineTorqueMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
+                            SetVehicleEngineTorqueMultiplier(veh.Handle, MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplierAmount);
                         }
                         // If the player has switched to a new vehicle, and the vehicle engine power multiplier is turned on. Set the new value.
                         if (SwitchedVehicle)
@@ -335,26 +332,26 @@ namespace vMenuClient
                             // Only do this if the option is enabled AND the player has permissions for it.
                             if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
                             {
-                                SetVehicleEnginePowerMultiplier(vehicle.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
+                                SetVehicleEnginePowerMultiplier(veh.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
                             }
                             // If the player switched vehicles and the option is turned off or the player has no permissions for it
                             // Then reset the power multiplier ONCE.
                             else
                             {
-                                SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
+                                SetVehicleEnginePowerMultiplier(veh.Handle, 1f);
                             }
 
                             // disable this if els compatibility is turned on.
                             if (!GetSettingsBool(Setting.vmenu_use_els_compatibility_mode))
                             {
                                 // No Siren Toggle
-                                vehicle.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
+                                veh.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
                             }
 
                         }
 
                         // Manage "no helmet"
-                        var ped = new Ped(PlayerPedId());
+                        var ped = new Ped(Game.PlayerPed.Handle);
                         // If the no helmet feature is turned on, disalbe "ped can wear helmet"
                         if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
                         {
@@ -398,11 +395,10 @@ namespace vMenuClient
                 await Delay(1);
 
                 // Manage vehicle engine always on.
-                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && DoesEntityExist(cf.GetVehicle(lastVehicle: true)) &&
-                    !IsPedInAnyVehicle(PlayerPedId(), false)) && (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
+                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && cf.GetVehicle(lastVehicle: true).Exists() && !Game.PlayerPed.IsInVehicle()) && (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
                 {
                     await Delay(100);
-                    SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true), true, true, true);
+                    SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true).Handle, true, true, true);
                 }
 
             }
@@ -413,23 +409,22 @@ namespace vMenuClient
         }
         private async Task MoreVehicleOptions()
         {
-            if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(PlayerPedId(), true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk))
+            if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk))
             {
-                var veh = cf.GetVehicle();
-                if (DoesEntityExist(veh))
+                Vehicle veh = cf.GetVehicle();
+                if (veh != null && veh.Exists())
                 {
-                    Vehicle vehicle = new Vehicle(veh);
-                    if (vehicle.Driver == Game.PlayerPed && vehicle.IsEngineRunning && !IsPauseMenuActive())
+                    if (veh.Driver == Game.PlayerPed && veh.IsEngineRunning && !IsPauseMenuActive())
                     {
                         // turn on high beams when honking.
                         if (Game.IsControlPressed(0, Control.VehicleHorn))
                         {
-                            vehicle.AreHighBeamsOn = true;
+                            veh.AreHighBeamsOn = true;
                         }
                         // turn high beams back off when just stopped honking.
                         if (Game.IsControlJustReleased(0, Control.VehicleHorn))
                         {
-                            vehicle.AreHighBeamsOn = false;
+                            veh.AreHighBeamsOn = false;
                         }
                     }
                     else
@@ -506,11 +501,11 @@ namespace vMenuClient
                 // Show coordinates.
                 if (MainMenu.MiscSettingsMenu.ShowCoordinates && cf.IsAllowed(Permission.MSShowCoordinates))
                 {
-                    var pos = GetEntityCoords(PlayerPedId(), true);
+                    var pos = GetEntityCoords(Game.PlayerPed.Handle, true);
                     cf.DrawTextOnScreen($"~r~X~t~: {Math.Round(pos.X, 2)}" +
                         $"~n~~r~Y~t~: {Math.Round(pos.Y, 2)}" +
                         $"~n~~r~Z~t~: {Math.Round(pos.Z, 2)}" +
-                        $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(PlayerPedId()), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
+                        $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(Game.PlayerPed.Handle), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
                 }
 
                 //// Hide hud.
@@ -730,7 +725,7 @@ namespace vMenuClient
                 if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
                 {
                     // Get the current location.
-                    currentPos = GetEntityCoords(PlayerPedId(), true);
+                    currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
 
                     // Get the nearest vehicle node.
                     nodePos = currentPos;
@@ -952,12 +947,12 @@ namespace vMenuClient
                 if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && cf.IsAllowed(Permission.WPNoReload))
                 {
                     // Disable reloading.
-                    //PedSkipNextReloading(PlayerPedId());
-                    SetAmmoInClip(PlayerPedId(), (uint)Game.PlayerPed.Weapons.Current.Hash, 5);
+                    //PedSkipNextReloading(Game.PlayerPed.Handle);
+                    SetAmmoInClip(Game.PlayerPed.Handle, (uint)Game.PlayerPed.Weapons.Current.Hash, 5);
                 }
 
                 // Enable/disable infinite ammo.
-                //SetPedInfiniteAmmoClip(PlayerPedId(), MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
+                //SetPedInfiniteAmmoClip(Game.PlayerPed.Handle, MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
                 if (Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
                 {
                     Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo);
@@ -974,11 +969,11 @@ namespace vMenuClient
 
                 if (MainMenu.WeaponOptionsMenu.AutoEquipChute)
                 {
-                    if ((IsPedInAnyHeli(PlayerPedId()) || IsPedInAnyPlane(PlayerPedId())) && !HasPedGotWeapon(PlayerPedId(), (uint)WeaponHash.Parachute, false))
+                    if ((IsPedInAnyHeli(Game.PlayerPed.Handle) || IsPedInAnyPlane(Game.PlayerPed.Handle)) && !HasPedGotWeapon(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, false))
                     {
-                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, true);
                         SetPlayerHasReserveParachute(PlayerId());
-                        SetPlayerCanLeaveParachuteSmokeTrail(PlayerPedId(), true);
+                        SetPlayerCanLeaveParachuteSmokeTrail(Game.PlayerPed.Handle, true);
                     }
                 }
             }
@@ -999,16 +994,16 @@ namespace vMenuClient
             if (MainMenu.OnlinePlayersMenu != null && cf.IsAllowed(Permission.OPMenu) && cf.IsAllowed(Permission.OPSpectate))
             {
                 // When the player dies while spectating, cancel the spectating to prevent an infinite black loading screen.
-                if (GetEntityHealth(PlayerPedId()) < 1 && NetworkIsInSpectatorMode())
+                if (GetEntityHealth(Game.PlayerPed.Handle) < 1 && NetworkIsInSpectatorMode())
                 {
                     DoScreenFadeOut(50);
                     await Delay(50);
-                    NetworkSetInSpectatorMode(true, PlayerPedId());
-                    NetworkSetInSpectatorMode(false, PlayerPedId());
+                    NetworkSetInSpectatorMode(true, Game.PlayerPed.Handle);
+                    NetworkSetInSpectatorMode(false, Game.PlayerPed.Handle);
 
                     await Delay(50);
                     DoScreenFadeIn(50);
-                    while (GetEntityHealth(PlayerPedId()) < 1)
+                    while (GetEntityHealth(Game.PlayerPed.Handle) < 1)
                     {
                         await Delay(0);
                     }
@@ -1043,7 +1038,7 @@ namespace vMenuClient
 
                         RenderScriptCams(true, false, 0, true, false);
 
-                        FreezeEntityPosition(PlayerPedId(), true);
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
 
                         cf.DisableMovementControlsThisFrame(true, true);
 
@@ -1081,7 +1076,7 @@ namespace vMenuClient
                     camera.Delete();
                     DestroyAllCams(true);
                     Game.PlayerPed.Task.ClearLookAt();
-                    FreezeEntityPosition(PlayerPedId(), false);
+                    FreezeEntityPosition(Game.PlayerPed.Handle, false);
                 }
             }
         }
@@ -1130,7 +1125,7 @@ namespace vMenuClient
             }
             else
             {
-                DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
                 foreach (Player player in new PlayerList())
                 {
 
@@ -1207,7 +1202,7 @@ namespace vMenuClient
                     await Delay(0);
                 }
             }
-            DecorSetInt(PlayerPedId(), clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+            DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
         }
 
 
@@ -1338,9 +1333,9 @@ namespace vMenuClient
         /// </summary>
         private void ShowSpeedKmh()
         {
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            if (Game.PlayerPed.IsInVehicle())
             {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle()) * 3.6f).ToString());
+                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle().Handle) * 3.6f).ToString());
                 cf.DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
             }
         }
@@ -1351,9 +1346,9 @@ namespace vMenuClient
         /// </summary>
         private void ShowSpeedMph()
         {
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            if (Game.PlayerPed.IsInVehicle())
             {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle()) * 2.23694f).ToString());
+                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle().Handle) * 2.23694f).ToString());
 
                 if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
                 {

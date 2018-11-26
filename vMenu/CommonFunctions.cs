@@ -77,7 +77,58 @@ namespace vMenuClient
         /// <param name="ped">Get the vehicle for this player.</param>
         /// <param name="lastVehicle">If true, return the last vehicle, if false (default) return the current vehicle.</param>
         /// <returns>Returns a vehicle (int).</returns>
-        public int GetVehicle(int player = -1, bool lastVehicle = false) => GetVehiclePedIsIn(GetPlayerPed(player), lastVehicle);
+        //public int GetVehicle(int player = -1, bool lastVehicle = false)
+        //{
+
+        //};
+
+        public Vehicle GetVehicle(bool lastVehicle = false)
+        {
+            if (lastVehicle)
+            {
+                return Game.PlayerPed.LastVehicle;
+            }
+            else
+            {
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    return Game.PlayerPed.CurrentVehicle;
+                }
+            }
+            return null;
+        }
+
+        public Vehicle GetVehicle(Ped ped, bool lastVehicle = false)
+        {
+            if (lastVehicle)
+            {
+                return ped.LastVehicle;
+            }
+            else
+            {
+                if (ped.IsInVehicle())
+                {
+                    return ped.CurrentVehicle;
+                }
+            }
+            return null;
+        }
+
+        public Vehicle GetVehicle(Player player, bool lastVehicle = false)
+        {
+            if (lastVehicle)
+            {
+                return player.Character.LastVehicle;
+            }
+            else
+            {
+                if (player.Character.IsInVehicle())
+                {
+                    return player.Character.CurrentVehicle;
+                }
+            }
+            return null;
+        }
         #endregion
 
         #region GetVehicleModel (uint)(hash) from Entity/Vehicle (int)
@@ -96,19 +147,19 @@ namespace vMenuClient
         public void DriveToWp(int style = 0)
         {
 
-            ClearPedTasks(PlayerPedId());
+            ClearPedTasks(Game.PlayerPed.Handle);
             driveWanderTaskActive = false;
             driveToWpTaskActive = true;
 
-            var waypoint = World.WaypointPosition;
+            Vector3 waypoint = World.WaypointPosition;
 
-            var veh = GetVehicle();
-            var model = (uint)GetEntityModel(veh);
+            Vehicle veh = GetVehicle();
+            uint model = (uint)veh.Model.Hash;
 
-            SetDriverAbility(PlayerPedId(), 1f);
-            SetDriverAggressiveness(PlayerPedId(), 0f);
+            SetDriverAbility(Game.PlayerPed.Handle, 1f);
+            SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
 
-            TaskVehicleDriveToCoordLongrange(PlayerPedId(), veh, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
+            TaskVehicleDriveToCoordLongrange(Game.PlayerPed.Handle, veh.Handle, waypoint.X, waypoint.Y, waypoint.Z, GetVehicleModelMaxSpeed(model), style, 10f);
         }
 
         /// <summary>
@@ -116,17 +167,17 @@ namespace vMenuClient
         /// </summary>
         public void DriveWander(int style = 0)
         {
-            ClearPedTasks(PlayerPedId());
+            ClearPedTasks(Game.PlayerPed.Handle);
             driveWanderTaskActive = true;
             driveToWpTaskActive = false;
 
-            var veh = GetVehicle();
-            var model = (uint)GetEntityModel(veh);
+            Vehicle veh = GetVehicle();
+            uint model = (uint)veh.Model.Hash;
 
-            SetDriverAbility(PlayerPedId(), 1f);
-            SetDriverAggressiveness(PlayerPedId(), 0f);
+            SetDriverAbility(Game.PlayerPed.Handle, 1f);
+            SetDriverAggressiveness(Game.PlayerPed.Handle, 0f);
 
-            TaskVehicleDriveWander(PlayerPedId(), veh, GetVehicleModelMaxSpeed(model), style);
+            TaskVehicleDriveWander(Game.PlayerPed.Handle, veh.Handle, GetVehicleModelMaxSpeed(model), style);
         }
         #endregion
 
@@ -160,7 +211,7 @@ namespace vMenuClient
             if (NetworkIsPlayerActive(playerId))
             {
                 int playerPed = GetPlayerPed(playerId);
-                if (PlayerPedId() == playerPed)
+                if (Game.PlayerPed.Handle == playerPed)
                 {
                     Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!");
                     return;
@@ -179,14 +230,14 @@ namespace vMenuClient
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
                         // Get the vehicle of the specified player.
-                        int vehicle = GetVehicle(player: playerId);
+                        Vehicle vehicle = GetVehicle(new PlayerList()[playerId]);
 
-                        int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle));
+                        int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle.Handle));
 
                         // Does the vehicle exist? Is it NOT dead/broken? Are there enough vehicle seats empty?
-                        if (DoesEntityExist(vehicle) && !IsEntityDead(vehicle) && IsAnyVehicleSeatEmpty(vehicle))
+                        if (vehicle.Exists() && !vehicle.IsDead && IsAnyVehicleSeatEmpty(vehicle.Handle))
                         {
-                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, (int)VehicleSeat.Any);
+                            TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, (int)VehicleSeat.Any);
                             Notify.Success("Teleported into ~g~<C>" + GetPlayerName(playerId) + "</C>'s ~s~vehicle.");
                         }
                         // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
@@ -232,11 +283,11 @@ namespace vMenuClient
             if (!safeModeDisabled)
             {
                 RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
-                bool inCar = IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId();
+                bool inCar = Game.PlayerPed.IsInVehicle() && GetVehicle().Driver == Game.PlayerPed;
                 if (inCar)
-                    SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, pos.Z);
+                    SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z);
                 else
-                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
+                    SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
 
                 int timer = GetGameTimer();
                 bool failed = false;
@@ -256,15 +307,15 @@ namespace vMenuClient
                 if (!failed)
                 {
                     if (inCar)
-                        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ);
+                        SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ);
                     else
-                        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ, false, false, false, true);
+                        SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ, false, false, false, true);
                 }
                 await Delay(200);
-                failed = (IsEntityInWater(PlayerPedId()) || GetEntityHeightAboveGround(PlayerPedId()) > 50f) ? true : failed;
+                failed = (IsEntityInWater(Game.PlayerPed.Handle) || GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 50f) ? true : failed;
                 if (failed)
                 {
-                    GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, true);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, true);
                     Vector3 safePos = pos;
                     safePos.Z = 810f;
                     var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
@@ -272,38 +323,38 @@ namespace vMenuClient
                     {
                         Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.", true);
                         if (inCar)
-                            SetPedCoordsKeepVehicle(PlayerPedId(), safePos.X, safePos.Y, safePos.Z);
+                            SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z);
                         else
-                            SetEntityCoords(PlayerPedId(), safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                            SetEntityCoords(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z, false, false, false, true);
                     }
                     else
                     {
                         Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!", true);
                         if (inCar)
-                            SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, 810f);
+                            SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, 810f);
                         else
-                            SetEntityCoords(PlayerPedId(), pos.X, pos.Y, 810f, false, false, false, true);
+                            SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, 810f, false, false, false, true);
                     }
                 }
             }
             else
             {
-                if (IsPedInAnyVehicle(PlayerPedId(), false) && GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())
+                if (Game.PlayerPed.IsInVehicle() && GetVehicle().Driver == Game.PlayerPed)
                 {
-                    SetEntityCoords(GetVehicle(), pos.X, pos.Y, pos.Z, false, false, false, true);
+                    SetEntityCoords(GetVehicle().Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
                 else
                 {
-                    SetEntityCoords(PlayerPedId(), pos.X, pos.Y, pos.Z, false, false, false, true);
+                    SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
             }
 
             //else
             //{
             //    if (inCar)
-            //        SetPedCoordsKeepVehicle(PlayerPedId(), pos.X, pos.Y, outputZ + 0.1f);
+            //        SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ + 0.1f);
             //    else
-            //        SetEntityCoords(PlayerPedId(), pos.X, pos.Y, outputZ + 0.1f, false, false, false, true);
+            //        SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ + 0.1f, false, false, false, true);
             //}
         }
 
@@ -498,40 +549,40 @@ namespace vMenuClient
                 // If we take the pill, remove any weapons in our hands.
                 if (takePill)
                 {
-                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_unarmed"), true);
+                    SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
                 }
                 // Otherwise, give the ped a gun.
                 else if (weaponHash != null)
                 {
-                    SetCurrentPedWeapon(PlayerPedId(), (uint)weaponHash, true);
-                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                    SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)weaponHash, true);
+                    SetPedDropsWeaponsWhenDead(Game.PlayerPed.Handle, true);
                 }
                 else
                 {
-                    GiveWeaponToPed(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
-                    SetCurrentPedWeapon(PlayerPedId(), (uint)GetHashKey("weapon_pistol_mk2"), true);
-                    SetPedDropsWeaponsWhenDead(PlayerPedId(), true);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_pistol_mk2"), 1, false, true);
+                    SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_pistol_mk2"), true);
+                    SetPedDropsWeaponsWhenDead(Game.PlayerPed.Handle, true);
                 }
 
                 // Play the animation for the pill or pistol suicide type. Pistol oddly enough does not have any sounds. Needs research.
-                ClearPedTasks(PlayerPedId());
-                TaskPlayAnim(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
+                ClearPedTasks(Game.PlayerPed.Handle);
+                TaskPlayAnim(Game.PlayerPed.Handle, "MP_SUICIDE", (takePill ? "pill" : "pistol"), 8f, -8f, -1, 270540800, 0, false, false, false);
 
                 bool shot = false;
                 while (true)
                 {
-                    float time = GetEntityAnimCurrentTime(PlayerPedId(), "MP_SUICIDE", (takePill ? "pill" : "pistol"));
-                    if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
+                    float time = GetEntityAnimCurrentTime(Game.PlayerPed.Handle, "MP_SUICIDE", (takePill ? "pill" : "pistol"));
+                    if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Fire")) && !shot) // shoot the gun if the animation event is triggered.
                     {
-                        ClearEntityLastDamageEntity(PlayerPedId());
-                        SetPedShootsAtCoord(PlayerPedId(), 0f, 0f, 0f, false);
+                        ClearEntityLastDamageEntity(Game.PlayerPed.Handle);
+                        SetPedShootsAtCoord(Game.PlayerPed.Handle, 0f, 0f, 0f, false);
                         shot = true;
                     }
                     if (time > (takePill ? 0.536f : 0.365f))
                     {
                         // Kill the player.
-                        ClearEntityLastDamageEntity(PlayerPedId());
-                        SetEntityHealth(PlayerPedId(), 0);
+                        ClearEntityLastDamageEntity(Game.PlayerPed.Handle);
+                        SetEntityHealth(Game.PlayerPed.Handle, 0);
                         break;
                     }
                     await Delay(0);
@@ -569,7 +620,7 @@ namespace vMenuClient
                 DoScreenFadeOut(100);
                 await Delay(100);
                 Notify.Info("Stopped spectating.", false, false);
-                NetworkSetInSpectatorMode(false, PlayerPedId());
+                NetworkSetInSpectatorMode(false, Game.PlayerPed.Handle);
                 DoScreenFadeIn(100);
                 await Delay(100);
             }
@@ -595,7 +646,7 @@ namespace vMenuClient
         {
 
             // Create a new vehicle.
-            Vehicle vehicle = new Vehicle(GetVehicle());
+            Vehicle vehicle = GetVehicle();
 
             // If there are enough empty seats, continue.
             if (AreAnyVehicleSeatsFree(vehicle.Handle))
@@ -604,7 +655,7 @@ namespace vMenuClient
                 var maxSeats = GetVehicleModelNumberOfSeats((uint)GetEntityModel(vehicle.Handle));
 
                 // If the player is currently in the "last" seat, start from the driver's position and loop through the seats.
-                if (GetPedInVehicleSeat(vehicle.Handle, maxSeats - 2) == PlayerPedId())
+                if (GetPedInVehicleSeat(vehicle.Handle, maxSeats - 2) == Game.PlayerPed.Handle)
                 {
                     // Loop through all seats.
                     for (var seat = -1; seat < maxSeats - 2; seat++)
@@ -612,7 +663,7 @@ namespace vMenuClient
                         // If the seat is free, get in it and stop the loop.
                         if (vehicle.IsSeatFree((VehicleSeat)seat))
                         {
-                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                            TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, seat);
                             break;
                         }
                     }
@@ -627,7 +678,7 @@ namespace vMenuClient
                     {
                         // If this seat is the one the player is sitting on, set passedCurrentSeat to true.
                         // This way we won't just keep placing the ped in the 1st available seat, but actually the first "next" available seat.
-                        if (!passedCurrentSeat && GetPedInVehicleSeat(vehicle.Handle, seat) == PlayerPedId())
+                        if (!passedCurrentSeat && GetPedInVehicleSeat(vehicle.Handle, seat) == Game.PlayerPed.Handle)
                         {
                             passedCurrentSeat = true;
                         }
@@ -636,7 +687,7 @@ namespace vMenuClient
                         if (passedCurrentSeat && IsVehicleSeatFree(vehicle.Handle, seat))
                         {
                             switchedPlace = true;
-                            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                            TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, seat);
                             break;
                         }
                     }
@@ -650,7 +701,7 @@ namespace vMenuClient
                             // If the seat is free, take it and break the loop.
                             if (IsVehicleSeatFree(vehicle.Handle, seat))
                             {
-                                TaskWarpPedIntoVehicle(PlayerPedId(), vehicle.Handle, seat);
+                                TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, seat);
                                 break;
                             }
                         }
@@ -715,9 +766,9 @@ namespace vMenuClient
         {
             float speed = 0f;
             float rpm = 0f;
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            if (Game.PlayerPed.IsInVehicle())
             {
-                Vehicle tmpOldVehicle = new Vehicle(GetVehicle());
+                Vehicle tmpOldVehicle = GetVehicle();
                 speed = GetEntitySpeedVector(tmpOldVehicle.Handle, true).Y; // get forward/backward speed only
                 rpm = tmpOldVehicle.CurrentRPM;
                 tmpOldVehicle = null;
@@ -746,15 +797,15 @@ namespace vMenuClient
             Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
 
             // Get the heading & position for where the vehicle should be spawned.
-            Vector3 pos = (spawnInside) ? GetEntityCoords(PlayerPedId(), true) : GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 8f, 0f);
-            float heading = GetEntityHeading(PlayerPedId()) + (spawnInside ? 0f : 90f);
+            Vector3 pos = (spawnInside) ? GetEntityCoords(Game.PlayerPed.Handle, true) : GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0f, 8f, 0f);
+            float heading = GetEntityHeading(Game.PlayerPed.Handle) + (spawnInside ? 0f : 90f);
 
             // If the previous vehicle exists...
             if (previousVehicle != null)
             {
                 // And it's actually a vehicle (rather than another random entity type)
                 if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
-                    (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == PlayerPedId()))
+                    (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == Game.PlayerPed.Handle))
                 {
                     // If the previous vehicle should be deleted:
                     if (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious))
@@ -779,22 +830,22 @@ namespace vMenuClient
                 }
             }
 
-            if (IsPedInAnyVehicle(PlayerPedId(), false) && (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious)))
+            if (Game.PlayerPed.IsInVehicle() && (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious)))
             {
-                if (GetPedInVehicleSeat(GetVehicle(), -1) == PlayerPedId())// && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
+                if (GetVehicle().Driver == Game.PlayerPed)// && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
                 {
                     var tmpveh = GetVehicle();
-                    SetVehicleHasBeenOwnedByPlayer(tmpveh, false);
-                    SetEntityAsMissionEntity(tmpveh, true, true);
+                    SetVehicleHasBeenOwnedByPlayer(tmpveh.Handle, false);
+                    SetEntityAsMissionEntity(tmpveh.Handle, true, true);
 
                     if (previousVehicle != null)
                     {
-                        if (previousVehicle.Handle == tmpveh)
+                        if (previousVehicle.Handle == tmpveh.Handle)
                         {
                             previousVehicle = null;
                         }
                     }
-                    DeleteVehicle(ref tmpveh);
+                    tmpveh.Delete();
                     Notify.Info("Your old car was removed to prevent your new car from glitching inside it. Next time, get out of your vehicle before spawning a new one if you want to keep your old one.");
                 }
             }
@@ -802,8 +853,8 @@ namespace vMenuClient
             if (previousVehicle != null)
                 previousVehicle.PreviouslyOwnedByPlayer = false;
 
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
-                pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0, 8f, 0.1f);
+            if (Game.PlayerPed.IsInVehicle())
+                pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0, 8f, 0.1f);
 
             // Create the new vehicle and remove the need to hotwire the car.
             Vehicle vehicle = new Vehicle(CreateVehicle(vehicleHash, pos.X, pos.Y, pos.Z + 1f, heading, true, false))
@@ -823,10 +874,10 @@ namespace vMenuClient
                 vehicle.IsEngineRunning = true;
 
                 // Set the ped into the vehicle.
-                new Ped(PlayerPedId()).SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                new Ped(Game.PlayerPed.Handle).SetIntoVehicle(vehicle, VehicleSeat.Driver);
 
                 // If the vehicle is a helicopter and the player is in the air, set the blades to be full speed.
-                if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(PlayerPedId()) > 10.0f)
+                if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 10.0f)
                 {
                     SetHeliBladesFullSpeed(vehicle.Handle);
                 }
@@ -935,10 +986,10 @@ namespace vMenuClient
         public async void SaveVehicle(string updateExistingSavedVehicleName = null)
         {
             // Only continue if the player is in a vehicle.
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
+            if (Game.PlayerPed.IsInVehicle())
             {
                 // Get the vehicle.
-                Vehicle veh = new Vehicle(GetVehicle());
+                Vehicle veh = GetVehicle();
                 // Make sure the entity is actually a vehicle and it still exists, and it's not dead.
                 if (veh.Exists() && !veh.IsDead && veh.IsDriveable)
                 {
@@ -1233,10 +1284,10 @@ namespace vMenuClient
                 // Get the vehicle.
                 var veh = GetVehicle();
                 // If it exists.
-                if (DoesEntityExist(veh))
+                if (veh.Exists())
                 {
                     // Set the license plate.
-                    SetVehicleNumberPlateText(veh, text);
+                    SetVehicleNumberPlateText(veh.Handle, text);
                 }
                 // If it doesn't exist, notify the user.
                 else
@@ -1320,41 +1371,41 @@ namespace vMenuClient
                 // Set the current scenario.
                 currentScenario = scenarioName;
                 // Clear all tasks to make sure the player is ready to play the scenario.
-                ClearPedTasks(PlayerPedId());
+                ClearPedTasks(Game.PlayerPed.Handle);
 
                 var canPlay = true;
                 // Check if the player CAN play a scenario... 
-                //if (IsPedInAnyVehicle(PlayerPedId(), true))
+                //if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true))
                 //{
                 //    Notification.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
                 //    canPlay = false;
                 //}
-                if (IsPedRunning(PlayerPedId()))
+                if (IsPedRunning(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are running.", true, false);
                     canPlay = false;
                 }
-                if (IsEntityDead(PlayerPedId()))
+                if (IsEntityDead(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are dead.", true, false);
                     canPlay = false;
                 }
-                if (IsPlayerInCutscene(PlayerPedId()))
+                if (IsPlayerInCutscene(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are in a cutscene.", true, false);
                     canPlay = false;
                 }
-                if (IsPedFalling(PlayerPedId()))
+                if (IsPedFalling(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are falling.", true, false);
                     canPlay = false;
                 }
-                if (IsPedRagdoll(PlayerPedId()))
+                if (IsPedRagdoll(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are currently in a ragdoll state.", true, false);
                     canPlay = false;
                 }
-                if (!IsPedOnFoot(PlayerPedId()))
+                if (!IsPedOnFoot(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You must be on foot to start a scenario.", true, false);
                     canPlay = false;
@@ -1364,7 +1415,7 @@ namespace vMenuClient
                     Notify.Alert("You can't start a scenario when you are currently spectating.", true, false);
                     canPlay = false;
                 }
-                if (GetEntitySpeed(PlayerPedId()) > 5.0f)
+                if (GetEntitySpeed(Game.PlayerPed.Handle) > 5.0f)
                 {
                     Notify.Alert("You can't start a scenario when you are moving too fast.", true, false);
                     canPlay = false;
@@ -1376,16 +1427,16 @@ namespace vMenuClient
                     if (PedScenarios.PositionBasedScenarios.Contains(scenarioName))
                     {
                         // Get the offset-position from the player. (0.5m behind the player, and 0.5m below the player seems fine for most scenarios)
-                        var pos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, -0.5f, -0.5f);
-                        var heading = GetEntityHeading(PlayerPedId());
+                        var pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0f, -0.5f, -0.5f);
+                        var heading = GetEntityHeading(Game.PlayerPed.Handle);
                         // Play the scenario at the specified location.
-                        TaskStartScenarioAtPosition(PlayerPedId(), scenarioName, pos.X, pos.Y, pos.Z, heading, -1, true, false);
+                        TaskStartScenarioAtPosition(Game.PlayerPed.Handle, scenarioName, pos.X, pos.Y, pos.Z, heading, -1, true, false);
                     }
                     // If it's not a sit scenario (or maybe it is, but using the above native causes other
                     // issues for some sit scenarios so those are not registered as "sit" scenarios), then play it at the current player's position.
                     else
                     {
-                        TaskStartScenarioInPlace(PlayerPedId(), scenarioName, 0, true);
+                        TaskStartScenarioInPlace(Game.PlayerPed.Handle, scenarioName, 0, true);
                     }
                 }
             }
@@ -1393,16 +1444,16 @@ namespace vMenuClient
             else
             {
                 currentScenario = "";
-                ClearPedTasks(PlayerPedId());
-                ClearPedSecondaryTask(PlayerPedId());
+                ClearPedTasks(Game.PlayerPed.Handle);
+                ClearPedSecondaryTask(Game.PlayerPed.Handle);
             }
 
             // If the scenario name to play is called "forcestop" then clear the current scenario and force any tasks to be cleared.
             if (scenarioName == "forcestop")
             {
                 currentScenario = "";
-                ClearPedTasks(PlayerPedId());
-                ClearPedTasksImmediately(PlayerPedId());
+                ClearPedTasks(Game.PlayerPed.Handle);
+                ClearPedTasksImmediately(Game.PlayerPed.Handle);
             }
 
         }
@@ -1782,15 +1833,15 @@ namespace vMenuClient
                     await Delay(0);
                 }
 
-                if ((uint)GetEntityModel(PlayerPedId()) != modelHash) // only change skins if the player is not yet using the new skin.
+                if ((uint)GetEntityModel(Game.PlayerPed.Handle) != modelHash) // only change skins if the player is not yet using the new skin.
                 {
                     SetPlayerModel(PlayerId(), modelHash);
                 }
-                SetPedDefaultComponentVariation(PlayerPedId());
+                SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
 
                 if (pedCustomizationOptions.version == 1)
                 {
-                    var ped = PlayerPedId();
+                    var ped = Game.PlayerPed.Handle;
                     for (var drawable = 0; drawable < 21; drawable++)
                     {
                         SetPedComponentVariation(ped, drawable, pedCustomizationOptions.drawableVariations[drawable],
@@ -1870,7 +1921,7 @@ namespace vMenuClient
                 PedInfo data = new PedInfo();
 
                 // Get the ped.
-                int ped = PlayerPedId();
+                int ped = Game.PlayerPed.Handle;
 
                 data.version = 1;
                 // Get the ped model hash & add it to the dictionary.
@@ -2087,14 +2138,14 @@ namespace vMenuClient
             //await Delay(1);
             foreach (var vw in ValidWeapons.Weapons)
             {
-                if (HasPedGotWeapon(PlayerPedId(), vw.Value, false))
+                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Value, false))
                 {
                     List<uint> components = new List<uint>();
                     foreach (var wc in ValidWeapons.weaponComponents)
                     {
                         if (DoesWeaponTakeWeaponComponent(vw.Value, wc.Value))
                         {
-                            if (HasPedGotWeaponComponent(PlayerPedId(), vw.Value, wc.Value))
+                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Value, wc.Value))
                             {
                                 components.Add(wc.Value);
                             }
@@ -2102,10 +2153,10 @@ namespace vMenuClient
                     }
                     weaponsList.Add(new WeaponInfo()
                     {
-                        Ammo = GetAmmoInPedWeapon(PlayerPedId(), vw.Value),
+                        Ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Value),
                         Hash = vw.Value,
                         Components = components,
-                        Tint = GetPedWeaponTintIndex(PlayerPedId(), vw.Value)
+                        Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Value)
                     });
                 }
             }
@@ -2122,15 +2173,15 @@ namespace vMenuClient
             {
                 foreach (WeaponInfo wi in weaponsList)
                 {
-                    GiveWeaponToPed(PlayerPedId(), wi.Hash, wi.Ammo, false, false);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, wi.Hash, wi.Ammo, false, false);
                     if (wi.Components.Count > 0)
                     {
                         foreach (var wc in wi.Components)
                         {
-                            GiveWeaponComponentToPed(PlayerPedId(), wi.Hash, wc);
+                            GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, wc);
                         }
                     }
-                    SetPedWeaponTintIndex(PlayerPedId(), wi.Hash, wi.Tint);
+                    SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
                 }
             }
         }
@@ -2237,7 +2288,7 @@ namespace vMenuClient
 
                 if (IsWeaponValid(model))
                 {
-                    GiveWeaponToPed(PlayerPedId(), model, ammo, false, true);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, model, ammo, false, true);
                     Notify.Success("Added weapon to inventory.");
                 }
                 else
@@ -2255,13 +2306,13 @@ namespace vMenuClient
         #region Set Player Walking Style
         public async void SetWalkingStyle(string walkingStyle)
         {
-            if (IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_f_freemode_01")) || IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_m_freemode_01")))
+            if (IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_f_freemode_01")) || IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_m_freemode_01")))
             {
-                bool isPedMale = IsPedModel(PlayerPedId(), (uint)GetHashKey("mp_m_freemode_01"));
-                ClearPedAlternateMovementAnim(PlayerPedId(), 0, 1f);
-                ClearPedAlternateMovementAnim(PlayerPedId(), 1, 1f);
-                ClearPedAlternateMovementAnim(PlayerPedId(), 2, 1f);
-                ClearPedAlternateWalkAnim(PlayerPedId(), 1f);
+                bool isPedMale = IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_m_freemode_01"));
+                ClearPedAlternateMovementAnim(Game.PlayerPed.Handle, 0, 1f);
+                ClearPedAlternateMovementAnim(Game.PlayerPed.Handle, 1, 1f);
+                ClearPedAlternateMovementAnim(Game.PlayerPed.Handle, 2, 1f);
+                ClearPedAlternateWalkAnim(Game.PlayerPed.Handle, 1f);
                 string animDict = null;
                 if (walkingStyle == "Injured")
                 {
@@ -2309,9 +2360,9 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
-                    SetPedAlternateMovementAnim(PlayerPedId(), 0, animDict, "idle", 1f, true);
-                    SetPedAlternateMovementAnim(PlayerPedId(), 1, animDict, "walk", 1f, true);
-                    SetPedAlternateMovementAnim(PlayerPedId(), 2, animDict, "run", 1f, true);
+                    SetPedAlternateMovementAnim(Game.PlayerPed.Handle, 0, animDict, "idle", 1f, true);
+                    SetPedAlternateMovementAnim(Game.PlayerPed.Handle, 1, animDict, "walk", 1f, true);
+                    SetPedAlternateMovementAnim(Game.PlayerPed.Handle, 2, animDict, "run", 1f, true);
                 }
                 else if (walkingStyle != "Normal")
                 {

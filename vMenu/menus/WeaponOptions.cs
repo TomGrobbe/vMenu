@@ -108,15 +108,15 @@ namespace vMenuClient
                 addonWeaponsMenu.OnItemSelect += (sender, item, index) =>
                 {
                     var weapon = AddonWeapons.ElementAt(index);
-                    if (HasPedGotWeapon(PlayerPedId(), weapon.Value, false))
+                    if (HasPedGotWeapon(Game.PlayerPed.Handle, weapon.Value, false))
                     {
-                        RemoveWeaponFromPed(PlayerPedId(), weapon.Value);
+                        RemoveWeaponFromPed(Game.PlayerPed.Handle, weapon.Value);
                     }
                     else
                     {
                         var maxAmmo = 200;
-                        GetMaxAmmo(PlayerPedId(), weapon.Value, ref maxAmmo);
-                        GiveWeaponToPed(PlayerPedId(), weapon.Value, maxAmmo, false, true);
+                        GetMaxAmmo(Game.PlayerPed.Handle, weapon.Value, ref maxAmmo);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, weapon.Value, maxAmmo, false, true);
                     }
                 };
                 addonWeaponsBtn.SetRightLabel("→→→");
@@ -227,7 +227,7 @@ namespace vMenuClient
             #region handle events
             primaryChute.OnItemSelect += (sender, item, index) =>
             {
-                SetPedParachuteTintIndex(PlayerPedId(), index - 1);
+                SetPedParachuteTintIndex(Game.PlayerPed.Handle, index - 1);
                 Subtitle.Custom($"Primary parachute style selected: ~r~{item.Text}~s~.");
             };
 
@@ -265,14 +265,14 @@ namespace vMenuClient
             {
                 if (item == togglePrimary)
                 {
-                    if (HasPedGotWeapon(PlayerPedId(), (uint)WeaponHash.Parachute, false))
+                    if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, false))
                     {
-                        RemoveWeaponFromPed(PlayerPedId(), (uint)WeaponHash.Parachute);
+                        RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute);
                         Notify.Success("Primary parachute ~r~removed~s~.", true);
                     }
                     else
                     {
-                        GiveWeaponToPed(PlayerPedId(), (uint)WeaponHash.Parachute, 1, false, false);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, false);
                         Notify.Success("Primary parachute ~g~equippped~s~.", true);
                     }
                 }
@@ -550,9 +550,9 @@ namespace vMenuClient
                     {
                         if (item == weaponTints)
                         {
-                            if (HasPedGotWeapon(PlayerPedId(), weaponInfo[sender].Hash, false))
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, weaponInfo[sender].Hash, false))
                             {
-                                SetPedWeaponTintIndex(PlayerPedId(), weaponInfo[sender].Hash, index);
+                                SetPedWeaponTintIndex(Game.PlayerPed.Handle, weaponInfo[sender].Hash, index);
                             }
                             else
                             {
@@ -569,26 +569,26 @@ namespace vMenuClient
                         {
                             var info = weaponInfo[sender];
                             uint hash = info.Hash;
-                            if (HasPedGotWeapon(PlayerPedId(), hash, false))
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
-                                RemoveWeaponFromPed(PlayerPedId(), hash);
+                                RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
                                 Subtitle.Custom("Weapon removed.");
                             }
                             else
                             {
                                 var ammo = 255;
-                                GetMaxAmmo(PlayerPedId(), hash, ref ammo);
-                                GiveWeaponToPed(PlayerPedId(), hash, ammo, false, true);
+                                GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
+                                GiveWeaponToPed(Game.PlayerPed.Handle, hash, ammo, false, true);
                                 Subtitle.Custom("Weapon added.");
                             }
                         }
                         else if (item == fillAmmo)
                         {
-                            if (HasPedGotWeapon(PlayerPedId(), weaponInfo[sender].Hash, false))
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, weaponInfo[sender].Hash, false))
                             {
                                 var ammo = 900;
-                                GetMaxAmmo(PlayerPedId(), weaponInfo[sender].Hash, ref ammo);
-                                SetAmmoInClip(PlayerPedId(), weaponInfo[sender].Hash, ammo);
+                                GetMaxAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ref ammo);
+                                SetAmmoInClip(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
                             }
                             else
                             {
@@ -616,16 +616,16 @@ namespace vMenuClient
                                     {
                                         var Weapon = weaponInfo[sender];
                                         var componentHash = Weapon.Components[weaponComponents[item]];
-                                        if (HasPedGotWeapon(PlayerPedId(), Weapon.Hash, false))
+                                        if (HasPedGotWeapon(Game.PlayerPed.Handle, Weapon.Hash, false))
                                         {
-                                            if (HasPedGotWeaponComponent(PlayerPedId(), Weapon.Hash, componentHash))
+                                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, Weapon.Hash, componentHash))
                                             {
-                                                RemoveWeaponComponentFromPed(PlayerPedId(), Weapon.Hash, componentHash);
+                                                RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
                                                 Subtitle.Custom("Component removed.");
                                             }
                                             else
                                             {
-                                                GiveWeaponComponentToPed(PlayerPedId(), Weapon.Hash, componentHash);
+                                                GiveWeaponComponentToPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
                                                 Subtitle.Custom("Component equiped.");
                                             }
                                         }
@@ -751,13 +751,13 @@ namespace vMenuClient
             #region Handle button presses
             menu.OnItemSelect += (sender, item, index) =>
             {
-                Ped ped = new Ped(PlayerPedId());
+                Ped ped = new Ped(Game.PlayerPed.Handle);
                 if (item == getAllWeapons)
                 {
                     foreach (var weapon in ValidWeapons.Weapons)
                     {
                         var ammo = 255;
-                        GetMaxAmmo(PlayerPedId(), weapon.Value, ref ammo);
+                        GetMaxAmmo(Game.PlayerPed.Handle, weapon.Value, ref ammo);
                         ped.Weapons.Give((WeaponHash)weapon.Value, ammo, weapon.Key == "Unarmed", true);
                     }
                     ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);

@@ -470,12 +470,18 @@ namespace vMenuClient
                     {
                         if (Game.IsControlJustPressed(0, (Control)NoClipKey) && Cf.IsAllowed(Permission.NoClip))
                         {
-                            if (IsPedInAnyVehicle(PlayerPedId(), false))
+                            if (Game.PlayerPed.IsInVehicle())
                             {
-                                if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == PlayerPedId())
+                                Vehicle veh = Cf.GetVehicle();
+                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                                 {
+
                                     NoClipEnabled = !Mp.IsAnyMenuOpen();
                                 }
+                                //if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == Game.PlayerPed.Handle)
+                                //{
+                                    //NoClipEnabled = !Mp.IsAnyMenuOpen();
+                                //}
                                 else
                                 {
                                     NoClipEnabled = false;
@@ -515,7 +521,7 @@ namespace vMenuClient
                     {
                         Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
                         // when in a vehicle.
-                        if (IsPedInAnyVehicle(PlayerPedId(), false))
+                        if (Game.PlayerPed.IsInVehicle())
                         {
                             Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
                             Game.DisableControlThisFrame(0, Control.VehicleDuck);
@@ -552,7 +558,7 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, Control.Aim);
 
                     // When in a vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    if (Game.PlayerPed.IsInVehicle())
                     {
                         Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
                         Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);

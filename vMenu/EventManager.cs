@@ -306,7 +306,7 @@ namespace vMenuClient
         private void KillMe()
         {
             Notify.Info("Someone wanted you dead.... Sorry.");
-            SetEntityHealth(PlayerPedId(), 0);
+            SetEntityHealth(Game.PlayerPed.Handle, 0);
         }
 
         /// <summary>
