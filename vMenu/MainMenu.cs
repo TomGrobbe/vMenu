@@ -62,6 +62,12 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
+                Debug.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+            }), false);
+
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 if (args != null)
