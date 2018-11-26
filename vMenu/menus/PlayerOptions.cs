@@ -130,7 +130,6 @@ namespace vMenuClient
             {
                 menu.AddItem(everyoneIgnoresPlayerCheckbox);
             }
-
             if (cf.IsAllowed(Permission.POMaxHealth))
             {
                 menu.AddItem(healPlayerBtn);
@@ -279,62 +278,75 @@ namespace vMenuClient
             #region handle all events
             // Checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
-                        {
-                            // God Mode toggled.
-                            if (item == playerGodModeCheckbox)
-                            {
-                                PlayerGodMode = _checked;
-                            }
-                            // Invisibility toggled.
-                            else if (item == invisibleCheckbox)
-                            {
-                                PlayerInvisible = _checked;
-                            }
-                            // Unlimited Stamina toggled.
-                            else if (item == unlimitedStaminaCheckbox)
-                            {
-                                PlayerStamina = _checked;
-                            }
-                            // Fast run toggled.
-                            else if (item == fastRunCheckbox)
-                            {
-                                PlayerFastRun = _checked;
-                                SetRunSprintMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
-                            }
-                            // Fast swim toggled.
-                            else if (item == fastSwimCheckbox)
-                            {
-                                PlayerFastSwim = _checked;
-                                SetSwimMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
-                            }
-                            // Super jump toggled.
-                            else if (item == superJumpCheckbox)
-                            {
-                                PlayerSuperJump = _checked;
-                            }
-                            // No ragdoll toggled.
-                            else if (item == noRagdollCheckbox)
-                            {
-                                PlayerNoRagdoll = _checked;
-                            }
-                            // Never wanted toggled.
-                            else if (item == neverWantedCheckbox)
-                            {
-                                PlayerNeverWanted = _checked;
-                            }
-                            // Everyone ignores player toggled.
-                            else if (item == everyoneIgnoresPlayerCheckbox)
-                            {
-                                PlayerIsIgnored = _checked;
-                            }
-                            // Freeze player toggled.
-                            else if (item == playerFrozenCheckbox)
-                            {
-                                PlayerFrozen = _checked;
-                                if (!_checked)
-                                    FreezeEntityPosition(Game.PlayerPed.Handle, false);
-                            }
-                        };
+            {
+                // God Mode toggled.
+                if (item == playerGodModeCheckbox)
+                {
+                    PlayerGodMode = _checked;
+                }
+                // Invisibility toggled.
+                else if (item == invisibleCheckbox)
+                {
+                    PlayerInvisible = _checked;
+                    SetEntityVisible(Game.PlayerPed.Handle, !PlayerInvisible, false);
+                }
+                // Unlimited Stamina toggled.
+                else if (item == unlimitedStaminaCheckbox)
+                {
+                    PlayerStamina = _checked;
+                }
+                // Fast run toggled.
+                else if (item == fastRunCheckbox)
+                {
+                    PlayerFastRun = _checked;
+                    SetRunSprintMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
+                }
+                // Fast swim toggled.
+                else if (item == fastSwimCheckbox)
+                {
+                    PlayerFastSwim = _checked;
+                    SetSwimMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
+                }
+                // Super jump toggled.
+                else if (item == superJumpCheckbox)
+                {
+                    PlayerSuperJump = _checked;
+                }
+                // No ragdoll toggled.
+                else if (item == noRagdollCheckbox)
+                {
+                    PlayerNoRagdoll = _checked;
+                }
+                // Never wanted toggled.
+                else if (item == neverWantedCheckbox)
+                {
+                    PlayerNeverWanted = _checked;
+                }
+                // Everyone ignores player toggled.
+                else if (item == everyoneIgnoresPlayerCheckbox)
+                {
+                    PlayerIsIgnored = _checked;
+
+                    // Manage player is ignored by everyone.
+                    SetEveryoneIgnorePlayer(PlayerId(), PlayerIsIgnored);
+                    SetPoliceIgnorePlayer(PlayerId(), PlayerIsIgnored);
+                    SetPlayerCanBeHassledByGangs(PlayerId(), !PlayerIsIgnored);
+                }
+                // Freeze player toggled.
+                else if (item == playerFrozenCheckbox)
+                {
+                    PlayerFrozen = _checked;
+
+                    if (MainMenu.NoClipMenu != null && !MainMenu.NoClipEnabled)
+                    {
+                        FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
+                    }
+                    else if (!MainMenu.NoClipEnabled)
+                    {
+                        FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
+                    }
+                }
+            };
 
             // List selections
             menu.OnListSelect += (sender, listItem, index) =>

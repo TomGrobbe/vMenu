@@ -410,6 +410,23 @@ namespace vMenuClient
                     // Create all (sub)menus.
                     CreateSubmenus();
                 }
+
+                // Manage Stamina
+                if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && Cf.IsAllowed(Permission.POUnlimitedStamina))
+                {
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                }
+                else
+                {
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
+                }
+                // Manage other stats.
+                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
             }
             #endregion
 
@@ -480,7 +497,7 @@ namespace vMenuClient
                                 }
                                 //if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == Game.PlayerPed.Handle)
                                 //{
-                                    //NoClipEnabled = !Mp.IsAnyMenuOpen();
+                                //NoClipEnabled = !Mp.IsAnyMenuOpen();
                                 //}
                                 else
                                 {

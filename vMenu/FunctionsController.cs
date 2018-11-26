@@ -156,43 +156,18 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task PlayerOptions()
         {
-            // perms
-            bool ignorePlayerAllowed = cf.IsAllowed(Permission.POIgnored);
-            bool godmodeAllowed = cf.IsAllowed(Permission.POGod);
-            bool playerInvisible = cf.IsAllowed(Permission.POInvisible);
-            bool noRagdollAllowed = cf.IsAllowed(Permission.PONoRagdoll);
-            bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
-            bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
-
-
-
-
             // Player options. Only run player options if the player options menu has actually been created.
             if (MainMenu.PlayerOptionsMenu != null && cf.IsAllowed(Permission.POMenu))
             {
+                // perms
+                bool ignorePlayerAllowed = cf.IsAllowed(Permission.POIgnored);
+                bool godmodeAllowed = cf.IsAllowed(Permission.POGod);
+                bool noRagdollAllowed = cf.IsAllowed(Permission.PONoRagdoll);
+                bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
+                bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
+
                 // Manage Player God Mode
                 SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
-
-                // Manage invisibility.
-                SetEntityVisible(Game.PlayerPed.Handle, (!MainMenu.PlayerOptionsMenu.PlayerInvisible && playerInvisible) ||
-                    (!playerInvisible), false);
-
-                // Manage Stamina
-                if (MainMenu.PlayerOptionsMenu.PlayerStamina && cf.IsAllowed(Permission.POUnlimitedStamina))
-                {
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
-                }
-                else
-                {
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
-                }
-                // Manage other stats.
-                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
 
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
@@ -230,31 +205,6 @@ namespace vMenuClient
                 {
                     ClearPlayerWantedLevel(PlayerId());
                 }
-
-                // Manage player is ignored by everyone.
-                SetEveryoneIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed);
-
-                SetPoliceIgnorePlayer(PlayerId(), MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed);
-
-                SetPlayerCanBeHassledByGangs(PlayerId(), !((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
-                    (MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed)));
-
-                if (MainMenu.NoClipMenu != null)
-                {
-                    if (!MainMenu.NoClipEnabled)
-                    {
-                        // Manage player frozen.
-                        if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
-                            FreezeEntityPosition(Game.PlayerPed.Handle, true);
-                    }
-                }
-                else
-                {
-                    // Manage player frozen.
-                    if (MainMenu.PlayerOptionsMenu.PlayerFrozen && playerFrozenAllowed)
-                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
-                }
-
 
                 if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
                 {

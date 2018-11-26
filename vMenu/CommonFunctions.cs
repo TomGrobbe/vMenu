@@ -1352,9 +1352,8 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public bool IsAllowed(Permission permission) =>
-            // Get the permissions.
-            PermissionsManager.IsAllowed(permission);
+        //public bool IsAllowed(Permission permission) => true;
+        public bool IsAllowed(Permission permission) => PermissionsManager.IsAllowed(permission);
         #endregion
 
         #region Play Scenarios
