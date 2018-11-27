@@ -97,7 +97,7 @@ namespace vMenuClient
                 if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
                 {
                     var tmpVehicle = cf.GetVehicle();
-                    if (tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
+                    if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
                     {
                         // Set the last vehicle to the new vehicle entity.
                         LastVehicle = tmpVehicle.Handle;
@@ -345,10 +345,11 @@ namespace vMenuClient
                 await Delay(1);
 
                 // Manage vehicle engine always on.
-                if ((MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && cf.GetVehicle(true) != null && cf.GetVehicle(true).Exists() && !Game.PlayerPed.IsInVehicle()) && (cf.IsAllowed(Permission.VOEngineAlwaysOn)))
+                if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && cf.GetVehicle(true) != null && cf.GetVehicle(true).Exists() && !Game.PlayerPed.IsInVehicle() && cf.IsAllowed(Permission.VOEngineAlwaysOn))
                 {
                     await Delay(100);
-                    SetVehicleEngineOn(cf.GetVehicle(lastVehicle: true).Handle, true, true, true);
+                    if (cf.GetVehicle(true) != null)
+                        SetVehicleEngineOn(cf.GetVehicle(true).Handle, true, true, true);
                 }
 
             }

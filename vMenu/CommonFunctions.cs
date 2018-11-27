@@ -231,27 +231,29 @@ namespace vMenuClient
                     {
                         // Get the vehicle of the specified player.
                         Vehicle vehicle = GetVehicle(new PlayerList()[playerId]);
-
-                        int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle.Handle));
-
-                        // Does the vehicle exist? Is it NOT dead/broken? Are there enough vehicle seats empty?
-                        if (vehicle.Exists() && !vehicle.IsDead && IsAnyVehicleSeatEmpty(vehicle.Handle))
+                        if (vehicle != null)
                         {
-                            TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, (int)VehicleSeat.Any);
-                            Notify.Success("Teleported into ~g~<C>" + GetPlayerName(playerId) + "</C>'s ~s~vehicle.");
-                        }
-                        // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
-                        else
-                        {
-                            // If there's only one seat on this vehicle, tell them that it's a one-seater.
-                            if (totalVehicleSeats == 1)
+                            int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle.Handle));
+
+                            // Does the vehicle exist? Is it NOT dead/broken? Are there enough vehicle seats empty?
+                            if (vehicle.Exists() && !vehicle.IsDead && IsAnyVehicleSeatEmpty(vehicle.Handle))
                             {
-                                Notify.Error("This vehicle only has room for 1 player!");
+                                TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, vehicle.Handle, (int)VehicleSeat.Any);
+                                Notify.Success("Teleported into ~g~<C>" + GetPlayerName(playerId) + "</C>'s ~s~vehicle.");
                             }
-                            // Otherwise, tell them there's not enough empty seats remaining.
+                            // If there are not enough empty vehicle seats or the vehicle doesn't exist/is dead then notify the user.
                             else
                             {
-                                Notify.Error("Not enough empty vehicle seats remaining!");
+                                // If there's only one seat on this vehicle, tell them that it's a one-seater.
+                                if (totalVehicleSeats == 1)
+                                {
+                                    Notify.Error("This vehicle only has room for 1 player!");
+                                }
+                                // Otherwise, tell them there's not enough empty seats remaining.
+                                else
+                                {
+                                    Notify.Error("Not enough empty vehicle seats remaining!");
+                                }
                             }
                         }
                     }
@@ -991,7 +993,7 @@ namespace vMenuClient
                 // Get the vehicle.
                 Vehicle veh = GetVehicle();
                 // Make sure the entity is actually a vehicle and it still exists, and it's not dead.
-                if (veh.Exists() && !veh.IsDead && veh.IsDriveable)
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.IsDriveable)
                 {
                     #region new saving method
                     Dictionary<int, int> mods = new Dictionary<int, int>();
@@ -1284,7 +1286,7 @@ namespace vMenuClient
                 // Get the vehicle.
                 var veh = GetVehicle();
                 // If it exists.
-                if (veh.Exists())
+                if (veh != null && veh.Exists())
                 {
                     // Set the license plate.
                     SetVehicleNumberPlateText(veh.Handle, text);
