@@ -31,6 +31,7 @@ namespace vMenuClient
         public bool VehicleGodMode { get; private set; } = UserDefaults.VehicleGodMode;
         public bool VehicleSpecialGodMode { get; private set; } = UserDefaults.VehicleSpecialGodMode;
         public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
+        public bool VehicleNeverDirty { get; private set; } = UserDefaults.VehicleNeverDirty;
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
@@ -62,8 +63,8 @@ namespace vMenuClient
             #region menu variables
             // Create Checkboxes.
             UIMenuCheckboxItem vehicleGod = new UIMenuCheckboxItem("Vehicle God Mode", VehicleGodMode, "Your vehicle will not be able to take visual or physical damage.");
-            UIMenuCheckboxItem vehicleSpecialGod = new UIMenuCheckboxItem("Special Vehicle God Mode", VehicleSpecialGodMode, "This option repairs your vehicle immediately when " +
-                "it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.");
+            UIMenuCheckboxItem vehicleSpecialGod = new UIMenuCheckboxItem("Special Vehicle God Mode", VehicleSpecialGodMode, "This option repairs your vehicle immediately when it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.");
+            UIMenuCheckboxItem vehicleNeverDirty = new UIMenuCheckboxItem("Keep Vehicle Clean", VehicleNeverDirty, "This will constantly clean your car if the vehicle dirt level goes above 0. Note that this only cleans ~o~dust~s~ or ~o~dirt~s~. This does not clean mud, snow or other ~r~damage decals~s~. Repair your vehicle to remove them.");
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
             UIMenuCheckboxItem vehicleNoTurbulence = new UIMenuCheckboxItem("Disable Plane Turbulence", DisablePlaneTurbulence, "Disables the turbulence for all planes. Note only works for planes. Helicopters and other flying vehicles are not supported.");
             UIMenuCheckboxItem vehicleNoSiren = new UIMenuCheckboxItem("Disable Siren", VehicleNoSiren, "Disables your vehicle's siren. Only works if your vehicle actually has a siren.");
@@ -71,8 +72,7 @@ namespace vMenuClient
             UIMenuCheckboxItem vehicleFreeze = new UIMenuCheckboxItem("Freeze Vehicle", VehicleFrozen, "Freeze your vehicle's position.");
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
-            UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn." +
-                " Does not work during the day when you have your lights turned off.");
+            UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.");
 
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -210,6 +210,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
                 menu.AddItem(fixVehicle);
+            }
+            if (cf.IsAllowed(Permission.VOKeepClean))
+            {
+                menu.AddItem(vehicleNeverDirty);
             }
             if (cf.IsAllowed(Permission.VOWash))
             {
@@ -434,7 +438,7 @@ namespace vMenuClient
             {
                 // Create a vehicle object.
                 Vehicle vehicle = cf.GetVehicle();
-                
+
 
                 if (item == vehicleGod) // God Mode Toggled
                 {
@@ -505,6 +509,10 @@ namespace vMenuClient
                             SetPlaneTurbulenceMultiplier(vehicle.Handle, 1.0f);
                         }
                     }
+                }
+                else if (item == vehicleNeverDirty)
+                {
+                    VehicleNeverDirty = _checked;
                 }
             };
             #endregion

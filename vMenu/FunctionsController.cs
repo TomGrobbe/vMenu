@@ -239,7 +239,6 @@ namespace vMenuClient
                         bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
                         veh.CanBeVisiblyDamaged = !god;
                         veh.CanEngineDegrade = !god;
-                        // vehicle.CanTiresBurst = !god;
                         veh.CanWheelsBreak = !god;
                         veh.IsAxlesStrong = god;
                         veh.IsBulletProof = god;
@@ -262,6 +261,11 @@ namespace vMenuClient
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
                         {
                             FreezeEntityPosition(veh.Handle, true);
+                        }
+
+                        if (MainMenu.VehicleOptionsMenu.VehicleNeverDirty && veh.DirtLevel > 0f && cf.IsAllowed(Permission.VOKeepClean))
+                        {
+                            veh.Wash();
                         }
 
                         await Delay(0);

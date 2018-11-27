@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,6 +76,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("vehicleSpecialGodMode"); }
             set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
+        }
+
+        public static bool VehicleNeverDirty
+        {
+            get { return GetSettingsBool("vehicleNeverDirty"); }
+            set { SetSavedSettingsBool("vehicleNeverDirty", value); }
         }
 
         public static bool VehicleEngineAlwaysOn
@@ -391,6 +397,10 @@ namespace vMenuClient
 
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
                 prefs.Add("vehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
+
+
+                VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
+                prefs.Add("vehicleNeverDirty", MainMenu.VehicleOptionsMenu.VehicleNeverDirty);
 
                 VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
                 prefs.Add("vehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);

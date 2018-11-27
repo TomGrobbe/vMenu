@@ -48,6 +48,7 @@
         VOAll,
         VOGod,
         VOSpecialGod,
+        VOKeepClean,
         VORepair,
         VOWash,
         VOEngine,
