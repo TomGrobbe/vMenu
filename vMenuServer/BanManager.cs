@@ -193,7 +193,7 @@ namespace vMenuServer
         {
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.PermBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                Player target = new PlayerList()[targetPlayer];
+                Player target = Players[targetPlayer];
                 if (target != null)
                 {
                     if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
@@ -249,7 +249,7 @@ namespace vMenuServer
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Log("Source player is allowed to ban others.", LogLevel.info);
-                Player target = new PlayerList()[targetPlayer];
+                Player target = Players[targetPlayer];
                 if (target != null)
                 {
                     Log("Target player is not null so moving on.", LogLevel.info);

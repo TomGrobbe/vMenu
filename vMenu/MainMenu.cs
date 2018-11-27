@@ -44,6 +44,7 @@ namespace vMenuClient
         public static About AboutMenu { get; private set; }
         public static UIMenu NoClipMenu { get; } = new NoclipMenu().GetMenu();
         public static bool NoClipEnabled { get; set; } = false;
+        public static PlayerList PlayersList;
 
         // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
@@ -62,6 +63,9 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            PlayersList = Players;
+
+
             RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
@@ -104,6 +108,7 @@ namespace vMenuClient
 
             if (GetCurrentResourceName() != "vMenu")
             {
+
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
                 try
                 {
@@ -121,6 +126,8 @@ namespace vMenuClient
                 Tick += ProcessMainButtons;
                 Tick += ProcessDirectionalButtons;
             }
+
+            SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
 
         }
 

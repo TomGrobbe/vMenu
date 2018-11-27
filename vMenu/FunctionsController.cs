@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +38,6 @@ namespace vMenuClient
         private string crossingName = "";
         private string suffix = "";
         private bool wasMenuJustOpen = false;
-        private PlayerList blipsPlayerList = new PlayerList();
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -55,7 +54,7 @@ namespace vMenuClient
         public FunctionsController()
         {
             // Load the initial playerlist.
-            foreach (Player p in new PlayerList())
+            foreach (Player p in Players)
             {
                 playerList.Add(p.Handle, p.Name);
             }
@@ -539,7 +538,7 @@ namespace vMenuClient
                 // Join/Quit notifications
                 if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
                 {
-                    PlayerList plist = new PlayerList();
+                    PlayerList plist = Players;
                     Dictionary<int, string> pl = new Dictionary<int, string>();
                     foreach (Player p in plist)
                     {
@@ -589,7 +588,7 @@ namespace vMenuClient
                 // Death notifications
                 if (MainMenu.MiscSettingsMenu.DeathNotifications && cf.IsAllowed(Permission.MSDeathNotifs))
                 {
-                    PlayerList pl = new PlayerList();
+                    PlayerList pl = Players;
                     var tmpiterator = 0;
                     foreach (Player p in pl)
                     {
@@ -809,11 +808,9 @@ namespace vMenuClient
                     }
                     if (MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker && cf.IsAllowed(Permission.VCShowSpeaker))
                     {
-                        PlayerList pl = new PlayerList();
+                        PlayerList pl = Players;
                         var i = 1;
                         var currentlyTalking = false;
-                        // cf.DrawTextOnScreen($"~b~Debugging", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
-                        // i++;
                         foreach (Player p in pl)
                         {
                             if (NetworkIsPlayerTalking(p.Handle))
@@ -856,7 +853,6 @@ namespace vMenuClient
                         {
                             DrawSprite("mpleaderboard", "leaderboard_audio_mute", 0.008f, 0.985f, voiceIndicatorMutedWidth, voiceIndicatorHeight, 0f, 255, 55, 0, 255);
                         }
-
                     }
                     else
                     {
@@ -1093,56 +1089,48 @@ namespace vMenuClient
             else
             {
                 DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
-                foreach (Player player in new PlayerList())
+                foreach (Player player in Players)
                 {
-
                     Ped p = player.Character;
                     if (p != null && p.Exists() && !p.IsDead)
                     {
-                        //cf.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
+                        // cf.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
+
                         if (DecorExistOn(p.Handle, clothingAnimationDecor))
                         {
                             int decorVal = DecorGetInt(p.Handle, clothingAnimationDecor);
                             if (decorVal == 0) // on solid/no animation.
                             {
-                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 1f);
+                                SetPedIlluminatedClothingGlowIntensity(p.Handle, 1f);
                             }
                             else if (decorVal == 1) // off.
                             {
-                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, 0f);
+                                SetPedIlluminatedClothingGlowIntensity(p.Handle, 0f);
                             }
                             else if (decorVal == 2) // fade.
                             {
-                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, clothingOpacity);
+                                SetPedIlluminatedClothingGlowIntensity(p.Handle, clothingOpacity);
                             }
                             else if (decorVal == 3) // flash.
                             {
                                 float result = 0f;
                                 if (clothingAnimationReverse)
                                 {
-                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.5f))// || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
+                                    if ((clothingOpacity >= 0f && clothingOpacity <= 0.5f)) // || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
                                     {
                                         result = 1f;
                                     }
                                 }
                                 else
                                 {
-                                    if ((clothingOpacity >= 0.5f && clothingOpacity <= 1.0f))//|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
+                                    if ((clothingOpacity >= 0.5f && clothingOpacity <= 1.0f)) //|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
                                     {
                                         result = 1f;
                                     }
                                 }
-                                this.SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
+                                SetPedIlluminatedClothingGlowIntensity(p.Handle, result);
                             }
                         }
-                        //else
-                        //{
-                        //    DecorRemove(p.Handle, clothingAnimationDecor);
-                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
-                        //    await Delay(0);
-                        //    DecorRemove(p.Handle, clothingAnimationDecor);
-                        //    DecorSetInt(p.Handle, clothingAnimationDecor, -1);
-                        //}
                     }
                 }
                 if (clothingAnimationReverse)
@@ -1170,12 +1158,6 @@ namespace vMenuClient
                 }
             }
             DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
-        }
-
-
-        private void SetPedIlluminatedClothingGlowIntensity(int ped, float intensity)
-        {
-            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x4E90D746056E273D, ped, intensity);
         }
 
         #endregion

@@ -47,7 +47,7 @@ namespace vMenuClient
             }
 
             // Create a new player list.
-            PlayerList pl = new PlayerList();
+            PlayerList pl = MainMenu.PlayersList;
 
             // Loop through the playerlist.
             foreach (Player p in pl)
