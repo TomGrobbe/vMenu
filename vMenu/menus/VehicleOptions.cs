@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -434,6 +434,7 @@ namespace vMenuClient
             {
                 // Create a vehicle object.
                 Vehicle vehicle = cf.GetVehicle();
+                
 
                 if (item == vehicleGod) // God Mode Toggled
                 {
@@ -447,7 +448,12 @@ namespace vMenuClient
                 {
                     VehicleFrozen = _checked;
                     if (!_checked)
-                        FreezeEntityPosition(cf.GetVehicle().Handle, false);
+                    {
+                        if (vehicle != null && vehicle.Exists())
+                        {
+                            FreezeEntityPosition(vehicle.Handle, false);
+                        }
+                    }
                 }
                 else if (item == torqueEnabled) // Enable Torque Multiplier Toggled
                 {
@@ -458,11 +464,13 @@ namespace vMenuClient
                     VehiclePowerMultiplier = _checked;
                     if (_checked)
                     {
-                        SetVehicleEnginePowerMultiplier(cf.GetVehicle().Handle, VehiclePowerMultiplierAmount);
+                        if (vehicle != null && vehicle.Exists())
+                            SetVehicleEnginePowerMultiplier(vehicle.Handle, VehiclePowerMultiplierAmount);
                     }
                     else
                     {
-                        SetVehicleEnginePowerMultiplier(cf.GetVehicle().Handle, 1f);
+                        if (vehicle != null && vehicle.Exists())
+                            SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
                     }
                 }
                 else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
@@ -472,7 +480,8 @@ namespace vMenuClient
                 else if (item == vehicleNoSiren) // Disable Siren Toggled
                 {
                     VehicleNoSiren = _checked;
-                    vehicle.IsSirenSilent = _checked;
+                    if (vehicle != null && vehicle.Exists())
+                        vehicle.IsSirenSilent = _checked;
                 }
                 else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
                 {
@@ -919,7 +928,7 @@ namespace vMenuClient
                 {
                     Notify.Error(CommonErrors.NoVehicle);
                 }
-                
+
             };
             #endregion
 
