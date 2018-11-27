@@ -13,72 +13,94 @@ namespace vMenuClient
         public static int GetBlipSpriteForVehicle(int vehicle)
         {
             uint model = (uint)GetEntityModel(vehicle);
+            Dictionary<uint, int> sprites = new Dictionary<uint, int>()
+            {
+                { (uint)GetHashKey("taxi"), 56 },
+                //
+                { (uint)GetHashKey("nightshark"), 225 },
+                //
+                { (uint)GetHashKey("rhino"), 421 },
+                //
+                { (uint)GetHashKey("lazer"), 424 },
+                { (uint)GetHashKey("besra"), 424 },
+                { (uint)GetHashKey("hydra"), 424 },
+                //
+                { (uint)GetHashKey("insurgent"), 426 },
+                { (uint)GetHashKey("insurgent2"), 426 },
+                { (uint)GetHashKey("insurgent3"), 426 },
+                //
+                { (uint)GetHashKey("limo2"), 460 },
+                //
+                { (uint)GetHashKey("blazer5"), 512 },
+                //
+                { (uint)GetHashKey("phantom2"), 528 },
+                { (uint)GetHashKey("boxville5"), 529 },
+                { (uint)GetHashKey("ruiner2"), 530 },
+                { (uint)GetHashKey("dune4"), 531 },
+                { (uint)GetHashKey("dune5"), 531 },
+                { (uint)GetHashKey("wastelander"), 532 },
+                { (uint)GetHashKey("voltic2"), 533 },
+                { (uint)GetHashKey("technical2"), 534 },
+                { (uint)GetHashKey("technical3"), 534 },
+                { (uint)GetHashKey("technical"), 534 },
+                //
+                { (uint)GetHashKey("apc"), 558 },
+                { (uint)GetHashKey("oppressor"), 559 },
+                { (uint)GetHashKey("oppressor2"), 559 },
+                { (uint)GetHashKey("halftrack"), 560 },
+                { (uint)GetHashKey("dune3"), 561 },
+                { (uint)GetHashKey("tampa3"), 562 },
+                { (uint)GetHashKey("trailersmall2"), 563 },
+                //
+                { (uint)GetHashKey("alphaz1"), 572 },
+                { (uint)GetHashKey("bombushka"), 573 },
+                { (uint)GetHashKey("havok"), 574 },
+                { (uint)GetHashKey("howard"), 575 },
+                { (uint)GetHashKey("hunter"), 576 },
+                { (uint)GetHashKey("microlight"), 577 },
+                { (uint)GetHashKey("mogul"), 578 },
+                { (uint)GetHashKey("molotok"), 579 },
+                { (uint)GetHashKey("nokota"), 580 },
+                { (uint)GetHashKey("pyro"), 581 },
+                { (uint)GetHashKey("rogue"), 582 },
+                { (uint)GetHashKey("starling"), 583 },
+                { (uint)GetHashKey("seabreeze"), 584 },
+                { (uint)GetHashKey("tula"), 585 },
+                //
+                { (uint)GetHashKey("avenger"), 589 },
+                //
+                { (uint)GetHashKey("stromberg"), 595 },
+                { (uint)GetHashKey("deluxo"), 596 },
+                { (uint)GetHashKey("thruster"), 597 },
+                { (uint)GetHashKey("khanjali"), 598 },
+                { (uint)GetHashKey("riot2"), 599 },
+                { (uint)GetHashKey("volatol"), 600 },
+                { (uint)GetHashKey("barrage"), 601 },
+                { (uint)GetHashKey("akula"), 602 },
+                { (uint)GetHashKey("chernobog"), 603 },
+            };
 
-            if (model == (uint)GetHashKey("rhino"))
+            if (sprites.ContainsKey(model))
             {
-                return 421; // tank
+                return sprites[model];
             }
-            if (model == (uint)GetHashKey("KHANJALI"))
+            else if (IsThisModelABike(model))
             {
-                return 598; // new tank
+                return 348;
             }
-            if (model == (uint)GetHashKey("limo2"))
+            else if (IsThisModelABoat(model))
             {
-                return 562; // armored limo
+                return 427;
             }
-            if (model == (uint)GetHashKey("TAMPA3") || model == (uint)GetHashKey("BARRAGE") || model == (uint)GetHashKey("HALFTRACK") || model == (uint)GetHashKey("HALFTRACK"))
+            else if (IsThisModelAHeli(model))
             {
-                return 562; // weaponized tampa (and similar small armored/weaponized vehicles)
+                return 422;
             }
-            if (model == (uint)GetHashKey("APC"))
+            else if (IsThisModelAPlane(model))
             {
-                return 558; // apc
+                return 423;
             }
-            if (model == (uint)GetHashKey("DUNE3"))
-            {
-                return 561; // weaponized dune
-            }
-            if (model == (uint)GetHashKey("INSURGENT") || model == (uint)GetHashKey("INSURGENT2") || model == (uint)GetHashKey("INSURGENT3") || model == (uint)GetHashKey("CARACARA"))
-            {
-                return 613; // inurgent pickup
-            }
-            if (model == (uint)GetHashKey("TRAILERSMALL2"))
-            {
-                return 563; // anti aircraft trailer
-            }
-            if (IsThisModelABicycle(model) || IsThisModelABike(model))
-            {
-                return 226; // (motor)bike
-            }
-            if (model == (uint)VehicleHash.Marquis)
-            {
-                return 410; // sailboat
-            }
-            if (model == (uint)VehicleHash.Submersible || model == (uint)VehicleHash.Submersible2)
-            {
-                return 308; // submarine
-            }
-            if (IsThisModelABoat(model) || IsThisModelAJetski(model))
-            {
-                return 427; // speed boat
-            }
-            if (IsThisModelAHeli(model))
-            {
-                return 422; // animated helicopter
-            }
-            if (IsThisModelACar(model))
-            {
-                return 225; // regular car
-            }
-            if (model == (uint)VehicleHash.Lazer || model == (uint)VehicleHash.Hydra || model == (uint)VehicleHash.Besra)
-            {
-                return 424; // (fighter)jet
-            }
-            if (IsThisModelAPlane(model))
-            {
-                return 423; // regular plane
-            }
-            return 225; // regular car
+            return 225;
         }
     }
 }
