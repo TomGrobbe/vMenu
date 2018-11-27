@@ -294,6 +294,7 @@ namespace vMenuClient
                 else if (item == unlimitedStaminaCheckbox)
                 {
                     PlayerStamina = _checked;
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), _checked ? 100 : 0, true);
                 }
                 // Fast run toggled.
                 else if (item == fastRunCheckbox)
