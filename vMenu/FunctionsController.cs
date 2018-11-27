@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1165,67 +1165,133 @@ namespace vMenuClient
         #region player blips tasks
         private async Task PlayerBlipsControl()
         {
-            if (MainMenu.MiscSettingsMenu != null)
+            if (DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
             {
-                bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
 
-                blipsPlayerList = new PlayerList();
-                foreach (Player p in blipsPlayerList)
+                int sprite = 1;
+                if (IsPedInAnyVehicle(PlayerPedId(), false))
                 {
-                    if (p != null && NetworkIsPlayerActive(p.Handle) && p.Character != null && p.Character.Exists())
+                    Vehicle veh = cf.GetVehicle();
+                    if (veh != null && veh.Exists())
                     {
-                        if (enabled)
+                        sprite = BlipInfo.GetBlipSpriteForVehicle(veh.Handle);
+                    }
+                }
+
+                DecorSetInt(PlayerPedId(), "vmenu_player_blip_sprite_id", sprite);
+
+                if (MainMenu.MiscSettingsMenu != null)
+                {
+                    bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
+
+                    foreach (Player p in MainMenu.PlayersList)
+                    {
+                        // continue only if this player is valid.
+                        if (p != null && NetworkIsPlayerActive(p.Handle) && p.Character != null && p.Character.Exists())
                         {
-                            if (p != Game.Player)
+
+                            //    
+                            //else
+                            //    SetBlipDisplay(blip, 3);
+
+                            // if blips are enabled and the player has permisisons to use them.
+                            if (enabled)
                             {
-                                int ped = p.Character.Handle;
-                                int blip = GetBlipFromEntity(ped);
-
-                                if (blip == 0 || blip == -1)
+                                if (p != Game.Player)
                                 {
-                                    cf.Log("New Player blip created (1/2).");
-                                    blip = AddBlipForEntity(ped);
-                                    cf.Log("New Player blip attached to player (2/2).");
-                                }
+                                    int ped = p.Character.Handle;
+                                    int blip = GetBlipFromEntity(ped);
 
-                                SetBlipColour(blip, 0);
+                                    // if blip id is invalid.
+                                    if (blip < 1)
+                                    {
+                                        blip = AddBlipForEntity(ped);
+                                    }
+                                    // only manage the blip for this player if the player is nearby
+                                    if (p.Character.Position.DistanceToSquared2D(Game.PlayerPed.Position) < 500000 || Game.IsPaused)
+                                    {
+                                        // (re)set the blip color in case something changed it.
+                                        SetBlipColour(blip, 0);
 
-                                if (!IsPedInAnyVehicle(ped, false))
-                                {
-                                    ShowHeadingIndicatorOnBlip(blip, true);
-                                }
-                                else
-                                {
-                                    ShowHeadingIndicatorOnBlip(blip, false);
-                                }
+                                        // if the decorator exists on this player, use the decorator value to determine what the blip sprite should be.
+                                        if (DecorExistOn(p.Character.Handle, "vmenu_player_blip_sprite_id"))
+                                        {
+                                            int decorSprite = DecorGetInt(p.Character.Handle, "vmenu_player_blip_sprite_id");
+                                            // set the sprite according to the decorator value.
+                                            SetBlipSprite(blip, decorSprite);
 
-                                cf.SetCorrectBlipSprite(ped, blip);
-                                SetBlipNameToPlayerName(blip, p.Handle);
+                                            // show heading on blip only if the player is on foot (blip sprite 1)
+                                            ShowHeadingIndicatorOnBlip(blip, decorSprite == 1);
 
-                                // thanks lambda menu for hiding this great feature in their source code!
-                                // sets the blip category to 7, which makes the blips group under "Other Players:"
-                                SetBlipCategory(blip, 7);
+                                            // set the blip rotation if the player is not in a helicopter (sprite 422).
+                                            if (decorSprite != 422)
+                                            {
+                                                SetBlipRotation(blip, (int)GetEntityHeading(ped));
+                                            }
+                                        }
+                                        else // backup method for when the decorator value is not found.
+                                        {
+                                            // set the blip sprite using the backup method in case decorators failed.
+                                            cf.SetCorrectBlipSprite(ped, blip);
 
-                                if (p.Character.IsInVehicle() && !p.Character.IsInHeli)
-                                {
-                                    SetBlipRotation(blip, (int)GetEntityHeading(ped));
+                                            // only show the heading indicator if the player is NOT in a vehicle.
+                                            if (!IsPedInAnyVehicle(ped, false))
+                                            {
+                                                ShowHeadingIndicatorOnBlip(blip, true);
+                                            }
+                                            else
+                                            {
+                                                ShowHeadingIndicatorOnBlip(blip, false);
+
+                                                // If the player is not in a helicopter, set the blip rotation.
+                                                if (!p.Character.IsInHeli)
+                                                {
+                                                    SetBlipRotation(blip, (int)GetEntityHeading(ped));
+                                                }
+                                            }
+                                        }
+
+                                        // set the player name.
+                                        SetBlipNameToPlayerName(blip, p.Handle);
+
+                                        // thanks lambda menu for hiding this great feature in their source code!
+                                        // sets the blip category to 7, which makes the blips group under "Other Players:"
+                                        SetBlipCategory(blip, 7);
+
+                                        //N_0x75a16c3da34f1245(blip, false); // unknown
+
+                                        // display on minimap and main map.
+                                        SetBlipDisplay(blip, 6);
+                                    }
+                                    else
+                                    {
+                                        // hide it from the minimap.
+                                        SetBlipDisplay(blip, 3);
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()) && MainMenu.OnlinePlayersMenu != null && !MainMenu.OnlinePlayersMenu.PlayersWaypointList.Contains(p.Handle))
+                            else // blips are not enabled.
                             {
-                                p.Character.AttachedBlip.Delete();
+                                if (!(p.Character.AttachedBlip == null || !p.Character.AttachedBlip.Exists()) && MainMenu.OnlinePlayersMenu != null && !MainMenu.OnlinePlayersMenu.PlayersWaypointList.Contains(p.Handle))
+                                {
+                                    p.Character.AttachedBlip.Delete(); // remove player blip if it exists.
+                                }
                             }
                         }
                     }
                 }
-                await Delay(1); // wait 1 tick before doing the next loop.
+                else // misc settings is null
+                {
+                    await Delay(1000);
+                }
             }
-            else
+            else // decorator does not exist.
             {
-                await Delay(1000);
+                DecorRegister("vmenu_player_blip_sprite_id", 3);
+                while (!DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
+                {
+                    await Delay(0);
+                }
             }
         }
 
