@@ -93,11 +93,6 @@
     <Compile Include="VehicleData.cs" />
     <Compile Include="Vehicles.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="mp_ped_data.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
@@ -105,7 +100,7 @@
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
+    REM copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>
