@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -398,6 +398,8 @@ namespace vMenuClient
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
                 prefs.Add("vehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
 
+                VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
+                prefs.Add("vehicleSpecialGodMode", MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode);
 
                 VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
                 prefs.Add("vehicleNeverDirty", MainMenu.VehicleOptionsMenu.VehicleNeverDirty);
