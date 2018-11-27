@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +34,7 @@ namespace vMenuClient
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
+        public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
@@ -64,6 +65,7 @@ namespace vMenuClient
             UIMenuCheckboxItem vehicleSpecialGod = new UIMenuCheckboxItem("Special Vehicle God Mode", VehicleSpecialGodMode, "This option repairs your vehicle immediately when " +
                 "it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.");
             UIMenuCheckboxItem vehicleEngineAO = new UIMenuCheckboxItem("Engine Always On", VehicleEngineAlwaysOn, "Keeps your vehicle engine on when you exit your vehicle.");
+            UIMenuCheckboxItem vehicleNoTurbulence = new UIMenuCheckboxItem("Disable Plane Turbulence", DisablePlaneTurbulence, "Disables the turbulence for all planes. Note only works for planes. Helicopters and other flying vehicles are not supported.");
             UIMenuCheckboxItem vehicleNoSiren = new UIMenuCheckboxItem("Disable Siren", VehicleNoSiren, "Disables your vehicle's siren. Only works if your vehicle actually has a siren.");
             UIMenuCheckboxItem vehicleNoBikeHelmet = new UIMenuCheckboxItem("No Bike Helmet", VehicleNoBikeHelemet, "No longer auto-equip a helmet when getting on a bike or quad.");
             UIMenuCheckboxItem vehicleFreeze = new UIMenuCheckboxItem("Freeze Vehicle", VehicleFrozen, "Freeze your vehicle's position.");
@@ -261,6 +263,10 @@ namespace vMenuClient
             {
                 menu.AddItem(powerEnabled); // POWER ENABLED
                 menu.AddItem(powerMultiplier); // POWER LIST
+            }
+            if (cf.IsAllowed(Permission.VODisableTurbulence))
+            {
+                menu.AddItem(vehicleNoTurbulence);
             }
             if (cf.IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
             {
@@ -475,6 +481,21 @@ namespace vMenuClient
                 else if (item == highbeamsOnHonk)
                 {
                     FlashHighbeamsOnHonk = _checked;
+                }
+                else if (item == vehicleNoTurbulence)
+                {
+                    DisablePlaneTurbulence = _checked;
+                    if (vehicle != null && vehicle.Exists() && vehicle.Model.IsPlane)
+                    {
+                        if (MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence)
+                        {
+                            SetPlaneTurbulenceMultiplier(vehicle.Handle, 0f);
+                        }
+                        else
+                        {
+                            SetPlaneTurbulenceMultiplier(vehicle.Handle, 1.0f);
+                        }
+                    }
                 }
             };
             #endregion

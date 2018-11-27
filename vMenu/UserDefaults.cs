@@ -101,6 +101,12 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleHighbeamsOnHonk"); }
             set { SetSavedSettingsBool("vehicleHighbeamsOnHonk", value); }
         }
+
+        public static bool VehicleDisablePlaneTurbulence
+        {
+            get { return GetSettingsBool("vehicleDisablePlaneTurbulence"); }
+            set { SetSavedSettingsBool("vehicleDisablePlaneTurbulence", value); }
+        }
         #endregion
 
         #region Vehicle Spawner Options
@@ -394,6 +400,9 @@ namespace vMenuClient
 
                 VehicleHighbeamsOnHonk = MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk;
                 prefs.Add("vehicleHighbeamsOnHonk", MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk);
+
+                VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
+                prefs.Add("vehicleDisablePlaneTurbulence", MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)

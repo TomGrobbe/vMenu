@@ -298,6 +298,18 @@ namespace vMenuClient
                                 veh.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
                             }
 
+                            // Set the plane turbulence multiplier in case the vehicle was changed:
+                            if (veh.Model.IsPlane)
+                            {
+                                if (MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence && cf.IsAllowed(Permission.VODisableTurbulence))
+                                {
+                                    SetPlaneTurbulenceMultiplier(veh.Handle, 0f);
+                                }
+                                else
+                                {
+                                    SetPlaneTurbulenceMultiplier(veh.Handle, 1.0f);
+                                }
+                            }
                         }
 
                         // Manage "no helmet"

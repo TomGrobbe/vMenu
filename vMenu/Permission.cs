@@ -71,6 +71,7 @@
         VODelete,
         VOUnderglow,
         VOFlashHighbeamsOnHonk,
+        VODisableTurbulence,
 
 
         // Vehicle Spawner
