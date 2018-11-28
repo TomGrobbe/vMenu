@@ -1,25 +1,445 @@
 {
-    "teleports": [
-        {
-            "name": "Example Location",
-            "coordinates": {
-                "x": 472.94,
-                "y": -3035.96,
-                "z": 6.2
-            },
-            "heading": 356.1
-        }
-    ],
-    "blips": [
-        {
-            "name": "Example Blip",
-            "coordinates": {
-                "x": 472.94,
-                "y": -3035.96,
-                "z": 6.2
-            },
-            "spriteID": 1,
-            "color": 1
-        }
-    ]
+   "teleports":[
+      {
+         "name":"Example Location",
+         "coordinates":{
+            "x":472.94,
+            "y":-3035.96,
+            "z":6.2
+         },
+         "heading":356.1
+      }
+   ],
+   "blips":[
+      {
+         "name":"Simeon's Showroom",
+         "coordinates":{
+            "x":-47.1617,
+            "y":-1115.333,
+            "z":26.5
+         },
+         "spriteID":369,
+         "color":2
+      },
+      {
+         "name":"Trevor's Trailer",
+        "coordinates": {
+          "x": 1985.481,
+          "y": 3828.768,
+          "z": 32.5
+        },
+         "spriteID":40,
+         "color":2
+      },
+      {
+         "name":"Jewel Store",
+         "coordinates":{
+            "x":-637.2016,
+            "y":-239.1625,
+            "z":38.1
+         },
+         "spriteID":439,
+         "color":2
+      },
+      {
+         "name":"Rooftop Construction",
+         "coordinates":{
+            "x":-585.8247,
+            "y":-282.72,
+            "z":35.45475
+         },
+         "spriteID":402,
+         "color":2
+      },
+      {
+         "name":"Heist Union Depository",
+         "coordinates":{
+            "x":2.696893,
+            "y":-667.0166,
+            "z":16.13063
+         },
+         "spriteID":500,
+         "color":2
+      },
+      {
+         "name":"Morgue",
+         "coordinates":{
+            "x":239.752,
+            "y":-1360.65,
+            "z":39.53437
+         },
+         "spriteID":274,
+         "color":2
+      },
+      {
+         "name":"Cluckin Bell",
+         "coordinates":{
+            "x":-146.3837,
+            "y":6161.5,
+            "z":30.2062
+         },
+         "spriteID":478,
+         "color":2
+      },
+      {
+         "name":"Grapeseed's Farm",
+         "coordinates":{
+            "x":2447.9,
+            "y":4973.4,
+            "z":47.7
+         },
+         "spriteID":350,
+         "color":2
+      },
+      {
+         "name":"FIB",
+         "coordinates":{
+            "x":105.4557,
+            "y":-745.4835,
+            "z":44.7548
+         },
+         "spriteID":475,
+         "color":2
+      },
+      {
+         "name":"Lester's factory",
+         "coordinates":{
+            "x":716.84,
+            "y":-962.05,
+            "z":31.59
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Life Invader lobby",
+         "coordinates":{
+            "x":-1047.9,
+            "y":-233,
+            "z":39
+         },
+         "spriteID":475,
+         "color":2
+      },
+      {
+         "name":"Carwash",
+         "coordinates":{
+            "x":55.7,
+            "y":-1391.3,
+            "z":30.5
+         },
+         "spriteID":100,
+         "color":2
+      },
+      {
+         "name":"Fame Or Shame",
+         "coordinates":{
+            "x":-248.4915,
+            "y":-2010.509,
+            "z":34.5742
+         },
+         "spriteID":475,
+         "color":2
+      },
+      {
+         "name":"Mission House",
+         "coordinates":{
+            "x":-3086.428,
+            "y":339.2523,
+            "z":6.3717
+         },
+         "spriteID":350,
+         "color":2
+      },
+      {
+         "name":"Mod Shop",
+         "coordinates":{
+            "x":970.2745,
+            "y":-1826.57,
+            "z":31.11477
+         },
+         "spriteID":446,
+         "color":2
+      },
+      {
+         "name":"Grave",
+         "coordinates":{
+            "x":-282.4638,
+            "y":2835.845,
+            "z":55.91446
+         },
+         "spriteID":274,
+         "color":2
+      },
+      {
+         "name":"Stab City",
+         "coordinates":{
+            "x":49.49379,
+            "y":3744.472,
+            "z":46.38629
+         },
+         "spriteID":494,
+         "color":2
+      },
+      {
+         "name":"The Lost Clubhouse",
+         "coordinates":{
+            "x":984.1552,
+            "y":-95.3662,
+            "z":74.5
+         },
+         "spriteID":494,
+         "color":2
+      },
+      {
+         "name":"Raton Canyon River",
+         "coordinates":{
+            "x":-1652.83,
+            "y":4445.28,
+            "z":2.52
+         },
+         "spriteID":463,
+         "color":2
+      },
+      {
+         "name":"Pillbox Hospital",
+         "coordinates":{
+            "x":305,
+            "y":-583,
+            "z":50
+         },
+         "spriteID":61,
+         "color":2
+      },
+      {
+         "name":"Mission House",
+         "coordinates":{
+            "x":-1117.163,
+            "y":303.0907,
+            "z":66.52217
+         },
+         "spriteID":40,
+         "color":2
+      },
+      {
+         "name":"Zancudo River",
+         "coordinates":{
+            "x":86.815,
+            "y":3191.649,
+            "z":30.463
+         },
+         "spriteID":463,
+         "color":2
+      },
+      {
+         "name":"Cassidy Creek",
+         "coordinates":{
+            "x":-425.677,
+            "y":4433.404,
+            "z":27.3253
+         },
+         "spriteID":463,
+         "color":2
+      },
+      {
+         "name":"Heist Aircraft Carrier",
+         "coordinates":{
+            "x":3082.312,
+            "y":-4717.119,
+            "z":15.2622
+         },
+         "spriteID":455,
+         "color":2
+      },
+      {
+         "name":"Heist Yacht",
+         "coordinates":{
+            "x":-2043.974,
+            "y":-1031.582,
+            "z":11.981
+         },
+         "spriteID":455,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":848,
+            "y":3004,
+            "z":44
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":2118,
+            "y":3330,
+            "z":46
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":2491,
+            "y":3150,
+            "z":50
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":486,
+            "y":3005,
+            "z":42
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":-391,
+            "y":4354,
+            "z":57
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":1815,
+            "y":4706,
+            "z":41
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":1571,
+            "y":2241,
+            "z":79
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":-772,
+            "y":5938,
+            "z":23
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":31,
+            "y":2945,
+            "z":58
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":-3046,
+            "y":3331,
+            "z":11
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Bunker",
+         "coordinates":{
+            "x":-3171,
+            "y":1375,
+            "z":18
+         },
+         "spriteID":473,
+         "color":2
+      },
+      {
+         "name":"Red Carpet",
+         "coordinates":{
+            "x":300.5927,
+            "y":199.7589,
+            "z":104.3776
+         },
+         "spriteID":409,
+         "color":2
+      },
+      {
+         "name":"Bahama Mamas",
+         "coordinates":{
+            "x":-1388.001,
+            "y":-618.4197,
+            "z":30.8196
+         },
+         "spriteID":93,
+         "color":2
+      },
+      {
+         "name":"Aircraft Hangar",
+         "coordinates":{
+            "x":-1152.17,
+            "y":-3410.83,
+            "z":13.95
+         },
+         "spriteID":359,
+         "color":2
+      },
+      {
+         "name":"Aircraft Hangar",
+         "coordinates":{
+            "x":-1395.4,
+            "y":-3266.66,
+            "z":13.95
+         },
+         "spriteID":359,
+         "color":2
+      },
+      {
+         "name":"Aircraft Hangar",
+         "coordinates":{
+            "x":-2470.22,
+            "y":3274.79,
+            "z":32.83
+         },
+         "spriteID":359,
+         "color":2
+      },
+      {
+         "name":"Aircraft Hangar",
+         "coordinates":{
+            "x":-2021.5,
+            "y":3157.4,
+            "z":32.81
+         },
+         "spriteID":359,
+         "color":2
+      },
+      {
+         "name":"Aircraft Hangar",
+         "coordinates":{
+            "x":-1878.01,
+            "y":3108.85,
+            "z":32.81
+         },
+         "spriteID":359,
+         "color":2
+      }
+   ]
 }
