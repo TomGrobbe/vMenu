@@ -73,6 +73,8 @@
         VOUnderglow,
         VOFlashHighbeamsOnHonk,
         VODisableTurbulence,
+        VOFlares,
+        VOPlaneBombs,
 
 
         // Vehicle Spawner

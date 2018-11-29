@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,6 +48,14 @@ namespace vMenuClient
         private bool clothingAnimationReverse = false;
         private float clothingOpacity = 1f;
 
+
+        /// I made these seperate bools that only get set once after initial load 
+        /// to prevent the cf.IsAllowed() function being called over and over again multiple times every tick. 
+        /// Values are set in <see cref="EventManager.ConfigureClient(dynamic, dynamic, dynamic, dynamic)"/>
+        public static bool flaresAllowed = false;
+        public static bool bombsAllowed = false;
+
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -78,6 +86,7 @@ namespace vMenuClient
             Tick += PlayerBlipsControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
+            //Tick += FlaresAndBombsTick;
         }
 
         /// Task related
@@ -88,7 +97,6 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task GeneralTasks()
         {
-            //Debug.Write("Size: " + playerList.Count + "\n");
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
             if (cf != null)
             {
@@ -313,6 +321,14 @@ namespace vMenuClient
                                     SetPlaneTurbulenceMultiplier(veh.Handle, 1.0f);
                                 }
                             }
+
+                            /// TODO: add help message on how to toggle flares/bombs.
+                            /*
+                            if (CanShootFlares())
+                            {
+                                BeginTextCommandDisplayHelp("STRING")
+                        }
+                            */
                         }
 
                         // Manage "no helmet"
@@ -1161,7 +1177,6 @@ namespace vMenuClient
         }
 
         #endregion
-
         #region player blips tasks
         private async Task PlayerBlipsControl()
         {
@@ -1296,7 +1311,6 @@ namespace vMenuClient
         }
 
         #endregion
-
         #region Online Player Options Tasks
         private async Task OnlinePlayersTasks()
         {
@@ -1336,6 +1350,119 @@ namespace vMenuClient
                     await Delay(10);
                 }
                 waypointPlayerIdsToRemove.Clear();
+            }
+        }
+        #endregion
+        #region Flares and plane bombs controler
+
+        private readonly List<uint> flareVehicles = new List<uint>()
+        {
+            (uint)GetHashKey("mogul"),
+            (uint)GetHashKey("rogue"),
+            (uint)GetHashKey("starling"),
+            (uint)GetHashKey("seabreeze"),
+            (uint)GetHashKey("tula"),
+            (uint)GetHashKey("bombushka"),
+            (uint)GetHashKey("hunter"),
+            (uint)GetHashKey("nokota"),
+            (uint)GetHashKey("pyro"),
+            (uint)GetHashKey("molotok"),
+            (uint)GetHashKey("havok"),
+            (uint)GetHashKey("alphaz1"),
+            (uint)GetHashKey("microlight"),
+            (uint)GetHashKey("howard"),
+            (uint)GetHashKey("avenger"),
+            (uint)GetHashKey("thruster"),
+            (uint)GetHashKey("volatol")
+        };
+
+        private readonly List<uint> bombVehicles = new List<uint>()
+        {
+            (uint)GetHashKey("cuban800"),
+            (uint)GetHashKey("mogul"),
+            (uint)GetHashKey("rogue"),
+            (uint)GetHashKey("starling"),
+            (uint)GetHashKey("seabreeze"),
+            (uint)GetHashKey("tula"),
+            (uint)GetHashKey("bombushka"),
+            (uint)GetHashKey("hunter"),
+            (uint)GetHashKey("avenger"),
+            (uint)GetHashKey("akula"),
+            (uint)GetHashKey("volatol")
+        };
+
+        /// Returns true if the player can currently fire flares.
+        bool CanShootFlares()
+        {
+            if (Game.PlayerPed.IsInVehicle())
+            {
+                Vehicle veh = cf.GetVehicle();
+                if (veh == null || !veh.Exists() || veh.IsDead)
+                {
+                    return false;
+                }
+
+                if (flareVehicles.Contains((uint)veh.Model.Hash) && GetVehicleMod(veh.Handle, 1) == 1 && GetAircraftCountermeasureCount(veh.Handle) > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// Returns true if the player can currently drop bombs.
+        bool CanDropBombs()
+        {
+            if (Game.PlayerPed.IsInVehicle())
+            {
+                Vehicle veh = cf.GetVehicle();
+                if (veh == null || !veh.Exists() || veh.IsDead)
+                {
+                    return false;
+                }
+
+                if (bombVehicles.Contains((uint)veh.Model.Hash) && GetVehicleMod(veh.Handle, 9) > -1 && GetAircraftBombCount(veh.Handle) > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void ShootFlares()
+        {
+            // TODO
+        }
+
+        void DropBombs()
+        {
+            // TODO
+        }
+
+        private async Task FlaresAndBombsTick()
+        {
+            if (cf == null)
+            {
+                await Delay(0);
+            }
+            else
+            {
+                if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Screen.Fading.IsFadedIn && !IsPlayerSwitchInProgress())
+                {
+                    if (flaresAllowed && CanShootFlares())
+                    {
+
+                    }
+
+                    if (bombsAllowed && CanDropBombs())
+                    {
+
+                    }
+                }
+                else
+                {
+                    await Delay(1);
+                }
             }
         }
         #endregion

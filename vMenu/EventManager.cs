@@ -50,6 +50,8 @@ namespace vMenuClient
         {
             MainMenu.SetPermissions(perms);
 
+            FunctionsController.flaresAllowed = cf.IsAllowed(Permission.VOFlares);
+            FunctionsController.bombsAllowed = cf.IsAllowed(Permission.VOPlaneBombs);
 
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             foreach (var addon in addonVehicles)
@@ -97,6 +99,7 @@ namespace vMenuClient
 
             minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
             minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
+
 
             MainMenu.PreSetupComplete = true;
         }

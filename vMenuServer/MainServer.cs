@@ -1,4 +1,4 @@
-﻿using GHMatti.Http;
+using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -192,6 +192,8 @@ namespace vMenuServer
             "VOUnderglow",
             "VOFlashHighbeamsOnHonk",
             "VODisableTurbulence",
+            "VOFlares",
+            "VOPlaneBombs",
             
             // Vehicle Spawner
             "VSMenu",
