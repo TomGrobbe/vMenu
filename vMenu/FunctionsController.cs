@@ -2000,13 +2000,27 @@ namespace vMenuClient
                 }
                 ClearPedTasks(PlayerPedId());
                 TaskPlayAnim(PlayerPedId(), animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
+                int timeoutTimer = GetGameTimer();
                 while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) <= 0.0f)
                 {
+                    if (GetGameTimer() - timeoutTimer > 2000)
+                    {
+                        ClearPedTasks(PlayerPedId());
+                        Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function.");
+                        return;
+                    }
                     await Delay(0);
                 }
+                timeoutTimer = GetGameTimer();
                 while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.0f)
                 {
                     await Delay(0);
+                    if (GetGameTimer() - timeoutTimer > 3000)
+                    {
+                        ClearPedTasks(PlayerPedId());
+                        Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function.");
+                        return;
+                    }
                     if (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.39f)
                     {
                         SetPedPropIndex(PlayerPedId(), 0, newHelmet, texture, true);
