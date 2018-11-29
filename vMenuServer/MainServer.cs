@@ -1,4 +1,4 @@
-using GHMatti.Http;
+﻿using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,6 +124,7 @@ namespace vMenuServer
             // Global
             "Everything",
             "DontKickMe",
+            "DontBanMe",
             "NoClip",
             "Staff",
 
