@@ -91,7 +91,7 @@ namespace vMenuClient
             liveriesMenuBtn.SetRightLabel("→→→");
             UIMenuItem colorsMenuBtn = new UIMenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
             colorsMenuBtn.SetRightLabel("→→→");
-            UIMenuItem underglowMenuBtn = new UIMenuItem("Vehicle Underglow Options", "Make your vehicle shine with some fancy underglow!");
+            UIMenuItem underglowMenuBtn = new UIMenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!");
             underglowMenuBtn.SetRightLabel("→→→");
             UIMenuItem flipVehicle = new UIMenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             UIMenuItem vehicleAlarm = new UIMenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
@@ -179,7 +179,7 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            VehicleUnderglowMenu = new UIMenu("Vehicle Underglow", "Vehicle Underglow Options", true)
+            VehicleUnderglowMenu = new UIMenu("Vehicle Neon Kits", "Vehicle Neon Underglow Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -1230,8 +1230,12 @@ namespace vMenuClient
                 "vehicle. Note not all vehicles have lights.");
             UIMenuCheckboxItem underglowRight = new UIMenuCheckboxItem("Enable Right Light", false, "Enable or disable the underglow on the back side of the " +
                 "vehicle. Note not all vehicles have lights.");
-            var underglowColorsList = new List<dynamic>() { "Red", "Pink", "Purple", "Blacklight", "Dark Blue", "Light Blue", "White", "Lime", "Green", "Dark Green", "Gold", "Orange", "Yellow" };
-            UIMenuListItem underglowColor = new UIMenuListItem("Underglow Color", underglowColorsList, 0, "Select the color of the underglow.");
+            var underglowColorsList = new List<dynamic>();
+            for (int i = 0; i < 13; i++)
+            {
+                underglowColorsList.Add(GetLabelText($"CMOD_NEONCOL_{i}"));
+            }
+            UIMenuListItem underglowColor = new UIMenuListItem(GetLabelText("CMOD_NEON_1"), underglowColorsList, 0, "Select the color of the neon underglow.");
 
             VehicleUnderglowMenu.AddItem(underglowFront);
             VehicleUnderglowMenu.AddItem(underglowBack);
@@ -1245,9 +1249,9 @@ namespace vMenuClient
                 #region reset checkboxes state when opening the menu.
                 if (item == underglowMenuBtn)
                 {
-                    if (Game.PlayerPed.IsInVehicle())
+                    Vehicle veh = cf.GetVehicle();
+                    if (veh != null)
                     {
-                        Vehicle veh = cf.GetVehicle();
                         if (veh.Mods.HasNeonLights)
                         {
                             underglowFront.Checked = veh.Mods.HasNeonLight(VehicleNeonLight.Front) && veh.Mods.IsNeonLightsOn(VehicleNeonLight.Front);
@@ -1300,6 +1304,8 @@ namespace vMenuClient
                         underglowLeft.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                         underglowRight.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                     }
+
+                    underglowColor.Index = GetIndexFromColor();
                 }
                 #endregion
             };
@@ -1682,45 +1688,67 @@ namespace vMenuClient
         #endregion
 
         #region GetColorFromIndex function (underglow)
+
+        private readonly List<int[]> _VehicleNeonLightColors = new List<int[]>()
+        {
+            { new int[3] { 255, 255, 255 } },   // White
+            { new int[3] { 2, 21, 255 } },      // Blue
+            { new int[3] { 3, 83, 255 } },      // Electric blue
+            { new int[3] { 0, 255, 140 } },     // Mint Green
+            { new int[3] { 94, 255, 1 } },      // Lime Green
+            { new int[3] { 255, 255, 0 } },     // Yellow
+            { new int[3] { 255, 150, 5 } },     // Golden Shower
+            { new int[3] { 255, 62, 0 } },      // Orange
+            { new int[3] { 255, 0, 0 } },       // Red
+            { new int[3] { 255, 50, 100 } },    // Pony Pink
+            { new int[3] { 255, 5, 190 } },     // Hot Pink
+            { new int[3] { 35, 1, 255 } },      // Purple
+            { new int[3] { 15, 3, 255 } },      // Blacklight
+        };
+
         /// <summary>
-        /// Converts a list index to a color.
+        /// Converts a list index to a <see cref="System.Drawing.Color"/> struct.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
         private System.Drawing.Color GetColorFromIndex(int index)
         {
-            switch (index)
+            if (index >= 0 && index < 13)
             {
-                // { "Red", "Pink", "Purple", "Blacklight", "Dark Blue", "Light Blue", "White", "Lime", "Green", "Dark Green", "Gold", "Orange", "Yellow" }
-                case 0:
-                    return System.Drawing.Color.FromArgb(red: 237, green: 0, blue: 0); // red
-                case 1:
-                    return System.Drawing.Color.FromArgb(red: 237, green: 0, blue: 201); // pink
-                case 2:
-                    return System.Drawing.Color.FromArgb(red: 156, green: 0, blue: 237); // purple
-                case 3:
-                    return System.Drawing.Color.FromArgb(red: 66, green: 0, blue: 255); // blacklight
-                case 4:
-                    return System.Drawing.Color.FromArgb(red: 0, green: 66, blue: 255); // dark blue
-                case 5:
-                    return System.Drawing.Color.FromArgb(red: 0, green: 198, blue: 255); // light blue
-                case 6:
-                    return System.Drawing.Color.FromArgb(red: 255, green: 255, blue: 255); // white
-                case 7:
-                    return System.Drawing.Color.FromArgb(red: 0, green: 255, blue: 0); // lime green
-                case 8:
-                    return System.Drawing.Color.FromArgb(red: 33, green: 169, blue: 15); // green
-                case 9:
-                    return System.Drawing.Color.FromArgb(red: 8, green: 64, blue: 0); // dark green
-                case 10:
-                    return System.Drawing.Color.FromArgb(red: 222, green: 165, blue: 10); // golden shower
-                case 11:
-                    return System.Drawing.Color.FromArgb(red: 222, green: 85, blue: 10); // orange
-                case 12:
-                    return System.Drawing.Color.FromArgb(red: 236, green: 244, blue: 28); // yellow
-                default:
-                    return System.Drawing.Color.FromArgb(red: 255, green: 255, blue: 255); // white
+                return System.Drawing.Color.FromArgb(_VehicleNeonLightColors[index][0], _VehicleNeonLightColors[index][1], _VehicleNeonLightColors[index][2]);
             }
+            return System.Drawing.Color.FromArgb(255, 255, 255);
+        }
+
+        /// <summary>
+        /// Returns the color index that is applied on the current vehicle. 
+        /// If a color is active on the vehicle which is not in the list, it'll return the default index 0 (white).
+        /// </summary>
+        /// <returns></returns>
+        private int GetIndexFromColor()
+        {
+            Vehicle veh = cf.GetVehicle();
+
+            if (veh == null || !veh.Exists() || !veh.Mods.HasNeonLights)
+            {
+                return 0;
+            }
+
+            int r = 255, g = 255, b = 255;
+
+            GetVehicleNeonLightsColour(veh.Handle, ref r, ref g, ref b);
+
+            if (r == 255 && g == 0 && b == 255) // default return value when the vehicle has no neon kit selected.
+            {
+                return 0;
+            }
+
+            if (_VehicleNeonLightColors.Any(a => { return a[0] == r && a[1] == g && a[2] == b; }))
+            {
+                return _VehicleNeonLightColors.FindIndex(a => { return a[0] == r && a[1] == g && a[2] == b; });
+            }
+
+            return 0;
         }
         #endregion
     }
