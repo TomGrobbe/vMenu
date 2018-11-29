@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,6 +48,10 @@ namespace vMenuClient
         private bool clothingAnimationReverse = false;
         private float clothingOpacity = 1f;
 
+        private const string snowball_anim_dict = "anim@mp_snowball";
+        private const string snowball_anim_name = "pickup_snowball";
+        private readonly uint snowball_hash = (uint)GetHashKey("weapon_snowball");
+        private bool showSnowballInfo = false;
 
         /// I made these seperate bools that only get set once after initial load 
         /// to prevent the cf.IsAllowed() function being called over and over again multiple times every tick. 
@@ -87,6 +91,8 @@ namespace vMenuClient
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
             //Tick += FlaresAndBombsTick;
+            Tick += AnimationsAndInteractions;
+            Tick += HelpMessageController;
         }
 
         /// Task related
@@ -327,7 +333,7 @@ namespace vMenuClient
                             if (CanShootFlares())
                             {
                                 BeginTextCommandDisplayHelp("STRING")
-                        }
+                            }
                             */
                         }
 
@@ -1466,6 +1472,104 @@ namespace vMenuClient
             }
         }
         #endregion
+        #region Tick related to animations and interactions in-game
+        /// <summary>
+        /// Manages (triggers) all interactions and animations that happen in the world without direct use of the menu.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AnimationsAndInteractions()
+        {
+            if (cf != null)
+            {
+                if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
+                {
+                    // snowballs
+                    if (Game.IsControlJustReleased(0, Control.Detonate))
+                    {
+                        if (World.NextWeather == Weather.Christmas)
+                        {
+                            if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Screen.Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
+                                || GetInteriorFromEntity(Game.PlayerPed.Handle) != 0 || !Game.PlayerPed.IsOnFoot || Game.PlayerPed.IsInParachuteFreeFall ||
+                                Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
+                                Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(PlayerPedId()) == snowball_hash || GetSelectedPedWeapon(PlayerPedId()) == GetHashKey("unarmed")))
+                            {
+                                await PickupSnowball();
+                            }
+                        }
+                    }
+                    // helmet visor
+                    if (Game.IsControlPressed(0, Control.SwitchVisor))
+                    {
+                        int timer = GetGameTimer();
+                        while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
+                        {
+                            await Delay(0);
+                            if (GetGameTimer() - timer > 400)
+                            {
+                                await SwitchHelmet();
+                                break;
+                            }
+                        }
+                        while (Game.IsControlPressed(0, Control.SwitchVisor))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                await Delay(0);
+            }
+        }
+        #endregion
+        #region help message controller
+        private async Task HelpMessageController()
+        {
+            if (GetNextWeatherType() == GetHashKey("XMAS"))
+            {
+                void ShowSnowballInfoMessage()
+                {
+                    int maxAmmo = 10;
+                    GetMaxAmmo(PlayerPedId(), snowball_hash, ref maxAmmo);
+                    if (maxAmmo > GetAmmoInPedWeapon(PlayerPedId(), snowball_hash))
+                    {
+                        BeginTextCommandDisplayHelp("HELP_SNOWP");
+                        AddTextComponentInteger(2);
+                        AddTextComponentInteger(maxAmmo);
+                        EndTextCommandDisplayHelp(0, false, true, 6000);
+                    }
+
+                }
+
+                // help text control for snowballs
+                if (!IsPedInAnyVehicle(PlayerPedId(), true))
+                {
+                    if (showSnowballInfo)
+                    {
+                        BeginTextCommandIsThisHelpMessageBeingDisplayed("HELP_SNOWP");
+                        if (EndTextCommandIsThisHelpMessageBeingDisplayed(0))
+                        {
+                            showSnowballInfo = false;
+                            return;
+                        }
+                        else if (IsHelpMessageBeingDisplayed())
+                        {
+                            ClearAllHelpMessages();
+                        }
+                        ShowSnowballInfoMessage();
+                    }
+                    showSnowballInfo = false;
+                }
+                else
+                {
+                    showSnowballInfo = true;
+                }
+            }
+            await Delay(100);
+        }
+        #endregion
+
 
         /// Not task related
         #region Private ShowSpeed Functions
@@ -1500,6 +1604,463 @@ namespace vMenuClient
                 else
                 {
                     cf.DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
+                }
+            }
+        }
+        #endregion
+
+        #region animation functions
+        /// <summary>
+        /// This triggers a helmet visor/goggles toggle if available.
+        /// </summary>
+        /// <returns></returns>
+        async Task SwitchHelmet()
+        {
+            int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
+            await Delay(1);
+            int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
+            await Delay(1);
+            int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
+            await Delay(1);
+            if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+            {
+                int newHelmet = 0;
+                string animName = "visor_up";
+                string animDict = "anim@mp_helmets@on_foot";
+                if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeFemale01)
+                {
+                    switch (component)
+                    {
+                        case 49:
+                            newHelmet = 67;
+                            animName = "visor_up";
+                            break;
+                        case 50:
+                            newHelmet = 68;
+                            animName = "visor_up";
+                            break;
+                        case 51:
+                            newHelmet = 69;
+                            animName = "visor_up";
+                            break;
+                        case 52:
+                            newHelmet = 70;
+                            animName = "visor_up";
+                            break;
+                        case 62:
+                            newHelmet = 71;
+                            animName = "visor_up";
+                            break;
+                        case 66:
+                            newHelmet = 81;
+                            animName = "visor_down";
+                            break;
+                        case 67:
+                            newHelmet = 49;
+                            animName = "visor_down";
+                            break;
+                        case 68:
+                            newHelmet = 50;
+                            animName = "visor_down";
+                            break;
+                        case 69:
+                            newHelmet = 51;
+                            animName = "visor_down";
+                            break;
+                        case 70:
+                            newHelmet = 52;
+                            animName = "visor_down";
+                            break;
+                        case 71:
+                            newHelmet = 62;
+                            animName = "visor_down";
+                            break;
+                        case 72:
+                            newHelmet = 73;
+                            animName = "visor_up";
+                            break;
+                        case 73:
+                            newHelmet = 72;
+                            animName = "visor_down";
+                            break;
+                        case 77:
+                            newHelmet = 78;
+                            animName = "visor_up";
+                            break;
+                        case 78:
+                            newHelmet = 77;
+                            animName = "visor_down";
+                            break;
+                        case 79:
+                            newHelmet = 80;
+                            animName = "visor_up";
+                            break;
+                        case 80:
+                            newHelmet = 79;
+                            animName = "visor_down";
+                            break;
+                        case 81:
+                            newHelmet = 66;
+                            animName = "visor_up";
+                            break;
+                        case 90:
+                            newHelmet = 91;
+                            animName = "visor_up";
+                            break;
+                        case 91:
+                            newHelmet = 90;
+                            animName = "visor_down";
+                            break;
+                        case 115:
+                            newHelmet = 116;
+                            animName = "goggles_up";
+                            break;
+                        case 116:
+                            newHelmet = 115;
+                            animName = "goggles_down";
+                            break;
+                        case 117:
+                            newHelmet = 118;
+                            animName = "goggles_up";
+                            break;
+                        case 118:
+                            newHelmet = 117;
+                            animName = "goggles_down";
+                            break;
+                        case 122:
+                            newHelmet = 123;
+                            animName = "visor_up";
+                            break;
+                        case 123:
+                            newHelmet = 122;
+                            animName = "visor_down";
+                            break;
+                        case 124:
+                            newHelmet = 125;
+                            animName = "visor_up";
+                            break;
+                        case 125:
+                            newHelmet = 124;
+                            animName = "visor_down";
+                            break;
+                    }
+                }
+                else if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeMale01)
+                {
+                    switch (component)
+                    {
+                        case 50:
+                            newHelmet = 68;
+                            animName = "visor_up";
+                            break;
+                        case 51:
+                            newHelmet = 69;
+                            animName = "visor_up";
+                            break;
+                        case 52:
+                            newHelmet = 70;
+                            animName = "visor_up";
+                            break;
+                        case 53:
+                            newHelmet = 71;
+                            animName = "visor_up";
+                            break;
+                        case 62:
+                            newHelmet = 72;
+                            animName = "visor_up";
+                            break;
+                        case 67:
+                            newHelmet = 82;
+                            animName = "visor_down";
+                            break;
+                        case 68:
+                            newHelmet = 50;
+                            animName = "visor_down";
+                            break;
+                        case 69:
+                            newHelmet = 51;
+                            animName = "visor_down";
+                            break;
+                        case 70:
+                            newHelmet = 52;
+                            animName = "visor_down";
+                            break;
+                        case 71:
+                            newHelmet = 53;
+                            animName = "visor_down";
+                            break;
+                        case 72:
+                            newHelmet = 62;
+                            animName = "visor_down";
+                            break;
+                        case 73:
+                            newHelmet = 74;
+                            animName = "visor_up";
+                            break;
+                        case 74:
+                            newHelmet = 73;
+                            animName = "visor_down";
+                            break;
+                        case 78:
+                            newHelmet = 79;
+                            animName = "visor_up";
+                            break;
+                        case 79:
+                            newHelmet = 78;
+                            animName = "visor_down";
+                            break;
+                        case 80:
+                            newHelmet = 81;
+                            animName = "visor_up";
+                            break;
+                        case 81:
+                            newHelmet = 80;
+                            animName = "visor_down";
+                            break;
+                        case 82:
+                            newHelmet = 67;
+                            animName = "visor_up";
+                            break;
+                        case 91:
+                            newHelmet = 92;
+                            animName = "visor_up";
+                            break;
+                        case 92:
+                            newHelmet = 91;
+                            animName = "visor_down";
+                            break;
+                        case 116:
+                            newHelmet = 117;
+                            animName = "goggles_up";
+                            break;
+                        case 117:
+                            newHelmet = 116;
+                            animName = "goggles_down";
+                            break;
+                        case 118:
+                            newHelmet = 119;
+                            animName = "goggles_up";
+                            break;
+                        case 119:
+                            newHelmet = 118;
+                            animName = "goggles_down";
+                            break;
+                        case 123:
+                            newHelmet = 124;
+                            animName = "visor_up";
+                            break;
+                        case 124:
+                            newHelmet = 123;
+                            animName = "visor_down";
+                            break;
+                        case 125:
+                            newHelmet = 126;
+                            animName = "visor_up";
+                            break;
+                        case 126:
+                            newHelmet = 125;
+                            animName = "visor_down";
+                            break;
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                if (GetFollowPedCamViewMode() == 4)
+                {
+                    if (animName.Contains("goggles"))
+                    {
+                        animName = animName.Replace("goggles", "visor");
+                    }
+                    animName = "pov_" + animName;
+                }
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    if (animName.Contains("goggles"))
+                    {
+                        ClearAllHelpMessages();
+                        BeginTextCommandDisplayHelp("string");
+                        AddTextComponentSubstringPlayerName("You can not toggle your goggles while in a vehicle.");
+                        EndTextCommandDisplayHelp(0, false, true, 6000);
+                        return;
+                    }
+                    Vehicle veh = cf.GetVehicle();
+                    if (veh != null && veh.Exists() && !veh.IsDead && (veh.Model.IsBicycle || veh.Model.IsBike || veh.Model.IsQuadbike))
+                    {
+                        if (veh.Model.IsQuadbike)
+                        {
+                            animDict = "anim@mp_helmets@on_bike@quad";
+                        }
+                        else if (veh.Model.IsBike)
+                        {
+                            List<uint> sportBikes = new List<uint>()
+                            {
+                                (uint)GetHashKey("AKUMA"),
+                                (uint)GetHashKey("BATI"),
+                                (uint)GetHashKey("BATI2"),
+                                (uint)GetHashKey("CARBONRS"),
+                                (uint)GetHashKey("DEFILER"),
+                                (uint)GetHashKey("DIABLOUS2"),
+                                (uint)GetHashKey("DOUBLE"),
+                                (uint)GetHashKey("FCR"),
+                                (uint)GetHashKey("FCR2"),
+                                (uint)GetHashKey("HAKUCHOU"),
+                                (uint)GetHashKey("HAKUCHOU2"),
+                                (uint)GetHashKey("LECTRO"),
+                                (uint)GetHashKey("NEMESIS"),
+                                (uint)GetHashKey("OPPRESSOR"),
+                                (uint)GetHashKey("OPPRESSOR2"),
+                                (uint)GetHashKey("PCJ"),
+                                (uint)GetHashKey("RUFFIAN"),
+                                (uint)GetHashKey("SHOTARO"),
+                                (uint)GetHashKey("VADER"),
+                                (uint)GetHashKey("VORTEX"),
+                            };
+                            List<uint> chopperBikes = new List<uint>()
+                            {
+                                (uint)GetHashKey("SANCTUS"),
+                                (uint)GetHashKey("ZOMBIEA"),
+                                (uint)GetHashKey("ZOMBIEB"),
+                            };
+                            List<uint> dirtBikes = new List<uint>()
+                            {
+                                (uint)GetHashKey("BF400"),
+                                (uint)GetHashKey("ENDURO"),
+                                (uint)GetHashKey("MANCHEZ"),
+                                (uint)GetHashKey("SANCHEZ"),
+                                (uint)GetHashKey("SANCHEZ2"),
+                                (uint)GetHashKey("ESSKEY"),
+                            };
+                            List<uint> scooters = new List<uint>()
+                            {
+                                (uint)GetHashKey("FAGGIO"),
+                                (uint)GetHashKey("FAGGIO2"),
+                                (uint)GetHashKey("FAGGIO3"),
+                                (uint)GetHashKey("CLIFFHANGER"),
+                                (uint)GetHashKey("BAGGER"),
+                            };
+                            List<uint> policeb = new List<uint>()
+                            {
+                                (uint)GetHashKey("AVARUS"),
+                                (uint)GetHashKey("CHIMERA"),
+                                (uint)GetHashKey("POLICEB"),
+                                (uint)GetHashKey("SOVEREIGN"),
+                                (uint)GetHashKey("HEXER"),
+                                (uint)GetHashKey("INNOVATION"),
+                                (uint)GetHashKey("NIGHTBLADE"),
+                                (uint)GetHashKey("RATBIKE"),
+                                (uint)GetHashKey("DAEMON"),
+                                (uint)GetHashKey("DAEMON2"),
+                                (uint)GetHashKey("DIABLOUS"),
+                                (uint)GetHashKey("GARGOYLE"),
+                                (uint)GetHashKey("THRUST"),
+                                (uint)GetHashKey("VINDICATOR"),
+                                (uint)GetHashKey("WOLFSBANE"),
+                            };
+
+                            if (policeb.Contains((uint)veh.Model.Hash))
+                            {
+                                animDict = "anim@mp_helmets@on_bike@policeb";
+                            }
+                            else if (sportBikes.Contains((uint)veh.Model.Hash))
+                            {
+                                animDict = "anim@mp_helmets@on_bike@sports";
+                            }
+                            else if (chopperBikes.Contains((uint)veh.Model.Hash))
+                            {
+                                animDict = "anim@mp_helmets@on_bike@chopper";
+                            }
+                            else if (dirtBikes.Contains((uint)veh.Model.Hash))
+                            {
+                                animDict = "anim@mp_helmets@on_bike@dirt";
+                            }
+                            else if (scooters.Contains((uint)veh.Model.Hash))
+                            {
+                                animDict = "anim@mp_helmets@on_bike@scooter";
+                            }
+                            else
+                            {
+                                animDict = "anim@mp_helmets@on_bike@sports";
+                            }
+                        }
+                        else if (veh.Model.IsBicycle)
+                        {
+                            animDict = "anim@mp_helmets@on_bike@scooter";
+                        }
+                    }
+                }
+                if (!HasAnimDictLoaded(animDict))
+                {
+                    RequestAnimDict(animDict);
+                    while (!HasAnimDictLoaded(animDict))
+                    {
+                        await Delay(0);
+                    }
+                }
+                ClearPedTasks(PlayerPedId());
+                TaskPlayAnim(PlayerPedId(), animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
+                while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) <= 0.0f)
+                {
+                    await Delay(0);
+                }
+                while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.0f)
+                {
+                    await Delay(0);
+                    if (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.39f)
+                    {
+                        SetPedPropIndex(PlayerPedId(), 0, newHelmet, texture, true);
+                    }
+                }
+                ClearPedTasks(PlayerPedId());
+                RemoveAnimDict(animDict);
+            }
+        }
+
+        /// <summary>
+        /// Pickup a snowball.
+        /// </summary>
+        /// <returns></returns>
+        async Task PickupSnowball()
+        {
+            ClearPedTasks(PlayerPedId());
+            if (cf.IsAllowed(Permission.WPSnowball)) // only if the player is allowed to spawn in snowballs.
+            {
+                int maxAmmo = 10;
+                GetMaxAmmo(PlayerPedId(), snowball_hash, ref maxAmmo);
+                if (GetAmmoInPedWeapon(PlayerPedId(), snowball_hash) < maxAmmo)
+                {
+                    SetPedCurrentWeaponVisible(PlayerPedId(), false, true, false, false);
+                    if (!HasAnimDictLoaded(snowball_anim_dict))
+                    {
+                        RequestAnimDict(snowball_anim_dict);
+                        while (!HasAnimDictLoaded(snowball_anim_dict))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                    TaskPlayAnim(PlayerPedId(), snowball_anim_dict, snowball_anim_name, 8f, 1f, -1, 0, 0f, false, false, false);
+                    while (!IsEntityPlayingAnim(PlayerPedId(), snowball_anim_dict, snowball_anim_name, 0))
+                    {
+                        await Delay(0);
+                        if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("CreateObject")) || HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Interrupt")))
+                        {
+                            break;
+                        }
+                    }
+                    AddAmmoToPed(PlayerPedId(), snowball_hash, 2);
+                    GiveWeaponToPed(PlayerPedId(), snowball_hash, 0, true, true);
+                    if (GetAmmoInPedWeapon(PlayerPedId(), snowball_hash) > maxAmmo)
+                    {
+                        SetPedAmmo(PlayerPedId(), snowball_hash, maxAmmo);
+                    }
+                }
+                else
+                {
+                    ClearAllHelpMessages();
+                    BeginTextCommandDisplayHelp("string");
+                    AddTextComponentSubstringPlayerName($"You can not carry more than {maxAmmo} snowballs!");
+                    EndTextCommandDisplayHelp(0, false, true, 6000);
                 }
             }
         }

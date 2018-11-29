@@ -408,6 +408,22 @@ namespace vMenuClient
                     {
                         SetPedPropIndex(Game.PlayerPed.Handle, propID, index - 1, 0, true);
                     }
+                    if (propID == 0)
+                    {
+                        int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
+                        int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
+                        int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
+                        if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+                        {
+                            if (!IsHelpMessageBeingDisplayed())
+                            {
+                                BeginTextCommandDisplayHelp("TWOSTRINGS");
+                                AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed"); 
+                                AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
+                                EndTextCommandDisplayHelp(0, false, true, 6000);
+                            }
+                        }
+                    }
 
                 }
             };
