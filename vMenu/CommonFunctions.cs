@@ -268,8 +268,7 @@ namespace vMenuClient
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
-                //Notification.Error("This player does not exist so the teleport has been cancelled.");
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");;
                 return;
             }
         }
@@ -287,24 +286,35 @@ namespace vMenuClient
                 RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
                 bool inCar = Game.PlayerPed.IsInVehicle() && GetVehicle().Driver == Game.PlayerPed;
                 if (inCar)
+                {
                     SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z);
+                    FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), false), true);
+                }
                 else
+                {
                     SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
+                    FreezeEntityPosition(PlayerPedId(), true);
+                }
 
                 int timer = GetGameTimer();
-                bool failed = false;
+                bool failed = true;
                 float outputZ = pos.Z;
                 await Delay(100);
                 var z = 0f;
-                while (!GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
+                while (GetGameTimer() - timer < 5000)
                 {
                     await Delay(0);
-                    if (GetGameTimer() - timer > 5000)
+                    if (GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
                     {
-                        failed = true;
+                        failed = false;
                         break;
                     }
-                    z = z < 900f ? z + 10f : 0f;
+                    Debug.WriteLine(z.ToString());
+                    z = z + 10f;
+                    if (z > 900)
+                    {
+                        z = 5;
+                    }
                 }
                 if (!failed)
                 {
@@ -350,14 +360,14 @@ namespace vMenuClient
                     SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
             }
-
-            //else
-            //{
-            //    if (inCar)
-            //        SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ + 0.1f);
-            //    else
-            //        SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ + 0.1f, false, false, false, true);
-            //}
+            if (Game.PlayerPed.IsInVehicle())
+            {
+                FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), false), false);
+            }
+            else
+            {
+                Game.PlayerPed.IsPositionFrozen = false;
+            }
         }
 
         /// <summary>
@@ -368,7 +378,7 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = 150f;
+                pos.Z = Game.PlayerPed.Position.Z;
                 await TeleportToCoords(pos);
             }
             else
