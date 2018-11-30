@@ -185,8 +185,24 @@ namespace vMenuClient
             if (Mp.IsAnyMenuOpen())
             {
                 currentMenu = Cf.GetOpenMenu();
+                if (MpPedCustomizationMenu != null)
+                    if (currentMenu == MpPedCustomizationMenu.createMaleMenu || currentMenu == MpPedCustomizationMenu.createFemaleMenu)
+                    {
+                        MpPedCustomization.DisableBackButton = true;
+                        MpPedCustomization.DontCloseMenus = true;
+                    }
+                    else
+                    {
+                        MpPedCustomization.DisableBackButton = false;
+                        MpPedCustomization.DontCloseMenus = false;
+                    }
                 if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
+                    if (MpPedCustomization.DisableBackButton || MpPedCustomization.DontCloseMenus)
+                    {
+                        Game.DisableControlThisFrame(0, Control.FrontendPause);
+                        Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate);
+                    }
                     if (currentMenu.Visible && !DisableControls)
                     {
                         // Select / Enter
@@ -198,11 +214,16 @@ namespace vMenuClient
                             }
                         }
                         // Cancel / Go Back
-                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
+                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && !MpPedCustomization.DisableBackButton)
                         {
                             // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
                             await Delay(0);
                             currentMenu.GoBack();
+                        }
+                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
+                        {
+                            await Delay(0);
+                            Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
                         }
                     }
                 }

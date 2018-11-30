@@ -21,6 +21,13 @@ namespace vMenuClient
 
         public struct PedHair
         {
+            public int style;
+            public int color;
+            public int colorHighlight;
+            public int eyebrowsStyle;
+            public int eyebrowsColor;
+            public int beardStyle;
+            public int beardColor;
         }
 
         public struct PedMakeup

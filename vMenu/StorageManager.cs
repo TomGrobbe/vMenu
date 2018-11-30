@@ -21,7 +21,7 @@ namespace vMenuClient
         /// <param name="overrideExistingData">When true, will override existing save data with the same name. 
         /// If false, it will cancel the save if existing data is found and return false.</param>
         /// <returns>A boolean value indicating if the save was successful.</returns>
-        public bool SaveDictionary(string saveName, Dictionary<string, string> data, bool overrideExistingData)
+        public static bool SaveDictionary(string saveName, Dictionary<string, string> data, bool overrideExistingData)
         {
             // If the savename doesn't exist yet or we're allowed to override it.
             if (GetResourceKvpString(saveName) == null || overrideExistingData)
@@ -49,7 +49,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="name">The key for the dictionary to get.</param>
         /// <returns>The requested dictionary.</returns>
-        public Dictionary<string, string> GetSavedDictionary(string name)
+        public static Dictionary<string, string> GetSavedDictionary(string name)
         {
             string json;
             json = GetResourceKvpString(name);
@@ -63,7 +63,7 @@ namespace vMenuClient
             return MainMenu.Cf.JsonToPedInfo(GetResourceKvpString(name), name);
         }
 
-        public bool SavePedInfo(string saveName, CommonFunctions.PedInfo pedData, bool overrideExisting)
+        public static bool SavePedInfo(string saveName, CommonFunctions.PedInfo pedData, bool overrideExisting)
         {
             if (overrideExisting || (GetResourceKvpString(saveName) ?? "NULL") == "NULL")
             {
@@ -78,7 +78,7 @@ namespace vMenuClient
         /// Delete the specified saved item from local storage.
         /// </summary>
         /// <param name="saveName">The full name of the item to remove.</param>
-        public void DeleteSavedStorageItem(string saveName)
+        public static void DeleteSavedStorageItem(string saveName)
         {
             DeleteResourceKvp(saveName);
         }
@@ -240,7 +240,7 @@ namespace vMenuClient
         /// <param name="jsonData">The data to store.</param>
         /// <param name="overrideExistingData">If the saveName is already in use, can we override it?</param>
         /// <returns>Whether or not the data was saved successfully.</returns>
-        public bool SaveJsonData(string saveName, string jsonData, bool overrideExistingData)
+        public static bool SaveJsonData(string saveName, string jsonData, bool overrideExistingData)
         {
             if (!string.IsNullOrEmpty(saveName) && !string.IsNullOrEmpty(jsonData))
             {
@@ -268,7 +268,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName"></param>
         /// <returns></returns>
-        public string GetJsonData(string saveName)
+        public static string GetJsonData(string saveName)
         {
             if (!string.IsNullOrEmpty(saveName))
             {

@@ -418,7 +418,7 @@ namespace vMenuClient
                             if (!IsHelpMessageBeingDisplayed())
                             {
                                 BeginTextCommandDisplayHelp("TWOSTRINGS");
-                                AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed"); 
+                                AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
                                 AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
                                 EndTextCommandDisplayHelp(0, false, true, 6000);
                             }
@@ -646,7 +646,7 @@ namespace vMenuClient
             deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                sm.DeleteSavedStorageItem("ped_" + name);
+                StorageManager.DeleteSavedStorageItem("ped_" + name);
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();
             };

@@ -995,22 +995,29 @@ namespace vMenuClient
         }
         #endregion
         #region Player Appearance
+
+
+
         private async Task ManagePlayerAppearanceCamera()
         {
             if (MainMenu.MpPedCustomizationMenu != null)
             {
                 var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
-                bool open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
-                if (open)
+
+                bool IsOpen()
+                {
+                    return menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible || MainMenu.MpPedCustomizationMenu.maleInheritance.Visible || MainMenu.MpPedCustomizationMenu.savedCharactersMenu.Visible || MainMenu.MpPedCustomizationMenu.maleAppearance.Visible;
+                }
+
+                if (IsOpen())
                 {
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
                     Camera camera = new Camera(cam);
 
                     Game.PlayerPed.Task.ClearAllImmediately();
-                    while (open)
+                    while (IsOpen())
                     {
                         await Delay(0);
-                        open = menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible;
 
                         SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
                         SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
@@ -1024,29 +1031,38 @@ namespace vMenuClient
                         camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.7f));
                         camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         Game.PlayerPed.Task.ClearAll();
+                        var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
+                        var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);
                         if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
-                            Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                            TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                            //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
                         }
                         else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
-                            Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                            TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                            //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
                         }
                         else
                         {
-                            float input = Game.GetDisabledControlNormal(0, Control.LookLeftRight);
+                            float input = GetDisabledControlNormal(0, 1);
 
                             if (input > 0.5f)
                             {
-                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                                //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
+                                TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                                //Debug.WriteLine("look 2");
                             }
                             else if (input < -0.5f)
                             {
-                                Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                                //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
+                                TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                                //Debug.WriteLine("look 1");
                             }
                             else
                             {
                                 Game.PlayerPed.Task.LookAt(camera.Position);
+                                //Debug.WriteLine("look else");
                             }
                         }
 
@@ -1520,7 +1536,7 @@ namespace vMenuClient
         #region help message controller
         private async Task HelpMessageController()
         {
-            if (GetNextWeatherType() == GetHashKey("XMAS"))
+            if (World.NextWeather == Weather.Christmas)
             {
                 void ShowSnowballInfoMessage()
                 {
@@ -1573,6 +1589,7 @@ namespace vMenuClient
         Text Text7 = new Text("7", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
         Text Text8 = new Text("8", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
         Text Text9 = new Text("9", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text entityIdText = new Text("Handle: ", new System.Drawing.PointF(0f, 0f), 0.3f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
         private async Task ModelDrawDimensions()
         {
             if (MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
@@ -1600,54 +1617,66 @@ namespace vMenuClient
                     Vector3 pos8 = new Vector3(pos2.X, pos2.Y, pos2.Z - (pos2.Z - pos1.Z));
 
                     var off1 = GetOffsetFromEntityInWorldCoords(ent, pos1.X, pos1.Y, pos1.Z);
-                    var off2 = GetOffsetFromEntityInWorldCoords(ent, pos2.X, pos2.Y, pos2.Z);
-                    var off3 = GetOffsetFromEntityInWorldCoords(ent, pos3.X, pos3.Y, pos3.Z);
-                    var off4 = GetOffsetFromEntityInWorldCoords(ent, pos4.X, pos4.Y, pos4.Z);
-                    var off5 = GetOffsetFromEntityInWorldCoords(ent, pos5.X, pos5.Y, pos5.Z);
+                    var off2 = GetOffsetFromEntityInWorldCoords(ent, pos5.X, pos5.Y, pos5.Z);
+                    var off3 = GetOffsetFromEntityInWorldCoords(ent, pos7.X, pos7.Y, pos7.Z);
+                    var off4 = GetOffsetFromEntityInWorldCoords(ent, pos3.X, pos3.Y, pos3.Z);
+                    var off5 = GetOffsetFromEntityInWorldCoords(ent, pos4.X, pos4.Y, pos4.Z);
                     var off6 = GetOffsetFromEntityInWorldCoords(ent, pos6.X, pos6.Y, pos6.Z);
-                    var off7 = GetOffsetFromEntityInWorldCoords(ent, pos7.X, pos7.Y, pos7.Z);
+                    var off7 = GetOffsetFromEntityInWorldCoords(ent, pos2.X, pos2.Y, pos2.Z);
                     var off8 = GetOffsetFromEntityInWorldCoords(ent, pos8.X, pos8.Y, pos8.Z);
 
                     var x = pos4.X - ((pos4.X - pos8.X) / 2f);
                     var y = pos4.Y - ((pos4.Y - pos8.Y) / 2f);
-                    var z = pos4.Z;
-                    var pos9 = new Vector3(x, y, z - 0.1f);
-                    var pos10 = new Vector3(x, y, z + 0.1f);
-                    var pos11 = new Vector3(x, y, z);
-                    var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z);
-                    var off10 = GetOffsetFromEntityInWorldCoords(ent, pos10.X, pos10.Y, pos10.Z);
-                    var off11 = GetOffsetFromEntityInWorldCoords(ent, pos11.X, pos11.Y, pos11.Z);
+                    var z = pos8.Z - ((pos8.Z - pos7.Z) / 2f);
+                    //var pos9 = new Vector3(x, y, z - 0.1f);
+                    //var pos10 = new Vector3(x, y, z + 0.1f);
+                    var pos9 = new Vector3(x, y, z);
+                    var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
+                    var off9bottom = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
+                    var off9up = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z + 0.1f);
+                    var off9left = GetOffsetFromEntityInWorldCoords(ent, pos9.X + 0.1f, pos9.Y, pos9.Z);
+                    var off9right = GetOffsetFromEntityInWorldCoords(ent, pos9.X - 0.1f, pos9.Y, pos9.Z);
+                    var possomething = new Vector3(pos7.X - ((pos7.X - pos6.X) / 2f), 0f, pos7.Z - ((pos7.Z - pos2.Z) / 2f));
+                    var centerMiddleTop = GetOffsetFromEntityInWorldCoords(ent, possomething.X, possomething.Y, possomething.Z);
 
                     SetDrawOrigin(off1.X, off1.Y, off1.Z, 0); Text1.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off2.X, off2.Y, off2.Z, 0); Text2.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off3.X, off3.Y, off3.Z, 0); Text3.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off2.X, off2.Y, off2.Z + 0.15f, 0); Text2.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off3.X, off3.Y, off3.Z + 0.15f, 0); Text3.Draw(); ClearDrawOrigin();
                     SetDrawOrigin(off4.X, off4.Y, off4.Z, 0); Text4.Draw(); ClearDrawOrigin();
                     SetDrawOrigin(off5.X, off5.Y, off5.Z, 0); Text5.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off6.X, off6.Y, off6.Z, 0); Text6.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off7.X, off7.Y, off7.Z, 0); Text7.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off6.X, off6.Y, off6.Z + 0.15f, 0); Text6.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off7.X, off7.Y, off7.Z + 0.15f, 0); Text7.Draw(); ClearDrawOrigin();
                     SetDrawOrigin(off8.X, off8.Y, off8.Z, 0); Text8.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off11.X, off11.Y, off11.Z, 0); Text9.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off9bottom.X, off9bottom.Y, off9bottom.Z, 0); Text9.Draw(); ClearDrawOrigin();
+                    entityIdText.Caption = $"Handle {ent}";
+                    SetDrawOrigin(centerMiddleTop.X, centerMiddleTop.Y, centerMiddleTop.Z, 0); entityIdText.Draw(); ClearDrawOrigin();
 
-                    DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 255, 255, 255, 255);
+                    DrawLine(off1.X, off1.Y, off1.Z, off7.X, off7.Y, off7.Z, 255, 255, 255, 255); // white min to max
 
-                    DrawLine(off1.X, off1.Y, off1.Z, off3.X, off3.Y, off3.Z, 255, 0, 0, 255);
-                    DrawLine(off1.X, off1.Y, off1.Z, off4.X, off4.Y, off4.Z, 255, 0, 0, 255);
-                    DrawLine(off1.X, off1.Y, off1.Z, off5.X, off5.Y, off5.Z, 255, 0, 0, 255);
 
-                    DrawLine(off2.X, off2.Y, off2.Z, off6.X, off6.Y, off6.Z, 0, 0, 255, 255);
-                    DrawLine(off2.X, off2.Y, off2.Z, off7.X, off7.Y, off7.Z, 0, 0, 255, 255);
-                    DrawLine(off2.X, off2.Y, off2.Z, off8.X, off8.Y, off8.Z, 0, 0, 255, 255);
+                    DrawLine(off1.X, off1.Y, off1.Z, off4.X, off4.Y, off4.Z, 255, 0, 0, 255); // red   (x)
+                    DrawLine(off1.X, off1.Y, off1.Z, off5.X, off5.Y, off5.Z, 0, 255, 0, 255); // green (y)
+                    DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 0, 0, 255, 255); // blue  (z)
 
-                    DrawLine(off3.X, off3.Y, off3.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255);
-                    DrawLine(off5.X, off5.Y, off5.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255);
-                    DrawLine(off5.X, off5.Y, off5.Z, off6.X, off6.Y, off6.Z, 0, 255, 0, 255);
+                    DrawLine(off8.X, off8.Y, off8.Z, off5.X, off5.Y, off5.Z, 255, 0, 0, 255); // red   (x)
+                    DrawLine(off8.X, off8.Y, off8.Z, off4.X, off4.Y, off4.Z, 0, 255, 0, 255); // green (y)
+                    DrawLine(off8.X, off8.Y, off8.Z, off7.X, off7.Y, off7.Z, 0, 0, 255, 255); // blue  (z)
 
-                    DrawLine(off4.X, off4.Y, off4.Z, off8.X, off8.Y, off8.Z, 150, 150, 0, 255);
-                    DrawLine(off4.X, off4.Y, off4.Z, off6.X, off6.Y, off6.Z, 150, 150, 0, 255);
-                    DrawLine(off8.X, off8.Y, off8.Z, off3.X, off3.Y, off3.Z, 150, 150, 0, 255);
+                    DrawLine(off2.X, off2.Y, off2.Z, off3.X, off3.Y, off3.Z, 255, 0, 0, 255); // red   (x)
+                    DrawLine(off2.X, off2.Y, off2.Z, off6.X, off6.Y, off6.Z, 0, 255, 0, 255); // green (y)
+                    DrawLine(off3.X, off3.Y, off3.Z, off4.X, off4.Y, off4.Z, 0, 0, 255, 255); // blue  (z)
 
-                    DrawLine(off9.X, off9.Y, off9.Z, off10.X, off10.Y, off10.Z, 255, 0, 255, 255);
+                    DrawLine(off6.X, off6.Y, off6.Z, off7.X, off7.Y, off7.Z, 255, 0, 0, 255); // red   (x)
+                    DrawLine(off3.X, off3.Y, off3.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255); // green (y)
+                    DrawLine(off6.X, off6.Y, off6.Z, off5.X, off5.Y, off5.Z, 0, 0, 255, 255); // blue  (z)
+
+                    DrawLine(off9bottom.X, off9bottom.Y, off9bottom.Z, off9up.X, off9up.Y, off9up.Z, 255, 0, 255, 255); // pink (center front up/down)
+                    DrawLine(off9left.X, off9left.Y, off9left.Z, off9right.X, off9right.Y, off9right.Z, 255, 255, 0, 255); // yellow (center front x)
                 }
+            }
+            else
+            {
+                await Delay(0);
             }
         }
         #endregion

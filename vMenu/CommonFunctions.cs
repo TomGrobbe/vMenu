@@ -1973,11 +1973,11 @@ namespace vMenuClient
                 bool saveSuccessful = false;
                 if (name == "vMenu_tmp_saved_ped")
                 {
-                    saveSuccessful = sm.SavePedInfo(name, data, true);
+                    saveSuccessful = StorageManager.SavePedInfo(name, data, true);
                 }
                 else
                 {
-                    saveSuccessful = sm.SavePedInfo("ped_" + name, data, false);
+                    saveSuccessful = StorageManager.SavePedInfo("ped_" + name, data, false);
                 }
 
 
@@ -2115,7 +2115,7 @@ namespace vMenuClient
                 pi.props = props;
                 pi.propTextures = propTextures;
                 pi.version = 1;
-                if (sm.SavePedInfo(saveName, pi, true))
+                if (StorageManager.SavePedInfo(saveName, pi, true))
                 {
                     Notify.Success("Converted saved ped successfully.");
                 }
