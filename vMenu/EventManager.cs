@@ -101,6 +101,31 @@ namespace vMenuClient
             minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
 
 
+            async void UpdateWeatherParticlesOnce()
+            {
+                if (currentWeatherType == "XMAS")
+                {
+                    if (!HasNamedPtfxAssetLoaded("core_snow"))
+                    {
+                        RequestNamedPtfxAsset("core_snow");
+                        while (!HasNamedPtfxAssetLoaded("core_snow"))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                    UseParticleFxAssetNextCall("core_snow");
+                    SetForceVehicleTrails(true);
+                    SetForcePedFootstepsTracks(true);
+                }
+                else
+                {
+                    SetForceVehicleTrails(false);
+                    SetForcePedFootstepsTracks(false);
+                    RemoveNamedPtfxAsset("core_snow");
+                }
+            }
+            UpdateWeatherParticlesOnce();
+
             MainMenu.PreSetupComplete = true;
         }
 
