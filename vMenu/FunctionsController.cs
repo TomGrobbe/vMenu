@@ -1564,6 +1564,15 @@ namespace vMenuClient
         }
         #endregion
         #region draw model dimensions
+        Text Text1 = new Text("1", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text2 = new Text("2", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text3 = new Text("3", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text4 = new Text("4", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text5 = new Text("5", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text6 = new Text("6", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text7 = new Text("7", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text8 = new Text("8", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        Text Text9 = new Text("9", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
         private async Task ModelDrawDimensions()
         {
             if (MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
@@ -1604,8 +1613,20 @@ namespace vMenuClient
                     var z = pos4.Z;
                     var pos9 = new Vector3(x, y, z - 0.1f);
                     var pos10 = new Vector3(x, y, z + 0.1f);
+                    var pos11 = new Vector3(x, y, z);
                     var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z);
                     var off10 = GetOffsetFromEntityInWorldCoords(ent, pos10.X, pos10.Y, pos10.Z);
+                    var off11 = GetOffsetFromEntityInWorldCoords(ent, pos11.X, pos11.Y, pos11.Z);
+
+                    SetDrawOrigin(off1.X, off1.Y, off1.Z, 0); Text1.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off2.X, off2.Y, off2.Z, 0); Text2.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off3.X, off3.Y, off3.Z, 0); Text3.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off4.X, off4.Y, off4.Z, 0); Text4.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off5.X, off5.Y, off5.Z, 0); Text5.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off6.X, off6.Y, off6.Z, 0); Text6.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off7.X, off7.Y, off7.Z, 0); Text7.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off8.X, off8.Y, off8.Z, 0); Text8.Draw(); ClearDrawOrigin();
+                    SetDrawOrigin(off11.X, off11.Y, off11.Z, 0); Text9.Draw(); ClearDrawOrigin();
 
                     DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 255, 255, 255, 255);
 
