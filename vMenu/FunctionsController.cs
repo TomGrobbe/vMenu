@@ -93,6 +93,7 @@ namespace vMenuClient
             //Tick += FlaresAndBombsTick;
             Tick += AnimationsAndInteractions;
             Tick += HelpMessageController;
+            Tick += ModelDrawDimensions;
         }
 
         /// Task related
@@ -150,15 +151,8 @@ namespace vMenuClient
                         // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
                         await Delay(5);
                         MainMenu.DisableControls = false;
-
-
                     }
                 }
-                await Delay(0);
-            }
-            else
-            {
-                await Delay(0);
             }
         }
         #endregion
@@ -1567,6 +1561,73 @@ namespace vMenuClient
                 }
             }
             await Delay(100);
+        }
+        #endregion
+        #region draw model dimensions
+        private async Task ModelDrawDimensions()
+        {
+            if (MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
+            {
+                var veh = cf.GetVehicle(true);
+                if (veh == null)
+                {
+                    veh = cf.GetVehicle();
+                }
+                if (veh == null)
+                {
+                    veh = new Vehicle(GetVehiclePedIsUsing(Game.PlayerPed.Handle));
+                }
+                if (veh != null && veh.Exists())
+                {
+                    int ent = veh.Handle;
+                    int model = GetEntityModel(veh.Handle);
+                    Vector3 pos1 = new Vector3(), pos2 = new Vector3();
+                    GetModelDimensions((uint)model, ref pos1, ref pos2);
+                    Vector3 pos3 = new Vector3(pos1.X - (pos1.X - pos2.X), pos1.Y, pos1.Z);
+                    Vector3 pos4 = new Vector3(pos1.X, pos1.Y - (pos1.Y - pos2.Y), pos1.Z);
+                    Vector3 pos5 = new Vector3(pos1.X, pos1.Y, pos1.Z - (pos1.Z - pos2.Z));
+                    Vector3 pos6 = new Vector3(pos2.X - (pos2.X - pos1.X), pos2.Y, pos2.Z);
+                    Vector3 pos7 = new Vector3(pos2.X, pos2.Y - (pos2.Y - pos1.Y), pos2.Z);
+                    Vector3 pos8 = new Vector3(pos2.X, pos2.Y, pos2.Z - (pos2.Z - pos1.Z));
+
+                    var off1 = GetOffsetFromEntityInWorldCoords(ent, pos1.X, pos1.Y, pos1.Z);
+                    var off2 = GetOffsetFromEntityInWorldCoords(ent, pos2.X, pos2.Y, pos2.Z);
+                    var off3 = GetOffsetFromEntityInWorldCoords(ent, pos3.X, pos3.Y, pos3.Z);
+                    var off4 = GetOffsetFromEntityInWorldCoords(ent, pos4.X, pos4.Y, pos4.Z);
+                    var off5 = GetOffsetFromEntityInWorldCoords(ent, pos5.X, pos5.Y, pos5.Z);
+                    var off6 = GetOffsetFromEntityInWorldCoords(ent, pos6.X, pos6.Y, pos6.Z);
+                    var off7 = GetOffsetFromEntityInWorldCoords(ent, pos7.X, pos7.Y, pos7.Z);
+                    var off8 = GetOffsetFromEntityInWorldCoords(ent, pos8.X, pos8.Y, pos8.Z);
+
+                    var x = pos4.X - ((pos4.X - pos8.X) / 2f);
+                    var y = pos4.Y - ((pos4.Y - pos8.Y) / 2f);
+                    var z = pos4.Z;
+                    var pos9 = new Vector3(x, y, z - 0.1f);
+                    var pos10 = new Vector3(x, y, z + 0.1f);
+                    var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z);
+                    var off10 = GetOffsetFromEntityInWorldCoords(ent, pos10.X, pos10.Y, pos10.Z);
+
+                    DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 255, 255, 255, 255);
+
+                    DrawLine(off1.X, off1.Y, off1.Z, off3.X, off3.Y, off3.Z, 255, 0, 0, 255);
+                    DrawLine(off1.X, off1.Y, off1.Z, off4.X, off4.Y, off4.Z, 255, 0, 0, 255);
+                    DrawLine(off1.X, off1.Y, off1.Z, off5.X, off5.Y, off5.Z, 255, 0, 0, 255);
+
+                    DrawLine(off2.X, off2.Y, off2.Z, off6.X, off6.Y, off6.Z, 0, 0, 255, 255);
+                    DrawLine(off2.X, off2.Y, off2.Z, off7.X, off7.Y, off7.Z, 0, 0, 255, 255);
+                    DrawLine(off2.X, off2.Y, off2.Z, off8.X, off8.Y, off8.Z, 0, 0, 255, 255);
+
+                    DrawLine(off3.X, off3.Y, off3.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255);
+                    DrawLine(off5.X, off5.Y, off5.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255);
+                    DrawLine(off5.X, off5.Y, off5.Z, off6.X, off6.Y, off6.Z, 0, 255, 0, 255);
+
+                    DrawLine(off4.X, off4.Y, off4.Z, off8.X, off8.Y, off8.Z, 150, 150, 0, 255);
+                    DrawLine(off4.X, off4.Y, off4.Z, off6.X, off6.Y, off6.Z, 150, 150, 0, 255);
+                    DrawLine(off8.X, off8.Y, off8.Z, off3.X, off3.Y, off3.Z, 150, 150, 0, 255);
+
+                    DrawLine(off9.X, off9.Y, off9.Z, off10.X, off10.Y, off10.Z, 255, 0, 255, 255);
+                }
+            }
         }
         #endregion
 

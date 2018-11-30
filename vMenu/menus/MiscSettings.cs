@@ -28,6 +28,7 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         private List<Vector3> tpLocations = new List<Vector3>();
@@ -73,6 +74,7 @@ namespace vMenuClient
             UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
             UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", false, "Enable or disable night vision.");
             UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", false, "Enable or disable thermal vision.");
+            UIMenuCheckboxItem modelDimensions = new UIMenuCheckboxItem("Show Vehicle Dimensions", ShowVehicleModelDimensions, "Draws lines for the model dimensions of your vehicle (debug function).");
 
             UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
@@ -130,6 +132,7 @@ namespace vMenuClient
             // Always allowed
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
+            menu.AddItem(modelDimensions);
             if (cf.IsAllowed(Permission.MSConnectionMenu))
             {
                 menu.AddItem(connectionSubmenuBtn);
@@ -298,6 +301,10 @@ namespace vMenuClient
                 else if (item == restorePlayerWeapons)
                 {
                     RestorePlayerWeapons = _checked;
+                }
+                else if (item == modelDimensions)
+                {
+                    ShowVehicleModelDimensions = _checked;
                 }
             };
 
