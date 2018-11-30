@@ -309,7 +309,7 @@ namespace vMenuClient
                         failed = false;
                         break;
                     }
-                    Debug.WriteLine(z.ToString());
+                    //Debug.WriteLine(z.ToString());
                     z = z + 10f;
                     if (z > 900)
                     {
