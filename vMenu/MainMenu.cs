@@ -65,12 +65,15 @@ namespace vMenuClient
         {
             PlayersList = Players;
 
-
-            RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            if (EnableExperimentalFeatures || DebugMode)
             {
-                PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
-                Debug.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
-            }), false);
+                RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+                {
+                    PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
+                    Debug.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+                }), false);
+            }
+
 
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
@@ -186,7 +189,8 @@ namespace vMenuClient
             {
                 currentMenu = Cf.GetOpenMenu();
                 if (MpPedCustomizationMenu != null)
-                    if (currentMenu == MpPedCustomizationMenu.createMaleMenu || currentMenu == MpPedCustomizationMenu.createFemaleMenu)
+                {
+                    if (currentMenu == MpPedCustomizationMenu.createCharacterMenu)
                     {
                         MpPedCustomization.DisableBackButton = true;
                         MpPedCustomization.DontCloseMenus = true;
@@ -196,6 +200,7 @@ namespace vMenuClient
                         MpPedCustomization.DisableBackButton = false;
                         MpPedCustomization.DontCloseMenus = false;
                     }
+                }
                 if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
                     if (MpPedCustomization.DisableBackButton || MpPedCustomization.DontCloseMenus)
@@ -303,48 +308,54 @@ namespace vMenuClient
                     // Check if the Go Left controls are pressed.
                     else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
                     {
-                        currentMenu.GoLeft();
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-                        while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
+                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                         {
-                            currentMenu = Cf.GetOpenMenu();
-                            if (GetGameTimer() - time > delay)
+                            currentMenu.GoLeft();
+                            var time = GetGameTimer();
+                            var times = 0;
+                            var delay = 200;
+                            while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
                             {
-                                times++;
-                                if (times > 2)
+                                currentMenu = Cf.GetOpenMenu();
+                                if (GetGameTimer() - time > delay)
                                 {
-                                    delay = 150;
+                                    times++;
+                                    if (times > 2)
+                                    {
+                                        delay = 150;
+                                    }
+                                    currentMenu.GoLeft();
+                                    time = GetGameTimer();
                                 }
-                                currentMenu.GoLeft();
-                                time = GetGameTimer();
+                                await Delay(0);
                             }
-                            await Delay(0);
                         }
                     }
 
                     // Check if the Go Right controls are pressed.
                     else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
                     {
-                        currentMenu.GoRight();
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-                        while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
+                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                         {
-                            currentMenu = Cf.GetOpenMenu();
-                            if (GetGameTimer() - time > delay)
+                            currentMenu.GoRight();
+                            var time = GetGameTimer();
+                            var times = 0;
+                            var delay = 200;
+                            while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
                             {
-                                times++;
-                                if (times > 2)
+                                currentMenu = Cf.GetOpenMenu();
+                                if (GetGameTimer() - time > delay)
                                 {
-                                    delay = 150;
+                                    times++;
+                                    if (times > 2)
+                                    {
+                                        delay = 150;
+                                    }
+                                    currentMenu.GoRight();
+                                    time = GetGameTimer();
                                 }
-                                currentMenu.GoRight();
-                                time = GetGameTimer();
+                                await Delay(0);
                             }
-                            await Delay(0);
                         }
                     }
 

@@ -28,6 +28,7 @@ namespace vMenuClient
             public int eyebrowsColor;
             public int beardStyle;
             public int beardColor;
+            //public int 
         }
 
         public struct PedMakeup

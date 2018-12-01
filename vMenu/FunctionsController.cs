@@ -1006,7 +1006,15 @@ namespace vMenuClient
 
                 bool IsOpen()
                 {
-                    return menu.Visible || MainMenu.MpPedCustomizationMenu.createMaleMenu.Visible || MainMenu.MpPedCustomizationMenu.createFemaleMenu.Visible || MainMenu.MpPedCustomizationMenu.maleInheritance.Visible || MainMenu.MpPedCustomizationMenu.savedCharactersMenu.Visible || MainMenu.MpPedCustomizationMenu.maleAppearance.Visible;
+                    return
+                        MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
                 }
 
                 if (IsOpen())
