@@ -172,6 +172,7 @@ namespace vMenuServer
             "VORepair",
             "VOWash",
             "VOEngine",
+            "VOSpeedLimiter",
             "VOChangePlate",
             "VOMod",
             "VOColors",
