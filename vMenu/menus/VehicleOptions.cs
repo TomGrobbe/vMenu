@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -678,17 +678,28 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        Vehicle v = cf.GetVehicle();
+                        Vehicle vehicle = cf.GetVehicle();
 
-                        if (v != null && v.Exists())
+                        if (vehicle != null && vehicle.Exists())
                         {
                             if (index == 0) // Set
                             {
-                                v.MaxSpeed = v.Speed;
+                                vehicle.MaxSpeed = vehicle.Speed;
+
+                                if (ShouldUseMetricMeasurements()) // kph
+                                {
+                                    Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(vehicle.Speed * 3.6f, 1)} KPH~s~.");
+                                }
+                                else // mph
+                                {
+                                    Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(vehicle.Speed * 2.237f, 1)} MPH~s~.");
+                                }
+
                             }
                             else if (index == 1) // Reset
                             {
-                                v.MaxSpeed = 500.0f; // Default max speed seemingly for all vehicles.
+                                vehicle.MaxSpeed = 500.0f; // Default max speed seemingly for all vehicles.
+                                Notify.Info("Vehicle speed is now no longer limited.");
                             }
                         }
                     }
