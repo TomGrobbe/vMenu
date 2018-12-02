@@ -37,6 +37,7 @@ namespace vMenuClient
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool VehicleFrozen { get; private set; } = false;
+        public bool SpeedLimited { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
@@ -73,11 +74,17 @@ namespace vMenuClient
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
             UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.");
-
+            
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
             UIMenuItem cleanVehicle = new UIMenuItem("Wash Vehicle", "Clean your vehicle.");
             UIMenuItem toggleEngine = new UIMenuItem("Toggle Engine On/Off", "Turn your engine on/off.");
+            List<dynamic> speedLimiterOptions = new List<dynamic>()
+            {
+                "Set",
+                "Reset"
+            };
+            UIMenuListItem speedLimiter = new UIMenuListItem("Speed Limiter", speedLimiterOptions, 0, "Set your vehicles max speed to your ~y~CURRENT SPEED~s~. Resetting your vehicles max speed will set the max speed of your current vehicle back to default.");
             UIMenuItem setLicensePlateText = new UIMenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
             UIMenuItem modMenuBtn = new UIMenuItem("Mod Menu", "Tune and customize your vehicle here.");
             modMenuBtn.SetRightLabel("→→→");
@@ -223,6 +230,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
             {
                 menu.AddItem(toggleEngine);
+            }
+            if (cf.IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
+            {
+                menu.AddItem(speedLimiter);
             }
             if (cf.IsAllowed(Permission.VOChangePlate))
             {
@@ -660,6 +671,26 @@ namespace vMenuClient
                     else
                     {
                         Notify.Error(CommonErrors.NoVehicle);
+                    }
+                }
+                // Speed Limiter
+                else if (item == speedLimiter)
+                {
+                    if (Game.PlayerPed.IsInVehicle())
+                    {
+                        Vehicle v = cf.GetVehicle();
+
+                        if (v != null && v.Exists())
+                        {
+                            if (index == 0) // Set
+                            {
+                                v.MaxSpeed = v.Speed;
+                            }
+                            else if (index == 1) // Reset
+                            {
+                                v.MaxSpeed = 500.0f; // Default max speed seemingly for all vehicles.
+                            }
+                        }
                     }
                 }
             };
