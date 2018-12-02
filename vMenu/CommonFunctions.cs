@@ -2580,5 +2580,14 @@ namespace vMenuClient
             }
         }
         #endregion
+
+        public string GetSafePlayerName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return "";
+            }
+            return name.Replace("^", @"\^").Replace("~", @"\~").Replace("<", "«").Replace(">", "»");
+        }
     }
 }

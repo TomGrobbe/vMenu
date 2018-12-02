@@ -568,7 +568,7 @@ namespace vMenuClient
                         {
                             if (!playerList.Contains(player))
                             {
-                                Notify.Custom($"~g~<C>{player.Value}</C>~s~ joined the server.");
+                                Notify.Custom($"~g~<C>{cf.GetSafePlayerName(player.Value)}</C>~s~ joined the server.");
                                 await Delay(0);
                             }
                         }
@@ -580,7 +580,7 @@ namespace vMenuClient
                         {
                             if (!pl.Contains(player))
                             {
-                                Notify.Custom($"~r~<C>{player.Value}</C>~s~ left the server.");
+                                Notify.Custom($"~r~<C>{cf.GetSafePlayerName(player.Value)}</C>~s~ left the server.");
                                 await Delay(0);
                             }
                         }
@@ -630,14 +630,14 @@ namespace vMenuClient
                                             {
                                                 if (playerKiller.Character.Handle == killer.Handle)
                                                 {
-                                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                    Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{cf.GetSafePlayerName(playerKiller.Name)}</C>~s~.");
                                                     found = true;
                                                     break;
                                                 }
                                             }
                                             if (!found)
                                             {
-                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                             }
                                         }
                                         else if (killer.Model.IsVehicle)
@@ -649,7 +649,7 @@ namespace vMenuClient
                                                 {
                                                     if (playerKiller.Character.CurrentVehicle.Handle == killer.Handle)
                                                     {
-                                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered by ~y~<C>{playerKiller.Name}</C>~s~.");
+                                                        Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{cf.GetSafePlayerName(playerKiller.Name)}</C>~s~.");
                                                         found = true;
                                                         break;
                                                     }
@@ -657,27 +657,27 @@ namespace vMenuClient
                                             }
                                             if (!found)
                                             {
-                                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                             }
                                         }
                                         else
                                         {
-                                            Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                            Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~<C>{p.Name}</C> ~s~has been murdered.");
+                                        Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~<C>{p.Name}</C> ~s~committed suicide.");
+                                    Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~committed suicide.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~<C>{p.Name}</C> ~s~died.");
+                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~died.");
                             }
                             deadPlayers.Add(p.Handle);
                         }
@@ -1046,7 +1046,7 @@ namespace vMenuClient
                             camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
                             camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         }
-                        
+
                         Game.PlayerPed.Task.ClearAll();
                         var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);

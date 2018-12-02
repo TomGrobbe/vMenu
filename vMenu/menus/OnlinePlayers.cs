@@ -75,8 +75,6 @@ namespace vMenuClient
                             MouseEdgeEnabled = false,
                             ControlDisablingEnabled = false
                         };
-                        PlayerMenu.SetMenuWidthOffset(50);
-
 
                         // Create all player options buttons.
                         UIMenuItem teleportBtn = new UIMenuItem("Teleport To Player", "Teleport to this player.");
