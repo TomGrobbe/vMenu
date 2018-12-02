@@ -624,6 +624,7 @@ namespace vMenuClient
                 { 22, new KeyValuePair<string, string>("multiplayer_overlays", "FM_M_Hair_001_a") },
             };
 
+            // manage the list changes for appearance items.
             appearanceMenu.OnListChange += (sender, item, index) =>
             {
                 int itemIndex = sender.MenuItems.IndexOf(item);
@@ -763,6 +764,7 @@ namespace vMenuClient
                 }
             };
 
+            // manage the slider changes for opacity on the appearance items.
             appearanceMenu.OnSliderChange += (sender, item, index) =>
             {
                 int itemIndex = sender.MenuItems.IndexOf(item);
@@ -840,22 +842,9 @@ namespace vMenuClient
                     }
                 }
 
-                //int itemIndex = sender.MenuItems.IndexOf(item);
-                //if (itemIndex == 4) // beard style or beard opacity changes
-                //{
-                //    int selection = ((UIMenuListItem)sender.MenuItems[3]).Index;
-                //    float opacity = (((float)((UIMenuSliderItem)sender.MenuItems[4]).Index + 1) / 10f) - 0.1f;
-                //    SetPedHeadOverlay(PlayerPedId(), 1, selection, opacity);
-                //}
-                //else if (itemIndex == 7) // eyebrow style or opacity changes
-                //{
-                //    int selection = ((UIMenuListItem)sender.MenuItems[6]).Index;
-                //    float opacity = (((float)((UIMenuSliderItem)sender.MenuItems[7]).Index + 1) / 10f) - 0.1f;
-                //    SetPedHeadOverlay(PlayerPedId(), 2, selection, opacity);
-                //}
             };
             #endregion
-            // create character items selected.
+            // handle button presses for the createCharacter menu.
             createCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == saveButton) // save ped
@@ -865,12 +854,14 @@ namespace vMenuClient
                         createCharacterMenu.GoBack();
                     }
                 }
-                else if (item == exitNoSave) // exit
+                else if (item == exitNoSave) // exit without saving
                 {
                     bool confirm = false;
                     AddTextEntry("vmenu_warning_message_first_line", "Are you sure you want to exit the character creator?");
                     AddTextEntry("vmenu_warning_message_second_line", "You will lose all (unsaved) customization!");
                     createCharacterMenu.Visible = false;
+
+                    // wait for confirmation or cancel input.
                     while (true)
                     {
                         await BaseScript.Delay(0);
@@ -887,6 +878,8 @@ namespace vMenuClient
                             break;
                         }
                     }
+
+                    // if confirmed to discard changes quit the editor.
                     if (confirm)
                     {
                         while (IsControlPressed(2, 201) || IsControlPressed(2, 217) || IsDisabledControlPressed(2, 201) || IsDisabledControlPressed(2, 217))
@@ -894,12 +887,12 @@ namespace vMenuClient
                         await BaseScript.Delay(100);
                         menu.Visible = true;
                     }
-                    else
+                    else // otherwise cancel and go back to the editor.
                     {
                         createCharacterMenu.Visible = true;
                     }
                 }
-                else if (item == inheritanceButton) // inhertiance menu
+                else if (item == inheritanceButton) // update the inheritance menu anytime it's opened to prevent some weird glitch where old data is used.
                 {
                     var data = Game.PlayerPed.GetHeadBlendData();
                     inheritanceDads.Index = data.FirstFaceShape;
