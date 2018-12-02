@@ -259,10 +259,10 @@ namespace vMenuClient
                         // Update the currently selected item to the new one.
                         currentMenu.GoUp();
                         currentMenu.GoUpOverflow();
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        {
-                            currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                        }
+                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                        //{
+                        //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
+                        //}
 
 
                         // Get the current game time.
@@ -291,10 +291,10 @@ namespace vMenuClient
                                 // Update the currently selected item to the new one.
                                 currentMenu.GoUp();
                                 currentMenu.GoUpOverflow();
-                                if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                {
-                                    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                                }
+                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                                //{
+                                //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
+                                //}
 
                                 // Reset the time to the current game timer.
                                 time = GetGameTimer();
@@ -364,10 +364,10 @@ namespace vMenuClient
                     {
                         currentMenu.GoDown();
                         currentMenu.GoDownOverflow();
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        {
-                            currentMenu.CurrentSelection++;
-                        }
+                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                        //{
+                        //    currentMenu.CurrentSelection++;
+                        //}
                         var time = GetGameTimer();
                         var times = 0;
                         var delay = 200;
@@ -383,10 +383,10 @@ namespace vMenuClient
                                 }
                                 currentMenu.GoDown();
                                 currentMenu.GoDownOverflow();
-                                if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                {
-                                    currentMenu.CurrentSelection++;
-                                }
+                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                                //{
+                                //    currentMenu.CurrentSelection++;
+                                //}
                                 time = GetGameTimer();
                             }
                             await Delay(0);
