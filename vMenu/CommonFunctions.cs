@@ -1896,7 +1896,6 @@ namespace vMenuClient
                         {
                             await Delay(0);
                         }
-                        Debug.WriteLine("done1");
                     }
                 }
                 SetModelAsNoLongerNeeded(modelHash);

@@ -282,5 +282,29 @@ namespace vMenuClient
             }
             return null;
         }
+
+        public static MpPedDataManager.MultiplayerPedData GetSavedMpCharacterData(string name)
+        {
+            var output = new MpPedDataManager.MultiplayerPedData();
+            if (string.IsNullOrEmpty(name))
+            {
+                return output;
+            }
+            string jsonString = GetResourceKvpString(name.StartsWith("mp_ped_") ? name : "mp_ped_" + name);
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return output;
+            }
+            try
+            {
+                output = JsonConvert.DeserializeObject<MpPedDataManager.MultiplayerPedData>(jsonString);
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            MainMenu.Cf.Log(jsonString);
+            return output;
+        }
     }
 }
