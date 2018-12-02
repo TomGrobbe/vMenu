@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -433,6 +433,65 @@ namespace vMenuClient
 
             #endregion
 
+            #region clothing options menu
+            string[] clothingCategoryNames = new string[12] { "Unused (head)", "Masks", "Unused (hair)", "Upper Body", "Lower Body", "Bags & Parachutes", "Shoes", "Scarfs & Chains", "Shirt & Accessory", "Body Armor & Accessory 2", "Badges & Logos", "Shirt Overlay & Jackets" };
+            if (currentCharacter.DrawableVariations.clothes == null)
+            {
+                currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
+            }
+            for (int i = 0; i < 12; i++)
+            {
+                if (i != 0 && i != 2)
+                {
+                    int currentVariationIndex = editPed ? currentCharacter.DrawableVariations.clothes[i].Key : GetPedDrawableVariation(PlayerPedId(), i);
+                    int currentVariationTextureIndex = editPed ? currentCharacter.DrawableVariations.clothes[i].Value : GetPedTextureVariation(PlayerPedId(), i);
+
+                    List<dynamic> items = new List<dynamic>();
+                    for (int x = 0; x < GetNumberOfPedDrawableVariations(PlayerPedId(), i); x++)
+                    {
+                        items.Add($"Drawable #{x} (of {GetNumberOfPedDrawableVariations(PlayerPedId(), i)})");
+                    }
+
+                    UIMenuListItem listItem = new UIMenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex}.");
+                    clothesMenu.AddItem(listItem);
+                }
+            }
+            #endregion
+
+            #region props options menu
+            if (currentCharacter.DrawableVariations.clothes == null)
+            {
+                currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
+            }
+
+
+            string[] propNames = new string[5] { "Hats & Helmets", "Glasses", "Misc Props", "Watches", "Bracelets" };
+            for (int x = 0; x < 5; x++)
+            {
+                int propId = x;
+                if (x > 2)
+                {
+                    propId += 3;
+                }
+
+                int currentProp = editPed ? currentCharacter.PropVariations.props[propId].Key : GetPedPropIndex(PlayerPedId(), propId);
+                int currentPropTexture = editPed ? currentCharacter.PropVariations.props[propId].Value : GetPedPropTextureIndex(PlayerPedId(), propId);
+
+                List<dynamic> propsList = new List<dynamic>();
+                for (int i = 0; i < GetNumberOfPedPropDrawableVariations(PlayerPedId(), propId); i++)
+                {
+                    propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(PlayerPedId(), propId)})");
+                }
+                propsList.Add("No Prop");
+
+                UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
+                propsMenu.AddItem(propListItem);
+            }
+            #endregion
+
+            #region face features menu
+
+            #endregion
 
             createCharacterMenu.RefreshIndex();
             createCharacterMenu.UpdateScaleform();
@@ -844,6 +903,132 @@ namespace vMenuClient
 
             };
             #endregion
+
+            #region clothes
+            clothesMenu.OnListChange += (sender, item, index) =>
+            {
+                int realIndex = sender.MenuItems.IndexOf(item);
+                int componentIndex = realIndex + 1;
+                if (realIndex > 0)
+                {
+                    componentIndex += 1;
+                }
+
+                int textureIndex = GetPedTextureVariation(PlayerPedId(), componentIndex);
+                int newTextureIndex = 0;
+                SetPedComponentVariation(PlayerPedId(), componentIndex, item.Index, newTextureIndex, 0);
+                if (currentCharacter.DrawableVariations.clothes == null)
+                {
+                    currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
+                }
+                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
+                item.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                clothesMenu.UpdateScaleform();
+            };
+
+            clothesMenu.OnListSelect += (sender, item, index) =>
+            {
+                int realIndex = sender.MenuItems.IndexOf(item);
+                int componentIndex = realIndex + 1;
+                if (realIndex > 0)
+                {
+                    componentIndex += 1;
+                }
+
+                int textureIndex = GetPedTextureVariation(PlayerPedId(), componentIndex);
+                int newTextureIndex = (GetNumberOfPedTextureVariations(PlayerPedId(), componentIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                SetPedComponentVariation(PlayerPedId(), componentIndex, item.Index, newTextureIndex, 0);
+                if (currentCharacter.DrawableVariations.clothes == null)
+                {
+                    currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
+                }
+                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
+                item.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                clothesMenu.UpdateScaleform();
+            };
+            #endregion
+
+            #region props
+            propsMenu.OnListChange += (sender, item, index) =>
+            {
+                int realIndex = sender.MenuItems.IndexOf(item);
+                int propIndex = realIndex;
+                if (realIndex == 3)
+                {
+                    propIndex = 6;
+                }
+                if (realIndex == 4)
+                {
+                    propIndex = 7;
+                }
+
+                int textureIndex = GetPedPropTextureIndex(PlayerPedId(), propIndex);
+                int newTextureIndex = (GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), item.Index))
+                {
+                    ClearPedProp(PlayerPedId(), propIndex);
+                    if (currentCharacter.PropVariations.props == null)
+                    {
+                        currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                    }
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
+                }
+                else
+                {
+                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, newTextureIndex, true);
+                    if (currentCharacter.PropVariations.props == null)
+                    {
+                        currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                    }
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
+                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                    propsMenu.UpdateScaleform();
+                }
+            };
+
+            propsMenu.OnListSelect += (sender, item, index) =>
+            {
+                int realIndex = sender.MenuItems.IndexOf(item);
+                int propIndex = realIndex;
+                if (realIndex == 3)
+                {
+                    propIndex = 6;
+                }
+                if (realIndex == 4)
+                {
+                    propIndex = 7;
+                }
+
+                int textureIndex = GetPedPropTextureIndex(PlayerPedId(), propIndex);
+                int newTextureIndex = (GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), item.Index))
+                {
+                    ClearPedProp(PlayerPedId(), propIndex);
+                    if (currentCharacter.PropVariations.props == null)
+                    {
+                        currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                    }
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
+                }
+                else
+                {
+                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, newTextureIndex, true);
+                    if (currentCharacter.PropVariations.props == null)
+                    {
+                        currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                    }
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
+                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                    propsMenu.UpdateScaleform();
+                }
+
+            };
+            #endregion
+
+            #region face shape data
+
+            #endregion
+
             // handle button presses for the createCharacter menu.
             createCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {

@@ -13,12 +13,12 @@ namespace vMenuClient
     {
         public struct DrawableVariations
         {
-
+            public Dictionary<int, KeyValuePair<int, int>> clothes;
         }
 
         public struct PropVariations
         {
-
+            public Dictionary<int, KeyValuePair<int, int>> props;
         }
 
         public struct FaceShapeFeatures
