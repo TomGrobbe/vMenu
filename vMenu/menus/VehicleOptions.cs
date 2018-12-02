@@ -37,10 +37,12 @@ namespace vMenuClient
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool VehicleFrozen { get; private set; } = false;
+        public bool SpeedLimited { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
+        public float VehicleDefaultMaxSpeed { get; private set; } = 55.0f; // ~120 MPH
 
         private Dictionary<UIMenuItem, int> vehicleExtras = new Dictionary<UIMenuItem, int>();
         #endregion
@@ -73,6 +75,7 @@ namespace vMenuClient
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
             UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.");
+            UIMenuCheckboxItem speedLimiter = new UIMenuCheckboxItem("Speed Limiter", SpeedLimited, "Sets your vehicle's max speed to your vehicles ~y~CURRENT SPEED~s~.");
 
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -223,6 +226,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
             {
                 menu.AddItem(toggleEngine);
+            }
+            if (cf.IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
+            {
+                menu.AddItem(speedLimiter);
             }
             if (cf.IsAllowed(Permission.VOChangePlate))
             {
@@ -456,6 +463,25 @@ namespace vMenuClient
                         if (vehicle != null && vehicle.Exists())
                         {
                             FreezeEntityPosition(vehicle.Handle, false);
+                        }
+                    }
+                }
+                else if (item == speedLimiter) // Speed Limiter Toggled
+                {
+                    SpeedLimited = _checked;
+                    if (_checked)
+                    {
+                        if (vehicle != null && vehicle.Exists())
+                        {
+                            VehicleDefaultMaxSpeed = GetVehicleMaxSpeed(vehicle.Handle);
+                            vehicle.MaxSpeed = vehicle.Speed;
+                        }
+                    }
+                    else
+                    {
+                        if (vehicle != null && vehicle.Exists())
+                        {
+                            vehicle.MaxSpeed = VehicleDefaultMaxSpeed;
                         }
                     }
                 }
