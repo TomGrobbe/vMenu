@@ -268,7 +268,7 @@ namespace vMenuClient
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");;
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled."); ;
                 return;
             }
         }
@@ -1822,13 +1822,13 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public void SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
+        public async Task SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => await SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async void SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
+        public async Task SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
         {
             //uint model = modelHash;
             //Debug.Write(modelHash.ToString() + "\n");
@@ -1886,6 +1886,19 @@ namespace vMenuClient
                 {
                     RestoreWeaponLoadout();
                 }
+                if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
+                {
+                    var headBlendData = Game.PlayerPed.GetHeadBlendData();
+                    if (pedCustomizationOptions.version == -1)
+                    {
+                        SetPedHeadBlendData(PlayerPedId(), 0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0f, false);
+                        while (!HasPedHeadBlendFinished(PlayerPedId()))
+                        {
+                            await Delay(0);
+                        }
+                        Debug.WriteLine("done1");
+                    }
+                }
                 SetModelAsNoLongerNeeded(modelHash);
             }
             else
@@ -1902,7 +1915,7 @@ namespace vMenuClient
             string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
             if (input != "NULL")
             {
-                SetPlayerSkin((uint)GetHashKey(input), new PedInfo() { version = -1 });
+                await SetPlayerSkin((uint)GetHashKey(input), new PedInfo() { version = -1 });
             }
             else
             {
@@ -2009,19 +2022,19 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public void LoadSavedPed(string savedName, bool restoreWeapons)
+        public async void LoadSavedPed(string savedName, bool restoreWeapons)
         {
             if (savedName != "vMenu_tmp_saved_ped")
             {
                 PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
                 Log(JsonConvert.SerializeObject(pi));
-                SetPlayerSkin(pi.model, pi, restoreWeapons);
+                await SetPlayerSkin(pi.model, pi, restoreWeapons);
             }
             else
             {
                 PedInfo pi = sm.GetSavedPedInfo(savedName);
                 Log(JsonConvert.SerializeObject(pi));
-                SetPlayerSkin(pi.model, pi, restoreWeapons);
+                await SetPlayerSkin(pi.model, pi, restoreWeapons);
                 DeleteResourceKvp("vMenu_tmp_saved_ped");
             }
 

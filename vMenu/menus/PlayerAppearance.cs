@@ -268,11 +268,11 @@ namespace vMenuClient
                             button.Description = "This ped is not available on this server. Are you sure the model is valid?";
                         }
                     }
-                    addonPeds.OnItemSelect += (sender, item, index) =>
+                    addonPeds.OnItemSelect += async (sender, item, index) =>
                     {
                         if (item.Enabled)
                         {
-                            cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
+                            await cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
                         }
                         else
                         {
@@ -330,7 +330,7 @@ namespace vMenuClient
             }
 
             // Handle list selections.
-            menu.OnListSelect += (sender, item, index) =>
+            menu.OnListSelect += async (sender, item, index) =>
             {
                 if (item == walkingStyle)
                 {
@@ -347,7 +347,7 @@ namespace vMenuClient
                     string modelName = modelNames[i];
                     if (cf.IsAllowed(Permission.PASpawnNew))
                     {
-                        cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
+                        await cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
                     }
                 }
 

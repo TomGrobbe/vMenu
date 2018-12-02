@@ -11,37 +11,94 @@ namespace vMenuClient
 {
     public class MpPedDataManager : BaseScript
     {
-        public struct CharacterComponents
+        public struct DrawableVariations
         {
+
         }
 
-        public struct FaceFeatures
+        public struct PropVariations
         {
+
         }
 
-        public struct PedHair
+        public struct FaceShapeFeatures
         {
-            public int style;
-            public int color;
-            public int colorHighlight;
-            public int eyebrowsStyle;
-            public int eyebrowsColor;
+
+        }
+
+        public struct PedTatttoos { } // added the structure for it, but will not be implemented until it's actually possible. Just future-proofing my setup here.
+
+        public struct PedFacePaints { } // also added to make it future proof, but not actually used (yet).
+
+        public struct PedAppearance
+        {
+            public int hairStyle;
+            public int hairColor;
+            public int hairHighlightColor;
+            public KeyValuePair<string, string> HairOverlay;
+
+            // 0 blemishes
+            public int blemishesStyle;
+            public float blemishesOpacity;
+
+            // 1 beard
             public int beardStyle;
             public int beardColor;
-            //public int 
-        }
+            public float beardOpacity;
 
-        public struct PedMakeup
-        {
+            // 2 eyebrows
+            public int eyebrowsStyle;
+            public int eyebrowsColor;
+            public float eyebrowsOpacity;
+
+            // 3 ageing
+            public int ageingStyle;
+            public float ageingOpacity;
+
+            // 4 makeup
+            public int makeupStyle;
+            public int makeupColor;
+            public float makeupOpacity;
+
+            // 5 blush
+            public int blushStyle;
+            public int blushColor;
+            public float blushOpacity;
+
+            // 6 complexion
+            public int complexionStyle;
+            public float complexionOpacity;
+
+            // 7 sun damage
+            public int sunDamageStyle;
+            public float sunDamageOpacity;
+
+            // 8 lipstick
+            public int lipstickStyle;
+            public int lipstickColor;
+            public float lipstickOpacity;
+
+            // 9 moles / freckles
+            public int molesFrecklesStyle;
+            public float molesFrecklesOpacity;
+
+            // 10 chest hair
+            public int chestHairStyle;
+            public int chestHairColor;
+            public float chestHairOpacity;
+
+            public int eyeColor;
         }
 
         public struct MultiplayerPedData
         {
             public PedHeadBlendData PedHeadBlendData;
-            public CharacterComponents CharacterComponentsData;
-            public FaceFeatures FaceFeaturesData;
-            public PedHair PedHairData;
-            public PedMakeup PedMakeupData;
+            public DrawableVariations DrawableVariations;
+            public PropVariations PropVariations;
+            public FaceShapeFeatures FaceShapeFeatures;
+            public PedAppearance PedAppearance;
+            public PedTatttoos PedTatttoos;
+            public PedFacePaints PedFacePaints;
             public bool IsMale;
             public uint ModelHash;
             public string SaveName;

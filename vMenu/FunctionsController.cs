@@ -1036,8 +1036,8 @@ namespace vMenuClient
 
                         cf.DisableMovementControlsThisFrame(true, true);
 
-                        camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.7f));
-                        camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
+                        camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
+                        camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.6f));
                         Game.PlayerPed.Task.ClearAll();
                         var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);
