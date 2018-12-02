@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1092,26 +1092,26 @@ namespace vMenuClient
             };
 
             menu.OnItemSelect += async (sender, item, index) =>
-           {
-               if (item == createMale)
-               {
-                   await cf.SetPlayerSkin("mp_m_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
-                   SetPedDefaultComponentVariation(PlayerPedId());
-                   ClearAllPedProps(PlayerPedId());
-                   MakeCreateCharacterMenu(male: true);
-               }
-               else if (item == createFemale)
-               {
-                   await cf.SetPlayerSkin("mp_f_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
-                   SetPedDefaultComponentVariation(PlayerPedId());
-                   ClearAllPedProps(PlayerPedId());
-                   MakeCreateCharacterMenu(male: false);
-               }
-               else if (item == savedCharacters)
-               {
-                   UpdateSavedPedsMenu();
-               }
-           };
+            {
+                if (item == createMale)
+                {
+                    await cf.SetPlayerSkin("mp_m_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
+                    SetPedDefaultComponentVariation(PlayerPedId());
+                    ClearAllPedProps(PlayerPedId());
+                    MakeCreateCharacterMenu(male: true);
+                }
+                else if (item == createFemale)
+                {
+                    await cf.SetPlayerSkin("mp_f_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
+                    SetPedDefaultComponentVariation(PlayerPedId());
+                    ClearAllPedProps(PlayerPedId());
+                    MakeCreateCharacterMenu(male: false);
+                }
+                else if (item == savedCharacters)
+                {
+                    UpdateSavedPedsMenu();
+                }
+            };
         }
 
         void UpdateSavedPedsMenu()
