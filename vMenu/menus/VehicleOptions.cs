@@ -42,7 +42,7 @@ namespace vMenuClient
         public bool VehiclePowerMultiplier { get; private set; } = false;
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
-        public float VehicleDefaultMaxSpeed { get; private set; } = 55.0f; // ~120 MPH
+        public float VehicleDefaultMaxSpeed { get; private set; } = 500.0f; // ~1,100 MPH (just to be safe)
 
         private Dictionary<UIMenuItem, int> vehicleExtras = new Dictionary<UIMenuItem, int>();
         #endregion
