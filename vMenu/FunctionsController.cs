@@ -1008,12 +1008,12 @@ namespace vMenuClient
                 {
                     return
                         MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
+                        MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
                 }
 
@@ -1036,8 +1036,17 @@ namespace vMenuClient
 
                         cf.DisableMovementControlsThisFrame(true, true);
 
-                        camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
-                        camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.6f));
+                        if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible || MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
+                        {
+                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                        }
+                        else
+                        {
+                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
+                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
+                        }
+                        
                         Game.PlayerPed.Task.ClearAll();
                         var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);
