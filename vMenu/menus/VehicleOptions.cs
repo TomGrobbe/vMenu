@@ -371,6 +371,11 @@ namespace vMenuClient
             // Manage button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
+                if (item == deleteBtn) // reset the index so that "no" / "cancel" will always be selected by default.
+                {
+                    DeleteConfirmMenu.RefreshIndex();
+                    DeleteConfirmMenu.UpdateScaleform();
+                }
                 // If the player is actually in a vehicle, continue.
                 if (cf.GetVehicle() != null && cf.GetVehicle().Exists())
                 {
