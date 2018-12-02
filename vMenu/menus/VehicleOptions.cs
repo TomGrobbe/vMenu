@@ -73,17 +73,11 @@ namespace vMenuClient
             UIMenuCheckboxItem torqueEnabled = new UIMenuCheckboxItem("Enable Torque Multiplier", VehicleTorqueMultiplier, "Enables the torque multiplier selected from the list below.");
             UIMenuCheckboxItem powerEnabled = new UIMenuCheckboxItem("Enable Power Multiplier", VehiclePowerMultiplier, "Enables the power multiplier selected from the list below.");
             UIMenuCheckboxItem highbeamsOnHonk = new UIMenuCheckboxItem("Flash Highbeams On Honk", FlashHighbeamsOnHonk, "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.");
-            
+
             // Create buttons.
             UIMenuItem fixVehicle = new UIMenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
             UIMenuItem cleanVehicle = new UIMenuItem("Wash Vehicle", "Clean your vehicle.");
             UIMenuItem toggleEngine = new UIMenuItem("Toggle Engine On/Off", "Turn your engine on/off.");
-            List<dynamic> speedLimiterOptions = new List<dynamic>()
-            {
-                "Set",
-                "Reset"
-            };
-            UIMenuListItem speedLimiter = new UIMenuListItem("Speed Limiter", speedLimiterOptions, 0, "Set your vehicles max speed to your ~y~CURRENT SPEED~s~. Resetting your vehicles max speed will set the max speed of your current vehicle back to default.");
             UIMenuItem setLicensePlateText = new UIMenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
             UIMenuItem modMenuBtn = new UIMenuItem("Mod Menu", "Tune and customize your vehicle here.");
             modMenuBtn.SetRightLabel("→→→");
@@ -132,6 +126,8 @@ namespace vMenuClient
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem powerMultiplier = new UIMenuListItem("Set Engine Power Multiplier", powerMultiplierList, 0, "Set the engine power multiplier.");
+            List<dynamic> speedLimiterOptions = new List<dynamic>() { "Set", "Reset" };
+            UIMenuListItem speedLimiter = new UIMenuListItem("Speed Limiter", speedLimiterOptions, 0, "Set your vehicles max speed to your ~y~current speed~s~. Resetting your vehicles max speed will set the max speed of your current vehicle back to default. Only your current vehicle is affected by this option.");
             #endregion
 
             #region Submenus
