@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1012,7 +1012,10 @@ namespace vMenuClient
         #region Player Appearance
 
 
-
+        /// <summary>
+        /// Manages the camera view for when the mp ped creator is open.
+        /// </summary>
+        /// <returns></returns>
         private async Task ManagePlayerAppearanceCamera()
         {
             if (MainMenu.MpPedCustomizationMenu != null)
@@ -1038,29 +1041,166 @@ namespace vMenuClient
                     Camera camera = new Camera(cam);
 
                     Game.PlayerPed.Task.ClearAllImmediately();
-                    while (IsOpen())
+
+                    SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
+                    //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
+
+                    /* 
+                     * Camera positions and PointAt locations.
+                    
+                    // head close up
+                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
+                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                    
+                    // upper body close up
+                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
+                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
+                    
+                    // lower body close up
+                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
+                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
+                    
+                    // very low (feet level) very close up
+                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
+                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
+                    
+                    // default normal height full character visible.
+                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                    
+                    */
+
+                    void SetCameraPosition()
                     {
-                        await Delay(0);
-
-                        SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
-                        SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
-
-                        RenderScriptCams(true, false, 0, true, false);
-
-                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
-
-                        cf.DisableMovementControlsThisFrame(true, true);
-
-                        if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible || MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
+                        if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
-                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                            int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentSelection;
+                            switch (index)
+                            {
+                                case 0:
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                case 8:
+                                case 9:
+                                case 10:
+                                case 11:
+                                case 12:
+                                case 13:
+                                case 14:
+                                case 15:
+                                case 16:
+                                case 17:
+                                case 18:
+                                case 19:
+                                case 20:
+                                case 21:
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                case 27:
+                                case 31:
+                                    // close up head.
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    break;
+                                case 28:
+                                case 29:
+                                case 30:
+                                default:
+                                    // normal position (full character visible)
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    break;
+                            }
                         }
+                        else if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
+                        {
+                            int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentSelection;
+                            switch (index)
+                            {
+                                case 0:
+                                    // head level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    break;
+                                case 1:
+                                case 3:
+                                case 5:
+                                case 6:
+                                case 7:
+                                case 9:
+                                    // upper body level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
+                                    break;
+                                case 2:
+                                    // lower body level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
+                                    break;
+                                case 4:
+                                    // feet (ground) level (close up)
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
+                                    break;
+                                case 8:
+                                default:
+                                    // normal position (full character visible)
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    break;
+                            }
+                        }
+                        else if (MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible)
+                        {
+                            // head level
+                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
+                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                        }
+                        else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
+                        {
+                            int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentSelection;
+                            switch (index)
+                            {
+                                case 0:
+                                case 1:
+                                case 2:
+                                    // head level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    break;
+                                case 3:
+                                    // lower body level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(-0.2f, 0f, -0.25f));
+                                    break;
+                                case 4:
+                                    // lower body level
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0.2f, 0f, -0.25f));
+                                    break;
+                                default:
+                                    // normal position (full character visible)
+                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    break;
+                            }
+                        }
+                        else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible) { /*TODO*/}
+                        else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible) { /*TODO*/}
                         else
                         {
-                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
-                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
+                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
                         }
+                    }
 
                     while (IsOpen())
                     {
@@ -1085,7 +1225,7 @@ namespace vMenuClient
                         //    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
                         //    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         //}
-                        SetEntityInvincible(Game.PlayerPed.Handle, true);
+                        SetCameraPosition();
 
                         Game.PlayerPed.Task.ClearAll();
 
