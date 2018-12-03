@@ -490,8 +490,18 @@ namespace vMenuClient
                 }
                 propsList.Add("No Prop");
 
-                UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
-                propsMenu.AddItem(propListItem);
+                if (GetPedPropIndex(PlayerPedId(), propId) != -1)
+                {
+                    UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
+                    propsMenu.AddItem(propListItem);
+                }
+                else
+                {
+                    UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, "Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.");
+                    propsMenu.AddItem(propListItem);
+                }
+
+
             }
             #endregion
 
@@ -993,28 +1003,36 @@ namespace vMenuClient
                     propIndex = 7;
                 }
 
-                int textureIndex = GetPedPropTextureIndex(PlayerPedId(), propIndex);
-                int newTextureIndex = (GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
-                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), item.Index))
+                int textureIndex = 0;
+                if (index >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), propIndex))
                 {
+                    SetPedPropIndex(PlayerPedId(), propIndex, -1, -1, false);
                     ClearPedProp(PlayerPedId(), propIndex);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
+                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                 }
                 else
                 {
-                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, newTextureIndex, true);
+                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, textureIndex, true);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
-                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
-                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                    propsMenu.UpdateScaleform();
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, textureIndex);
+                    if (GetPedPropIndex(PlayerPedId(), propIndex) == -1)
+                    {
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                    }
+                    else
+                    {
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1}).";
+                    }
                 }
+                propsMenu.UpdateScaleform();
             };
 
             propsMenu.OnListSelect += (sender, item, index) =>
@@ -1032,14 +1050,16 @@ namespace vMenuClient
 
                 int textureIndex = GetPedPropTextureIndex(PlayerPedId(), propIndex);
                 int newTextureIndex = (GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
-                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), item.Index))
+                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), propIndex))
                 {
+                    SetPedPropIndex(PlayerPedId(), propIndex, -1, -1, false);
                     ClearPedProp(PlayerPedId(), propIndex);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
+                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                 }
                 else
                 {
@@ -1049,9 +1069,16 @@ namespace vMenuClient
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
-                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                    propsMenu.UpdateScaleform();
+                    if (GetPedPropIndex(PlayerPedId(), propIndex) == -1)
+                    {
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                    }
+                    else
+                    {
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1}).";
+                    }
                 }
+                propsMenu.UpdateScaleform();
             };
             #endregion
 
