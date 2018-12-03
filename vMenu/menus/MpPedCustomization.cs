@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1161,7 +1161,7 @@ namespace vMenuClient
                 {
                     await cf.SetPlayerSkin("mp_m_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
 
-                    SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
+                    //SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
                     ClearPedDecorations(PlayerPedId());
                     ClearPedFacialDecorations(PlayerPedId());
                     SetPedDefaultComponentVariation(PlayerPedId());
@@ -1175,7 +1175,7 @@ namespace vMenuClient
                 {
                     await cf.SetPlayerSkin("mp_f_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
 
-                    SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
+                    //SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
                     ClearPedDecorations(PlayerPedId());
                     ClearPedFacialDecorations(PlayerPedId());
                     SetPedDefaultComponentVariation(PlayerPedId());
@@ -1216,7 +1216,12 @@ namespace vMenuClient
                     }
                 }
 
-                SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
+                // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
+                // and female ped at the same time.. really fucking weird. Only the cf.SetPlayerSkin function seems to work some how. I really have no clue.
+                await cf.SetPlayerSkin(currentCharacter.ModelHash, new CommonFunctions.PedInfo() { version = -1 }, true);
+                // SetPlayerModel(PlayerPedId(), currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
+                // SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
+
                 ClearPedDecorations(PlayerPedId());
                 ClearPedFacialDecorations(PlayerPedId());
                 SetPedDefaultComponentVariation(PlayerPedId());
