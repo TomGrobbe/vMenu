@@ -22,13 +22,13 @@ namespace vMenuClient
             MouseEdgeEnabled = false,
             ControlDisablingEnabled = false
         };
-        public UIMenu editCharacterMenu = new UIMenu("vMenu", "Edit Your Saved Character", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
+        //public UIMenu editCharacterMenu = new UIMenu("vMenu", "Edit Your Saved Character", true)
+        //{
+        //    ScaleWithSafezone = false,
+        //    MouseControlsEnabled = false,
+        //    MouseEdgeEnabled = false,
+        //    ControlDisablingEnabled = false
+        //};
         public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", true)
         {
             ScaleWithSafezone = false,
@@ -103,9 +103,9 @@ namespace vMenuClient
                 currentCharacter.ModelHash = male ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01");
                 currentCharacter.IsMale = male;
 
-                SetPedComponentVariation(PlayerPedId(), 3, 15, 0, 0);
-                SetPedComponentVariation(PlayerPedId(), 8, 15, 0, 0);
-                SetPedComponentVariation(PlayerPedId(), 11, 15, 0, 0);
+                SetPedComponentVariation(Game.PlayerPed.Handle, 3, 15, 0, 0);
+                SetPedComponentVariation(Game.PlayerPed.Handle, 8, 15, 0, 0);
+                SetPedComponentVariation(Game.PlayerPed.Handle, 11, 15, 0, 0);
             }
             if (currentCharacter.DrawableVariations.clothes == null)
             {
@@ -133,11 +133,11 @@ namespace vMenuClient
             }
 
             List<dynamic> hairStylesList = new List<dynamic>();
-            for (int i = 0; i < GetNumberOfPedDrawableVariations(PlayerPedId(), 2); i++)
+            for (int i = 0; i < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2); i++)
             {
                 hairStylesList.Add($"Style #{i}");
             }
-            hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(PlayerPedId(), 2)}");
+            hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2)}");
 
             List<dynamic> blemishesStyleList = new List<dynamic>();
             for (int i = 0; i < GetNumHeadOverlayValues(0); i++)
@@ -232,57 +232,57 @@ namespace vMenuClient
 
 
             // hair
-            int currentHairStyle = editPed ? currentCharacter.PedAppearance.hairStyle : GetPedDrawableVariation(PlayerPedId(), 2);
+            int currentHairStyle = editPed ? currentCharacter.PedAppearance.hairStyle : GetPedDrawableVariation(Game.PlayerPed.Handle, 2);
             int currentHairColor = editPed ? currentCharacter.PedAppearance.hairColor : 0;
             int currentHairHighlightColor = editPed ? currentCharacter.PedAppearance.hairHighlightColor : 0;
 
             // 0 blemishes
-            int currentBlemishesStyle = editPed ? currentCharacter.PedAppearance.blemishesStyle : GetPedHeadOverlayValue(PlayerPedId(), 0) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 0) : 0;
+            int currentBlemishesStyle = editPed ? currentCharacter.PedAppearance.blemishesStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 0) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 0) : 0;
             float currentBlemishesOpacity = editPed ? currentCharacter.PedAppearance.blemishesOpacity : 0.5f;
 
             // 1 beard
-            int currentBeardStyle = editPed ? currentCharacter.PedAppearance.beardStyle : GetPedHeadOverlayValue(PlayerPedId(), 1) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 1) : 0;
+            int currentBeardStyle = editPed ? currentCharacter.PedAppearance.beardStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 1) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 1) : 0;
             float currentBeardOpacity = editPed ? currentCharacter.PedAppearance.beardOpacity : 0.5f;
             int currentBeardColor = editPed ? currentCharacter.PedAppearance.beardColor : 0;
 
             // 2 eyebrows
-            int currentEyebrowStyle = editPed ? currentCharacter.PedAppearance.eyebrowsStyle : GetPedHeadOverlayValue(PlayerPedId(), 2) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 2) : 0;
+            int currentEyebrowStyle = editPed ? currentCharacter.PedAppearance.eyebrowsStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 2) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 2) : 0;
             float currentEyebrowOpacity = editPed ? currentCharacter.PedAppearance.eyebrowsOpacity : 0.5f;
             int currentEyebrowColor = editPed ? currentCharacter.PedAppearance.eyebrowsColor : 0;
 
             // 3 ageing
-            int currentAgeingStyle = editPed ? currentCharacter.PedAppearance.ageingStyle : GetPedHeadOverlayValue(PlayerPedId(), 3) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 3) : 0;
+            int currentAgeingStyle = editPed ? currentCharacter.PedAppearance.ageingStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 3) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 3) : 0;
             float currentAgeingOpacity = editPed ? currentCharacter.PedAppearance.ageingOpacity : 0.5f;
 
             // 4 makeup
-            int currentMakeupStyle = editPed ? currentCharacter.PedAppearance.makeupStyle : GetPedHeadOverlayValue(PlayerPedId(), 4) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 4) : 0;
+            int currentMakeupStyle = editPed ? currentCharacter.PedAppearance.makeupStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 4) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 4) : 0;
             float currentMakeupOpacity = editPed ? currentCharacter.PedAppearance.makeupOpacity : 0.5f;
             int currentMakeupColor = editPed ? currentCharacter.PedAppearance.makeupColor : 0;
 
             // 5 blush
-            int currentBlushStyle = editPed ? currentCharacter.PedAppearance.blushStyle : GetPedHeadOverlayValue(PlayerPedId(), 5) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 5) : 0;
+            int currentBlushStyle = editPed ? currentCharacter.PedAppearance.blushStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 5) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 5) : 0;
             float currentBlushOpacity = editPed ? currentCharacter.PedAppearance.blushOpacity : 0.5f;
             int currentBlushColor = editPed ? currentCharacter.PedAppearance.blushColor : 0;
 
             // 6 complexion
-            int currentComplexionStyle = editPed ? currentCharacter.PedAppearance.complexionStyle : GetPedHeadOverlayValue(PlayerPedId(), 6) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 6) : 0;
+            int currentComplexionStyle = editPed ? currentCharacter.PedAppearance.complexionStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 6) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 6) : 0;
             float currentComplexionOpacity = editPed ? currentCharacter.PedAppearance.complexionOpacity : 0.5f;
 
             // 7 sun damage
-            int currentSunDamageStyle = editPed ? currentCharacter.PedAppearance.sunDamageStyle : GetPedHeadOverlayValue(PlayerPedId(), 7) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 7) : 0;
+            int currentSunDamageStyle = editPed ? currentCharacter.PedAppearance.sunDamageStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 7) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 7) : 0;
             float currentSunDamageOpacity = editPed ? currentCharacter.PedAppearance.sunDamageOpacity : 0.5f;
 
             // 8 lipstick
-            int currentLipstickStyle = editPed ? currentCharacter.PedAppearance.lipstickStyle : GetPedHeadOverlayValue(PlayerPedId(), 8) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 8) : 0;
+            int currentLipstickStyle = editPed ? currentCharacter.PedAppearance.lipstickStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 8) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 8) : 0;
             float currentLipstickOpacity = editPed ? currentCharacter.PedAppearance.lipstickOpacity : 0.5f;
             int currentLipstickColor = editPed ? currentCharacter.PedAppearance.lipstickColor : 0;
 
             // 9 moles/freckles
-            int currentMolesFrecklesStyle = editPed ? currentCharacter.PedAppearance.molesFrecklesStyle : GetPedHeadOverlayValue(PlayerPedId(), 9) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 9) : 0;
+            int currentMolesFrecklesStyle = editPed ? currentCharacter.PedAppearance.molesFrecklesStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 9) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 9) : 0;
             float currentMolesFrecklesOpacity = editPed ? currentCharacter.PedAppearance.molesFrecklesOpacity : 0.5f;
 
             // 10 chest hair
-            int currentChesthairStyle = editPed ? currentCharacter.PedAppearance.chestHairStyle : GetPedHeadOverlayValue(PlayerPedId(), 10) != 255 ? GetPedHeadOverlayValue(PlayerPedId(), 10) : 0;
+            int currentChesthairStyle = editPed ? currentCharacter.PedAppearance.chestHairStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 10) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 10) : 0;
             float currentChesthairOpacity = editPed ? currentCharacter.PedAppearance.chestHairOpacity : 0.5f;
             int currentChesthairColor = editPed ? currentCharacter.PedAppearance.chestHairColor : 0;
 
@@ -455,13 +455,13 @@ namespace vMenuClient
             {
                 if (i != 0 && i != 2)
                 {
-                    int currentVariationIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Key : GetPedDrawableVariation(PlayerPedId(), i);
-                    int currentVariationTextureIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Value : GetPedTextureVariation(PlayerPedId(), i);
+                    int currentVariationIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Key : GetPedDrawableVariation(Game.PlayerPed.Handle, i);
+                    int currentVariationTextureIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Value : GetPedTextureVariation(Game.PlayerPed.Handle, i);
 
                     List<dynamic> items = new List<dynamic>();
-                    for (int x = 0; x < GetNumberOfPedDrawableVariations(PlayerPedId(), i); x++)
+                    for (int x = 0; x < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i); x++)
                     {
-                        items.Add($"Drawable #{x} (of {GetNumberOfPedDrawableVariations(PlayerPedId(), i)})");
+                        items.Add($"Drawable #{x} (of {GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i)})");
                     }
 
                     UIMenuListItem listItem = new UIMenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex}.");
@@ -480,17 +480,17 @@ namespace vMenuClient
                     propId += 3;
                 }
 
-                int currentProp = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Key : GetPedPropIndex(PlayerPedId(), propId);
-                int currentPropTexture = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Value : GetPedPropTextureIndex(PlayerPedId(), propId);
+                int currentProp = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Key : GetPedPropIndex(Game.PlayerPed.Handle, propId);
+                int currentPropTexture = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Value : GetPedPropTextureIndex(Game.PlayerPed.Handle, propId);
 
                 List<dynamic> propsList = new List<dynamic>();
-                for (int i = 0; i < GetNumberOfPedPropDrawableVariations(PlayerPedId(), propId); i++)
+                for (int i = 0; i < GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId); i++)
                 {
-                    propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(PlayerPedId(), propId)})");
+                    propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId)})");
                 }
                 propsList.Add("No Prop");
 
-                if (GetPedPropIndex(PlayerPedId(), propId) != -1)
+                if (GetPedPropIndex(Game.PlayerPed.Handle, propId) != -1)
                 {
                     UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
                     propsMenu.AddItem(propListItem);
@@ -591,7 +591,7 @@ namespace vMenuClient
             savedCharacters.SetRightLabel("→→→");
 
             MainMenu.Mp.Add(createCharacterMenu);
-            MainMenu.Mp.Add(editCharacterMenu);
+            //MainMenu.Mp.Add(editCharacterMenu);
             MainMenu.Mp.Add(savedCharactersMenu);
             MainMenu.Mp.Add(inheritanceMenu);
             MainMenu.Mp.Add(appearanceMenu);
@@ -612,15 +612,22 @@ namespace vMenuClient
             menu.RefreshIndex();
             menu.UpdateScaleform();
 
-            menu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
+            //menu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
+            //editCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             createCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            editCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             inheritanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             appearanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             faceShapeMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             clothesMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             propsMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
+            createCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            inheritanceMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            appearanceMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            faceShapeMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            clothesMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            propsMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
 
             UIMenuItem inheritanceButton = new UIMenuItem("Character Inheritance", "Character inheritance options.");
             UIMenuItem appearanceButton = new UIMenuItem("Character Appearance", "Character appearance options.");
@@ -682,7 +689,7 @@ namespace vMenuClient
 
             void SetHeadBlend()
             {
-                SetPedHeadBlendData(PlayerPedId(), inheritanceDads.Index, inheritanceMoms.Index, 0, inheritanceDads.Index, inheritanceMoms.Index, 0, mixValues[inheritanceShapeMix.Index], mixValues[inheritanceSkinMix.Index], 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.Index, inheritanceMoms.Index, 0, inheritanceDads.Index, inheritanceMoms.Index, 0, mixValues[inheritanceShapeMix.Index], mixValues[inheritanceSkinMix.Index], 0f, false);
             }
 
             inheritanceMenu.OnListChange += (sender, item, index) =>
@@ -730,21 +737,21 @@ namespace vMenuClient
                 int itemIndex = sender.MenuItems.IndexOf(item);
                 if (itemIndex == 0) // hair style
                 {
-                    ClearPedFacialDecorations(PlayerPedId());
+                    ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>("", "");
 
-                    if (index >= GetNumberOfPedDrawableVariations(PlayerPedId(), 2))
+                    if (index >= GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2))
                     {
-                        SetPedComponentVariation(PlayerPedId(), 2, 0, 0, 0);
+                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, 0, 0, 0);
                         currentCharacter.PedAppearance.hairStyle = 0;
                     }
                     else
                     {
-                        SetPedComponentVariation(PlayerPedId(), 2, index, 0, 0);
+                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, index, 0, 0);
                         currentCharacter.PedAppearance.hairStyle = index;
                         if (hairOverlays.ContainsKey(index))
                         {
-                            SetPedFacialDecoration(PlayerPedId(), (uint)GetHashKey(hairOverlays[index].Key), (uint)GetHashKey(hairOverlays[index].Value));
+                            SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(hairOverlays[index].Key), (uint)GetHashKey(hairOverlays[index].Value));
                             currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>(hairOverlays[index].Key, hairOverlays[index].Value);
                         }
                     }
@@ -756,7 +763,7 @@ namespace vMenuClient
                     tmp = (UIMenuListItem)sender.MenuItems[2];
                     int hairHighlightColor = tmp.Index;
 
-                    SetPedHairColor(PlayerPedId(), hairColor, hairHighlightColor);
+                    SetPedHairColor(Game.PlayerPed.Handle, hairColor, hairHighlightColor);
 
                     currentCharacter.PedAppearance.hairColor = hairColor;
                     currentCharacter.PedAppearance.hairHighlightColor = hairHighlightColor;
@@ -764,7 +771,7 @@ namespace vMenuClient
                 else if (itemIndex == 31) // eye color
                 {
                     int selection = ((UIMenuListItem)sender.MenuItems[itemIndex]).Index;
-                    SetPedEyeColor(PlayerPedId(), selection);
+                    SetPedEyeColor(Game.PlayerPed.Handle, selection);
                     currentCharacter.PedAppearance.eyeColor = selection;
                 }
                 else
@@ -782,82 +789,82 @@ namespace vMenuClient
                     switch (itemIndex)
                     {
                         case 3: // blemishes
-                            SetPedHeadOverlay(PlayerPedId(), 0, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 0, selection, opacity);
                             currentCharacter.PedAppearance.blemishesStyle = selection;
                             currentCharacter.PedAppearance.blemishesOpacity = opacity;
                             break;
                         case 5: // beards
-                            SetPedHeadOverlay(PlayerPedId(), 1, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 1, selection, opacity);
                             currentCharacter.PedAppearance.beardStyle = selection;
                             currentCharacter.PedAppearance.beardOpacity = opacity;
                             break;
                         case 7: // beards color
-                            SetPedHeadOverlayColor(PlayerPedId(), 1, 1, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 1, 1, selection, selection);
                             currentCharacter.PedAppearance.beardColor = selection;
                             break;
                         case 8: // eyebrows
-                            SetPedHeadOverlay(PlayerPedId(), 2, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 2, selection, opacity);
                             currentCharacter.PedAppearance.eyebrowsStyle = selection;
                             currentCharacter.PedAppearance.eyebrowsOpacity = opacity;
                             break;
                         case 10: // eyebrows color
-                            SetPedHeadOverlayColor(PlayerPedId(), 2, 1, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 2, 1, selection, selection);
                             currentCharacter.PedAppearance.eyebrowsColor = selection;
                             break;
                         case 11: // ageing
-                            SetPedHeadOverlay(PlayerPedId(), 3, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 3, selection, opacity);
                             currentCharacter.PedAppearance.ageingStyle = selection;
                             currentCharacter.PedAppearance.ageingOpacity = opacity;
                             break;
                         case 13: // makeup
-                            SetPedHeadOverlay(PlayerPedId(), 4, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 4, selection, opacity);
                             currentCharacter.PedAppearance.makeupStyle = selection;
                             currentCharacter.PedAppearance.makeupOpacity = opacity;
                             break;
                         case 15: // makeup color
-                            SetPedHeadOverlayColor(PlayerPedId(), 4, 2, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 4, 2, selection, selection);
                             currentCharacter.PedAppearance.makeupColor = selection;
                             break;
                         case 16: // blush style
-                            SetPedHeadOverlay(PlayerPedId(), 5, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 5, selection, opacity);
                             currentCharacter.PedAppearance.blushStyle = selection;
                             currentCharacter.PedAppearance.blushOpacity = opacity;
                             break;
                         case 18: // blush color
-                            SetPedHeadOverlayColor(PlayerPedId(), 5, 2, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 5, 2, selection, selection);
                             currentCharacter.PedAppearance.blushColor = selection;
                             break;
                         case 19: // complexion
-                            SetPedHeadOverlay(PlayerPedId(), 6, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 6, selection, opacity);
                             currentCharacter.PedAppearance.complexionStyle = selection;
                             currentCharacter.PedAppearance.complexionOpacity = opacity;
                             break;
                         case 21: // sun damage
-                            SetPedHeadOverlay(PlayerPedId(), 7, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 7, selection, opacity);
                             currentCharacter.PedAppearance.sunDamageStyle = selection;
                             currentCharacter.PedAppearance.sunDamageOpacity = opacity;
                             break;
                         case 23: // lipstick
-                            SetPedHeadOverlay(PlayerPedId(), 8, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 8, selection, opacity);
                             currentCharacter.PedAppearance.lipstickStyle = selection;
                             currentCharacter.PedAppearance.lipstickOpacity = opacity;
                             break;
                         case 25: // lipstick color
-                            SetPedHeadOverlayColor(PlayerPedId(), 8, 2, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 8, 2, selection, selection);
                             currentCharacter.PedAppearance.lipstickColor = selection;
                             break;
                         case 26: // moles and freckles
-                            SetPedHeadOverlay(PlayerPedId(), 9, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 9, selection, opacity);
                             currentCharacter.PedAppearance.molesFrecklesStyle = selection;
                             currentCharacter.PedAppearance.molesFrecklesOpacity = opacity;
                             break;
                         case 28: // chest hair
-                            SetPedHeadOverlay(PlayerPedId(), 10, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 10, selection, opacity);
                             currentCharacter.PedAppearance.chestHairStyle = selection;
                             currentCharacter.PedAppearance.chestHairOpacity = opacity;
                             break;
                         case 30: // chest hair color
-                            SetPedHeadOverlayColor(PlayerPedId(), 10, 1, selection, selection);
+                            SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, selection, selection);
                             currentCharacter.PedAppearance.chestHairColor = selection;
                             break;
                     }
@@ -885,57 +892,57 @@ namespace vMenuClient
                     switch (itemIndex)
                     {
                         case 4: // blemishes
-                            SetPedHeadOverlay(PlayerPedId(), 0, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 0, selection, opacity);
                             currentCharacter.PedAppearance.blemishesStyle = selection;
                             currentCharacter.PedAppearance.blemishesOpacity = opacity;
                             break;
                         case 6: // beards
-                            SetPedHeadOverlay(PlayerPedId(), 1, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 1, selection, opacity);
                             currentCharacter.PedAppearance.beardStyle = selection;
                             currentCharacter.PedAppearance.beardOpacity = opacity;
                             break;
                         case 9: // eyebrows
-                            SetPedHeadOverlay(PlayerPedId(), 2, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 2, selection, opacity);
                             currentCharacter.PedAppearance.eyebrowsStyle = selection;
                             currentCharacter.PedAppearance.eyebrowsOpacity = opacity;
                             break;
                         case 12: // ageing
-                            SetPedHeadOverlay(PlayerPedId(), 3, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 3, selection, opacity);
                             currentCharacter.PedAppearance.ageingStyle = selection;
                             currentCharacter.PedAppearance.ageingOpacity = opacity;
                             break;
                         case 14: // makeup
-                            SetPedHeadOverlay(PlayerPedId(), 4, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 4, selection, opacity);
                             currentCharacter.PedAppearance.makeupStyle = selection;
                             currentCharacter.PedAppearance.makeupOpacity = opacity;
                             break;
                         case 17: // blush style
-                            SetPedHeadOverlay(PlayerPedId(), 5, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 5, selection, opacity);
                             currentCharacter.PedAppearance.blushStyle = selection;
                             currentCharacter.PedAppearance.blushOpacity = opacity;
                             break;
                         case 20: // complexion
-                            SetPedHeadOverlay(PlayerPedId(), 6, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 6, selection, opacity);
                             currentCharacter.PedAppearance.complexionStyle = selection;
                             currentCharacter.PedAppearance.complexionOpacity = opacity;
                             break;
                         case 22: // sun damage
-                            SetPedHeadOverlay(PlayerPedId(), 7, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 7, selection, opacity);
                             currentCharacter.PedAppearance.sunDamageStyle = selection;
                             currentCharacter.PedAppearance.sunDamageOpacity = opacity;
                             break;
                         case 24: // lipstick
-                            SetPedHeadOverlay(PlayerPedId(), 8, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 8, selection, opacity);
                             currentCharacter.PedAppearance.lipstickStyle = selection;
                             currentCharacter.PedAppearance.lipstickOpacity = opacity;
                             break;
                         case 27: // moles and freckles
-                            SetPedHeadOverlay(PlayerPedId(), 9, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 9, selection, opacity);
                             currentCharacter.PedAppearance.molesFrecklesStyle = selection;
                             currentCharacter.PedAppearance.molesFrecklesOpacity = opacity;
                             break;
                         case 29: // chest hair
-                            SetPedHeadOverlay(PlayerPedId(), 10, selection, opacity);
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 10, selection, opacity);
                             currentCharacter.PedAppearance.chestHairStyle = selection;
                             currentCharacter.PedAppearance.chestHairOpacity = opacity;
                             break;
@@ -955,9 +962,9 @@ namespace vMenuClient
                     componentIndex += 1;
                 }
 
-                int textureIndex = GetPedTextureVariation(PlayerPedId(), componentIndex);
+                int textureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, componentIndex);
                 int newTextureIndex = 0;
-                SetPedComponentVariation(PlayerPedId(), componentIndex, item.Index, newTextureIndex, 0);
+                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, item.Index, newTextureIndex, 0);
                 if (currentCharacter.DrawableVariations.clothes == null)
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
@@ -976,9 +983,9 @@ namespace vMenuClient
                     componentIndex += 1;
                 }
 
-                int textureIndex = GetPedTextureVariation(PlayerPedId(), componentIndex);
-                int newTextureIndex = (GetNumberOfPedTextureVariations(PlayerPedId(), componentIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
-                SetPedComponentVariation(PlayerPedId(), componentIndex, item.Index, newTextureIndex, 0);
+                int textureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, componentIndex);
+                int newTextureIndex = (GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, item.Index, newTextureIndex, 0);
                 if (currentCharacter.DrawableVariations.clothes == null)
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
@@ -1004,10 +1011,10 @@ namespace vMenuClient
                 }
 
                 int textureIndex = 0;
-                if (index >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), propIndex))
+                if (index >= GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex))
                 {
-                    SetPedPropIndex(PlayerPedId(), propIndex, -1, -1, false);
-                    ClearPedProp(PlayerPedId(), propIndex);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, -1, -1, false);
+                    ClearPedProp(Game.PlayerPed.Handle, propIndex);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
@@ -1017,19 +1024,19 @@ namespace vMenuClient
                 }
                 else
                 {
-                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, textureIndex, true);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, item.Index, textureIndex, true);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, textureIndex);
-                    if (GetPedPropIndex(PlayerPedId(), propIndex) == -1)
+                    if (GetPedPropIndex(Game.PlayerPed.Handle, propIndex) == -1)
                     {
                         item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                     }
                     else
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1}).";
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1}).";
                     }
                 }
                 propsMenu.UpdateScaleform();
@@ -1048,12 +1055,12 @@ namespace vMenuClient
                     propIndex = 7;
                 }
 
-                int textureIndex = GetPedPropTextureIndex(PlayerPedId(), propIndex);
-                int newTextureIndex = (GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
-                if (textureIndex >= GetNumberOfPedPropDrawableVariations(PlayerPedId(), propIndex))
+                int textureIndex = GetPedPropTextureIndex(Game.PlayerPed.Handle, propIndex);
+                int newTextureIndex = (GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                if (textureIndex >= GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex))
                 {
-                    SetPedPropIndex(PlayerPedId(), propIndex, -1, -1, false);
-                    ClearPedProp(PlayerPedId(), propIndex);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, -1, -1, false);
+                    ClearPedProp(Game.PlayerPed.Handle, propIndex);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
@@ -1063,19 +1070,19 @@ namespace vMenuClient
                 }
                 else
                 {
-                    SetPedPropIndex(PlayerPedId(), propIndex, item.Index, newTextureIndex, true);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, item.Index, newTextureIndex, true);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
-                    if (GetPedPropIndex(PlayerPedId(), propIndex) == -1)
+                    if (GetPedPropIndex(Game.PlayerPed.Handle, propIndex) == -1)
                     {
                         item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                     }
                     else
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(PlayerPedId(), propIndex, item.Index) - 1}).";
+                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1}).";
                     }
                 }
                 propsMenu.UpdateScaleform();
@@ -1161,13 +1168,13 @@ namespace vMenuClient
                 {
                     await cf.SetPlayerSkin("mp_m_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
 
-                    //SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
-                    ClearPedDecorations(PlayerPedId());
-                    ClearPedFacialDecorations(PlayerPedId());
-                    SetPedDefaultComponentVariation(PlayerPedId());
-                    SetPedHairColor(PlayerPedId(), 0, 0);
-                    SetPedEyeColor(PlayerPedId(), 0);
-                    ClearAllPedProps(PlayerPedId());
+                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    ClearPedDecorations(Game.PlayerPed.Handle);
+                    ClearPedFacialDecorations(Game.PlayerPed.Handle);
+                    SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                    SetPedHairColor(Game.PlayerPed.Handle, 0, 0);
+                    SetPedEyeColor(Game.PlayerPed.Handle, 0);
+                    ClearAllPedProps(Game.PlayerPed.Handle);
 
                     MakeCreateCharacterMenu(male: true);
                 }
@@ -1175,13 +1182,13 @@ namespace vMenuClient
                 {
                     await cf.SetPlayerSkin("mp_f_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
 
-                    //SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
-                    ClearPedDecorations(PlayerPedId());
-                    ClearPedFacialDecorations(PlayerPedId());
-                    SetPedDefaultComponentVariation(PlayerPedId());
-                    SetPedHairColor(PlayerPedId(), 0, 0);
-                    SetPedEyeColor(PlayerPedId(), 0);
-                    ClearAllPedProps(PlayerPedId());
+                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    ClearPedDecorations(Game.PlayerPed.Handle);
+                    ClearPedFacialDecorations(Game.PlayerPed.Handle);
+                    SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                    SetPedHairColor(Game.PlayerPed.Handle, 0, 0);
+                    SetPedEyeColor(Game.PlayerPed.Handle, 0);
+                    ClearAllPedProps(Game.PlayerPed.Handle);
 
                     MakeCreateCharacterMenu(male: false);
                 }
@@ -1219,21 +1226,21 @@ namespace vMenuClient
                 // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
                 // and female ped at the same time.. really fucking weird. Only the cf.SetPlayerSkin function seems to work some how. I really have no clue.
                 await cf.SetPlayerSkin(currentCharacter.ModelHash, new CommonFunctions.PedInfo() { version = -1 }, true);
-                // SetPlayerModel(PlayerPedId(), currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
-                // SetPlayerModel(PlayerPedId(), currentCharacter.ModelHash);
+                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
+                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
 
-                ClearPedDecorations(PlayerPedId());
-                ClearPedFacialDecorations(PlayerPedId());
-                SetPedDefaultComponentVariation(PlayerPedId());
-                SetPedHairColor(PlayerPedId(), 0, 0);
-                SetPedEyeColor(PlayerPedId(), 0);
-                ClearAllPedProps(PlayerPedId());
+                ClearPedDecorations(Game.PlayerPed.Handle);
+                ClearPedFacialDecorations(Game.PlayerPed.Handle);
+                SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                SetPedHairColor(Game.PlayerPed.Handle, 0, 0);
+                SetPedEyeColor(Game.PlayerPed.Handle, 0);
+                ClearAllPedProps(Game.PlayerPed.Handle);
 
                 #region headblend
                 var data = currentCharacter.PedHeadBlendData;
-                SetPedHeadBlendData(PlayerPedId(), data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, data.ParentThirdUnkPercent, data.IsParentInheritance);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, data.ParentThirdUnkPercent, data.IsParentInheritance);
 
-                while (!HasPedHeadBlendFinished(PlayerPedId()))
+                while (!HasPedHeadBlendFinished(Game.PlayerPed.Handle))
                 {
                     await BaseScript.Delay(0);
                 }
@@ -1242,42 +1249,42 @@ namespace vMenuClient
                 #region appearance
                 var appData = currentCharacter.PedAppearance;
                 // hair
-                SetPedComponentVariation(PlayerPedId(), 2, appData.hairStyle, 0, 0);
-                SetPedHairColor(PlayerPedId(), appData.hairColor, appData.hairHighlightColor);
+                SetPedComponentVariation(Game.PlayerPed.Handle, 2, appData.hairStyle, 0, 0);
+                SetPedHairColor(Game.PlayerPed.Handle, appData.hairColor, appData.hairHighlightColor);
                 if (!string.IsNullOrEmpty(appData.HairOverlay.Key) && !string.IsNullOrEmpty(appData.HairOverlay.Value))
                 {
-                    SetPedFacialDecoration(PlayerPedId(), (uint)GetHashKey(appData.HairOverlay.Key), (uint)GetHashKey(appData.HairOverlay.Value));
+                    SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(appData.HairOverlay.Key), (uint)GetHashKey(appData.HairOverlay.Value));
                 }
                 // blemishes
-                SetPedHeadOverlay(PlayerPedId(), 0, appData.blemishesStyle, appData.blemishesOpacity);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 0, appData.blemishesStyle, appData.blemishesOpacity);
                 // bread
-                SetPedHeadOverlay(PlayerPedId(), 1, appData.beardStyle, appData.beardOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 1, 1, appData.beardColor, appData.beardColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 1, appData.beardStyle, appData.beardOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 1, 1, appData.beardColor, appData.beardColor);
                 // eyebrows
-                SetPedHeadOverlay(PlayerPedId(), 2, appData.eyebrowsStyle, appData.eyebrowsOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 2, 1, appData.eyebrowsColor, appData.eyebrowsColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 2, appData.eyebrowsStyle, appData.eyebrowsOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 2, 1, appData.eyebrowsColor, appData.eyebrowsColor);
                 // ageing
-                SetPedHeadOverlay(PlayerPedId(), 3, appData.ageingStyle, appData.ageingOpacity);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 3, appData.ageingStyle, appData.ageingOpacity);
                 // makeup
-                SetPedHeadOverlay(PlayerPedId(), 4, appData.makeupStyle, appData.makeupOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 4, 2, appData.makeupColor, appData.makeupColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 4, appData.makeupStyle, appData.makeupOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 4, 2, appData.makeupColor, appData.makeupColor);
                 // blush
-                SetPedHeadOverlay(PlayerPedId(), 5, appData.blushStyle, appData.blushOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 5, 2, appData.blushColor, appData.blushColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 5, appData.blushStyle, appData.blushOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 5, 2, appData.blushColor, appData.blushColor);
                 // complexion
-                SetPedHeadOverlay(PlayerPedId(), 6, appData.complexionStyle, appData.complexionOpacity);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 6, appData.complexionStyle, appData.complexionOpacity);
                 // sundamage
-                SetPedHeadOverlay(PlayerPedId(), 7, appData.sunDamageStyle, appData.sunDamageOpacity);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 7, appData.sunDamageStyle, appData.sunDamageOpacity);
                 // lipstick
-                SetPedHeadOverlay(PlayerPedId(), 8, appData.lipstickStyle, appData.lipstickOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 8, 2, appData.lipstickColor, appData.lipstickColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 8, appData.lipstickStyle, appData.lipstickOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 8, 2, appData.lipstickColor, appData.lipstickColor);
                 // moles and freckles
-                SetPedHeadOverlay(PlayerPedId(), 9, appData.molesFrecklesStyle, appData.molesFrecklesOpacity);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 9, appData.molesFrecklesStyle, appData.molesFrecklesOpacity);
                 // chest hair 
-                SetPedHeadOverlay(PlayerPedId(), 10, appData.chestHairStyle, appData.chestHairOpacity);
-                SetPedHeadOverlayColor(PlayerPedId(), 10, 1, appData.chestHairColor, appData.chestHairColor);
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 10, appData.chestHairStyle, appData.chestHairOpacity);
+                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, appData.chestHairColor, appData.chestHairColor);
                 // eyecolor
-                SetPedEyeColor(PlayerPedId(), appData.eyeColor);
+                SetPedEyeColor(Game.PlayerPed.Handle, appData.eyeColor);
                 #endregion
 
                 #region Face Shape Data
@@ -1289,7 +1296,7 @@ namespace vMenuClient
                 {
                     foreach (var cd in currentCharacter.DrawableVariations.clothes)
                     {
-                        SetPedComponentVariation(PlayerPedId(), cd.Key, cd.Value.Key, cd.Value.Value, 0);
+                        SetPedComponentVariation(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value, 0);
                     }
                 }
                 #endregion
@@ -1301,7 +1308,7 @@ namespace vMenuClient
                     {
                         if (cd.Value.Key > -1)
                         {
-                            SetPedPropIndex(PlayerPedId(), cd.Key, cd.Value.Key, cd.Value.Value > -1 ? cd.Value.Value : 0, true);
+                            SetPedPropIndex(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value > -1 ? cd.Value.Value : 0, true);
                         }
                     }
                 }

@@ -288,12 +288,12 @@ namespace vMenuClient
                 if (inCar)
                 {
                     SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z);
-                    FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), false), true);
+                    FreezeEntityPosition(GetVehiclePedIsIn(Game.PlayerPed.Handle, false), true);
                 }
                 else
                 {
                     SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
-                    FreezeEntityPosition(PlayerPedId(), true);
+                    FreezeEntityPosition(Game.PlayerPed.Handle, true);
                 }
 
                 int timer = GetGameTimer();
@@ -362,7 +362,7 @@ namespace vMenuClient
             }
             if (Game.PlayerPed.IsInVehicle())
             {
-                FreezeEntityPosition(GetVehiclePedIsIn(PlayerPedId(), false), false);
+                FreezeEntityPosition(GetVehiclePedIsIn(Game.PlayerPed.Handle, false), false);
             }
             else
             {
@@ -1891,8 +1891,8 @@ namespace vMenuClient
                     var headBlendData = Game.PlayerPed.GetHeadBlendData();
                     if (pedCustomizationOptions.version == -1)
                     {
-                        SetPedHeadBlendData(PlayerPedId(), 0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0f, false);
-                        while (!HasPedHeadBlendFinished(PlayerPedId()))
+                        SetPedHeadBlendData(Game.PlayerPed.Handle, 0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0f, false);
+                        while (!HasPedHeadBlendFinished(Game.PlayerPed.Handle))
                         {
                             await Delay(0);
                         }

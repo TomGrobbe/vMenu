@@ -180,7 +180,7 @@ namespace vMenuClient
                         MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
+                        //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
@@ -1028,7 +1028,7 @@ namespace vMenuClient
                         MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
+                        //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
@@ -1037,6 +1037,18 @@ namespace vMenuClient
 
                 if (IsOpen())
                 {
+                    // <camCoords, camPointOffset>
+                    List<KeyValuePair<Vector3, Vector3>> camPositions = new List<KeyValuePair<Vector3, Vector3>>()
+                    {
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f)),     // default
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)),   // head
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(-0.2f, 0f, -0.25f)), // left wrist
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0.2f, 0f, -0.25f)), // right wrist
+                    };
+
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
                     Camera camera = new Camera(cam);
 
@@ -1070,8 +1082,19 @@ namespace vMenuClient
                     
                     */
 
+                    bool rearCamActive = false;
+                    //Vector3 frontBackupCamPos = new Vector3();
+                    //float playerHeading = GetEntityHeading(Game.PlayerPed.Handle);
+
                     void SetCameraPosition()
                     {
+                        //frontBackupCamPos = camera.Position;
+                        //if (rearCamActive)
+                        //{
+                        //    camera.Position = frontBackupCamPos;
+                        //}
+                        //else
+                        //{
                         if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
                             int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentSelection;
@@ -1107,16 +1130,16 @@ namespace vMenuClient
                                 case 27:
                                 case 31:
                                     // close up head.
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    camera.Position = camPositions[1].Key;
+                                    camera.PointAt(camPositions[1].Value);
                                     break;
                                 case 28:
                                 case 29:
                                 case 30:
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    camera.Position = camPositions[0].Key;
+                                    camera.PointAt(camPositions[0].Value);
                                     break;
                             }
                         }
@@ -1127,8 +1150,8 @@ namespace vMenuClient
                             {
                                 case 0:
                                     // head level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    camera.Position = camPositions[1].Key;
+                                    camera.PointAt(camPositions[1].Value);
                                     break;
                                 case 1:
                                 case 3:
@@ -1137,32 +1160,32 @@ namespace vMenuClient
                                 case 7:
                                 case 9:
                                     // upper body level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
+                                    camera.Position = camPositions[2].Key;
+                                    camera.PointAt(camPositions[2].Value);
                                     break;
                                 case 2:
                                     // lower body level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
+                                    camera.Position = camPositions[3].Key;
+                                    camera.PointAt(camPositions[3].Value);
                                     break;
                                 case 4:
                                     // feet (ground) level (close up)
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
+                                    camera.Position = camPositions[4].Key;
+                                    camera.PointAt(camPositions[4].Value);
                                     break;
                                 case 8:
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    camera.Position = camPositions[0].Key;
+                                    camera.PointAt(camPositions[0].Value);
                                     break;
                             }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible)
                         {
                             // head level
-                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
-                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                            camera.Position = camPositions[1].Key;
+                            camera.PointAt(camPositions[1].Value);
                         }
                         else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
                         {
@@ -1173,23 +1196,39 @@ namespace vMenuClient
                                 case 1:
                                 case 2:
                                     // head level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
+                                    camera.Position = camPositions[1].Key;
+                                    camera.PointAt(camPositions[1].Value);
                                     break;
                                 case 3:
-                                    // lower body level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(-0.2f, 0f, -0.25f));
+                                    // left wrist
+                                    if (rearCamActive)
+                                    {
+                                        camera.Position = camPositions[6].Key;
+                                        camera.PointAt(camPositions[6].Value);
+                                    }
+                                    else
+                                    {
+                                        camera.Position = camPositions[5].Key;
+                                        camera.PointAt(camPositions[5].Value);
+                                    }
                                     break;
                                 case 4:
-                                    // lower body level
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0.2f, 0f, -0.25f));
+                                    // right wrist
+                                    if (rearCamActive)
+                                    {
+                                        camera.Position = camPositions[5].Key;
+                                        camera.PointAt(camPositions[5].Value);
+                                    }
+                                    else
+                                    {
+                                        camera.Position = camPositions[6].Key;
+                                        camera.PointAt(camPositions[6].Value);
+                                    }
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                                    camera.Position = camPositions[0].Key;
+                                    camera.PointAt(camPositions[0].Value);
                                     break;
                             }
                         }
@@ -1197,48 +1236,88 @@ namespace vMenuClient
                         else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible) { /*TODO*/}
                         else
                         {
-                            camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                            camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                            camera.Position = camPositions[0].Key;
+                            camera.PointAt(camPositions[0].Value);
                         }
+                        //}
                     }
+
+                    float heading = Game.PlayerPed.Heading;
 
                     while (IsOpen())
                     {
                         await Delay(0);
 
                         SetEntityInvincible(Game.PlayerPed.Handle, true);
-                        SetEntityCollision(PlayerPedId(), false, false);
+                        SetEntityCollision(Game.PlayerPed.Handle, false, false);
 
                         RenderScriptCams(true, false, 0, true, false);
+                        if (Game.IsControlJustReleased(0, Control.PhoneExtraOption))
+                        {
+                            var Pos = Game.PlayerPed.Position;
+                            if (rearCamActive)
+                            {
+                                SetEntityCollision(Game.PlayerPed.Handle, true, true);
+                                FreezeEntityPosition(Game.PlayerPed.Handle, false);
+                                TaskGoStraightToCoord(Game.PlayerPed.Handle, Pos.X, Pos.Y, Pos.Z, 8f, 1600, heading, 0.1f);
+                                int timer = GetGameTimer();
+                                while (true)
+                                {
+                                    await Delay(0);
+                                    //cf.DisableMovementControlsThisFrame(true, true);
+                                    Game.DisableAllControlsThisFrame(0);
+                                    if (GetGameTimer() - timer > 1600)
+                                    {
+                                        break;
+                                    }
+                                }
+                                ClearPedTasks(Game.PlayerPed.Handle);
+                                Game.PlayerPed.PositionNoOffset = Pos;
+                                FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                                SetEntityCollision(Game.PlayerPed.Handle, false, false);
+                            }
+                            else
+                            {
+                                SetEntityCollision(Game.PlayerPed.Handle, true, true);
+                                FreezeEntityPosition(Game.PlayerPed.Handle, false);
+                                TaskGoStraightToCoord(Game.PlayerPed.Handle, Pos.X, Pos.Y, Pos.Z, 8f, 1600, heading - 180f, 0.1f);
+                                int timer = GetGameTimer();
+                                while (true)
+                                {
+                                    await Delay(0);
+                                    //cf.DisableMovementControlsThisFrame(true, true);
+                                    Game.DisableAllControlsThisFrame(0);
+                                    if (GetGameTimer() - timer > 1600)
+                                    {
+                                        break;
+                                    }
+                                }
+                                ClearPedTasks(Game.PlayerPed.Handle);
+                                Game.PlayerPed.PositionNoOffset = Pos;
+                                FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                                SetEntityCollision(Game.PlayerPed.Handle, false, false);
+                            }
+                            rearCamActive = !rearCamActive;
+                        }
 
                         FreezeEntityPosition(Game.PlayerPed.Handle, true);
 
                         cf.DisableMovementControlsThisFrame(true, true);
 
-                        //if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible || MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
-                        //{
-                        //    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-                        //    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                        //}
-                        //else
-                        //{
-                        //    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
-                        //    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
-                        //}
                         SetCameraPosition();
 
                         Game.PlayerPed.Task.ClearAll();
 
-                        var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
-                        var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);
+                        var offsetRight = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, -2f, 0.05f, 0.7f);
+                        var offsetLeft = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 2f, 0.05f, 0.7f);
 
                         if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
-                            TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                            TaskLookAtCoord(Game.PlayerPed.Handle, offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
                         }
                         else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
-                            TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                            TaskLookAtCoord(Game.PlayerPed.Handle, offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
                         }
                         else
                         {
@@ -1246,23 +1325,24 @@ namespace vMenuClient
 
                             if (input > 0.5f)
                             {
-                                TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                                TaskLookAtCoord(Game.PlayerPed.Handle, offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
                             }
                             else if (input < -0.5f)
                             {
-                                TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                                TaskLookAtCoord(Game.PlayerPed.Handle, offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
                             }
                             else
                             {
-                                TaskLookAtCoord(PlayerPedId(), camera.Position.X, camera.Position.Y, camera.Position.Z, 100, 0, 0);
+                                TaskLookAtCoord(Game.PlayerPed.Handle, camera.Position.X, camera.Position.Y, camera.Position.Z, 100, 0, 0);
                             }
                         }
+
                     }
                     RenderScriptCams(false, false, 0, false, false);
                     camera.Delete();
                     DestroyAllCams(true);
-                    ClearPedTasksImmediately(PlayerPedId());
-                    SetEntityCollision(PlayerPedId(), true, true);
+                    ClearPedTasksImmediately(Game.PlayerPed.Handle);
+                    SetEntityCollision(Game.PlayerPed.Handle, true, true);
                     FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     SetEntityInvincible(Game.PlayerPed.Handle, false);
 
@@ -1394,7 +1474,7 @@ namespace vMenuClient
             {
 
                 int sprite = 1;
-                if (IsPedInAnyVehicle(PlayerPedId(), false))
+                if (IsPedInAnyVehicle(Game.PlayerPed.Handle, false))
                 {
                     Vehicle veh = cf.GetVehicle();
                     if (veh != null && veh.Exists())
@@ -1403,7 +1483,7 @@ namespace vMenuClient
                     }
                 }
 
-                DecorSetInt(PlayerPedId(), "vmenu_player_blip_sprite_id", sprite);
+                DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
 
                 if (MainMenu.MiscSettingsMenu != null)
                 {
@@ -1695,7 +1775,7 @@ namespace vMenuClient
                             if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Screen.Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
                                 || GetInteriorFromEntity(Game.PlayerPed.Handle) != 0 || !Game.PlayerPed.IsOnFoot || Game.PlayerPed.IsInParachuteFreeFall ||
                                 Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
-                                Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(PlayerPedId()) == snowball_hash || GetSelectedPedWeapon(PlayerPedId()) == GetHashKey("unarmed")))
+                                Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
                             {
                                 await PickupSnowball();
                             }
@@ -1735,8 +1815,8 @@ namespace vMenuClient
                 void ShowSnowballInfoMessage()
                 {
                     int maxAmmo = 10;
-                    GetMaxAmmo(PlayerPedId(), snowball_hash, ref maxAmmo);
-                    if (maxAmmo > GetAmmoInPedWeapon(PlayerPedId(), snowball_hash))
+                    GetMaxAmmo(Game.PlayerPed.Handle, snowball_hash, ref maxAmmo);
+                    if (maxAmmo > GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash))
                     {
                         BeginTextCommandDisplayHelp("HELP_SNOWP");
                         AddTextComponentInteger(2);
@@ -1747,7 +1827,7 @@ namespace vMenuClient
                 }
 
                 // help text control for snowballs
-                if (!IsPedInAnyVehicle(PlayerPedId(), true))
+                if (!IsPedInAnyVehicle(Game.PlayerPed.Handle, true))
                 {
                     if (showSnowballInfo)
                     {
@@ -2303,35 +2383,35 @@ namespace vMenuClient
                         await Delay(0);
                     }
                 }
-                ClearPedTasks(PlayerPedId());
-                TaskPlayAnim(PlayerPedId(), animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
+                ClearPedTasks(Game.PlayerPed.Handle);
+                TaskPlayAnim(Game.PlayerPed.Handle, animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
                 int timeoutTimer = GetGameTimer();
-                while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) <= 0.0f)
+                while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) <= 0.0f)
                 {
                     if (GetGameTimer() - timeoutTimer > 2000)
                     {
-                        ClearPedTasks(PlayerPedId());
+                        ClearPedTasks(Game.PlayerPed.Handle);
                         Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function.");
                         return;
                     }
                     await Delay(0);
                 }
                 timeoutTimer = GetGameTimer();
-                while (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.0f)
+                while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.0f)
                 {
                     await Delay(0);
                     if (GetGameTimer() - timeoutTimer > 3000)
                     {
-                        ClearPedTasks(PlayerPedId());
+                        ClearPedTasks(Game.PlayerPed.Handle);
                         Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function.");
                         return;
                     }
-                    if (GetEntityAnimCurrentTime(PlayerPedId(), animDict, animName) > 0.39f)
+                    if (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.39f)
                     {
-                        SetPedPropIndex(PlayerPedId(), 0, newHelmet, texture, true);
+                        SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, texture, true);
                     }
                 }
-                ClearPedTasks(PlayerPedId());
+                ClearPedTasks(Game.PlayerPed.Handle);
                 RemoveAnimDict(animDict);
             }
         }
@@ -2342,14 +2422,14 @@ namespace vMenuClient
         /// <returns></returns>
         async Task PickupSnowball()
         {
-            ClearPedTasks(PlayerPedId());
+            ClearPedTasks(Game.PlayerPed.Handle);
             if (cf.IsAllowed(Permission.WPSnowball)) // only if the player is allowed to spawn in snowballs.
             {
                 int maxAmmo = 10;
-                GetMaxAmmo(PlayerPedId(), snowball_hash, ref maxAmmo);
-                if (GetAmmoInPedWeapon(PlayerPedId(), snowball_hash) < maxAmmo)
+                GetMaxAmmo(Game.PlayerPed.Handle, snowball_hash, ref maxAmmo);
+                if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) < maxAmmo)
                 {
-                    SetPedCurrentWeaponVisible(PlayerPedId(), false, true, false, false);
+                    SetPedCurrentWeaponVisible(Game.PlayerPed.Handle, false, true, false, false);
                     if (!HasAnimDictLoaded(snowball_anim_dict))
                     {
                         RequestAnimDict(snowball_anim_dict);
@@ -2358,20 +2438,20 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
-                    TaskPlayAnim(PlayerPedId(), snowball_anim_dict, snowball_anim_name, 8f, 1f, -1, 0, 0f, false, false, false);
-                    while (!IsEntityPlayingAnim(PlayerPedId(), snowball_anim_dict, snowball_anim_name, 0))
+                    TaskPlayAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 8f, 1f, -1, 0, 0f, false, false, false);
+                    while (!IsEntityPlayingAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 0))
                     {
                         await Delay(0);
-                        if (HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("CreateObject")) || HasAnimEventFired(PlayerPedId(), (uint)GetHashKey("Interrupt")))
+                        if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")) || HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
                         {
                             break;
                         }
                     }
-                    AddAmmoToPed(PlayerPedId(), snowball_hash, 2);
-                    GiveWeaponToPed(PlayerPedId(), snowball_hash, 0, true, true);
-                    if (GetAmmoInPedWeapon(PlayerPedId(), snowball_hash) > maxAmmo)
+                    AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
+                    if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) > maxAmmo)
                     {
-                        SetPedAmmo(PlayerPedId(), snowball_hash, maxAmmo);
+                        SetPedAmmo(Game.PlayerPed.Handle, snowball_hash, maxAmmo);
                     }
                 }
                 else
