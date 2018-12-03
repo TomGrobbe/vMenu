@@ -1062,19 +1062,43 @@ namespace vMenuClient
                             camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
                         }
 
+                    while (IsOpen())
+                    {
+                        await Delay(0);
+
                         SetEntityInvincible(Game.PlayerPed.Handle, true);
+                        SetEntityCollision(PlayerPedId(), false, false);
+
+                        RenderScriptCams(true, false, 0, true, false);
+
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
+
+                        cf.DisableMovementControlsThisFrame(true, true);
+
+                        //if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible || MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
+                        //{
+                        //    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
+                        //    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
+                        //}
+                        //else
+                        //{
+                        //    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.6f));
+                        //    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.7f));
+                        //}
+                        SetEntityInvincible(Game.PlayerPed.Handle, true);
+
                         Game.PlayerPed.Task.ClearAll();
+
                         var offsetRight = GetOffsetFromEntityInWorldCoords(PlayerPedId(), -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 2f, 0.05f, 0.7f);
+
                         if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
                             TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
-                            //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
                         }
                         else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
                             TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
-                            //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
                         }
                         else
                         {
@@ -1082,29 +1106,26 @@ namespace vMenuClient
 
                             if (input > 0.5f)
                             {
-                                //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(-2f, 0.05f, 0.7f)));
                                 TaskLookAtCoord(PlayerPedId(), offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
-                                //Debug.WriteLine("look 2");
                             }
                             else if (input < -0.5f)
                             {
-                                //Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(2f, 0.05f, 0.7f)));
                                 TaskLookAtCoord(PlayerPedId(), offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
-                                //Debug.WriteLine("look 1");
                             }
                             else
                             {
-                                Game.PlayerPed.Task.LookAt(camera.Position);
-                                //Debug.WriteLine("look else");
+                                TaskLookAtCoord(PlayerPedId(), camera.Position.X, camera.Position.Y, camera.Position.Z, 100, 0, 0);
                             }
                         }
-
                     }
                     RenderScriptCams(false, false, 0, false, false);
                     camera.Delete();
                     DestroyAllCams(true);
-                    Game.PlayerPed.Task.ClearLookAt();
+                    ClearPedTasksImmediately(PlayerPedId());
+                    SetEntityCollision(PlayerPedId(), true, true);
                     FreezeEntityPosition(Game.PlayerPed.Handle, false);
+                    SetEntityInvincible(Game.PlayerPed.Handle, false);
+
                 }
             }
         }
