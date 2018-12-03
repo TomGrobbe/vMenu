@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -2432,6 +2432,8 @@ namespace vMenuClient
                 Game.DisableControlThisFrame(0, Control.VehicleMoveUp);
                 Game.DisableControlThisFrame(0, Control.VehicleMoveUpDown);
                 Game.DisableControlThisFrame(0, Control.VehicleSubMouseControlOverride);
+                Game.DisableControlThisFrame(0, Control.Duck);
+                Game.DisableControlThisFrame(0, Control.SelectWeapon);
             }
             if (disableCameraMovement)
             {
