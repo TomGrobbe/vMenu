@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1340,7 +1340,6 @@ namespace vMenuClient
             {
                 if (item == editPed)
                 {
-                    // TODO: load saved ped data.
                     currentCharacter = StorageManager.GetSavedMpCharacterData(selectedSavedCharacterManageName);
 
                     await SpawnSavedPed();
@@ -1362,10 +1361,21 @@ namespace vMenuClient
                         Notify.Success("Your saved character has been deleted.");
                         manageSavedCharacterMenu.GoBack();
                         UpdateSavedPedsMenu();
+                        manageSavedCharacterMenu.RefreshIndex();
+                        manageSavedCharacterMenu.UpdateScaleform();
                     }
                     else
                     {
                         delPed.SetRightLabel("Are you sure?");
+                        manageSavedCharacterMenu.UpdateScaleform();
+                    }
+                }
+
+                if (item != delPed)
+                {
+                    if (delPed.RightLabel == "Are you sure?")
+                    {
+                        delPed.SetRightLabel("");
                     }
                 }
             };
@@ -1380,6 +1390,8 @@ namespace vMenuClient
             {
                 selectedSavedCharacterManageName = item.Text;
                 manageSavedCharacterMenu.Subtitle.Caption = item.Text;
+                manageSavedCharacterMenu.RefreshIndex();
+                manageSavedCharacterMenu.UpdateScaleform();
             };
         }
 
