@@ -31,6 +31,7 @@ namespace vMenuClient
         public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
+        //public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
