@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -588,6 +588,10 @@ namespace vMenuClient
                             Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
                             Game.DisableControlThisFrame(0, Control.VehicleDuck);
                         }
+                    }
+                    else // when not using a controller.
+                    {
+                        Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate); // disable the escape key opening the pause menu, pressing P still works.
                     }
                     // Disable Shared Controls
 
