@@ -17,6 +17,16 @@ namespace vMenuClient
         private UIMenu menu;
         private CommonFunctions cf = MainMenu.Cf;
 
+        UIMenu playerMenu = new UIMenu("Online Players", "Player:", true)
+        {
+            ScaleWithSafezone = false,
+            MouseControlsEnabled = false,
+            MouseEdgeEnabled = false,
+            ControlDisablingEnabled = false
+        };
+
+        Player currentPlayer = new Player(PlayerId());
+
 
         /// <summary>
         /// Creates the menu.
@@ -32,7 +42,188 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            UpdatePlayerlist();
+            MainMenu.Mp.Add(playerMenu);
+
+            UIMenuItem teleport = new UIMenuItem("Teleport To Player", "Teleport to this player.");
+            UIMenuItem teleportVeh = new UIMenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
+            UIMenuItem summon = new UIMenuItem("Summon Player", "Teleport the player to you.");
+            UIMenuItem toggleGPS = new UIMenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
+            UIMenuItem spectate = new UIMenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
+            UIMenuItem kill = new UIMenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
+            UIMenuItem kick = new UIMenuItem("~r~Kick Player", "Kick the player from the server.");
+            UIMenuItem ban = new UIMenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
+            UIMenuItem tempban = new UIMenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+
+            if (cf.IsAllowed(Permission.OPTeleport))
+            {
+                playerMenu.AddItem(teleport);
+                playerMenu.AddItem(teleportVeh);
+            }
+            if (cf.IsAllowed(Permission.OPSummon))
+            {
+                playerMenu.AddItem(summon);
+            }
+            if (cf.IsAllowed(Permission.OPSpectate))
+            {
+                playerMenu.AddItem(spectate);
+            }
+            if (cf.IsAllowed(Permission.OPWaypoint))
+            {
+                playerMenu.AddItem(toggleGPS);
+            }
+            if (cf.IsAllowed(Permission.OPKill))
+            {
+                playerMenu.AddItem(kill);
+            }
+            if (cf.IsAllowed(Permission.OPKick))
+            {
+                playerMenu.AddItem(kick);
+            }
+            if (cf.IsAllowed(Permission.OPTempBan))
+            {
+                playerMenu.AddItem(tempban);
+            }
+            if (cf.IsAllowed(Permission.OPPermBan))
+            {
+                playerMenu.AddItem(ban);
+                ban.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+            }
+
+            playerMenu.OnMenuClose += (sender) =>
+            {
+                playerMenu.RefreshIndex();
+                playerMenu.UpdateScaleform();
+                ban.SetRightLabel("");
+            };
+
+            playerMenu.OnIndexChange += (sender, index) =>
+            {
+                ban.SetRightLabel("");
+            };
+
+            // handle button presses for the specific player's menu.
+            playerMenu.OnItemSelect += async (sender, item, index) =>
+            {
+                // teleport (in vehicle) button
+                if (item == teleport || item == teleportVeh)
+                {
+                    if (Game.Player.Handle != currentPlayer.Handle)
+                        cf.TeleportToPlayerAsync(currentPlayer.Handle, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
+                    else
+                        Notify.Error("You can not teleport to yourself! Silly you.");
+                }
+                // summon button
+                else if (item == summon)
+                {
+                    if (Game.Player.Handle != currentPlayer.Handle)
+                        cf.SummonPlayer(currentPlayer);
+                    else
+                        Notify.Error("You can't summon yourself. You silly.");
+                }
+                // spectating
+                else if (item == spectate)
+                {
+                    cf.SpectatePlayer(currentPlayer);
+                }
+                // kill button
+                else if (item == kill)
+                {
+                    cf.KillPlayer(currentPlayer);
+                }
+                // manage the gps route being clicked.
+                else if (item == toggleGPS)
+                {
+                    bool selectedPedRouteAlreadyActive = false;
+                    if (PlayersWaypointList.Count > 0)
+                    {
+                        if (PlayersWaypointList.Contains(currentPlayer.Handle))
+                        {
+                            selectedPedRouteAlreadyActive = true;
+                        }
+                        foreach (int playerId in PlayersWaypointList)
+                        {
+                            int playerPed = GetPlayerPed(playerId);
+                            if (DoesEntityExist(playerPed) && DoesBlipExist(GetBlipFromEntity(playerPed)))
+                            {
+                                int oldBlip = GetBlipFromEntity(playerPed);
+                                SetBlipRoute(oldBlip, false);
+                                RemoveBlip(ref oldBlip);
+                                Notify.Custom($"~g~GPS route to ~s~<C>{cf.GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now disabled.");
+                            }
+                        }
+                        PlayersWaypointList.Clear();
+                    }
+
+                    if (!selectedPedRouteAlreadyActive)
+                    {
+                        if (currentPlayer.Handle != PlayerId())
+                        {
+                            int ped = GetPlayerPed(currentPlayer.Handle);
+                            int blip = GetBlipFromEntity(ped);
+                            if (DoesBlipExist(blip))
+                            {
+                                SetBlipColour(blip, 58);
+                                SetBlipRouteColour(blip, 58);
+                                SetBlipRoute(blip, true);
+                            }
+                            else
+                            {
+                                blip = AddBlipForEntity(ped);
+                                SetBlipColour(blip, 58);
+                                SetBlipRouteColour(blip, 58);
+                                SetBlipRoute(blip, true);
+                            }
+                            PlayersWaypointList.Add(currentPlayer.Handle);
+                            Notify.Custom($"~g~GPS route to ~s~<C>{cf.GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now active, press the ~s~Toggle GPS Route~g~ button again to disable the route.");
+                        }
+                        else
+                        {
+                            Notify.Error("You can not set a waypoint to yourself.");
+                        }
+                    }
+                }
+                // kick button
+                else if (item == kick)
+                {
+                    if (currentPlayer.Handle != Game.Player.Handle)
+                        cf.KickPlayer(currentPlayer, true);
+                    else
+                        Notify.Error("You cannot kick yourself!");
+                }
+                // temp ban
+                else if (item == tempban)
+                {
+                    cf.BanPlayer(currentPlayer, false);
+                }
+                // perm ban
+                else if (item == ban)
+                {
+                    if (ban.RightLabel == "Are you sure?")
+                    {
+                        ban.SetRightLabel("");
+                        UpdatePlayerlist();
+                        playerMenu.GoBack();
+                        cf.BanPlayer(currentPlayer, true);
+                    }
+                    else
+                    {
+                        ban.SetRightLabel("Are you sure?");
+                    }
+                }
+            };
+
+            // handle button presses in the player list.
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", "")))
+                {
+                    currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", ""));
+                }
+                else
+                {
+                    playerMenu.GoBack();
+                }
+            };
         }
 
         /// <summary>
@@ -40,6 +231,23 @@ namespace vMenuClient
         /// </summary>
         public void UpdatePlayerlist()
         {
+            menu.Clear();
+
+            foreach (Player p in MainMenu.PlayersList)
+            {
+                UIMenuItem pItem = new UIMenuItem($"{p.Name}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.");
+                pItem.SetRightLabel($"Server #{p.ServerId} →→→");
+                menu.AddItem(pItem);
+                menu.BindMenuToItem(playerMenu, pItem);
+            }
+
+            menu.RefreshIndex();
+            menu.UpdateScaleform();
+            playerMenu.RefreshIndex();
+            playerMenu.UpdateScaleform();
+
+
+            /*
             // Remove leftover menu items if they exist.
             if (menu.MenuItems.Count > 0)
             {
@@ -294,6 +502,7 @@ namespace vMenuClient
                     }
                 };
             };
+            */
         }
 
         /// <summary>

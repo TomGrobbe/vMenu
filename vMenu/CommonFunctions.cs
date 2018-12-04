@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -619,35 +619,71 @@ namespace vMenuClient
         #endregion
 
         #region Spectate function
-        /// <summary>
-        /// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
-        /// </summary>
-        /// <param name="playerId"></param>
-        public async void SpectateAsync(int playerId = -1)
+        public async void SpectatePlayer(Player player, bool forceDisable = false)
         {
-            // Stop spectating.
-            if (NetworkIsInSpectatorMode() || playerId == -1)
+            if (forceDisable)
             {
-                //spectating = false;
-                DoScreenFadeOut(100);
-                await Delay(100);
-                Notify.Info("Stopped spectating.", false, false);
-                NetworkSetInSpectatorMode(false, Game.PlayerPed.Handle);
-                DoScreenFadeIn(100);
-                await Delay(100);
+                NetworkSetInSpectatorMode(false, 0); // disable spectating.
             }
-            // Start spectating for the first time.
             else
             {
-                //spectating = true;
-                DoScreenFadeOut(100);
-                await Delay(100);
-                Notify.Info($"Spectating ~r~{GetPlayerName(playerId)}</C>~s~.", false, false);
-                NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
-                DoScreenFadeIn(100);
-                await Delay(100);
+                if (player.Handle == Game.Player.Handle)
+                {
+                    if (NetworkIsInSpectatorMode())
+                    {
+                        DoScreenFadeOut(500);
+                        while (IsScreenFadingOut()) await Delay(0);
+                        NetworkSetInSpectatorMode(false, 0); // disable spectating.
+                        DoScreenFadeIn(500);
+                        Notify.Success("Stopped spectating.", false, true);
+                    }
+                    else
+                    {
+                        Notify.Alert("You can't spectate yourself.", false, true);
+                    }
+                }
+                else
+                {
+                    DoScreenFadeOut(500);
+                    while (IsScreenFadingOut()) await Delay(0);
+                    NetworkSetInSpectatorMode(false, 0);
+                    NetworkSetInSpectatorMode(true, player.Character.Handle);
+                    DoScreenFadeIn(500);
+                    Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                }
             }
+
         }
+
+        ///// <summary>
+        ///// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
+        ///// </summary>
+        ///// <param name="playerId"></param>
+        //public async void SpectateAsync(int playerId = -1)
+        //{
+        //    // Stop spectating.
+        //    if (NetworkIsInSpectatorMode() || playerId == -1)
+        //    {
+        //        //spectating = false;
+        //        DoScreenFadeOut(100);
+        //        await Delay(100);
+        //        Notify.Info("Stopped spectating.", false, false);
+        //        NetworkSetInSpectatorMode(false, Game.PlayerPed.Handle);
+        //        DoScreenFadeIn(100);
+        //        await Delay(100);
+        //    }
+        //    // Start spectating for the first time.
+        //    else
+        //    {
+        //        //spectating = true;
+        //        DoScreenFadeOut(100);
+        //        await Delay(100);
+        //        Notify.Info($"Spectating ~r~{GetPlayerName(playerId)}</C>~s~.", false, false);
+        //        NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
+        //        DoScreenFadeIn(100);
+        //        await Delay(100);
+        //    }
+        //}
         #endregion
 
         #region Cycle Through Vehicle Seats
