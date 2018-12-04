@@ -74,7 +74,6 @@ namespace vMenuClient
                 }), false);
             }
 
-
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 if (args != null)
@@ -94,6 +93,11 @@ namespace vMenuClient
                             {
                                 SetRichPresence($"Enjoying FiveM!");
                             }
+                        }
+                        else if (args[0].ToString().ToLower() == "gc")
+                        {
+                            GC.Collect();
+                            Debug.WriteLine("Cleared memory.");
                         }
                     }
                     else

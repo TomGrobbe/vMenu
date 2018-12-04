@@ -94,6 +94,19 @@ namespace vMenuClient
             Tick += AnimationsAndInteractions;
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
+            Tick += GcTick;
+        }
+        int gcTimer = GetGameTimer();
+        private async Task GcTick()
+        {
+            if (GetGameTimer() - gcTimer > 60000)
+            {
+                gcTimer = GetGameTimer();
+                GC.Collect();
+                cf.Log($"[vMenu] GC at {GetGameTimer()} ({GetTimeAsString(GetGameTimer())}).");
+
+            }
+            await Delay(1000);
         }
 
         /// Task related
