@@ -203,6 +203,12 @@ namespace vMenuClient
             get { return GetSettingsBool("miscRestorePlayerWeapons"); }
             set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
         }
+
+        public static bool MiscShowTime
+        {
+            get { return GetSettingsBool("miscShowTime"); }
+            set { SetSavedSettingsBool("miscShowTime", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -388,6 +394,9 @@ namespace vMenuClient
 
                 MiscRestorePlayerWeapons = MainMenu.MiscSettingsMenu.RestorePlayerWeapons;
                 prefs.Add("miscRestorePlayerWeapons", MainMenu.MiscSettingsMenu.RestorePlayerWeapons);
+
+                MiscShowTime = MainMenu.MiscSettingsMenu.DrawTimeOnScreen;
+                prefs.Add("miscShowTime", MainMenu.MiscSettingsMenu.DrawTimeOnScreen);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

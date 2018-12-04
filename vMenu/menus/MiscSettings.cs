@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +31,7 @@ namespace vMenuClient
         public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
-        //public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
+        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
@@ -69,6 +69,7 @@ namespace vMenuClient
             UIMenuCheckboxItem hideRadar = new UIMenuCheckboxItem("Hide Radar", HideRadar, "Hide the radar/minimap.");
             UIMenuCheckboxItem hideHud = new UIMenuCheckboxItem("Hide Hud", HideHud, "Hide all hud elements.");
             UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
+            UIMenuCheckboxItem drawTime = new UIMenuCheckboxItem("Show Time On Screen", DrawTimeOnScreen, "Shows you the current time on screen.");
             UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
             saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
@@ -147,6 +148,7 @@ namespace vMenuClient
             {
                 menu.AddItem(showLocation);
             }
+            menu.AddItem(drawTime); // always allowed
             if (cf.IsAllowed(Permission.MSJoinQuitNotifs))
             {
                 menu.AddItem(deathNotifs);
@@ -261,6 +263,10 @@ namespace vMenuClient
                 else if (item == showLocation)
                 {
                     ShowLocation = _checked;
+                }
+                else if (item == drawTime)
+                {
+                    DrawTimeOnScreen = _checked;
                 }
                 else if (item == deathNotifs)
                 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -530,6 +530,14 @@ namespace vMenuClient
                 {
                     ShowLocation();
                 }
+
+                if (MainMenu.MiscSettingsMenu.DrawTimeOnScreen)
+                {
+                    int hour = CitizenFX.Core.World.CurrentDayTime.Hours;
+                    int minute = CitizenFX.Core.World.CurrentDayTime.Minutes;
+                    string time = $"{(hour < 10 ? "0" + hour.ToString() : hour.ToString())}:{(minute < 10 ? "0" + minute.ToString() : minute.ToString())}";
+                    cf.DrawTextOnScreen(time, 0.005f, 0.965f);
+                }
                 #endregion
 
                 #region camera angle locking
@@ -805,12 +813,12 @@ namespace vMenuClient
                 // Draw the right border for the heading character.
                 cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
 
-                // Get and draw the time.
-                var tth = GetClockHours();
-                var ttm = GetClockMinutes();
-                var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
-                var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-                cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+                //// Get and draw the time.
+                //var tth = GetClockHours();
+                //var ttm = GetClockMinutes();
+                //var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
+                //var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
+                //cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
             }
         }
         #endregion
