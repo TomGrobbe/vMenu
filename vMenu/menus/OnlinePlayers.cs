@@ -25,7 +25,7 @@ namespace vMenuClient
             ControlDisablingEnabled = false
         };
 
-        Player currentPlayer = new Player(PlayerId());
+        Player currentPlayer = new Player(Game.Player.Handle);
 
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Online Players", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Online Players", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -156,7 +156,7 @@ namespace vMenuClient
 
                     if (!selectedPedRouteAlreadyActive)
                     {
-                        if (currentPlayer.Handle != PlayerId())
+                        if (currentPlayer.Handle != Game.Player.Handle)
                         {
                             int ped = GetPlayerPed(currentPlayer.Handle);
                             int blip = GetBlipFromEntity(ped);
@@ -386,7 +386,7 @@ namespace vMenuClient
 
                                 if (!selectedPedRouteAlreadyActive)
                                 {
-                                    if (player.Handle != PlayerId())
+                                    if (player.Handle != Game.Player.Handle)
                                     {
                                         int ped = GetPlayerPed(player.Handle);
                                         int blip = GetBlipFromEntity(ped);
@@ -416,7 +416,7 @@ namespace vMenuClient
                             // Spectate player button is pressed.
                             else if (item2 == spectateBtn)
                             {
-                                if (player.Handle == PlayerId())
+                                if (player.Handle == Game.Player.Handle)
                                 {
                                     Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~spectate yourself!", true, true);
                                 }
@@ -428,7 +428,7 @@ namespace vMenuClient
                             // Summon player button is pressed.
                             else if (item2 == summonBtn)
                             {
-                                if (player.Handle == PlayerId())
+                                if (player.Handle == Game.Player.Handle)
                                 {
                                     Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~summon yourself!", true, true);
                                 }

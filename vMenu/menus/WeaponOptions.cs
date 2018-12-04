@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +32,7 @@ namespace vMenuClient
         {
             #region create main weapon options menu and add items
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Weapon Options", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weapon Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -233,7 +233,7 @@ namespace vMenuClient
 
             secondaryChute.OnItemSelect += (sender, item, index) =>
             {
-                SetPlayerReserveParachuteTintIndex(PlayerId(), index - 1);
+                SetPlayerReserveParachuteTintIndex(Game.Player.Handle, index - 1);
                 Subtitle.Custom($"Reserve parachute style selected: ~r~{item.Text}~s~.");
             };
             #endregion
@@ -278,7 +278,7 @@ namespace vMenuClient
                 }
                 else if (item == toggleSecondary)
                 {
-                    SetPlayerHasReserveParachute(PlayerId());
+                    SetPlayerHasReserveParachute(Game.Player.Handle);
                     Notify.Success("Reserve parachute ~g~equippped~s~.", true);
                 }
             };
@@ -309,33 +309,33 @@ namespace vMenuClient
             {
                 if (item == smokeColors)
                 {
-                    SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), false);
+                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, false);
                     if (index == 0)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 255, 255);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 255);
                     }
                     else if (index == 1)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 255, 0);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 0);
                     }
                     else if (index == 2)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 255, 0, 0);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 0, 0);
                     }
                     else if (index == 3)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 0, 255, 0);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 255, 0);
                     }
                     else if (index == 4)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 0, 0, 255);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 0, 255);
                     }
                     else if (index == 5)
                     {
-                        SetPlayerParachuteSmokeTrailColor(PlayerId(), 1, 1, 1);
+                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 1, 1, 1);
                     }
 
-                    SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), true);
+                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, true);
                 }
             };
             #endregion

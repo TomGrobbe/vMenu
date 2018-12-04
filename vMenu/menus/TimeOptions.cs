@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +22,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Time Options", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Time Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,

@@ -424,10 +424,10 @@ namespace vMenuClient
                 ClearBrief();
 
                 // Request the permissions data from the server.
-                TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
+                TriggerServerEvent("vMenu:RequestPermissions", Game.Player.Handle);
 
                 // Wait until the data is received and the player's name is loaded correctly.
-                while (!PreSetupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
+                while (!PreSetupComplete || GetPlayerName(Game.Player.Handle) == "**Invalid**" || GetPlayerName(Game.Player.Handle) == "** Invalid **")
                 {
                     await Delay(0);
                 }
@@ -442,7 +442,7 @@ namespace vMenuClient
                         NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
                     }
                     // Create the main menu.
-                    Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
+                    Menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Main Menu", true)
                     {
                         ScaleWithSafezone = false,
                         MouseControlsEnabled = false,
@@ -697,7 +697,7 @@ namespace vMenuClient
                 {
                     if (item == button)
                     {
-                        TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                        TriggerServerEvent("vMenu:RequestBanList", Game.Player.Handle);
                         menu.RefreshIndex();
                         menu.UpdateScaleform();
                     }

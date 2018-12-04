@@ -42,7 +42,7 @@ namespace vMenuClient
         {
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -50,7 +50,7 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            UIMenu teleportMenu = new UIMenu(GetPlayerName(PlayerId()), "Teleport Locations", true)
+            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -82,7 +82,7 @@ namespace vMenuClient
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
             UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
-            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(PlayerId()), "Connection Options", true)
+            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,

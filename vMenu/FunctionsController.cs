@@ -207,7 +207,7 @@ namespace vMenuClient
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
                 {
-                    SetSuperJumpThisFrame(PlayerId());
+                    SetSuperJumpThisFrame(Game.Player.Handle);
                 }
 
                 // Manage PlayerNoRagdoll
@@ -236,9 +236,9 @@ namespace vMenuClient
                 }
 
                 // Manage never wanted.
-                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(PlayerId()) > 0 && cf.IsAllowed(Permission.PONeverWanted))
+                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(Game.Player.Handle) > 0 && cf.IsAllowed(Permission.PONeverWanted))
                 {
-                    ClearPlayerWantedLevel(PlayerId());
+                    ClearPlayerWantedLevel(Game.Player.Handle);
                 }
 
                 if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
@@ -897,7 +897,7 @@ namespace vMenuClient
                                 await Delay(0);
                             }
                         }
-                        if (NetworkIsPlayerTalking(PlayerId()))
+                        if (NetworkIsPlayerTalking(Game.Player.Handle))
                         {
                             DrawSprite("mpleaderboard", $"leaderboard_audio_{voiceCycle}", 0.008f, 0.985f, voiceIndicatorWidth, voiceIndicatorHeight, 0f, 255, 55, 0, 255);
                         }
@@ -987,7 +987,7 @@ namespace vMenuClient
                     if ((IsPedInAnyHeli(Game.PlayerPed.Handle) || IsPedInAnyPlane(Game.PlayerPed.Handle)) && !HasPedGotWeapon(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, false))
                     {
                         GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, true);
-                        SetPlayerHasReserveParachute(PlayerId());
+                        SetPlayerHasReserveParachute(Game.Player.Handle);
                         SetPlayerCanLeaveParachuteSmokeTrail(Game.PlayerPed.Handle, true);
                     }
                 }

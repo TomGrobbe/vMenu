@@ -1882,7 +1882,7 @@ namespace vMenuClient
 
                 if ((uint)GetEntityModel(Game.PlayerPed.Handle) != modelHash) // only change skins if the player is not yet using the new skin.
                 {
-                    SetPlayerModel(PlayerId(), modelHash);
+                    SetPlayerModel(Game.Player.Handle, modelHash);
                 }
                 SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +49,7 @@ namespace vMenuClient
             }
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Voice Chat Settings", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Voice Chat Settings", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,

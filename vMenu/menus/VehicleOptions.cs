@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,7 +52,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Vehicle Options", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,

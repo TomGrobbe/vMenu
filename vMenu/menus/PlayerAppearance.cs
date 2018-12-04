@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -125,7 +125,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Appearance", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Appearance", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -134,7 +134,7 @@ namespace vMenuClient
             };
 
             ////Create the submenus.
-            //mpCharMenu = new UIMenu(GetPlayerName(PlayerId()), "Multiplayer Ped Customization", true)
+            //mpCharMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Multiplayer Ped Customization", true)
             //{
             //    ScaleWithSafezone = false,
             //    MouseControlsEnabled = false,
@@ -1839,7 +1839,7 @@ namespace vMenuClient
             /*
             #region tattoo stuff
             // create submenu.
-            UIMenu tattooMenu = new UIMenu(GetPlayerName(PlayerId()), "MP Character Tattoo Options", true)
+            UIMenu tattooMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "MP Character Tattoo Options", true)
             {
                 ControlDisablingEnabled = false,
                 MouseControlsEnabled = false,
@@ -2221,7 +2221,7 @@ namespace vMenuClient
                 {
                     await BaseScript.Delay(0);
                 }
-                SetPlayerModel(PlayerId(), model);
+                SetPlayerModel(Game.Player.Handle, model);
                 SetModelAsNoLongerNeeded((uint)model);
                 SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
                 SetPedHeadBlendData(Game.PlayerPed.Handle, male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);

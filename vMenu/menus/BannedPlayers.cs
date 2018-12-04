@@ -45,7 +45,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Banned Players Management", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Banned Players Management", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -65,7 +65,7 @@ namespace vMenuClient
 
             bannedPlayer.OnMenuClose += (sender) =>
             {
-                BaseScript.TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                BaseScript.TriggerServerEvent("vMenu:RequestBanList", Game.Player.Handle);
                 bannedPlayer.MenuItems[5].SetRightLabel("");
                 UpdateBans();
             };
