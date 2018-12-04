@@ -1443,11 +1443,13 @@ namespace vMenuClient
             UIMenuItem spawnPed = new UIMenuItem("Spawn Saved Character", "Spawns the selected saved character.");
             UIMenuItem editPed = new UIMenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
             UIMenuItem clonePed = new UIMenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
+            UIMenuItem renameCharacter = new UIMenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
             UIMenuItem delPed = new UIMenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
             delPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             manageSavedCharacterMenu.AddItem(spawnPed);
             manageSavedCharacterMenu.AddItem(editPed);
             manageSavedCharacterMenu.AddItem(clonePed);
+            manageSavedCharacterMenu.AddItem(renameCharacter);
             manageSavedCharacterMenu.AddItem(delPed);
 
             manageSavedCharacterMenu.BindMenuToItem(createCharacterMenu, editPed);
@@ -1492,6 +1494,41 @@ namespace vMenuClient
                             else
                             {
                                 Notify.Error("The clone could not be created, reason unknown. Does a character already exist with that name? :(");
+                            }
+                        }
+                    }
+                }
+                else if (item == renameCharacter)
+                {
+                    var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
+                    string name = await cf.GetUserInput("Enter a new character name", "", 30);
+                    if (string.IsNullOrEmpty(name) || name.ToUpper() == "NULL")
+                    {
+                        Notify.Error(CommonErrors.InvalidInput);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(GetResourceKvpString("mp_ped_" + name)))
+                        {
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists);
+                        }
+                        else
+                        {
+                            tmpCharacter.SaveName = "mp_ped_" + name;
+                            if (StorageManager.SaveJsonData("mp_ped_" + name, Newtonsoft.Json.JsonConvert.SerializeObject(tmpCharacter), false))
+                            {
+                                StorageManager.DeleteSavedStorageItem("mp_ped_" + selectedSavedCharacterManageName);
+                                Notify.Success($"Your character has been renamed to ~g~<C>{name}</C>~s~.");
+                                UpdateSavedPedsMenu();
+                                while (!MainMenu.Mp.IsAnyMenuOpen())
+                                {
+                                    await BaseScript.Delay(0);
+                                }
+                                manageSavedCharacterMenu.GoBack();
+                            }
+                            else
+                            {
+                                Notify.Error("Something went wrong while renaming your character, your old character will NOT be deleted because of this.");
                             }
                         }
                     }
