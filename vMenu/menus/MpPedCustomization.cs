@@ -609,13 +609,13 @@ namespace vMenuClient
 
                     if (StorageManager.SaveJsonData("mp_ped_" + name, json, false))
                     {
-                        Notify.Success($"Your character (~g~{name}~s~) has been saved.");
+                        Notify.Success($"Your character (~g~<C>{name}</C>~s~) has been saved.");
                         Debug.WriteLine($"Saved Character {name}. Data: {json}");
                         return true;
                     }
                     else
                     {
-                        Notify.Error($"Saving failed, most likely because this name (~y~{name}~s~) is already in use.");
+                        Notify.Error($"Saving failed, most likely because this name (~y~<C>{name}</C>~s~) is already in use.");
                         return false;
                     }
                 }
