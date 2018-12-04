@@ -28,7 +28,17 @@ namespace vMenuClient
             public string bannedBy;
         }
 
+        BanRecord currentRecord = new BanRecord();
+
         public List<BanRecord> banlist = new List<BanRecord>();
+
+        UIMenu bannedPlayer = new UIMenu("Banned Player", "Ban Record: ", true)
+        {
+            ScaleWithSafezone = false,
+            MouseControlsEnabled = false,
+            MouseEdgeEnabled = false,
+            ControlDisablingEnabled = false
+        };
 
         /// <summary>
         /// Creates the menu.
@@ -42,7 +52,131 @@ namespace vMenuClient
                 MouseEdgeEnabled = false,
                 ControlDisablingEnabled = false
             };
-            UpdateBans();
+
+            bannedPlayer.AddItem(new UIMenuItem("Player Name"));
+            bannedPlayer.AddItem(new UIMenuItem("Banned By"));
+            bannedPlayer.AddItem(new UIMenuItem("Banned Until"));
+            bannedPlayer.AddItem(new UIMenuItem("Player Identifiers"));
+            bannedPlayer.AddItem(new UIMenuItem("Banned For"));
+            bannedPlayer.AddItem(new UIMenuItem("~r~Unban", "~r~Warning, unbanning the player can NOT be undone. You will NOT be able to ban them agian until they re-join the server. Are you absolutely sure you want to unban this player? ~s~Tip: Tempbanned players will automatically get unbanned if they log on to the server after their ban date has expired."));
+
+            // should be enough for now to cover all possible identifiers.
+            List<string> colors = new List<string>() { "~r~", "~g~", "~b~", "~o~", "~y~", "~p~", "~s~", "~t~", };
+
+            bannedPlayer.OnMenuClose += (sender) =>
+            {
+                BaseScript.TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                bannedPlayer.MenuItems[5].SetRightLabel("");
+                UpdateBans();
+            };
+
+            bannedPlayer.OnIndexChange += (sender, index) =>
+            {
+                bannedPlayer.MenuItems[5].SetRightLabel("");
+            };
+
+            bannedPlayer.OnItemSelect += (sender, item, index) =>
+            {
+                if (index == 5 && cf.IsAllowed(Permission.OPUnban))
+                {
+                    if (item.RightLabel == "Are you sure?")
+                    {
+                        if (banlist.Contains(currentRecord))
+                        {
+                            UnbanPlayer(banlist.IndexOf(currentRecord));
+                            bannedPlayer.MenuItems[5].SetRightLabel("");
+                            bannedPlayer.GoBack();
+                        }
+                        else
+                        {
+                            Notify.Error("Somehow you managed to click the unban button but this ban record you're apparently viewing does not even exist. Weird...");
+                        }
+                    }
+                    else
+                    {
+                        item.SetRightLabel("Are you sure?");
+                    }
+                }
+                else
+                {
+                    bannedPlayer.MenuItems[5].SetRightLabel("");
+                }
+
+            };
+
+            menu.OnItemSelect += (sender, item, index) =>
+            {
+                if (index < banlist.Count)
+                {
+                    currentRecord = banlist[index];
+                    bannedPlayer.Subtitle.Caption = "Ban Record: ~y~" + currentRecord.playerName;
+                    var nameItem = bannedPlayer.MenuItems[0];
+                    var bannedByItem = bannedPlayer.MenuItems[1];
+                    var bannedUntilItem = bannedPlayer.MenuItems[2];
+                    var playerIdentifiersItem = bannedPlayer.MenuItems[3];
+                    var banReasonItem = bannedPlayer.MenuItems[4];
+                    nameItem.SetRightLabel(currentRecord.playerName);
+                    nameItem.Description = "Player name: ~y~" + currentRecord.playerName;
+                    bannedByItem.SetRightLabel(currentRecord.bannedBy);
+                    bannedByItem.Description = "Player banned by: ~y~" + currentRecord.bannedBy;
+                    if (currentRecord.bannedUntil.Date.Year == 3000)
+                        bannedUntilItem.SetRightLabel("Forever");
+                    else
+                        bannedUntilItem.SetRightLabel(currentRecord.bannedUntil.Date.ToString());
+                    bannedUntilItem.Description = "This player is banned until: " + currentRecord.bannedUntil.Date.ToString();
+                    playerIdentifiersItem.Description = "";
+
+                    int i = 0;
+                    foreach (string id in currentRecord.identifiers)
+                    {
+                        // only (admins) people that can unban players are allowed to view IP's.
+                        // this is just a slight 'safety' feature in case someone who doesn't know what they're doing
+                        // gave builtin.everyone access to view the banlist.
+                        if (id.StartsWith("ip:") && !cf.IsAllowed(Permission.OPUnban))
+                        {
+                            playerIdentifiersItem.Description += $"{colors[i]}ip: (hidden) ";
+                        }
+                        else
+                        {
+                            playerIdentifiersItem.Description += $"{colors[i]}{id.Replace(":", ": ")} ";
+                        }
+                        i++;
+                    }
+                    banReasonItem.Description = "Banned for: " + currentRecord.banReason;
+
+                    var unbanPlayerBtn = bannedPlayer.MenuItems[5];
+                    unbanPlayerBtn.SetRightLabel("");
+                    if (!cf.IsAllowed(Permission.OPUnban))
+                    {
+                        unbanPlayerBtn.Enabled = false;
+                        unbanPlayerBtn.Description = "You are not allowed to unban players. You are only allowed to view their ban record.";
+                        unbanPlayerBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    }
+
+                    bannedPlayer.RefreshIndex();
+                    bannedPlayer.UpdateScaleform();
+                }
+            };
+            MainMenu.Mp.Add(bannedPlayer);
+
+        }
+
+        /// <summary>
+        /// Updates the ban list menu.
+        /// </summary>
+        public void UpdateBans()
+        {
+            menu.Clear();
+
+            foreach (BanRecord ban in banlist)
+            {
+                UIMenuItem recordBtn = new UIMenuItem(ban.playerName, $"~y~{ban.playerName}~s~ was banned by ~y~{ban.bannedBy}~s~ until ~y~{ban.bannedUntil}~s~ for ~y~{ban.banReason}~s~.");
+                recordBtn.SetRightLabel("→→→");
+                menu.AddItem(recordBtn);
+                menu.BindMenuToItem(bannedPlayer, recordBtn);
+            }
+            menu.RefreshIndex();
+            menu.UpdateScaleform();
         }
 
         /// <summary>
@@ -58,9 +192,7 @@ namespace vMenuClient
                 BanRecord b = JsonToBanRecord(br);
                 banlist.Add(b);
             }
-
             UpdateBans();
-
         }
 
         /// <summary>
@@ -78,152 +210,6 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Updates the ban list menu.
-        /// </summary>
-        public void UpdateBans()
-        {
-            menu.Clear();
-
-            foreach (BanRecord ban in banlist)
-            {
-                UIMenu bannedPlayer = new UIMenu("Banned Player", "Ban Record: " + ban.playerName, true)
-                {
-                    ScaleWithSafezone = false,
-                    MouseControlsEnabled = false,
-                    MouseEdgeEnabled = false,
-                    ControlDisablingEnabled = false
-                };
-
-                // info items.
-                UIMenuItem name = new UIMenuItem("Name:", ban.playerName)
-                {
-                    Enabled = false
-                };
-                name.SetRightLabel(ban.playerName);
-
-                UIMenuItem bannedBy = new UIMenuItem("Banned By:", ban.bannedBy)
-                {
-                    Enabled = false
-                };
-                bannedBy.SetRightLabel(ban.bannedBy);
-
-                UIMenuItem bannedUntil = new UIMenuItem("Banned Until:", ban.bannedUntil.ToString())
-                {
-                    Enabled = false
-                };
-                bannedUntil.SetRightLabel(ban.bannedUntil.ToString());
-
-                var identifierstring = "";
-                foreach (string id in ban.identifiers)
-                {
-                    if (id.Contains("steam:"))
-                    {
-                        var id2 = id;
-                        if (id.Length > 40)
-                        {
-                            id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
-                        }
-                        identifierstring += "~o~" + id2 + " ";
-                    }
-                    else if (id.Contains("license:"))
-                    {
-                        var id2 = id;
-                        if (id.Length > 40)
-                        {
-                            id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
-                        }
-                        identifierstring += "~y~" + id2 + " ";
-                    }
-                    else if (id.Contains("ip:"))
-                    {
-                        var id2 = id;
-                        if (id.Length > 40)
-                        {
-                            id2 = id.Substring(0, 40) + " " + id.Substring(40, id.Length - 40);
-                        }
-                        identifierstring += "~g~" + id2 + " ";
-                    }
-
-                }
-                UIMenuItem identifiers = new UIMenuItem("Player Identifiers", identifierstring)
-                {
-                    Enabled = false
-                };
-
-                UIMenuItem banReason = new UIMenuItem("Ban Reason", ban.banReason)
-                {
-                    Enabled = false
-                };
-
-                UIMenuItem unbanPlayer = new UIMenuItem("~r~Unban Player", "Unbanning the player cannot be undone. " +
-                    "You will have to wait for the player to be online to ban them again.");
-
-                // add items to menu.
-                bannedPlayer.AddItem(name);
-                bannedPlayer.AddItem(bannedBy);
-                bannedPlayer.AddItem(bannedUntil);
-                bannedPlayer.AddItem(identifiers);
-                bannedPlayer.AddItem(banReason);
-                bannedPlayer.AddItem(unbanPlayer);
-                if (!cf.IsAllowed(Permission.OPUnban))
-                {
-                    unbanPlayer.Enabled = false;
-                    unbanPlayer.Description = "You are not allowed to unban players. You can only view this ban record.";
-                    unbanPlayer.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                }
-
-                // refresh index and update scaleform.
-                bannedPlayer.RefreshIndex();
-                bannedPlayer.UpdateScaleform();
-
-                // create button for this player and add it to the main banned players menu.
-                UIMenuItem player = new UIMenuItem(ban.playerName, "View details of this player's ban record.");
-                menu.AddItem(player);
-                menu.BindMenuToItem(bannedPlayer, player);
-
-                bannedPlayer.OnItemSelect += (sender, item, index) =>
-                {
-                    if (item == unbanPlayer)
-                    {
-                        if (item.Description == "Are you sure?")
-                        {
-                            Notify.Custom($"Player ~o~<C>{banlist[menu.MenuItems.IndexOf(player)].playerName}</C>~s~ has been ~g~unbanned~s~.");
-                            UnbanPlayer(menu.MenuItems.IndexOf(player));
-                            bannedPlayer.UpdateScaleform();
-                            bannedPlayer.GoBack();
-                            UpdateBans();
-                        }
-                        else
-                        {
-                            item.Description = "Are you sure?";
-                            bannedPlayer.UpdateScaleform();
-                            bannedPlayer.RefreshIndex();
-                            bannedPlayer.CurrentSelection = bannedPlayer.MenuItems.Count - 1;
-                        }
-                    }
-                };
-
-                bannedPlayer.OnMenuClose += (a) =>
-                {
-                    if (bannedPlayer.MenuItems.Last().Description == "Are you sure?")
-                    {
-                        bannedPlayer.MenuItems.Last().Description = "Unbanning the player cannot be undone. " +
-                    "You will have to wait for the player to be online to ban them again.";
-                        bannedPlayer.UpdateScaleform();
-                        bannedPlayer.RefreshIndex();
-                    }
-                };
-
-                // add menu to menu pool.
-                MainMenu.Mp.Add(bannedPlayer);
-            }
-
-            // update index & scaleform.
-            menu.RefreshIndex();
-            menu.UpdateScaleform();
-        }
-
-        /// <summary>
         /// Sends an event to the server requesting the player to be unbanned.
         /// We'll just assume that worked fine, so remove the item from our local list, we'll re-sync once the menu is re-opened.
         /// </summary>
@@ -234,7 +220,6 @@ namespace vMenuClient
             banlist.Remove(record);
             BaseScript.TriggerServerEvent("vMenu:RequestPlayerUnban", JsonConvert.SerializeObject(record));
         }
-
 
         /// <summary>
         /// Converts the ban record (json object) into a BanRecord struct.
