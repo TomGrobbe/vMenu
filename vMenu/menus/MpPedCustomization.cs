@@ -1599,6 +1599,7 @@ namespace vMenuClient
             savedCharactersMenu.Clear();
             if (names.Count > 0)
             {
+                names.Sort((a, b) => { return a.ToLower().CompareTo(b.ToLower()); });
                 foreach (string item in names)
                 {
                     UIMenuItem btn = new UIMenuItem(item, "Click to spawn, edit or delete this saved character.");
