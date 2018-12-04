@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -682,7 +682,7 @@ namespace vMenuClient
                     }
                 };
             }
-            if (Cf.IsAllowed(Permission.OPUnban))
+            if (Cf.IsAllowed(Permission.OPUnban) || Cf.IsAllowed(Permission.OPViewBannedPlayers))
             {
                 BannedPlayersMenu = new BannedPlayers();
                 UIMenu menu = BannedPlayersMenu.GetMenu();

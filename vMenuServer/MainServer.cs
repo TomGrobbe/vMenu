@@ -51,7 +51,6 @@ namespace vMenuServer
                     prefix = "^3[vMenu] [WARNING]^7 ";
                 }
                 Debug.WriteLine($"{prefix}[DEBUG LOG] {data.ToString()}");
-
             }
         }
     }
@@ -140,6 +139,7 @@ namespace vMenuServer
             "OPPermBan",
             "OPTempBan",
             "OPUnban",
+            "OPViewBannedPlayers",
 
             // Player Options
             "POMenu",

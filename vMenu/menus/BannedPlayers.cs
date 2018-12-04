@@ -93,7 +93,6 @@ namespace vMenuClient
                     MouseEdgeEnabled = false,
                     ControlDisablingEnabled = false
                 };
-                bannedPlayer.SetMenuWidthOffset(50);
 
                 // info items.
                 UIMenuItem name = new UIMenuItem("Name:", ban.playerName)
@@ -166,6 +165,12 @@ namespace vMenuClient
                 bannedPlayer.AddItem(identifiers);
                 bannedPlayer.AddItem(banReason);
                 bannedPlayer.AddItem(unbanPlayer);
+                if (!cf.IsAllowed(Permission.OPUnban))
+                {
+                    unbanPlayer.Enabled = false;
+                    unbanPlayer.Description = "You are not allowed to unban players. You can only view this ban record.";
+                    unbanPlayer.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                }
 
                 // refresh index and update scaleform.
                 bannedPlayer.RefreshIndex();

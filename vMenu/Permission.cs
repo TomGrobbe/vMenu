@@ -20,6 +20,7 @@
         OPPermBan,
         OPTempBan,
         OPUnban,
+        OPViewBannedPlayers,
 
         // Player Options
         POMenu,
