@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1602,8 +1602,9 @@ namespace vMenuClient
                 names.Sort((a, b) => { return a.ToLower().CompareTo(b.ToLower()); });
                 foreach (string item in names)
                 {
-                    UIMenuItem btn = new UIMenuItem(item, "Click to spawn, edit or delete this saved character.");
-                    btn.SetRightLabel("→→→");
+                    var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
+                    UIMenuItem btn = new UIMenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.");
+                    btn.SetRightLabel($"({(tmpData.IsMale ? "M" : "F")}) →→→");
                     savedCharactersMenu.AddItem(btn);
                     savedCharactersMenu.BindMenuToItem(manageSavedCharacterMenu, btn);
                 }
