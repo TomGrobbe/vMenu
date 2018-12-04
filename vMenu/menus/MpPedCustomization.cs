@@ -1442,10 +1442,12 @@ namespace vMenuClient
 
             UIMenuItem spawnPed = new UIMenuItem("Spawn Saved Character", "Spawns the selected saved character.");
             UIMenuItem editPed = new UIMenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
+            UIMenuItem clonePed = new UIMenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
             UIMenuItem delPed = new UIMenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
             delPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
             manageSavedCharacterMenu.AddItem(spawnPed);
             manageSavedCharacterMenu.AddItem(editPed);
+            manageSavedCharacterMenu.AddItem(clonePed);
             manageSavedCharacterMenu.AddItem(delPed);
 
             manageSavedCharacterMenu.BindMenuToItem(createCharacterMenu, editPed);
@@ -1464,6 +1466,35 @@ namespace vMenuClient
                     currentCharacter = StorageManager.GetSavedMpCharacterData(selectedSavedCharacterManageName);
 
                     await SpawnSavedPed();
+                }
+                else if (item == clonePed)
+                {
+                    var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
+                    string name = await cf.GetUserInput("Enter a name for the cloned character", "", 30);
+                    if (string.IsNullOrEmpty(name) || name.ToUpper() == "NULL")
+                    {
+                        Notify.Error(CommonErrors.InvalidSaveName);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(GetResourceKvpString("mp_ped_" + name)))
+                        {
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists);
+                        }
+                        else
+                        {
+                            tmpCharacter.SaveName = "mp_ped_" + name;
+                            if (StorageManager.SaveJsonData("mp_ped_" + name, Newtonsoft.Json.JsonConvert.SerializeObject(tmpCharacter), false))
+                            {
+                                Notify.Success($"Your character has been cloned. The name of the cloned character is: ~g~<C>{name}</C>~s~.");
+                                UpdateSavedPedsMenu();
+                            }
+                            else
+                            {
+                                Notify.Error("The clone could not be created, reason unknown. Does a character already exist with that name? :(");
+                            }
+                        }
+                    }
                 }
                 else if (item == delPed)
                 {
