@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -405,6 +405,10 @@ namespace vMenuClient
 
             if (male)
             {
+                // There are weird people out there that wanted makeup for male characters
+                // so yeah.... here you go I suppose... strange...
+
+                /*
                 makeupStyle.Enabled = false;
                 makeupStyle.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                 makeupStyle.Description = "This is not available for male characters.";
@@ -442,6 +446,7 @@ namespace vMenuClient
                 lipstickColor.Enabled = false;
                 lipstickColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
                 lipstickColor.Description = "This is not available for male characters.";
+                */
             }
             else
             {
