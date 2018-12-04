@@ -23,7 +23,7 @@ namespace vMenuClient
 
         public struct FaceShapeFeatures
         {
-
+            public Dictionary<int, float> features;
         }
 
         public struct PedTatttoos { } // added the structure for it, but will not be implemented until it's actually possible. Just future-proofing my setup here.

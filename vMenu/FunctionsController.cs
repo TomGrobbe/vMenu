@@ -1045,8 +1045,8 @@ namespace vMenuClient
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(-0.2f, 0f, -0.25f)), // left wrist
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0.2f, 0f, -0.25f)), // right wrist
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // left wrist
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist
                     };
 
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
@@ -1136,6 +1136,10 @@ namespace vMenuClient
                                 case 28:
                                 case 29:
                                 case 30:
+                                    // torso
+                                    camera.Position = camPositions[2].Key;
+                                    camera.PointAt(camPositions[2].Value);
+                                    break;
                                 default:
                                     // normal position (full character visible)
                                     camera.Position = camPositions[0].Key;
@@ -1232,7 +1236,11 @@ namespace vMenuClient
                                     break;
                             }
                         }
-                        else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible) { /*TODO*/}
+                        else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible)
+                        {
+                            camera.Position = camPositions[1].Key;
+                            camera.PointAt(camPositions[1].Value);
+                        }
                         else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible) { /*TODO*/}
                         else
                         {
