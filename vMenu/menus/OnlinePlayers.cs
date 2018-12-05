@@ -102,7 +102,7 @@ namespace vMenuClient
             };
 
             // handle button presses for the specific player's menu.
-            playerMenu.OnItemSelect += async (sender, item, index) =>
+            playerMenu.OnItemSelect += (sender, item, index) =>
             {
                 // teleport (in vehicle) button
                 if (item == teleport || item == teleportVeh)
