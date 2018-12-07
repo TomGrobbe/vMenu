@@ -64,7 +64,8 @@ namespace vMenuClient
                 {
                     while (MainMenu.NoClipEnabled)
                     {
-                        var noclipEntity = IsPedInAnyVehicle(PlayerPedId(), false) ? cf.GetVehicle() : PlayerPedId();
+                        
+                        var noclipEntity = Game.PlayerPed.IsInVehicle() ? cf.GetVehicle().Handle : Game.PlayerPed.Handle;
 
                         if (noclipMenu.Visible == false)
                         {
@@ -113,11 +114,11 @@ namespace vMenuClient
                             }
                             if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                             {
-                                SetEntityHeading(PlayerPedId(), GetEntityHeading(PlayerPedId()) + 3f);
+                                SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) + 3f);
                             }
                             if (Game.IsDisabledControlPressed(0, Control.MoveRightOnly))
                             {
-                                SetEntityHeading(PlayerPedId(), GetEntityHeading(PlayerPedId()) - 3f);
+                                SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) - 3f);
                             }
                             if (Game.IsDisabledControlPressed(0, Control.Cover))
                             {

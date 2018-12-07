@@ -78,6 +78,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
         }
 
+        public static bool VehicleNeverDirty
+        {
+            get { return GetSettingsBool("vehicleNeverDirty"); }
+            set { SetSavedSettingsBool("vehicleNeverDirty", value); }
+        }
+
         public static bool VehicleEngineAlwaysOn
         {
             get { return GetSettingsBool("vehicleEngineAlwaysOn"); }
@@ -100,6 +106,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("vehicleHighbeamsOnHonk"); }
             set { SetSavedSettingsBool("vehicleHighbeamsOnHonk", value); }
+        }
+
+        public static bool VehicleDisablePlaneTurbulence
+        {
+            get { return GetSettingsBool("vehicleDisablePlaneTurbulence"); }
+            set { SetSavedSettingsBool("vehicleDisablePlaneTurbulence", value); }
         }
         #endregion
 
@@ -190,6 +202,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("miscRestorePlayerWeapons"); }
             set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
+        }
+
+        public static bool MiscShowTime
+        {
+            get { return GetSettingsBool("miscShowTime"); }
+            set { SetSavedSettingsBool("miscShowTime", value); }
         }
         #endregion
 
@@ -376,6 +394,9 @@ namespace vMenuClient
 
                 MiscRestorePlayerWeapons = MainMenu.MiscSettingsMenu.RestorePlayerWeapons;
                 prefs.Add("miscRestorePlayerWeapons", MainMenu.MiscSettingsMenu.RestorePlayerWeapons);
+
+                MiscShowTime = MainMenu.MiscSettingsMenu.DrawTimeOnScreen;
+                prefs.Add("miscShowTime", MainMenu.MiscSettingsMenu.DrawTimeOnScreen);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
@@ -386,6 +407,12 @@ namespace vMenuClient
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
                 prefs.Add("vehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
 
+                VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
+                prefs.Add("vehicleSpecialGodMode", MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode);
+
+                VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
+                prefs.Add("vehicleNeverDirty", MainMenu.VehicleOptionsMenu.VehicleNeverDirty);
+
                 VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
                 prefs.Add("vehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);
 
@@ -394,6 +421,9 @@ namespace vMenuClient
 
                 VehicleHighbeamsOnHonk = MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk;
                 prefs.Add("vehicleHighbeamsOnHonk", MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk);
+
+                VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
+                prefs.Add("vehicleDisablePlaneTurbulence", MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)

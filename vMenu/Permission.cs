@@ -20,6 +20,7 @@
         OPPermBan,
         OPTempBan,
         OPUnban,
+        OPViewBannedPlayers,
 
         // Player Options
         POMenu,
@@ -48,9 +49,11 @@
         VOAll,
         VOGod,
         VOSpecialGod,
+        VOKeepClean,
         VORepair,
         VOWash,
         VOEngine,
+        VOSpeedLimiter,
         VOChangePlate,
         VOMod,
         VOColors,
@@ -71,6 +74,9 @@
         VODelete,
         VOUnderglow,
         VOFlashHighbeamsOnHonk,
+        VODisableTurbulence,
+        VOFlares,
+        VOPlaneBombs,
 
 
         // Vehicle Spawner

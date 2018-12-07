@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -125,7 +125,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Appearance", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Appearance", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -134,7 +134,7 @@ namespace vMenuClient
             };
 
             ////Create the submenus.
-            //mpCharMenu = new UIMenu(GetPlayerName(PlayerId()), "Multiplayer Ped Customization", true)
+            //mpCharMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Multiplayer Ped Customization", true)
             //{
             //    ScaleWithSafezone = false,
             //    MouseControlsEnabled = false,
@@ -268,11 +268,11 @@ namespace vMenuClient
                             button.Description = "This ped is not available on this server. Are you sure the model is valid?";
                         }
                     }
-                    addonPeds.OnItemSelect += (sender, item, index) =>
+                    addonPeds.OnItemSelect += async (sender, item, index) =>
                     {
                         if (item.Enabled)
                         {
-                            cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
+                            await cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
                         }
                         else
                         {
@@ -330,11 +330,11 @@ namespace vMenuClient
             }
 
             // Handle list selections.
-            menu.OnListSelect += (sender, item, index) =>
+            menu.OnListSelect += async (sender, item, index) =>
             {
                 if (item == walkingStyle)
                 {
-                    Subtitle.Custom("Ped is: " + IsPedMale(PlayerPedId()));
+                    Subtitle.Custom("Ped is: " + IsPedMale(Game.PlayerPed.Handle));
                     cf.SetWalkingStyle(walkstyles[index].ToString());
                 }
                 else if (item == clothingGlowType)
@@ -347,7 +347,7 @@ namespace vMenuClient
                     string modelName = modelNames[i];
                     if (cf.IsAllowed(Permission.PASpawnNew))
                     {
-                        cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
+                        await cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
                     }
                 }
 
@@ -389,24 +389,40 @@ namespace vMenuClient
             // Manage list changes.
             pedCustomizationMenu.OnListChange += (sender, item, index) =>
             {
-                //SetPedComponentVariation(PlayerPedId(), sender2.CurrentSelection, index2, 0, 0);
+                //SetPedComponentVariation(Game.PlayerPed.Handle, sender2.CurrentSelection, index2, 0, 0);
 
                 if (drawablesMenuListItems.ContainsKey(item))
                 {
                     int drawableID = drawablesMenuListItems[item];
-                    SetPedComponentVariation(PlayerPedId(), drawableID, index, 0, 0);
+                    SetPedComponentVariation(Game.PlayerPed.Handle, drawableID, index, 0, 0);
                 }
                 else if (propsMenuListItems.ContainsKey(item))
                 {
                     int propID = propsMenuListItems[item];
                     if (index == 0)
                     {
-                        SetPedPropIndex(PlayerPedId(), propID, index - 1, 0, false);
-                        ClearPedProp(PlayerPedId(), propID);
+                        SetPedPropIndex(Game.PlayerPed.Handle, propID, index - 1, 0, false);
+                        ClearPedProp(Game.PlayerPed.Handle, propID);
                     }
                     else
                     {
-                        SetPedPropIndex(PlayerPedId(), propID, index - 1, 0, true);
+                        SetPedPropIndex(Game.PlayerPed.Handle, propID, index - 1, 0, true);
+                    }
+                    if (propID == 0)
+                    {
+                        int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
+                        int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
+                        int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
+                        if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+                        {
+                            if (!IsHelpMessageBeingDisplayed())
+                            {
+                                BeginTextCommandDisplayHelp("TWOSTRINGS");
+                                AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
+                                AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
+                                EndTextCommandDisplayHelp(0, false, true, 6000);
+                            }
+                        }
                     }
 
                 }
@@ -418,25 +434,25 @@ namespace vMenuClient
                 if (drawablesMenuListItems.ContainsKey(item)) // drawable
                 {
                     int currentDrawableID = drawablesMenuListItems[item];
-                    int currentTextureIndex = GetPedTextureVariation(PlayerPedId(), currentDrawableID);
-                    int maxDrawableTextures = GetNumberOfPedTextureVariations(PlayerPedId(), currentDrawableID, index) - 1;
+                    int currentTextureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, currentDrawableID);
+                    int maxDrawableTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, currentDrawableID, index) - 1;
 
                     if (currentTextureIndex == -1)
                         currentTextureIndex = 0;
 
                     int newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
 
-                    SetPedComponentVariation(PlayerPedId(), currentDrawableID, index, newTexture, 0);
+                    SetPedComponentVariation(Game.PlayerPed.Handle, currentDrawableID, index, newTexture, 0);
                 }
                 else if (propsMenuListItems.ContainsKey(item)) // prop
                 {
                     int currentPropIndex = propsMenuListItems[item];
-                    int currentPropVariationIndex = GetPedPropIndex(PlayerPedId(), currentPropIndex);
-                    int currentPropTextureVariation = GetPedPropTextureIndex(PlayerPedId(), currentPropIndex);
-                    int maxPropTextureVariations = GetNumberOfPedPropTextureVariations(PlayerPedId(), currentPropIndex, currentPropVariationIndex) - 1;
+                    int currentPropVariationIndex = GetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex);
+                    int currentPropTextureVariation = GetPedPropTextureIndex(Game.PlayerPed.Handle, currentPropIndex);
+                    int maxPropTextureVariations = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex) - 1;
 
                     int newPropTextureVariationIndex = currentPropTextureVariation < maxPropTextureVariations ? currentPropTextureVariation + 1 : 0;
-                    SetPedPropIndex(PlayerPedId(), currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
+                    SetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
                 }
             };
             #endregion
@@ -471,9 +487,9 @@ namespace vMenuClient
             #region Ped Drawables
             for (int drawable = 0; drawable < 12; drawable++)
             {
-                int currentDrawable = GetPedDrawableVariation(PlayerPedId(), drawable);
-                int maxVariations = GetNumberOfPedDrawableVariations(PlayerPedId(), drawable);
-                int maxTextures = GetNumberOfPedTextureVariations(PlayerPedId(), drawable, currentDrawable);
+                int currentDrawable = GetPedDrawableVariation(Game.PlayerPed.Handle, drawable);
+                int maxVariations = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, drawable);
+                int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, drawable, currentDrawable);
 
                 if (maxVariations > 0)
                 {
@@ -496,8 +512,8 @@ namespace vMenuClient
             {
                 int realProp = tmpProp > 2 ? tmpProp + 3 : tmpProp;
 
-                int currentProp = GetPedPropIndex(PlayerPedId(), realProp);
-                int maxPropVariations = GetNumberOfPedPropDrawableVariations(PlayerPedId(), realProp);
+                int currentProp = GetPedPropIndex(Game.PlayerPed.Handle, realProp);
+                int maxPropVariations = GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, realProp);
 
                 if (maxPropVariations > 0)
                 {
@@ -630,7 +646,7 @@ namespace vMenuClient
             deleteSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                sm.DeleteSavedStorageItem("ped_" + name);
+                StorageManager.DeleteSavedStorageItem("ped_" + name);
                 Notify.Success("Saved ped deleted.");
                 deleteSavedPedMenu.GoBack();
             };
@@ -1657,37 +1673,37 @@ namespace vMenuClient
                     // heritage features.
                     SetPedHeritage();
                     // hair style.
-                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    SetPedComponentVariation(Game.PlayerPed.Handle, 2, currentCharacter.HairStyle, 0, 0);
                     // hair colors.
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                    SetPedHairColor(Game.PlayerPed.Handle, currentCharacter.HairColor, currentCharacter.HairHighlightColor);
                     // eye color.
-                    SetPedEyeColor(PlayerPedId(), currentCharacter.EyeColor);
+                    SetPedEyeColor(Game.PlayerPed.Handle, currentCharacter.EyeColor);
 
                     // facial features.
-                    SetPedFaceFeature(PlayerPedId(), 0, currentCharacter.NoseWidth);
-                    SetPedFaceFeature(PlayerPedId(), 1, currentCharacter.NosePeakHeight);
-                    SetPedFaceFeature(PlayerPedId(), 2, currentCharacter.NosePeakLength);
-                    SetPedFaceFeature(PlayerPedId(), 3, currentCharacter.NosePeakLowering);
-                    SetPedFaceFeature(PlayerPedId(), 4, currentCharacter.NoseBoneTwist);
-                    SetPedFaceFeature(PlayerPedId(), 5, currentCharacter.EyebrowHeight);
-                    SetPedFaceFeature(PlayerPedId(), 6, currentCharacter.EyebrowForward);
-                    SetPedFaceFeature(PlayerPedId(), 7, currentCharacter.CheeksBoneHeight);
-                    SetPedFaceFeature(PlayerPedId(), 8, currentCharacter.CheeksBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 9, currentCharacter.CheeksWidth);
-                    SetPedFaceFeature(PlayerPedId(), 10, currentCharacter.EyesOpening);
-                    SetPedFaceFeature(PlayerPedId(), 11, currentCharacter.LipsThickness);
-                    SetPedFaceFeature(PlayerPedId(), 12, currentCharacter.JawBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 13, currentCharacter.JawBoneBackLength);
-                    SetPedFaceFeature(PlayerPedId(), 14, currentCharacter.ChinBoneLowering);
-                    SetPedFaceFeature(PlayerPedId(), 15, currentCharacter.ChinBoneLength);
-                    SetPedFaceFeature(PlayerPedId(), 16, currentCharacter.ChinBoneWidth);
-                    SetPedFaceFeature(PlayerPedId(), 17, currentCharacter.ChinHole);
-                    SetPedFaceFeature(PlayerPedId(), 18, currentCharacter.NeckThickness);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 0, currentCharacter.NoseWidth);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 1, currentCharacter.NosePeakHeight);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 2, currentCharacter.NosePeakLength);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 3, currentCharacter.NosePeakLowering);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 4, currentCharacter.NoseBoneTwist);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 5, currentCharacter.EyebrowHeight);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 6, currentCharacter.EyebrowForward);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 7, currentCharacter.CheeksBoneHeight);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 8, currentCharacter.CheeksBoneWidth);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 9, currentCharacter.CheeksWidth);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 10, currentCharacter.EyesOpening);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 11, currentCharacter.LipsThickness);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 12, currentCharacter.JawBoneWidth);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 13, currentCharacter.JawBoneBackLength);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 14, currentCharacter.ChinBoneLowering);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 15, currentCharacter.ChinBoneLength);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 16, currentCharacter.ChinBoneWidth);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 17, currentCharacter.ChinHole);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, 18, currentCharacter.NeckThickness);
 
                     // facial appearance
 
 
-                    //SetPedFaceFeature(PlayerPedId(), 0, )
+                    //SetPedFaceFeature(Game.PlayerPed.Handle, 0, )
                 }
                 else
                 {
@@ -1747,23 +1763,23 @@ namespace vMenuClient
                 {
                     if (index == 0)
                     {
-                        SetPedComponentVariation(PlayerPedId(), 2, 0, 0, 0);
+                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, 0, 0, 0);
                         currentCharacter.HairStyle = 0;
                     }
                     else
                     {
-                        SetPedComponentVariation(PlayerPedId(), 2, index + 25 + 13, 0, 0);
+                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, index + 25 + 13, 0, 0);
                         currentCharacter.HairStyle = index + 25 + 13;
                     }
                 }
                 else if (item == f_hair_colors)
                 {
-                    SetPedHairColor(PlayerPedId(), index, currentCharacter.HairHighlightColor);
+                    SetPedHairColor(Game.PlayerPed.Handle, index, currentCharacter.HairHighlightColor);
                     currentCharacter.HairColor = index;
                 }
                 else if (item == f_hair_hi_colors)
                 {
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, index);
+                    SetPedHairColor(Game.PlayerPed.Handle, currentCharacter.HairColor, index);
                     currentCharacter.HairHighlightColor = index;
                     
                 }
@@ -1774,7 +1790,7 @@ namespace vMenuClient
             #region slider events
             femaleFeaturesMenu.OnSliderChange += (sender, item, index) =>
             {
-                SetPedFaceFeature(PlayerPedId(), sender.MenuItems.IndexOf(item), features_range[index]);
+                SetPedFaceFeature(Game.PlayerPed.Handle, sender.MenuItems.IndexOf(item), features_range[index]);
                 //currentCharacter.
             };
 
@@ -1812,10 +1828,10 @@ namespace vMenuClient
             //    Debug.WriteLine(nose[index].ToString());
 
 
-            //    SetPedFaceFeature(PlayerPedId(), 0, nose[index]);
+            //    SetPedFaceFeature(Game.PlayerPed.Handle, 0, nose[index]);
             //    //var data = 0;
-            //    //GetPedHeadBlendData(PlayerPedId(), ref data);
-            //    //var dat = CitizenFX.Core.Native.Function.Call<dynamic>((CitizenFX.Core.Native.Hash)0x2746BD9D88C5C5D0, PlayerPedId());
+            //    //GetPedHeadBlendData(Game.PlayerPed.Handle, ref data);
+            //    //var dat = CitizenFX.Core.Native.Function.Call<dynamic>((CitizenFX.Core.Native.Hash)0x2746BD9D88C5C5D0, Game.PlayerPed.Handle);
             //    //Debug.WriteLine(dat.ToString());
             //    //GetPedHeadBlendData()
             //};
@@ -1823,7 +1839,7 @@ namespace vMenuClient
             /*
             #region tattoo stuff
             // create submenu.
-            UIMenu tattooMenu = new UIMenu(GetPlayerName(PlayerId()), "MP Character Tattoo Options", true)
+            UIMenu tattooMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "MP Character Tattoo Options", true)
             {
                 ControlDisablingEnabled = false,
                 MouseControlsEnabled = false,
@@ -2179,14 +2195,14 @@ namespace vMenuClient
             int mom = currentCharacter.Mom;
             //int num = dad + mom;
             //dad = (num < 20) ? (20 + dad) : (dad + mom + 2);
-            //SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, thirdF, false);
-            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01"))
+            //SetPedHeadBlendData(Game.PlayerPed.Handle, mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, thirdF, false);
+            if (GetEntityModel(Game.PlayerPed.Handle) == (uint)GetHashKey("mp_f_freemode_01"))
             {
-                SetPedHeadBlendData(PlayerPedId(), mom + 21, dad, 0, mom + 21, dad, 0, Resemblance, SkinTone, 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, mom + 21, dad, 0, mom + 21, dad, 0, Resemblance, SkinTone, 0f, false);
             }
             else
             {
-                SetPedHeadBlendData(PlayerPedId(), mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, mom, dad, 0, mom, dad, 0, Resemblance, SkinTone, 0f, false);
             }
 
         }
@@ -2205,25 +2221,25 @@ namespace vMenuClient
                 {
                     await BaseScript.Delay(0);
                 }
-                SetPlayerModel(PlayerId(), model);
+                SetPlayerModel(Game.Player.Handle, model);
                 SetModelAsNoLongerNeeded((uint)model);
-                SetPedDefaultComponentVariation(PlayerPedId());
-                SetPedHeadBlendData(PlayerPedId(), male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);
+                SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, male ? 0 : 20, 0, 0, male ? 0 : 20, 0, 0, 0f, 0f, 0f, false);
                 if (!male)
                 {
                     currentCharacter.HairStyle = 4 + 25 + 13;
-                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    SetPedComponentVariation(Game.PlayerPed.Handle, 2, currentCharacter.HairStyle, 0, 0);
                     currentCharacter.HairColor = 59;
                     currentCharacter.HairHighlightColor = 3;
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                    SetPedHairColor(Game.PlayerPed.Handle, currentCharacter.HairColor, currentCharacter.HairHighlightColor);
                 }
                 else
                 {
                     currentCharacter.HairStyle = 4 + 0 + 13;
-                    SetPedComponentVariation(PlayerPedId(), 2, currentCharacter.HairStyle, 0, 0);
+                    SetPedComponentVariation(Game.PlayerPed.Handle, 2, currentCharacter.HairStyle, 0, 0);
                     currentCharacter.HairColor = 59;
                     currentCharacter.HairHighlightColor = 3;
-                    SetPedHairColor(PlayerPedId(), currentCharacter.HairColor, currentCharacter.HairHighlightColor);
+                    SetPedHairColor(Game.PlayerPed.Handle, currentCharacter.HairColor, currentCharacter.HairHighlightColor);
                 }
 
             }
@@ -2239,26 +2255,26 @@ namespace vMenuClient
         /// <param name="index"></param>
         private void EnableTattoo(UIMenu sender, UIMenuItem item, int index)
         {
-            if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_m_freemode_01")) // ped is male.
+            if (GetEntityModel(Game.PlayerPed.Handle) == (uint)GetHashKey("mp_m_freemode_01")) // ped is male.
             {
                 Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
                 if (tat.gender == PedGender.MALE || tat.gender == PedGender.UNISEX)
                 {
-                    ClearPedDecorations(PlayerPedId());
-                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
+                    ClearPedDecorations(Game.PlayerPed.Handle);
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
                 }
                 else
                 {
                     Notify.Error("This tattoo is not available for male peds.");
                 }
             }
-            else if (GetEntityModel(PlayerPedId()) == (uint)GetHashKey("mp_f_freemode_01")) // ped is female.
+            else if (GetEntityModel(Game.PlayerPed.Handle) == (uint)GetHashKey("mp_f_freemode_01")) // ped is female.
             {
                 Tattoo tat = tattoosList.Find((th) => GetLabelText(th.displayName) == item.Text);
                 if (tat.gender == PedGender.FEMALE || tat.gender == PedGender.UNISEX)
                 {
-                    ClearPedDecorations(PlayerPedId());
-                    SetPedDecoration(PlayerPedId(), (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
+                    ClearPedDecorations(Game.PlayerPed.Handle);
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tat.collection), (uint)GetHashKey(tat.name));
                 }
                 else
                 {

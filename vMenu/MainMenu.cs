@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +44,7 @@ namespace vMenuClient
         public static About AboutMenu { get; private set; }
         public static UIMenu NoClipMenu { get; } = new NoclipMenu().GetMenu();
         public static bool NoClipEnabled { get; set; } = false;
+        public static PlayerList PlayersList;
 
         // Only used when debugging is enabled:
         private BarTimerBar bt = new BarTimerBar("Opening Menu");
@@ -62,6 +63,17 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
+            PlayersList = Players;
+
+            if (EnableExperimentalFeatures || DebugMode)
+            {
+                RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+                {
+                    PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
+                    Debug.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
+                }), false);
+            }
+
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 if (args != null)
@@ -82,6 +94,11 @@ namespace vMenuClient
                                 SetRichPresence($"Enjoying FiveM!");
                             }
                         }
+                        else if (args[0].ToString().ToLower() == "gc")
+                        {
+                            GC.Collect();
+                            Debug.WriteLine("Cleared memory.");
+                        }
                     }
                     else
                     {
@@ -98,6 +115,7 @@ namespace vMenuClient
 
             if (GetCurrentResourceName() != "vMenu")
             {
+
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
                 try
                 {
@@ -115,6 +133,8 @@ namespace vMenuClient
                 Tick += ProcessMainButtons;
                 Tick += ProcessDirectionalButtons;
             }
+
+            SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
 
         }
 
@@ -172,8 +192,26 @@ namespace vMenuClient
             if (Mp.IsAnyMenuOpen())
             {
                 currentMenu = Cf.GetOpenMenu();
+                if (MpPedCustomizationMenu != null)
+                {
+                    if (currentMenu == MpPedCustomizationMenu.createCharacterMenu)
+                    {
+                        MpPedCustomization.DisableBackButton = true;
+                        MpPedCustomization.DontCloseMenus = true;
+                    }
+                    else
+                    {
+                        MpPedCustomization.DisableBackButton = false;
+                        MpPedCustomization.DontCloseMenus = false;
+                    }
+                }
                 if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
+                    if (MpPedCustomization.DisableBackButton || MpPedCustomization.DontCloseMenus)
+                    {
+                        Game.DisableControlThisFrame(0, Control.FrontendPause);
+                        Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate);
+                    }
                     if (currentMenu.Visible && !DisableControls)
                     {
                         // Select / Enter
@@ -185,11 +223,16 @@ namespace vMenuClient
                             }
                         }
                         // Cancel / Go Back
-                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel))
+                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && !MpPedCustomization.DisableBackButton)
                         {
                             // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
                             await Delay(0);
                             currentMenu.GoBack();
+                        }
+                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
+                        {
+                            await Delay(0);
+                            Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
                         }
                     }
                 }
@@ -220,10 +263,10 @@ namespace vMenuClient
                         // Update the currently selected item to the new one.
                         currentMenu.GoUp();
                         currentMenu.GoUpOverflow();
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        {
-                            currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                        }
+                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                        //{
+                        //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
+                        //}
 
 
                         // Get the current game time.
@@ -252,10 +295,10 @@ namespace vMenuClient
                                 // Update the currently selected item to the new one.
                                 currentMenu.GoUp();
                                 currentMenu.GoUpOverflow();
-                                if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                {
-                                    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                                }
+                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                                //{
+                                //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
+                                //}
 
                                 // Reset the time to the current game timer.
                                 time = GetGameTimer();
@@ -269,48 +312,54 @@ namespace vMenuClient
                     // Check if the Go Left controls are pressed.
                     else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
                     {
-                        currentMenu.GoLeft();
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-                        while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
+                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                         {
-                            currentMenu = Cf.GetOpenMenu();
-                            if (GetGameTimer() - time > delay)
+                            currentMenu.GoLeft();
+                            var time = GetGameTimer();
+                            var times = 0;
+                            var delay = 200;
+                            while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
                             {
-                                times++;
-                                if (times > 2)
+                                currentMenu = Cf.GetOpenMenu();
+                                if (GetGameTimer() - time > delay)
                                 {
-                                    delay = 150;
+                                    times++;
+                                    if (times > 2)
+                                    {
+                                        delay = 150;
+                                    }
+                                    currentMenu.GoLeft();
+                                    time = GetGameTimer();
                                 }
-                                currentMenu.GoLeft();
-                                time = GetGameTimer();
+                                await Delay(0);
                             }
-                            await Delay(0);
                         }
                     }
 
                     // Check if the Go Right controls are pressed.
                     else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
                     {
-                        currentMenu.GoRight();
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-                        while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
+                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                         {
-                            currentMenu = Cf.GetOpenMenu();
-                            if (GetGameTimer() - time > delay)
+                            currentMenu.GoRight();
+                            var time = GetGameTimer();
+                            var times = 0;
+                            var delay = 200;
+                            while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
                             {
-                                times++;
-                                if (times > 2)
+                                currentMenu = Cf.GetOpenMenu();
+                                if (GetGameTimer() - time > delay)
                                 {
-                                    delay = 150;
+                                    times++;
+                                    if (times > 2)
+                                    {
+                                        delay = 150;
+                                    }
+                                    currentMenu.GoRight();
+                                    time = GetGameTimer();
                                 }
-                                currentMenu.GoRight();
-                                time = GetGameTimer();
+                                await Delay(0);
                             }
-                            await Delay(0);
                         }
                     }
 
@@ -319,10 +368,10 @@ namespace vMenuClient
                     {
                         currentMenu.GoDown();
                         currentMenu.GoDownOverflow();
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        {
-                            currentMenu.CurrentSelection++;
-                        }
+                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                        //{
+                        //    currentMenu.CurrentSelection++;
+                        //}
                         var time = GetGameTimer();
                         var times = 0;
                         var delay = 200;
@@ -338,10 +387,10 @@ namespace vMenuClient
                                 }
                                 currentMenu.GoDown();
                                 currentMenu.GoDownOverflow();
-                                if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                {
-                                    currentMenu.CurrentSelection++;
-                                }
+                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
+                                //{
+                                //    currentMenu.CurrentSelection++;
+                                //}
                                 time = GetGameTimer();
                             }
                             await Delay(0);
@@ -375,10 +424,10 @@ namespace vMenuClient
                 ClearBrief();
 
                 // Request the permissions data from the server.
-                TriggerServerEvent("vMenu:RequestPermissions", PlayerId());
+                TriggerServerEvent("vMenu:RequestPermissions", Game.Player.Handle);
 
                 // Wait until the data is received and the player's name is loaded correctly.
-                while (!PreSetupComplete || GetPlayerName(PlayerId()) == "**Invalid**" || GetPlayerName(PlayerId()) == "** Invalid **")
+                while (!PreSetupComplete || GetPlayerName(Game.Player.Handle) == "**Invalid**" || GetPlayerName(Game.Player.Handle) == "** Invalid **")
                 {
                     await Delay(0);
                 }
@@ -393,7 +442,7 @@ namespace vMenuClient
                         NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
                     }
                     // Create the main menu.
-                    Menu = new UIMenu(GetPlayerName(PlayerId()), "Main Menu", true)
+                    Menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Main Menu", true)
                     {
                         ScaleWithSafezone = false,
                         MouseControlsEnabled = false,
@@ -410,6 +459,23 @@ namespace vMenuClient
                     // Create all (sub)menus.
                     CreateSubmenus();
                 }
+
+                // Manage Stamina
+                if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && Cf.IsAllowed(Permission.POUnlimitedStamina))
+                {
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                }
+                else
+                {
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
+                }
+                // Manage other stats.
+                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
             }
             #endregion
 
@@ -470,12 +536,18 @@ namespace vMenuClient
                     {
                         if (Game.IsControlJustPressed(0, (Control)NoClipKey) && Cf.IsAllowed(Permission.NoClip))
                         {
-                            if (IsPedInAnyVehicle(PlayerPedId(), false))
+                            if (Game.PlayerPed.IsInVehicle())
                             {
-                                if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == PlayerPedId())
+                                Vehicle veh = Cf.GetVehicle();
+                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                                 {
+
                                     NoClipEnabled = !Mp.IsAnyMenuOpen();
                                 }
+                                //if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == Game.PlayerPed.Handle)
+                                //{
+                                //NoClipEnabled = !Mp.IsAnyMenuOpen();
+                                //}
                                 else
                                 {
                                     NoClipEnabled = false;
@@ -515,11 +587,15 @@ namespace vMenuClient
                     {
                         Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
                         // when in a vehicle.
-                        if (IsPedInAnyVehicle(PlayerPedId(), false))
+                        if (Game.PlayerPed.IsInVehicle())
                         {
                             Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
                             Game.DisableControlThisFrame(0, Control.VehicleDuck);
                         }
+                    }
+                    else // when not using a controller.
+                    {
+                        Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate); // disable the escape key opening the pause menu, pressing P still works.
                     }
                     // Disable Shared Controls
 
@@ -552,7 +628,7 @@ namespace vMenuClient
                     Game.DisableControlThisFrame(0, Control.Aim);
 
                     // When in a vehicle
-                    if (IsPedInAnyVehicle(PlayerPedId(), false))
+                    if (Game.PlayerPed.IsInVehicle())
                     {
                         Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
                         Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);
@@ -610,7 +686,7 @@ namespace vMenuClient
                     }
                 };
             }
-            if (Cf.IsAllowed(Permission.OPUnban))
+            if (Cf.IsAllowed(Permission.OPUnban) || Cf.IsAllowed(Permission.OPViewBannedPlayers))
             {
                 BannedPlayersMenu = new BannedPlayers();
                 UIMenu menu = BannedPlayersMenu.GetMenu();
@@ -621,7 +697,7 @@ namespace vMenuClient
                 {
                     if (item == button)
                     {
-                        TriggerServerEvent("vMenu:RequestBanList", PlayerId());
+                        TriggerServerEvent("vMenu:RequestBanList", Game.Player.Handle);
                         menu.RefreshIndex();
                         menu.UpdateScaleform();
                     }

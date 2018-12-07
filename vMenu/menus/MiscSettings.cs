@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,8 +28,10 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
+        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
@@ -40,7 +42,7 @@ namespace vMenuClient
         {
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Misc Settings", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -48,7 +50,7 @@ namespace vMenuClient
                 ControlDisablingEnabled = false
             };
 
-            UIMenu teleportMenu = new UIMenu(GetPlayerName(PlayerId()), "Teleport Locations", true)
+            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -67,18 +69,20 @@ namespace vMenuClient
             UIMenuCheckboxItem hideRadar = new UIMenuCheckboxItem("Hide Radar", HideRadar, "Hide the radar/minimap.");
             UIMenuCheckboxItem hideHud = new UIMenuCheckboxItem("Hide Hud", HideHud, "Hide all hud elements.");
             UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
+            UIMenuCheckboxItem drawTime = new UIMenuCheckboxItem("Show Time On Screen", DrawTimeOnScreen, "Shows you the current time on screen.");
             UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
             saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
             UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
             UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
             UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", false, "Enable or disable night vision.");
             UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", false, "Enable or disable thermal vision.");
+            UIMenuCheckboxItem modelDimensions = new UIMenuCheckboxItem("Show Vehicle Dimensions", ShowVehicleModelDimensions, "Draws lines for the model dimensions of your vehicle (debug function).");
 
             UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
             UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
-            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(PlayerId()), "Connection Options", true)
+            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -130,6 +134,7 @@ namespace vMenuClient
             // Always allowed
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
+            menu.AddItem(modelDimensions);
             if (cf.IsAllowed(Permission.MSConnectionMenu))
             {
                 menu.AddItem(connectionSubmenuBtn);
@@ -143,6 +148,7 @@ namespace vMenuClient
             {
                 menu.AddItem(showLocation);
             }
+            menu.AddItem(drawTime); // always allowed
             if (cf.IsAllowed(Permission.MSJoinQuitNotifs))
             {
                 menu.AddItem(deathNotifs);
@@ -196,7 +202,7 @@ namespace vMenuClient
                         teleportMenu.OnItemSelect += async (sender, item, index) =>
                         {
                             await cf.TeleportToCoords(tpLocations[index], true);
-                            SetEntityHeading(PlayerPedId(), tpLocationsHeading[index]);
+                            SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
                         };
                     }
                     catch (JsonReaderException ex)
@@ -258,6 +264,10 @@ namespace vMenuClient
                 {
                     ShowLocation = _checked;
                 }
+                else if (item == drawTime)
+                {
+                    DrawTimeOnScreen = _checked;
+                }
                 else if (item == deathNotifs)
                 {
                     DeathNotifications = _checked;
@@ -298,6 +308,10 @@ namespace vMenuClient
                 else if (item == restorePlayerWeapons)
                 {
                     RestorePlayerWeapons = _checked;
+                }
+                else if (item == modelDimensions)
+                {
+                    ShowVehicleModelDimensions = _checked;
                 }
             };
 

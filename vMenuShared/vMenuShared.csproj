@@ -38,17 +38,17 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core.Client">
-      <HintPath>..\CitizenFX.Core.Client.dll</HintPath>
+    <Reference Include="CitizenFX.Core">
+      <HintPath>..\dependencies\client\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="CitizenFX.Core.Server">
-      <HintPath>..\CitizenFX.Core.Server.dll</HintPath>
+      <HintPath>..\dependencies\server\CitizenFX.Core.Server.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,10 +66,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">cp "$(TargetPath)" "$(SolutionDir)/dependencies/shared"
     </PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'"> if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenu\" (
-    copy /Y "$(TargetPath)" "$(SolutionDir)"
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "$(TargetPath)" "$(SolutionDir)\dependencies\shared"
+if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
     copy /Y "$(TargetPath)" "D:\FXserver\vMenu\resources\vMenu\"
 )</PostBuildEvent>
   </PropertyGroup>

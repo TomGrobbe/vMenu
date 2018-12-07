@@ -32,18 +32,16 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core.Client">
-      <HintPath>..\CitizenFX.Core.Client.dll</HintPath>
+    <Reference Include="CitizenFX.Core">
+      <HintPath>..\dependencies\client\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NativeUI, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\NativeUI.dll</HintPath>
+    <Reference Include="NativeUI">
+      <HintPath>..\dependencies\client\NativeUI.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,8 +51,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="vMenuShared.net">
-      <HintPath>..\vMenuShared.net.dll</HintPath>
+    <Reference Include="vMenuShared.net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dependencies\shared\vMenuShared.net.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -93,19 +92,14 @@
     <Compile Include="VehicleData.cs" />
     <Compile Include="Vehicles.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="mp_ped_data.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
-    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub Repos\vMenu\vMenu\" (
-    copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
+    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
+    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
+    REM copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

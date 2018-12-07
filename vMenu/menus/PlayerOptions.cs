@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +34,7 @@ namespace vMenuClient
         {
             #region create menu and menu items
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(PlayerId()), "Player Options", true)
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Options", true)
             {
                 ScaleWithSafezone = false,
                 MouseControlsEnabled = false,
@@ -47,9 +47,9 @@ namespace vMenuClient
             UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
             UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
             UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", PlayerFastRun, "Get ~g~Snail~s~ powers and run very fast!");
-            SetRunSprintMultiplierForPlayer(PlayerId(), (PlayerFastRun ? 1.49f : 1f));
+            SetRunSprintMultiplierForPlayer(Game.Player.Handle, (PlayerFastRun ? 1.49f : 1f));
             UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", PlayerFastSwim, "Get ~g~Snail 2.0~s~ powers and swim super fast!");
-            SetSwimMultiplierForPlayer(PlayerId(), (PlayerFastSwim ? 1.49f : 1f));
+            SetSwimMultiplierForPlayer(Game.Player.Handle, (PlayerFastSwim ? 1.49f : 1f));
             UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
             UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
             UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
@@ -58,7 +58,7 @@ namespace vMenuClient
 
             // Wanted level options
             List<dynamic> wantedLevelList = new List<dynamic> { "No Wanted Level", 1, 2, 3, 4, 5 };
-            UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(PlayerId()), "Set your wanted level by selecting a value, and pressing enter.");
+            UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(Game.Player.Handle), "Set your wanted level by selecting a value, and pressing enter.");
 
             UIMenuItem healPlayerBtn = new UIMenuItem("Heal Player", "Give the player max health.");
             UIMenuItem maxArmorBtn = new UIMenuItem("Max Armor", "Give the player max armor.");
@@ -130,7 +130,6 @@ namespace vMenuClient
             {
                 menu.AddItem(everyoneIgnoresPlayerCheckbox);
             }
-
             if (cf.IsAllowed(Permission.POMaxHealth))
             {
                 menu.AddItem(healPlayerBtn);
@@ -194,7 +193,7 @@ namespace vMenuClient
                                     {
                                         Notify.Error("You need a waypoint before you can drive to it!");
                                     }
-                                    
+
                                 }
                                 else if (item == startDrivingRandomly)
                                 {
@@ -221,30 +220,35 @@ namespace vMenuClient
                     {
                         if (Game.PlayerPed.IsInVehicle())
                         {
-                            Vector3 outPos = new Vector3();
-                            if (GetNthClosestVehicleNode(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, 3, ref outPos, 0, 0, 0))
+                            Vehicle veh = cf.GetVehicle();
+                            if (veh != null && veh.Exists() && !veh.IsDead)
                             {
-                                Notify.Info("The player ped will find a suitable place to park the car and will then stop driving. Please wait.");
-                                ClearPedTasks(PlayerPedId());
-                                TaskVehiclePark(PlayerPedId(), cf.GetVehicle(), outPos.X, outPos.Y, outPos.Z, Game.PlayerPed.Heading, 3, 60f, true);
-                                while (Game.PlayerPed.Position.DistanceToSquared2D(outPos) > 3f)
+                                Vector3 outPos = new Vector3();
+                                if (GetNthClosestVehicleNode(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, 3, ref outPos, 0, 0, 0))
                                 {
-                                    await BaseScript.Delay(0);
+                                    Notify.Info("The player ped will find a suitable place to park the car and will then stop driving. Please wait.");
+                                    ClearPedTasks(Game.PlayerPed.Handle);
+                                    TaskVehiclePark(Game.PlayerPed.Handle, veh.Handle, outPos.X, outPos.Y, outPos.Z, Game.PlayerPed.Heading, 3, 60f, true);
+                                    while (Game.PlayerPed.Position.DistanceToSquared2D(outPos) > 3f)
+                                    {
+                                        await BaseScript.Delay(0);
+                                    }
+                                    SetVehicleHalt(veh.Handle, 3f, 0, false);
+                                    ClearPedTasks(Game.PlayerPed.Handle);
+                                    Notify.Info("The player ped has stopped driving.");
                                 }
-                                SetVehicleHalt(cf.GetVehicle(), 3f, 0, false);
-                                ClearPedTasks(PlayerPedId());
-                                Notify.Info("The player ped has stopped driving.");
                             }
+
                         }
                         else
                         {
-                            ClearPedTasks(PlayerPedId());
+                            ClearPedTasks(Game.PlayerPed.Handle);
                             Notify.Alert("Your ped is not in any vehicle.");
                         }
                     }
                     else if (item == forceStopDriving)
                     {
-                        ClearPedTasks(PlayerPedId());
+                        ClearPedTasks(Game.PlayerPed.Handle);
                         Notify.Info("Driving task cancelled.");
                     }
                 };
@@ -254,7 +258,7 @@ namespace vMenuClient
                     if (item == drivingStyle)
                     {
                         int style = GetStyleFromIndex(index);
-                        SetDriveTaskDrivingStyle(PlayerPedId(), style);
+                        SetDriveTaskDrivingStyle(Game.PlayerPed.Handle, style);
                         Notify.Info($"Driving task style is now set to: ~r~{drivingStyles[index]}~s~.");
                     }
                 };
@@ -274,62 +278,76 @@ namespace vMenuClient
             #region handle all events
             // Checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
-                        {
-                            // God Mode toggled.
-                            if (item == playerGodModeCheckbox)
-                            {
-                                PlayerGodMode = _checked;
-                            }
-                            // Invisibility toggled.
-                            else if (item == invisibleCheckbox)
-                            {
-                                PlayerInvisible = _checked;
-                            }
-                            // Unlimited Stamina toggled.
-                            else if (item == unlimitedStaminaCheckbox)
-                            {
-                                PlayerStamina = _checked;
-                            }
-                            // Fast run toggled.
-                            else if (item == fastRunCheckbox)
-                            {
-                                PlayerFastRun = _checked;
-                                SetRunSprintMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
-                            }
-                            // Fast swim toggled.
-                            else if (item == fastSwimCheckbox)
-                            {
-                                PlayerFastSwim = _checked;
-                                SetSwimMultiplierForPlayer(PlayerId(), (_checked ? 1.49f : 1f));
-                            }
-                            // Super jump toggled.
-                            else if (item == superJumpCheckbox)
-                            {
-                                PlayerSuperJump = _checked;
-                            }
-                            // No ragdoll toggled.
-                            else if (item == noRagdollCheckbox)
-                            {
-                                PlayerNoRagdoll = _checked;
-                            }
-                            // Never wanted toggled.
-                            else if (item == neverWantedCheckbox)
-                            {
-                                PlayerNeverWanted = _checked;
-                            }
-                            // Everyone ignores player toggled.
-                            else if (item == everyoneIgnoresPlayerCheckbox)
-                            {
-                                PlayerIsIgnored = _checked;
-                            }
-                            // Freeze player toggled.
-                            else if (item == playerFrozenCheckbox)
-                            {
-                                PlayerFrozen = _checked;
-                                if (!_checked)
-                                    FreezeEntityPosition(PlayerPedId(), false);
-                            }
-                        };
+            {
+                // God Mode toggled.
+                if (item == playerGodModeCheckbox)
+                {
+                    PlayerGodMode = _checked;
+                }
+                // Invisibility toggled.
+                else if (item == invisibleCheckbox)
+                {
+                    PlayerInvisible = _checked;
+                    SetEntityVisible(Game.PlayerPed.Handle, !PlayerInvisible, false);
+                }
+                // Unlimited Stamina toggled.
+                else if (item == unlimitedStaminaCheckbox)
+                {
+                    PlayerStamina = _checked;
+                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), _checked ? 100 : 0, true);
+                }
+                // Fast run toggled.
+                else if (item == fastRunCheckbox)
+                {
+                    PlayerFastRun = _checked;
+                    SetRunSprintMultiplierForPlayer(Game.Player.Handle, (_checked ? 1.49f : 1f));
+                }
+                // Fast swim toggled.
+                else if (item == fastSwimCheckbox)
+                {
+                    PlayerFastSwim = _checked;
+                    SetSwimMultiplierForPlayer(Game.Player.Handle, (_checked ? 1.49f : 1f));
+                }
+                // Super jump toggled.
+                else if (item == superJumpCheckbox)
+                {
+                    PlayerSuperJump = _checked;
+                }
+                // No ragdoll toggled.
+                else if (item == noRagdollCheckbox)
+                {
+                    PlayerNoRagdoll = _checked;
+                }
+                // Never wanted toggled.
+                else if (item == neverWantedCheckbox)
+                {
+                    PlayerNeverWanted = _checked;
+                }
+                // Everyone ignores player toggled.
+                else if (item == everyoneIgnoresPlayerCheckbox)
+                {
+                    PlayerIsIgnored = _checked;
+
+                    // Manage player is ignored by everyone.
+                    SetEveryoneIgnorePlayer(Game.Player.Handle, PlayerIsIgnored);
+                    SetPoliceIgnorePlayer(Game.Player.Handle, PlayerIsIgnored);
+                    SetPlayerCanBeHassledByGangs(Game.Player.Handle, !PlayerIsIgnored);
+                }
+                // Freeze player toggled.
+                else if (item == playerFrozenCheckbox)
+                {
+                    PlayerFrozen = _checked;
+
+                    if (MainMenu.NoClipMenu != null && !MainMenu.NoClipEnabled)
+                    {
+                        FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
+                    }
+                    else if (!MainMenu.NoClipEnabled)
+                    {
+                        FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
+                    }
+                }
+            };
 
             // List selections
             menu.OnListSelect += (sender, listItem, index) =>
@@ -337,8 +355,8 @@ namespace vMenuClient
                 // Set wanted Level
                 if (listItem == setWantedLevel)
                 {
-                    SetPlayerWantedLevel(PlayerId(), index, false);
-                    SetPlayerWantedLevelNow(PlayerId(), false);
+                    SetPlayerWantedLevel(Game.Player.Handle, index, false);
+                    SetPlayerWantedLevelNow(Game.Player.Handle, false);
                 }
                 // Player Scenarios 
                 else if (listItem == playerScenarios)

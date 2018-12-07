@@ -50,6 +50,8 @@ namespace vMenuClient
         {
             MainMenu.SetPermissions(perms);
 
+            FunctionsController.flaresAllowed = cf.IsAllowed(Permission.VOFlares);
+            FunctionsController.bombsAllowed = cf.IsAllowed(Permission.VOPlaneBombs);
 
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             foreach (var addon in addonVehicles)
@@ -98,6 +100,8 @@ namespace vMenuClient
             minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
             minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
 
+            UpdateWeatherParticlesOnce();
+
             MainMenu.PreSetupComplete = true;
         }
 
@@ -134,6 +138,30 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
+        private async void UpdateWeatherParticlesOnce()
+        {
+            if (currentWeatherType.ToUpper() == "XMAS")
+            {
+                if (!HasNamedPtfxAssetLoaded("core_snow"))
+                {
+                    RequestNamedPtfxAsset("core_snow");
+                    while (!HasNamedPtfxAssetLoaded("core_snow"))
+                    {
+                        await Delay(0);
+                    }
+                }
+                UseParticleFxAssetNextCall("core_snow");
+                SetForceVehicleTrails(true);
+                SetForcePedFootstepsTracks(true);
+            }
+            else
+            {
+                SetForceVehicleTrails(false);
+                SetForcePedFootstepsTracks(false);
+                RemoveNamedPtfxAsset("core_snow");
+            }
+        }
+
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -146,29 +174,11 @@ namespace vMenuClient
                 await Delay(500);
 
                 var justChanged = false;
+                UpdateWeatherParticlesOnce();
                 if (currentWeatherType != lastWeather)
                 {
                     cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
-                    if (currentWeatherType == "XMAS")
-                    {
-                        if (!HasNamedPtfxAssetLoaded("core_snow"))
-                        {
-                            RequestNamedPtfxAsset("core_snow");
-                            while (!HasNamedPtfxAssetLoaded("core_snow"))
-                            {
-                                await Delay(0);
-                            }
-                        }
-                        UseParticleFxAssetNextCall("core_snow");
-                        SetForceVehicleTrails(true);
-                        SetForcePedFootstepsTracks(true);
-                    }
-                    else
-                    {
-                        SetForceVehicleTrails(false);
-                        SetForcePedFootstepsTracks(false);
-                        RemoveNamedPtfxAsset("core_snow");
-                    }
+                    
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
@@ -306,7 +316,7 @@ namespace vMenuClient
         private void KillMe()
         {
             Notify.Info("Someone wanted you dead.... Sorry.");
-            SetEntityHealth(PlayerPedId(), 0);
+            SetEntityHealth(Game.PlayerPed.Handle, 0);
         }
 
         /// <summary>

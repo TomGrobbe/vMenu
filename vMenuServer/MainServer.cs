@@ -51,7 +51,6 @@ namespace vMenuServer
                     prefix = "^3[vMenu] [WARNING]^7 ";
                 }
                 Debug.WriteLine($"{prefix}[DEBUG LOG] {data.ToString()}");
-
             }
         }
     }
@@ -124,6 +123,7 @@ namespace vMenuServer
             // Global
             "Everything",
             "DontKickMe",
+            "DontBanMe",
             "NoClip",
             "Staff",
 
@@ -139,6 +139,7 @@ namespace vMenuServer
             "OPPermBan",
             "OPTempBan",
             "OPUnban",
+            "OPViewBannedPlayers",
 
             // Player Options
             "POMenu",
@@ -167,9 +168,11 @@ namespace vMenuServer
             "VOAll",
             "VOGod",
             "VOSpecialGod",
+            "VOKeepClean",
             "VORepair",
             "VOWash",
             "VOEngine",
+            "VOSpeedLimiter",
             "VOChangePlate",
             "VOMod",
             "VOColors",
@@ -190,6 +193,9 @@ namespace vMenuServer
             "VODelete",
             "VOUnderglow",
             "VOFlashHighbeamsOnHonk",
+            "VODisableTurbulence",
+            "VOFlares",
+            "VOPlaneBombs",
             
             // Vehicle Spawner
             "VSMenu",
@@ -391,7 +397,7 @@ namespace vMenuServer
                             }
                             else
                             {
-                                new PlayerList()[source].TriggerEvent("chatMessage", $"vMenu Debug mode is now set to: {DebugMode}.");
+                                Players[source].TriggerEvent("chatMessage", $"vMenu Debug mode is now set to: {DebugMode}.");
                             }
                             return;
                         }
@@ -871,7 +877,7 @@ namespace vMenuServer
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // If the player is allowed to be kicked.
-                Player targetPlayer = new PlayerList()[target];
+                Player targetPlayer = Players[target];
                 if (targetPlayer != null)
                 {
                     if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
@@ -907,7 +913,7 @@ namespace vMenuServer
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kill") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                Player targetPlayer = new PlayerList()[target];
+                Player targetPlayer = Players[target];
                 if (targetPlayer != null)
                 {
                     // Trigger the client event on the target player to make them kill themselves. R.I.P.
@@ -933,7 +939,7 @@ namespace vMenuServer
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 // Trigger the client event on the target player to make them teleport to the source player.
-                Player targetPlayer = new PlayerList()[target];
+                Player targetPlayer = Players[target];
                 if (targetPlayer != null)
                 {
                     TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
