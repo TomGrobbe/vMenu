@@ -103,6 +103,7 @@ namespace vMenuClient
             public uint ModelHash;
             public string SaveName;
             public int Version;
+            public string WalkingStyle;
         }
     }
 }
