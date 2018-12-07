@@ -761,23 +761,23 @@ namespace vMenuClient
                 button.SetRightLabel("→→→");
                 AddMenu(menu, button);
 
-                if (EnableExperimentalFeatures)
-                {
-                    MpPedCustomizationMenu = new MpPedCustomization();
-                    UIMenu menu2 = MpPedCustomizationMenu.GetMenu();
-                    UIMenuItem button2 = new UIMenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.");
-                    button2.SetRightLabel("→→→");
-                    AddMenu(menu2, button2);
-                }
-                else
-                {
-                    MpPedCustomizationMenu = new MpPedCustomization();
-                    UIMenu menu2 = MpPedCustomizationMenu.GetMenu();
-                    UIMenuItem button2 = new UIMenuItem("MP Ped Customization", "This option is coming VERY soon™. Please be patient, it will be worth the wait.");
-                    button2.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
-                    button2.Enabled = false;
-                    AddMenu(menu2, button2);
-                }
+                //if (EnableExperimentalFeatures)
+                //{
+                MpPedCustomizationMenu = new MpPedCustomization();
+                UIMenu menu2 = MpPedCustomizationMenu.GetMenu();
+                UIMenuItem button2 = new UIMenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.");
+                button2.SetRightLabel("→→→");
+                AddMenu(menu2, button2);
+                //}
+                //else
+                //{
+                //    MpPedCustomizationMenu = new MpPedCustomization();
+                //    UIMenu menu2 = MpPedCustomizationMenu.GetMenu();
+                //    UIMenuItem button2 = new UIMenuItem("MP Ped Customization", "This option is coming VERY soon™. Please be patient, it will be worth the wait.");
+                //    button2.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
+                //    button2.Enabled = false;
+                //    AddMenu(menu2, button2);
+                //}
 
             }
 
