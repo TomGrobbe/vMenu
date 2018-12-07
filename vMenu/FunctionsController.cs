@@ -1839,7 +1839,7 @@ namespace vMenuClient
         #region help message controller
         private async Task HelpMessageController()
         {
-            if (World.NextWeather == Weather.Christmas)
+            if (World.NextWeather == Weather.Christmas && cf.IsAllowed(Permission.WPSnowball))
             {
                 void ShowSnowballInfoMessage()
                 {
