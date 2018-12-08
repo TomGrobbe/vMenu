@@ -619,6 +619,8 @@ namespace vMenuClient
         #endregion
 
         #region Spectate function
+
+        int currentlySpectatingPlayer = -1;
         public async void SpectatePlayer(Player player, bool forceDisable = false)
         {
             if (forceDisable)
@@ -636,6 +638,7 @@ namespace vMenuClient
                         NetworkSetInSpectatorMode(false, 0); // disable spectating.
                         DoScreenFadeIn(500);
                         Notify.Success("Stopped spectating.", false, true);
+                        currentlySpectatingPlayer = -1;
                     }
                     else
                     {
@@ -644,12 +647,39 @@ namespace vMenuClient
                 }
                 else
                 {
-                    DoScreenFadeOut(500);
-                    while (IsScreenFadingOut()) await Delay(0);
-                    NetworkSetInSpectatorMode(false, 0);
-                    NetworkSetInSpectatorMode(true, player.Character.Handle);
-                    DoScreenFadeIn(500);
-                    Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                    if (NetworkIsInSpectatorMode())
+                    {
+                        if (currentlySpectatingPlayer != player.Handle)
+                        {
+                            DoScreenFadeOut(500);
+                            while (IsScreenFadingOut()) await Delay(0);
+                            NetworkSetInSpectatorMode(false, 0);
+                            NetworkSetInSpectatorMode(true, player.Character.Handle);
+                            DoScreenFadeIn(500);
+                            Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            currentlySpectatingPlayer = player.Handle;
+                        }
+                        else
+                        {
+                            DoScreenFadeOut(500);
+                            while (IsScreenFadingOut()) await Delay(0);
+                            NetworkSetInSpectatorMode(false, 0); // disable spectating.
+                            DoScreenFadeIn(500);
+                            Notify.Success("Stopped spectating.", false, true);
+                            currentlySpectatingPlayer = -1;
+                        }
+                    }
+                    else
+                    {
+                        DoScreenFadeOut(500);
+                        while (IsScreenFadingOut()) await Delay(0);
+                        NetworkSetInSpectatorMode(false, 0);
+                        NetworkSetInSpectatorMode(true, player.Character.Handle);
+                        DoScreenFadeIn(500);
+                        Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                        currentlySpectatingPlayer = player.Handle;
+                    }
+
                 }
             }
 
