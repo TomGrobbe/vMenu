@@ -24,7 +24,7 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
-        private UIMenu lastOpenMenu = null;
+        //private UIMenu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -37,7 +37,7 @@ namespace vMenuClient
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
-        private bool wasMenuJustOpen = false;
+        //private bool wasMenuJustOpen = false;
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -132,40 +132,52 @@ namespace vMenuClient
                     }
                 }
 
-                if (!MainMenu.DontOpenMenus && MainMenu.Mp.IsAnyMenuOpen())
+                if (MainMenu.Mp.IsAnyMenuOpen())
                 {
-                    lastOpenMenu = cf.GetOpenMenu();
-                }
-                // If any on-screen keyboard is visible, close any open menus and disable any menu from opening.
-                if (UpdateOnscreenKeyboard() == 0 && (MainMenu.Mp.IsAnyMenuOpen() || wasMenuJustOpen)) // still editing aka the input box is visible.
-                {
-                    MainMenu.DontOpenMenus = true;
-                    MainMenu.DisableControls = true;
-                    wasMenuJustOpen = true; // added for extra check to make sure only vMenu gets re-opened if vMenu was already open.
-                }
-                // Otherwise, check if the "DontOpenMenus" option is (still) true.
-                else
-                {
-                    if (MainMenu.DontOpenMenus)
+                    if (UpdateOnscreenKeyboard() == 0)
                     {
-                        // Allow menus from being displayed.
-                        MainMenu.DontOpenMenus = false;
-
-                        // Check if the previous menu isn't null.
-                        if (lastOpenMenu != null && wasMenuJustOpen)
-                        {
-                            // Re-open the last menu.
-                            lastOpenMenu.Visible = true;
-                            // Set the last menu to null.
-                            lastOpenMenu = null;
-                            wasMenuJustOpen = false; // reset the justOpen state.
-                        }
-
-                        // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
-                        await Delay(5);
-                        MainMenu.DisableControls = false;
+                        MainMenu.Mp.CloseAllMenus();
                     }
                 }
+
+                //if (!MainMenu.DontOpenMenus && MainMenu.Mp.IsAnyMenuOpen())
+                //{
+                //    lastOpenMenu = cf.GetOpenMenu();
+                //}
+                //// If any on-screen keyboard is visible, close any open menus and disable any menu from opening.
+                //if (UpdateOnscreenKeyboard() == 0 && (MainMenu.Mp.IsAnyMenuOpen() || wasMenuJustOpen)) // still editing aka the input box is visible.
+                //{
+                //    MainMenu.DontOpenMenus = true;
+                //    MainMenu.DisableControls = true;
+                //    wasMenuJustOpen = true; // added for extra check to make sure only vMenu gets re-opened if vMenu was already open.
+                //}
+                //// Otherwise, check if the "DontOpenMenus" option is (still) true.
+                //else
+                //{
+                //    if (MainMenu.DontOpenMenus)
+                //    {
+                //        // Allow menus from being displayed.
+                //        MainMenu.DontOpenMenus = false;
+
+                //        // Check if the previous menu isn't null.
+                //        if (lastOpenMenu != null && wasMenuJustOpen)
+                //        {
+                //            // Re-open the last menu.
+                //            lastOpenMenu.Visible = true;
+                //            // Set the last menu to null.
+                //            lastOpenMenu = null;
+                //            wasMenuJustOpen = false; // reset the justOpen state.
+                //        }
+
+                //        // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
+                //        await Delay(5);
+                //        MainMenu.DisableControls = false;
+                //    }
+                //}
+            }
+            else
+            {
+                await Delay(0);
             }
         }
         #endregion

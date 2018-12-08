@@ -405,9 +405,9 @@ namespace vMenuClient
                 // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
                 if (askUserForReason && providedReason == defaultReason)
                 {
-                    string userInput = await GetUserInput("Enter Kick Message", "", 100) ?? "NULL";
+                    string userInput = await GetUserInput(windowTitle: "Enter Kick Message", maxInputLength: 100);
                     // If the input is not invalid, set the kick reason to the user's custom message.
-                    if (userInput != "NULL")
+                    if (!string.IsNullOrEmpty(userInput))
                     {
                         defaultReason += $" Reason: {userInput}";
                     }
@@ -450,8 +450,8 @@ namespace vMenuClient
         /// <param name="forever">Ban forever or ban temporarily.</param>
         public async void BanPlayer(Player player, bool forever)
         {
-            string banReason = await GetUserInput("Enter Ban Reason", "Banned by staff", 200);
-            if (!string.IsNullOrEmpty(banReason) && banReason.Length > 1 && banReason != "NULL")
+            string banReason = await GetUserInput(windowTitle: "Enter Ban Reason", defaultText: "Banned by staff.", maxInputLength: 200);
+            if (!string.IsNullOrEmpty(banReason) && banReason.Length > 1)
             {
                 if (forever)
                 {
@@ -459,7 +459,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    string banDurationHours = await GetUserInput("Ban Duration (in hours)                      Max: 720 (1 month)", "1.5", 10);
+                    string banDurationHours = await GetUserInput(windowTitle: "Ban Duration (in hours) - Max: 720 (1 month)", defaultText: "1.5", maxInputLength: 10);
                     if (!string.IsNullOrEmpty(banDurationHours))
                     {
                         if (double.TryParse(banDurationHours, out double banHours))
@@ -776,9 +776,9 @@ namespace vMenuClient
             if (vehicleName == "custom")
             {
                 // Get the result.
-                string result = await GetUserInput("Enter Vehicle Name", "");
+                string result = await GetUserInput(windowTitle: "Enter Vehicle Name");
                 // If the result was not invalid.
-                if (result != "NULL")
+                if (!string.IsNullOrEmpty(result))
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
@@ -1123,7 +1123,7 @@ namespace vMenuClient
                     if (updateExistingSavedVehicleName == null)
                     {
                         // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                        var saveName = await GetUserInput("Enter a save name", "", 25);
+                        var saveName = await GetUserInput(windowTitle: "Enter a save name", maxInputLength: 30);
                         // If the name is not invalid.
                         if (saveName != "NULL")
                         {
@@ -1260,17 +1260,68 @@ namespace vMenuClient
 
         #region GetUserInput
         /// <summary>
-        /// Gets input from the user.
+        /// Get a user input text string.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetUserInput() => await GetUserInput(null, null, 30);
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="maxInputLength"></param>
+        /// <returns></returns>
+        public async Task<string> GetUserInput(int maxInputLength) => await GetUserInput(null, null, maxInputLength);
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <returns></returns>
+        public async Task<string> GetUserInput(string windowTitle) => await GetUserInput(windowTitle, null, 30);
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <param name="maxInputLength"></param>
+        /// <returns></returns>
+        public async Task<string> GetUserInput(string windowTitle, int maxInputLength) => await GetUserInput(windowTitle, null, maxInputLength);
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <param name="defaultText"></param>
+        /// <returns></returns>
+        public async Task<string> GetUserInput(string windowTitle, string defaultText) => await GetUserInput(windowTitle, defaultText, 30);
+        /// <summary>
+        /// Get a user input text string.
         /// </summary>
         /// <param name="windowTitle"></param>
         /// <param name="defaultText"></param>
         /// <param name="maxInputLength"></param>
-        /// <returns>Reruns the input or "NULL" if cancelled.</returns>
-        public async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 20)
+        /// <returns></returns>
+        public async Task<string> GetUserInput(string windowTitle, string defaultText, int maxInputLength)
         {
+            var currentMenu = GetOpenMenu();
+            if (currentMenu != null)
+            {
+                MainMenu.Mp.CloseAllMenus();
+            }
+            MainMenu.DisableControls = true;
+            MainMenu.DontOpenMenus = true;
+
             // Create the window title string.
             var spacer = "\t";
             AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
+
+            async void ReopenMenuDelayed(UIMenu menu)
+            {
+                MainMenu.DontOpenMenus = false;
+                await Delay(100);
+                if (menu != null)
+                {
+                    menu.Visible = true;
+                }
+                await Delay(50);
+                MainMenu.DisableControls = false;
+            }
 
             // Display the input box.
             DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
@@ -1278,42 +1329,21 @@ namespace vMenuClient
             // Wait for a result.
             while (true)
             {
-                // Cancelled
-                if (UpdateOnscreenKeyboard() == 2)
-                {
-                    break;
-                }
-                // Finished
-                else if (UpdateOnscreenKeyboard() == 1)
-                {
-                    break;
-                }
-                // Not displaying keyboard
-                else if (UpdateOnscreenKeyboard() == 3)
-                {
-                    break;
-                }
-                // Still editing
-                else
-                {
-                    await Delay(0);
-                }
-                // Just in case something goes wrong, add wait to prevent crashing.
-                await Delay(0);
-            }
-            // Get the result
-            int status = UpdateOnscreenKeyboard();
-            string result = GetOnscreenKeyboardResult();
+                int keyboardStatus = UpdateOnscreenKeyboard();
 
-            // If the result is not empty or null
-            if (result != "" && result != null && status == 1)
-            {
-                // Return result.
-                return result.ToString();
-            }
-            else
-            {
-                return "NULL";
+                switch (keyboardStatus)
+                {
+                    case 3: // not displaying input field anymore somehow
+                    case 2: // cancelled
+                        ReopenMenuDelayed(currentMenu);
+                        return null;
+                    case 1: // finished editing
+                        ReopenMenuDelayed(currentMenu);
+                        return GetOnscreenKeyboardResult();
+                    default:
+                        await Delay(0);
+                        break;
+                }
             }
         }
         #endregion
@@ -1325,9 +1355,9 @@ namespace vMenuClient
         public async void SetLicensePlateTextAsync()
         {
             // Get the input.
-            var text = await GetUserInput("Enter License Plate", maxInputLength: 8);
+            var text = await GetUserInput(windowTitle: "Enter License Plate", maxInputLength: 8);
             // If the input is valid.
-            if (text != "NULL")
+            if (!string.IsNullOrEmpty(text))
             {
                 // Get the vehicle.
                 var veh = GetVehicle();
@@ -1947,8 +1977,8 @@ namespace vMenuClient
         /// </summary>
         public async void SpawnPedByName()
         {
-            string input = await GetUserInput("Enter Ped Model Name", "", 30) ?? "NULL";
-            if (input != "NULL")
+            string input = await GetUserInput(windowTitle: "Enter Ped Model Name", maxInputLength: 30);
+            if (!string.IsNullOrEmpty(input))
             {
                 await SetPlayerSkin((uint)GetHashKey(input), new PedInfo() { version = -1 });
             }
@@ -1969,11 +1999,11 @@ namespace vMenuClient
             if (string.IsNullOrEmpty(name))
             {
                 // Get the save name.
-                name = await GetUserInput("Enter a ped save name", maxInputLength: 15);
+                name = await GetUserInput(windowTitle: "Enter a ped save name", maxInputLength: 30);
             }
 
             // If the save name is not invalid.
-            if (name != "" && name != null && name != "NULL")
+            if (!string.IsNullOrEmpty(name))
             {
                 // Create a dictionary to store all data in.
                 //Dictionary<string, string> pedData = new Dictionary<string, string>();
@@ -2314,9 +2344,9 @@ namespace vMenuClient
         public async void SetAllWeaponsAmmo()
         {
             int ammo = 100;
-            string inputAmmo = await GetUserInput("Enter Ammo Amount", "100") ?? "NULL";
+            string inputAmmo = await GetUserInput(windowTitle: "Enter Ammo Amount", defaultText: "100");
 
-            if (inputAmmo != "NULL")
+            if (!string.IsNullOrEmpty(inputAmmo))
             {
                 ammo = int.Parse(inputAmmo);
                 Ped ped = Game.PlayerPed;
@@ -2340,8 +2370,8 @@ namespace vMenuClient
         public async void SpawnCustomWeapon()
         {
             int ammo = 900;
-            string inputName = await GetUserInput("Enter Weapon Model Name", "", 30) ?? "NULL";
-            if (inputName != "NULL")
+            string inputName = await GetUserInput(windowTitle: "Enter Weapon Model Name", maxInputLength: 30);
+            if (!string.IsNullOrEmpty(inputName))
             {
                 var model = (uint)GetHashKey(inputName.ToUpper());
 

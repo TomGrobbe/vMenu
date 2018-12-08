@@ -596,10 +596,10 @@ namespace vMenuClient
             }
             else
             {
-                string name = await cf.GetUserInput("Enter a save name.", "", 30);
-                if (string.IsNullOrEmpty(name) || name == "NULL")
+                string name = await cf.GetUserInput(windowTitle: "Enter a save name.", maxInputLength: 30);
+                if (string.IsNullOrEmpty(name))
                 {
-                    Notify.Alert("You cancelled the action or you provided an invalid name.");
+                    Notify.Error(CommonErrors.InvalidInput);
                     return false;
                 }
                 else
@@ -1472,8 +1472,8 @@ namespace vMenuClient
                 else if (item == clonePed)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await cf.GetUserInput("Enter a name for the cloned character", "", 30);
-                    if (string.IsNullOrEmpty(name) || name.ToUpper() == "NULL")
+                    string name = await cf.GetUserInput(windowTitle: "Enter a name for the cloned character", maxInputLength: 30);
+                    if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidSaveName);
                     }
@@ -1501,8 +1501,8 @@ namespace vMenuClient
                 else if (item == renameCharacter)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await cf.GetUserInput("Enter a new character name", "", 30);
-                    if (string.IsNullOrEmpty(name) || name.ToUpper() == "NULL")
+                    string name = await cf.GetUserInput(windowTitle: "Enter a new character name", maxInputLength: 30);
+                    if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
                     }

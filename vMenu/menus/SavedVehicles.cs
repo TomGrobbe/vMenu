@@ -154,10 +154,10 @@ namespace vMenuClient
                 }
                 else if (item == renameVehicle)
                 {
-                    string newName = await cf.GetUserInput("Enter a new name for this vehicle.", "", 25);
-                    if (string.IsNullOrEmpty(newName) || newName == "NULL")
+                    string newName = await cf.GetUserInput(windowTitle: "Enter a new name for this vehicle.", maxInputLength: 30);
+                    if (string.IsNullOrEmpty(newName))
                     {
-                        Notify.Error("You entered an invalid name or you cancelled the action.");
+                        Notify.Error(CommonErrors.InvalidInput);
                     }
                     else
                     {
