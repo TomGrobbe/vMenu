@@ -587,7 +587,7 @@ namespace vMenuClient
             #endregion
 
             #region Handle List Items Selected
-            menu.OnListSelect += (sender, item, index) =>
+            menu.OnListSelect += async (sender, item, index) =>
             {
                 // Set dirt level
                 if (item == setDirtLevel)
@@ -701,6 +701,14 @@ namespace vMenuClient
                                 vehicle.MaxSpeed = 500.0f; // Default max speed seemingly for all vehicles.
                                 Notify.Info("Vehicle speed is now no longer limited.");
                             }
+                            //else if (index == 3) // custom speed
+                            //{
+                            //    string inputSpeed = await cf.GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
+                            //    if (string.IsNullOrEmpty(inputSpeed))
+                            //    {
+                                    
+                            //    }
+                            //}
                         }
                     }
                 }
