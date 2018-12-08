@@ -92,9 +92,9 @@ namespace vMenuClient
         /// <returns></returns>
         public static bool SaveVehicleInfo(string saveName, CommonFunctions.VehicleInfo vehicleInfo, bool overrideOldVersion)
         {
-            if ((GetResourceKvpString(saveName) ?? "NULL") == "NULL" || overrideOldVersion)
+            if (string.IsNullOrEmpty(GetResourceKvpString(saveName)) || overrideOldVersion)
             {
-                if ((saveName ?? "NULL") != "NULL" && saveName.Length > 4)
+                if (!string.IsNullOrEmpty(saveName) && saveName.Length > 4)
                 {
                     // convert
                     string json = JsonConvert.SerializeObject(vehicleInfo);
@@ -104,8 +104,6 @@ namespace vMenuClient
 
                     // save
                     SetResourceKvp(saveName, json);
-                    //Debug.WriteLine(GetResourceKvpString(saveName).ToString());
-                    //Debug.WriteLine(saveName);
 
                     // confirm
                     return GetResourceKvpString(saveName) == json;

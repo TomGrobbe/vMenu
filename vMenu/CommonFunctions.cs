@@ -1125,7 +1125,7 @@ namespace vMenuClient
                         // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
                         var saveName = await GetUserInput(windowTitle: "Enter a save name", maxInputLength: 30);
                         // If the name is not invalid.
-                        if (saveName != "NULL")
+                        if (!string.IsNullOrEmpty(saveName))
                         {
                             // Save everything from the dictionary into the client's kvp storage.
                             // If the save was successfull:

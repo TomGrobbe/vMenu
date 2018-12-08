@@ -96,10 +96,18 @@ namespace vMenuClient
                     UpdateMenuAvailableCategories();
                 };
 
-                categoryMenu.OnItemSelect += (sender, item, index) =>
+                categoryMenu.OnItemSelect += async (sender, item, index) =>
                 {
-                    UpdateSelectedVehicleMenu(item);
                     lastMenu = categoryMenu;
+                    if (!UpdateSelectedVehicleMenu(item))
+                    {
+                        while (!MainMenu.Mp.IsAnyMenuOpen() || categoryMenu.Visible)
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                        cf.GetOpenMenu().Visible = false;
+                        lastMenu.Visible = true; // force the category menu to re-open after closing all other menus.
+                    }
                 };
             }
 
@@ -221,15 +229,28 @@ namespace vMenuClient
         }
 
 
-
-        private void UpdateSelectedVehicleMenu(UIMenuItem selectedItem)
+        /// <summary>
+        /// Updates the selected vehicle.
+        /// </summary>
+        /// <param name="selectedItem"></param>
+        /// <returns>A bool, true if successfull, false if unsuccessfull</returns>
+        private bool UpdateSelectedVehicleMenu(UIMenuItem selectedItem)
         {
+            if (!svMenuItems.ContainsKey(selectedItem))
+            {
+                Notify.Error("In some very strange way, you've managed to select a button, that does not exist according to this list. So your vehicle could not be loaded. :( Maybe your save files are broken?");
+                return false;
+            }
             var vehInfo = svMenuItems[selectedItem];
             selectedVehicleMenu.Subtitle.Caption = $"{vehInfo.Key.Substring(4)} ({vehInfo.Value.name})";
             currentlySelectedVehicle = vehInfo;
+            return true;
         }
 
 
+        /// <summary>
+        /// Updates the available vehicle category list.
+        /// </summary>
         public void UpdateMenuAvailableCategories()
         {
             savedVehicles = cf.GetSavedVehicles();
