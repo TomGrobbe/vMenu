@@ -198,23 +198,27 @@ namespace vMenuClient
                 bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
                 bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
 
-                // Manage Player God Mode
-                bool IsMpPedCreatorOpen()
+                if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible != null)
                 {
-                    return
-                        MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                        //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
+                    // Manage Player God Mode
+                    bool IsMpPedCreatorOpen()
+                    {
+                        return
+                            MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
+                            //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
+                            MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
+                    }
+                    if (!IsMpPedCreatorOpen())
+                    {
+                        SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
+                    }
                 }
-                if (!IsMpPedCreatorOpen())
-                {
-                    SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
-                }
+                
 
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
