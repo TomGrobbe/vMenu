@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
         public static Dictionary<string, UIMenuItem> weatherHashMenuIndex = new Dictionary<string, UIMenuItem>();
         public UIMenuCheckboxItem dynamicWeatherEnabled;
         public UIMenuCheckboxItem blackout;
@@ -47,17 +46,17 @@ namespace vMenuClient
             UIMenuItem randomizeclouds = new UIMenuItem("Randomize Clouds", "Add random clouds to the sky!");
 
             var indexOffset = 2;
-            if (cf.IsAllowed(Permission.WODynamic))
+            if (IsAllowed(Permission.WODynamic))
             {
                 menu.AddItem(dynamicWeatherEnabled);
                 indexOffset--;
             }
-            if (cf.IsAllowed(Permission.WOBlackout))
+            if (IsAllowed(Permission.WOBlackout))
             {
                 menu.AddItem(blackout);
                 indexOffset--;
             }
-            if (cf.IsAllowed(Permission.WOSetWeather))
+            if (IsAllowed(Permission.WOSetWeather))
             {
                 weatherHashMenuIndex.Add("-1750463879", extrasunny);
                 weatherHashMenuIndex.Add("916995460", clear);
@@ -91,12 +90,12 @@ namespace vMenuClient
                 menu.AddItem(xmas);
                 menu.AddItem(halloween);
             }
-            if (cf.IsAllowed(Permission.WORandomizeClouds))
+            if (IsAllowed(Permission.WORandomizeClouds))
             {
                 menu.AddItem(removeclouds);
             }
 
-            if (cf.IsAllowed(Permission.WORemoveClouds))
+            if (IsAllowed(Permission.WORemoveClouds))
             {
                 menu.AddItem(randomizeclouds);
             }
@@ -127,15 +126,15 @@ namespace vMenuClient
                 if (index >= 2 && index <= 16)
                 {
                     Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 45 seconds.");
-                    cf.UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
+                    UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
                 if (item == removeclouds)
                 {
-                    cf.ModifyClouds(true);
+                    ModifyClouds(true);
                 }
                 else if (item == randomizeclouds)
                 {
-                    cf.ModifyClouds(false);
+                    ModifyClouds(false);
                 }
             };
 
@@ -145,13 +144,13 @@ namespace vMenuClient
                 {
                     EventManager.dynamicWeather = _checked;
                     Notify.Custom($"Dynamic weather changes are now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
-                    cf.UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, _checked);
+                    UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, _checked);
                 }
                 else if (item == blackout)
                 {
                     EventManager.blackoutMode = _checked;
                     Notify.Custom($"Blackout mode is now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
-                    cf.UpdateServerWeather(EventManager.currentWeatherType, _checked, EventManager.dynamicWeather);
+                    UpdateServerWeather(EventManager.currentWeatherType, _checked, EventManager.dynamicWeather);
                 }
             };
         }

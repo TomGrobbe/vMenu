@@ -17,8 +17,6 @@ namespace vMenuClient
         #region Variables
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
-        private static VehicleData vd = new VehicleData();
 
         // Submenus
         public UIMenu VehicleModMenu { get; private set; }
@@ -150,121 +148,121 @@ namespace vMenuClient
 
             #region Add items to the menu.
             // Add everything to the menu. (based on permissions)
-            if (cf.IsAllowed(Permission.VOGod)) // GOD MODE
+            if (IsAllowed(Permission.VOGod)) // GOD MODE
             {
                 menu.AddItem(vehicleGod);
             }
-            if (cf.IsAllowed(Permission.VOSpecialGod)) // special god mode
+            if (IsAllowed(Permission.VOSpecialGod)) // special god mode
             {
                 menu.AddItem(vehicleSpecialGod);
             }
-            if (cf.IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
+            if (IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
                 menu.AddItem(fixVehicle);
             }
-            if (cf.IsAllowed(Permission.VOKeepClean))
+            if (IsAllowed(Permission.VOKeepClean))
             {
                 menu.AddItem(vehicleNeverDirty);
             }
-            if (cf.IsAllowed(Permission.VOWash))
+            if (IsAllowed(Permission.VOWash))
             {
                 menu.AddItem(cleanVehicle); // CLEAN VEHICLE
                 menu.AddItem(setDirtLevel); // SET DIRT LEVEL
             }
-            if (cf.IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
+            if (IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
             {
                 menu.AddItem(toggleEngine);
             }
-            if (cf.IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
+            if (IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
             {
                 menu.AddItem(speedLimiter);
             }
-            if (cf.IsAllowed(Permission.VOChangePlate))
+            if (IsAllowed(Permission.VOChangePlate))
             {
                 menu.AddItem(setLicensePlateText); // SET LICENSE PLATE TEXT
                 menu.AddItem(setLicensePlateType); // SET LICENSE PLATE TYPE
             }
-            if (cf.IsAllowed(Permission.VOMod)) // MOD MENU
+            if (IsAllowed(Permission.VOMod)) // MOD MENU
             {
                 menu.AddItem(modMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOColors)) // COLORS MENU
+            if (IsAllowed(Permission.VOColors)) // COLORS MENU
             {
                 menu.AddItem(colorsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOUnderglow)) // UNDERGLOW EFFECTS
+            if (IsAllowed(Permission.VOUnderglow)) // UNDERGLOW EFFECTS
             {
                 menu.AddItem(underglowMenuBtn);
                 menu.BindMenuToItem(VehicleUnderglowMenu, underglowMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOLiveries)) // LIVERIES MENU
+            if (IsAllowed(Permission.VOLiveries)) // LIVERIES MENU
             {
                 menu.AddItem(liveriesMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOComponents)) // COMPONENTS MENU
+            if (IsAllowed(Permission.VOComponents)) // COMPONENTS MENU
             {
                 menu.AddItem(componentsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VODoors)) // DOORS MENU
+            if (IsAllowed(Permission.VODoors)) // DOORS MENU
             {
                 menu.AddItem(doorsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOWindows)) // WINDOWS MENU
+            if (IsAllowed(Permission.VOWindows)) // WINDOWS MENU
             {
                 menu.AddItem(windowsMenuBtn);
             }
-            if (cf.IsAllowed(Permission.VOTorqueMultiplier))
+            if (IsAllowed(Permission.VOTorqueMultiplier))
             {
                 menu.AddItem(torqueEnabled); // TORQUE ENABLED
                 menu.AddItem(torqueMultiplier); // TORQUE LIST
             }
-            if (cf.IsAllowed(Permission.VOPowerMultiplier))
+            if (IsAllowed(Permission.VOPowerMultiplier))
             {
                 menu.AddItem(powerEnabled); // POWER ENABLED
                 menu.AddItem(powerMultiplier); // POWER LIST
             }
-            if (cf.IsAllowed(Permission.VODisableTurbulence))
+            if (IsAllowed(Permission.VODisableTurbulence))
             {
                 menu.AddItem(vehicleNoTurbulence);
             }
-            if (cf.IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
+            if (IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
             {
                 menu.AddItem(flipVehicle);
             }
-            if (cf.IsAllowed(Permission.VOAlarm)) // TOGGLE VEHICLE ALARM
+            if (IsAllowed(Permission.VOAlarm)) // TOGGLE VEHICLE ALARM
             {
                 menu.AddItem(vehicleAlarm);
             }
-            if (cf.IsAllowed(Permission.VOCycleSeats)) // CYCLE THROUGH VEHICLE SEATS
+            if (IsAllowed(Permission.VOCycleSeats)) // CYCLE THROUGH VEHICLE SEATS
             {
                 menu.AddItem(cycleSeats);
             }
-            if (cf.IsAllowed(Permission.VOLights)) // VEHICLE LIGHTS LIST
+            if (IsAllowed(Permission.VOLights)) // VEHICLE LIGHTS LIST
             {
                 menu.AddItem(vehicleLights);
             }
-            if (cf.IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
+            if (IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
                 menu.AddItem(vehicleFreeze);
             }
-            if (cf.IsAllowed(Permission.VOEngineAlwaysOn)) // LEAVE ENGINE RUNNING
+            if (IsAllowed(Permission.VOEngineAlwaysOn)) // LEAVE ENGINE RUNNING
             {
                 menu.AddItem(vehicleEngineAO);
             }
-            if (cf.IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
+            if (IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
             {
                 menu.AddItem(vehicleNoSiren);
             }
-            if (cf.IsAllowed(Permission.VONoHelmet)) // DISABLE BIKE HELMET
+            if (IsAllowed(Permission.VONoHelmet)) // DISABLE BIKE HELMET
             {
                 menu.AddItem(vehicleNoBikeHelmet);
             }
-            if (cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk)) // FLASH HIGHBEAMS ON HONK
+            if (IsAllowed(Permission.VOFlashHighbeamsOnHonk)) // FLASH HIGHBEAMS ON HONK
             {
                 menu.AddItem(highbeamsOnHonk);
             }
 
-            if (cf.IsAllowed(Permission.VODelete)) // DELETE VEHICLE
+            if (IsAllowed(Permission.VODelete)) // DELETE VEHICLE
             {
                 menu.AddItem(deleteBtn);
             }
@@ -281,8 +279,8 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Vehicle veh = cf.GetVehicle();
-                    if (veh != null && veh.Exists() && cf.GetVehicle().Driver == Game.PlayerPed)
+                    Vehicle veh = GetVehicle();
+                    if (veh != null && veh.Exists() && GetVehicle().Driver == Game.PlayerPed)
                     {
                         SetVehicleHasBeenOwnedByPlayer(veh.Handle, false);
                         SetEntityAsMissionEntity(veh.Handle, false, false);
@@ -326,10 +324,10 @@ namespace vMenuClient
                     DeleteConfirmMenu.UpdateScaleform();
                 }
                 // If the player is actually in a vehicle, continue.
-                if (cf.GetVehicle() != null && cf.GetVehicle().Exists())
+                if (GetVehicle() != null && GetVehicle().Exists())
                 {
                     // Create a vehicle object.
-                    Vehicle vehicle = cf.GetVehicle();
+                    Vehicle vehicle = GetVehicle();
 
                     // Check if the player is the driver of the vehicle, if so, continue.
                     if (vehicle.GetPedOnSeat(VehicleSeat.Driver) == new Ped(Game.PlayerPed.Handle))
@@ -374,7 +372,7 @@ namespace vMenuClient
                         // Set license plate text
                         else if (item == setLicensePlateText)
                         {
-                            cf.SetLicensePlateTextAsync();
+                            SetLicensePlateCustomText();
                         }
                     }
 
@@ -387,7 +385,7 @@ namespace vMenuClient
                     // Cycle vehicle seats
                     if (item == cycleSeats)
                     {
-                        cf.CycleThroughSeats();
+                        CycleThroughSeats();
                     }
                 }
             };
@@ -397,7 +395,7 @@ namespace vMenuClient
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
                 // Create a vehicle object.
-                Vehicle vehicle = cf.GetVehicle();
+                Vehicle vehicle = GetVehicle();
 
 
                 if (item == vehicleGod) // God Mode Toggled
@@ -481,9 +479,9 @@ namespace vMenuClient
             // Handle list changes.
             menu.OnListChange += (sender, item, index) =>
             {
-                if (cf.GetVehicle() != null && cf.GetVehicle().Exists())
+                if (GetVehicle() != null && GetVehicle().Exists())
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     // If the torque multiplier changed. Change the torque multiplier to the new value.
                     if (item == torqueMultiplier)
                     {
@@ -543,7 +541,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        cf.GetVehicle().DirtLevel = float.Parse(index.ToString());
+                        GetVehicle().DirtLevel = float.Parse(index.ToString());
                     }
                     else
                     {
@@ -555,7 +553,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        Vehicle veh = cf.GetVehicle();
+                        Vehicle veh = GetVehicle();
                         var state = GetVehicleIndicatorLights(veh.Handle); // 0 = none, 1 = left, 2 = right, 3 = both
 
                         if (index == 0) // Hazard lights
@@ -599,18 +597,18 @@ namespace vMenuClient
                         }
                         //else if (index == 3) // Interior lights
                         //{
-                        //    cf.Log("Something cool here.");
+                        //    CommonFunctions.Log("Something cool here.");
                         //}
                         //else if (index == 4) // taxi light
                         //{
                         //    SetTaxiLights(veh, true);
                         //    SetTaxiLights(veh, false);
-                        //    //MainMenu.Cf.Log(IsTaxiLightOn(veh).ToString());
+                        //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
                         //    //SetTaxiLights(veh, true);
-                        //    //MainMenu.Cf.Log(IsTaxiLightOn(veh).ToString());
+                        //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
                         //    //SetTaxiLights(veh, false);
                         //    //SetTaxiLights(veh, !IsTaxiLightOn(veh));
-                        //    MainMenu.Cf.Log
+                        //    CommonFunctions.Log
                         //}
                         else if (index == 3) // helicopter spotlight
                         {
@@ -627,7 +625,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        Vehicle vehicle = cf.GetVehicle();
+                        Vehicle vehicle = GetVehicle();
 
                         if (vehicle != null && vehicle.Exists())
                         {
@@ -653,7 +651,7 @@ namespace vMenuClient
                             }
                             else if (index == 2) // custom speed
                             {
-                                string inputSpeed = await cf.GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
+                                string inputSpeed = await GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
                                 if (!string.IsNullOrEmpty(inputSpeed))
                                 {
                                     if (float.TryParse(inputSpeed, out float outFloat))
@@ -706,42 +704,42 @@ namespace vMenuClient
             #region Create lists for each color.
             // Metallic Colors
             List<dynamic> Metallic = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
             {
                 Metallic.Add(color.Key.ToString());
             }
 
             // Matte colors
             List<dynamic> Matte = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MatteColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MatteColors)
             {
                 Matte.Add(color.Key.ToString());
             }
 
             // Metal colors
             List<dynamic> Metals = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MetalColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetalColors)
             {
                 Metals.Add(color.Key.ToString());
             }
 
             // Util Colors
             List<dynamic> Utils = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.UtilColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.UtilColors)
             {
                 Utils.Add(color.Key.ToString());
             }
 
             // Worn colors
             List<dynamic> Worn = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.WornColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.WornColors)
             {
                 Worn.Add(color.Key.ToString());
             }
 
             // Pearlescent colors
             List<dynamic> Pearlescent = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
             {
                 Pearlescent.Add(color.Key.ToString());
             }
@@ -749,21 +747,21 @@ namespace vMenuClient
             // Wheel colors
             List<dynamic> Wheels = new List<dynamic>();
             Wheels.Add("Default Alloy Color");
-            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
             {
                 Wheels.Add(color.Key.ToString());
             }
 
             // Dashboard Trim Colors
             List<dynamic> DashboardColor = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
             {
                 DashboardColor.Add(color.Key.ToString());
             }
 
             // Extra Accent Colors
             List<dynamic> TrimColor = new List<dynamic>();
-            foreach (KeyValuePair<string, int> color in vd.MetallicColors)
+            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
             {
                 TrimColor.Add(color.Key.ToString());
             }
@@ -771,9 +769,9 @@ namespace vMenuClient
 
             #region Create the headers + menu list items
             // Headers
-            UIMenuItem primaryColorsHeader = cf.GetSpacerMenuItem("PRIMARY COLORS");
-            UIMenuItem secondaryColorsHeader = cf.GetSpacerMenuItem("SECONDARY COLORS");
-            UIMenuItem otherColorsHeader = cf.GetSpacerMenuItem("OTHER COLORS");
+            UIMenuItem primaryColorsHeader = GetSpacerMenuItem("PRIMARY COLORS");
+            UIMenuItem secondaryColorsHeader = GetSpacerMenuItem("SECONDARY COLORS");
+            UIMenuItem otherColorsHeader = GetSpacerMenuItem("OTHER COLORS");
 
             // Primary Colors
             UIMenuListItem classicColors = new UIMenuListItem("Classic", Metallic, 0, "Select a Classic primary color.");
@@ -834,7 +832,7 @@ namespace vMenuClient
             VehicleColorsMenu.OnListChange += (sender, item, index) =>
             {
                 // Get the current vehicle.
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
 
                 // Check if the vehicle exists and isn't dead and the player is the driver of the vehicle.
                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
@@ -861,66 +859,66 @@ namespace vMenuClient
                     // Classic / Metallic (primary)
                     if (item == classicColors || item == metallicColors)
                     {
-                        primary = vd.MetallicColors[Metallic[index]];
+                        primary = VehicleData.MetallicColors[Metallic[index]];
                         if (item == metallicColors) // If the primary metallic changes, 
                         {
-                            pearlescent = vd.MetallicColors[Metallic[index]];
+                            pearlescent = VehicleData.MetallicColors[Metallic[index]];
                         }
                     }
                     // Classic / Metallic (secondary)
                     else if (item == classicColors2 || item == metallicColors2)
                     {
-                        secondary = vd.MetallicColors[Metallic[index]];
+                        secondary = VehicleData.MetallicColors[Metallic[index]];
                     }
 
                     // Matte (primary)
                     else if (item == matteColors)
                     {
-                        primary = vd.MatteColors[Matte[index]];
+                        primary = VehicleData.MatteColors[Matte[index]];
                     }
                     // Matte (secondary)
                     else if (item == matteColors2)
                     {
-                        secondary = vd.MatteColors[Matte[index]];
+                        secondary = VehicleData.MatteColors[Matte[index]];
                     }
 
                     // Metals (primary)
                     else if (item == metalsColors)
                     {
-                        primary = vd.MetalColors[Metals[index]];
+                        primary = VehicleData.MetalColors[Metals[index]];
                     }
                     // Metals (secondary)
                     else if (item == metalsColors2)
                     {
-                        secondary = vd.MetalColors[Metals[index]];
+                        secondary = VehicleData.MetalColors[Metals[index]];
                     }
 
                     // Utils (primary)
                     else if (item == utilsColors)
                     {
-                        primary = vd.UtilColors[Utils[index]];
+                        primary = VehicleData.UtilColors[Utils[index]];
                     }
                     // Utils (secondary)
                     else if (item == utilsColors2)
                     {
-                        secondary = vd.UtilColors[Utils[index]];
+                        secondary = VehicleData.UtilColors[Utils[index]];
                     }
 
                     // Worn (primary)
                     else if (item == wornColors)
                     {
-                        primary = vd.WornColors[Worn[index]];
+                        primary = VehicleData.WornColors[Worn[index]];
                     }
                     // Worn (secondary)
                     else if (item == wornColors2)
                     {
-                        secondary = vd.WornColors[Worn[index]];
+                        secondary = VehicleData.WornColors[Worn[index]];
                     }
 
                     // Pearlescent
                     else if (item == pearlescentColors)
                     {
-                        pearlescent = vd.MetallicColors[Metallic[index]];
+                        pearlescent = VehicleData.MetallicColors[Metallic[index]];
                     }
 
                     // Wheel colors
@@ -933,18 +931,18 @@ namespace vMenuClient
                         }
                         else
                         {
-                            wheels = vd.MetallicColors[Metallic[index - 1]];
+                            wheels = VehicleData.MetallicColors[Metallic[index - 1]];
                         }
                     }
 
                     else if (item == dashboardColors)
                     {
-                        trimColor = vd.MetallicColors[DashboardColor[index]];
+                        trimColor = VehicleData.MetallicColors[DashboardColor[index]];
                         SetVehicleInteriorColour(veh.Handle, trimColor);
                     }
                     else if (item == trimColors)
                     {
-                        dashboardColor = vd.MetallicColors[TrimColor[index]];
+                        dashboardColor = VehicleData.MetallicColors[TrimColor[index]];
                         SetVehicleDashboardColour(veh.Handle, dashboardColor);
                     }
 
@@ -962,7 +960,7 @@ namespace vMenuClient
             // Handle chrome button press.
             VehicleColorsMenu.OnItemSelect += (sender, item, index) =>
             {
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 if (veh != null && veh.Exists())
                 {
                     // Set primary and secondary color to chrome.
@@ -1001,7 +999,7 @@ namespace vMenuClient
             VehicleDoorsMenu.OnItemSelect += (sender, item, index) =>
             {
                 // Get the vehicle.
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 // If the player is in a vehicle, it's not dead and the player is the driver, continue.
                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                 {
@@ -1058,7 +1056,7 @@ namespace vMenuClient
             VehicleWindowsMenu.AddItem(rwd);
             VehicleWindowsMenu.OnItemSelect += (sender, item, index) =>
             {
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 if (veh != null && veh.Exists() && !veh.IsDead)
                 {
                     if (item == fwu)
@@ -1092,7 +1090,7 @@ namespace vMenuClient
                 if (item == liveriesMenuBtn)
                 {
                     // Get the player's vehicle.
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     // If it exists, isn't dead and the player is in the drivers seat continue.
                     if (veh != null && veh.Exists() && !veh.IsDead)
                     {
@@ -1115,7 +1113,7 @@ namespace vMenuClient
                                 VehicleLiveriesMenu.AddItem(liveryListItem);
                                 VehicleLiveriesMenu.OnListChange += (sender2, item2, index2) =>
                                 {
-                                    veh = cf.GetVehicle();
+                                    veh = GetVehicle();
                                     SetVehicleLivery(veh.Handle, index2);
                                 };
                                 VehicleLiveriesMenu.RefreshIndex();
@@ -1191,7 +1189,7 @@ namespace vMenuClient
                     }
 
                     // Get the vehicle.
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
 
                     // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
                     if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
@@ -1251,7 +1249,7 @@ namespace vMenuClient
                 // Then toggle that extra.
                 if (vehicleExtras.TryGetValue(item, out int extra))
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     veh.ToggleExtra(extra, _checked);
                 }
             };
@@ -1285,7 +1283,7 @@ namespace vMenuClient
                 #region reset checkboxes state when opening the menu.
                 if (item == underglowMenuBtn)
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     if (veh != null)
                     {
                         if (veh.Mods.HasNeonLights)
@@ -1350,7 +1348,7 @@ namespace vMenuClient
             {
                 if (Game.PlayerPed.IsInVehicle())
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     if (veh.Mods.HasNeonLights)
                     {
                         veh.Mods.NeonLightsColor = GetColorFromIndex(underglowColor.Index);
@@ -1380,7 +1378,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        Vehicle veh = cf.GetVehicle();
+                        Vehicle veh = GetVehicle();
                         if (veh.Mods.HasNeonLights)
                         {
                             veh.Mods.NeonLightsColor = GetColorFromIndex(newIndex);
@@ -1423,7 +1421,7 @@ namespace vMenuClient
             }
 
             // Get the vehicle.
-            Vehicle veh = cf.GetVehicle();
+            Vehicle veh = GetVehicle();
 
             // Check if the vehicle exists, is still drivable/alive and it's actually a vehicle.
             if (veh != null && veh.Exists() && !veh.IsDead)
@@ -1438,10 +1436,10 @@ namespace vMenuClient
                 // Loop through all the mods.
                 foreach (var mod in mods)
                 {
-                    veh = cf.GetVehicle();
+                    veh = GetVehicle();
 
                     // Get the mod type (suspension, armor, etc) name (convert the PascalCase to the Proper Case string values).
-                    var typeName = cf.ToProperString(mod.ModType.ToString());
+                    var typeName = ToProperString(mod.ModType.ToString());
 
                     // Create a list to all available upgrades for this modtype.
                     var modlist = new List<dynamic>();
@@ -1460,7 +1458,7 @@ namespace vMenuClient
                         currentItem = $"[{2 + x}/{ mod.ModCount + 1}]";
 
                         // Create the name (again, converting to proper case), then add the name.
-                        name = mod.GetLocalizedModName(x) != "" ? $"{cf.ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x.ToString()} {currentItem}";
+                        name = mod.GetLocalizedModName(x) != "" ? $"{ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x.ToString()} {currentItem}";
                         modlist.Add(name);
                     }
 
@@ -1474,7 +1472,7 @@ namespace vMenuClient
                 #endregion
 
                 #region more variables and setup
-                veh = cf.GetVehicle();
+                veh = GetVehicle();
                 // Create the wheel types list & listitem and add it to the menu.
                 List<dynamic> wheelTypes = new List<dynamic>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
                 UIMenuListItem vehicleWheelType = new UIMenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh.Handle), $"Choose a ~y~wheel type~s~ for your vehicle. ~r~Important:~s~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
@@ -1560,7 +1558,7 @@ namespace vMenuClient
                 // Handle checkbox changes.
                 VehicleModMenu.OnCheckboxChange += (sender2, item2, _checked) =>
                 {
-                    veh = cf.GetVehicle();
+                    veh = GetVehicle();
 
                     // Xenon Headlights
                     if (item2 == xenonHeadlights)
@@ -1622,7 +1620,7 @@ namespace vMenuClient
                 VehicleModMenu.OnListChange += (sender2, item2, index2) =>
                 {
                     // Get the vehicle and set the mod kit.
-                    veh = cf.GetVehicle();
+                    veh = GetVehicle();
                     SetVehicleModKit(veh.Handle, 0);
 
                     #region handle the dynamic (vehicle-specific) mods
@@ -1763,7 +1761,7 @@ namespace vMenuClient
         /// <returns></returns>
         private int GetIndexFromColor()
         {
-            Vehicle veh = cf.GetVehicle();
+            Vehicle veh = GetVehicle();
 
             if (veh == null || !veh.Exists() || !veh.Mods.HasNeonLights)
             {

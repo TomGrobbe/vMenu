@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +18,10 @@ namespace vMenuClient
         private UIMenu menu;
         private UIMenu selectedVehicleMenu = new UIMenu("Manage Vehicle", "Manage this saved vehicle.", true);
         private UIMenu unavailableVehiclesMenu = new UIMenu("Missing Vehicles", "Unavailable Saved Vehicles", true);
-        private CommonFunctions cf = MainMenu.Cf;
-        private Dictionary<string, CommonFunctions.VehicleInfo> savedVehicles = new Dictionary<string, CommonFunctions.VehicleInfo>();
+        private Dictionary<string, VehicleInfo> savedVehicles = new Dictionary<string, VehicleInfo>();
         private List<UIMenu> subMenus = new List<UIMenu>();
-        private Dictionary<UIMenuItem, KeyValuePair<string, CommonFunctions.VehicleInfo>> svMenuItems = new Dictionary<UIMenuItem, KeyValuePair<string, CommonFunctions.VehicleInfo>>();
-        private KeyValuePair<string, CommonFunctions.VehicleInfo> currentlySelectedVehicle = new KeyValuePair<string, CommonFunctions.VehicleInfo>();
+        private Dictionary<UIMenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<UIMenuItem, KeyValuePair<string, VehicleInfo>>();
+        private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>();
         UIMenu lastMenu = null;
         private int deleteButtonPressedCount = 0;
 
@@ -49,7 +48,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        cf.SaveVehicle();
+                        SaveVehicle();
                     }
                     else
                     {
@@ -84,7 +83,7 @@ namespace vMenuClient
                         {
                             await BaseScript.Delay(0);
                         }
-                        cf.GetOpenMenu().Visible = false;
+                        GetOpenMenu().Visible = false;
                         lastMenu.Visible = true; // force the category menu to re-open after closing all other menus.
                     }
                 };
@@ -132,16 +131,16 @@ namespace vMenuClient
                 {
                     if (MainMenu.VehicleSpawnerMenu != null)
                     {
-                        cf.SpawnVehicle(currentlySelectedVehicle.Value.model, MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, false, vehicleInfo: currentlySelectedVehicle.Value, saveName: currentlySelectedVehicle.Key.Substring(4));
+                        SpawnVehicle(currentlySelectedVehicle.Value.model, MainMenu.VehicleSpawnerMenu.SpawnInVehicle, MainMenu.VehicleSpawnerMenu.ReplaceVehicle, false, vehicleInfo: currentlySelectedVehicle.Value, saveName: currentlySelectedVehicle.Key.Substring(4));
                     }
                     else
                     {
-                        cf.SpawnVehicle(currentlySelectedVehicle.Value.model, true, true, false, vehicleInfo: currentlySelectedVehicle.Value, saveName: currentlySelectedVehicle.Key.Substring(4));
+                        SpawnVehicle(currentlySelectedVehicle.Value.model, true, true, false, vehicleInfo: currentlySelectedVehicle.Value, saveName: currentlySelectedVehicle.Key.Substring(4));
                     }
                 }
                 else if (item == renameVehicle)
                 {
-                    string newName = await cf.GetUserInput(windowTitle: "Enter a new name for this vehicle.", maxInputLength: 30);
+                    string newName = await GetUserInput(windowTitle: "Enter a new name for this vehicle.", maxInputLength: 30);
                     if (string.IsNullOrEmpty(newName))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
@@ -158,7 +157,7 @@ namespace vMenuClient
                             Notify.Success("Your vehicle has successfully been renamed.");
                             UpdateMenuAvailableCategories();
                             selectedVehicleMenu.GoBack();
-                            currentlySelectedVehicle = new KeyValuePair<string, CommonFunctions.VehicleInfo>(); // clear the old info
+                            currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>(); // clear the old info
                         }
                         else
                         {
@@ -170,7 +169,7 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        cf.SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
+                        SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
                         selectedVehicleMenu.GoBack();
                         Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
                     }
@@ -232,8 +231,8 @@ namespace vMenuClient
         /// </summary>
         public void UpdateMenuAvailableCategories()
         {
-            savedVehicles = cf.GetSavedVehicles();
-            svMenuItems = new Dictionary<UIMenuItem, KeyValuePair<string, CommonFunctions.VehicleInfo>>();
+            savedVehicles = GetSavedVehicles();
+            svMenuItems = new Dictionary<UIMenuItem, KeyValuePair<string, VehicleInfo>>();
 
             for (int i = 1; i < GetMenu().MenuItems.Count - 1; i++)
             {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,7 +58,7 @@ namespace vMenuClient
                 {
                     if (GetSettingsBool(Setting.vmenu_quit_session_in_rockstar_editor))
                     {
-                        MainMenu.Cf.QuitSession();
+                        QuitSession();
                     }
                     ActivateRockstarEditor();
                     // wait for the editor to be closed again.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +38,7 @@ namespace vMenuClient
                 //if (Permissions.Contains("Everything"))
                 if (allowEverything)
                 {
-                    //MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
+                    //CommonFunctions.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
                     return true;
                 }
                 else
@@ -46,7 +46,7 @@ namespace vMenuClient
                     //var allowed = false;
                     if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
                     {
-                        //MainMenu.Cf.Log(".All was allowed.");
+                        //CommonFunctions.Log(".All was allowed.");
                         //allowed = true;
                         return true;
                     }

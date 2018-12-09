@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
 
         /// <summary>
         /// Struct used to store bans.
@@ -67,7 +66,7 @@ namespace vMenuClient
 
             bannedPlayer.OnItemSelect += (sender, item, index) =>
             {
-                if (index == 5 && cf.IsAllowed(Permission.OPUnban))
+                if (index == 5 && IsAllowed(Permission.OPUnban))
                 {
                     if (item.RightLabel == "Are you sure?")
                     {
@@ -122,7 +121,7 @@ namespace vMenuClient
                         // only (admins) people that can unban players are allowed to view IP's.
                         // this is just a slight 'safety' feature in case someone who doesn't know what they're doing
                         // gave builtin.everyone access to view the banlist.
-                        if (id.StartsWith("ip:") && !cf.IsAllowed(Permission.OPUnban))
+                        if (id.StartsWith("ip:") && !IsAllowed(Permission.OPUnban))
                         {
                             playerIdentifiersItem.Description += $"{colors[i]}ip: (hidden) ";
                         }
@@ -136,7 +135,7 @@ namespace vMenuClient
 
                     var unbanPlayerBtn = bannedPlayer.MenuItems[5];
                     unbanPlayerBtn.SetRightLabel("");
-                    if (!cf.IsAllowed(Permission.OPUnban))
+                    if (!IsAllowed(Permission.OPUnban))
                     {
                         unbanPlayerBtn.Enabled = false;
                         unbanPlayerBtn.Description = "You are not allowed to unban players. You are only allowed to view their ban record.";

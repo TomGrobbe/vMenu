@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -470,7 +470,7 @@ namespace vMenuClient
 
             Notify.Success("Your settings have been saved.");
 
-            MainMenu.Cf.Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
+            Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
         }
 
         #endregion

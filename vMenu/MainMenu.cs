@@ -16,9 +16,6 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         #region Variables
-        // Function Variables
-        public static CommonFunctions Cf { get; } = new CommonFunctions();
-
         public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
@@ -124,7 +121,7 @@ namespace vMenuClient
                 }
                 catch (Exception e)
                 {
-                    Cf.Log(e.Message);
+                    Log(e.Message);
                 }
                 TriggerEvent("chatMessage", "^3IMPORTANT: vMenu IS NOT SETUP CORRECTLY. PLEASE CHECK THE SERVER LOG FOR MORE INFO.");
             }
@@ -152,32 +149,32 @@ namespace vMenuClient
                 // Add the new permission to the dictionary.
                 PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
             }
-            Cf.Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
+            Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
 
             VehicleSpawner.allowedCategories = new List<bool>()
             {
-                Cf.IsAllowed(Permission.VSCompacts),
-                Cf.IsAllowed(Permission.VSSedans),
-                Cf.IsAllowed(Permission.VSSUVs),
-                Cf.IsAllowed(Permission.VSCoupes),
-                Cf.IsAllowed(Permission.VSMuscle),
-                Cf.IsAllowed(Permission.VSSportsClassic),
-                Cf.IsAllowed(Permission.VSSports),
-                Cf.IsAllowed(Permission.VSSuper),
-                Cf.IsAllowed(Permission.VSMotorcycles),
-                Cf.IsAllowed(Permission.VSOffRoad),
-                Cf.IsAllowed(Permission.VSIndustrial),
-                Cf.IsAllowed(Permission.VSUtility),
-                Cf.IsAllowed(Permission.VSVans),
-                Cf.IsAllowed(Permission.VSCycles),
-                Cf.IsAllowed(Permission.VSBoats),
-                Cf.IsAllowed(Permission.VSHelicopters),
-                Cf.IsAllowed(Permission.VSPlanes),
-                Cf.IsAllowed(Permission.VSService),
-                Cf.IsAllowed(Permission.VSEmergency),
-                Cf.IsAllowed(Permission.VSMilitary),
-                Cf.IsAllowed(Permission.VSCommercial),
-                Cf.IsAllowed(Permission.VSTrains),
+                IsAllowed(Permission.VSCompacts),
+                IsAllowed(Permission.VSSedans),
+                IsAllowed(Permission.VSSUVs),
+                IsAllowed(Permission.VSCoupes),
+                IsAllowed(Permission.VSMuscle),
+                IsAllowed(Permission.VSSportsClassic),
+                IsAllowed(Permission.VSSports),
+                IsAllowed(Permission.VSSuper),
+                IsAllowed(Permission.VSMotorcycles),
+                IsAllowed(Permission.VSOffRoad),
+                IsAllowed(Permission.VSIndustrial),
+                IsAllowed(Permission.VSUtility),
+                IsAllowed(Permission.VSVans),
+                IsAllowed(Permission.VSCycles),
+                IsAllowed(Permission.VSBoats),
+                IsAllowed(Permission.VSHelicopters),
+                IsAllowed(Permission.VSPlanes),
+                IsAllowed(Permission.VSService),
+                IsAllowed(Permission.VSEmergency),
+                IsAllowed(Permission.VSMilitary),
+                IsAllowed(Permission.VSCommercial),
+                IsAllowed(Permission.VSTrains),
             };
         }
         #endregion
@@ -192,7 +189,7 @@ namespace vMenuClient
         {
             if (Mp.IsAnyMenuOpen())
             {
-                currentMenu = Cf.GetOpenMenu();
+                currentMenu = GetOpenMenu();
                 if (MpPedCustomizationMenu != null)
                 {
                     if (currentMenu == MpPedCustomizationMenu.createCharacterMenu)
@@ -323,7 +320,7 @@ namespace vMenuClient
             if (Mp.IsAnyMenuOpen())
             {
                 // Get the currently open menu.
-                UIMenu currentMenu = Cf.GetOpenMenu();
+                UIMenu currentMenu = GetOpenMenu();
                 // If it exists.
                 if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
@@ -342,10 +339,10 @@ namespace vMenuClient
                             var delay = 200;
 
                             // Do the following as long as the controls are being pressed.
-                            while (IsUpPressed() && Mp.IsAnyMenuOpen() && Cf.GetOpenMenu() != null)
+                            while (IsUpPressed() && Mp.IsAnyMenuOpen() && GetOpenMenu() != null)
                             {
                                 // Update the current menu.
-                                currentMenu = Cf.GetOpenMenu();
+                                currentMenu = GetOpenMenu();
 
                                 // Check if the game time has changed by "delay" amount.
                                 if (GetGameTimer() - time > delay)
@@ -381,9 +378,9 @@ namespace vMenuClient
                             var time = GetGameTimer();
                             var times = 0;
                             var delay = 200;
-                            while (IsDownPressed() && Cf.GetOpenMenu() != null)
+                            while (IsDownPressed() && GetOpenMenu() != null)
                             {
-                                currentMenu = Cf.GetOpenMenu();
+                                currentMenu = GetOpenMenu();
                                 if (GetGameTimer() - time > delay)
                                 {
                                     times++;
@@ -409,9 +406,9 @@ namespace vMenuClient
                                 var time = GetGameTimer();
                                 var times = 0;
                                 var delay = 200;
-                                while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon) && Cf.GetOpenMenu() != null)
+                                while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon) && GetOpenMenu() != null)
                                 {
-                                    currentMenu = Cf.GetOpenMenu();
+                                    currentMenu = GetOpenMenu();
                                     if (GetGameTimer() - time > delay)
                                     {
                                         times++;
@@ -436,9 +433,9 @@ namespace vMenuClient
                                 var time = GetGameTimer();
                                 var times = 0;
                                 var delay = 200;
-                                while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && !Game.IsControlPressed(0, Control.SelectWeapon) && Cf.GetOpenMenu() != null)
+                                while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && !Game.IsControlPressed(0, Control.SelectWeapon) && GetOpenMenu() != null)
                                 {
-                                    currentMenu = Cf.GetOpenMenu();
+                                    currentMenu = GetOpenMenu();
                                     if (GetGameTimer() - time > delay)
                                     {
                                         times++;
@@ -486,7 +483,7 @@ namespace vMenuClient
                 {
                     await Delay(0);
                 }
-                if ((Cf.IsAllowed(Permission.Staff) && GetSettingsBool(Setting.vmenu_menu_staff_only)) || GetSettingsBool(Setting.vmenu_menu_staff_only) == false)
+                if ((IsAllowed(Permission.Staff) && GetSettingsBool(Setting.vmenu_menu_staff_only)) || GetSettingsBool(Setting.vmenu_menu_staff_only) == false)
                 {
                     if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
                     {
@@ -510,7 +507,7 @@ namespace vMenuClient
                 }
 
                 // Manage Stamina
-                if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && Cf.IsAllowed(Permission.POUnlimitedStamina))
+                if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
                 {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
                 }
@@ -583,17 +580,17 @@ namespace vMenuClient
 
                     if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                     {
-                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && Cf.IsAllowed(Permission.NoClip))
+                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip))
                         {
                             if (Game.PlayerPed.IsInVehicle())
                             {
-                                Vehicle veh = Cf.GetVehicle();
+                                Vehicle veh = GetVehicle();
                                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                                 {
 
                                     NoClipEnabled = !Mp.IsAnyMenuOpen();
                                 }
-                                //if (GetPedInVehicleSeat(Cf.GetVehicle(), -1) == Game.PlayerPed.Handle)
+                                //if (GetPedInVehicleSeat(CommonFunctions.GetVehicle(), -1) == Game.PlayerPed.Handle)
                                 //{
                                 //NoClipEnabled = !Mp.IsAnyMenuOpen();
                                 //}
@@ -726,7 +723,7 @@ namespace vMenuClient
         private void CreateSubmenus()
         {
             // Add the online players menu.
-            if (Cf.IsAllowed(Permission.OPMenu))
+            if (IsAllowed(Permission.OPMenu))
             {
                 OnlinePlayersMenu = new OnlinePlayers();
                 UIMenu menu = OnlinePlayersMenu.GetMenu();
@@ -743,7 +740,7 @@ namespace vMenuClient
                     }
                 };
             }
-            if (Cf.IsAllowed(Permission.OPUnban) || Cf.IsAllowed(Permission.OPViewBannedPlayers))
+            if (IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers))
             {
                 BannedPlayersMenu = new BannedPlayers();
                 UIMenu menu = BannedPlayersMenu.GetMenu();
@@ -762,7 +759,7 @@ namespace vMenuClient
             }
 
             // Add the player options menu.
-            if (Cf.IsAllowed(Permission.POMenu))
+            if (IsAllowed(Permission.POMenu))
             {
                 PlayerOptionsMenu = new PlayerOptions();
                 UIMenu menu = PlayerOptionsMenu.GetMenu();
@@ -772,7 +769,7 @@ namespace vMenuClient
             }
 
             // Add the vehicle options Menu.
-            if (Cf.IsAllowed(Permission.VOMenu))
+            if (IsAllowed(Permission.VOMenu))
             {
                 VehicleOptionsMenu = new VehicleOptions();
                 UIMenu menu = VehicleOptionsMenu.GetMenu();
@@ -783,7 +780,7 @@ namespace vMenuClient
 
             var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
-            if (Cf.IsAllowed(Permission.VSMenu))
+            if (IsAllowed(Permission.VSMenu))
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
                 UIMenu menu = VehicleSpawnerMenu.GetMenu();
@@ -793,7 +790,7 @@ namespace vMenuClient
             }
 
             // Add Saved Vehicles menu.
-            if (Cf.IsAllowed(Permission.SVMenu))
+            if (IsAllowed(Permission.SVMenu))
             {
                 SavedVehiclesMenu = new SavedVehicles();
                 UIMenu menu = SavedVehiclesMenu.GetMenu();
@@ -810,7 +807,7 @@ namespace vMenuClient
             }
 
             // Add the player appearance menu.
-            if (Cf.IsAllowed(Permission.PAMenu))
+            if (IsAllowed(Permission.PAMenu))
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
                 UIMenu menu = PlayerAppearanceMenu.GetMenu();
@@ -840,7 +837,7 @@ namespace vMenuClient
 
             // Add the time options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
+            if (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
                 TimeOptionsMenu = new TimeOptions();
                 UIMenu menu = TimeOptionsMenu.GetMenu();
@@ -851,7 +848,7 @@ namespace vMenuClient
 
             // Add the weather options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
-            if (Cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
+            if (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 UIMenu menu = WeatherOptionsMenu.GetMenu();
@@ -861,7 +858,7 @@ namespace vMenuClient
             }
 
             // Add the weapons menu.
-            if (Cf.IsAllowed(Permission.WPMenu))
+            if (IsAllowed(Permission.WPMenu))
             {
                 WeaponOptionsMenu = new WeaponOptions();
                 UIMenu menu = WeaponOptionsMenu.GetMenu();
@@ -871,7 +868,7 @@ namespace vMenuClient
             }
 
             // Add Voice Chat Menu.
-            if (Cf.IsAllowed(Permission.VCMenu))
+            if (IsAllowed(Permission.VCMenu))
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 UIMenu menu = VoiceChatSettingsMenu.GetMenu();
@@ -889,7 +886,7 @@ namespace vMenuClient
             }
 
             // Add misc settings menu.
-            //if (Cf.IsAllowed(Permission.MSMenu))
+            //if (CommonFunctions.IsAllowed(Permission.MSMenu))
             // removed the permissions check, because the misc menu should've never been restricted in the first place.
             // not sure why I even added this before... saving of preferences and similar functions should always be allowed.
             // no matter what.

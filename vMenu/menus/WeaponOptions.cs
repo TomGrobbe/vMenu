@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
 
         public bool UnlimitedAmmo { get; private set; } = UserDefaults.WeaponsUnlimitedAmmo;
         public bool NoReload { get; private set; } = UserDefaults.WeaponsNoReload;
@@ -47,28 +46,28 @@ namespace vMenuClient
             UIMenuItem spawnByName = new UIMenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
 
             // Add items based on permissions
-            if (cf.IsAllowed(Permission.WPGetAll))
+            if (IsAllowed(Permission.WPGetAll))
             {
                 menu.AddItem(getAllWeapons);
             }
-            if (cf.IsAllowed(Permission.WPRemoveAll))
+            if (IsAllowed(Permission.WPRemoveAll))
             {
                 menu.AddItem(removeAllWeapons);
             }
-            if (cf.IsAllowed(Permission.WPUnlimitedAmmo))
+            if (IsAllowed(Permission.WPUnlimitedAmmo))
             {
                 menu.AddItem(unlimitedAmmo);
             }
-            if (cf.IsAllowed(Permission.WPNoReload))
+            if (IsAllowed(Permission.WPNoReload))
             {
                 menu.AddItem(noReload);
             }
-            if (cf.IsAllowed(Permission.WPSetAllAmmo))
+            if (IsAllowed(Permission.WPSetAllAmmo))
             {
                 menu.AddItem(setAmmo);
                 menu.AddItem(refillMaxAmmo);
             }
-            if (cf.IsAllowed(Permission.WPSpawnByName))
+            if (IsAllowed(Permission.WPSpawnByName))
             {
                 menu.AddItem(spawnByName);
             }
@@ -80,7 +79,7 @@ namespace vMenuClient
             menu.AddItem(addonWeaponsBtn);
 
             #region manage creating and accessing addon weapons menu
-            if (cf.IsAllowed(Permission.WPSpawn) && AddonWeapons != null && AddonWeapons.Count > 0)
+            if (IsAllowed(Permission.WPSpawn) && AddonWeapons != null && AddonWeapons.Count > 0)
             {
                 menu.BindMenuToItem(addonWeaponsMenu, addonWeaponsBtn);
                 foreach (KeyValuePair<string, uint> weapon in AddonWeapons)
@@ -335,7 +334,7 @@ namespace vMenuClient
             #endregion
 
             #region Create Weapon Category Submenus
-            UIMenuItem spacer = cf.GetSpacerMenuItem("↓ Weapon Categories ↓");
+            UIMenuItem spacer = GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddItem(spacer);
 
             UIMenu handGuns = new UIMenu("Weapons", "Handguns", true);
@@ -410,7 +409,7 @@ namespace vMenuClient
             foreach (ValidWeapon weapon in vw.WeaponList)
             {
                 uint cat = (uint)GetWeapontypeGroup(weapon.Hash);
-                if (weapon.Name != null && (cf.IsAllowed(weapon.Perm) || cf.IsAllowed(Permission.WPGetAll)))
+                if (weapon.Name != null && (IsAllowed(weapon.Perm) || IsAllowed(Permission.WPGetAll)))
                 {
                     #region Create menu for this weapon and add buttons
                     UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true);
@@ -425,7 +424,7 @@ namespace vMenuClient
                     UIMenuItem getOrRemoveWeapon = new UIMenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.");
                     getOrRemoveWeapon.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);
                     weaponMenu.AddItem(getOrRemoveWeapon);
-                    if (!cf.IsAllowed(Permission.WPSpawn))
+                    if (!IsAllowed(Permission.WPSpawn))
                     {
                         getOrRemoveWeapon.Enabled = false;
                         getOrRemoveWeapon.Description = "This option has been disabled by the server owner.";
@@ -679,7 +678,7 @@ namespace vMenuClient
                 }
                 else if (item == setAmmo)
                 {
-                    cf.SetAllWeaponsAmmo();
+                    SetAllWeaponsAmmo();
                 }
                 else if (item == refillMaxAmmo)
                 {
@@ -695,7 +694,7 @@ namespace vMenuClient
                 }
                 else if (item == spawnByName)
                 {
-                    cf.SpawnCustomWeapon();
+                    SpawnCustomWeapon();
                 }
             };
             #endregion

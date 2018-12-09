@@ -16,21 +16,15 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
         public static Dictionary<string, uint> AddonVehicles;
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
         public static List<bool> allowedCategories;
 
-        private static VehicleData vd = new VehicleData();
-
         private void CreateMenu()
         {
-            //VehicleData vd = new VehicleData();
             #region initial setup.
-
-
             // Create the menu.
             menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Spawner", true);
 
@@ -42,7 +36,7 @@ namespace vMenuClient
                 "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
 
             // Add the items to the menu.
-            if (cf.IsAllowed(Permission.VSSpawnByName))
+            if (IsAllowed(Permission.VSSpawnByName))
             {
                 menu.AddItem(spawnByName);
             }
@@ -58,7 +52,7 @@ namespace vMenuClient
 
             menu.AddItem(addonCarsBtn);
 
-            if (cf.IsAllowed(Permission.VSAddon))
+            if (IsAllowed(Permission.VSAddon))
             {
                 if (AddonVehicles != null)
                 {
@@ -84,7 +78,7 @@ namespace vMenuClient
 
                         addonCarsMenu.OnItemSelect += (sender, item, index) =>
                         {
-                            cf.SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
+                            SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
                         };
                         addonCarsMenu.RefreshIndex();
                         addonCarsMenu.UpdateScaleform();
@@ -119,7 +113,7 @@ namespace vMenuClient
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
                 // Get the class name.
-                string className = cf.GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
+                string className = GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
@@ -152,7 +146,7 @@ namespace vMenuClient
                     var properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
 
                     // Get the localized vehicle name, if it's "NULL" (no label found) then use the "properCasedModelName" created above.
-                    var vehName = cf.GetVehDisplayNameFromModel(veh) != "NULL" ? cf.GetVehDisplayNameFromModel(veh) : properCasedModelName;
+                    var vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
 
                     // Loop through all the menu items and check each item's title/text and see if it matches the current vehicle (display) name.
                     var duplicate = false;
@@ -180,7 +174,7 @@ namespace vMenuClient
 
                             // Then create and add a new button for this vehicle.
 
-                            if (cf.DoesModelExist(veh))
+                            if (DoesModelExist(veh))
                             {
                                 var vehBtn = new UIMenuItem(vehName) { Enabled = true };
                                 vehicleClassMenu.AddItem(vehBtn);
@@ -201,7 +195,7 @@ namespace vMenuClient
                     // If it's not a duplicate, add the model name.
                     if (!duplicate)
                     {
-                        if (cf.DoesModelExist(veh))
+                        if (DoesModelExist(veh))
                         {
                             var vehBtn = new UIMenuItem(vehName) { Enabled = true };
                             vehicleClassMenu.AddItem(vehBtn);
@@ -219,7 +213,7 @@ namespace vMenuClient
                 // Handle button presses
                 vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
                 {
-                    cf.SpawnVehicle(vl.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
+                    SpawnVehicle(vl.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
                 };
             }
             #endregion
@@ -231,7 +225,7 @@ namespace vMenuClient
                 if (item == spawnByName)
                 {
                     // Passing "custom" as the vehicle name, will ask the user for input.
-                    cf.SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
+                    SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
                 }
             };
 

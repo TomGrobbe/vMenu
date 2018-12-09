@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +16,6 @@ namespace vMenuClient
     public class EventManager : BaseScript
     {
         // common functions.
-        private CommonFunctions cf = MainMenu.Cf;
         public static string currentWeatherType = GetSettingsString(Setting.vmenu_default_weather);
         public static bool blackoutMode = false;
         public static bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
@@ -54,15 +53,15 @@ namespace vMenuClient
         {
             MainMenu.SetPermissions(perms);
 
-            FunctionsController.flaresAllowed = cf.IsAllowed(Permission.VOFlares);
-            FunctionsController.bombsAllowed = cf.IsAllowed(Permission.VOPlaneBombs);
+            FunctionsController.flaresAllowed = IsAllowed(Permission.VOFlares);
+            FunctionsController.bombsAllowed = IsAllowed(Permission.VOPlaneBombs);
 
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             foreach (var addon in addonVehicles)
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
-                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
+                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!VehicleSpawner.AddonVehicles.ContainsKey(modelName))
                 {
@@ -75,7 +74,7 @@ namespace vMenuClient
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
-                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
+                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!PlayerAppearance.AddonPeds.ContainsKey(modelName))
                 {
@@ -88,7 +87,7 @@ namespace vMenuClient
             {
                 string modelName = addon.ToString();
                 uint modelHash = (uint)GetHashKey(modelName);
-                cf.Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
+                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
 
                 if (!WeaponOptions.AddonWeapons.ContainsKey(modelName))
                 {
@@ -116,7 +115,7 @@ namespace vMenuClient
         {
             Debug.Write("\n\n\n\n[vMenu] vMenu is outdated, please update asap.\n\n\n\n");
             await Delay(5000);
-            cf.Log("Sending alert now.");
+            Log("Sending alert now.");
             if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
             {
                 Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
@@ -138,7 +137,7 @@ namespace vMenuClient
         /// </summary>
         private void GoodBye()
         {
-            cf.Log("fuck you.");
+            Log("fuck you.");
             ForceSocialClubUpdate();
         }
 
@@ -181,7 +180,7 @@ namespace vMenuClient
                 UpdateWeatherParticlesOnce();
                 if (currentWeatherType != lastWeather)
                 {
-                    cf.Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
+                    Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
                     
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
@@ -195,7 +194,7 @@ namespace vMenuClient
                     }
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
-                    cf.Log("done changing weather type (duration: 45.5 seconds)");
+                    Log("done changing weather type (duration: 45.5 seconds)");
                 }
                 if (!justChanged)
                 {
@@ -329,7 +328,7 @@ namespace vMenuClient
         /// <param name="targetPlayer"></param>
         private void SummonPlayer(string targetPlayer)
         {
-            cf.TeleportToPlayerAsync(GetPlayerFromServerId(int.Parse(targetPlayer)));
+            TeleportToPlayer(GetPlayerFromServerId(int.Parse(targetPlayer)));
         }
 
         /// <summary>

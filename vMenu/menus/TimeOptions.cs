@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
         public UIMenuItem freezeTimeToggle;
 
         /// <summary>
@@ -60,11 +59,11 @@ namespace vMenuClient
             UIMenuListItem manualMinute = new UIMenuListItem("Set Custom Minute", minutes, 0);
 
             // Add all menu items to the menu.
-            if (cf.IsAllowed(Permission.TOFreezeTime))
+            if (IsAllowed(Permission.TOFreezeTime))
             {
                 menu.AddItem(freezeTimeToggle);
             }
-            if (cf.IsAllowed(Permission.TOSetTime))
+            if (IsAllowed(Permission.TOSetTime))
             {
                 menu.AddItem(earlymorning);
                 menu.AddItem(morning);
@@ -85,7 +84,7 @@ namespace vMenuClient
                 if (item == freezeTimeToggle)
                 {
                     Subtitle.Info($"Time will now {(EventManager.freezeTime ? "~y~continue" : "~o~freeze")}~s~.", prefix: "Info:");
-                    cf.UpdateServerTime(EventManager.currentHours, EventManager.currentMinutes, !EventManager.freezeTime);
+                    UpdateServerTime(EventManager.currentHours, EventManager.currentMinutes, !EventManager.freezeTime);
                 }
                 else
                 {
@@ -93,7 +92,7 @@ namespace vMenuClient
                     // eg: index = 3 (12:00) ---> 3 * 3 (=9) + 3 [= 12] ---> 12:00
                     // eg: index = 8 (03:00) ---> 8 * 3 (=24) + 3 (=27, >23 so 27-24) [=3] ---> 03:00
                     var newHour = 0;
-                    if (cf.IsAllowed(Permission.TOFreezeTime))
+                    if (IsAllowed(Permission.TOFreezeTime))
                     {
                         newHour = (((index * 3) + 3 < 23) ? (index * 3) + 3 : ((index * 3) + 3) - 24);
                     }
@@ -105,7 +104,7 @@ namespace vMenuClient
                     var newMinute = 0;
                     Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~s~:~y~" +
                         $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~s~.", prefix: "Info:");
-                    cf.UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
+                    UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
                 }
 
             };
@@ -125,7 +124,7 @@ namespace vMenuClient
 
                 Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~s~:~y~" +
                         $"{(newMinute < 10 ? $"0{newMinute.ToString()}" : newMinute.ToString())}~s~.", prefix: "Info:");
-                cf.UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
+                UpdateServerTime(newHour, newMinute, EventManager.freezeTime);
             };
         }
 

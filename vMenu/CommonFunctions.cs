@@ -11,22 +11,48 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
-    public class CommonFunctions : BaseScript
+    public static class CommonFunctions
     {
         #region Variables
-        private string currentScenario = "";
-        private Vehicle previousVehicle;
-        private StorageManager sm = new StorageManager();
-        public MpPedDataManager MpPedDataManager = new MpPedDataManager();
+        private static string currentScenario = "";
+        private static Vehicle previousVehicle;
+        public static MpPedDataManager MpPedDataManager = new MpPedDataManager();
 
-        public bool driveToWpTaskActive = false;
-        public bool driveWanderTaskActive = false;
+        public static bool driveToWpTaskActive = false;
+        public static bool driveWanderTaskActive = false;
         #endregion
 
+        #region some misc functions copied from base script
         /// <summary>
-        /// Constructor
+        /// Copy of <see cref="BaseScript.TriggerServerEvent(string, object[])"/>
         /// </summary>
-        public CommonFunctions() { }
+        /// <param name="eventName"></param>
+        /// <param name="args"></param>
+        public static void TriggerServerEvent(string eventName, params object[] args)
+        {
+            BaseScript.TriggerServerEvent(eventName, args);
+        }
+
+        /// <summary>
+        /// Copy of <see cref="BaseScript.TriggerEvent(string, object[])"/>
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="args"></param>
+        public static void TriggerEvent(string eventName, params object[] args)
+        {
+            BaseScript.TriggerEvent(eventName, args);
+        }
+
+        /// <summary>
+        /// Copy of <see cref="BaseScript.Delay(int)"/>
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static async Task Delay(int time)
+        {
+            await BaseScript.Delay(time);
+        }
+        #endregion
 
         #region Get Localized Label Text
         /// <summary>
@@ -34,7 +60,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="label"></param>
         /// <returns></returns>
-        public string GetLocalizedName(string label) => GetLabelText(label);
+        public static string GetLocalizedName(string label) => GetLabelText(label);
         #endregion
 
         #region Get Localized Vehicle Display Name
@@ -43,16 +69,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string GetVehDisplayNameFromModel(string name) => GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
-        #endregion
-
-        #region GetHashKey for other classes
-        /// <summary>
-        /// Get the hash key for the specified string.
-        /// </summary>
-        /// <param name="input">String to convert into a hash.</param>
-        /// <returns>The has value of the input string.</returns>
-        public uint GetHash(string input) => (uint)GetHashKey(input);
+        public static string GetVehDisplayNameFromModel(string name) => GetLabelText(GetDisplayNameFromVehicleModel((uint)GetHashKey(name)));
         #endregion
 
         #region DoesModelExist
@@ -61,29 +78,23 @@ namespace vMenuClient
         /// </summary>
         /// <param name="modelName">The model name</param>
         /// <returns></returns>
-        public bool DoesModelExist(string modelName) => DoesModelExist((uint)GetHashKey(modelName));
+        public static bool DoesModelExist(string modelName) => DoesModelExist((uint)GetHashKey(modelName));
+
         /// <summary>
         /// Does this model exist?
         /// </summary>
         /// <param name="modelHash">The model hash</param>
         /// <returns></returns>
-        public bool DoesModelExist(uint modelHash) => IsModelInCdimage(modelHash);
+        public static bool DoesModelExist(uint modelHash) => IsModelInCdimage(modelHash);
         #endregion
 
         #region GetVehicle from specified player id (if not specified, return the vehicle of the current player)
         /// <summary>
-        /// Get the vehicle from the specified player. If no player specified, then return the vehicle of the current player.
-        /// Optionally specify the 'lastVehicle' (bool) parameter to return the last vehicle the player was in.
+        /// Returns the current or last vehicle of the current player.
         /// </summary>
-        /// <param name="ped">Get the vehicle for this player.</param>
-        /// <param name="lastVehicle">If true, return the last vehicle, if false (default) return the current vehicle.</param>
-        /// <returns>Returns a vehicle (int).</returns>
-        //public int GetVehicle(int player = -1, bool lastVehicle = false)
-        //{
-
-        //};
-
-        public Vehicle GetVehicle(bool lastVehicle = false)
+        /// <param name="lastVehicle"></param>
+        /// <returns></returns>
+        public static Vehicle GetVehicle(bool lastVehicle = false)
         {
             if (lastVehicle)
             {
@@ -99,7 +110,13 @@ namespace vMenuClient
             return null;
         }
 
-        public Vehicle GetVehicle(Ped ped, bool lastVehicle = false)
+        /// <summary>
+        /// Returns the current or last vehicle of the selected ped.
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="lastVehicle"></param>
+        /// <returns></returns>
+        public static Vehicle GetVehicle(Ped ped, bool lastVehicle = false)
         {
             if (lastVehicle)
             {
@@ -115,7 +132,13 @@ namespace vMenuClient
             return null;
         }
 
-        public Vehicle GetVehicle(Player player, bool lastVehicle = false)
+        /// <summary>
+        /// Returns the current or last vehicle of the selected player.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="lastVehicle"></param>
+        /// <returns></returns>
+        public static Vehicle GetVehicle(Player player, bool lastVehicle = false)
         {
             if (lastVehicle)
             {
@@ -138,14 +161,14 @@ namespace vMenuClient
         /// </summary>
         /// <param name="vehicle">Entity/vehicle.</param>
         /// <returns>Returns the (uint) model hash from a (vehicle) entity.</returns>
-        public uint GetVehicleModel(int vehicle) => (uint)GetHashKey(GetEntityModel(vehicle).ToString());
+        public static uint GetVehicleModel(int vehicle) => (uint)GetHashKey(GetEntityModel(vehicle).ToString());
         #endregion
 
         #region Drive Tasks (WIP)
         /// <summary>
-        /// Todo
+        /// Drives to waypoint
         /// </summary>
-        public void DriveToWp(int style = 0)
+        public static void DriveToWp(int style = 0)
         {
 
             ClearPedTasks(Game.PlayerPed.Handle);
@@ -164,9 +187,9 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Todo
+        /// Drives around the area.
         /// </summary>
-        public void DriveWander(int style = 0)
+        public static void DriveWander(int style = 0)
         {
             ClearPedTasks(Game.PlayerPed.Handle);
             driveWanderTaskActive = true;
@@ -186,16 +209,16 @@ namespace vMenuClient
         /// <summary>
         /// Quit the current network session, but leaves you connected to the server so addons/resources are still streamed.
         /// </summary>
-        public void QuitSession() => NetworkSessionEnd(true, true);
+        public static void QuitSession() => NetworkSessionEnd(true, true);
 
         /// <summary>
         /// Quit the game after 5 seconds.
         /// </summary>
-        public async void QuitGame()
+        public static async void QuitGame()
         {
             Notify.Info("The game will exit in 5 seconds.", true, true);
             Debug.WriteLine("Game will be terminated in 5 seconds, because the player used the Quit Game option in vMenu.");
-            await Delay(5000);
+            await BaseScript.Delay(5000);
             ForceSocialClubUpdate(); // bye bye
         }
         #endregion
@@ -206,7 +229,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="playerId"></param>
         /// <param name="inVehicle"></param>
-        public async void TeleportToPlayerAsync(int playerId, bool inVehicle = false)
+        public static async void TeleportToPlayer(int playerId, bool inVehicle = false)
         {
             // If the player exists.
             if (NetworkIsPlayerActive(playerId))
@@ -231,7 +254,7 @@ namespace vMenuClient
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
                         // Get the vehicle of the specified player.
-                        Vehicle vehicle = GetVehicle(Players[playerId]);
+                        Vehicle vehicle = GetVehicle(MainMenu.PlayersList[playerId]);
                         if (vehicle != null)
                         {
                             int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle.Handle));
@@ -280,7 +303,7 @@ namespace vMenuClient
         /// Teleport the player to a specific location.
         /// </summary>
         /// <param name="pos">These are the target coordinates to teleport to.</param>
-        public async Task TeleportToCoords(Vector3 pos, bool safeModeDisabled = false)
+        public static async Task TeleportToCoords(Vector3 pos, bool safeModeDisabled = false)
         {
             if (!safeModeDisabled)
             {
@@ -374,7 +397,7 @@ namespace vMenuClient
         /// <summary>
         /// Teleports to the player's waypoint. If no waypoint is set, notify the user.
         /// </summary>
-        public async void TeleportToWp()
+        public static async void TeleportToWp()
         {
             if (Game.IsWaypointActive)
             {
@@ -396,7 +419,7 @@ namespace vMenuClient
         /// <param name="player"></param>
         /// <param name="askUserForReason"></param>
         /// <param name="reason"></param>
-        public async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
+        public static async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
         {
             if (player != null)
             {
@@ -449,7 +472,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="player">Player to ban.</param>
         /// <param name="forever">Ban forever or ban temporarily.</param>
-        public async void BanPlayer(Player player, bool forever)
+        public static async void BanPlayer(Player player, bool forever)
         {
             string banReason = await GetUserInput(windowTitle: "Enter Ban Reason", defaultText: "Banned by staff.", maxInputLength: 200);
             if (!string.IsNullOrEmpty(banReason) && banReason.Length > 1)
@@ -501,12 +524,12 @@ namespace vMenuClient
         /// Kill player
         /// </summary>
         /// <param name="player"></param>
-        public void KillPlayer(Player player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
+        public static void KillPlayer(Player player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
 
         /// <summary>
         /// Kill yourself.
         /// </summary>
-        public async void CommitSuicide()
+        public static async void CommitSuicide()
         {
             if (!Game.PlayerPed.IsInVehicle())
             {
@@ -616,13 +639,12 @@ namespace vMenuClient
         /// Summon player.
         /// </summary>
         /// <param name="player"></param>
-        public void SummonPlayer(Player player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
+        public static void SummonPlayer(Player player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         #endregion
 
         #region Spectate function
-
-        int currentlySpectatingPlayer = -1;
-        public async void SpectatePlayer(Player player, bool forceDisable = false)
+        private static int currentlySpectatingPlayer = -1;
+        public static async void SpectatePlayer(Player player, bool forceDisable = false)
         {
             if (forceDisable)
             {
@@ -680,10 +702,8 @@ namespace vMenuClient
                         Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
                         currentlySpectatingPlayer = player.Handle;
                     }
-
                 }
             }
-
         }
         #endregion
 
@@ -691,7 +711,7 @@ namespace vMenuClient
         /// <summary>
         /// Cycle to the next available seat.
         /// </summary>
-        public void CycleThroughSeats()
+        public static void CycleThroughSeats()
         {
 
             // Create a new vehicle.
@@ -772,7 +792,7 @@ namespace vMenuClient
         /// <param name="vehicleName">Vehicle model name. If "custom" the user will be asked to enter a model name.</param>
         /// <param name="spawnInside">Warp the player inside the vehicle after spawning.</param>
         /// <param name="replacePrevious">Replace the previous vehicle of the player.</param>
-        public async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
+        public static async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
         {
             if (vehicleName == "custom")
             {
@@ -811,7 +831,7 @@ namespace vMenuClient
         /// <param name="skipLoad">Does not attempt to load the vehicle, but will spawn it right a way.</param>
         /// <param name="vehicleInfo">All information needed for a saved vehicle to re-apply all mods.</param>
         /// <param name="saveName">Used to get/set info about the saved vehicle data.</param>
-        public async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null)
+        public static async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null)
         {
             float speed = 0f;
             float rpm = 0f;
@@ -1032,7 +1052,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the vehicle the player is currently in to the client's kvp storage.
         /// </summary>
-        public async void SaveVehicle(string updateExistingSavedVehicleName = null)
+        public static async void SaveVehicle(string updateExistingSavedVehicleName = null)
         {
             // Only continue if the player is in a vehicle.
             if (Game.PlayerPed.IsInVehicle())
@@ -1174,21 +1194,12 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Loading Saved Vehicle
-        /// <summary>
-        /// New updated function to get the saved vehicle info from storage.
-        /// </summary>
-        /// <param name="saveName"></param>
-        /// <returns></returns>
-        public VehicleInfo GetSavedVehicleInfo(string saveName) => sm.GetSavedVehicleInfo(saveName);
-        #endregion
-
         #region Get Saved Vehicles Dictionary
         /// <summary>
         /// Returns a collection of all saved vehicles, with their save name and saved vehicle info struct.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, VehicleInfo> GetSavedVehicles()
+        public static Dictionary<string, VehicleInfo> GetSavedVehicles()
         {
             // Create a list to store all saved vehicle names in.
             var savedVehicleNames = new List<string>();
@@ -1221,7 +1232,7 @@ namespace vMenuClient
             // and add it to the dictionary above, with the vehicle save name as the key.
             foreach (var saveName in savedVehicleNames)
             {
-                vehiclesList.Add(saveName, sm.GetSavedVehicleInfo(saveName));
+                vehiclesList.Add(saveName, StorageManager.GetSavedVehicleInfo(saveName));
             }
             // Return the vehicle dictionary containing all vehicle save names (keys) linked to the correct vehicle
             // including all vehicle mods/customization parts.
@@ -1235,7 +1246,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="modelHash"></param>
         /// <returns>True if model is valid & loaded, false if model is invalid.</returns>
-        private async Task<bool> LoadModel(uint modelHash)
+        private static async Task<bool> LoadModel(uint modelHash)
         {
             // Check if the model exists in the game.
             if (IsModelInCdimage(modelHash))
@@ -1264,33 +1275,33 @@ namespace vMenuClient
         /// Get a user input text string.
         /// </summary>
         /// <returns></returns>
-        public async Task<string> GetUserInput() => await GetUserInput(null, null, 30);
+        public static async Task<string> GetUserInput() => await GetUserInput(null, null, 30);
         /// <summary>
         /// Get a user input text string.
         /// </summary>
         /// <param name="maxInputLength"></param>
         /// <returns></returns>
-        public async Task<string> GetUserInput(int maxInputLength) => await GetUserInput(null, null, maxInputLength);
+        public static async Task<string> GetUserInput(int maxInputLength) => await GetUserInput(null, null, maxInputLength);
         /// <summary>
         /// Get a user input text string.
         /// </summary>
         /// <param name="windowTitle"></param>
         /// <returns></returns>
-        public async Task<string> GetUserInput(string windowTitle) => await GetUserInput(windowTitle, null, 30);
+        public static async Task<string> GetUserInput(string windowTitle) => await GetUserInput(windowTitle, null, 30);
         /// <summary>
         /// Get a user input text string.
         /// </summary>
         /// <param name="windowTitle"></param>
         /// <param name="maxInputLength"></param>
         /// <returns></returns>
-        public async Task<string> GetUserInput(string windowTitle, int maxInputLength) => await GetUserInput(windowTitle, null, maxInputLength);
+        public static async Task<string> GetUserInput(string windowTitle, int maxInputLength) => await GetUserInput(windowTitle, null, maxInputLength);
         /// <summary>
         /// Get a user input text string.
         /// </summary>
         /// <param name="windowTitle"></param>
         /// <param name="defaultText"></param>
         /// <returns></returns>
-        public async Task<string> GetUserInput(string windowTitle, string defaultText) => await GetUserInput(windowTitle, defaultText, 30);
+        public static async Task<string> GetUserInput(string windowTitle, string defaultText) => await GetUserInput(windowTitle, defaultText, 30);
         /// <summary>
         /// Get a user input text string.
         /// </summary>
@@ -1298,7 +1309,7 @@ namespace vMenuClient
         /// <param name="defaultText"></param>
         /// <param name="maxInputLength"></param>
         /// <returns></returns>
-        public async Task<string> GetUserInput(string windowTitle, string defaultText, int maxInputLength)
+        public static async Task<string> GetUserInput(string windowTitle, string defaultText, int maxInputLength)
         {
             var currentMenu = GetOpenMenu();
             if (currentMenu != null)
@@ -1353,7 +1364,7 @@ namespace vMenuClient
         /// <summary>
         /// Set the license plate text using the player's custom input.
         /// </summary>
-        public async void SetLicensePlateTextAsync()
+        public static async void SetLicensePlateCustomText()
         {
             // Get the input.
             var text = await GetUserInput(windowTitle: "Enter License Plate", maxInputLength: 8);
@@ -1372,14 +1383,12 @@ namespace vMenuClient
                 else
                 {
                     Notify.Error(CommonErrors.NoVehicle);
-                    //Notification.Error("You're not inside a vehicle!");
                 }
             }
             // No valid text was given.
             else
             {
                 Notify.Error(CommonErrors.InvalidInput);
-                //Notification.Error($"License plate text ~r~{(text == "NULL" ? "(empty input)" : text)} ~s~can not be used on a license plate!");
             }
 
         }
@@ -1391,7 +1400,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="inputString"></param>
         /// <returns>Input string converted to a normal sentence.</returns>
-        public string ToProperString(string inputString)
+        public static string ToProperString(string inputString)
         {
             var outputString = "";
             var prevUpper = true;
@@ -1421,7 +1430,6 @@ namespace vMenuClient
             }
             return outputString;
         }
-
         #endregion
 
         #region Permissions
@@ -1431,8 +1439,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        //public bool IsAllowed(Permission permission) => true;
-        public bool IsAllowed(Permission permission) => PermissionsManager.IsAllowed(permission);
+        public static bool IsAllowed(Permission permission) => PermissionsManager.IsAllowed(permission);
         #endregion
 
         #region Play Scenarios
@@ -1441,7 +1448,7 @@ namespace vMenuClient
         /// If "forcestop" is specified, any currrently playing scenarios will be forcefully stopped.
         /// </summary>
         /// <param name="scenarioName"></param>
-        public void PlayScenario(string scenarioName)
+        public static void PlayScenario(string scenarioName)
         {
             // If there's currently no scenario playing, or the current scenario is not the same as the new scenario, then..
             if (currentScenario == "" || currentScenario != scenarioName)
@@ -1453,11 +1460,6 @@ namespace vMenuClient
 
                 var canPlay = true;
                 // Check if the player CAN play a scenario... 
-                //if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true))
-                //{
-                //    Notification.Alert("You can't start a scenario when you are inside a vehicle.", true, false);
-                //    canPlay = false;
-                //}
                 if (IsPedRunning(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are running.", true, false);
@@ -1539,156 +1541,13 @@ namespace vMenuClient
 
         #region Data parsing functions
         /// <summary>
-        /// New updated method for converting a KVP (string) json object (vehicle info data) to VehicleInfo struct.
-        /// </summary>
-        /// <param name="jsonObject"></param>
-        /// <param name="version"></param>
-        /// <param name="saveName">Name used to re-save the info if necessary.</param>
-        /// <returns></returns>
-        public VehicleInfo JsonToVehicleInfo(dynamic jsonObject, int version, string saveName)
-        {
-            VehicleInfo vi = new VehicleInfo();
-            if (version == 1)
-            {
-                var colors = new Dictionary<string, int>
-                {
-                    ["primary"] = jsonObject.colors.primary,
-                    ["secondary"] = jsonObject.colors.secondary,
-                    ["pearlescent"] = jsonObject.colors.pearlescent,
-                    ["wheels"] = jsonObject.colors.wheels,
-                    ["dash"] = jsonObject.colors.dash,
-                    ["trim"] = jsonObject.colors.trim,
-                    ["neonR"] = jsonObject.colors.neonR,
-                    ["neonG"] = jsonObject.colors.neonG,
-                    ["neonB"] = jsonObject.colors.neonB,
-                    ["tyresmokeR"] = jsonObject.colors.tyresmokeR,
-                    ["tyresmokeG"] = jsonObject.colors.tyresmokeG,
-                    ["tyresmokeB"] = jsonObject.colors.tyresmokeB,
-                };
-                vi.colors = colors;
-
-                vi.customWheels = jsonObject.customWheels;
-
-                var extras = new Dictionary<int, bool>();
-                foreach (KeyValuePair<int, bool> e in jsonObject.extras)
-                {
-                    extras.Add(e.Key, e.Value);
-                }
-                vi.extras = extras;
-
-                vi.livery = jsonObject.livery;
-                vi.model = jsonObject.model;
-
-                var mods = new Dictionary<int, int>();
-                foreach (KeyValuePair<int, int> m in jsonObject.mods)
-                {
-                    mods.Add(m.Key, m.Value);
-                }
-                vi.mods = mods;
-
-                vi.name = jsonObject.name;
-                vi.neonBack = jsonObject.neonBack;
-                vi.neonFront = jsonObject.neonFront;
-                vi.neonLeft = jsonObject.neonLeft;
-                vi.neonRight = jsonObject.neonRight;
-                vi.plateStyle = jsonObject.plateStyle;
-                vi.plateText = jsonObject.plateText;
-                vi.turbo = jsonObject.turbo;
-                vi.tyreSmoke = jsonObject.tyreSmoke;
-                vi.version = jsonObject.version;
-                vi.wheelType = jsonObject.wheelType;
-                vi.windowTint = jsonObject.windowTint;
-                vi.xenonHeadlights = jsonObject.xenonHeadlights;
-            }
-            else if (version == 0)
-            {
-                var dict = JsonToDictionary(JsonConvert.SerializeObject(jsonObject));
-                var colors = new Dictionary<string, int>()
-                {
-                    ["primary"] = int.Parse(dict["primaryColor"]),
-                    ["secondary"] = int.Parse(dict["secondaryColor"]),
-                    ["pearlescent"] = int.Parse(dict["pearlescentColor"]),
-                    ["wheels"] = int.Parse(dict["wheelsColor"]),
-                    ["dash"] = int.Parse(dict["dashboardColor"]),
-                    ["trim"] = int.Parse(dict["interiorColor"]),
-                    ["neonR"] = 255,
-                    ["neonG"] = 255,
-                    ["neonB"] = 255,
-                    ["tyresmokeR"] = int.Parse(dict["tireSmokeR"]),
-                    ["tyresmokeG"] = int.Parse(dict["tireSmokeG"]),
-                    ["tyresmokeB"] = int.Parse(dict["tireSmokeB"]),
-                };
-                var extras = new Dictionary<int, bool>();
-                for (int i = 0; i < 15; i++)
-                {
-                    if (dict["extra" + i] == "true")
-                    {
-                        extras.Add(i, true);
-                    }
-                    else
-                    {
-                        extras.Add(i, false);
-                    }
-                }
-
-                var mods = new Dictionary<int, int>();
-                int skip = 8 + 24 + 2 + 1;
-                foreach (var mod in dict)
-                {
-                    skip--;
-                    if (skip < 0)
-                    {
-                        var key = int.Parse(mod.Key);
-                        var val = int.Parse(mod.Value);
-                        mods.Add(key, val);
-                    }
-                }
-
-                vi.colors = colors;
-                vi.customWheels = dict["customWheels"] == "true";
-                vi.extras = extras;
-                vi.livery = int.Parse(dict["oldLivery"]);
-                vi.model = (uint)Int64.Parse(dict["model"]);
-                vi.mods = mods;
-                vi.name = dict["name"];
-                vi.neonBack = false;
-                vi.neonFront = false;
-                vi.neonLeft = false;
-                vi.neonRight = false;
-                vi.plateStyle = int.Parse(dict["plateStyle"]);
-                vi.plateText = dict["plate"];
-                vi.turbo = dict["turbo"] == "true";
-                vi.tyreSmoke = dict["tireSmoke"] == "true";
-                vi.version = 1;
-                vi.wheelType = int.Parse(dict["wheelType"]);
-                vi.windowTint = int.Parse(dict["windowTint"]);
-                vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
-
-                StorageManager.SaveVehicleInfo(saveName, vi, true);
-            }
-            else
-            {
-                Notify.Error("An error occurred while converting a saved vehicle record. Unknown version to convert from.");
-            }
-
-            return vi;
-        }
-
-        /// <summary>
         /// Converts a simple json string (only containing (string) key : (string) value).
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public Dictionary<string, string> JsonToDictionary(string json)
+        public static Dictionary<string, string> JsonToDictionary(string json)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dynamic obj = JsonConvert.DeserializeObject(json);
-            MainMenu.Cf.Log(obj.ToString());
-            foreach (Newtonsoft.Json.Linq.JProperty item in obj)
-            {
-                dict.Add(item.Name, item.Value.ToString());
-            }
-            return dict;
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
         }
         #endregion
 
@@ -1699,13 +1558,13 @@ namespace vMenuClient
         /// <param name="newWeather">The new weather type.</param>
         /// <param name="blackout">Manual blackout mode enabled/disabled.</param>
         /// <param name="dynamicChanges">Dynamic weather changes enabled/disabled.</param>
-        public void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges) => TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
+        public static void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges) => TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
 
         /// <summary>
         /// Modify the clouds for everyone. If removeClouds is true, then remove all clouds. If it's false, then randomize the clouds.
         /// </summary>
         /// <param name="removeClouds">Removes the clouds from the sky if true, otherwise randomizes the clouds type for all players.</param>
-        public void ModifyClouds(bool removeClouds) => TriggerServerEvent("vMenu:UpdateServerWeatherCloudsType", removeClouds);
+        public static void ModifyClouds(bool removeClouds) => TriggerServerEvent("vMenu:UpdateServerWeatherCloudsType", removeClouds);
         #endregion
 
         #region Time Sync
@@ -1715,7 +1574,7 @@ namespace vMenuClient
         /// <param name="hours">Hours (0-23)</param>
         /// <param name="minutes">Minutes (0-59)</param>
         /// <param name="freezeTime">Should the time be frozen?</param>
-        public void UpdateServerTime(int hours, int minutes, bool freezeTime)
+        public static void UpdateServerTime(int hours, int minutes, bool freezeTime)
         {
             var realHours = hours;
             var realMinutes = minutes;
@@ -1729,78 +1588,29 @@ namespace vMenuClient
             }
             TriggerServerEvent("vMenu:UpdateServerTime", realHours, realMinutes, freezeTime);
         }
-
-
         #endregion
 
         #region StringToStringArray
         /// <summary>
-        /// Converts the inputString into 1, 2 or 3 strings in a string[] (array).
+        /// Converts the inputString into a string[] (array).
         /// Each string in the array is up to 99 characters long at max.
         /// </summary>
         /// <param name="inputString"></param>
-        /// <returns>String[] containing 1, 2 or 3 strings.</returns>
-        public string[] StringToArray(string inputString)
+        /// <returns></returns>
+        public static string[] StringToArray(string inputString)
         {
-            string[] outputString = new string[3];
-
-            var lastSpaceIndex = 0;
-            var newStartIndex = 0;
-            outputString[0] = inputString;
-
-            if (inputString.Length > 99)
-            {
-                for (int i = 0; i < inputString.Length; i++)
-                {
-                    if (inputString.Substring(i, 1) == " ")
-                    {
-                        lastSpaceIndex = i;
-                    }
-
-                    if (inputString.Length > 99 && i >= 98)
-                    {
-                        if (i == 98)
-                        {
-                            outputString[0] = inputString.Substring(0, lastSpaceIndex);
-                            newStartIndex = lastSpaceIndex + 1;
-                        }
-                        if (i > 98 && i < 198)
-                        {
-                            if (i == 197)
-                            {
-                                outputString[1] = inputString.Substring(newStartIndex, (lastSpaceIndex - (outputString[0].Length - 1)) - (inputString.Length - 1 > 197 ? 1 : -1));
-                                newStartIndex = lastSpaceIndex + 1;
-                            }
-                            else if (i == inputString.Length - 1 && inputString.Length < 198)
-                            {
-                                outputString[1] = inputString.Substring(newStartIndex, ((inputString.Length - 1) - outputString[0].Length));
-                                newStartIndex = lastSpaceIndex + 1;
-                            }
-                        }
-                        if (i > 197)
-                        {
-                            if (i == inputString.Length - 1 || i == 296)
-                            {
-                                outputString[2] = inputString.Substring(newStartIndex, ((inputString.Length - 1) - outputString[0].Length) - outputString[1].Length);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return outputString;
+            return CitizenFX.Core.UI.Screen.StringToArray(inputString);
         }
         #endregion
 
         #region Hud Functions
-
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
         /// </summary>
         /// <param name="text">The text to display.</param>
         /// <param name="xPosition">The x position for the text draw origin.</param>
         /// <param name="yPosition">The y position for the text draw origin.</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition) =>
+        public static void DrawTextOnScreen(string text, float xPosition, float yPosition) =>
             DrawTextOnScreen(text, xPosition, yPosition, size: 0.48f);
 
         /// <summary>
@@ -1810,7 +1620,7 @@ namespace vMenuClient
         /// <param name="xPosition">The x position for the text draw origin.</param>
         /// <param name="yPosition">The y position for the text draw origin.</param>
         /// <param name="size">The size of the text.</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size) =>
+        public static void DrawTextOnScreen(string text, float xPosition, float yPosition, float size) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, CitizenFX.Core.UI.Alignment.Left);
 
         /// <summary>
@@ -1821,7 +1631,7 @@ namespace vMenuClient
         /// <param name="yPosition">The y position for the text draw origin.</param>
         /// <param name="size">The size of the text.</param>
         /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification) =>
+        public static void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, justification, 6);
 
         /// <summary>
@@ -1833,7 +1643,7 @@ namespace vMenuClient
         /// <param name="size">The size of the text.</param>
         /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
         /// <param name="font">Specify the font to use (0-8).</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font) =>
+        public static void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font) =>
             DrawTextOnScreen(text, xPosition, yPosition, size, justification, font, false);
 
         /// <summary>
@@ -1846,9 +1656,9 @@ namespace vMenuClient
         /// <param name="justification">Align the text. 0: center, 1: left, 2: right</param>
         /// <param name="font">Specify the font to use (0-8).</param>
         /// <param name="disableTextOutline">Disables the default text outline.</param>
-        public void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
+        public static void DrawTextOnScreen(string text, float xPosition, float yPosition, float size, CitizenFX.Core.UI.Alignment justification, int font, bool disableTextOutline)
         {
-            if (IsHudPreferenceSwitchedOn() && CitizenFX.Core.UI.Screen.Hud.IsVisible && !MainMenu.MiscSettingsMenu.HideHud && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsPauseMenuActive() && !IsFrontendFading() && !IsPauseMenuRestarting() && !IsHudHidden())
+            if (IsHudPreferenceSwitchedOn() && Hud.IsVisible && !MainMenu.MiscSettingsMenu.HideHud && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsPauseMenuActive() && !IsFrontendFading() && !IsPauseMenuRestarting() && !IsHudHidden())
             {
                 SetTextFont(font);
                 SetTextScale(1.0f, size);
@@ -1865,18 +1675,12 @@ namespace vMenuClient
         }
         #endregion
 
-        #region ped (& ped mp info) info struct
-        public struct MultiplayerPedInfo
-        {
-            // todo
-        };
-
+        #region ped info struct
         public struct PedInfo
         {
             public int version;
             public uint model;
             public bool isMpPed;
-            public MultiplayerPedInfo mpPedInfo;
             public Dictionary<int, int> props;
             public Dictionary<int, int> propTextures;
             public Dictionary<int, int> drawableVariations;
@@ -1889,13 +1693,13 @@ namespace vMenuClient
         /// Sets the player's model to the provided modelName.
         /// </summary>
         /// <param name="modelName">The model name.</param>
-        public async Task SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => await SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
+        public static async Task SetPlayerSkin(string modelName, PedInfo pedCustomizationOptions, bool keepWeapons = true) => await SetPlayerSkin((uint)GetHashKey(modelName), pedCustomizationOptions, keepWeapons);
 
         /// <summary>
         /// Sets the player's model to the provided modelHash.
         /// </summary>
         /// <param name="modelHash">The model hash.</param>
-        public async Task SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
+        public static async Task SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
         {
             //uint model = modelHash;
             //Debug.Write(modelHash.ToString() + "\n");
@@ -1976,7 +1780,7 @@ namespace vMenuClient
         /// <summary>
         /// Set the player model by asking for user input.
         /// </summary>
-        public async void SpawnPedByName()
+        public static async void SpawnPedByName()
         {
             string input = await GetUserInput(windowTitle: "Enter Ped Model Name", maxInputLength: 30);
             if (!string.IsNullOrEmpty(input))
@@ -1994,7 +1798,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the current player ped.
         /// </summary>
-        public async void SavePed(string forceName = null)
+        public static async void SavePed(string forceName = null)
         {
             string name = forceName;
             if (string.IsNullOrEmpty(name))
@@ -2007,7 +1811,6 @@ namespace vMenuClient
             if (!string.IsNullOrEmpty(name))
             {
                 // Create a dictionary to store all data in.
-                //Dictionary<string, string> pedData = new Dictionary<string, string>();
                 PedInfo data = new PedInfo();
 
                 // Get the ped.
@@ -2045,10 +1848,8 @@ namespace vMenuClient
                 data.propTextures = propTextures;
 
                 data.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
-                data.mpPedInfo = new MultiplayerPedInfo();
 
                 // Try to save the data, and save the result in a variable.
-                //bool saveSuccessful = sm.SaveDictionary("ped_" + name, pedData, false);
                 bool saveSuccessful = false;
                 if (name == "vMenu_tmp_saved_ped")
                 {
@@ -2088,17 +1889,17 @@ namespace vMenuClient
         /// Load the saved ped and spawn it.
         /// </summary>
         /// <param name="savedName">The ped saved name</param>
-        public async void LoadSavedPed(string savedName, bool restoreWeapons)
+        public static async void LoadSavedPed(string savedName, bool restoreWeapons)
         {
             if (savedName != "vMenu_tmp_saved_ped")
             {
-                PedInfo pi = sm.GetSavedPedInfo("ped_" + savedName);
+                PedInfo pi = StorageManager.GetSavedPedInfo("ped_" + savedName);
                 Log(JsonConvert.SerializeObject(pi));
                 await SetPlayerSkin(pi.model, pi, restoreWeapons);
             }
             else
             {
-                PedInfo pi = sm.GetSavedPedInfo(savedName);
+                PedInfo pi = StorageManager.GetSavedPedInfo(savedName);
                 Log(JsonConvert.SerializeObject(pi));
                 await SetPlayerSkin(pi.model, pi, restoreWeapons);
                 DeleteResourceKvp("vMenu_tmp_saved_ped");
@@ -2106,8 +1907,7 @@ namespace vMenuClient
 
         }
 
-
-        public bool GetPedInfoFromBeforeDeath()
+        public static bool GetPedInfoFromBeforeDeath()
         {
             if (!string.IsNullOrEmpty(GetResourceKvpString("vMenu_tmp_saved_ped")))
             {
@@ -2124,7 +1924,7 @@ namespace vMenuClient
         /// <param name="json"></param>
         /// <param name="saveName"></param>
         /// <returns></returns>
-        public PedInfo JsonToPedInfo(string json, string saveName)
+        public static PedInfo JsonToPedInfo(string json, string saveName)
         {
             return JsonConvert.DeserializeObject<PedInfo>(json);
         }
@@ -2139,12 +1939,12 @@ namespace vMenuClient
             public int Tint;
         }
 
-        private List<WeaponInfo> weaponsList = new List<WeaponInfo>();
+        private static List<WeaponInfo> weaponsList = new List<WeaponInfo>();
 
         /// <summary>
         /// Saves all current weapons and components.
         /// </summary>
-        public async Task SaveWeaponLoadout()
+        public static async Task SaveWeaponLoadout()
         {
             //await Delay(1);
             weaponsList.Clear();
@@ -2179,7 +1979,7 @@ namespace vMenuClient
         /// <summary>
         /// Restores all weapons and components
         /// </summary>
-        public async void RestoreWeaponLoadout()
+        public static async void RestoreWeaponLoadout()
         {
             await Delay(0);
             if (weaponsList.Count > 0)
@@ -2207,7 +2007,7 @@ namespace vMenuClient
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <returns></returns>
-        public UIMenuItem GetSpacerMenuItem(string title, string description = null)
+        public static UIMenuItem GetSpacerMenuItem(string title, string description = null)
         {
             string output = "~h~";
             int length = title.Length;
@@ -2231,7 +2031,7 @@ namespace vMenuClient
         /// Print data to the console and save it to the CitizenFX.log file. Only when vMenu debugging mode is enabled.
         /// </summary>
         /// <param name="data"></param>
-        public void Log(string data)
+        public static void Log(string data)
         {
             if (MainMenu.DebugMode)
                 Debug.Write(data + "\n");
@@ -2244,7 +2044,7 @@ namespace vMenuClient
         /// Returns the currently opened menu, if no menu is open, it'll return null.
         /// </summary>
         /// <returns></returns>
-        public UIMenu GetOpenMenu()
+        public static UIMenu GetOpenMenu()
         {
             if (MainMenu.Mp.IsAnyMenuOpen())
             {
@@ -2265,7 +2065,7 @@ namespace vMenuClient
         /// <summary>
         /// Set the ammo for all weapons in inventory to the custom amount entered by the user.
         /// </summary>
-        public async void SetAllWeaponsAmmo()
+        public static async void SetAllWeaponsAmmo()
         {
             int ammo = 100;
             string inputAmmo = await GetUserInput(windowTitle: "Enter Ammo Amount", defaultText: "100");
@@ -2291,7 +2091,7 @@ namespace vMenuClient
         /// <summary>
         /// Spawn a weapon by asking the player for the weapon name.
         /// </summary>
-        public async void SpawnCustomWeapon()
+        public static async void SpawnCustomWeapon()
         {
             int ammo = 900;
             string inputName = await GetUserInput(windowTitle: "Enter Weapon Model Name", maxInputLength: 30);
@@ -2317,7 +2117,7 @@ namespace vMenuClient
         #endregion
 
         #region Set Player Walking Style
-        public async void SetWalkingStyle(string walkingStyle)
+        public static async void SetWalkingStyle(string walkingStyle)
         {
             if (IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_f_freemode_01")) || IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_m_freemode_01")))
             {
@@ -2397,7 +2197,7 @@ namespace vMenuClient
         #endregion
 
         #region Disable Movement Controls
-        public void DisableMovementControlsThisFrame(bool disableMovement, bool disableCameraMovement)
+        public static void DisableMovementControlsThisFrame(bool disableMovement, bool disableCameraMovement)
         {
             if (disableMovement)
             {
@@ -2456,7 +2256,7 @@ namespace vMenuClient
         #endregion
 
         #region Set Correct Blip
-        public void SetCorrectBlipSprite(int ped, int blip)
+        public static void SetCorrectBlipSprite(int ped, int blip)
         {
             if (IsPedInAnyVehicle(ped, false))
             {
@@ -2475,7 +2275,7 @@ namespace vMenuClient
         }
         #endregion
 
-        public string GetSafePlayerName(string name)
+        public static string GetSafePlayerName(string name)
         {
             if (string.IsNullOrEmpty(name))
             {

@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private readonly CommonFunctions cf = MainMenu.Cf;
 
         private void CreateMenu()
         {

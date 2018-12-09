@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
 
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
@@ -33,7 +32,7 @@ namespace vMenuClient
         public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
-        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
+        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
@@ -96,11 +95,11 @@ namespace vMenuClient
             {
                 if (item == quitGame)
                 {
-                    cf.QuitGame();
+                    QuitGame();
                 }
                 else if (item == quitSession)
                 {
-                    cf.QuitSession();
+                    QuitSession();
                 }
                 else if (item == disconnectFromServer)
                 {
@@ -109,7 +108,7 @@ namespace vMenuClient
             };
 
             // Add menu items to the menu.
-            if (cf.IsAllowed(Permission.MSTeleportToWp))
+            if (IsAllowed(Permission.MSTeleportToWp))
             {
                 menu.AddItem(tptowp);
             }
@@ -118,46 +117,46 @@ namespace vMenuClient
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
             menu.AddItem(modelDimensions);
-            if (cf.IsAllowed(Permission.MSConnectionMenu))
+            if (IsAllowed(Permission.MSConnectionMenu))
             {
                 menu.AddItem(connectionSubmenuBtn);
                 connectionSubmenuBtn.SetRightLabel("→→→");
             }
-            if (cf.IsAllowed(Permission.MSShowCoordinates))
+            if (IsAllowed(Permission.MSShowCoordinates))
             {
                 menu.AddItem(coords);
             }
-            if (cf.IsAllowed(Permission.MSShowLocation))
+            if (IsAllowed(Permission.MSShowLocation))
             {
                 menu.AddItem(showLocation);
             }
             menu.AddItem(drawTime); // always allowed
-            if (cf.IsAllowed(Permission.MSJoinQuitNotifs))
+            if (IsAllowed(Permission.MSJoinQuitNotifs))
             {
                 menu.AddItem(deathNotifs);
             }
-            if (cf.IsAllowed(Permission.MSDeathNotifs))
+            if (IsAllowed(Permission.MSDeathNotifs))
             {
                 menu.AddItem(joinQuitNotifs);
             }
-            if (cf.IsAllowed(Permission.MSNightVision))
+            if (IsAllowed(Permission.MSNightVision))
             {
                 menu.AddItem(nightVision);
             }
-            if (cf.IsAllowed(Permission.MSThermalVision))
+            if (IsAllowed(Permission.MSThermalVision))
             {
                 menu.AddItem(thermalVision);
             }
-            if (cf.IsAllowed(Permission.MSLocationBlips))
+            if (IsAllowed(Permission.MSLocationBlips))
             {
                 menu.AddItem(locationBlips);
                 ToggleBlips(ShowLocationBlips);
             }
-            if (cf.IsAllowed(Permission.MSPlayerBlips))
+            if (IsAllowed(Permission.MSPlayerBlips))
             {
                 menu.AddItem(playerBlips);
             }
-            if (cf.IsAllowed(Permission.MSTeleportLocations))
+            if (IsAllowed(Permission.MSTeleportLocations))
             {
                 menu.AddItem(teleportMenuBtn);
                 teleportMenuBtn.SetRightLabel("→→→");
@@ -184,7 +183,7 @@ namespace vMenuClient
                         }
                         teleportMenu.OnItemSelect += async (sender, item, index) =>
                         {
-                            await cf.TeleportToCoords(tpLocations[index], true);
+                            await TeleportToCoords(tpLocations[index], true);
                             SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
                         };
                     }
@@ -194,15 +193,15 @@ namespace vMenuClient
                     }
                 }
             }
-            if (cf.IsAllowed(Permission.MSClearArea))
+            if (IsAllowed(Permission.MSClearArea))
             {
                 menu.AddItem(clearArea);
             }
-            if (cf.IsAllowed(Permission.MSRestoreAppearance))
+            if (IsAllowed(Permission.MSRestoreAppearance))
             {
                 menu.AddItem(restorePlayerAppearance);
             }
-            if (cf.IsAllowed(Permission.MSRestoreWeapons))
+            if (IsAllowed(Permission.MSRestoreWeapons))
             {
                 menu.AddItem(restorePlayerWeapons);
             }
@@ -304,7 +303,7 @@ namespace vMenuClient
                 // Teleport to waypoint.
                 if (item == tptowp)
                 {
-                    cf.TeleportToWp();
+                    TeleportToWp();
                 }
                 // save settings
                 else if (item == saveSettings)

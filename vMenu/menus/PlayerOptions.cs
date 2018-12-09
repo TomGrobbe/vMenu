@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
-        private static CommonFunctions cf = MainMenu.Cf;
 
         // Public variables (getters only), return the private variables.
         public bool PlayerGodMode { get; private set; } = UserDefaults.PlayerGodMode;
@@ -81,70 +80,70 @@ namespace vMenuClient
 
             #region add items to menu based on permissions
             // Add all checkboxes to the menu. (keeping permissions in mind)
-            if (cf.IsAllowed(Permission.POGod))
+            if (IsAllowed(Permission.POGod))
             {
                 menu.AddItem(playerGodModeCheckbox);
             }
-            if (cf.IsAllowed(Permission.POInvisible))
+            if (IsAllowed(Permission.POInvisible))
             {
                 menu.AddItem(invisibleCheckbox);
             }
-            if (cf.IsAllowed(Permission.POUnlimitedStamina))
+            if (IsAllowed(Permission.POUnlimitedStamina))
             {
                 menu.AddItem(unlimitedStaminaCheckbox);
             }
-            if (cf.IsAllowed(Permission.POFastRun))
+            if (IsAllowed(Permission.POFastRun))
             {
                 menu.AddItem(fastRunCheckbox);
             }
-            if (cf.IsAllowed(Permission.POFastSwim))
+            if (IsAllowed(Permission.POFastSwim))
             {
                 menu.AddItem(fastSwimCheckbox);
             }
-            if (cf.IsAllowed(Permission.POSuperjump))
+            if (IsAllowed(Permission.POSuperjump))
             {
                 menu.AddItem(superJumpCheckbox);
             }
-            if (cf.IsAllowed(Permission.PONoRagdoll))
+            if (IsAllowed(Permission.PONoRagdoll))
             {
                 menu.AddItem(noRagdollCheckbox);
             }
-            if (cf.IsAllowed(Permission.PONeverWanted))
+            if (IsAllowed(Permission.PONeverWanted))
             {
                 menu.AddItem(neverWantedCheckbox);
             }
-            if (cf.IsAllowed(Permission.POSetWanted))
+            if (IsAllowed(Permission.POSetWanted))
             {
                 menu.AddItem(setWantedLevel);
             }
-            if (cf.IsAllowed(Permission.POIgnored))
+            if (IsAllowed(Permission.POIgnored))
             {
                 menu.AddItem(everyoneIgnoresPlayerCheckbox);
             }
-            if (cf.IsAllowed(Permission.POMaxHealth))
+            if (IsAllowed(Permission.POMaxHealth))
             {
                 menu.AddItem(healPlayerBtn);
             }
-            if (cf.IsAllowed(Permission.POMaxArmor))
+            if (IsAllowed(Permission.POMaxArmor))
             {
                 menu.AddItem(maxArmorBtn);
             }
-            if (cf.IsAllowed(Permission.POCleanPlayer))
+            if (IsAllowed(Permission.POCleanPlayer))
             {
                 menu.AddItem(cleanPlayerBtn);
             }
-            if (cf.IsAllowed(Permission.PODryPlayer))
+            if (IsAllowed(Permission.PODryPlayer))
             {
                 menu.AddItem(dryPlayerBtn);
             }
-            if (cf.IsAllowed(Permission.POWetPlayer))
+            if (IsAllowed(Permission.POWetPlayer))
             {
                 menu.AddItem(wetPlayerBtn);
             }
 
             menu.AddItem(suicidePlayerBtn);
 
-            if (cf.IsAllowed(Permission.POVehicleAutoPilotMenu))
+            if (IsAllowed(Permission.POVehicleAutoPilotMenu))
             {
                 menu.AddItem(vehicleAutoPilotBtn);
                 menu.BindMenuToItem(vehicleAutoPilot, vehicleAutoPilotBtn);
@@ -177,7 +176,7 @@ namespace vMenuClient
                                     if (IsWaypointActive())
                                     {
                                         int style = GetStyleFromIndex(drivingStyle.Index);
-                                        cf.DriveToWp(style);
+                                        DriveToWp(style);
                                         Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button. The vehicle will stop when it has reached the destination.");
                                     }
                                     else
@@ -189,7 +188,7 @@ namespace vMenuClient
                                 else if (item == startDrivingRandomly)
                                 {
                                     int style = GetStyleFromIndex(drivingStyle.Index);
-                                    cf.DriveWander(style);
+                                    DriveWander(style);
                                     Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button.");
                                 }
                             }
@@ -211,7 +210,7 @@ namespace vMenuClient
                     {
                         if (Game.PlayerPed.IsInVehicle())
                         {
-                            Vehicle veh = cf.GetVehicle();
+                            Vehicle veh = GetVehicle();
                             if (veh != null && veh.Exists() && !veh.IsDead)
                             {
                                 Vector3 outPos = new Vector3();
@@ -255,11 +254,11 @@ namespace vMenuClient
                 };
             }
 
-            if (cf.IsAllowed(Permission.POFreeze))
+            if (IsAllowed(Permission.POFreeze))
             {
                 menu.AddItem(playerFrozenCheckbox);
             }
-            if (cf.IsAllowed(Permission.POScenarios))
+            if (IsAllowed(Permission.POScenarios))
             {
                 menu.AddItem(playerScenarios);
                 menu.AddItem(stopScenario);
@@ -352,7 +351,7 @@ namespace vMenuClient
                 // Player Scenarios 
                 else if (listItem == playerScenarios)
                 {
-                    cf.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
+                    CommonFunctions.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
                 }
             };
 
@@ -364,7 +363,7 @@ namespace vMenuClient
                 {
                     // Play a new scenario named "forcestop" (this scenario doesn't exist, but the "Play" function checks
                     // for the string "forcestop", if that's provided as th scenario name then it will forcefully clear the player task.
-                    cf.PlayScenario("forcestop");
+                    PlayScenario("forcestop");
                 }
                 else if (item == healPlayerBtn)
                 {
@@ -393,7 +392,7 @@ namespace vMenuClient
                 }
                 else if (item == suicidePlayerBtn)
                 {
-                    cf.CommitSuicide();
+                    CommitSuicide();
                 }
             };
             #endregion

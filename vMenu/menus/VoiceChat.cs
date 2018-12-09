@@ -16,7 +16,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
         public bool EnableVoicechat = UserDefaults.VoiceChatEnabled;
         public bool ShowCurrentSpeaker = UserDefaults.ShowCurrentSpeaker;
         public bool ShowVoiceStatus = UserDefaults.ShowVoiceStatus;
@@ -46,7 +45,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             currentChannel = channels[0];
-            if (cf.IsAllowed(Permission.VCStaffChannel))
+            if (IsAllowed(Permission.VCStaffChannel))
             {
                 channels.Add("Staff Channel");
             }
@@ -73,12 +72,12 @@ namespace vMenuClient
             UIMenuListItem voiceChatProximity = new UIMenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
             UIMenuListItem voiceChatChannel = new UIMenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
 
-            if (cf.IsAllowed(Permission.VCEnable))
+            if (IsAllowed(Permission.VCEnable))
             {
                 menu.AddItem(voiceChatEnabled);
 
                 // Nested permissions because without voice chat enabled, you wouldn't be able to use these settings anyway.
-                if (cf.IsAllowed(Permission.VCShowSpeaker))
+                if (IsAllowed(Permission.VCShowSpeaker))
                 {
                     menu.AddItem(showCurrentSpeaker);
                 }

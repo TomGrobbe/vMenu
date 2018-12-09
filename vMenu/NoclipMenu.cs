@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,6 @@ namespace vMenuClient
 {
     public class NoclipMenu : BaseScript
     {
-        private CommonFunctions cf = MainMenu.Cf;
         private bool setupDone = false;
         private UIMenu noclipMenu = null;
         private int currentSpeed = 0;
@@ -46,15 +45,9 @@ namespace vMenuClient
         private async Task OnTick()
         {
             // Setup is not done or cf is null.
-            if (cf != null && !setupDone)
+            if (!setupDone)
             {
                 Setup();
-            }
-            // Cf is null, update it.
-            else if (cf == null)
-            {
-                cf = MainMenu.Cf;
-                await Delay(0);
             }
             // Setup is done.
             else
@@ -68,7 +61,7 @@ namespace vMenuClient
                     while (MainMenu.NoClipEnabled)
                     {
                         
-                        var noclipEntity = Game.PlayerPed.IsInVehicle() ? cf.GetVehicle().Handle : Game.PlayerPed.Handle;
+                        var noclipEntity = Game.PlayerPed.IsInVehicle() ? GetVehicle().Handle : Game.PlayerPed.Handle;
 
                         if (noclipMenu.Visible == false)
                         {

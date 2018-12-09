@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +17,6 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private readonly CommonFunctions cf = MainMenu.Cf;
         public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", true);
         public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", true);
         public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", true);
@@ -524,7 +523,7 @@ namespace vMenuClient
             currentCharacter.PedHeadBlendData = Game.PlayerPed.GetHeadBlendData();
             if (isEdidtingPed)
             {
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(currentCharacter);
+                string json = JsonConvert.SerializeObject(currentCharacter);
                 if (StorageManager.SaveJsonData(currentCharacter.SaveName, json, true))
                 {
                     Notify.Success("Your character was saved successfully.");
@@ -538,7 +537,7 @@ namespace vMenuClient
             }
             else
             {
-                string name = await cf.GetUserInput(windowTitle: "Enter a save name.", maxInputLength: 30);
+                string name = await GetUserInput(windowTitle: "Enter a save name.", maxInputLength: 30);
                 if (string.IsNullOrEmpty(name))
                 {
                     Notify.Error(CommonErrors.InvalidInput);
@@ -547,7 +546,7 @@ namespace vMenuClient
                 else
                 {
                     currentCharacter.SaveName = "mp_ped_" + name;
-                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(currentCharacter);
+                    string json = JsonConvert.SerializeObject(currentCharacter);
 
                     if (StorageManager.SaveJsonData("mp_ped_" + name, json, false))
                     {
@@ -1198,7 +1197,7 @@ namespace vMenuClient
             {
                 if (item == createMale)
                 {
-                    await cf.SetPlayerSkin("mp_m_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
+                    await SetPlayerSkin("mp_m_freemode_01", new PedInfo() { version = -1 });
 
                     //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
                     ClearPedDecorations(Game.PlayerPed.Handle);
@@ -1212,7 +1211,7 @@ namespace vMenuClient
                 }
                 else if (item == createFemale)
                 {
-                    await cf.SetPlayerSkin("mp_f_freemode_01", new CommonFunctions.PedInfo() { version = -1 });
+                    await SetPlayerSkin("mp_f_freemode_01", new PedInfo() { version = -1 });
 
                     //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
                     ClearPedDecorations(Game.PlayerPed.Handle);
@@ -1256,8 +1255,8 @@ namespace vMenuClient
                 }
 
                 // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
-                // and female ped at the same time.. really fucking weird. Only the cf.SetPlayerSkin function seems to work some how. I really have no clue.
-                await cf.SetPlayerSkin(currentCharacter.ModelHash, new CommonFunctions.PedInfo() { version = -1 }, true);
+                // and female ped at the same time.. really fucking weird. Only the CommonFunctions.SetPlayerSkin function seems to work some how. I really have no clue.
+                await SetPlayerSkin(currentCharacter.ModelHash, new PedInfo() { version = -1 }, true);
                 // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
                 // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
 
@@ -1408,7 +1407,7 @@ namespace vMenuClient
                 else if (item == clonePed)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await cf.GetUserInput(windowTitle: "Enter a name for the cloned character", maxInputLength: 30);
+                    string name = await GetUserInput(windowTitle: "Enter a name for the cloned character", maxInputLength: 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidSaveName);
@@ -1422,7 +1421,7 @@ namespace vMenuClient
                         else
                         {
                             tmpCharacter.SaveName = "mp_ped_" + name;
-                            if (StorageManager.SaveJsonData("mp_ped_" + name, Newtonsoft.Json.JsonConvert.SerializeObject(tmpCharacter), false))
+                            if (StorageManager.SaveJsonData("mp_ped_" + name, JsonConvert.SerializeObject(tmpCharacter), false))
                             {
                                 Notify.Success($"Your character has been cloned. The name of the cloned character is: ~g~<C>{name}</C>~s~.");
                                 UpdateSavedPedsMenu();
@@ -1437,7 +1436,7 @@ namespace vMenuClient
                 else if (item == renameCharacter)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await cf.GetUserInput(windowTitle: "Enter a new character name", maxInputLength: 30);
+                    string name = await GetUserInput(windowTitle: "Enter a new character name", maxInputLength: 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
@@ -1451,7 +1450,7 @@ namespace vMenuClient
                         else
                         {
                             tmpCharacter.SaveName = "mp_ped_" + name;
-                            if (StorageManager.SaveJsonData("mp_ped_" + name, Newtonsoft.Json.JsonConvert.SerializeObject(tmpCharacter), false))
+                            if (StorageManager.SaveJsonData("mp_ped_" + name, JsonConvert.SerializeObject(tmpCharacter), false))
                             {
                                 StorageManager.DeleteSavedStorageItem("mp_ped_" + selectedSavedCharacterManageName);
                                 Notify.Success($"Your character has been renamed to ~g~<C>{name}</C>~s~.");

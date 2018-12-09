@@ -20,9 +20,6 @@ namespace vMenuClient
     /// </summary>
     class FunctionsController : BaseScript
     {
-        // Variables
-        private CommonFunctions cf = MainMenu.Cf;
-
         private int LastVehicle = 0;
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
@@ -57,7 +54,7 @@ namespace vMenuClient
         private bool showSnowballInfo = false;
 
         /// I made these seperate bools that only get set once after initial load 
-        /// to prevent the cf.IsAllowed() function being called over and over again multiple times every tick. 
+        /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick. 
         /// Values are set in <see cref="EventManager.ConfigureClient(dynamic, dynamic, dynamic, dynamic)"/>
         public static bool flaresAllowed = false;
         public static bool bombsAllowed = false;
@@ -106,7 +103,7 @@ namespace vMenuClient
             {
                 gcTimer = GetGameTimer();
                 GC.Collect();
-                cf.Log($"[vMenu] GC at {GetGameTimer()} ({GetTimeAsString(GetGameTimer())}).");
+                Log($"[vMenu] GC at {GetGameTimer()} ({GetTimeAsString(GetGameTimer())}).");
 
             }
             await Delay(1000);
@@ -121,66 +118,25 @@ namespace vMenuClient
         private async Task GeneralTasks()
         {
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
-            if (cf != null)
+            // Check if the player has switched to a new vehicle.
+            if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
             {
-                // Check if the player has switched to a new vehicle.
-                if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
+                var tmpVehicle = GetVehicle();
+                if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
                 {
-                    var tmpVehicle = cf.GetVehicle();
-                    if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
-                    {
-                        // Set the last vehicle to the new vehicle entity.
-                        LastVehicle = tmpVehicle.Handle;
-                        SwitchedVehicle = true;
-                    }
+                    // Set the last vehicle to the new vehicle entity.
+                    LastVehicle = tmpVehicle.Handle;
+                    SwitchedVehicle = true;
                 }
-
-                if (MainMenu.Mp.IsAnyMenuOpen())
-                {
-                    if (UpdateOnscreenKeyboard() == 0)
-                    {
-                        MainMenu.Mp.CloseAllMenus();
-                    }
-                }
-
-                //if (!MainMenu.DontOpenMenus && MainMenu.Mp.IsAnyMenuOpen())
-                //{
-                //    lastOpenMenu = cf.GetOpenMenu();
-                //}
-                //// If any on-screen keyboard is visible, close any open menus and disable any menu from opening.
-                //if (UpdateOnscreenKeyboard() == 0 && (MainMenu.Mp.IsAnyMenuOpen() || wasMenuJustOpen)) // still editing aka the input box is visible.
-                //{
-                //    MainMenu.DontOpenMenus = true;
-                //    MainMenu.DisableControls = true;
-                //    wasMenuJustOpen = true; // added for extra check to make sure only vMenu gets re-opened if vMenu was already open.
-                //}
-                //// Otherwise, check if the "DontOpenMenus" option is (still) true.
-                //else
-                //{
-                //    if (MainMenu.DontOpenMenus)
-                //    {
-                //        // Allow menus from being displayed.
-                //        MainMenu.DontOpenMenus = false;
-
-                //        // Check if the previous menu isn't null.
-                //        if (lastOpenMenu != null && wasMenuJustOpen)
-                //        {
-                //            // Re-open the last menu.
-                //            lastOpenMenu.Visible = true;
-                //            // Set the last menu to null.
-                //            lastOpenMenu = null;
-                //            wasMenuJustOpen = false; // reset the justOpen state.
-                //        }
-
-                //        // Wait 5 ticks before allowing the menu to be controlled, to prevent accidental interactions when the menu JUST re-appeared.
-                //        await Delay(5);
-                //        MainMenu.DisableControls = false;
-                //    }
-                //}
             }
-            else
+
+            if (MainMenu.Mp.IsAnyMenuOpen())
             {
-                await Delay(0);
+                if (UpdateOnscreenKeyboard() == 0)
+                {
+                    await Delay(0);
+                    MainMenu.Mp.CloseAllMenus();
+                }
             }
         }
         #endregion
@@ -192,14 +148,14 @@ namespace vMenuClient
         private async Task PlayerOptions()
         {
             // Player options. Only run player options if the player options menu has actually been created.
-            if (MainMenu.PlayerOptionsMenu != null && cf.IsAllowed(Permission.POMenu))
+            if (MainMenu.PlayerOptionsMenu != null && IsAllowed(Permission.POMenu))
             {
                 // perms
-                bool ignorePlayerAllowed = cf.IsAllowed(Permission.POIgnored);
-                bool godmodeAllowed = cf.IsAllowed(Permission.POGod);
-                bool noRagdollAllowed = cf.IsAllowed(Permission.PONoRagdoll);
-                bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
-                bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
+                bool ignorePlayerAllowed = IsAllowed(Permission.POIgnored);
+                bool godmodeAllowed = IsAllowed(Permission.POGod);
+                bool noRagdollAllowed = IsAllowed(Permission.PONoRagdoll);
+                bool vehicleGodModeAllowed = IsAllowed(Permission.VOGod);
+                bool playerFrozenAllowed = IsAllowed(Permission.POFreeze);
 
                 if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu != null)
                 {
@@ -223,7 +179,7 @@ namespace vMenuClient
 
 
                 // Manage Super jump.
-                if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
+                if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && IsAllowed(Permission.POSuperjump))
                 {
                     SetSuperJumpThisFrame(Game.Player.Handle);
                 }
@@ -254,16 +210,16 @@ namespace vMenuClient
                 }
 
                 // Manage never wanted.
-                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(Game.Player.Handle) > 0 && cf.IsAllowed(Permission.PONeverWanted))
+                if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(Game.Player.Handle) > 0 && IsAllowed(Permission.PONeverWanted))
                 {
                     ClearPlayerWantedLevel(Game.Player.Handle);
                 }
 
-                if (MainMenu.Cf.driveToWpTaskActive && !Game.IsWaypointActive)
+                if (driveToWpTaskActive && !Game.IsWaypointActive)
                 {
                     ClearPedTasks(Game.PlayerPed.Handle);
                     Notify.Custom("Destination reached, the car will now stop driving!");
-                    MainMenu.Cf.driveToWpTaskActive = false;
+                    driveToWpTaskActive = false;
                 }
             }
             else
@@ -280,16 +236,16 @@ namespace vMenuClient
         private async Task VehicleOptions()
         {
             // Vehicle options. Only run vehicle options if the vehicle options menu has actually been created.
-            if (MainMenu.VehicleOptionsMenu != null && cf.IsAllowed(Permission.VOMenu))
+            if (MainMenu.VehicleOptionsMenu != null && IsAllowed(Permission.VOMenu))
             {
                 // When the player is in a valid vehicle:
                 if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true))
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     if (veh != null && veh.Exists())
                     {
                         // God mode
-                        bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && cf.IsAllowed(Permission.VOGod);
+                        bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && IsAllowed(Permission.VOGod);
                         veh.CanBeVisiblyDamaged = !god;
                         veh.CanEngineDegrade = !god;
                         veh.CanWheelsBreak = !god;
@@ -300,30 +256,30 @@ namespace vMenuClient
                         veh.IsFireProof = god;
                         veh.IsInvincible = god;
                         veh.IsMeleeProof = god;
-                        foreach (VehicleDoor vd in veh.Doors.GetAll())
+                        foreach (VehicleDoor vehicleDoor in veh.Doors.GetAll())
                         {
-                            vd.CanBeBroken = !god;
+                            vehicleDoor.CanBeBroken = !god;
                         }
-                        bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && cf.IsAllowed(Permission.VOSpecialGod);
+                        bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
                         if (specialgod && veh.EngineHealth < 1000)
                         {
                             veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
                         }
 
                         // Freeze Vehicle Position (if enabled).
-                        if (MainMenu.VehicleOptionsMenu.VehicleFrozen && cf.IsAllowed(Permission.VOFreeze))
+                        if (MainMenu.VehicleOptionsMenu.VehicleFrozen && IsAllowed(Permission.VOFreeze))
                         {
                             FreezeEntityPosition(veh.Handle, true);
                         }
 
-                        if (MainMenu.VehicleOptionsMenu.VehicleNeverDirty && veh.DirtLevel > 0f && cf.IsAllowed(Permission.VOKeepClean))
+                        if (MainMenu.VehicleOptionsMenu.VehicleNeverDirty && veh.DirtLevel > 0f && IsAllowed(Permission.VOKeepClean))
                         {
                             veh.Wash();
                         }
 
                         await Delay(0);
                         // If the torque multiplier is enabled and the player is allowed to use it.
-                        if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && cf.IsAllowed(Permission.VOTorqueMultiplier))
+                        if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && IsAllowed(Permission.VOTorqueMultiplier))
                         {
                             // Set the torque multiplier to the selected value by the player.
                             // no need for an "else" to reset this value, because when it's not called every frame, nothing happens.
@@ -337,7 +293,7 @@ namespace vMenuClient
 
                             // Vehicle engine power multiplier. Enable it once the player switched vehicles.
                             // Only do this if the option is enabled AND the player has permissions for it.
-                            if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && cf.IsAllowed(Permission.VOPowerMultiplier))
+                            if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && IsAllowed(Permission.VOPowerMultiplier))
                             {
                                 SetVehicleEnginePowerMultiplier(veh.Handle, MainMenu.VehicleOptionsMenu.VehiclePowerMultiplierAmount);
                             }
@@ -352,13 +308,13 @@ namespace vMenuClient
                             if (!GetSettingsBool(Setting.vmenu_use_els_compatibility_mode))
                             {
                                 // No Siren Toggle
-                                veh.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && cf.IsAllowed(Permission.VONoSiren);
+                                veh.IsSirenSilent = MainMenu.VehicleOptionsMenu.VehicleNoSiren && IsAllowed(Permission.VONoSiren);
                             }
 
                             // Set the plane turbulence multiplier in case the vehicle was changed:
                             if (veh.Model.IsPlane)
                             {
-                                if (MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence && cf.IsAllowed(Permission.VODisableTurbulence))
+                                if (MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence && IsAllowed(Permission.VODisableTurbulence))
                                 {
                                     SetPlaneTurbulenceMultiplier(veh.Handle, 0f);
                                 }
@@ -380,17 +336,17 @@ namespace vMenuClient
                         // Manage "no helmet"
                         var ped = new Ped(Game.PlayerPed.Handle);
                         // If the no helmet feature is turned on, disalbe "ped can wear helmet"
-                        if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
+                        if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && IsAllowed(Permission.VONoHelmet))
                         {
                             ped.CanWearHelmet = false;
                         }
                         // otherwise, allow helmets.
-                        else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet || !cf.IsAllowed(Permission.VONoHelmet))
+                        else if (!MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet || !IsAllowed(Permission.VONoHelmet))
                         {
                             ped.CanWearHelmet = true;
                         }
                         // If the player is still wearing a helmet, even if the option is set to: no helmet, then remove the helmet.
-                        if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && cf.IsAllowed(Permission.VONoHelmet))
+                        if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && IsAllowed(Permission.VONoHelmet))
                         {
                             ped.RemoveHelmet(true);
                         }
@@ -422,11 +378,11 @@ namespace vMenuClient
                 await Delay(1);
 
                 // Manage vehicle engine always on.
-                if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && cf.GetVehicle(true) != null && cf.GetVehicle(true).Exists() && !Game.PlayerPed.IsInVehicle() && cf.IsAllowed(Permission.VOEngineAlwaysOn))
+                if (MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn && GetVehicle(true) != null && GetVehicle(true).Exists() && !Game.PlayerPed.IsInVehicle() && IsAllowed(Permission.VOEngineAlwaysOn))
                 {
                     await Delay(100);
-                    if (cf.GetVehicle(true) != null)
-                        SetVehicleEngineOn(cf.GetVehicle(true).Handle, true, true, true);
+                    if (GetVehicle(true) != null)
+                        SetVehicleEngineOn(GetVehicle(true).Handle, true, true, true);
                 }
 
             }
@@ -437,9 +393,9 @@ namespace vMenuClient
         }
         private async Task MoreVehicleOptions()
         {
-            if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && cf.IsAllowed(Permission.VOFlashHighbeamsOnHonk))
+            if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && IsAllowed(Permission.VOFlashHighbeamsOnHonk))
             {
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 if (veh != null && veh.Exists())
                 {
                     if (veh.Driver == Game.PlayerPed && veh.IsEngineRunning && !IsPauseMenuActive())
@@ -476,24 +432,24 @@ namespace vMenuClient
         private async Task _WeatherOptions()
         {
             await Delay(1000);
-            if (MainMenu.WeatherOptionsMenu != null && cf.IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
+            if (MainMenu.WeatherOptionsMenu != null && IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
                     MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { if (mi.GetType() != typeof(UIMenuCheckboxItem)) mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
                     var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
                     item.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
-                    if (cf.IsAllowed(Permission.WODynamic))
+                    if (IsAllowed(Permission.WODynamic))
                     {
                         UIMenuCheckboxItem dynWeatherTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
                         dynWeatherTmp.Checked = EventManager.dynamicWeather;
-                        if (cf.IsAllowed(Permission.WOBlackout))
+                        if (IsAllowed(Permission.WOBlackout))
                         {
                             UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[1];
                             blackoutTmp.Checked = EventManager.blackoutMode;
                         }
                     }
-                    else if (cf.IsAllowed(Permission.WOBlackout))
+                    else if (IsAllowed(Permission.WOBlackout))
                     {
                         UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
                         blackoutTmp.Checked = EventManager.blackoutMode;
@@ -511,7 +467,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task MiscSettings()
         {
-            if (MainMenu.MiscSettingsMenu != null /*&& cf.IsAllowed(Permission.MSMenu)*/)
+            if (MainMenu.MiscSettingsMenu != null /*&& CommonFunctions.IsAllowed(Permission.MSMenu)*/)
             {
                 #region Misc Settings
                 // Show speedometer km/h
@@ -527,10 +483,10 @@ namespace vMenuClient
                 }
 
                 // Show coordinates.
-                if (MainMenu.MiscSettingsMenu.ShowCoordinates && cf.IsAllowed(Permission.MSShowCoordinates))
+                if (MainMenu.MiscSettingsMenu.ShowCoordinates && IsAllowed(Permission.MSShowCoordinates))
                 {
                     var pos = GetEntityCoords(Game.PlayerPed.Handle, true);
-                    cf.DrawTextOnScreen($"~r~X~t~: {Math.Round(pos.X, 2)}" +
+                    DrawTextOnScreen($"~r~X~t~: {Math.Round(pos.X, 2)}" +
                         $"~n~~r~Y~t~: {Math.Round(pos.Y, 2)}" +
                         $"~n~~r~Z~t~: {Math.Round(pos.Z, 2)}" +
                         $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(Game.PlayerPed.Handle), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
@@ -557,17 +513,17 @@ namespace vMenuClient
 
                 #region Show Location
                 // Show location & time.
-                if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
+                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
                 {
                     ShowLocation();
                 }
 
                 if (MainMenu.MiscSettingsMenu.DrawTimeOnScreen)
                 {
-                    int hour = CitizenFX.Core.World.CurrentDayTime.Hours;
-                    int minute = CitizenFX.Core.World.CurrentDayTime.Minutes;
+                    int hour = World.CurrentDayTime.Hours;
+                    int minute = World.CurrentDayTime.Minutes;
                     string time = $"{(hour < 10 ? "0" + hour.ToString() : hour.ToString())}:{(minute < 10 ? "0" + minute.ToString() : minute.ToString())}";
-                    cf.DrawTextOnScreen(time, 0.005f, 0.965f);
+                    DrawTextOnScreen(time, 0.005f, 0.965f);
                 }
                 #endregion
 
@@ -606,7 +562,7 @@ namespace vMenuClient
             if (MainMenu.MiscSettingsMenu != null)
             {
                 // Join/Quit notifications
-                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && cf.IsAllowed(Permission.MSJoinQuitNotifs))
+                if (MainMenu.MiscSettingsMenu.JoinQuitNotifications && IsAllowed(Permission.MSJoinQuitNotifs))
                 {
                     PlayerList plist = Players;
                     Dictionary<int, string> pl = new Dictionary<int, string>();
@@ -622,7 +578,7 @@ namespace vMenuClient
                         {
                             if (!playerList.Contains(player))
                             {
-                                Notify.Custom($"~g~<C>{cf.GetSafePlayerName(player.Value)}</C>~s~ joined the server.");
+                                Notify.Custom($"~g~<C>{GetSafePlayerName(player.Value)}</C>~s~ joined the server.");
                                 await Delay(0);
                             }
                         }
@@ -634,7 +590,7 @@ namespace vMenuClient
                         {
                             if (!pl.Contains(player))
                             {
-                                Notify.Custom($"~r~<C>{cf.GetSafePlayerName(player.Value)}</C>~s~ left the server.");
+                                Notify.Custom($"~r~<C>{GetSafePlayerName(player.Value)}</C>~s~ left the server.");
                                 await Delay(0);
                             }
                         }
@@ -656,7 +612,7 @@ namespace vMenuClient
             if (MainMenu.MiscSettingsMenu != null)
             {
                 // Death notifications
-                if (MainMenu.MiscSettingsMenu.DeathNotifications && cf.IsAllowed(Permission.MSDeathNotifs))
+                if (MainMenu.MiscSettingsMenu.DeathNotifications && IsAllowed(Permission.MSDeathNotifs))
                 {
                     PlayerList pl = Players;
                     var tmpiterator = 0;
@@ -684,14 +640,14 @@ namespace vMenuClient
                                             {
                                                 if (playerKiller.Character.Handle == killer.Handle)
                                                 {
-                                                    Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{cf.GetSafePlayerName(playerKiller.Name)}</C>~s~.");
+                                                    Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{GetSafePlayerName(playerKiller.Name)}</C>~s~.");
                                                     found = true;
                                                     break;
                                                 }
                                             }
                                             if (!found)
                                             {
-                                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                                Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                             }
                                         }
                                         else if (killer.Model.IsVehicle)
@@ -703,7 +659,7 @@ namespace vMenuClient
                                                 {
                                                     if (playerKiller.Character.CurrentVehicle.Handle == killer.Handle)
                                                     {
-                                                        Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{cf.GetSafePlayerName(playerKiller.Name)}</C>~s~.");
+                                                        Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{GetSafePlayerName(playerKiller.Name)}</C>~s~.");
                                                         found = true;
                                                         break;
                                                     }
@@ -711,27 +667,27 @@ namespace vMenuClient
                                             }
                                             if (!found)
                                             {
-                                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                                Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                             }
                                         }
                                         else
                                         {
-                                            Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                            Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                        Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~committed suicide.");
+                                    Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~committed suicide.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~<C>{cf.GetSafePlayerName(p.Name)}</C> ~s~died.");
+                                Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~died.");
                             }
                             deadPlayers.Add(p.Handle);
                         }
@@ -758,7 +714,7 @@ namespace vMenuClient
         {
             if (MainMenu.MiscSettingsMenu != null)
             {
-                if (MainMenu.MiscSettingsMenu.ShowLocation && cf.IsAllowed(Permission.MSShowLocation))
+                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
                 {
                     // Get the current location.
                     currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
@@ -833,23 +789,23 @@ namespace vMenuClient
                 }
 
                 // Draw the street name + crossing.
-                cf.DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
+                DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
                 // Draw the zone name.
-                cf.DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
+                DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
 
                 // Draw the left border for the heading character.
-                cf.DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
+                DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
                 // Draw the heading character.
-                cf.DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
+                DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
                 // Draw the right border for the heading character.
-                cf.DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
+                DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
 
                 //// Get and draw the time.
                 //var tth = GetClockHours();
                 //var ttm = GetClockMinutes();
                 //var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
                 //var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-                //cf.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
+                //CommonFunctions.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
             }
         }
         #endregion
@@ -861,9 +817,9 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task VoiceChat()
         {
-            if (MainMenu.VoiceChatSettingsMenu != null && cf.IsAllowed(Permission.VCMenu))
+            if (MainMenu.VoiceChatSettingsMenu != null && IsAllowed(Permission.VCMenu))
             {
-                if (MainMenu.VoiceChatSettingsMenu.EnableVoicechat && cf.IsAllowed(Permission.VCEnable))
+                if (MainMenu.VoiceChatSettingsMenu.EnableVoicechat && IsAllowed(Permission.VCEnable))
                 {
                     NetworkSetVoiceActive(true);
                     NetworkSetTalkerProximity(MainMenu.VoiceChatSettingsMenu.currentProximity);
@@ -876,7 +832,7 @@ namespace vMenuClient
                     {
                         NetworkSetVoiceChannel(channel);
                     }
-                    if (MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker && cf.IsAllowed(Permission.VCShowSpeaker))
+                    if (MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker && IsAllowed(Permission.VCShowSpeaker))
                     {
                         PlayerList pl = Players;
                         var i = 1;
@@ -887,10 +843,10 @@ namespace vMenuClient
                             {
                                 if (!currentlyTalking)
                                 {
-                                    cf.DrawTextOnScreen("~s~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
+                                    DrawTextOnScreen("~s~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
                                     currentlyTalking = true;
                                 }
-                                cf.DrawTextOnScreen($"~b~{p.Name}", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
+                                DrawTextOnScreen($"~b~{p.Name}", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
                                 i++;
                             }
                         }
@@ -951,9 +907,9 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task TimeOptions()
         {
-            if (MainMenu.TimeOptionsMenu != null && cf.IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
+            if (MainMenu.TimeOptionsMenu != null && IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
-                if ((MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible) && cf.IsAllowed(Permission.TOFreezeTime))
+                if ((MainMenu.TimeOptionsMenu.freezeTimeToggle != null && MainMenu.TimeOptionsMenu.GetMenu().Visible) && IsAllowed(Permission.TOFreezeTime))
                 {
                     // Update the current time displayed in the Time Options menu (only when the menu is actually visible).
                     var hours = GetClockHours();
@@ -974,10 +930,10 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeaponOptions()
         {
-            if (MainMenu.WeaponOptionsMenu != null && cf.IsAllowed(Permission.WPMenu))
+            if (MainMenu.WeaponOptionsMenu != null && IsAllowed(Permission.WPMenu))
             {
                 // If no reload is enabled.
-                if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && cf.IsAllowed(Permission.WPNoReload))
+                if (MainMenu.WeaponOptionsMenu.NoReload && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Minigun && IsAllowed(Permission.WPNoReload))
                 {
                     // Disable reloading.
                     //PedSkipNextReloading(Game.PlayerPed.Handle);
@@ -985,16 +941,16 @@ namespace vMenuClient
                 }
 
                 // Enable/disable infinite ammo.
-                //SetPedInfiniteAmmoClip(Game.PlayerPed.Handle, MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo));
+                //SetPedInfiniteAmmoClip(Game.PlayerPed.Handle, MainMenu.WeaponOptionsMenu.UnlimitedAmmo && CommonFunctions.IsAllowed(Permission.WPUnlimitedAmmo));
                 if (Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
                 {
-                    Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo);
+                    Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && IsAllowed(Permission.WPUnlimitedAmmo);
                 }
 
 
                 /// THIS SOLUTION IS BUGGED AND CAUSES CRASHES
                 //// workaround for mk2 weapons (the infinite ammo doesn't seem to work all the time for mk2 weapons)
-                //if (MainMenu.WeaponOptionsMenu.UnlimitedAmmo && cf.IsAllowed(Permission.WPUnlimitedAmmo) && Game.PlayerPed.Weapons.Current.IsMk2 &&
+                //if (MainMenu.WeaponOptionsMenu.UnlimitedAmmo && CommonFunctions.IsAllowed(Permission.WPUnlimitedAmmo) && Game.PlayerPed.Weapons.Current.IsMk2 &&
                 //    Game.PlayerPed.Weapons.Current.Ammo != Game.PlayerPed.Weapons.Current.MaxAmmo)
                 //{
                 //    Game.PlayerPed.Weapons.Current.Ammo = Game.PlayerPed.Weapons.Current.MaxAmmo;
@@ -1024,7 +980,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task SpectateHandling()
         {
-            if (MainMenu.OnlinePlayersMenu != null && cf.IsAllowed(Permission.OPMenu) && cf.IsAllowed(Permission.OPSpectate))
+            if (MainMenu.OnlinePlayersMenu != null && IsAllowed(Permission.OPMenu) && IsAllowed(Permission.OPSpectate))
             {
                 // When the player dies while spectating, cancel the spectating to prevent an infinite black loading screen.
                 if (GetEntityHealth(Game.PlayerPed.Handle) < 1 && NetworkIsInSpectatorMode())
@@ -1311,7 +1267,7 @@ namespace vMenuClient
                                 while (true)
                                 {
                                     await Delay(0);
-                                    //cf.DisableMovementControlsThisFrame(true, true);
+                                    //CommonFunctions.DisableMovementControlsThisFrame(true, true);
                                     Game.DisableAllControlsThisFrame(0);
                                     if (GetGameTimer() - timer > 1600)
                                     {
@@ -1332,7 +1288,7 @@ namespace vMenuClient
                                 while (true)
                                 {
                                     await Delay(0);
-                                    //cf.DisableMovementControlsThisFrame(true, true);
+                                    //CommonFunctions.DisableMovementControlsThisFrame(true, true);
                                     Game.DisableAllControlsThisFrame(0);
                                     if (GetGameTimer() - timer > 1600)
                                     {
@@ -1349,7 +1305,7 @@ namespace vMenuClient
 
                         FreezeEntityPosition(Game.PlayerPed.Handle, true);
 
-                        cf.DisableMovementControlsThisFrame(true, true);
+                        DisableMovementControlsThisFrame(true, true);
 
                         SetCameraPosition();
 
@@ -1404,14 +1360,14 @@ namespace vMenuClient
             {
                 if (MainMenu.MiscSettingsMenu != null)
                 {
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
                     {
-                        cf.SavePed("vMenu_tmp_saved_ped");
+                        SavePed("vMenu_tmp_saved_ped");
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
                     {
-                        await cf.SaveWeaponLoadout();
+                        await SaveWeaponLoadout();
                     }
 
                     while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
@@ -1419,13 +1375,13 @@ namespace vMenuClient
                         await Delay(0);
                     }
 
-                    if (cf.GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && cf.IsAllowed(Permission.MSRestoreAppearance))
+                    if (GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
                     {
-                        cf.LoadSavedPed("vMenu_tmp_saved_ped", false);
+                        LoadSavedPed("vMenu_tmp_saved_ped", false);
                     }
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && cf.IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
                     {
-                        cf.RestoreWeaponLoadout();
+                        RestoreWeaponLoadout();
                     }
                 }
 
@@ -1447,7 +1403,7 @@ namespace vMenuClient
                     Ped p = player.Character;
                     if (p != null && p.Exists() && !p.IsDead)
                     {
-                        // cf.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
+                        // CommonFunctions.Log($"Player {player.Name}, is {(DecorExistOn(p.Handle, clothingAnimationDecor) ? "registered" : "not registered")}");
 
                         if (DecorExistOn(p.Handle, clothingAnimationDecor))
                         {
@@ -1523,7 +1479,7 @@ namespace vMenuClient
                 int sprite = 1;
                 if (IsPedInAnyVehicle(Game.PlayerPed.Handle, false))
                 {
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     if (veh != null && veh.Exists())
                     {
                         sprite = BlipInfo.GetBlipSpriteForVehicle(veh.Handle);
@@ -1534,7 +1490,7 @@ namespace vMenuClient
 
                 if (MainMenu.MiscSettingsMenu != null)
                 {
-                    bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && cf.IsAllowed(Permission.MSPlayerBlips);
+                    bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && IsAllowed(Permission.MSPlayerBlips);
 
                     foreach (Player p in MainMenu.PlayersList)
                     {
@@ -1584,7 +1540,7 @@ namespace vMenuClient
                                         else // backup method for when the decorator value is not found.
                                         {
                                             // set the blip sprite using the backup method in case decorators failed.
-                                            cf.SetCorrectBlipSprite(ped, blip);
+                                            SetCorrectBlipSprite(ped, blip);
 
                                             // only show the heading indicator if the player is NOT in a vehicle.
                                             if (!IsPedInAnyVehicle(ped, false))
@@ -1733,7 +1689,7 @@ namespace vMenuClient
         {
             if (Game.PlayerPed.IsInVehicle())
             {
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 if (veh == null || !veh.Exists() || veh.IsDead)
                 {
                     return false;
@@ -1752,7 +1708,7 @@ namespace vMenuClient
         {
             if (Game.PlayerPed.IsInVehicle())
             {
-                Vehicle veh = cf.GetVehicle();
+                Vehicle veh = GetVehicle();
                 if (veh == null || !veh.Exists() || veh.IsDead)
                 {
                     return false;
@@ -1778,28 +1734,21 @@ namespace vMenuClient
 
         private async Task FlaresAndBombsTick()
         {
-            if (cf == null)
+            if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Screen.Fading.IsFadedIn && !IsPlayerSwitchInProgress())
             {
-                await Delay(0);
+                if (flaresAllowed && CanShootFlares())
+                {
+
+                }
+
+                if (bombsAllowed && CanDropBombs())
+                {
+
+                }
             }
             else
             {
-                if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Screen.Fading.IsFadedIn && !IsPlayerSwitchInProgress())
-                {
-                    if (flaresAllowed && CanShootFlares())
-                    {
-
-                    }
-
-                    if (bombsAllowed && CanDropBombs())
-                    {
-
-                    }
-                }
-                else
-                {
-                    await Delay(1);
-                }
+                await Delay(1);
             }
         }
         #endregion
@@ -1810,54 +1759,48 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task AnimationsAndInteractions()
         {
-            if (cf != null)
+
+            if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
             {
-                if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
+                // snowballs
+                if (Game.IsControlJustReleased(0, Control.Detonate))
                 {
-                    // snowballs
-                    if (Game.IsControlJustReleased(0, Control.Detonate))
+                    if (World.NextWeather == Weather.Christmas)
                     {
-                        if (World.NextWeather == Weather.Christmas)
+                        if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Screen.Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
+                            || GetInteriorFromEntity(Game.PlayerPed.Handle) != 0 || !Game.PlayerPed.IsOnFoot || Game.PlayerPed.IsInParachuteFreeFall ||
+                            Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
+                            Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
                         {
-                            if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Screen.Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
-                                || GetInteriorFromEntity(Game.PlayerPed.Handle) != 0 || !Game.PlayerPed.IsOnFoot || Game.PlayerPed.IsInParachuteFreeFall ||
-                                Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
-                                Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
-                            {
-                                await PickupSnowball();
-                            }
-                        }
-                    }
-                    // helmet visor
-                    if (Game.IsControlPressed(0, Control.SwitchVisor))
-                    {
-                        int timer = GetGameTimer();
-                        while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
-                        {
-                            await Delay(0);
-                            if (GetGameTimer() - timer > 400)
-                            {
-                                await SwitchHelmet();
-                                break;
-                            }
-                        }
-                        while (Game.IsControlPressed(0, Control.SwitchVisor))
-                        {
-                            await Delay(0);
+                            await PickupSnowball();
                         }
                     }
                 }
-            }
-            else
-            {
-                await Delay(0);
+                // helmet visor
+                if (Game.IsControlPressed(0, Control.SwitchVisor))
+                {
+                    int timer = GetGameTimer();
+                    while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
+                    {
+                        await Delay(0);
+                        if (GetGameTimer() - timer > 400)
+                        {
+                            await SwitchHelmet();
+                            break;
+                        }
+                    }
+                    while (Game.IsControlPressed(0, Control.SwitchVisor))
+                    {
+                        await Delay(0);
+                    }
+                }
             }
         }
         #endregion
         #region help message controller
         private async Task HelpMessageController()
         {
-            if (World.NextWeather == Weather.Christmas && cf.IsAllowed(Permission.WPSnowball))
+            if (World.NextWeather == Weather.Christmas && IsAllowed(Permission.WPSnowball))
             {
                 void ShowSnowballInfoMessage()
                 {
@@ -1915,10 +1858,10 @@ namespace vMenuClient
         {
             if (MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
             {
-                var veh = cf.GetVehicle(true);
+                var veh = GetVehicle(true);
                 if (veh == null)
                 {
-                    veh = cf.GetVehicle();
+                    veh = GetVehicle();
                 }
                 if (veh == null)
                 {
@@ -2013,8 +1956,8 @@ namespace vMenuClient
         {
             if (Game.PlayerPed.IsInVehicle())
             {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle().Handle) * 3.6f).ToString());
-                cf.DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
+                int speed = int.Parse(Math.Round(GetEntitySpeed(GetVehicle().Handle) * 3.6f).ToString());
+                DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
             }
         }
 
@@ -2026,16 +1969,16 @@ namespace vMenuClient
         {
             if (Game.PlayerPed.IsInVehicle())
             {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(cf.GetVehicle().Handle) * 2.23694f).ToString());
+                int speed = int.Parse(Math.Round(GetEntitySpeed(GetVehicle().Handle) * 2.23694f).ToString());
 
                 if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
                 {
-                    cf.DrawTextOnScreen($"{speed} MPH", 0.995f, 0.925f, 0.7f, Alignment.Right, 4);
+                    DrawTextOnScreen($"{speed} MPH", 0.995f, 0.925f, 0.7f, Alignment.Right, 4);
                     HideHudComponentThisFrame((int)HudComponent.StreetName);
                 }
                 else
                 {
-                    cf.DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
+                    DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
                 }
             }
         }
@@ -2317,7 +2260,7 @@ namespace vMenuClient
                         EndTextCommandDisplayHelp(0, false, true, 6000);
                         return;
                     }
-                    Vehicle veh = cf.GetVehicle();
+                    Vehicle veh = GetVehicle();
                     if (veh != null && veh.Exists() && !veh.IsDead && (veh.Model.IsBicycle || veh.Model.IsBike || veh.Model.IsQuadbike))
                     {
                         if (veh.Model.IsQuadbike)
@@ -2470,7 +2413,7 @@ namespace vMenuClient
         async Task PickupSnowball()
         {
             ClearPedTasks(Game.PlayerPed.Handle);
-            if (cf.IsAllowed(Permission.WPSnowball)) // only if the player is allowed to spawn in snowballs.
+            if (IsAllowed(Permission.WPSnowball)) // only if the player is allowed to spawn in snowballs.
             {
                 int maxAmmo = 10;
                 GetMaxAmmo(Game.PlayerPed.Handle, snowball_hash, ref maxAmmo);
