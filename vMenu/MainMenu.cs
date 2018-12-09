@@ -644,6 +644,14 @@ namespace vMenuClient
                     else // when not using a controller.
                     {
                         Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate); // disable the escape key opening the pause menu, pressing P still works.
+
+                        // Disable the scrollwheel button changing weapons while the menu is open.
+                        // Only if you press TAB (to show the weapon wheel) then it will allow you to change weapons.
+                        if (!Game.IsControlPressed(0, Control.SelectWeapon))
+                        {
+                            Game.DisableControlThisFrame(24, Control.SelectNextWeapon);
+                            Game.DisableControlThisFrame(24, Control.SelectPrevWeapon);
+                        }
                     }
                     // Disable Shared Controls
 
