@@ -37,6 +37,7 @@ namespace vMenuClient
             UIMenuItem summon = new UIMenuItem("Summon Player", "Teleport the player to you.");
             UIMenuItem toggleGPS = new UIMenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
             UIMenuItem spectate = new UIMenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
+            UIMenuItem printIdentifiers = new UIMenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
             UIMenuItem kill = new UIMenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
             UIMenuItem kick = new UIMenuItem("~r~Kick Player", "Kick the player from the server.");
             UIMenuItem ban = new UIMenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
@@ -58,6 +59,10 @@ namespace vMenuClient
             if (cf.IsAllowed(Permission.OPWaypoint))
             {
                 playerMenu.AddItem(toggleGPS);
+            }
+            if (cf.IsAllowed(Permission.OPIdentifiers))
+            {
+                playerMenu.AddItem(printIdentifiers);
             }
             if (cf.IsAllowed(Permission.OPKill))
             {
@@ -169,6 +174,21 @@ namespace vMenuClient
                             Notify.Error("You can not set a waypoint to yourself.");
                         }
                     }
+                }
+                else if (item == printIdentifiers)
+                {
+                    Func<string, string> CallbackFunction = (data) =>
+                    {
+                        Debug.WriteLine(data);
+                        string ids = "~s~";
+                        foreach (string s in Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(data))
+                        {
+                            ids += "~n~" + s;
+                        }
+                        Notify.Custom($"~y~<C>{cf.GetSafePlayerName(currentPlayer.Name)}</C>~g~'s Identifiers: {ids}", false);
+                        return data;
+                    };
+                    BaseScript.TriggerServerEvent("vMenu:GetPlayerIdentifiers", currentPlayer.ServerId, CallbackFunction);
                 }
                 // kick button
                 else if (item == kick)

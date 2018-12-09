@@ -14,6 +14,7 @@
         OPTeleport,
         OPWaypoint,
         OPSpectate,
+        OPIdentifiers,
         OPSummon,
         OPKill,
         OPKick,
