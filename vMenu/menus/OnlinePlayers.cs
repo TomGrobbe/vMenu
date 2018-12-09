@@ -103,7 +103,7 @@ namespace vMenuClient
                     if (Game.Player.Handle != currentPlayer.Handle)
                         cf.TeleportToPlayerAsync(currentPlayer.Handle, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
                     else
-                        Notify.Error("You can not teleport to yourself! Silly you.");
+                        Notify.Error("You can not teleport to yourself!");
                 }
                 // summon button
                 else if (item == summon)
@@ -111,7 +111,7 @@ namespace vMenuClient
                     if (Game.Player.Handle != currentPlayer.Handle)
                         cf.SummonPlayer(currentPlayer);
                     else
-                        Notify.Error("You can't summon yourself. You silly.");
+                        Notify.Error("You can't summon yourself.");
                 }
                 // spectating
                 else if (item == spectate)
