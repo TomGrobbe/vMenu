@@ -222,16 +222,18 @@ namespace vMenuClient
 
             // handle button presses in the player list.
             menu.OnItemSelect += (sender, item, index) =>
-            {
-                if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", "")))
                 {
-                    currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", ""));
-                }
-                else
-                {
-                    playerMenu.GoBack();
-                }
-            };
+                    if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", "")))
+                    {
+                        currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", ""));
+                        playerMenu.Subtitle.Caption = $"~s~Player: ~y~{cf.GetSafePlayerName(currentPlayer.Name)}";
+                        playerMenu.CounterPretext = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
+                    }
+                    else
+                    {
+                        playerMenu.GoBack();
+                    }
+                };
         }
 
         /// <summary>
@@ -243,7 +245,7 @@ namespace vMenuClient
 
             foreach (Player p in MainMenu.PlayersList)
             {
-                UIMenuItem pItem = new UIMenuItem($"{p.Name}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.");
+                UIMenuItem pItem = new UIMenuItem($"{cf.GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.");
                 pItem.SetRightLabel($"Server #{p.ServerId} →→→");
                 menu.AddItem(pItem);
                 menu.BindMenuToItem(playerMenu, pItem);
