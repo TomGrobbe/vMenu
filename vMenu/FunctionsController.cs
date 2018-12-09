@@ -198,7 +198,7 @@ namespace vMenuClient
                 bool vehicleGodModeAllowed = cf.IsAllowed(Permission.VOGod);
                 bool playerFrozenAllowed = cf.IsAllowed(Permission.POFreeze);
 
-                if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible != null)
+                if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu != null)
                 {
                     // Manage Player God Mode
                     bool IsMpPedCreatorOpen()
@@ -207,7 +207,6 @@ namespace vMenuClient
                             MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
                             MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
                             MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                            //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
                             MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
                             MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
                             MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
@@ -218,7 +217,7 @@ namespace vMenuClient
                         SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
                     }
                 }
-                
+
 
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && cf.IsAllowed(Permission.POSuperjump))
