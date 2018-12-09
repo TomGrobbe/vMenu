@@ -244,81 +244,143 @@ namespace vMenuClient
         }
 
         /// <summary>
+        /// Returns true when one of the 'up' buttons is currently pressed, only if that button can be active according to some conditions.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsUpPressed()
+        {
+            // return false (not pressed) if the pause menu is active.
+            if (Game.IsPaused)
+            {
+                return false;
+            }
+
+            // when the player is holding TAB, while not in a vehicle, and when the scrollwheel is being used, return false to prevent interferring with weapon selection.
+            if (!Game.PlayerPed.IsInVehicle())
+            {
+                if (Game.IsControlPressed(0, Control.SelectWeapon))
+                {
+                    if (Game.IsControlPressed(0, Control.SelectNextWeapon) || Game.IsControlPressed(0, Control.SelectPrevWeapon))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // return true if the scrollwheel up or the arrow up key is being used at this frame.
+            if (Game.IsControlPressed(0, Control.FrontendUp) ||
+                Game.IsDisabledControlPressed(0, Control.FrontendUp) ||
+                Game.IsControlPressed(0, Control.PhoneScrollBackward) ||
+                Game.IsDisabledControlPressed(0, Control.PhoneScrollBackward))
+            {
+                return true;
+            }
+
+            // return false if none of the conditions matched.
+            return false;
+        }
+
+        private bool IsDownPressed()
+        {
+            // return false (not pressed) if the pause menu is active.
+            if (Game.IsPaused)
+            {
+                return false;
+            }
+
+            // when the player is holding TAB, while not in a vehicle, and when the scrollwheel is being used, return false to prevent interferring with weapon selection.
+            if (!Game.PlayerPed.IsInVehicle())
+            {
+                if (Game.IsControlPressed(0, Control.SelectWeapon))
+                {
+                    if (Game.IsControlPressed(0, Control.SelectNextWeapon) || Game.IsControlPressed(0, Control.SelectPrevWeapon))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // return true if the scrollwheel down or the arrow down key is being used at this frame.
+            if (Game.IsControlPressed(0, Control.FrontendDown) ||
+                Game.IsDisabledControlPressed(0, Control.FrontendDown) ||
+                Game.IsControlPressed(0, Control.PhoneScrollForward) ||
+                Game.IsDisabledControlPressed(0, Control.PhoneScrollForward))
+            {
+                return true;
+            }
+
+            // return false if none of the conditions matched.
+            return false;
+        }
+
+        /// <summary>
         /// Process left/right/up/down buttons (also holding down buttons will speed up after 3 iterations)
         /// </summary>
         /// <returns></returns>
         private async Task ProcessDirectionalButtons()
         {
-            // Get the currently open menu.
-            UIMenu currentMenu = Cf.GetOpenMenu();
-            // If it exists.
-            if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
+            if (Mp.IsAnyMenuOpen())
             {
-                if (currentMenu.Visible && !DisableControls)
+                // Get the currently open menu.
+                UIMenu currentMenu = Cf.GetOpenMenu();
+                // If it exists.
+                if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
                 {
-                    // Check if the Go Up controls are pressed.
-                    if (Game.IsDisabledControlJustPressed(0, (Control)188) || Game.IsControlJustPressed(0, (Control)188) || Game.IsControlJustPressed(0, (Control)181) || Game.IsDisabledControlJustPressed(0, (Control)181))
+                    if (currentMenu.Visible && !DisableControls)
                     {
-
-                        // Update the currently selected item to the new one.
-                        currentMenu.GoUp();
-                        currentMenu.GoUpOverflow();
-                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        //{
-                        //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                        //}
-
-
-                        // Get the current game time.
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-
-                        // Do the following as long as the controls are being pressed.
-                        while ((Game.IsDisabledControlPressed(0, (Control)188) || Game.IsControlPressed(0, (Control)188)) && Cf.GetOpenMenu() != null)
+                        // Check if the Go Up controls are pressed.
+                        if (IsUpPressed())
                         {
-                            // Update the current menu.
-                            currentMenu = Cf.GetOpenMenu();
+                            // Update the currently selected item to the new one.
+                            currentMenu.GoUp();
+                            currentMenu.GoUpOverflow();
 
-                            // Check if the game time has changed by "delay" amount.
-                            if (GetGameTimer() - time > delay)
-                            {
-                                // Increment the "changed indexes" counter
-                                times++;
-
-                                // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
-                                if (times > 2)
-                                {
-                                    delay = 150;
-                                }
-
-                                // Update the currently selected item to the new one.
-                                currentMenu.GoUp();
-                                currentMenu.GoUpOverflow();
-                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                //{
-                                //    currentMenu.CurrentSelection = currentMenu.MenuItems.Count - 1;
-                                //}
-
-                                // Reset the time to the current game timer.
-                                time = GetGameTimer();
-                            }
-
-                            // Wait for the next game tick.
-                            await Delay(0);
-                        }
-                    }
-
-                    // Check if the Go Left controls are pressed.
-                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft))
-                    {
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
-                        {
-                            currentMenu.GoLeft();
+                            // Get the current game time.
                             var time = GetGameTimer();
                             var times = 0;
                             var delay = 200;
-                            while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && Cf.GetOpenMenu() != null)
+
+                            // Do the following as long as the controls are being pressed.
+                            while (IsUpPressed() && Mp.IsAnyMenuOpen() && Cf.GetOpenMenu() != null)
+                            {
+                                // Update the current menu.
+                                currentMenu = Cf.GetOpenMenu();
+
+                                // Check if the game time has changed by "delay" amount.
+                                if (GetGameTimer() - time > delay)
+                                {
+                                    // Increment the "changed indexes" counter
+                                    times++;
+
+                                    // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
+                                    if (times > 2)
+                                    {
+                                        delay = 150;
+                                    }
+
+                                    // Update the currently selected item to the new one.
+                                    currentMenu.GoUp();
+                                    currentMenu.GoUpOverflow();
+
+                                    // Reset the time to the current game timer.
+                                    time = GetGameTimer();
+                                }
+
+                                // Wait for the next game tick.
+                                await Delay(0);
+                            }
+                        }
+
+                        // Check if the Go Down controls are pressed.
+                        else if (IsDownPressed())
+                        {
+                            currentMenu.GoDown();
+                            currentMenu.GoDownOverflow();
+
+                            var time = GetGameTimer();
+                            var times = 0;
+                            var delay = 200;
+                            while (IsDownPressed() && Cf.GetOpenMenu() != null)
                             {
                                 currentMenu = Cf.GetOpenMenu();
                                 if (GetGameTimer() - time > delay)
@@ -328,78 +390,70 @@ namespace vMenuClient
                                     {
                                         delay = 150;
                                     }
-                                    currentMenu.GoLeft();
+                                    currentMenu.GoDown();
+                                    currentMenu.GoDownOverflow();
+
                                     time = GetGameTimer();
                                 }
                                 await Delay(0);
                             }
                         }
-                    }
 
-                    // Check if the Go Right controls are pressed.
-                    else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight))
-                    {
-                        if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
+                        // Check if the Go Left controls are pressed.
+                        else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon))
                         {
-                            currentMenu.GoRight();
-                            var time = GetGameTimer();
-                            var times = 0;
-                            var delay = 200;
-                            while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && Cf.GetOpenMenu() != null)
+                            if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                             {
-                                currentMenu = Cf.GetOpenMenu();
-                                if (GetGameTimer() - time > delay)
+                                currentMenu.GoLeft();
+                                var time = GetGameTimer();
+                                var times = 0;
+                                var delay = 200;
+                                while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon) && Cf.GetOpenMenu() != null)
                                 {
-                                    times++;
-                                    if (times > 2)
+                                    currentMenu = Cf.GetOpenMenu();
+                                    if (GetGameTimer() - time > delay)
                                     {
-                                        delay = 150;
+                                        times++;
+                                        if (times > 2)
+                                        {
+                                            delay = 150;
+                                        }
+                                        currentMenu.GoLeft();
+                                        time = GetGameTimer();
                                     }
-                                    currentMenu.GoRight();
-                                    time = GetGameTimer();
+                                    await Delay(0);
                                 }
-                                await Delay(0);
                             }
                         }
-                    }
 
-                    // Check if the Go Down controls are pressed.
-                    else if (Game.IsDisabledControlJustPressed(0, (Control)187) || Game.IsControlJustPressed(0, (Control)187) || Game.IsControlJustPressed(0, (Control)180) || Game.IsDisabledControlJustPressed(0, (Control)180))
-                    {
-                        currentMenu.GoDown();
-                        currentMenu.GoDownOverflow();
-                        //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                        //{
-                        //    currentMenu.CurrentSelection++;
-                        //}
-                        var time = GetGameTimer();
-                        var times = 0;
-                        var delay = 200;
-                        while ((Game.IsDisabledControlPressed(0, (Control)187) || Game.IsControlPressed(0, (Control)187) || Game.IsControlPressed(0, (Control)180) || Game.IsDisabledControlPressed(0, (Control)180)) && Cf.GetOpenMenu() != null)
+                        // Check if the Go Right controls are pressed.
+                        else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight) && !Game.IsControlPressed(0, Control.SelectWeapon))
                         {
-                            currentMenu = Cf.GetOpenMenu();
-                            if (GetGameTimer() - time > delay)
+                            if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
                             {
-                                times++;
-                                if (times > 2)
+                                currentMenu.GoRight();
+                                var time = GetGameTimer();
+                                var times = 0;
+                                var delay = 200;
+                                while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && !Game.IsControlPressed(0, Control.SelectWeapon) && Cf.GetOpenMenu() != null)
                                 {
-                                    delay = 150;
+                                    currentMenu = Cf.GetOpenMenu();
+                                    if (GetGameTimer() - time > delay)
+                                    {
+                                        times++;
+                                        if (times > 2)
+                                        {
+                                            delay = 150;
+                                        }
+                                        currentMenu.GoRight();
+                                        time = GetGameTimer();
+                                    }
+                                    await Delay(0);
                                 }
-                                currentMenu.GoDown();
-                                currentMenu.GoDownOverflow();
-                                //if (currentMenu.MenuItems[currentMenu.CurrentSelection] is UIMenuHeritageCardItem)
-                                //{
-                                //    currentMenu.CurrentSelection++;
-                                //}
-                                time = GetGameTimer();
                             }
-                            await Delay(0);
                         }
+
                     }
-                }
-                else
-                {
-                    await Delay(0);
                 }
             }
             else
