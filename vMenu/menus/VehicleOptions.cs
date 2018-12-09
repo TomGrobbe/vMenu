@@ -120,7 +120,7 @@ namespace vMenuClient
             UIMenuListItem torqueMultiplier = new UIMenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
             var powerMultiplierList = new List<dynamic> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
             UIMenuListItem powerMultiplier = new UIMenuListItem("Set Engine Power Multiplier", powerMultiplierList, 0, "Set the engine power multiplier.");
-            List<dynamic> speedLimiterOptions = new List<dynamic>() { "Set", "Reset" };
+            List<dynamic> speedLimiterOptions = new List<dynamic>() { "Set", "Reset", "Custom Speed Limit" };
             UIMenuListItem speedLimiter = new UIMenuListItem("Speed Limiter", speedLimiterOptions, 0, "Set your vehicles max speed to your ~y~current speed~s~. Resetting your vehicles max speed will set the max speed of your current vehicle back to default. Only your current vehicle is affected by this option.");
             #endregion
 
@@ -630,7 +630,8 @@ namespace vMenuClient
                         {
                             if (index == 0) // Set
                             {
-                                vehicle.MaxSpeed = vehicle.Speed;
+                                SetEntityMaxSpeed(vehicle.Handle, 500.01f);
+                                SetEntityMaxSpeed(vehicle.Handle, vehicle.Speed);
 
                                 if (ShouldUseMetricMeasurements()) // kph
                                 {
@@ -644,17 +645,53 @@ namespace vMenuClient
                             }
                             else if (index == 1) // Reset
                             {
-                                vehicle.MaxSpeed = 500.0f; // Default max speed seemingly for all vehicles.
+                                SetEntityMaxSpeed(vehicle.Handle, 500.01f); // Default max speed seemingly for all vehicles.
                                 Notify.Info("Vehicle speed is now no longer limited.");
                             }
-                            //else if (index == 3) // custom speed
-                            //{
-                            //    string inputSpeed = await cf.GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
-                            //    if (string.IsNullOrEmpty(inputSpeed))
-                            //    {
-                                    
-                            //    }
-                            //}
+                            else if (index == 2) // custom speed
+                            {
+                                string inputSpeed = await cf.GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
+                                if (!string.IsNullOrEmpty(inputSpeed))
+                                {
+                                    if (float.TryParse(inputSpeed, out float outFloat))
+                                    {
+                                        //vehicle.MaxSpeed = outFloat;
+                                        SetEntityMaxSpeed(vehicle.Handle, 500.01f);
+                                        await BaseScript.Delay(0);
+                                        SetEntityMaxSpeed(vehicle.Handle, outFloat + 0.01f);
+                                        if (ShouldUseMetricMeasurements()) // kph
+                                        {
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outFloat * 3.6f, 1)} KPH~s~.");
+                                        }
+                                        else // mph
+                                        {
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outFloat * 2.237f, 1)} MPH~s~.");
+                                        }
+                                    }
+                                    else if (int.TryParse(inputSpeed, out int outInt))
+                                    {
+                                        SetEntityMaxSpeed(vehicle.Handle, 500.01f);
+                                        await BaseScript.Delay(0);
+                                        SetEntityMaxSpeed(vehicle.Handle, outInt + 0.01f);
+                                        if (ShouldUseMetricMeasurements()) // kph
+                                        {
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round((float)outInt * 3.6f, 1)} KPH~s~.");
+                                        }
+                                        else // mph
+                                        {
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round((float)outInt * 2.237f, 1)} MPH~s~.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Notify.Error("This is not a valid number. Please enter a valid speed in meters per second.");
+                                    }
+                                }
+                                else
+                                {
+                                    Notify.Error(CommonErrors.InvalidInput);
+                                }
+                            }
                         }
                     }
                 }
