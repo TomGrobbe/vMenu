@@ -14,12 +14,7 @@ namespace vMenuClient
 {
     public class PlayerAppearance
     {
-        // Variables
-        private CommonFunctions cf = MainMenu.Cf;
-        private StorageManager sm = new StorageManager();
-
         private UIMenu menu;
-        //public UIMenu mpCharMenu;
 
         private UIMenu pedCustomizationMenu;
         private UIMenu spawnSavedPedMenu;
@@ -28,95 +23,6 @@ namespace vMenuClient
         public static Dictionary<string, uint> AddonPeds;
 
         public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
-
-        /*
-        
-        //public List<UIMenu> mpCharMenus = new List<UIMenu>();
-
-        #region Mp character struct
-        public struct MpCharacterStyle
-        {
-            /// sex
-            public bool IsMale { get; set; }
-
-            /// appearance
-            // hair
-            public int HairStyle { get; set; }
-            public int HairColor { get; set; }
-            public int HairHighlightColor { get; set; }
-            // face
-            public int EyeColor { get; set; }
-
-
-            /// body/head shapes
-            public float NoseWidth { get; set; }
-            public float NosePeakHeight { get; set; }
-            public float NosePeakLength { get; set; }
-            public float NosePeakLowering { get; set; }
-            public float NoseBoneTwist { get; set; }
-            public float EyebrowHeight { get; set; }
-            public float EyebrowForward { get; set; }
-            public float CheeksBoneHeight { get; set; }
-            public float CheeksBoneWidth { get; set; }
-            public float CheeksWidth { get; set; }
-            public float EyesOpening { get; set; }
-            public float LipsThickness { get; set; }
-            public float JawBoneWidth { get; set; }
-            public float JawBoneBackLength { get; set; }
-            public float ChinBoneLowering { get; set; }
-            public float ChinBoneLength { get; set; }
-            public float ChinBoneWidth { get; set; }
-            public float ChinHole { get; set; }
-            public float NeckThickness { get; set; }
-            public float Resemblance { get; set; }
-            public float SkinTone { get; set; }
-
-            public int Mom { get; set; }
-            public int Dad { get; set; }
-            public bool Valid { get; private set; }
-
-
-            /// constructor
-
-            public MpCharacterStyle(bool isMale) : this(isMale, true, 0, 0, 0, 0, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0, 0, 0f, 0f) { }
-            public MpCharacterStyle(bool isMale, bool isValid) : this(isMale, isValid, 0, 0, 0, 0, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0, 0, 0f, 0f) { }
-            public MpCharacterStyle(bool isMale, bool isValid, int hairStyle, int hairColor, int hairHighlightColor, int eyeColor, float noseWidth, float nosePeakHeight, float nosePeakLength, float nosePeakLowering, float noseBoneTwist, float eyebrowHeight, float eyebrowForward, float cheekboneHeight, float cheekboneWidth, float cheekWidth, float eyesOpening, float lipsThickness, float jawBoneWidth, float jawBoneBackLength, float chinBoneLowering, float chinBoneLength, float chinBoneWidth, float chinHole, float neckThickness, int mom, int dad, float resemblance, float skinTone)
-            {
-                IsMale = isMale;
-                Valid = isValid;
-                HairStyle = hairStyle;
-                HairColor = hairColor;
-                HairHighlightColor = hairHighlightColor;
-                EyeColor = eyeColor;
-                NoseWidth = noseWidth;
-                NosePeakHeight = nosePeakHeight;
-                NosePeakLength = nosePeakLength;
-                NosePeakLowering = nosePeakLowering;
-                NoseBoneTwist = noseBoneTwist;
-                EyebrowHeight = eyebrowHeight;
-                EyebrowForward = eyebrowForward;
-                CheeksBoneHeight = cheekboneHeight;
-                CheeksBoneWidth = cheekboneWidth;
-                CheeksWidth = cheekWidth;
-                EyesOpening = eyesOpening;
-                LipsThickness = lipsThickness;
-                JawBoneWidth = jawBoneWidth;
-                JawBoneBackLength = jawBoneBackLength;
-                ChinBoneLength = chinBoneLength;
-                ChinBoneWidth = chinBoneWidth;
-                ChinBoneLowering = chinBoneLowering;
-                ChinHole = chinHole;
-                NeckThickness = neckThickness;
-                Mom = mom;
-                Dad = dad;
-                Resemblance = resemblance;
-                SkinTone = skinTone;
-            }
-        }
-        #endregion
-        
-        //MpCharacterStyle currentCharacter = new MpCharacterStyle(false, false);
-        */
 
         private Dictionary<UIMenuListItem, int> drawablesMenuListItems = new Dictionary<UIMenuListItem, int>();
         private Dictionary<UIMenuListItem, int> propsMenuListItems = new Dictionary<UIMenuListItem, int>();
@@ -163,7 +69,7 @@ namespace vMenuClient
             menu.AddItem(walkingStyle);
             menu.AddItem(clothingGlowType);
 
-            if (cf.IsAllowed(Permission.PACustomize))
+            if (IsAllowed(Permission.PACustomize))
             {
                 menu.BindMenuToItem(pedCustomizationMenu, pedCustomization);
             }
@@ -174,7 +80,7 @@ namespace vMenuClient
                 pedCustomization.Description = "~r~This option has been disabled by the server owner.";
             }
 
-            if (cf.IsAllowed(Permission.PASpawnSaved))
+            if (IsAllowed(Permission.PASpawnSaved))
             {
                 menu.BindMenuToItem(spawnSavedPedMenu, spawnSavedPed);
             }
@@ -213,7 +119,7 @@ namespace vMenuClient
                     {
                         if (item.Enabled)
                         {
-                            await cf.SetPlayerSkin(AddonPeds.ElementAt(index).Value, new CommonFunctions.PedInfo() { version = -1 });
+                            await SetPlayerSkin(AddonPeds.ElementAt(index).Value, new PedInfo() { version = -1 });
                         }
                         else
                         {
@@ -262,7 +168,7 @@ namespace vMenuClient
                 UIMenuListItem pedl = new UIMenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
 
                 menu.AddItem(pedl);
-                if (!cf.IsAllowed(Permission.PASpawnNew))
+                if (!IsAllowed(Permission.PASpawnNew))
                 {
                     pedl.Enabled = false;
                     pedl.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
@@ -276,7 +182,7 @@ namespace vMenuClient
                 if (item == walkingStyle)
                 {
                     Subtitle.Custom("Ped is: " + IsPedMale(Game.PlayerPed.Handle));
-                    cf.SetWalkingStyle(walkstyles[index].ToString());
+                    CommonFunctions.SetWalkingStyle(walkstyles[index].ToString());
                 }
                 else if (item == clothingGlowType)
                 {
@@ -286,9 +192,9 @@ namespace vMenuClient
                 {
                     int i = ((sender.CurrentSelection - 8) * 50) + index;
                     string modelName = modelNames[i];
-                    if (cf.IsAllowed(Permission.PASpawnNew))
+                    if (IsAllowed(Permission.PASpawnNew))
                     {
-                        await cf.SetPlayerSkin(modelName, new CommonFunctions.PedInfo() { version = -1 });
+                        await SetPlayerSkin(modelName, new PedInfo() { version = -1 });
                     }
                 }
 
@@ -311,11 +217,11 @@ namespace vMenuClient
                 }
                 else if (item == savePed)
                 {
-                    cf.SavePed();
+                    SavePed();
                 }
                 else if (item == spawnByName)
                 {
-                    cf.SpawnPedByName();
+                    SpawnPedByName();
                 }
             };
 
@@ -323,7 +229,7 @@ namespace vMenuClient
             spawnSavedPedMenu.OnItemSelect += (sender, item, idex) =>
             {
                 var name = item.Text.ToString();
-                cf.LoadSavedPed(name, true);
+                LoadSavedPed(name, true);
             };
 
             #region ped drawable list changes
@@ -1579,7 +1485,7 @@ namespace vMenuClient
                 }
                 foreach (var name in characterNames)
                 {
-                    var Character = cf.LoadMultiplayerCharacter(name.Substring(8, name.Length - 8));
+                    var Character = CommonFunctions.LoadMultiplayerCharacter(name.Substring(8, name.Length - 8));
                     if (Character.Valid)
                     {
                         UIMenuItem nameItem = new UIMenuItem(name.Substring(8, name.Length - 8), "Press select to load this character.");
@@ -1604,7 +1510,7 @@ namespace vMenuClient
 
             loadCharacterMenu.OnItemSelect += (sender, item, index) =>
             {
-                var Character = cf.LoadMultiplayerCharacter(item.Text.ToString());
+                var Character = CommonFunctions.LoadMultiplayerCharacter(item.Text.ToString());
                 if (Character.Valid)
                 {
                     Notify.Success("Multiplayer character has been loaded.");
@@ -1670,7 +1576,7 @@ namespace vMenuClient
             {
                 if (item == f_saveChar)
                 {
-                    cf.SaveMultiplayerCharacter(currentCharacter);
+                    CommonFunctions.SaveMultiplayerCharacter(currentCharacter);
                 }
             };
             #endregion
