@@ -112,15 +112,10 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Custom(string message, bool blink = true, bool saveToBrief = true)
         {
-            SetNotificationTextEntry("THREESTRINGS");
-            string[] messages = MainMenu.Cf.StringToArray(message);
-            foreach (string msg in messages)
+            SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
-                if (msg != null)
-                {
-                    AddTextComponentSubstringPlayerName(msg);
-                }
-
+                AddTextComponentSubstringPlayerName(s);
             }
             DrawNotification(blink, saveToBrief);
         }
@@ -213,11 +208,10 @@ namespace vMenuClient
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         public static void Custom(string message, int duration = 2500, bool drawImmediately = true)
         {
-            BeginTextCommandPrint("THREESTRINGS");
-            var messages = MainMenu.Cf.StringToArray(message);
-            foreach (var msg in messages)
+            BeginTextCommandPrint("CELL_EMAIL_BCON"); // 10x ~a~
+            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
-                AddTextComponentSubstringPlayerName(msg);
+                AddTextComponentSubstringPlayerName(s);
             }
             EndTextCommandPrint(duration, drawImmediately);
         }
