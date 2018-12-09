@@ -642,7 +642,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Alert("You can't spectate yourself.", false, true);
+                        Notify.Error("You can't spectate yourself.", false, true);
                     }
                 }
                 else
@@ -684,36 +684,6 @@ namespace vMenuClient
             }
 
         }
-
-        ///// <summary>
-        ///// Toggle spectating for the specified player Id. Leave the player ID empty (or -1) to disable spectating.
-        ///// </summary>
-        ///// <param name="playerId"></param>
-        //public async void SpectateAsync(int playerId = -1)
-        //{
-        //    // Stop spectating.
-        //    if (NetworkIsInSpectatorMode() || playerId == -1)
-        //    {
-        //        //spectating = false;
-        //        DoScreenFadeOut(100);
-        //        await Delay(100);
-        //        Notify.Info("Stopped spectating.", false, false);
-        //        NetworkSetInSpectatorMode(false, Game.PlayerPed.Handle);
-        //        DoScreenFadeIn(100);
-        //        await Delay(100);
-        //    }
-        //    // Start spectating for the first time.
-        //    else
-        //    {
-        //        //spectating = true;
-        //        DoScreenFadeOut(100);
-        //        await Delay(100);
-        //        Notify.Info($"Spectating ~r~{GetPlayerName(playerId)}</C>~s~.", false, false);
-        //        NetworkSetInSpectatorMode(true, GetPlayerPed(playerId));
-        //        DoScreenFadeIn(100);
-        //        await Delay(100);
-        //    }
-        //}
         #endregion
 
         #region Cycle Through Vehicle Seats
