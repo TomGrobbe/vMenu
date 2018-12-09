@@ -39,7 +39,10 @@ namespace vMenuShared
             vmenu_outdated_version_notify_players,
 
             vmenu_use_els_compatibility_mode,
-            vmenu_quit_session_in_rockstar_editor
+            vmenu_quit_session_in_rockstar_editor,
+
+            vmenu_server_info_message,
+            vmenu_server_info_website_url
         }
 
         public static bool GetSettingsBool(Setting setting)
