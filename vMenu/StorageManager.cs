@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -14,7 +14,7 @@ using static vMenuClient.CommonFunctions;
 namespace vMenuClient
 {
 
-    public class StorageManager : BaseScript
+    public static class StorageManager
     {
         /// <summary>
         /// Save Dictionary(string, string) to local storage.
@@ -30,9 +30,9 @@ namespace vMenuClient
             if (GetResourceKvpString(saveName) == null || overrideExistingData)
             {
                 // Get the json string from the dictionary.
-                //string jsonString = MainMenu.Cf.DictionaryToJson(data);
+                //string jsonString = CommonFunctions.DictionaryToJson(data);
                 string jsonString = JsonConvert.SerializeObject(data);
-                MainMenu.Cf.Log($"Saving: [name: {saveName}, json:{jsonString}]");
+                Log($"Saving: [name: {saveName}, json:{jsonString}]");
 
                 // Save the kvp.
                 SetResourceKvp(saveName, jsonString);
@@ -48,25 +48,23 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Get a saved dictionary. (Used for saving peds)
+        /// Returns a <see cref="PedInfo"/> struct containing the data of the saved ped.
         /// </summary>
-        /// <param name="name">The key for the dictionary to get.</param>
-        /// <returns>The requested dictionary.</returns>
-        public static Dictionary<string, string> GetSavedDictionary(string name)
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static PedInfo GetSavedPedInfo(string name)
         {
-            string json;
-            json = GetResourceKvpString(name);
-            MainMenu.Cf.Log("Existing v2 save is being loaded: Name: " + name + " Dict: " + json.ToString());
-            var dict = MainMenu.Cf.JsonToDictionary(json);
-            return dict ?? new Dictionary<string, string>();
+            return JsonToPedInfo(GetResourceKvpString(name), name);
         }
 
-        public CommonFunctions.PedInfo GetSavedPedInfo(string name)
-        {
-            return MainMenu.Cf.JsonToPedInfo(GetResourceKvpString(name), name);
-        }
-
-        public static bool SavePedInfo(string saveName, CommonFunctions.PedInfo pedData, bool overrideExisting)
+        /// <summary>
+        /// Saves an (old/nomral) ped data to storage.
+        /// </summary>
+        /// <param name="saveName"></param>
+        /// <param name="pedData"></param>
+        /// <param name="overrideExisting"></param>
+        /// <returns></returns>
+        public static bool SavePedInfo(string saveName, PedInfo pedData, bool overrideExisting)
         {
             if (overrideExisting || (GetResourceKvpString(saveName) ?? "NULL") == "NULL")
             {
@@ -93,7 +91,7 @@ namespace vMenuClient
         /// <param name="vehicleInfo"></param>
         /// <param name="overrideOldVersion"></param>
         /// <returns></returns>
-        public static bool SaveVehicleInfo(string saveName, CommonFunctions.VehicleInfo vehicleInfo, bool overrideOldVersion)
+        public static bool SaveVehicleInfo(string saveName, VehicleInfo vehicleInfo, bool overrideOldVersion)
         {
             if (string.IsNullOrEmpty(GetResourceKvpString(saveName)) || overrideOldVersion)
             {
@@ -103,7 +101,7 @@ namespace vMenuClient
                     string json = JsonConvert.SerializeObject(vehicleInfo);
 
                     // log
-                    MainMenu.Cf.Log($"[vMenu] Saving!\nName: {saveName}\nVehicle Data: {json}\n");
+                    Log($"[vMenu] Saving!\nName: {saveName}\nVehicle Data: {json}\n");
 
                     // save
                     SetResourceKvp(saveName, json);
@@ -121,14 +119,14 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName">Saved vehicle name to get info from. (name includes "veh_")</param>
         /// <returns></returns>
-        public CommonFunctions.VehicleInfo GetSavedVehicleInfo(string saveName)
+        public static VehicleInfo GetSavedVehicleInfo(string saveName)
         {
             string json = GetResourceKvpString(saveName);
-            var vi = new CommonFunctions.VehicleInfo() { };
+            var vi = new VehicleInfo() { };
             dynamic data = JsonConvert.DeserializeObject(json);
             if (data.ContainsKey("version"))
             {
-                //MainMenu.Cf.Log("New Version: " + data["version"] + "\n");
+                //CommonFunctions.Log("New Version: " + data["version"] + "\n");
                 var colors = new Dictionary<string, int>();
                 foreach (Newtonsoft.Json.Linq.JProperty c in data["colors"])
                 {
@@ -166,8 +164,8 @@ namespace vMenuClient
             }
             else
             {
-                //MainMenu.Cf.Log("Old: " + json + "\n");
-                var dict = MainMenu.Cf.JsonToDictionary(json);
+                //CommonFunctions.Log("Old: " + json + "\n");
+                var dict = JsonToDictionary(json);
                 var colors = new Dictionary<string, int>()
                 {
                     ["primary"] = int.Parse(dict["primaryColor"]),
@@ -230,7 +228,7 @@ namespace vMenuClient
                 vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
                 SaveVehicleInfo(saveName, vi, true);
             }
-            //MainMenu.Cf.Log(json + "\n");
+            //CommonFunctions.Log(json + "\n");
             return vi;
         }
 
@@ -284,6 +282,11 @@ namespace vMenuClient
             return null;
         }
 
+        /// <summary>
+        /// Returns a <see cref="MpPedDataManager.MultiplayerPedData"/> struct containing the data of the saved MP Character.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static MpPedDataManager.MultiplayerPedData GetSavedMpCharacterData(string name)
         {
             var output = new MpPedDataManager.MultiplayerPedData();
@@ -304,7 +307,7 @@ namespace vMenuClient
             {
                 Debug.WriteLine(e.Message);
             }
-            MainMenu.Cf.Log(jsonString);
+            Log(jsonString);
             return output;
         }
     }
