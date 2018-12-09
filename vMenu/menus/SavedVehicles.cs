@@ -13,20 +13,8 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private UIMenu selectedVehicleMenu = new UIMenu("Manage Vehicle", "Manage this saved vehicle.", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        private UIMenu unavailableVehiclesMenu = new UIMenu("Missing Vehicles", "Unavailable Saved Vehicles", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
+        private UIMenu selectedVehicleMenu = new UIMenu("Manage Vehicle", "Manage this saved vehicle.", true);
+        private UIMenu unavailableVehiclesMenu = new UIMenu("Missing Vehicles", "Unavailable Saved Vehicles", true);
         private CommonFunctions cf = MainMenu.Cf;
         private Dictionary<string, CommonFunctions.VehicleInfo> savedVehicles = new Dictionary<string, CommonFunctions.VehicleInfo>();
         private List<UIMenu> subMenus = new List<UIMenu>();
@@ -44,13 +32,7 @@ namespace vMenuClient
             string menuTitle = "Saved Vehicles";
             #region Create menus and submenus
             // Create the menu.
-            menu = new UIMenu(menuTitle, "Manage Saved Vehicles", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(menuTitle, "Manage Saved Vehicles", true);
 
 
 
@@ -76,13 +58,7 @@ namespace vMenuClient
 
             for (int i = 0; i < 22; i++)
             {
-                UIMenu categoryMenu = new UIMenu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"), true)
-                {
-                    ScaleWithSafezone = false,
-                    MouseControlsEnabled = false,
-                    MouseEdgeEnabled = false,
-                    ControlDisablingEnabled = false
-                };
+                UIMenu categoryMenu = new UIMenu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"), true);
 
                 UIMenuItem categoryButton = new UIMenuItem(GetLabelText($"VEH_CLASS_{i}"), $"All saved vehicles from the {(GetLabelText($"VEH_CLASS_{i}"))} category.");
                 subMenus.Add(categoryMenu);

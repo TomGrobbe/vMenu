@@ -29,13 +29,7 @@ namespace vMenuClient
 
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Spawner", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Spawner", true);
 
             // Create the buttons and checkboxes.
             UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
@@ -55,13 +49,7 @@ namespace vMenuClient
 
             #region addon cars menu
             // Vehicle Addons List
-            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", true);
             UIMenuItem addonCarsBtn = new UIMenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
             addonCarsBtn.SetRightLabel("→→→");
 
@@ -134,13 +122,7 @@ namespace vMenuClient
                 UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
                 btn.SetRightLabel("→→→");
 
-                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true)
-                {
-                    ScaleWithSafezone = false,
-                    MouseControlsEnabled = false,
-                    MouseEdgeEnabled = false,
-                    ControlDisablingEnabled = false
-                };
+                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true);
 
                 MainMenu.Mp.Add(vehicleClassMenu);
                 menu.AddItem(btn);

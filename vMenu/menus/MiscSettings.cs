@@ -42,21 +42,8 @@ namespace vMenuClient
         {
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-
-            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true);
+            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true);
             UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
             menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
             MainMenu.Mp.Add(teleportMenu);
@@ -82,13 +69,7 @@ namespace vMenuClient
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
             UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
-            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true);
             UIMenuItem connectionSubmenuBtn = new UIMenuItem("Connection Options", "Server connection/game quit options.");
             UIMenuItem quitSession = new UIMenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
                 "Use this if you need to have addons streamed but want to use the rockstar editor.");

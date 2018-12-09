@@ -169,16 +169,7 @@ namespace vMenuClient
         private void Setup()
         {
 
-            noclipMenu = new UIMenu("No Clip", "Controls", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
-            noclipMenu.SetMenuWidthOffset(50);
-
-
+            noclipMenu = new UIMenu("No Clip", "Controls", true);
 
             UIMenuItem speed = new UIMenuItem("Current Moving Speed", "This is your current moving speed.");
             speed.SetRightLabel(speeds[currentSpeed]);

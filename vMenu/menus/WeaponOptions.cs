@@ -32,13 +32,7 @@ namespace vMenuClient
         {
             #region create main weapon options menu and add items
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weapon Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weapon Options", true);
 
             UIMenuItem getAllWeapons = new UIMenuItem("Get All Weapons", "Get all weapons.");
             UIMenuItem removeAllWeapons = new UIMenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
@@ -79,13 +73,7 @@ namespace vMenuClient
 
             #region addonweapons submenu
             UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
-            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true);
             menu.AddItem(addonWeaponsBtn);
 
             #region manage creating and accessing addon weapons menu
@@ -136,29 +124,11 @@ namespace vMenuClient
             #region parachute options menu
             #region parachute buttons and submenus
             UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
-            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true)
-            {
-                MouseEdgeEnabled = false,
-                MouseControlsEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true);
 
-            UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", true);
 
-            UIMenu secondaryChute = new UIMenu("Parachute Options", "Select A Reserve Parachute", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu secondaryChute = new UIMenu("Parachute Options", "Select A Reserve Parachute", true);
 
             UIMenuItem chute = new UIMenuItem("No Style", "Default parachute.");
             UIMenuItem chute0 = new UIMenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
@@ -365,84 +335,28 @@ namespace vMenuClient
             UIMenuItem spacer = cf.GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddItem(spacer);
 
-            UIMenu handGuns = new UIMenu("Weapons", "Handguns", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            handGuns.SetMenuWidthOffset(50);
+            UIMenu handGuns = new UIMenu("Weapons", "Handguns", true);
             UIMenuItem handGunsBtn = new UIMenuItem("Handguns");
 
-            UIMenu rifles = new UIMenu("Weapons", "Assault Rifles", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            rifles.SetMenuWidthOffset(50);
+            UIMenu rifles = new UIMenu("Weapons", "Assault Rifles", true);
             UIMenuItem riflesBtn = new UIMenuItem("Assault Rifles");
 
-            UIMenu shotguns = new UIMenu("Weapons", "Shotguns", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            shotguns.SetMenuWidthOffset(50);
+            UIMenu shotguns = new UIMenu("Weapons", "Shotguns", true);
             UIMenuItem shotgunsBtn = new UIMenuItem("Shotguns");
 
-            UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            smgs.SetMenuWidthOffset(50);
+            UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns", true);
             UIMenuItem smgsBtn = new UIMenuItem("Sub-/Light Machine Guns");
 
-            UIMenu throwables = new UIMenu("Weapons", "Throwables", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            throwables.SetMenuWidthOffset(50);
+            UIMenu throwables = new UIMenu("Weapons", "Throwables", true);
             UIMenuItem throwablesBtn = new UIMenuItem("Throwables");
 
-            UIMenu melee = new UIMenu("Weapons", "Melee", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            melee.SetMenuWidthOffset(50);
+            UIMenu melee = new UIMenu("Weapons", "Melee", true);
             UIMenuItem meleeBtn = new UIMenuItem("Melee");
 
-            UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            heavy.SetMenuWidthOffset(50);
+            UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons", true);
             UIMenuItem heavyBtn = new UIMenuItem("Heavy Weapons");
 
-            UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles", true)
-            {
-                ScaleWithSafezone = false,
-                ControlDisablingEnabled = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-            };
-            snipers.SetMenuWidthOffset(50);
+            UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles", true);
             UIMenuItem snipersBtn = new UIMenuItem("Sniper Rifles");
 
             MainMenu.Mp.Add(handGuns);
@@ -496,13 +410,7 @@ namespace vMenuClient
                 if (weapon.Name != null && (cf.IsAllowed(weapon.Perm) || cf.IsAllowed(Permission.WPGetAll)))
                 {
                     #region Create menu for this weapon and add buttons
-                    UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true)
-                    {
-                        ScaleWithSafezone = false,
-                        MouseControlsEnabled = false,
-                        MouseEdgeEnabled = false,
-                        ControlDisablingEnabled = false
-                    };
+                    UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true);
                     UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
                     weaponItem.SetRightLabel("→→→");
                     weaponItem.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);

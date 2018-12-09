@@ -52,13 +52,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Options", true);
 
             #region menu variables
             // Create Checkboxes.
@@ -132,62 +126,14 @@ namespace vMenuClient
 
             #region Submenus
             // Submenu's
-            VehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleComponentsMenu = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleColorsMenu = new UIMenu("Vehicle Colors", "Vehicle Colors", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            DeleteConfirmMenu = new UIMenu("Confirm Action", "Delete Vehicle, Are You Sure?", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            VehicleUnderglowMenu = new UIMenu("Vehicle Neon Kits", "Vehicle Neon Underglow Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            VehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", true);
+            VehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", true);
+            VehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", true);
+            VehicleComponentsMenu = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", true);
+            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries", true);
+            VehicleColorsMenu = new UIMenu("Vehicle Colors", "Vehicle Colors", true);
+            DeleteConfirmMenu = new UIMenu("Confirm Action", "Delete Vehicle, Are You Sure?", true);
+            VehicleUnderglowMenu = new UIMenu("Vehicle Neon Kits", "Vehicle Neon Underglow Options", true);
 
             MainMenu.Mp.Add(VehicleModMenu);
             MainMenu.Mp.Add(VehicleDoorsMenu);

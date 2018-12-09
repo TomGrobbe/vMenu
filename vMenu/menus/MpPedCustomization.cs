@@ -15,76 +15,15 @@ namespace vMenuClient
         // Variables
         private UIMenu menu;
         private readonly CommonFunctions cf = MainMenu.Cf;
-        public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        //public UIMenu editCharacterMenu = new UIMenu("vMenu", "Edit Your Saved Character", true)
-        //{
-        //    ScaleWithSafezone = false,
-        //    MouseControlsEnabled = false,
-        //    MouseEdgeEnabled = false,
-        //    ControlDisablingEnabled = false
-        //};
-        public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu appearanceMenu = new UIMenu("vMenu", "Character Appearance Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu faceShapeMenu = new UIMenu("vMenu", "Character Face Shape Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu tattoosMenu = new UIMenu("vMenu", "Character Tattoo Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu clothesMenu = new UIMenu("vMenu", "Character Clothing Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        public UIMenu propsMenu = new UIMenu("vMenu", "Character Props Options", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-        private UIMenu manageSavedCharacterMenu = new UIMenu("vMenu", "Manage MP Character", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
+        public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", true);
+        public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", true);
+        public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", true);
+        public UIMenu appearanceMenu = new UIMenu("vMenu", "Character Appearance Options", true);
+        public UIMenu faceShapeMenu = new UIMenu("vMenu", "Character Face Shape Options", true);
+        public UIMenu tattoosMenu = new UIMenu("vMenu", "Character Tattoo Options", true);
+        public UIMenu clothesMenu = new UIMenu("vMenu", "Character Clothing Options", true);
+        public UIMenu propsMenu = new UIMenu("vMenu", "Character Props Options", true);
+        private UIMenu manageSavedCharacterMenu = new UIMenu("vMenu", "Manage MP Character", true);
         public static bool DontCloseMenus = false;
         public static bool DisableBackButton = false;
         string selectedSavedCharacterManageName = "";
@@ -629,13 +568,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu("vMenu", "About vMenu", true);
 
             UIMenuItem createMale = new UIMenuItem("Create Male Character", "Create a new male character.");
             createMale.SetRightLabel("→→→");

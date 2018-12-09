@@ -18,13 +18,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu("vMenu", "About vMenu", true);
 
             // Create menu items.
             UIMenuItem version = new UIMenuItem("Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.");

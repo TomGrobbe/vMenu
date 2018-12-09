@@ -21,13 +21,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weather Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weather Options", true);
 
             dynamicWeatherEnabled = new UIMenuCheckboxItem("Toggle Dynamic Weather", EventManager.dynamicWeather, "Enable or disable dynamic weather changes.");
             blackout = new UIMenuCheckboxItem("Toggle Blackout", EventManager.blackoutMode, "This disables or enables all lights across the map.");

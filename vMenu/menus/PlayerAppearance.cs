@@ -125,56 +125,17 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Appearance", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-
-            ////Create the submenus.
-            //mpCharMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Multiplayer Ped Customization", true)
-            //{
-            //    ScaleWithSafezone = false,
-            //    MouseControlsEnabled = false,
-            //    MouseEdgeEnabled = false,
-            //    ControlDisablingEnabled = false
-            //};
-            //mpCharMenu.AddInstructionalButton(new InstructionalButton(Control.LookLeftRight, "Turn Head Left/Right"));
-            //mpCharMenus.Add(mpCharMenu);
-
-            spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn Saved Ped", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            deleteSavedPedMenu = new UIMenu("Saved Peds", "Delete Saved Ped", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            pedCustomizationMenu = new UIMenu("Ped Customization", "Customize Saved Ped", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Appearance", true);
+            spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn Saved Ped", true);
+            deleteSavedPedMenu = new UIMenu("Saved Peds", "Delete Saved Ped", true);
+            pedCustomizationMenu = new UIMenu("Ped Customization", "Customize Saved Ped", true);
 
             // Add the (submenus) to the menu pool.
-            //MainMenu.Mp.Add(mpCharMenu);
             MainMenu.Mp.Add(pedCustomizationMenu);
             MainMenu.Mp.Add(spawnSavedPedMenu);
             MainMenu.Mp.Add(deleteSavedPedMenu);
 
             // Create the menu items.
-            //UIMenuItem mpCharMenuBtn = new UIMenuItem("MP Character Customization", "All multiplayer (freemode character) ped customization options.");
-            //mpCharMenuBtn.SetRightLabel("→→→");
             UIMenuItem pedCustomization = new UIMenuItem("Ped Customization", "Modify your ped's appearance.");
             pedCustomization.SetRightLabel("→→→");
             UIMenuItem savePed = new UIMenuItem("Save Current Ped", "Save your current ped and clothes.");
@@ -191,30 +152,13 @@ namespace vMenuClient
             List<dynamic> clothingGlowAnimations = new List<dynamic>() { "On", "Off", "Fade", "Flash" };
             UIMenuListItem clothingGlowType = new UIMenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType, "Set the style of the animation used on your player's illuminated clothing items.");
 
-            // Add items to the mneu.
-            //menu.AddItem(mpCharMenuBtn);
+            // Add items to the menu.
             menu.AddItem(pedCustomization);
             menu.AddItem(savePed);
             menu.AddItem(spawnSavedPed);
             menu.AddItem(deleteSavedPed);
             menu.AddItem(walkingStyle);
             menu.AddItem(clothingGlowType);
-
-            // old mp character stuff
-            /*
-            ////Bind items to the submenus.
-            //if (cf.IsAllowed(Permission.PACustomize) && MainMenu.EnableExperimentalFeatures) // only enable it if experimental features are turned on
-            //{
-            //    CreateMpPedMenu(mpCharMenu); // loads all menu items and adds event listeners.
-            //    menu.BindMenuToItem(mpCharMenu, mpCharMenuBtn);
-            //}
-            //else
-            //{
-            //    mpCharMenuBtn.Enabled = false;
-            //    mpCharMenuBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-            //    mpCharMenuBtn.Description = "This will be added in the near future. It does not work, so don't even try to enable it, it WILL currently delete all your saved peds/vehicles if you do so.";
-            //}
-            */
 
             if (cf.IsAllowed(Permission.PACustomize))
             {
@@ -240,13 +184,7 @@ namespace vMenuClient
 
             menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
 
-            UIMenu addonPeds = new UIMenu("Model Spawner", "Spawn Addon Ped", true)
-            {
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false,
-                ScaleWithSafezone = false
-            };
+            UIMenu addonPeds = new UIMenu("Model Spawner", "Spawn Addon Ped", true);
 
             UIMenuItem addonPedsBtn = new UIMenuItem("Addon Peds", "Choose a player skin from the addons list available on this server.");
             menu.AddItem(addonPedsBtn);

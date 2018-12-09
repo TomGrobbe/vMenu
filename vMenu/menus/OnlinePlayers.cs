@@ -17,14 +17,7 @@ namespace vMenuClient
         private UIMenu menu;
         private CommonFunctions cf = MainMenu.Cf;
 
-        UIMenu playerMenu = new UIMenu("Online Players", "Player:", true)
-        {
-            ScaleWithSafezone = false,
-            MouseControlsEnabled = false,
-            MouseEdgeEnabled = false,
-            ControlDisablingEnabled = false
-        };
-
+        UIMenu playerMenu = new UIMenu("Online Players", "Player:", true) { AlwaysShowMenuItemCounter = true };
         Player currentPlayer = new Player(Game.Player.Handle);
 
 
@@ -34,13 +27,8 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Online Players", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Online Players", true) { AlwaysShowMenuItemCounter = true };
+            menu.CounterPretext = "Players: ";
 
             MainMenu.Mp.Add(playerMenu);
 
