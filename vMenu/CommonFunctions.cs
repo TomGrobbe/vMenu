@@ -1865,6 +1865,10 @@ namespace vMenuClient
                 data.propTextures = propTextures;
 
                 data.isMpPed = (model == (uint)GetHashKey("mp_f_freemode_01") || model == (uint)GetHashKey("mp_m_freemode_01"));
+                if (data.isMpPed)
+                {
+                    Notify.Alert("Note, you should probably use the MP Character creator if you want more advanced features. Saving Multiplayer characters with this function does NOT save a lot of the online peds customization.");
+                }
 
                 // Try to save the data, and save the result in a variable.
                 bool saveSuccessful = false;
