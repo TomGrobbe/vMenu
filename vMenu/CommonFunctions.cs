@@ -1709,6 +1709,7 @@ namespace vMenuClient
                     Vehicle veh = Game.PlayerPed.CurrentVehicle;
                     VehicleSeat seat = Game.PlayerPed.SeatIndex;
 
+                    int lastArmorValue = Game.PlayerPed.Armor;
 
                     // set the model
                     SetPlayerModel(Game.Player.Handle, modelHash);
@@ -1732,6 +1733,8 @@ namespace vMenuClient
                         FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     }
 
+                    // restore armor.
+                    Game.PlayerPed.Armor = lastArmorValue;
                 }
                 SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
 
