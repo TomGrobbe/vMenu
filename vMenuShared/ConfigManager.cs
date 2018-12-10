@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,6 @@ namespace vMenuShared
 {
     public static class ConfigManager
     {
-
         public enum Setting
         {
             vmenu_use_permissions,

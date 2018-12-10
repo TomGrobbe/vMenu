@@ -53,7 +53,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Options", true);
+            menu = new UIMenu(Game.Player.Name, "Vehicle Options", RightAlignMenus());
 
             #region menu variables
             // Create Checkboxes.
@@ -127,14 +127,14 @@ namespace vMenuClient
 
             #region Submenus
             // Submenu's
-            VehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", true);
-            VehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", true);
-            VehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", true);
-            VehicleComponentsMenu = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", true);
-            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries", true);
-            VehicleColorsMenu = new UIMenu("Vehicle Colors", "Vehicle Colors", true);
-            DeleteConfirmMenu = new UIMenu("Confirm Action", "Delete Vehicle, Are You Sure?", true);
-            VehicleUnderglowMenu = new UIMenu("Vehicle Neon Kits", "Vehicle Neon Underglow Options", true);
+            VehicleModMenu = new UIMenu("Mod Menu", "Vehicle Mods", RightAlignMenus());
+            VehicleDoorsMenu = new UIMenu("Vehicle Doors", "Vehicle Doors Management", RightAlignMenus());
+            VehicleWindowsMenu = new UIMenu("Vehicle Windows", "Vehicle Windows Management", RightAlignMenus());
+            VehicleComponentsMenu = new UIMenu("Vehicle Extras", "Vehicle Extras/Components", RightAlignMenus());
+            VehicleLiveriesMenu = new UIMenu("Vehicle Liveries", "Vehicle Liveries", RightAlignMenus());
+            VehicleColorsMenu = new UIMenu("Vehicle Colors", "Vehicle Colors", RightAlignMenus());
+            DeleteConfirmMenu = new UIMenu("Confirm Action", "Delete Vehicle, Are You Sure?", RightAlignMenus());
+            VehicleUnderglowMenu = new UIMenu("Vehicle Neon Kits", "Vehicle Neon Underglow Options", RightAlignMenus());
 
             MainMenu.Mp.Add(VehicleModMenu);
             MainMenu.Mp.Add(VehicleDoorsMenu);

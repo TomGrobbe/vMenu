@@ -24,7 +24,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Time Options", true);
+            menu = new UIMenu(Game.Player.Name, "Time Options", RightAlignMenus());
 
             // Create all menu items.
             freezeTimeToggle = new UIMenuItem("Freeze/Unfreeze Time", "Enable or disable time freezing.");

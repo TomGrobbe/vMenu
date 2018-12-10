@@ -16,8 +16,8 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        private UIMenu selectedVehicleMenu = new UIMenu("Manage Vehicle", "Manage this saved vehicle.", true);
-        private UIMenu unavailableVehiclesMenu = new UIMenu("Missing Vehicles", "Unavailable Saved Vehicles", true);
+        private UIMenu selectedVehicleMenu = new UIMenu("Manage Vehicle", "Manage this saved vehicle.", RightAlignMenus());
+        private UIMenu unavailableVehiclesMenu = new UIMenu("Missing Vehicles", "Unavailable Saved Vehicles", RightAlignMenus());
         private Dictionary<string, VehicleInfo> savedVehicles = new Dictionary<string, VehicleInfo>();
         private List<UIMenu> subMenus = new List<UIMenu>();
         private Dictionary<UIMenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<UIMenuItem, KeyValuePair<string, VehicleInfo>>();
@@ -34,7 +34,7 @@ namespace vMenuClient
             string menuTitle = "Saved Vehicles";
             #region Create menus and submenus
             // Create the menu.
-            menu = new UIMenu(menuTitle, "Manage Saved Vehicles", true);
+            menu = new UIMenu(menuTitle, "Manage Saved Vehicles", RightAlignMenus());
 
 
 
@@ -60,7 +60,7 @@ namespace vMenuClient
 
             for (int i = 0; i < 22; i++)
             {
-                UIMenu categoryMenu = new UIMenu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"), true);
+                UIMenu categoryMenu = new UIMenu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"), RightAlignMenus());
 
                 UIMenuItem categoryButton = new UIMenuItem(GetLabelText($"VEH_CLASS_{i}"), $"All saved vehicles from the {(GetLabelText($"VEH_CLASS_{i}"))} category.");
                 subMenus.Add(categoryMenu);

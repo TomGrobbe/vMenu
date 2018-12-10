@@ -26,7 +26,7 @@ namespace vMenuClient
         {
             #region initial setup.
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Vehicle Spawner", true);
+            menu = new UIMenu(Game.Player.Name, "Vehicle Spawner", RightAlignMenus());
 
             // Create the buttons and checkboxes.
             UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
@@ -46,7 +46,7 @@ namespace vMenuClient
 
             #region addon cars menu
             // Vehicle Addons List
-            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", true);
+            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", RightAlignMenus());
             UIMenuItem addonCarsBtn = new UIMenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
             addonCarsBtn.SetRightLabel("→→→");
 
@@ -119,7 +119,7 @@ namespace vMenuClient
                 UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
                 btn.SetRightLabel("→→→");
 
-                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, true);
+                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, RightAlignMenus());
 
                 MainMenu.Mp.Add(vehicleClassMenu);
                 menu.AddItem(btn);

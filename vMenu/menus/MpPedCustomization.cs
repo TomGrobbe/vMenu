@@ -17,15 +17,15 @@ namespace vMenuClient
     {
         // Variables
         private UIMenu menu;
-        public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", true);
-        public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", true);
-        public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", true);
-        public UIMenu appearanceMenu = new UIMenu("vMenu", "Character Appearance Options", true);
-        public UIMenu faceShapeMenu = new UIMenu("vMenu", "Character Face Shape Options", true);
-        public UIMenu tattoosMenu = new UIMenu("vMenu", "Character Tattoo Options", true);
-        public UIMenu clothesMenu = new UIMenu("vMenu", "Character Clothing Options", true);
-        public UIMenu propsMenu = new UIMenu("vMenu", "Character Props Options", true);
-        private UIMenu manageSavedCharacterMenu = new UIMenu("vMenu", "Manage MP Character", true);
+        public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", RightAlignMenus());
+        public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", RightAlignMenus());
+        public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", RightAlignMenus());
+        public UIMenu appearanceMenu = new UIMenu("vMenu", "Character Appearance Options", RightAlignMenus());
+        public UIMenu faceShapeMenu = new UIMenu("vMenu", "Character Face Shape Options", RightAlignMenus());
+        public UIMenu tattoosMenu = new UIMenu("vMenu", "Character Tattoo Options", RightAlignMenus());
+        public UIMenu clothesMenu = new UIMenu("vMenu", "Character Clothing Options", RightAlignMenus());
+        public UIMenu propsMenu = new UIMenu("vMenu", "Character Props Options", RightAlignMenus());
+        private UIMenu manageSavedCharacterMenu = new UIMenu("vMenu", "Manage MP Character", RightAlignMenus());
         public static bool DontCloseMenus = false;
         public static bool DisableBackButton = false;
         string selectedSavedCharacterManageName = "";
@@ -570,7 +570,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", true);
+            menu = new UIMenu("vMenu", "About vMenu", RightAlignMenus());
 
             UIMenuItem createMale = new UIMenuItem("Create Male Character", "Create a new male character.");
             createMale.SetRightLabel("→→→");

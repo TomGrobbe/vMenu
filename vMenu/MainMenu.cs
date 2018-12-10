@@ -494,7 +494,7 @@ namespace vMenuClient
                         NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
                     }
                     // Create the main menu.
-                    Menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Main Menu", true);
+                    Menu = new UIMenu(Game.Player.Name, "Main Menu", RightAlignMenus());
 
                     // Add the main menu to the menu pool.
                     Mp.Add(Menu);

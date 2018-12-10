@@ -34,10 +34,10 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Appearance", true);
-            spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn Saved Ped", true);
-            deleteSavedPedMenu = new UIMenu("Saved Peds", "Delete Saved Ped", true);
-            pedCustomizationMenu = new UIMenu("Ped Customization", "Customize Saved Ped", true);
+            menu = new UIMenu(Game.Player.Name, "Player Appearance", RightAlignMenus());
+            spawnSavedPedMenu = new UIMenu("Saved Peds", "Spawn Saved Ped", RightAlignMenus());
+            deleteSavedPedMenu = new UIMenu("Saved Peds", "Delete Saved Ped", RightAlignMenus());
+            pedCustomizationMenu = new UIMenu("Ped Customization", "Customize Saved Ped", RightAlignMenus());
 
             // Add the (submenus) to the menu pool.
             MainMenu.Mp.Add(pedCustomizationMenu);
@@ -93,7 +93,7 @@ namespace vMenuClient
 
             menu.BindMenuToItem(deleteSavedPedMenu, deleteSavedPed);
 
-            UIMenu addonPeds = new UIMenu("Model Spawner", "Spawn Addon Ped", true);
+            UIMenu addonPeds = new UIMenu("Model Spawner", "Spawn Addon Ped", RightAlignMenus());
 
             UIMenuItem addonPedsBtn = new UIMenuItem("Addon Peds", "Choose a player skin from the addons list available on this server.");
             menu.AddItem(addonPedsBtn);

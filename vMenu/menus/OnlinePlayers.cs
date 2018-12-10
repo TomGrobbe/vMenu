@@ -19,7 +19,7 @@ namespace vMenuClient
         // Menu variable, will be defined in CreateMenu()
         private UIMenu menu;
 
-        UIMenu playerMenu = new UIMenu("Online Players", "Player:", true) { AlwaysShowMenuItemCounter = true };
+        UIMenu playerMenu = new UIMenu("Online Players", "Player:", RightAlignMenus()) { AlwaysShowMenuItemCounter = true };
         Player currentPlayer = new Player(Game.Player.Handle);
 
 
@@ -29,7 +29,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Online Players", true) { AlwaysShowMenuItemCounter = true };
+            menu = new UIMenu(Game.Player.Name, "Online Players", RightAlignMenus()) { AlwaysShowMenuItemCounter = true };
             menu.CounterPretext = "Players: ";
 
             MainMenu.Mp.Add(playerMenu);

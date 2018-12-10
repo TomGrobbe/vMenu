@@ -51,7 +51,7 @@ namespace vMenuClient
             }
 
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Voice Chat Settings", true);
+            menu = new UIMenu(Game.Player.Name, "Voice Chat Settings", RightAlignMenus());
 
             UIMenuCheckboxItem voiceChatEnabled = new UIMenuCheckboxItem("Enable Voice Chat", EnableVoicechat, "Enable or disable voice chat.");
             UIMenuCheckboxItem showCurrentSpeaker = new UIMenuCheckboxItem("Show Current Speaker", ShowCurrentSpeaker, "Shows who is currently talking.");

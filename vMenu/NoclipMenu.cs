@@ -60,7 +60,7 @@ namespace vMenuClient
                 {
                     while (MainMenu.NoClipEnabled)
                     {
-                        
+
                         var noclipEntity = Game.PlayerPed.IsInVehicle() ? GetVehicle().Handle : Game.PlayerPed.Handle;
 
                         if (noclipMenu.Visible == false)
@@ -165,7 +165,7 @@ namespace vMenuClient
         private void Setup()
         {
 
-            noclipMenu = new UIMenu("No Clip", "Controls", true);
+            noclipMenu = new UIMenu("No Clip", "Controls", RightAlignMenus());
 
             UIMenuItem speed = new UIMenuItem("Current Moving Speed", "This is your current moving speed.");
             speed.SetRightLabel(speeds[currentSpeed]);

@@ -33,14 +33,14 @@ namespace vMenuClient
 
         public List<BanRecord> banlist = new List<BanRecord>();
 
-        UIMenu bannedPlayer = new UIMenu("Banned Player", "Ban Record: ", true);
+        UIMenu bannedPlayer = new UIMenu("Banned Player", "Ban Record: ", RightAlignMenus());
 
         /// <summary>
         /// Creates the menu.
         /// </summary>
         private void CreateMenu()
         {
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Banned Players Management", true);
+            menu = new UIMenu(Game.Player.Name, "Banned Players Management", RightAlignMenus());
 
             bannedPlayer.AddItem(new UIMenuItem("Player Name"));
             bannedPlayer.AddItem(new UIMenuItem("Banned By"));

@@ -53,6 +53,10 @@ namespace vMenuClient
         }
         #endregion
 
+        #region menu position
+        public static bool RightAlignMenus() => UserDefaults.MiscRightAlignMenu;
+        #endregion
+
         #region Get Localized Label Text
         /// <summary>
         /// Get the localized name from a text label (for classes that don't have BaseScript)
@@ -1686,8 +1690,6 @@ namespace vMenuClient
         /// <param name="modelHash">The model hash.</param>
         public static async Task SetPlayerSkin(uint modelHash, PedInfo pedCustomizationOptions, bool keepWeapons = true)
         {
-            //uint model = modelHash;
-            //Debug.Write(modelHash.ToString() + "\n");
             if (IsModelInCdimage(modelHash))
             {
                 if (keepWeapons)

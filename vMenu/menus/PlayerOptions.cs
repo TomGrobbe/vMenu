@@ -36,7 +36,7 @@ namespace vMenuClient
         {
             #region create menu and menu items
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Player Options", true);
+            menu = new UIMenu(Game.Player.Name, "Player Options", RightAlignMenus());
 
             // Create all checkboxes.
             UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("Godmode", PlayerGodMode, "Makes you invincible.");

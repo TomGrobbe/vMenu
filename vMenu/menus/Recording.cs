@@ -21,7 +21,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("Recording", "Recording Options", true);
+            menu = new UIMenu("Recording", "Recording Options", RightAlignMenus());
 
             UIMenuItem startRec = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
             UIMenuItem stopRec = new UIMenuItem("Stop Recording", "Stop and save your current recording.");

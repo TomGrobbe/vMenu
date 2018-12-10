@@ -33,6 +33,9 @@ namespace vMenuClient
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
+        public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+
+
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
@@ -41,16 +44,18 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true);
-            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true);
+            menu = new UIMenu(Game.Player.Name, "Misc Settings", RightAlignMenus());
+
+            // teleport menu
+            UIMenu teleportMenu = new UIMenu(Game.Player.Name, "Teleport Locations", RightAlignMenus());
             UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
             menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
             MainMenu.Mp.Add(teleportMenu);
 
             // Create the menu items.
             UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+            UIMenuCheckboxItem rightAlignMenu = new UIMenuCheckboxItem("Right Align Menu", MiscRightAlignMenu, "If you want vMenu to appear on the left side of your screen, disable this option. It will be saved immediately, but it will only take affect after restarting your game.");
             UIMenuCheckboxItem speedKmh = new UIMenuCheckboxItem("Show Speed KM/H", ShowSpeedoKmh, "Show a speedometer on your screen indicating your speed in KM/h.");
             UIMenuCheckboxItem speedMph = new UIMenuCheckboxItem("Show Speed MPH", ShowSpeedoMph, "Show a speedometer on your screen indicating your speed in MPH.");
             UIMenuCheckboxItem coords = new UIMenuCheckboxItem("Show Coordinates", ShowCoordinates, "Show your current coordinates at the top of your screen.");
@@ -114,6 +119,7 @@ namespace vMenuClient
             }
 
             // Always allowed
+            menu.AddItem(rightAlignMenu);
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
             menu.AddItem(modelDimensions);
@@ -206,7 +212,6 @@ namespace vMenuClient
                 menu.AddItem(restorePlayerWeapons);
             }
 
-
             // Always allowed
             menu.AddItem(hideRadar);
             menu.AddItem(hideHud);
@@ -217,6 +222,12 @@ namespace vMenuClient
             // Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, _checked) =>
             {
+                if (item == rightAlignMenu)
+                {
+                    MiscRightAlignMenu = _checked;
+                    UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
+                    Notify.Alert("You must restart your game before this option takes affect.");
+                }
                 if (item == speedKmh)
                 {
                     ShowSpeedoKmh = _checked;
@@ -317,10 +328,6 @@ namespace vMenuClient
                     BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
                 }
             };
-
-
-
-
         }
 
         /// <summary>

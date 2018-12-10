@@ -20,7 +20,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", true);
+            menu = new UIMenu("vMenu", "About vMenu", RightAlignMenus());
 
             // Create menu items.
             UIMenuItem version = new UIMenuItem("vMenu Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.");

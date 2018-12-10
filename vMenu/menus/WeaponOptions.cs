@@ -34,7 +34,7 @@ namespace vMenuClient
         {
             #region create main weapon options menu and add items
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Weapon Options", true);
+            menu = new UIMenu(Game.Player.Name, "Weapon Options", RightAlignMenus());
 
             UIMenuItem getAllWeapons = new UIMenuItem("Get All Weapons", "Get all weapons.");
             UIMenuItem removeAllWeapons = new UIMenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
@@ -75,7 +75,7 @@ namespace vMenuClient
 
             #region addonweapons submenu
             UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
-            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", true);
+            UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons", RightAlignMenus());
             menu.AddItem(addonWeaponsBtn);
 
             #region manage creating and accessing addon weapons menu
@@ -126,11 +126,11 @@ namespace vMenuClient
             #region parachute options menu
             #region parachute buttons and submenus
             UIMenuItem parachuteBtn = new UIMenuItem("Parachute Options", "All parachute related options can be changed here.");
-            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", true);
+            UIMenu parachuteMenu = new UIMenu("Parachute Options", "Parachute Options", RightAlignMenus());
 
-            UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", true);
+            UIMenu primaryChute = new UIMenu("Parachute Options", "Select A Primary Parachute", RightAlignMenus());
 
-            UIMenu secondaryChute = new UIMenu("Parachute Options", "Select A Reserve Parachute", true);
+            UIMenu secondaryChute = new UIMenu("Parachute Options", "Select A Reserve Parachute", RightAlignMenus());
 
             UIMenuItem chute = new UIMenuItem("No Style", "Default parachute.");
             UIMenuItem chute0 = new UIMenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
@@ -337,28 +337,28 @@ namespace vMenuClient
             UIMenuItem spacer = GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddItem(spacer);
 
-            UIMenu handGuns = new UIMenu("Weapons", "Handguns", true);
+            UIMenu handGuns = new UIMenu("Weapons", "Handguns", RightAlignMenus());
             UIMenuItem handGunsBtn = new UIMenuItem("Handguns");
 
-            UIMenu rifles = new UIMenu("Weapons", "Assault Rifles", true);
+            UIMenu rifles = new UIMenu("Weapons", "Assault Rifles", RightAlignMenus());
             UIMenuItem riflesBtn = new UIMenuItem("Assault Rifles");
 
-            UIMenu shotguns = new UIMenu("Weapons", "Shotguns", true);
+            UIMenu shotguns = new UIMenu("Weapons", "Shotguns", RightAlignMenus());
             UIMenuItem shotgunsBtn = new UIMenuItem("Shotguns");
 
-            UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns", true);
+            UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns", RightAlignMenus());
             UIMenuItem smgsBtn = new UIMenuItem("Sub-/Light Machine Guns");
 
-            UIMenu throwables = new UIMenu("Weapons", "Throwables", true);
+            UIMenu throwables = new UIMenu("Weapons", "Throwables", RightAlignMenus());
             UIMenuItem throwablesBtn = new UIMenuItem("Throwables");
 
-            UIMenu melee = new UIMenu("Weapons", "Melee", true);
+            UIMenu melee = new UIMenu("Weapons", "Melee", RightAlignMenus());
             UIMenuItem meleeBtn = new UIMenuItem("Melee");
 
-            UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons", true);
+            UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons", RightAlignMenus());
             UIMenuItem heavyBtn = new UIMenuItem("Heavy Weapons");
 
-            UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles", true);
+            UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles", RightAlignMenus());
             UIMenuItem snipersBtn = new UIMenuItem("Sniper Rifles");
 
             MainMenu.Mp.Add(handGuns);
@@ -412,7 +412,7 @@ namespace vMenuClient
                 if (weapon.Name != null && (IsAllowed(weapon.Perm) || IsAllowed(Permission.WPGetAll)))
                 {
                     #region Create menu for this weapon and add buttons
-                    UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, true);
+                    UIMenu weaponMenu = new UIMenu("Weapon Options", weapon.Name, RightAlignMenus());
                     UIMenuItem weaponItem = new UIMenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
                     weaponItem.SetRightLabel("→→→");
                     weaponItem.SetLeftBadge(UIMenuItem.BadgeStyle.Gun);

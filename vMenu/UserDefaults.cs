@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -212,6 +212,12 @@ namespace vMenuClient
             get { return GetSettingsBool("miscShowTime"); }
             set { SetSavedSettingsBool("miscShowTime", value); }
         }
+
+        public static bool MiscRightAlignMenu
+        {
+            get { return GetSettingsBool("miscRightAlignMenu"); }
+            set { SetSavedSettingsBool("miscRightAlignMenu", value); }
+        }
         #endregion
 
         #region Voice Chat Settings
@@ -261,12 +267,12 @@ namespace vMenuClient
             // Get the current value.
             string savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
             // Check if it exists.
-            bool exists = savedValue != "" && savedValue != null;
+            bool exists = !string.IsNullOrEmpty(savedValue);
             // If not, create it and save the new default value of false.
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -400,6 +406,10 @@ namespace vMenuClient
 
                 MiscShowTime = MainMenu.MiscSettingsMenu.DrawTimeOnScreen;
                 prefs.Add("miscShowTime", MainMenu.MiscSettingsMenu.DrawTimeOnScreen);
+
+                MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
+                prefs.Add("miscRightAlignMenu", MainMenu.MiscSettingsMenu.MiscRightAlignMenu);
+
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
