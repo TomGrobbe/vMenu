@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +41,9 @@ namespace vMenuShared
             vmenu_quit_session_in_rockstar_editor,
 
             vmenu_server_info_message,
-            vmenu_server_info_website_url
+            vmenu_server_info_website_url,
+
+            vmenu_teleport_to_wp_keybind_key,
         }
 
         public static bool GetSettingsBool(Setting setting)

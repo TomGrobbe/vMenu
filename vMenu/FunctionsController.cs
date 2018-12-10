@@ -467,7 +467,7 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task MiscSettings()
         {
-            if (MainMenu.MiscSettingsMenu != null /*&& CommonFunctions.IsAllowed(Permission.MSMenu)*/)
+            if (MainMenu.MiscSettingsMenu != null)
             {
                 #region Misc Settings
                 // Show speedometer km/h
@@ -491,13 +491,6 @@ namespace vMenuClient
                         $"~n~~r~Z~t~: {Math.Round(pos.Z, 2)}" +
                         $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(Game.PlayerPed.Handle), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
                 }
-
-                //// Hide hud.
-                //if (MainMenu.MiscSettingsMenu.HideHud)
-                //{
-                //    //HideHudAndRadarThisFrame();
-                //    DisplayHud(false);
-                //}
 
                 // Hide radar.
                 if (MainMenu.MiscSettingsMenu.HideRadar)
@@ -545,6 +538,27 @@ namespace vMenuClient
                     SetGameplayCamRelativeHeading(cameraRotationHeading);
                 }
                 #endregion
+                if (MainMenu.MiscSettingsMenu.KbTpToWaypoint)
+                {
+                    if (IsAllowed(Permission.MSTeleportToWp))
+                    {
+                        if (Game.IsControlJustReleased(0, (Control)MainMenu.MiscSettingsMenu.KbTpToWaypointKey)
+                            && Fading.IsFadedIn
+                            && !IsPlayerSwitchInProgress()
+                            && Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                        {
+                            if (Game.IsWaypointActive)
+                            {
+                                TeleportToWp();
+                                Notify.Success("Teleported to waypoint.");
+                            }
+                            else
+                            {
+                                Notify.Error("You need to set a waypoint first.");
+                            }
+                        }
+                    }
+                }
             }
             else
             {

@@ -218,6 +218,14 @@ namespace vMenuClient
             get { return GetSettingsBool("miscRightAlignMenu"); }
             set { SetSavedSettingsBool("miscRightAlignMenu", value); }
         }
+
+        #region keybind menu
+        public static bool KbTpToWaypoint
+        {
+            get { return GetSettingsBool("kbTpToWaypoint"); }
+            set { SetSavedSettingsBool("kbTpToWaypoint", true); }
+        }
+        #endregion
         #endregion
 
         #region Voice Chat Settings

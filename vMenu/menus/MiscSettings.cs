@@ -35,6 +35,11 @@ namespace vMenuClient
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
 
+        // keybind states
+        public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
+        public int KbTpToWaypointKey { get; } = vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key) != -1
+            ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
+            : 168; // 168 (F7 by default)
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -52,6 +57,16 @@ namespace vMenuClient
             UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
             menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
             MainMenu.Mp.Add(teleportMenu);
+
+            // keybind settings menu
+            UIMenu keybindMenu = new UIMenu(Game.Player.Name, "Keybind Settings", RightAlignMenus());
+            UIMenuItem keybindMenuBtn = new UIMenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
+            menu.BindMenuToItem(keybindMenu, keybindMenuBtn);
+            MainMenu.Mp.Add(keybindMenu);
+
+            // keybind settings menu items
+            UIMenuCheckboxItem kbTpToWaypoint = new UIMenuCheckboxItem("Teleport To Waypoint", KbTpToWaypoint, "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.");
+            UIMenuItem backBtn = new UIMenuItem("Back");
 
             // Create the menu items.
             UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
@@ -96,6 +111,21 @@ namespace vMenuClient
             connectionSubmenu.UpdateScaleform();
             menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
 
+            keybindMenu.OnCheckboxChange += (sender, item, _checked) =>
+            {
+                if (item == kbTpToWaypoint)
+                {
+                    KbTpToWaypoint = _checked;
+                }
+            };
+            keybindMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == backBtn)
+                {
+                    keybindMenu.GoBack();
+                }
+            };
+
             connectionSubmenu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == quitGame)
@@ -116,13 +146,19 @@ namespace vMenuClient
             if (IsAllowed(Permission.MSTeleportToWp))
             {
                 menu.AddItem(tptowp);
+                keybindMenu.AddItem(kbTpToWaypoint);
             }
+
+
+            keybindMenu.AddItem(backBtn);
 
             // Always allowed
             menu.AddItem(rightAlignMenu);
             menu.AddItem(speedKmh);
             menu.AddItem(speedMph);
             menu.AddItem(modelDimensions);
+            menu.AddItem(keybindMenuBtn);
+            keybindMenuBtn.SetRightLabel("→→→");
             if (IsAllowed(Permission.MSConnectionMenu))
             {
                 menu.AddItem(connectionSubmenuBtn);
