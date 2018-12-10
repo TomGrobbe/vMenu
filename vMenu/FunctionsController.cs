@@ -1288,6 +1288,7 @@ namespace vMenuClient
                     while (IsOpen())
                     {
                         await Delay(0);
+                        DisplayRadar(false);
 
                         SetEntityInvincible(Game.PlayerPed.Handle, true);
                         SetEntityCollision(Game.PlayerPed.Handle, false, false);
@@ -1305,6 +1306,7 @@ namespace vMenuClient
                                 while (true)
                                 {
                                     await Delay(0);
+                                    DisplayRadar(false);
                                     //CommonFunctions.DisableMovementControlsThisFrame(true, true);
                                     Game.DisableAllControlsThisFrame(0);
                                     if (GetGameTimer() - timer > 1600)
@@ -1326,7 +1328,7 @@ namespace vMenuClient
                                 while (true)
                                 {
                                     await Delay(0);
-                                    //CommonFunctions.DisableMovementControlsThisFrame(true, true);
+                                    DisplayRadar(false);
                                     Game.DisableAllControlsThisFrame(0);
                                     if (GetGameTimer() - timer > 1600)
                                     {
@@ -1379,6 +1381,7 @@ namespace vMenuClient
                         }
 
                     }
+                    DisplayRadar(IsRadarPreferenceSwitchedOn());
                     RenderScriptCams(false, false, 0, false, false);
                     camera.Delete();
                     DestroyAllCams(true);
