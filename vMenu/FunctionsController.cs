@@ -1356,11 +1356,11 @@ namespace vMenuClient
 
                         if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
-                            TaskLookAtCoord(Game.PlayerPed.Handle, offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                            Game.PlayerPed.Task.LookAt(offsetRight);
                         }
                         else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
-                            TaskLookAtCoord(Game.PlayerPed.Handle, offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                            Game.PlayerPed.Task.LookAt(offsetLeft);
                         }
                         else
                         {
@@ -1368,18 +1368,17 @@ namespace vMenuClient
 
                             if (input > 0.5f)
                             {
-                                TaskLookAtCoord(Game.PlayerPed.Handle, offsetRight.X, offsetRight.Y, offsetRight.Z, 100, 0, 0);
+                                Game.PlayerPed.Task.LookAt(offsetRight);
                             }
                             else if (input < -0.5f)
                             {
-                                TaskLookAtCoord(Game.PlayerPed.Handle, offsetLeft.X, offsetLeft.Y, offsetLeft.Z, 100, 0, 0);
+                                Game.PlayerPed.Task.LookAt(offsetLeft);
                             }
                             else
                             {
-                                TaskLookAtCoord(Game.PlayerPed.Handle, camera.Position.X, camera.Position.Y, camera.Position.Z, 100, 0, 0);
+                                Game.PlayerPed.Task.LookAt(camera.Position);
                             }
                         }
-
                     }
                     DisplayRadar(IsRadarPreferenceSwitchedOn());
                     RenderScriptCams(false, false, 0, false, false);
