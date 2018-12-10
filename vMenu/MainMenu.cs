@@ -479,7 +479,7 @@ namespace vMenuClient
                 TriggerServerEvent("vMenu:RequestPermissions", Game.Player.Handle);
 
                 // Wait until the data is received and the player's name is loaded correctly.
-                while (!PreSetupComplete || GetPlayerName(Game.Player.Handle) == "**Invalid**" || GetPlayerName(Game.Player.Handle) == "** Invalid **")
+                while (!PreSetupComplete || Game.Player.Name == "**Invalid**" || Game.Player.Name == "** Invalid **")
                 {
                     await Delay(0);
                 }

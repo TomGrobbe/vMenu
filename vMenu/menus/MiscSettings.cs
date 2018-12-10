@@ -92,7 +92,7 @@ namespace vMenuClient
             UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
             UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
 
-            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true);
+            UIMenu connectionSubmenu = new UIMenu(Game.Player.Name, "Connection Options", RightAlignMenus());
             UIMenuItem connectionSubmenuBtn = new UIMenuItem("Connection Options", "Server connection/game quit options.");
             UIMenuItem quitSession = new UIMenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
                 "Use this if you need to have addons streamed but want to use the rockstar editor.");

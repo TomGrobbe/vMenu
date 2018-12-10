@@ -1774,7 +1774,7 @@ namespace vMenuClient
 
         private async Task FlaresAndBombsTick()
         {
-            if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Screen.Fading.IsFadedIn && !IsPlayerSwitchInProgress())
+            if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Fading.IsFadedIn && !IsPlayerSwitchInProgress())
             {
                 if (flaresAllowed && CanShootFlares())
                 {
@@ -1800,14 +1800,14 @@ namespace vMenuClient
         private async Task AnimationsAndInteractions()
         {
 
-            if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
+            if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
             {
                 // snowballs
                 if (Game.IsControlJustReleased(0, Control.Detonate))
                 {
                     if (World.NextWeather == Weather.Christmas)
                     {
-                        if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Screen.Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
+                        if (!(Game.PlayerPed.IsInVehicle() || Game.PlayerPed.IsDead || !Fading.IsFadedIn || IsPlayerSwitchInProgress() || Game.IsPaused
                             || GetInteriorFromEntity(Game.PlayerPed.Handle) != 0 || !Game.PlayerPed.IsOnFoot || Game.PlayerPed.IsInParachuteFreeFall ||
                             Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
                             Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
@@ -1820,7 +1820,7 @@ namespace vMenuClient
                 if (Game.IsControlPressed(0, Control.SwitchVisor))
                 {
                     int timer = GetGameTimer();
-                    while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Screen.Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
+                    while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
                     {
                         await Delay(0);
                         if (GetGameTimer() - timer > 400)
