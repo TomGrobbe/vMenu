@@ -365,6 +365,7 @@ namespace vMenuServer
             "MSConnectionMenu",
             "MSRestoreAppearance",
             "MSRestoreWeapons",
+            "MSDriftMode",
 
             // Voice Chat
             "VCMenu",

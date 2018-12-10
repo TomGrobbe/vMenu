@@ -40,6 +40,7 @@ namespace vMenuClient
         public int KbTpToWaypointKey { get; } = vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key) != -1
             ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
             : 168; // 168 (F7 by default)
+        public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -66,6 +67,7 @@ namespace vMenuClient
 
             // keybind settings menu items
             UIMenuCheckboxItem kbTpToWaypoint = new UIMenuCheckboxItem("Teleport To Waypoint", KbTpToWaypoint, "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.");
+            UIMenuCheckboxItem kbDriftMode = new UIMenuCheckboxItem("Drift Mode", KbDriftMode, "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.");
             UIMenuItem backBtn = new UIMenuItem("Back");
 
             // Create the menu items.
@@ -117,6 +119,10 @@ namespace vMenuClient
                 {
                     KbTpToWaypoint = _checked;
                 }
+                else if (item == kbDriftMode)
+                {
+                    KbDriftMode = _checked;
+                }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
             {
@@ -149,6 +155,10 @@ namespace vMenuClient
                 keybindMenu.AddItem(kbTpToWaypoint);
             }
 
+            if (IsAllowed(Permission.MSDriftMode))
+            {
+                keybindMenu.AddItem(kbDriftMode);
+            }
 
             keybindMenu.AddItem(backBtn);
 

@@ -559,6 +559,30 @@ namespace vMenuClient
                         }
                     }
                 }
+                if (MainMenu.MiscSettingsMenu.KbDriftMode)
+                {
+                    if (IsAllowed(Permission.MSDriftMode))
+                    {
+                        if (Game.PlayerPed.IsInVehicle())
+                        {
+                            Vehicle veh = GetVehicle();
+                            if (veh != null && veh.Exists() && !veh.IsDead)
+                            {
+                                if ((Game.IsControlPressed(0, Control.Sprint) && Game.CurrentInputMode == InputMode.MouseAndKeyboard) ||
+                                    (Game.IsControlPressed(0, Control.Jump) && Game.CurrentInputMode == InputMode.GamePad))
+                                {
+                                    SetVehicleReduceGrip(veh.Handle, true);
+                                }
+                                else
+                                if ((Game.IsControlJustReleased(0, Control.Sprint) && Game.CurrentInputMode == InputMode.MouseAndKeyboard) ||
+                                    (Game.IsControlJustReleased(0, Control.Jump) && Game.CurrentInputMode == InputMode.GamePad))
+                                {
+                                    SetVehicleReduceGrip(veh.Handle, false);
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
