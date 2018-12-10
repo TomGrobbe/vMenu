@@ -18714,6 +18714,20 @@
             Gets a value indicating whether this raycast collided with any <see cref="T:CitizenFX.Core.Entity"/>.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Entity,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Entity"/>.
+            </summary>
+            <param name="target"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Vector3,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Vector3"/> position.
+            </summary>
+            <param name="position"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
+        </member>
         <member name="P:CitizenFX.Core.Vehicle.DisplayName">
             <summary>
             Gets the display name of this <see cref="T:CitizenFX.Core.Vehicle"/>.
@@ -30129,7 +30143,7 @@
             Corrected p1. it's basically the 'carriage/trailer number'. So if the train has 3 trailers you'd call the native once with a var or 3 times with 1, 2, 3.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ALARM_TIME_LEFT">
+        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ACCELERATION">
             <summary>
             static - max acceleration
             </summary>
@@ -38487,6 +38501,11 @@
             GAMEPLAY::_0x957838AAF91BD12D(x, y, z, radius, false, false, false, false); seem to make all objects go away, peds, vehicles etc. All booleans set to true doesn't seem to change anything.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._CLEAR_NOTIFICATIONS_POS">
             <summary>
             _CLEAR_NOTIFICATIONS_POS(0.5f);
@@ -39007,6 +39026,11 @@
             The type name can be retrieved by using this:  
             typedef LPSTR(__fastcall *GetEntityPopulationTypeName_t)(unsigned __int16 entityPopulationType, bool scriptName);  
             	GetEntityPopulationTypeName_t GetEntityPopulationTypeName = (GetEntityPopulationTypeName_t)FindPattern("44 0F B7 C1 4C 8D 0D ?? ?? ?? ?? 41 83 F8 07");
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_EXTRA_TIMECYCLE_MODIFIER_INDEX">
+            <summary>
+            See [`GetTimecycleModifierIndex`](#_0xFDF3D97C674AFB66) for use, works the same just for the secondary timecycle modifier.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_FIRST_PARENT_ID_FOR_PED_TYPE">
@@ -40313,6 +40337,11 @@
             Removes a notification instantly instead of waiting for it to disappear
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._REMOVE_PED_SCUBA_GEAR_NOW">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._REMOVE_SPEED_ZONE">
             <summary>
             Used to remove a speedzone.  
@@ -40395,6 +40424,11 @@
         <member name="F:CitizenFX.Core.Native.Hash._RESET_EDITOR_VALUES">
             <summary>
             Sets (almost, not sure) all Rockstar Editor values (bIsRecording etc) to 0.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._RESET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._RESET_LOCALPLAYER_STATE">
@@ -40725,6 +40759,16 @@
             	return false;  
             }  
             wot ?
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_EXTRA_TIMECYCLE_MODIFIER">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_FAR_SHADOWS_SUPPRESSED">
@@ -43752,6 +43796,16 @@
             <summary>
             Resets the screen's draw-origin which was changed by the function GRAPHICS::SET_DRAW_ORIGIN(...) back to x=0,y=0.
             See GRAPHICS::SET_DRAW_ORIGIN(...) for further information.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.ClearExtraTimecycleModifier">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x92ccc17a7a2285da">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.ClearFloatingHelp(System.Int32,System.Boolean)">
@@ -47174,6 +47228,12 @@
             eventGroup: 0 = CEventGroupScriptAI, 1 = CEventGroupScriptNetwork
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.GetExtraTimecycleModifierIndex">
+            <summary>
+            See [`GetTimecycleModifierIndex`](#_0xFDF3D97C674AFB66) for use, works the same just for the secondary timecycle modifier.
+            </summary>
+            <returns>An integer representing the Timecycle modifier</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.GetFirstBlipInfoId(System.Int32)">
             <summary>
             8 = waypoint
@@ -48547,7 +48607,17 @@
             p1 is some kind of tolerance
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+        <member name="M:CitizenFX.Core.Native.API.GetPosixTime">
+            <summary>
+            Return POSIX timestamp.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c76">
+            <summary>
+            Return POSIX timestamp.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetPosixTime2(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
             <summary>
             Gets system time as year, month, day, hour, minute and second.
             Example usage:
@@ -48558,16 +48628,6 @@
             int minute;
             int second;
             TIME::GET_POSIX_TIME(&amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime2">
-            <summary>
-            Return POSIX timestamp.
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c762">
-            <summary>
-            Return POSIX timestamp.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetPrevWeatherTypeHashName">
@@ -49283,7 +49343,7 @@
             gets current UTC time
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration(System.Int32)">
+        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration2(System.Int32)">
             <summary>
             static - max acceleration
             </summary>
@@ -56292,6 +56352,18 @@
             Judging purely from a quick disassembly, if the ped is in a vehicle, the ped will be deleted immediately. If not, it'll be marked as no longer needed. - very elegant..
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.RemovePedScubaGearNow(System.Int32)">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+            <param name="ped">The ped to remove the scuba gear from.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xb50eb4ccb29704ac(System.Int32)">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+            <param name="ped">The ped to remove the scuba gear from.</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.RemovePickUpRopeForCargobob(System.Int32)">
             <summary>
             Retracts the hook on the cargobob.
@@ -56730,6 +56802,16 @@
         <member name="M:CitizenFX.Core.Native.API.N_0x3353d13f09307691">
             <summary>
             Sets (almost, not sure) all Rockstar Editor values (bIsRecording etc) to 0.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.ResetExtraTimecycleModifierStrength">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x2bf72ad5b41aa739">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.ResetLocalplayerState">
@@ -58294,6 +58376,28 @@
             "Triathlon_3"
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.SetExtraTimecycleModifier(System.String)">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c(System.String)">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.SetExtraTimecycleModifierStrength(System.Single)">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
+            </summary>
+            <param name="strength">:</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x2c328af17210f009(System.Single)">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
+            </summary>
+            <param name="strength">:</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.SetFadeInAfterDeathArrest(System.Boolean)">
             <summary>
             Sets whether the game should fade in after the player dies or is arrested.
@@ -59083,7 +59187,7 @@
             <param name="G">:</param>
             <param name="B">:</param>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c2(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             Seems to set the colour of the prop. Haven't really tested it on other props.
             Only appears in am_mp_nightclub.c for the nightclub dancefloor.
