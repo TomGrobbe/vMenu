@@ -1413,7 +1413,7 @@ namespace vMenuClient
                         await Delay(0);
                     }
 
-                    if (GetPedInfoFromBeforeDeath() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
+                    if (IsTempPedSaved() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
                     {
                         LoadSavedPed("vMenu_tmp_saved_ped", false);
                     }

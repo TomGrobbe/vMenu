@@ -1928,7 +1928,11 @@ namespace vMenuClient
 
         }
 
-        public static bool GetPedInfoFromBeforeDeath()
+        /// <summary>
+        /// Checks if the ped is saved from before the player died.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsTempPedSaved()
         {
             if (!string.IsNullOrEmpty(GetResourceKvpString("vMenu_tmp_saved_ped")))
             {
@@ -2054,9 +2058,7 @@ namespace vMenuClient
         /// <param name="data"></param>
         public static void Log(string data)
         {
-            if (MainMenu.DebugMode)
-                Debug.Write(data + "\n");
-            //Debug.WriteLine(data.Replace("{", "{{").Replace("}", "}}"), "");
+            if (MainMenu.DebugMode) Debug.Write(data + "\n");
         }
         #endregion
 
@@ -2088,24 +2090,27 @@ namespace vMenuClient
         /// </summary>
         public static async void SetAllWeaponsAmmo()
         {
-            int ammo = 100;
             string inputAmmo = await GetUserInput(windowTitle: "Enter Ammo Amount", defaultText: "100");
-
             if (!string.IsNullOrEmpty(inputAmmo))
             {
-                ammo = int.Parse(inputAmmo);
-                Ped ped = Game.PlayerPed;
-                foreach (var wp in ValidWeapons.Weapons)
+                if (int.TryParse(inputAmmo, out int ammo))
                 {
-                    if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                    foreach (var wp in ValidWeapons.Weapons)
                     {
-                        SetPedAmmo(ped.Handle, wp.Value, ammo);
+                        if (Game.PlayerPed.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        {
+                            SetPedAmmo(Game.PlayerPed.Handle, wp.Value, ammo);
+                        }
                     }
+                }
+                else
+                {
+                    Notify.Error("You did not enter a valid number.");
                 }
             }
             else
             {
-                Notify.Error("You did not enter a valid ammo count.");
+                Notify.Error(CommonErrors.InvalidInput);
             }
         }
 
@@ -2138,6 +2143,10 @@ namespace vMenuClient
         #endregion
 
         #region Set Player Walking Style
+        /// <summary>
+        /// Sets the walking style for this player.
+        /// </summary>
+        /// <param name="walkingStyle"></param>
         public static async void SetWalkingStyle(string walkingStyle)
         {
             if (IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_f_freemode_01")) || IsPedModel(Game.PlayerPed.Handle, (uint)GetHashKey("mp_m_freemode_01")))
@@ -2218,6 +2227,11 @@ namespace vMenuClient
         #endregion
 
         #region Disable Movement Controls
+        /// <summary>
+        /// Disables all movement and camera related controls this frame.
+        /// </summary>
+        /// <param name="disableMovement"></param>
+        /// <param name="disableCameraMovement"></param>
         public static void DisableMovementControlsThisFrame(bool disableMovement, bool disableCameraMovement)
         {
             if (disableMovement)
@@ -2277,6 +2291,12 @@ namespace vMenuClient
         #endregion
 
         #region Set Correct Blip
+        /// <summary>
+        /// Sets the correct blip sprite for the specific ped and blip.
+        /// This is the (old) backup method for setting the sprite if the decorators version doesn't work.
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="blip"></param>
         public static void SetCorrectBlipSprite(int ped, int blip)
         {
             if (IsPedInAnyVehicle(ped, false))
@@ -2296,6 +2316,12 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Get safe player name
+        /// <summary>
+        /// Returns a properly formatted and escaped player name for notifications.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static string GetSafePlayerName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -2304,5 +2330,6 @@ namespace vMenuClient
             }
             return name.Replace("^", @"\^").Replace("~", @"\~").Replace("<", "«").Replace(">", "»");
         }
+        #endregion
     }
 }
