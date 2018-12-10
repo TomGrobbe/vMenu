@@ -1704,7 +1704,34 @@ namespace vMenuClient
 
                 if ((uint)GetEntityModel(Game.PlayerPed.Handle) != modelHash) // only change skins if the player is not yet using the new skin.
                 {
+                    // check if the ped is in a vehicle.
+                    bool wasInVehicle = Game.PlayerPed.IsInVehicle();
+                    Vehicle veh = Game.PlayerPed.CurrentVehicle;
+                    VehicleSeat seat = Game.PlayerPed.SeatIndex;
+
+
+                    // set the model
                     SetPlayerModel(Game.Player.Handle, modelHash);
+
+                    // warp ped into vehicle if the player was in a vehicle.
+                    if (wasInVehicle && veh != null && seat != VehicleSeat.None)
+                    {
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                        int tmpTimer = GetGameTimer();
+                        while (!Game.PlayerPed.IsInVehicle(veh))
+                        {
+                            // if it takes too long, stop trying to teleport.
+                            if (GetGameTimer() - tmpTimer > 1000)
+                            {
+                                break;
+                            }
+                            ClearPedTasks(Game.PlayerPed.Handle);
+                            await Delay(0);
+                            TaskWarpPedIntoVehicle(Game.PlayerPed.Handle, veh.Handle, (int)seat);
+                        }
+                        FreezeEntityPosition(Game.PlayerPed.Handle, false);
+                    }
+
                 }
                 SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
 
