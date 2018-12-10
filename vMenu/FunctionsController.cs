@@ -215,11 +215,11 @@ namespace vMenuClient
                     ClearPlayerWantedLevel(Game.Player.Handle);
                 }
 
-                if (driveToWpTaskActive && !Game.IsWaypointActive)
+                if (DriveToWpTaskActive && !Game.IsWaypointActive)
                 {
                     ClearPedTasks(Game.PlayerPed.Handle);
                     Notify.Custom("Destination reached, the car will now stop driving!");
-                    driveToWpTaskActive = false;
+                    DriveToWpTaskActive = false;
                 }
             }
             else

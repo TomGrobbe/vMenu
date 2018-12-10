@@ -14,12 +14,11 @@ namespace vMenuClient
     public static class CommonFunctions
     {
         #region Variables
-        private static string currentScenario = "";
-        private static Vehicle previousVehicle;
-        public static MpPedDataManager MpPedDataManager = new MpPedDataManager();
+        private static string _currentScenario = "";
+        private static Vehicle _previousVehicle;
 
-        public static bool driveToWpTaskActive = false;
-        public static bool driveWanderTaskActive = false;
+        public static bool DriveToWpTaskActive = false;
+        public static bool DriveWanderTaskActive = false;
         #endregion
 
         #region some misc functions copied from base script
@@ -172,8 +171,8 @@ namespace vMenuClient
         {
 
             ClearPedTasks(Game.PlayerPed.Handle);
-            driveWanderTaskActive = false;
-            driveToWpTaskActive = true;
+            DriveWanderTaskActive = false;
+            DriveToWpTaskActive = true;
 
             Vector3 waypoint = World.WaypointPosition;
 
@@ -192,8 +191,8 @@ namespace vMenuClient
         public static void DriveWander(int style = 0)
         {
             ClearPedTasks(Game.PlayerPed.Handle);
-            driveWanderTaskActive = true;
-            driveToWpTaskActive = false;
+            DriveWanderTaskActive = true;
+            DriveToWpTaskActive = false;
 
             Vehicle veh = GetVehicle();
             uint model = (uint)veh.Model.Hash;
@@ -216,7 +215,7 @@ namespace vMenuClient
         /// </summary>
         public static async void QuitGame()
         {
-            Notify.Info("The game will exit in 5 seconds.", true, true);
+            Notify.Info("The game will exit in 5 seconds.");
             Debug.WriteLine("Game will be terminated in 5 seconds, because the player used the Quit Game option in vMenu.");
             await BaseScript.Delay(5000);
             ForceSocialClubUpdate(); // bye bye
@@ -292,17 +291,18 @@ namespace vMenuClient
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled."); ;
-                return;
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
             }
         }
         #endregion
 
         #region Teleport To Coords
         /// <summary>
-        /// Teleport the player to a specific location.
+        /// Teleport to the specified <see cref="pos"/>.
         /// </summary>
-        /// <param name="pos">These are the target coordinates to teleport to.</param>
+        /// <param name="pos"></param>
+        /// <param name="safeModeDisabled"></param>
+        /// <returns></returns>
         public static async Task TeleportToCoords(Vector3 pos, bool safeModeDisabled = false)
         {
             if (!safeModeDisabled)
@@ -348,7 +348,7 @@ namespace vMenuClient
                         SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ, false, false, false, true);
                 }
                 await Delay(200);
-                failed = (IsEntityInWater(Game.PlayerPed.Handle) || GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 50f) ? true : failed;
+                failed = IsEntityInWater(Game.PlayerPed.Handle) || GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 50f || failed;
                 if (failed)
                 {
                     GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, true);
@@ -357,7 +357,7 @@ namespace vMenuClient
                     var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
                     if (foundSafeSpot)
                     {
-                        Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.", true);
+                        Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.");
                         if (inCar)
                             SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z);
                         else
@@ -365,7 +365,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!", true);
+                        Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!");
                         if (inCar)
                             SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, 810f);
                         else
@@ -418,14 +418,13 @@ namespace vMenuClient
         /// </summary>
         /// <param name="player"></param>
         /// <param name="askUserForReason"></param>
-        /// <param name="reason"></param>
+        /// <param name="providedReason"></param>
         public static async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
         {
             if (player != null)
             {
                 // Default kick reason.
                 string defaultReason = "You have been kicked.";
-                bool cancel = false;
                 // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
                 if (askUserForReason && providedReason == defaultReason)
                 {
@@ -437,31 +436,17 @@ namespace vMenuClient
                     }
                     else
                     {
-                        cancel = true;
-                        Notify.Error("An invalid kick reason was provided. Action cancelled.", true, true);
+                        Notify.Error("An invalid kick reason was provided. Action cancelled.");
                         return;
                     }
                 }
-                // If the provided reason is not the same as the default reason, set the kick reason to the provided reason.
-                else if (providedReason != defaultReason)
-                {
-                    defaultReason = providedReason;
-                }
-
                 // Kick the player using the specified reason.
-                if (!cancel)
-                {
-                    TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
-                    Log($"Attempting to kick player {player.Name} (server id: {player.ServerId}, client id: {player.Handle}).");
-                }
-                else
-                {
-                    Notify.Error("The kick action was cancelled because the kick reason was invalid.", true, true);
-                }
+                TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
+                Log($"Attempting to kick player {player.Name} (server id: {player.ServerId}, client id: {player.Handle}).");
             }
             else
             {
-                Notify.Error("The selected player is somehow invalid, action aborted.", true, true);
+                Notify.Error("The selected player is somehow invalid, action aborted.");
             }
         }
         #endregion
@@ -870,19 +855,19 @@ namespace vMenuClient
             float heading = GetEntityHeading(Game.PlayerPed.Handle) + (spawnInside ? 0f : 90f);
 
             // If the previous vehicle exists...
-            if (previousVehicle != null)
+            if (_previousVehicle != null)
             {
                 // And it's actually a vehicle (rather than another random entity type)
-                if (previousVehicle.Exists() && previousVehicle.PreviouslyOwnedByPlayer &&
-                    (previousVehicle.Occupants.Count() == 0 || previousVehicle.Driver.Handle == Game.PlayerPed.Handle))
+                if (_previousVehicle.Exists() && _previousVehicle.PreviouslyOwnedByPlayer &&
+                    (_previousVehicle.Occupants.Count() == 0 || _previousVehicle.Driver.Handle == Game.PlayerPed.Handle))
                 {
                     // If the previous vehicle should be deleted:
                     if (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious))
                     {
                         // Delete it.
-                        previousVehicle.PreviouslyOwnedByPlayer = false;
-                        SetEntityAsMissionEntity(previousVehicle.Handle, true, true);
-                        previousVehicle.Delete();
+                        _previousVehicle.PreviouslyOwnedByPlayer = false;
+                        SetEntityAsMissionEntity(_previousVehicle.Handle, true, true);
+                        _previousVehicle.Delete();
                     }
                     // Otherwise
                     else
@@ -890,12 +875,12 @@ namespace vMenuClient
                         if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_keep_spawned_vehicles_persistent))
                         {
                             // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                            previousVehicle.IsPersistent = false;
-                            previousVehicle.PreviouslyOwnedByPlayer = false;
-                            previousVehicle.MarkAsNoLongerNeeded();
+                            _previousVehicle.IsPersistent = false;
+                            _previousVehicle.PreviouslyOwnedByPlayer = false;
+                            _previousVehicle.MarkAsNoLongerNeeded();
                         }
                     }
-                    previousVehicle = null;
+                    _previousVehicle = null;
                 }
             }
 
@@ -907,11 +892,11 @@ namespace vMenuClient
                     SetVehicleHasBeenOwnedByPlayer(tmpveh.Handle, false);
                     SetEntityAsMissionEntity(tmpveh.Handle, true, true);
 
-                    if (previousVehicle != null)
+                    if (_previousVehicle != null)
                     {
-                        if (previousVehicle.Handle == tmpveh.Handle)
+                        if (_previousVehicle.Handle == tmpveh.Handle)
                         {
-                            previousVehicle = null;
+                            _previousVehicle = null;
                         }
                     }
                     tmpveh.Delete();
@@ -919,8 +904,8 @@ namespace vMenuClient
                 }
             }
 
-            if (previousVehicle != null)
-                previousVehicle.PreviouslyOwnedByPlayer = false;
+            if (_previousVehicle != null)
+                _previousVehicle.PreviouslyOwnedByPlayer = false;
 
             if (Game.PlayerPed.IsInVehicle())
                 pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0, 8f, 0.1f);
@@ -1005,7 +990,7 @@ namespace vMenuClient
             }
 
             // Set the previous vehicle to the new vehicle.
-            previousVehicle = vehicle;
+            _previousVehicle = vehicle;
             //vehicle.Speed = speed; // retarded feature that randomly breaks for no fucking reason
             if (!vehicle.Model.IsTrain) // to be extra fucking safe
             {
@@ -1451,10 +1436,10 @@ namespace vMenuClient
         public static void PlayScenario(string scenarioName)
         {
             // If there's currently no scenario playing, or the current scenario is not the same as the new scenario, then..
-            if (currentScenario == "" || currentScenario != scenarioName)
+            if (_currentScenario == "" || _currentScenario != scenarioName)
             {
                 // Set the current scenario.
-                currentScenario = scenarioName;
+                _currentScenario = scenarioName;
                 // Clear all tasks to make sure the player is ready to play the scenario.
                 ClearPedTasks(Game.PlayerPed.Handle);
 
@@ -1523,7 +1508,7 @@ namespace vMenuClient
             // If the new scenario is the same as the currently playing one, cancel the current scenario.
             else
             {
-                currentScenario = "";
+                _currentScenario = "";
                 ClearPedTasks(Game.PlayerPed.Handle);
                 ClearPedSecondaryTask(Game.PlayerPed.Handle);
             }
@@ -1531,7 +1516,7 @@ namespace vMenuClient
             // If the scenario name to play is called "forcestop" then clear the current scenario and force any tasks to be cleared.
             if (scenarioName == "forcestop")
             {
-                currentScenario = "";
+                _currentScenario = "";
                 ClearPedTasks(Game.PlayerPed.Handle);
                 ClearPedTasksImmediately(Game.PlayerPed.Handle);
             }
