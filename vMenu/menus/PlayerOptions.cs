@@ -55,15 +55,15 @@ namespace vMenuClient
             // Wanted level options
             List<dynamic> wantedLevelList = new List<dynamic> { "No Wanted Level", 1, 2, 3, 4, 5 };
             UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(Game.Player.Handle), "Set your wanted level by selecting a value, and pressing enter.");
+            UIMenuListItem setArmorItem = new UIMenuListItem("Set Armor Type", new List<dynamic> { "No Armor", GetLabelText("WT_BA_0"), GetLabelText("WT_BA_1"), GetLabelText("WT_BA_2"), GetLabelText("WT_BA_3"), GetLabelText("WT_BA_4"), }, 0, "Set the armor level/type for your player.");
 
             UIMenuItem healPlayerBtn = new UIMenuItem("Heal Player", "Give the player max health.");
-            UIMenuItem maxArmorBtn = new UIMenuItem("Max Armor", "Give the player max armor.");
             UIMenuItem cleanPlayerBtn = new UIMenuItem("Clean Player Clothes", "Clean your player clothes.");
             UIMenuItem dryPlayerBtn = new UIMenuItem("Dry Player Clothes", "Make your player clothes dry.");
             UIMenuItem wetPlayerBtn = new UIMenuItem("Wet Player Clothes", "Make your player clothes wet.");
             UIMenuItem suicidePlayerBtn = new UIMenuItem("~r~Commit Suicide", "Kill yourself by taking the pill. Or by using a pistol if you have one.");
 
-            UIMenu vehicleAutoPilot = new UIMenu("Auto Pilot", "Vehicle auto pilot options.", true);
+            UIMenu vehicleAutoPilot = new UIMenu("Auto Pilot", "Vehicle auto pilot options.", RightAlignMenus());
 
             MainMenu.Mp.Add(vehicleAutoPilot);
 
@@ -126,7 +126,7 @@ namespace vMenuClient
             }
             if (IsAllowed(Permission.POMaxArmor))
             {
-                menu.AddItem(maxArmorBtn);
+                menu.AddItem(setArmorItem);
             }
             if (IsAllowed(Permission.POCleanPlayer))
             {
@@ -353,6 +353,10 @@ namespace vMenuClient
                 {
                     CommonFunctions.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
                 }
+                else if (listItem == setArmorItem)
+                {
+                    Game.PlayerPed.Armor = (listItem.Index) * 20;
+                }
             };
 
             // button presses
@@ -369,11 +373,6 @@ namespace vMenuClient
                 {
                     Game.PlayerPed.Health = Game.PlayerPed.MaxHealth;
                     Notify.Success("Player healed.");
-                }
-                else if (item == maxArmorBtn)
-                {
-                    Game.PlayerPed.Armor = 200;
-                    Notify.Success("Max armor applied.");
                 }
                 else if (item == cleanPlayerBtn)
                 {
