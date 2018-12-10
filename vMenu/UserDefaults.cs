@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -225,6 +225,11 @@ namespace vMenuClient
             get { return GetSettingsBool("kbTpToWaypoint"); }
             set { SetSavedSettingsBool("kbTpToWaypoint", true); }
         }
+        public static bool KbDriftMode
+        {
+            get { return GetSettingsBool("kbDriftMode"); }
+            set { SetSavedSettingsBool("kbDriftMode", true); }
+        }
         #endregion
         #endregion
 
@@ -418,6 +423,11 @@ namespace vMenuClient
                 MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
                 prefs.Add("miscRightAlignMenu", MainMenu.MiscSettingsMenu.MiscRightAlignMenu);
 
+                KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
+                prefs.Add("kbTpToWaypoint", MainMenu.MiscSettingsMenu.KbTpToWaypoint);
+
+                KbDriftMode = MainMenu.MiscSettingsMenu.KbDriftMode;
+                prefs.Add("kbDriftMode", MainMenu.MiscSettingsMenu.KbDriftMode);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
