@@ -17869,6 +17869,11 @@
             A struct containing all ped head blend data. Used for MP (freemode) characters.
             </summary>
         </member>
+        <member name="T:CitizenFX.Core.UnsafeTattooCollectionData">
+            <summary>
+            This is used to GET the data. The GetData() function returns the data into a usable struct for scripts to use safely.
+            </summary>
+        </member>
         <member name="M:CitizenFX.Core.ParticleEffectsAsset.#ctor(System.String)">
             <summary>
             Creates a class used for loading <see cref="T:CitizenFX.Core.ParticleEffectsAsset"/>s than can be used to start <see cref="T:CitizenFX.Core.ParticleEffect"/>s from inside the Asset
