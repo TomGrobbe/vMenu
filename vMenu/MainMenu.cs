@@ -72,6 +72,19 @@ namespace vMenuClient
                 }), false);
             }
 
+            RegisterCommand("tattoo", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                if (args != null && args[0] != null && args[1] != null)
+                {
+                    Debug.WriteLine(args[0].ToString() + " " +  args[1].ToString());
+                    TattooCollectionData d = Game.GetTattooCollectionData(int.Parse(args[0].ToString()), int.Parse(args[1].ToString()));
+                    Debug.WriteLine("check");
+                    Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
+                }
+
+            }), false);
+
+
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 if (args != null)
