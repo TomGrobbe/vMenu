@@ -1736,7 +1736,12 @@ namespace vMenuClient
                     // restore armor.
                     Game.PlayerPed.Armor = lastArmorValue;
                 }
+
+                // Reset some stuff.
                 SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                ClearAllPedProps(Game.PlayerPed.Handle);
+                ClearPedDecorations(Game.PlayerPed.Handle);
+                ClearPedFacialDecorations(Game.PlayerPed.Handle);
 
                 if (pedCustomizationOptions.version == 1)
                 {

@@ -29,9 +29,18 @@ namespace vMenuClient
             public Dictionary<int, float> features;
         }
 
-        public struct PedTatttoos { } // added the structure for it, but will not be implemented until it's actually possible. Just future-proofing my setup here.
+        public struct PedTatttoos
+        {
+            public List<KeyValuePair<string, string>> TorsoTattoos;
+            public List<KeyValuePair<string, string>> HeadTattoos;
+            public List<KeyValuePair<string, string>> LeftArmTattoos;
+            public List<KeyValuePair<string, string>> RightArmTattoos;
+            public List<KeyValuePair<string, string>> LeftLegTattoos;
+            public List<KeyValuePair<string, string>> RightLegTattoos;
+        }
 
-        public struct PedFacePaints { } // also added to make it future proof, but not actually used (yet).
+        // probably won't be needed, since there's already makeup and tattoos now.
+        public struct PedFacePaints { }
 
         public struct PedAppearance
         {
@@ -107,6 +116,7 @@ namespace vMenuClient
             public string SaveName;
             public int Version;
             public string WalkingStyle;
+            public string FacialExpression;
         }
     }
 }

@@ -66,6 +66,7 @@ namespace vMenuClient
 
             appearanceMenu.Clear();
             //faceShapeMenu.Clear();
+            tattoosMenu.Clear();
             clothesMenu.Clear();
             propsMenu.Clear();
 
@@ -506,12 +507,119 @@ namespace vMenuClient
             }
             #endregion
 
+            #region Tattoos menu
+            List<dynamic> headTattoosList = new List<dynamic>();
+            List<dynamic> torsoTattoosList = new List<dynamic>();
+            List<dynamic> leftArmTattoosList = new List<dynamic>();
+            List<dynamic> rightArmTattoosList = new List<dynamic>();
+            List<dynamic> leftLegTattoosList = new List<dynamic>();
+            List<dynamic> rightLegTattoosList = new List<dynamic>();
+
+            if (male)
+            {
+                int counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.HEAD)
+                {
+                    headTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.HEAD.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.TORSO)
+                {
+                    torsoTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.TORSO.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.LEFT_ARM)
+                {
+                    leftArmTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.LEFT_ARM.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.RIGHT_ARM)
+                {
+                    rightArmTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.RIGHT_ARM.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.LEFT_LEG)
+                {
+                    leftLegTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.LEFT_LEG.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.MaleTattoos.RIGHT_LEG)
+                {
+                    rightLegTattoosList.Add($"Tattoo #{counter} (of {TattoosData.MaleTattoos.RIGHT_LEG.Count})");
+                    counter++;
+                }
+            }
+            else
+            {
+                int counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.HEAD)
+                {
+                    headTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.HEAD.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.TORSO)
+                {
+                    torsoTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.TORSO.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.LEFT_ARM)
+                {
+                    leftArmTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.LEFT_ARM.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.RIGHT_ARM)
+                {
+                    rightArmTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.RIGHT_ARM.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.LEFT_LEG)
+                {
+                    leftLegTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.LEFT_LEG.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in TattoosData.FemaleTattoos.RIGHT_LEG)
+                {
+                    rightLegTattoosList.Add($"Tattoo #{counter} (of {TattoosData.FemaleTattoos.RIGHT_LEG.Count})");
+                    counter++;
+                }
+            }
+
+            UIMenuListItem headTatts = new UIMenuListItem("Head Tattoos", headTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            UIMenuListItem torsoTatts = new UIMenuListItem("Torso Tattoos", torsoTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            UIMenuListItem leftArmTatts = new UIMenuListItem("Left Arm Tattoos", leftArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            UIMenuListItem rightArmTatts = new UIMenuListItem("Right Arm Tattoos", rightArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            UIMenuListItem leftLegTatts = new UIMenuListItem("Left Leg Tattoos", leftLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            UIMenuListItem rightLegTatts = new UIMenuListItem("Right Leg Tattoos", rightLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+
+            tattoosMenu.AddItem(headTatts);
+            tattoosMenu.AddItem(torsoTatts);
+            tattoosMenu.AddItem(leftArmTatts);
+            tattoosMenu.AddItem(rightArmTatts);
+            tattoosMenu.AddItem(leftLegTatts);
+            tattoosMenu.AddItem(rightLegTatts);
+            #endregion
+
             createCharacterMenu.RefreshIndex();
             createCharacterMenu.UpdateScaleform();
+
             appearanceMenu.RefreshIndex();
             appearanceMenu.UpdateScaleform();
+
             inheritanceMenu.RefreshIndex();
             inheritanceMenu.UpdateScaleform();
+
+            tattoosMenu.RefreshIndex();
+            tattoosMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -586,7 +694,7 @@ namespace vMenuClient
             MainMenu.Mp.Add(inheritanceMenu);
             MainMenu.Mp.Add(appearanceMenu);
             MainMenu.Mp.Add(faceShapeMenu);
-            //MainMenu.Mp.Add(tattoosMenu);
+            MainMenu.Mp.Add(tattoosMenu);
             MainMenu.Mp.Add(clothesMenu);
             MainMenu.Mp.Add(propsMenu);
 
@@ -602,8 +710,6 @@ namespace vMenuClient
             menu.RefreshIndex();
             menu.UpdateScaleform();
 
-            //menu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            //editCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             createCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             inheritanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
             appearanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
@@ -618,27 +724,22 @@ namespace vMenuClient
             tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
             clothesMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
             propsMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
+            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.ParachuteBrakeLeft, "Turn Camera Left"));
+            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.ParachuteBrakeRight, "Turn Camera Right"));
 
             UIMenuItem inheritanceButton = new UIMenuItem("Character Inheritance", "Character inheritance options.");
             UIMenuItem appearanceButton = new UIMenuItem("Character Appearance", "Character appearance options.");
             UIMenuItem faceButton = new UIMenuItem("Character Face Shape Options", "Character face shape options.");
-            UIMenuItem tattoosButton = new UIMenuItem("Character Tatttoo Options", "Currently unavailable, please be patient. It may come some day if it's ever properly supported. Needs a lot more research.");
+            UIMenuItem tattoosButton = new UIMenuItem("Character Tatttoo Options", "Character tattoo options.");
             UIMenuItem clothesButton = new UIMenuItem("Character Clothes", "Character clothes.");
             UIMenuItem propsButton = new UIMenuItem("Character Props", "Character props.");
             UIMenuItem saveButton = new UIMenuItem("Save Character", "Save your character.");
             UIMenuItem exitNoSave = new UIMenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
 
-
-            //tattoosButton.SetRightBadge(UIMenuItem.BadgeStyle.Tatoo);
-            tattoosButton.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
-            tattoosButton.Enabled = false;
-            //faceButton.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
-            //faceButton.Enabled = false;
-            //faceButton.Description = "This is currently not available yet. But it will be in a future update.";
-
             inheritanceButton.SetRightLabel("→→→");
             appearanceButton.SetRightLabel("→→→");
             faceButton.SetRightLabel("→→→");
+            tattoosButton.SetRightLabel("→→→");
             clothesButton.SetRightLabel("→→→");
             propsButton.SetRightLabel("→→→");
 
@@ -651,11 +752,10 @@ namespace vMenuClient
             createCharacterMenu.AddItem(saveButton);
             createCharacterMenu.AddItem(exitNoSave);
 
-
             createCharacterMenu.BindMenuToItem(inheritanceMenu, inheritanceButton);
             createCharacterMenu.BindMenuToItem(appearanceMenu, appearanceButton);
             createCharacterMenu.BindMenuToItem(faceShapeMenu, faceButton);
-            //createCharacterMenu.BindMenuToItem(appearanceMenu, tattoosButton);
+            createCharacterMenu.BindMenuToItem(tattoosMenu, tattoosButton);
             createCharacterMenu.BindMenuToItem(clothesMenu, clothesButton);
             createCharacterMenu.BindMenuToItem(propsMenu, propsButton);
 
@@ -1124,6 +1224,154 @@ namespace vMenuClient
 
             #endregion
 
+            #region tattoos menu list select events
+            tattoosMenu.OnListSelect += (sender, item, index) =>
+            {
+                if (currentCharacter.PedTatttoos.HeadTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.HeadTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.TorsoTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.TorsoTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.LeftArmTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.LeftArmTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.RightArmTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.RightArmTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.LeftLegTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.LeftLegTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.RightLegTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
+                }
+
+                int menuIndex = sender.MenuItems.IndexOf(item);
+                int tattooIndex = index;
+
+                if (menuIndex == 0) // head
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.HEAD.ElementAt(index) : TattoosData.FemaleTattoos.HEAD.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.HeadTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.HeadTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.HeadTattoos.Add(tat);
+                    }
+                }
+                else if (menuIndex == 1) // torso
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.TORSO.ElementAt(index) : TattoosData.FemaleTattoos.TORSO.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.TorsoTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.TorsoTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.TorsoTattoos.Add(tat);
+                    }
+                }
+                else if (menuIndex == 2) // left arm
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_ARM.ElementAt(index) : TattoosData.FemaleTattoos.LEFT_ARM.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.LeftArmTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.LeftArmTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.LeftArmTattoos.Add(tat);
+                    }
+                }
+                else if (menuIndex == 3) // right arm
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_ARM.ElementAt(index) : TattoosData.FemaleTattoos.RIGHT_ARM.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.RightArmTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.RightArmTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.RightArmTattoos.Add(tat);
+                    }
+                }
+                else if (menuIndex == 4) // left leg
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_LEG.ElementAt(index) : TattoosData.FemaleTattoos.LEFT_LEG.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.LeftLegTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.LeftLegTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.LeftLegTattoos.Add(tat);
+                    }
+                }
+                else if (menuIndex == 5) // right leg
+                {
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_LEG.ElementAt(index) : TattoosData.FemaleTattoos.RIGHT_LEG.ElementAt(index);
+                    KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTatttoos.RightLegTattoos.Contains(tat))
+                    {
+                        currentCharacter.PedTatttoos.RightLegTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        currentCharacter.PedTatttoos.RightLegTattoos.Add(tat);
+                    }
+                }
+
+                // remove all decorations, and then manually re-add them all. what a retarded way of doing this R*....
+                ClearPedDecorations(Game.PlayerPed.Handle);
+
+                foreach (var tattoo in currentCharacter.PedTatttoos.HeadTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.TorsoTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.LeftArmTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.RightArmTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.LeftLegTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.RightLegTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+
+                if (!string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Key) && !string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Value))
+                {
+                    // reset hair value
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Key), (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Value));
+                }
+
+
+            };
+            #endregion
+
             // handle button presses for the createCharacter menu.
             createCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {
@@ -1359,6 +1607,59 @@ namespace vMenuClient
                             SetPedPropIndex(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value > -1 ? cd.Value.Value : 0, true);
                         }
                     }
+                }
+                #endregion
+
+                #region Tattoos
+
+                if (currentCharacter.PedTatttoos.HeadTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.HeadTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.TorsoTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.TorsoTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.LeftArmTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.LeftArmTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.RightArmTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.RightArmTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.LeftLegTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.LeftLegTattoos = new List<KeyValuePair<string, string>>();
+                }
+                if (currentCharacter.PedTatttoos.RightLegTattoos == null)
+                {
+                    currentCharacter.PedTatttoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
+                }
+
+                foreach (var tattoo in currentCharacter.PedTatttoos.HeadTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.TorsoTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.LeftArmTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.RightArmTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.LeftLegTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                }
+                foreach (var tattoo in currentCharacter.PedTatttoos.RightLegTattoos)
+                {
+                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
                 }
                 #endregion
             }

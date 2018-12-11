@@ -1061,7 +1061,6 @@ namespace vMenuClient
                         MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                        //MainMenu.MpPedCustomizationMenu.editCharacterMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
                         MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
@@ -1070,16 +1069,26 @@ namespace vMenuClient
 
                 if (IsOpen())
                 {
-                    // <camCoords, camPointOffset>
                     List<KeyValuePair<Vector3, Vector3>> camPositions = new List<KeyValuePair<Vector3, Vector3>>()
                     {
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f)),     // default
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)),   // head
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // left wrist
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist
+                        // normal variants
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f)),     // default 0
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)),   // head 1
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body 2
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body 3
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes 4
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // left wrist 5
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist 6
+
+                        // tattoo turn left variants
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 8
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 9
+
+                        // tattoo turn right variants
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 11
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 12
                     };
 
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
@@ -1116,18 +1125,9 @@ namespace vMenuClient
                     */
 
                     bool rearCamActive = false;
-                    //Vector3 frontBackupCamPos = new Vector3();
-                    //float playerHeading = GetEntityHeading(Game.PlayerPed.Handle);
 
                     void SetCameraPosition()
                     {
-                        //frontBackupCamPos = camera.Position;
-                        //if (rearCamActive)
-                        //{
-                        //    camera.Position = frontBackupCamPos;
-                        //}
-                        //else
-                        //{
                         if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
                             int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentSelection;
@@ -1269,18 +1269,87 @@ namespace vMenuClient
                                     break;
                             }
                         }
+                        // face shape
                         else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible)
                         {
                             camera.Position = camPositions[1].Key;
                             camera.PointAt(camPositions[1].Value);
                         }
-                        else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible) { /*TODO*/}
+                        // tattoos
+                        else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
+                        {
+                            int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentSelection;
+                            switch (index)
+                            {
+                                case 0:
+                                    // head level
+                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
+                                    {
+                                        camera.Position = camPositions[7].Key;
+                                        camera.PointAt(camPositions[7].Value);
+                                    }
+                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
+                                    {
+                                        camera.Position = camPositions[10].Key;
+                                        camera.PointAt(camPositions[10].Value);
+                                    }
+                                    else // normal
+                                    {
+                                        camera.Position = camPositions[1].Key;
+                                        camera.PointAt(camPositions[1].Value);
+                                    }
+                                    break;
+                                case 1:
+                                case 2:
+                                case 3:
+                                    // upper body level
+                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
+                                    {
+                                        camera.Position = camPositions[8].Key;
+                                        camera.PointAt(camPositions[8].Value);
+                                    }
+                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
+                                    {
+                                        camera.Position = camPositions[11].Key;
+                                        camera.PointAt(camPositions[11].Value);
+                                    }
+                                    else // normal
+                                    {
+                                        camera.Position = camPositions[2].Key;
+                                        camera.PointAt(camPositions[2].Value);
+                                    }
+                                    break;
+                                case 4:
+                                case 5:
+                                    // lower body level
+                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
+                                    {
+                                        camera.Position = camPositions[9].Key;
+                                        camera.PointAt(camPositions[9].Value);
+                                    }
+                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
+                                    {
+                                        camera.Position = camPositions[12].Key;
+                                        camera.PointAt(camPositions[12].Value);
+                                    }
+                                    else // normal
+                                    {
+                                        camera.Position = camPositions[3].Key;
+                                        camera.PointAt(camPositions[3].Value);
+                                    }
+                                    break;
+                                default:
+                                    // normal position (full character visible)
+                                    camera.Position = camPositions[0].Key;
+                                    camera.PointAt(camPositions[0].Value);
+                                    break;
+                            }
+                        }
                         else
                         {
                             camera.Position = camPositions[0].Key;
                             camera.PointAt(camPositions[0].Value);
                         }
-                        //}
                     }
 
                     float heading = Game.PlayerPed.Heading;
@@ -1376,7 +1445,15 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Game.PlayerPed.Task.LookAt(camera.Position);
+                                if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
+                                {
+                                    Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, -3f, 0f)));
+                                }
+                                else
+                                {
+                                    Game.PlayerPed.Task.LookAt(camera.Position);
+                                }
+
                             }
                         }
                     }
