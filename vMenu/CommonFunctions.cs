@@ -257,7 +257,7 @@ namespace vMenuClient
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
                         // Get the vehicle of the specified player.
-                        Vehicle vehicle = GetVehicle(MainMenu.PlayersList[playerId]);
+                        Vehicle vehicle = GetVehicle(new Player(playerId), false);
                         if (vehicle != null)
                         {
                             int totalVehicleSeats = GetVehicleModelNumberOfSeats(GetVehicleModel(vehicle: vehicle.Handle));
