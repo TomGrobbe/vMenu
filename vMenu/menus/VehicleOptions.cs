@@ -1482,13 +1482,13 @@ namespace vMenuClient
                 UIMenuCheckboxItem toggleCustomWheels = new UIMenuCheckboxItem("Toggle Custom Wheels", GetVehicleModVariation(veh.Handle, 23), "Press this to add or remove ~y~custom~s~ wheels.");
                 UIMenuCheckboxItem xenonHeadlights = new UIMenuCheckboxItem("Xenon Headlights", IsToggleModOn(veh.Handle, 22), "Enable or disable ~b~xenon ~s~headlights.");
                 UIMenuCheckboxItem turbo = new UIMenuCheckboxItem("Turbo", IsToggleModOn(veh.Handle, 18), "Enable or disable the ~y~turbo~s~ for this vehicle.");
-                UIMenuCheckboxItem bulletProofTires = new UIMenuCheckboxItem("Bullet Proof Tires", !GetVehicleTyresCanBurst(veh.Handle) || VehicleGodMode || VehicleSpecialGodMode, "Enable or disable ~y~bullet proof tires~s~ for this vehicle.");
-                if (VehicleGodMode || VehicleSpecialGodMode)
-                {
-                    bulletProofTires.Enabled = false;
-                    bulletProofTires.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
-                    bulletProofTires.Description = "Bullet proof tires are currently forced on because you have vehicle god mode enabled.";
-                }
+                UIMenuCheckboxItem bulletProofTires = new UIMenuCheckboxItem("Bullet Proof Tires", !GetVehicleTyresCanBurst(veh.Handle), "Enable or disable ~y~bullet proof tires~s~ for this vehicle.");
+                //if (VehicleGodMode || VehicleSpecialGodMode)
+                //{
+                //    bulletProofTires.Enabled = false;
+                //    bulletProofTires.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                //    bulletProofTires.Description = "Bullet proof tires are currently forced on because you have vehicle god mode enabled.";
+                //}
 
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddItem(toggleCustomWheels);
