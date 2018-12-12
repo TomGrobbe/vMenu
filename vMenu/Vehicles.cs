@@ -19,6 +19,9 @@ namespace vMenuClient
             "DILETTANTE2",
             "ISSI2",
             "ISSI3",
+            "ISSI4", // MPCHRISTMAS2018 DLC
+            "ISSI5", // MPCHRISTMAS2018 DLC
+            "ISSI6", // MPCHRISTMAS2018 DLC
             "PANTO",
             "PRAIRIE",
             "RHAPSODY",
@@ -90,6 +93,7 @@ namespace vMenuClient
             "ROCOTO",
             "SEMINOLE",
             "SERRANO",
+            "TOROS", // MPCHRISTMAS2018 DLC
             "XLS",
             "XLS2",
         };
@@ -121,10 +125,15 @@ namespace vMenuClient
             "BUCCANEER2",
             "CHINO",
             "CHINO2",
+            "CLIQUE", // MPCHRISTMAS2018 DLC
             "COQUETTE3",
+            "DEVIANT", // MPCHRISTMAS2018 DLC
             "DOMINATOR",
             "DOMINATOR2",
             "DOMINATOR3",
+            "DOMINATOR4", // MPCHRISTMAS2018 DLC
+            "DOMINATOR5", // MPCHRISTMAS2018 DLC
+            "DOMINATOR6", // MPCHRISTMAS2018 DLC
             "DUKES",
             "DUKES2",
             "ELLIE",
@@ -136,6 +145,13 @@ namespace vMenuClient
             "HERMES",
             "HOTKNIFE",
             "HUSTLER",
+            "IMPALER", // MPCHRISTMAS2018 DLC
+            "IMPALER2", // MPCHRISTMAS2018 DLC
+            "IMPALER3", // MPCHRISTMAS2018 DLC
+            "IMPALER4", // MPCHRISTMAS2018 DLC
+            "IMPERATOR", // MPCHRISTMAS2018 DLC
+            "IMPERATOR2", // MPCHRISTMAS2018 DLC
+            "IMPERATOR3", // MPCHRISTMAS2018 DLC
             "LURCHER",
             "MOONBEAM",
             "MOONBEAM2",
@@ -152,10 +168,15 @@ namespace vMenuClient
             "SLAMVAN",
             "SLAMVAN2",
             "SLAMVAN3",
+            "SLAMVAN4", // MPCHRISTMAS2018 DLC
+            "SLAMVAN5", // MPCHRISTMAS2018 DLC
+            "SLAMVAN6", // MPCHRISTMAS2018 DLC
             "STALION",
             "STALION2",
             "TAMPA",
             "TAMPA3",
+            "TULIP", // MPCHRISTMAS2018 DLC
+            "VAMOS", // MPCHRISTMAS2018 DLC
             "VIGERO",
             "VIRGO",
             "VIRGO2",
@@ -235,6 +256,7 @@ namespace vMenuClient
             "FUTO",
             "GB200",
             "HOTRING",
+            "ITALIGTO", // MPCHRISTMAS2018 DLC
             "JESTER",
             "JESTER2",
             "KHAMELION",
@@ -258,6 +280,7 @@ namespace vMenuClient
             "SCHAFTER3",
             "SCHAFTER4",
             "SCHAFTER5",
+            "SCHLAGEN", // MPCHRISTMAS2018 DLC
             "SCHWARZER",
             "SENTINEL3",
             "SEVEN70",
@@ -268,6 +291,9 @@ namespace vMenuClient
             "TAMPA2",
             "TROPOS",
             "VERLIERER2",
+            "ZR380", // MPCHRISTMAS2018 DLC
+            "ZR3802", // MPCHRISTMAS2018 DLC
+            "ZR3803", // MPCHRISTMAS2018 DLC
         };
         #endregion
         #region Super
@@ -279,6 +305,7 @@ namespace vMenuClient
             "BULLET",
             "CHEETAH",
             "CYCLONE",
+            "DEVESTE", // MPCHRISTMAS2018 DLC
             "ENTITYXF",
             "ENTITY2",
             "FMJ",
@@ -330,6 +357,9 @@ namespace vMenuClient
             "DAEMON",
             "DAEMON2",
             "DEFILER",
+            "DEATHBIKE", // MPCHRISTMAS2018 DLC
+            "DEATHBIKE2", // MPCHRISTMAS2018 DLC
+            "DEATHBIKE3", // MPCHRISTMAS2018 DLC
             "DIABLOUS",
             "DIABLOUS2",
             "DOUBLE",
@@ -380,6 +410,12 @@ namespace vMenuClient
             "BLAZER5",
             "BODHI2",
             "BRAWLER",
+            "BRUISER", // MPCHRISTMAS2018 DLC
+            "BRUISER2", // MPCHRISTMAS2018 DLC
+            "BRUISER3", // MPCHRISTMAS2018 DLC
+            "BRUTUS", // MPCHRISTMAS2018 DLC
+            "BRUTUS2", // MPCHRISTMAS2018 DLC
+            "BRUTUS3", // MPCHRISTMAS2018 DLC
             "CARACARA",
             "DLOADER",
             "DUBSTA3",
@@ -398,9 +434,13 @@ namespace vMenuClient
             "MENACER", // dlc (mpbattle)
             "MESA3",
             "MONSTER",
+            "MONSTER3", // MPCHRISTMAS2018 DLC
+            "MONSTER4", // MPCHRISTMAS2018 DLC
+            "MONSTER5", // MPCHRISTMAS2018 DLC
             "NIGHTSHARK",
             "RANCHERXL",
             "RANCHERXL2",
+            "RCBANDITO", // MPCHRISTMAS2018 DLC
             "REBEL",
             "REBEL2",
             "RIATA",
@@ -694,6 +734,9 @@ namespace vMenuClient
             "HALFTRACK",
             "KHANJALI",
             "RHINO",
+            "SCARAB", // MPCHRISTMAS2018 DLC
+            "SCARAB2", // MPCHRISTMAS2018 DLC
+            "SCARAB3", // MPCHRISTMAS2018 DLC
             "THRUSTER", // Jetpack
             "TRAILERSMALL2", // Anti Aircraft Trailer
         };
@@ -703,6 +746,9 @@ namespace vMenuClient
         {
             "BENSON",
             "BIFF",
+            "CERBERUS", // MPCHRISTMAS2018 DLC
+            "CERBERUS2", // MPCHRISTMAS2018 DLC
+            "CERBERUS3", // MPCHRISTMAS2018 DLC
             "HAULER",
             "HAULER2",
             "MULE",
