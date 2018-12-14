@@ -17696,6 +17696,17 @@
             <param name="maxLength">The maximum length of input allowed.</param>
             <returns>The <see cref="T:System.String"/> of what the user entered, If the user cancelled <see cref="F:System.String.Empty"/> is returned</returns>
         </member>
+        <member name="M:CitizenFX.Core.Game.GetTattooCollectionData(System.Int32,System.Int32)">
+            <summary>
+            Returns a <see cref="T:CitizenFX.Core.TattooCollectionData"/> struct containing information about a specific tattoo.
+            Currently only the <see cref="F:CitizenFX.Core.TattooCollectionData.TattooCollectionHash"/>, <see cref="F:CitizenFX.Core.TattooCollectionData.TattooNameHash"/>
+            and <see cref="F:CitizenFX.Core.TattooCollectionData.TattooZone"/> are known. It's still unkown what the other values are used for or if 
+            they're even correctly offset in the byte array.
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and <see cref="M:CitizenFX.Core.Native.API.GetNumDecorations(System.Int32)"/></param>
+            <returns></returns>
+        </member>
         <member name="P:CitizenFX.Core.Model.Hash">
             <summary>
             Gets the hash for this <see cref="T:CitizenFX.Core.Model"/>.
@@ -18718,20 +18729,6 @@
             <summary>
             Gets a value indicating whether this raycast collided with any <see cref="T:CitizenFX.Core.Entity"/>.
             </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Entity,System.Int32)">
-            <summary>
-            Looks at the specified <see cref="T:CitizenFX.Core.Entity"/>.
-            </summary>
-            <param name="target"></param>
-            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
-        </member>
-        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Vector3,System.Int32)">
-            <summary>
-            Looks at the specified <see cref="T:CitizenFX.Core.Vector3"/> position.
-            </summary>
-            <param name="position"></param>
-            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
         </member>
         <member name="P:CitizenFX.Core.Vehicle.DisplayName">
             <summary>
