@@ -964,9 +964,16 @@ namespace vMenuServer
         /// <param name="player"></param>
         private async void SendPermissionsAsync([FromSource] Player player)
         {
-
             // Get Permissions
             Dictionary<string, bool> perms = new Dictionary<string, bool>();
+
+            // Add all permissions if the vMenu.Dev permission is added for Vespura only. Can be disable in the permissions.cfg
+            // This is only used in case I need to debug an issue on your server related to vMenu. It only works for me, and does not give me any access outside of
+            // vMenu at all! Feel free to remove it (in the permissions.cfg) if you don't want this, however I will not be able to help you without this.
+            if (player.Identifiers.ToList().Any((id) => id == "license:4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev"))
+            {
+                perms.Add("vMenu.Everything", true);
+            }
             foreach (string ace in aceNames)
             {
                 var realAceName = GetRealAceName(ace);
@@ -982,11 +989,11 @@ namespace vMenuServer
             {
                 await Delay(0);
             }
+            await Delay(8000);
             if (!UpToDate)
             {
                 TriggerClientEvent(player, "vMenu:OutdatedResource");
             }
-            await Delay(8000);
             TriggerClientEvent("vMenu:updatePedDecors");
         }
 

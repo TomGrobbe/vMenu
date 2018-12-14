@@ -76,12 +76,11 @@ namespace vMenuClient
             {
                 if (args != null && args[0] != null && args[1] != null)
                 {
-                    Debug.WriteLine(args[0].ToString() + " " +  args[1].ToString());
+                    Debug.WriteLine(args[0].ToString() + " " + args[1].ToString());
                     TattooCollectionData d = Game.GetTattooCollectionData(int.Parse(args[0].ToString()), int.Parse(args[1].ToString()));
                     Debug.WriteLine("check");
                     Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
                 }
-
             }), false);
 
 
@@ -617,7 +616,6 @@ namespace vMenuClient
                             {
                                 NoClipEnabled = !Mp.IsAnyMenuOpen();
                             }
-
                         }
                     }
                 }
