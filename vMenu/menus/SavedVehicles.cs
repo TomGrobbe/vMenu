@@ -72,19 +72,9 @@ namespace vMenuClient
                     UpdateMenuAvailableCategories();
                 };
 
-                categoryMenu.OnItemSelect += async (sender, item, index) =>
+                categoryMenu.OnItemSelect += (sender, item, index) =>
                 {
-                    lastMenu = categoryMenu;
-                    if (!UpdateSelectedVehicleMenu(item))
-                    {
-                        while (!MenuController.IsAnyMenuOpen() || categoryMenu.Visible)
-                        {
-                            await BaseScript.Delay(0);
-                        }
-                        //GetOpenMenu().CloseMenu();
-                        MenuController.CloseAllMenus();
-                        lastMenu.OpenMenu(); // force the category menu to re-open after closing all other menus.
-                    }
+                    UpdateSelectedVehicleMenu(item, sender);
                 };
             }
 
@@ -211,7 +201,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="selectedItem"></param>
         /// <returns>A bool, true if successfull, false if unsuccessfull</returns>
-        private bool UpdateSelectedVehicleMenu(MenuItem selectedItem)
+        private bool UpdateSelectedVehicleMenu(MenuItem selectedItem, Menu parentMenu = null)
         {
             if (!svMenuItems.ContainsKey(selectedItem))
             {
@@ -221,6 +211,12 @@ namespace vMenuClient
             var vehInfo = svMenuItems[selectedItem];
             selectedVehicleMenu.MenuSubtitle = $"{vehInfo.Key.Substring(4)} ({vehInfo.Value.name})";
             currentlySelectedVehicle = vehInfo;
+            MenuController.CloseAllMenus();
+            selectedVehicleMenu.OpenMenu();
+            if (parentMenu != null)
+            {
+                MenuController.AddSubmenu(parentMenu, selectedVehicleMenu);
+            }
             return true;
         }
 
@@ -275,7 +271,7 @@ namespace vMenuClient
 
                     svMenuItems.Add(savedVehicleBtn, sv);
 
-                    MenuController.BindMenuItem(menu, selectedVehicleMenu, savedVehicleBtn);
+                    //MenuController.BindMenuItem(menu, selectedVehicleMenu, savedVehicleBtn);
                     //menu.BindMenuToItem(selectedVehicleMenu, savedVehicleBtn);
                 }
                 else
