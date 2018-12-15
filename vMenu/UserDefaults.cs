@@ -223,12 +223,12 @@ namespace vMenuClient
         public static bool KbTpToWaypoint
         {
             get { return GetSettingsBool("kbTpToWaypoint"); }
-            set { SetSavedSettingsBool("kbTpToWaypoint", true); }
+            set { SetSavedSettingsBool("kbTpToWaypoint", value); }
         }
         public static bool KbDriftMode
         {
             get { return GetSettingsBool("kbDriftMode"); }
-            set { SetSavedSettingsBool("kbDriftMode", true); }
+            set { SetSavedSettingsBool("kbDriftMode", value); }
         }
         #endregion
         #endregion
