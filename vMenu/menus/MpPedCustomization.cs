@@ -78,87 +78,87 @@ namespace vMenuClient
             List<string> overlayColorsList = new List<string>();
             for (int i = 0; i < GetNumHairColors(); i++)
             {
-                overlayColorsList.Add($"Color #{i}");
+                overlayColorsList.Add($"Color #{i + 1}");
             }
 
             List<string> hairStylesList = new List<string>();
             for (int i = 0; i < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2); i++)
             {
-                hairStylesList.Add($"Style #{i}");
+                hairStylesList.Add($"Style #{i + 1}");
             }
             hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2)}");
 
             List<string> blemishesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(0); i++)
             {
-                blemishesStyleList.Add($"Style #{i}");
+                blemishesStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> beardStylesList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(1); i++)
             {
-                beardStylesList.Add($"Style #{i}");
+                beardStylesList.Add($"Style #{i + 1}");
             }
 
             List<string> eyebrowsStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(2); i++)
             {
-                eyebrowsStyleList.Add($"Style #{i}");
+                eyebrowsStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> ageingStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(3); i++)
             {
-                ageingStyleList.Add($"Style #{i}");
+                ageingStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> makeupStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(4); i++)
             {
-                makeupStyleList.Add($"Style #{i}");
+                makeupStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> blushStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(5); i++)
             {
-                blushStyleList.Add($"Style #{i}");
+                blushStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> complexionStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(6); i++)
             {
-                complexionStyleList.Add($"Style #{i}");
+                complexionStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> sunDamageStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(7); i++)
             {
-                sunDamageStyleList.Add($"Style #{i}");
+                sunDamageStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> lipstickStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(8); i++)
             {
-                lipstickStyleList.Add($"Style #{i}");
+                lipstickStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> molesFrecklesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(9); i++)
             {
-                molesFrecklesStyleList.Add($"Style #{i}");
+                molesFrecklesStyleList.Add($"Style #{i + 1}");
             }
 
             List<string> chestHairStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(10); i++)
             {
-                chestHairStyleList.Add($"Style #{i}");
+                chestHairStyleList.Add($"Style #{i + 1}");
             }
 
 
             List<string> eyeColorList = new List<string>();
             for (int i = 0; i < 32; i++)
             {
-                eyeColorList.Add($"Eye Color #{i}");
+                eyeColorList.Add($"Eye Color #{i + 1}");
             }
 
             /*
