@@ -608,6 +608,12 @@ namespace vMenuClient
                     }
                 }
 
+                if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
+                {
+                    await Delay(0);
+                    Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
+                }
+
                 if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                 {
                     if (!MenuController.IsAnyMenuOpen() || NoClipEnabled)
