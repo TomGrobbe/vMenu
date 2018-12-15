@@ -1318,7 +1318,7 @@ namespace vMenuClient
                 await Delay(100);
                 if (menu != null)
                 {
-                    menu.Visible = true;
+                    menu.OpenMenu();
                 }
                 await Delay(50);
                 MainMenu.DisableControls = false;

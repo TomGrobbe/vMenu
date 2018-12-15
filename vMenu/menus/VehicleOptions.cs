@@ -1124,8 +1124,8 @@ namespace vMenuClient
                             else
                             {
                                 Notify.Error("This vehicle does not have any liveries.");
-                                VehicleLiveriesMenu.Visible = false;
-                                menu.Visible = true;
+                                VehicleLiveriesMenu.CloseMenu();
+                                menu.OpenMenu();
                                 MenuItem backBtn = new MenuItem("No Liveries Available :(", "Click me to go back.")
                                 {
                                     Label = "Go Back"
@@ -1168,8 +1168,8 @@ namespace vMenuClient
                     }
                     else
                     {
-                        VehicleModMenu.Visible = false;
-                        menu.Visible = true;
+                        VehicleModMenu.CloseMenu();
+                        menu.OpenMenu();
                     }
 
                 }

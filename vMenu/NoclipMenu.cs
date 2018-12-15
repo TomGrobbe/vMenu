@@ -65,7 +65,7 @@ namespace vMenuClient
 
                         if (noclipMenu.Visible == false)
                         {
-                            noclipMenu.Visible = true;
+                            noclipMenu.OpenMenu();
                         }
                         FreezeEntityPosition(noclipEntity, true);
                         SetEntityInvincible(noclipEntity, true);
@@ -152,7 +152,7 @@ namespace vMenuClient
 
                     if (noclipMenu.Visible && !MainMenu.NoClipEnabled)
                     {
-                        noclipMenu.Visible = false;
+                        noclipMenu.CloseMenu();
                     }
 
                 }
@@ -166,9 +166,12 @@ namespace vMenuClient
         {
 
             noclipMenu = new Menu("No Clip", "Controls") { IgnoreDontOpenMenus = true };
+            MenuController.AddMenu(noclipMenu);
 
-            MenuItem speed = new MenuItem("Current Moving Speed", "This is your current moving speed.");
-            speed.Label = speeds[currentSpeed];
+            MenuItem speed = new MenuItem("Current Moving Speed", "This is your current moving speed.")
+            {
+                Label = speeds[currentSpeed]
+            };
 
             noclipMenu.AddMenuItem(speed);
 
@@ -183,9 +186,6 @@ namespace vMenuClient
             noclipMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Left/Right");
             noclipMenu.InstructionalButtons.Add(Control.Cover, "Go Up");
             noclipMenu.InstructionalButtons.Add(Control.MultiplayerInfo, "Go Down");
-
-
-            MenuController.AddMenu(noclipMenu);
 
             setupDone = true;
         }

@@ -81,8 +81,9 @@ namespace vMenuClient
                         {
                             await BaseScript.Delay(0);
                         }
-                        GetOpenMenu().Visible = false;
-                        lastMenu.Visible = true; // force the category menu to re-open after closing all other menus.
+                        //GetOpenMenu().CloseMenu();
+                        MenuController.CloseAllMenus();
+                        lastMenu.OpenMenu(); // force the category menu to re-open after closing all other menus.
                     }
                 };
             }
@@ -112,11 +113,11 @@ namespace vMenuClient
                 MenuController.CloseAllMenus();
                 if (lastMenu != null)
                 {
-                    lastMenu.Visible = true;
+                    lastMenu.OpenMenu();
                 }
                 else
                 {
-                    GetMenu().Visible = true;
+                    GetMenu().OpenMenu();
                 }
 
                 deleteButtonPressedCount = 0;

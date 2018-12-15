@@ -1414,7 +1414,7 @@ namespace vMenuClient
                     bool confirm = false;
                     AddTextEntry("vmenu_warning_message_first_line", "Are you sure you want to exit the character creator?");
                     AddTextEntry("vmenu_warning_message_second_line", "You will lose all (unsaved) customization!");
-                    createCharacterMenu.Visible = false;
+                    createCharacterMenu.CloseMenu();
 
                     // wait for confirmation or cancel input.
                     while (true)
@@ -1440,11 +1440,11 @@ namespace vMenuClient
                         while (IsControlPressed(2, 201) || IsControlPressed(2, 217) || IsDisabledControlPressed(2, 201) || IsDisabledControlPressed(2, 217))
                             await BaseScript.Delay(0);
                         await BaseScript.Delay(100);
-                        menu.Visible = true;
+                        menu.OpenMenu();
                     }
                     else // otherwise cancel and go back to the editor.
                     {
-                        createCharacterMenu.Visible = true;
+                        createCharacterMenu.OpenMenu();
                     }
                 }
                 else if (item == inheritanceButton) // update the inheritance menu anytime it's opened to prevent some weird glitch where old data is used.

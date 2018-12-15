@@ -368,8 +368,8 @@ namespace vMenuClient
                     {
                         if (m.Visible)
                         {
-                            MainMenu.VehicleOptionsMenu.GetMenu().Visible = true;
-                            m.Visible = false;
+                            MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
+                            m.CloseMenu();
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
                     }
