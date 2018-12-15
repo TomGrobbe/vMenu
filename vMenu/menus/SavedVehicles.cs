@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +22,6 @@ namespace vMenuClient
         private List<Menu> subMenus = new List<Menu>();
         private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
         private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>();
-        Menu lastMenu = null;
         private int deleteButtonPressedCount = 0;
 
 
@@ -100,16 +99,6 @@ namespace vMenuClient
             selectedVehicleMenu.OnMenuClose += (sender) =>
             {
                 selectedVehicleMenu.RefreshIndex();
-                MenuController.CloseAllMenus();
-                if (lastMenu != null)
-                {
-                    lastMenu.OpenMenu();
-                }
-                else
-                {
-                    GetMenu().OpenMenu();
-                }
-
                 deleteButtonPressedCount = 0;
                 deleteVehicle.Label = "";
             };
@@ -249,8 +238,6 @@ namespace vMenuClient
 
 
 
-            //GetMenu().UpdateScaleform();
-
             foreach (Menu m in subMenus)
             {
                 m.ClearMenuItems();
@@ -270,9 +257,6 @@ namespace vMenuClient
                     menu.AddMenuItem(savedVehicleBtn);
 
                     svMenuItems.Add(savedVehicleBtn, sv);
-
-                    //MenuController.BindMenuItem(menu, selectedVehicleMenu, savedVehicleBtn);
-                    //menu.BindMenuToItem(selectedVehicleMenu, savedVehicleBtn);
                 }
                 else
                 {
@@ -282,7 +266,6 @@ namespace vMenuClient
                     missingVehItem.LeftIcon = MenuItem.Icon.LOCK;
                     unavailableVehiclesMenu.AddMenuItem(missingVehItem);
                 }
-
             }
             foreach (Menu m in subMenus)
             {
@@ -290,9 +273,6 @@ namespace vMenuClient
                 {
                     return A.Text.ToLower().CompareTo(B.Text.ToLower());
                 });
-
-                //m.UpdateScaleform();
-                m.RefreshIndex();
             }
         }
 
