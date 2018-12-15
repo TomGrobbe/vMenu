@@ -35,7 +35,7 @@ namespace vMenuClient
             // Handle the SetPermissions event.
             EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
-            EventHandlers.Add("vMenu:KillMe", new Action(KillMe));
+            EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetWeather", new Action<string, bool, bool>(SetWeather));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
@@ -316,9 +316,9 @@ namespace vMenuClient
         /// <summary>
         /// Kill this player, poor thing, someone wants you dead... R.I.P.
         /// </summary>
-        private void KillMe()
+        private void KillMe(string sourceName)
         {
-            Notify.Info("Someone wanted you dead.... Sorry.");
+            Notify.Alert($"You have been killed by <C>{GetSafePlayerName(sourceName)}</C>~s~ using the ~r~Kill Player~s~ option in vMenu.");
             SetEntityHealth(Game.PlayerPed.Handle, 0);
         }
 
