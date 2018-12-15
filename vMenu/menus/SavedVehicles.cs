@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -236,13 +236,29 @@ namespace vMenuClient
                 }
             }
 
+            // Check if the items count will be changed. If there are less cars than there were before, one probably got deleted
+            // so in that case we need to refresh the index of that menu just to be safe. If not, keep the index where it is for improved
+            // usability of the menu.
+            foreach (Menu m in subMenus)
+            {
+                int size = m.Size;
+                int vclass = subMenus.IndexOf(m);
 
+                int count = savedVehicles.Count(a => GetVehicleClassFromName(a.Value.model) == vclass);
+                if (count < size)
+                {
+                    m.RefreshIndex();
+                }
+            }
 
             foreach (Menu m in subMenus)
             {
-                m.ClearMenuItems();
+                // Clear items but don't reset the index because we can guarantee that the index won't be out of bounds.
+                // this is the case because of the loop above where we reset the index if the items count changes.
+                m.ClearMenuItems(true);
             }
 
+            // Always clear this index because it's useless anyway and it's safer.
             unavailableVehiclesMenu.ClearMenuItems();
 
             foreach (var sv in savedVehicles)
