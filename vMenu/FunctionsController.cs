@@ -1425,11 +1425,11 @@ namespace vMenuClient
 
                         if (Game.IsDisabledControlPressed(0, Control.MoveRight))
                         {
-                            Game.PlayerPed.Task.LookAt(offsetRight);
+                            Game.PlayerPed.Task.LookAt(offsetRight, 100);
                         }
                         else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                         {
-                            Game.PlayerPed.Task.LookAt(offsetLeft);
+                            Game.PlayerPed.Task.LookAt(offsetLeft, 100);
                         }
                         else
                         {
@@ -1437,21 +1437,21 @@ namespace vMenuClient
 
                             if (input > 0.5f)
                             {
-                                Game.PlayerPed.Task.LookAt(offsetRight);
+                                Game.PlayerPed.Task.LookAt(offsetRight, 100);
                             }
                             else if (input < -0.5f)
                             {
-                                Game.PlayerPed.Task.LookAt(offsetLeft);
+                                Game.PlayerPed.Task.LookAt(offsetLeft, 100);
                             }
                             else
                             {
                                 if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
                                 {
-                                    Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, -3f, 0f)));
+                                    Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, -3f, 0f)), 100);
                                 }
                                 else
                                 {
-                                    Game.PlayerPed.Task.LookAt(camera.Position);
+                                    Game.PlayerPed.Task.LookAt(camera.Position, 100);
                                 }
 
                             }
