@@ -194,7 +194,7 @@ namespace vMenuClient
                 }
                 else if (item == clothingGlowType)
                 {
-                    ClothingAnimationType = item.Index;
+                    ClothingAnimationType = item.ListIndex;
                 }
                 else
                 {

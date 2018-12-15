@@ -1589,9 +1589,9 @@ namespace vMenuClient
                             // Enable it.
                             ToggleVehicleMod(veh.Handle, 20, true);
                             // Get the selected color values.
-                            var r = tireSmokeColors[tireSmokes[tireSmoke.Index]][0];
-                            var g = tireSmokeColors[tireSmokes[tireSmoke.Index]][1];
-                            var b = tireSmokeColors[tireSmokes[tireSmoke.Index]][2];
+                            var r = tireSmokeColors[tireSmokes[tireSmoke.ListIndex]][0];
+                            var g = tireSmokeColors[tireSmokes[tireSmoke.ListIndex]][1];
+                            var b = tireSmokeColors[tireSmokes[tireSmoke.ListIndex]][2];
                             // Set the color.
                             SetVehicleTyreSmokeColor(veh.Handle, r, g, b);
                         }
@@ -1634,7 +1634,7 @@ namespace vMenuClient
                         }
 
                         int modType = dict[itemIndex];
-                        int selectedUpgrade = item2.Index - 1;
+                        int selectedUpgrade = item2.ListIndex - 1;
                         bool customWheels = GetVehicleModVariation(veh.Handle, 23);
 
                         SetVehicleMod(veh.Handle, modType, selectedUpgrade, customWheels);

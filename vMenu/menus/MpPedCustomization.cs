@@ -797,7 +797,7 @@ namespace vMenuClient
 
             void SetHeadBlend()
             {
-                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.Index, inheritanceMoms.Index, 0, inheritanceDads.Index, inheritanceMoms.Index, 0, mixValues[inheritanceShapeMix.Position], mixValues[inheritanceSkinMix.Position], 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.ListIndex, inheritanceMoms.ListIndex, 0, inheritanceDads.ListIndex, inheritanceMoms.ListIndex, 0, mixValues[inheritanceShapeMix.Position], mixValues[inheritanceSkinMix.Position], 0f, false);
             }
 
             inheritanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
@@ -805,10 +805,10 @@ namespace vMenuClient
                 SetHeadBlend();
             };
 
-            //inheritanceMenu.OnSliderChange += (sender, item, index) =>
-            //{
-            //    SetHeadBlend();
-            //};
+            inheritanceMenu.OnSliderPositionChange += (sender, item, oldPosition, newPosition, itemIndex) =>
+            {
+                SetHeadBlend();
+            };
             #endregion
 
             #region appearance
@@ -867,9 +867,9 @@ namespace vMenuClient
                 else if (itemIndex == 1 || itemIndex == 2) // hair colors
                 {
                     var tmp = (MenuListItem)_menu.GetMenuItems()[1];
-                    int hairColor = tmp.Index;
+                    int hairColor = tmp.ListIndex;
                     tmp = (MenuListItem)_menu.GetMenuItems()[2];
-                    int hairHighlightColor = tmp.Index;
+                    int hairHighlightColor = tmp.ListIndex;
 
                     SetPedHairColor(Game.PlayerPed.Handle, hairColor, hairHighlightColor);
 
@@ -878,20 +878,20 @@ namespace vMenuClient
                 }
                 else if (itemIndex == 31) // eye color
                 {
-                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).ListIndex;
                     SetPedEyeColor(Game.PlayerPed.Handle, selection);
                     currentCharacter.PedAppearance.eyeColor = selection;
                 }
                 else
                 {
-                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).ListIndex;
                     float opacity = 0f;
-                    if (_menu.GetMenuItems()[itemIndex + 1] is MenuSliderItem)
-                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
-                    else if (_menu.GetMenuItems()[itemIndex - 1] is MenuSliderItem)
-                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
-                    else if (_menu.GetMenuItems()[itemIndex] is MenuSliderItem)
-                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex]).Index + 1) / 10f) - 0.1f;
+                    if (_menu.GetMenuItems()[itemIndex + 1] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex + 1]).ListIndex + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex - 1] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).ListIndex + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex]).ListIndex + 1) / 10f) - 0.1f;
                     else
                         opacity = 1f;
                     switch (itemIndex)
@@ -987,14 +987,14 @@ namespace vMenuClient
                 if (itemIndex > 2 && itemIndex < 31)
                 {
 
-                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).ListIndex;
                     float opacity = 0f;
                     if (_menu.GetMenuItems()[itemIndex] is MenuListItem)
-                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index + 1) / 10f) - 0.1f;
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex]).ListIndex + 1) / 10f) - 0.1f;
                     else if (_menu.GetMenuItems()[itemIndex + 1] is MenuListItem)
-                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex + 1]).ListIndex + 1) / 10f) - 0.1f;
                     else if (_menu.GetMenuItems()[itemIndex - 1] is MenuListItem)
-                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).ListIndex + 1) / 10f) - 0.1f;
                     else
                         opacity = 1f;
                     switch (itemIndex)
@@ -1056,7 +1056,6 @@ namespace vMenuClient
                             break;
                     }
                 }
-
             };
             #endregion
 
@@ -1226,7 +1225,7 @@ namespace vMenuClient
             var faceFeaturesNamesList = new string[20] { "Nose Width", "Noes Peak Height", "Nose Peak Length", "Nose Bone Height", "Nose Peak Lowering", "Nose Bone Twist", "Eyebrows Height", "Eyebrows Depth", "Cheekbones Height", "Cheekbones Width", "Cheeks Width", "Eyes Opening", "Lips Thickness", "Jaw Bone Width", "Jaw Bone Depth/Length", "Chin Height", "Chin Depth/Length", "Chin Width", "Chin Hole Size", "Neck Thickness" };
             for (int i = 0; i < 19; i++)
             {
-                MenuSliderItem faceFeature = new MenuSliderItem(faceFeaturesNamesList[i], $"Set the {faceFeaturesNamesList[i]} face feature value.", -10, 10, 0, true);
+                MenuSliderItem faceFeature = new MenuSliderItem(faceFeaturesNamesList[i], $"Set the {faceFeaturesNamesList[i]} face feature value.", 0, 20, 10, true);
                 faceShapeMenu.AddMenuItem(faceFeature);
             }
 

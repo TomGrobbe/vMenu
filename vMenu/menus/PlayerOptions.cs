@@ -174,7 +174,7 @@ namespace vMenuClient
                                 {
                                     if (IsWaypointActive())
                                     {
-                                        int style = GetStyleFromIndex(drivingStyle.Index);
+                                        int style = GetStyleFromIndex(drivingStyle.ListIndex);
                                         DriveToWp(style);
                                         Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button. The vehicle will stop when it has reached the destination.");
                                     }
@@ -186,7 +186,7 @@ namespace vMenuClient
                                 }
                                 else if (item == startDrivingRandomly)
                                 {
-                                    int style = GetStyleFromIndex(drivingStyle.Index);
+                                    int style = GetStyleFromIndex(drivingStyle.ListIndex);
                                     DriveWander(style);
                                     Notify.Info("Your player ped is now driving the vehicle for you. You can cancel any time by pressing the Stop Driving button.");
                                 }
@@ -354,7 +354,7 @@ namespace vMenuClient
                 }
                 else if (listItem == setArmorItem)
                 {
-                    Game.PlayerPed.Armor = (listItem.Index) * 20;
+                    Game.PlayerPed.Armor = (listItem.ListIndex) * 20;
                 }
             };
 

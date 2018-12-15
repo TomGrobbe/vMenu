@@ -131,11 +131,11 @@ namespace vMenuClient
                 int newMinute = EventManager.currentMinutes;
                 if (item == manualHour)
                 {
-                    newHour = item.Index;
+                    newHour = item.ListIndex;
                 }
                 else if (item == manualMinute)
                 {
-                    newMinute = item.Index;
+                    newMinute = item.ListIndex;
                 }
 
                 Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour.ToString()}" : newHour.ToString())}~s~:~y~" +
