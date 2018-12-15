@@ -593,37 +593,58 @@ namespace vMenuClient
                 //        }
                 //    }
 
+                var tmpMenu = GetOpenMenu();
+                if (MpPedCustomizationMenu != null)
+                {
+                    if (tmpMenu == MpPedCustomizationMenu.createCharacterMenu)
+                    {
+                        MpPedCustomization.DisableBackButton = true;
+                        MpPedCustomization.DontCloseMenus = true;
+                    }
+                    else
+                    {
+                        MpPedCustomization.DisableBackButton = false;
+                        MpPedCustomization.DontCloseMenus = false;
+                    }
+                }
+
                 if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                 {
-                    if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip))
+                    if (!MenuController.IsAnyMenuOpen() || NoClipEnabled)
                     {
-                        if (MenuController.IsAnyMenuOpen())
+                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip))
                         {
-                            if (MenuController.GetCurrentMenu() != NoClipMenu)
+                            if (MenuController.IsAnyMenuOpen())
                             {
-                                MenuController.CloseAllMenus();
+                                if (MenuController.GetCurrentMenu() != null && MenuController.GetCurrentMenu() != NoClipMenu)
+                                {
+                                    MenuController.CloseAllMenus();
+                                }
                             }
-                        }
-                        if (Game.PlayerPed.IsInVehicle())
-                        {
-                            Vehicle veh = GetVehicle();
-                            if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                            if (Game.PlayerPed.IsInVehicle())
                             {
-                                NoClipEnabled = !MenuController.IsAnyMenuOpen();
+                                Vehicle veh = GetVehicle();
+                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                                {
+                                    NoClipEnabled = !NoClipEnabled;
+                                    MenuController.DontOpenAnyMenu = NoClipEnabled;
+                                }
+                                //if (GetPedInVehicleSeat(CommonFunctions.GetVehicle(), -1) == Game.PlayerPed.Handle)
+                                //{
+                                //NoClipEnabled = !Mp.IsAnyMenuOpen();
+                                //}
+                                else
+                                {
+                                    NoClipEnabled = false;
+                                    MenuController.DontOpenAnyMenu = NoClipEnabled;
+                                    Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                }
                             }
-                            //if (GetPedInVehicleSeat(CommonFunctions.GetVehicle(), -1) == Game.PlayerPed.Handle)
-                            //{
-                            //NoClipEnabled = !Mp.IsAnyMenuOpen();
-                            //}
                             else
                             {
-                                NoClipEnabled = false;
-                                Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                NoClipEnabled = !NoClipEnabled;
+                                MenuController.DontOpenAnyMenu = NoClipEnabled;
                             }
-                        }
-                        else
-                        {
-                            NoClipEnabled = !MenuController.IsAnyMenuOpen();
                         }
                     }
                 }
@@ -638,6 +659,10 @@ namespace vMenuClient
                 {
                     MenuController.DontOpenAnyMenu = true;
                 }
+                //else
+                //{
+                //    MenuController.DontOpenAnyMenu = false;
+                //}
                 #endregion
 
                 // Menu toggle button.

@@ -60,7 +60,7 @@ namespace vMenuClient
                 {
                     while (MainMenu.NoClipEnabled)
                     {
-
+                        noclipMenu.InstructionalButtons[Control.Sprint] = $"Change speed ({speeds[currentSpeed]})";
                         var noclipEntity = Game.PlayerPed.IsInVehicle() ? GetVehicle().Handle : Game.PlayerPed.Handle;
 
                         if (noclipMenu.Visible == false)
@@ -175,17 +175,13 @@ namespace vMenuClient
 
             noclipMenu.AddMenuItem(speed);
 
-            //noclipMenu.DisableInstructionalButtons(true);
-            //noclipMenu.DisableInstructionalButtons(false);
-
-            // Only disable the default instructional buttons (back & select) (requires modified NativeUI build.)
-            //noclipMenu.DisableInstructionalButtons(false, disableDefaultButtons: true);
-
-            noclipMenu.InstructionalButtons.Add(Control.Sprint, "Change Speed");
+            noclipMenu.InstructionalButtons.Clear();
+            noclipMenu.InstructionalButtons.Add(Control.Sprint, $"Change speed ({speeds[currentSpeed]})");
             noclipMenu.InstructionalButtons.Add(Control.MoveUpDown, "Go Forwards/Backwards");
             noclipMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Left/Right");
-            noclipMenu.InstructionalButtons.Add(Control.Cover, "Go Up");
             noclipMenu.InstructionalButtons.Add(Control.MultiplayerInfo, "Go Down");
+            noclipMenu.InstructionalButtons.Add(Control.Cover, "Go Up");
+            noclipMenu.InstructionalButtons.Add((Control)MainMenu.NoClipKey, "Disable Noclip");
 
             setupDone = true;
         }
