@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -1303,7 +1303,7 @@ namespace vMenuClient
             var currentMenu = GetOpenMenu();
             if (currentMenu != null)
             {
-                MainMenu.Mp.CloseAllMenus();
+                MenuController.CloseAllMenus();
             }
             MainMenu.DisableControls = true;
             MainMenu.DontOpenMenus = true;
@@ -1312,7 +1312,7 @@ namespace vMenuClient
             var spacer = "\t";
             AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
 
-            async void ReopenMenuDelayed(UIMenu menu)
+            async void ReopenMenuDelayed(Menu menu)
             {
                 MainMenu.DontOpenMenus = false;
                 await Delay(100);
@@ -2032,12 +2032,12 @@ namespace vMenuClient
 
         #region Get "Header" Menu Item
         /// <summary>
-        /// Get a header menu item (text-centered, disabled UIMenuItem)
+        /// Get a header menu item (text-centered, disabled MenuItem)
         /// </summary>
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <returns></returns>
-        public static UIMenuItem GetSpacerMenuItem(string title, string description = null)
+        public static MenuItem GetSpacerMenuItem(string title, string description = null)
         {
             string output = "~h~";
             int length = title.Length;
@@ -2048,7 +2048,7 @@ namespace vMenuClient
                 output += " ";
             }
             output += title;
-            UIMenuItem item = new UIMenuItem(output, description ?? "")
+            MenuItem item = new MenuItem(output, description ?? "")
             {
                 Enabled = false
             };
@@ -2072,20 +2072,20 @@ namespace vMenuClient
         /// Returns the currently opened menu, if no menu is open, it'll return null.
         /// </summary>
         /// <returns></returns>
-        public static UIMenu GetOpenMenu()
+        public static Menu GetOpenMenu()
         {
-            if (MainMenu.Mp.IsAnyMenuOpen())
-            {
-                foreach (UIMenu m in MainMenu.Mp.ToList())
-                {
-                    if (m.Visible)
-                    {
-                        return m;
-                    }
-                }
-            }
-            return null;
-
+            return MenuController.GetCurrentMenu();
+            //if (MenuController.IsAnyMenuOpen())
+            //{
+            //    foreach (Menu m in MainMenu.Mp.ToList())
+            //    {
+            //        if (m.Visible)
+            //        {
+            //            return m;
+            //        }
+            //    }
+            //}
+            //return null;
         }
         #endregion
 

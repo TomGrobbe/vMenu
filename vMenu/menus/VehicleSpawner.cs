@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -15,7 +15,7 @@ namespace vMenuClient
     public class VehicleSpawner
     {
         // Variables
-        private UIMenu menu;
+        private Menu menu;
         public static Dictionary<string, uint> AddonVehicles;
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
@@ -26,31 +26,29 @@ namespace vMenuClient
         {
             #region initial setup.
             // Create the menu.
-            menu = new UIMenu(Game.Player.Name, "Vehicle Spawner", RightAlignMenus());
+            menu = new Menu(Game.Player.Name, "Vehicle Spawner");
 
             // Create the buttons and checkboxes.
-            UIMenuItem spawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
-            UIMenuCheckboxItem spawnInVeh = new UIMenuCheckboxItem("Spawn Inside Vehicle", SpawnInVehicle,
-                "This will teleport you into the vehicle when you spawn it.");
-            UIMenuCheckboxItem replacePrev = new UIMenuCheckboxItem("Replace Previous Vehicle", ReplaceVehicle,
-                "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.");
+            MenuItem spawnByName = new MenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
+            MenuCheckboxItem spawnInVeh = new MenuCheckboxItem("Spawn Inside Vehicle", "This will teleport you into the vehicle when you spawn it.", SpawnInVehicle);
+            MenuCheckboxItem replacePrev = new MenuCheckboxItem("Replace Previous Vehicle", "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.", ReplaceVehicle);
 
             // Add the items to the menu.
             if (IsAllowed(Permission.VSSpawnByName))
             {
-                menu.AddItem(spawnByName);
+                menu.AddMenuItem(spawnByName);
             }
-            menu.AddItem(spawnInVeh);
-            menu.AddItem(replacePrev);
+            menu.AddMenuItem(spawnInVeh);
+            menu.AddMenuItem(replacePrev);
             #endregion
 
             #region addon cars menu
             // Vehicle Addons List
-            UIMenu addonCarsMenu = new UIMenu("Addon Vehicles", "Spawn An Addon Vehicle", RightAlignMenus());
-            UIMenuItem addonCarsBtn = new UIMenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
-            addonCarsBtn.SetRightLabel("→→→");
+            Menu addonCarsMenu = new Menu("Addon Vehicles", "Spawn An Addon Vehicle");
+            MenuItem addonCarsBtn = new MenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
+            addonCarsBtn.Label = "→→→";
 
-            menu.AddItem(addonCarsBtn);
+            menu.AddMenuItem(addonCarsBtn);
 
             if (IsAllowed(Permission.VSAddon))
             {
@@ -58,22 +56,22 @@ namespace vMenuClient
                 {
                     if (AddonVehicles.Count > 0)
                     {
-                        menu.BindMenuToItem(addonCarsMenu, addonCarsBtn);
-                        MainMenu.Mp.Add(addonCarsMenu);
+                        MenuController.BindMenuItem(menu, addonCarsMenu, addonCarsBtn);
+                        MenuController.AddSubmenu(menu, addonCarsMenu);
                         foreach (KeyValuePair<string, uint> veh in AddonVehicles)
                         {
                             string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
                             string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
                             name = name != "CARNOTFOUND" ? name : veh.Key;
-                            UIMenuItem carBtn = new UIMenuItem(name, $"Click to spawn {name}.");
-                            carBtn.SetRightLabel($"({veh.Key.ToString()})");
+                            MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.");
+                            carBtn.Label = $"({veh.Key.ToString()})";
                             if (!IsModelInCdimage(veh.Value))
                             {
                                 carBtn.Enabled = false;
                                 carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
-                                carBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                                carBtn.LeftIcon = MenuItem.Icon.LOCK;
                             }
-                            addonCarsMenu.AddItem(carBtn);
+                            addonCarsMenu.AddMenuItem(carBtn);
                         }
 
                         addonCarsMenu.OnItemSelect += (sender, item, index) =>
@@ -81,26 +79,26 @@ namespace vMenuClient
                             SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
                         };
                         addonCarsMenu.RefreshIndex();
-                        addonCarsMenu.UpdateScaleform();
+                        //addonCarsMenu.UpdateScaleform();
                     }
                     else
                     {
                         addonCarsBtn.Enabled = false;
-                        addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                        addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
                         addonCarsBtn.Description = "There are no addon vehicles available on this server.";
                     }
                 }
                 else
                 {
                     addonCarsBtn.Enabled = false;
-                    addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
                     addonCarsBtn.Description = "The list containing all addon cars could not be loaded, is it configured properly?";
                 }
             }
             else
             {
                 addonCarsBtn.Enabled = false;
-                addonCarsBtn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 addonCarsBtn.Description = "Access to this list has been restricted by the server owner.";
             }
             #endregion
@@ -116,21 +114,21 @@ namespace vMenuClient
                 string className = GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
-                UIMenuItem btn = new UIMenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
-                btn.SetRightLabel("→→→");
+                MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
+                btn.Label = "→→→";
 
-                UIMenu vehicleClassMenu = new UIMenu("Vehicle Spawner", className, RightAlignMenus());
+                Menu vehicleClassMenu = new Menu("Vehicle Spawner", className);
 
-                MainMenu.Mp.Add(vehicleClassMenu);
-                menu.AddItem(btn);
+                MenuController.AddSubmenu(menu, vehicleClassMenu);
+                menu.AddMenuItem(btn);
 
                 if (allowedCategories[vehClass])
                 {
-                    menu.BindMenuToItem(vehicleClassMenu, btn);
+                    MenuController.BindMenuItem(menu, vehicleClassMenu, btn);
                 }
                 else
                 {
-                    btn.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                    btn.LeftIcon = MenuItem.Icon.LOCK;
                     btn.Description = "This category has been disabled by the server owner.";
                     btn.Enabled = false;
                 }
@@ -150,10 +148,10 @@ namespace vMenuClient
 
                     // Loop through all the menu items and check each item's title/text and see if it matches the current vehicle (display) name.
                     var duplicate = false;
-                    for (var itemIndex = 0; itemIndex < vehicleClassMenu.MenuItems.Count; itemIndex++)
+                    for (var itemIndex = 0; itemIndex < vehicleClassMenu.Size; itemIndex++)
                     {
                         // If it matches...
-                        if (vehicleClassMenu.MenuItems[itemIndex].Text.ToString() == vehName)
+                        if (vehicleClassMenu.GetMenuItems()[itemIndex].Text.ToString() == vehName)
                         {
 
                             // Check if the model was marked as duplicate before.
@@ -176,14 +174,14 @@ namespace vMenuClient
 
                             if (DoesModelExist(veh))
                             {
-                                var vehBtn = new UIMenuItem(vehName) { Enabled = true };
-                                vehicleClassMenu.AddItem(vehBtn);
+                                var vehBtn = new MenuItem(vehName) { Enabled = true };
+                                vehicleClassMenu.AddMenuItem(vehBtn);
                             }
                             else
                             {
-                                var vehBtn = new UIMenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
-                                vehicleClassMenu.AddItem(vehBtn);
-                                vehBtn.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
+                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
+                                vehicleClassMenu.AddMenuItem(vehBtn);
+                                vehBtn.RightIcon = MenuItem.Icon.LOCK;
                             }
 
                             // Mark duplicate as true and break from the loop because we already found the duplicate.
@@ -197,14 +195,14 @@ namespace vMenuClient
                     {
                         if (DoesModelExist(veh))
                         {
-                            var vehBtn = new UIMenuItem(vehName) { Enabled = true };
-                            vehicleClassMenu.AddItem(vehBtn);
+                            var vehBtn = new MenuItem(vehName) { Enabled = true };
+                            vehicleClassMenu.AddMenuItem(vehBtn);
                         }
                         else
                         {
-                            var vehBtn = new UIMenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
-                            vehicleClassMenu.AddItem(vehBtn);
-                            vehBtn.SetRightBadge(UIMenuItem.BadgeStyle.Lock);
+                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
+                            vehicleClassMenu.AddMenuItem(vehBtn);
+                            vehBtn.RightIcon = MenuItem.Icon.LOCK;
                         }
                     }
                 }
@@ -230,7 +228,7 @@ namespace vMenuClient
             };
 
             // Handle checkbox changes.
-            menu.OnCheckboxChange += (sender, item, _checked) =>
+            menu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
                 if (item == spawnInVeh)
                 {
@@ -248,7 +246,7 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -15,7 +15,7 @@ namespace vMenuClient
     public class MiscSettings
     {
         // Variables
-        private UIMenu menu;
+        private Menu menu;
 
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
@@ -51,69 +51,71 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(Game.Player.Name, "Misc Settings", RightAlignMenus());
+            menu = new Menu(Game.Player.Name, "Misc Settings");
 
             // teleport menu
-            UIMenu teleportMenu = new UIMenu(Game.Player.Name, "Teleport Locations", RightAlignMenus());
-            UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
-            menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
-            MainMenu.Mp.Add(teleportMenu);
+            Menu teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
+            MenuItem teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            MenuController.AddSubmenu(menu, teleportMenu);
+            MenuController.BindMenuItem(menu, teleportMenu, teleportMenuBtn);
 
             // keybind settings menu
-            UIMenu keybindMenu = new UIMenu(Game.Player.Name, "Keybind Settings", RightAlignMenus());
-            UIMenuItem keybindMenuBtn = new UIMenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
-            menu.BindMenuToItem(keybindMenu, keybindMenuBtn);
-            MainMenu.Mp.Add(keybindMenu);
+            Menu keybindMenu = new Menu(Game.Player.Name, "Keybind Settings");
+            MenuItem keybindMenuBtn = new MenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
+            MenuController.AddSubmenu(menu, keybindMenu);
+            MenuController.BindMenuItem(menu, keybindMenu, keybindMenuBtn);
 
             // keybind settings menu items
-            UIMenuCheckboxItem kbTpToWaypoint = new UIMenuCheckboxItem("Teleport To Waypoint", KbTpToWaypoint, "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.");
-            UIMenuCheckboxItem kbDriftMode = new UIMenuCheckboxItem("Drift Mode", KbDriftMode, "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.");
-            UIMenuItem backBtn = new UIMenuItem("Back");
+            MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
+            MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
+            MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
-            UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
-            UIMenuCheckboxItem rightAlignMenu = new UIMenuCheckboxItem("Right Align Menu", MiscRightAlignMenu, "If you want vMenu to appear on the left side of your screen, disable this option. It will be saved immediately, but it will only take affect after restarting your game.");
-            UIMenuCheckboxItem speedKmh = new UIMenuCheckboxItem("Show Speed KM/H", ShowSpeedoKmh, "Show a speedometer on your screen indicating your speed in KM/h.");
-            UIMenuCheckboxItem speedMph = new UIMenuCheckboxItem("Show Speed MPH", ShowSpeedoMph, "Show a speedometer on your screen indicating your speed in MPH.");
-            UIMenuCheckboxItem coords = new UIMenuCheckboxItem("Show Coordinates", ShowCoordinates, "Show your current coordinates at the top of your screen.");
-            UIMenuCheckboxItem hideRadar = new UIMenuCheckboxItem("Hide Radar", HideRadar, "Hide the radar/minimap.");
-            UIMenuCheckboxItem hideHud = new UIMenuCheckboxItem("Hide Hud", HideHud, "Hide all hud elements.");
-            UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
-            UIMenuCheckboxItem drawTime = new UIMenuCheckboxItem("Show Time On Screen", DrawTimeOnScreen, "Shows you the current time on screen.");
-            UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
-            saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
-            UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
-            UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
-            UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", false, "Enable or disable night vision.");
-            UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", false, "Enable or disable thermal vision.");
-            UIMenuCheckboxItem modelDimensions = new UIMenuCheckboxItem("Show Vehicle Dimensions", ShowVehicleModelDimensions, "Draws lines for the model dimensions of your vehicle (debug function).");
+            MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+            MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. It will be saved immediately, but it will only take affect after restarting your game.", MiscRightAlignMenu);
+            MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
+            MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
+            MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
+            MenuCheckboxItem hideRadar = new MenuCheckboxItem("Hide Radar", "Hide the radar/minimap.", HideRadar);
+            MenuCheckboxItem hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
+            MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Just like PLD.", ShowLocation);
+            MenuCheckboxItem drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
+            MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
+            saveSettings.RightIcon = MenuItem.Icon.TICK;
+            MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
+            MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
+            MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
+            MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
+            MenuCheckboxItem modelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws lines for the model dimensions of your vehicle (debug function).", ShowVehicleModelDimensions);
 
-            UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
-            UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
-            UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
+            MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
+            MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
+            MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
 
-            UIMenu connectionSubmenu = new UIMenu(Game.Player.Name, "Connection Options", RightAlignMenus());
-            UIMenuItem connectionSubmenuBtn = new UIMenuItem("Connection Options", "Server connection/game quit options.");
-            UIMenuItem quitSession = new UIMenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
+            Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
+            MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
+            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
                 "Use this if you need to have addons streamed but want to use the rockstar editor.");
-            UIMenuItem quitGame = new UIMenuItem("Quit Game", "Exits the game after 5 seconds.");
-            UIMenuItem disconnectFromServer = new UIMenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
+            MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
+            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
                 "~r~This feature is not recommended, quit the game instead for a better experience.");
-            connectionSubmenu.AddItem(quitSession);
-            connectionSubmenu.AddItem(quitGame);
-            connectionSubmenu.AddItem(disconnectFromServer);
+            connectionSubmenu.AddMenuItem(quitSession);
+            connectionSubmenu.AddMenuItem(quitGame);
+            connectionSubmenu.AddMenuItem(disconnectFromServer);
 
-            UIMenuCheckboxItem locationBlips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map for some common locations.");
-            UIMenuCheckboxItem playerBlips = new UIMenuCheckboxItem("Show Player Blips", ShowPlayerBlips, "Shows blips on the map for all players.");
-            UIMenuCheckboxItem restorePlayerAppearance = new UIMenuCheckboxItem("Restore Player Appearance", RestorePlayerAppearance, "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.");
-            UIMenuCheckboxItem restorePlayerWeapons = new UIMenuCheckboxItem("Restore Player Weapons", RestorePlayerWeapons, "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.");
+            MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
+            MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
+            MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
 
-            MainMenu.Mp.Add(connectionSubmenu);
-            connectionSubmenu.RefreshIndex();
-            connectionSubmenu.UpdateScaleform();
-            menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
+            MenuController.AddSubmenu(menu, connectionSubmenu);
+            MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
+            //MainMenu.Mp.Add(connectionSubmenu);
+            //connectionSubmenu.RefreshIndex();
+            //connectionSubmenu.UpdateScaleform();
+            //menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
 
-            keybindMenu.OnCheckboxChange += (sender, item, _checked) =>
+            keybindMenu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
                 if (item == kbTpToWaypoint)
                 {
@@ -151,67 +153,67 @@ namespace vMenuClient
             // Add menu items to the menu.
             if (IsAllowed(Permission.MSTeleportToWp))
             {
-                menu.AddItem(tptowp);
-                keybindMenu.AddItem(kbTpToWaypoint);
+                menu.AddMenuItem(tptowp);
+                keybindMenu.AddMenuItem(kbTpToWaypoint);
             }
 
             if (IsAllowed(Permission.MSDriftMode))
             {
-                keybindMenu.AddItem(kbDriftMode);
+                keybindMenu.AddMenuItem(kbDriftMode);
             }
 
-            keybindMenu.AddItem(backBtn);
+            keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
-            menu.AddItem(rightAlignMenu);
-            menu.AddItem(speedKmh);
-            menu.AddItem(speedMph);
-            menu.AddItem(modelDimensions);
-            menu.AddItem(keybindMenuBtn);
-            keybindMenuBtn.SetRightLabel("→→→");
+            menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(speedKmh);
+            menu.AddMenuItem(speedMph);
+            menu.AddMenuItem(modelDimensions);
+            menu.AddMenuItem(keybindMenuBtn);
+            keybindMenuBtn.Label = "→→→";
             if (IsAllowed(Permission.MSConnectionMenu))
             {
-                menu.AddItem(connectionSubmenuBtn);
-                connectionSubmenuBtn.SetRightLabel("→→→");
+                menu.AddMenuItem(connectionSubmenuBtn);
+                connectionSubmenuBtn.Label = "→→→";
             }
             if (IsAllowed(Permission.MSShowCoordinates))
             {
-                menu.AddItem(coords);
+                menu.AddMenuItem(coords);
             }
             if (IsAllowed(Permission.MSShowLocation))
             {
-                menu.AddItem(showLocation);
+                menu.AddMenuItem(showLocation);
             }
-            menu.AddItem(drawTime); // always allowed
+            menu.AddMenuItem(drawTime); // always allowed
             if (IsAllowed(Permission.MSJoinQuitNotifs))
             {
-                menu.AddItem(deathNotifs);
+                menu.AddMenuItem(deathNotifs);
             }
             if (IsAllowed(Permission.MSDeathNotifs))
             {
-                menu.AddItem(joinQuitNotifs);
+                menu.AddMenuItem(joinQuitNotifs);
             }
             if (IsAllowed(Permission.MSNightVision))
             {
-                menu.AddItem(nightVision);
+                menu.AddMenuItem(nightVision);
             }
             if (IsAllowed(Permission.MSThermalVision))
             {
-                menu.AddItem(thermalVision);
+                menu.AddMenuItem(thermalVision);
             }
             if (IsAllowed(Permission.MSLocationBlips))
             {
-                menu.AddItem(locationBlips);
+                menu.AddMenuItem(locationBlips);
                 ToggleBlips(ShowLocationBlips);
             }
             if (IsAllowed(Permission.MSPlayerBlips))
             {
-                menu.AddItem(playerBlips);
+                menu.AddMenuItem(playerBlips);
             }
             if (IsAllowed(Permission.MSTeleportLocations))
             {
-                menu.AddItem(teleportMenuBtn);
-                teleportMenuBtn.SetRightLabel("→→→");
+                menu.AddMenuItem(teleportMenuBtn);
+                teleportMenuBtn.Label = "→→→";
 
                 string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
                 if (string.IsNullOrEmpty(json))
@@ -228,8 +230,8 @@ namespace vMenuClient
                             string name = teleport["name"].ToString();
                             float heading = (float)teleport["heading"];
                             Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
-                            UIMenuItem tpBtn = new UIMenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
-                            teleportMenu.AddItem(tpBtn);
+                            MenuItem tpBtn = new MenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
+                            teleportMenu.AddMenuItem(tpBtn);
                             tpLocations.Add(coordinates);
                             tpLocationsHeading.Add(heading);
                         }
@@ -247,32 +249,33 @@ namespace vMenuClient
             }
             if (IsAllowed(Permission.MSClearArea))
             {
-                menu.AddItem(clearArea);
+                menu.AddMenuItem(clearArea);
             }
             if (IsAllowed(Permission.MSRestoreAppearance))
             {
-                menu.AddItem(restorePlayerAppearance);
+                menu.AddMenuItem(restorePlayerAppearance);
             }
             if (IsAllowed(Permission.MSRestoreWeapons))
             {
-                menu.AddItem(restorePlayerWeapons);
+                menu.AddMenuItem(restorePlayerWeapons);
             }
 
             // Always allowed
-            menu.AddItem(hideRadar);
-            menu.AddItem(hideHud);
-            menu.AddItem(lockCamX);
-            menu.AddItem(lockCamY);
-            menu.AddItem(saveSettings);
+            menu.AddMenuItem(hideRadar);
+            menu.AddMenuItem(hideHud);
+            menu.AddMenuItem(lockCamX);
+            menu.AddMenuItem(lockCamY);
+            menu.AddMenuItem(saveSettings);
 
             // Handle checkbox changes.
-            menu.OnCheckboxChange += (sender, item, _checked) =>
+            menu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
                 if (item == rightAlignMenu)
                 {
                     MiscRightAlignMenu = _checked;
                     UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
-                    Notify.Alert("You must restart your game before this option takes affect.");
+                    MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+                    //Notify.Alert("You must restart your game before this option takes affect.");
                 }
                 if (item == speedKmh)
                 {
@@ -380,7 +383,7 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -17,9 +17,9 @@ namespace vMenuClient
         public List<int> PlayersWaypointList = new List<int>();
 
         // Menu variable, will be defined in CreateMenu()
-        private UIMenu menu;
+        private Menu menu;
 
-        UIMenu playerMenu = new UIMenu("Online Players", "Player:", RightAlignMenus()) { AlwaysShowMenuItemCounter = true };
+        Menu playerMenu = new Menu("Online Players", "Player:");
         Player currentPlayer = new Player(Game.Player.Handle);
 
 
@@ -29,71 +29,71 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu(Game.Player.Name, "Online Players", RightAlignMenus()) { AlwaysShowMenuItemCounter = true };
-            menu.CounterPretext = "Players: ";
+            menu = new Menu(Game.Player.Name, "Online Players") { };
+            menu.CounterPreText = "Players: ";
 
-            MainMenu.Mp.Add(playerMenu);
+            MenuController.AddSubmenu(menu, playerMenu);
 
-            UIMenuItem teleport = new UIMenuItem("Teleport To Player", "Teleport to this player.");
-            UIMenuItem teleportVeh = new UIMenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
-            UIMenuItem summon = new UIMenuItem("Summon Player", "Teleport the player to you.");
-            UIMenuItem toggleGPS = new UIMenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
-            UIMenuItem spectate = new UIMenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
-            UIMenuItem printIdentifiers = new UIMenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
-            UIMenuItem kill = new UIMenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
-            UIMenuItem kick = new UIMenuItem("~r~Kick Player", "Kick the player from the server.");
-            UIMenuItem ban = new UIMenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
-            UIMenuItem tempban = new UIMenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+            MenuItem teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
+            MenuItem teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
+            MenuItem summon = new MenuItem("Summon Player", "Teleport the player to you.");
+            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
+            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
+            MenuItem printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
+            MenuItem kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
+            MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
+            MenuItem ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
+            MenuItem tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
 
             if (IsAllowed(Permission.OPTeleport))
             {
-                playerMenu.AddItem(teleport);
-                playerMenu.AddItem(teleportVeh);
+                playerMenu.AddMenuItem(teleport);
+                playerMenu.AddMenuItem(teleportVeh);
             }
             if (IsAllowed(Permission.OPSummon))
             {
-                playerMenu.AddItem(summon);
+                playerMenu.AddMenuItem(summon);
             }
             if (IsAllowed(Permission.OPSpectate))
             {
-                playerMenu.AddItem(spectate);
+                playerMenu.AddMenuItem(spectate);
             }
             if (IsAllowed(Permission.OPWaypoint))
             {
-                playerMenu.AddItem(toggleGPS);
+                playerMenu.AddMenuItem(toggleGPS);
             }
             if (IsAllowed(Permission.OPIdentifiers))
             {
-                playerMenu.AddItem(printIdentifiers);
+                playerMenu.AddMenuItem(printIdentifiers);
             }
             if (IsAllowed(Permission.OPKill))
             {
-                playerMenu.AddItem(kill);
+                playerMenu.AddMenuItem(kill);
             }
             if (IsAllowed(Permission.OPKick))
             {
-                playerMenu.AddItem(kick);
+                playerMenu.AddMenuItem(kick);
             }
             if (IsAllowed(Permission.OPTempBan))
             {
-                playerMenu.AddItem(tempban);
+                playerMenu.AddMenuItem(tempban);
             }
             if (IsAllowed(Permission.OPPermBan))
             {
-                playerMenu.AddItem(ban);
-                ban.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
+                playerMenu.AddMenuItem(ban);
+                ban.LeftIcon = MenuItem.Icon.WARNING;
             }
 
             playerMenu.OnMenuClose += (sender) =>
             {
                 playerMenu.RefreshIndex();
-                playerMenu.UpdateScaleform();
-                ban.SetRightLabel("");
+                //playerMenu.UpdateScaleform();
+                ban.Label = "";
             };
 
-            playerMenu.OnIndexChange += (sender, index) =>
+            playerMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) =>
             {
-                ban.SetRightLabel("");
+                ban.Label = "";
             };
 
             // handle button presses for the specific player's menu.
@@ -208,16 +208,16 @@ namespace vMenuClient
                 // perm ban
                 else if (item == ban)
                 {
-                    if (ban.RightLabel == "Are you sure?")
+                    if (ban.Label == "Are you sure?")
                     {
-                        ban.SetRightLabel("");
+                        ban.Label = "";
                         UpdatePlayerlist();
                         playerMenu.GoBack();
                         BanPlayer(currentPlayer, true);
                     }
                     else
                     {
-                        ban.SetRightLabel("Are you sure?");
+                        ban.Label = "Are you sure?";
                     }
                 }
             };
@@ -225,11 +225,11 @@ namespace vMenuClient
             // handle button presses in the player list.
             menu.OnItemSelect += (sender, item, index) =>
                 {
-                    if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", "")))
+                    if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.Label.Replace(" →→→", "").Replace("Server #", "")))
                     {
-                        currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.RightLabel.Replace(" →→→", "").Replace("Server #", ""));
-                        playerMenu.Subtitle.Caption = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
-                        playerMenu.CounterPretext = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
+                        currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.Label.Replace(" →→→", "").Replace("Server #", ""));
+                        playerMenu.MenuSubtitle = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
+                        playerMenu.CounterPreText = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
                     }
                     else
                     {
@@ -243,20 +243,22 @@ namespace vMenuClient
         /// </summary>
         public void UpdatePlayerlist()
         {
-            menu.Clear();
+            menu.ClearMenuItems();
 
             foreach (Player p in MainMenu.PlayersList)
             {
-                UIMenuItem pItem = new UIMenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.");
-                pItem.SetRightLabel($"Server #{p.ServerId} →→→");
-                menu.AddItem(pItem);
-                menu.BindMenuToItem(playerMenu, pItem);
+                MenuItem pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
+                {
+                    Label = $"Server #{p.ServerId} →→→"
+                };
+                menu.AddMenuItem(pItem);
+                MenuController.BindMenuItem(menu, playerMenu, pItem);
             }
 
             menu.RefreshIndex();
-            menu.UpdateScaleform();
+            //menu.UpdateScaleform();
             playerMenu.RefreshIndex();
-            playerMenu.UpdateScaleform();
+            //playerMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -264,7 +266,7 @@ namespace vMenuClient
         /// Then returns the menu.
         /// </summary>
         /// <returns>The Online Players Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

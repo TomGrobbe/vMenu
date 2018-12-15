@@ -130,7 +130,7 @@ namespace vMenuClient
         /// <summary>
         /// A list containing all readable strings.
         /// </summary>
-        public static List<dynamic> Scenarios = new List<dynamic>
+        public static List<string> Scenarios = new List<string>
         {
             "AA Drink Coffee",
             "AA Smoke Cig",

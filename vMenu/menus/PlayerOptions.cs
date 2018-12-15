@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -15,7 +15,7 @@ namespace vMenuClient
     public class PlayerOptions
     {
         // Menu variable, will be defined in CreateMenu()
-        private UIMenu menu;
+        private Menu menu;
 
         // Public variables (getters only), return the private variables.
         public bool PlayerGodMode { get; private set; } = UserDefaults.PlayerGodMode;
@@ -36,132 +36,131 @@ namespace vMenuClient
         {
             #region create menu and menu items
             // Create the menu.
-            menu = new UIMenu(Game.Player.Name, "Player Options", RightAlignMenus());
+            menu = new Menu(Game.Player.Name, "Player Options");
 
             // Create all checkboxes.
-            UIMenuCheckboxItem playerGodModeCheckbox = new UIMenuCheckboxItem("Godmode", PlayerGodMode, "Makes you invincible.");
-            UIMenuCheckboxItem invisibleCheckbox = new UIMenuCheckboxItem("Invisible", PlayerInvisible, "Makes you invisible to yourself and others.");
-            UIMenuCheckboxItem unlimitedStaminaCheckbox = new UIMenuCheckboxItem("Unlimited Stamina", PlayerStamina, "Allows you to run forever without slowing down or taking damage.");
-            UIMenuCheckboxItem fastRunCheckbox = new UIMenuCheckboxItem("Fast Run", PlayerFastRun, "Get ~g~Snail~s~ powers and run very fast!");
+            MenuCheckboxItem playerGodModeCheckbox = new MenuCheckboxItem("Godmode", "Makes you invincible.", PlayerGodMode);
+            MenuCheckboxItem invisibleCheckbox = new MenuCheckboxItem("Invisible", "Makes you invisible to yourself and others.", PlayerInvisible);
+            MenuCheckboxItem unlimitedStaminaCheckbox = new MenuCheckboxItem("Unlimited Stamina", "Allows you to run forever without slowing down or taking damage.", PlayerStamina);
+            MenuCheckboxItem fastRunCheckbox = new MenuCheckboxItem("Fast Run", "Get ~g~Snail~s~ powers and run very fast!", PlayerFastRun);
             SetRunSprintMultiplierForPlayer(Game.Player.Handle, (PlayerFastRun ? 1.49f : 1f));
-            UIMenuCheckboxItem fastSwimCheckbox = new UIMenuCheckboxItem("Fast Swim", PlayerFastSwim, "Get ~g~Snail 2.0~s~ powers and swim super fast!");
+            MenuCheckboxItem fastSwimCheckbox = new MenuCheckboxItem("Fast Swim", "Get ~g~Snail 2.0~s~ powers and swim super fast!", PlayerFastSwim);
             SetSwimMultiplierForPlayer(Game.Player.Handle, (PlayerFastSwim ? 1.49f : 1f));
-            UIMenuCheckboxItem superJumpCheckbox = new UIMenuCheckboxItem("Super Jump", PlayerSuperJump, "Get ~g~Snail 3.0~s~ powers and jump like a champ!");
-            UIMenuCheckboxItem noRagdollCheckbox = new UIMenuCheckboxItem("No Ragdoll", PlayerNoRagdoll, "Disables player ragdoll, makes you not fall off your bike anymore.");
-            UIMenuCheckboxItem neverWantedCheckbox = new UIMenuCheckboxItem("Never Wanted", PlayerNeverWanted, "Disables all wanted levels.");
-            UIMenuCheckboxItem everyoneIgnoresPlayerCheckbox = new UIMenuCheckboxItem("Everyone Ignore Player", PlayerIsIgnored, "Everyone will leave you alone.");
-            UIMenuCheckboxItem playerFrozenCheckbox = new UIMenuCheckboxItem("Freeze Player", PlayerFrozen, "Freezes your current location, why would you do this...?");
+            MenuCheckboxItem superJumpCheckbox = new MenuCheckboxItem("Super Jump", "Get ~g~Snail 3.0~s~ powers and jump like a champ!", PlayerSuperJump);
+            MenuCheckboxItem noRagdollCheckbox = new MenuCheckboxItem("No Ragdoll", "Disables player ragdoll, makes you not fall off your bike anymore.", PlayerNoRagdoll);
+            MenuCheckboxItem neverWantedCheckbox = new MenuCheckboxItem("Never Wanted", "Disables all wanted levels.", PlayerNeverWanted);
+            MenuCheckboxItem everyoneIgnoresPlayerCheckbox = new MenuCheckboxItem("Everyone Ignore Player", "Everyone will leave you alone.", PlayerIsIgnored);
+            MenuCheckboxItem playerFrozenCheckbox = new MenuCheckboxItem("Freeze Player", "Freezes your current location.", PlayerFrozen);
 
             // Wanted level options
-            List<dynamic> wantedLevelList = new List<dynamic> { "No Wanted Level", 1, 2, 3, 4, 5 };
-            UIMenuListItem setWantedLevel = new UIMenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(Game.Player.Handle), "Set your wanted level by selecting a value, and pressing enter.");
-            UIMenuListItem setArmorItem = new UIMenuListItem("Set Armor Type", new List<dynamic> { "No Armor", GetLabelText("WT_BA_0"), GetLabelText("WT_BA_1"), GetLabelText("WT_BA_2"), GetLabelText("WT_BA_3"), GetLabelText("WT_BA_4"), }, 0, "Set the armor level/type for your player.");
+            List<string> wantedLevelList = new List<string> { "No Wanted Level", "1", "2", "3", "4", "5" };
+            MenuListItem setWantedLevel = new MenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(Game.Player.Handle), "Set your wanted level by selecting a value, and pressing enter.");
+            MenuListItem setArmorItem = new MenuListItem("Set Armor Type", new List<string> { "No Armor", GetLabelText("WT_BA_0"), GetLabelText("WT_BA_1"), GetLabelText("WT_BA_2"), GetLabelText("WT_BA_3"), GetLabelText("WT_BA_4"), }, 0, "Set the armor level/type for your player.");
 
-            UIMenuItem healPlayerBtn = new UIMenuItem("Heal Player", "Give the player max health.");
-            UIMenuItem cleanPlayerBtn = new UIMenuItem("Clean Player Clothes", "Clean your player clothes.");
-            UIMenuItem dryPlayerBtn = new UIMenuItem("Dry Player Clothes", "Make your player clothes dry.");
-            UIMenuItem wetPlayerBtn = new UIMenuItem("Wet Player Clothes", "Make your player clothes wet.");
-            UIMenuItem suicidePlayerBtn = new UIMenuItem("~r~Commit Suicide", "Kill yourself by taking the pill. Or by using a pistol if you have one.");
+            MenuItem healPlayerBtn = new MenuItem("Heal Player", "Give the player max health.");
+            MenuItem cleanPlayerBtn = new MenuItem("Clean Player Clothes", "Clean your player clothes.");
+            MenuItem dryPlayerBtn = new MenuItem("Dry Player Clothes", "Make your player clothes dry.");
+            MenuItem wetPlayerBtn = new MenuItem("Wet Player Clothes", "Make your player clothes wet.");
+            MenuItem suicidePlayerBtn = new MenuItem("~r~Commit Suicide", "Kill yourself by taking the pill. Or by using a pistol if you have one.");
 
-            UIMenu vehicleAutoPilot = new UIMenu("Auto Pilot", "Vehicle auto pilot options.", RightAlignMenus());
+            Menu vehicleAutoPilot = new Menu("Auto Pilot", "Vehicle auto pilot options.");
 
-            MainMenu.Mp.Add(vehicleAutoPilot);
+            MenuController.AddSubmenu(menu, vehicleAutoPilot);
 
-            UIMenuItem vehicleAutoPilotBtn = new UIMenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.");
-            vehicleAutoPilotBtn.SetRightLabel("→→→");
+            MenuItem vehicleAutoPilotBtn = new MenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.");
+            vehicleAutoPilotBtn.Label = "→→→";
 
-            List<dynamic> drivingStyles = new List<dynamic>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse" };
-            UIMenuListItem drivingStyle = new UIMenuListItem("Driving Style", drivingStyles, 0, "Set the driving style that is used for the Drive to Waypoint and Drive Around Randomly functions.");
+            List<string> drivingStyles = new List<string>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse" };
+            MenuListItem drivingStyle = new MenuListItem("Driving Style", drivingStyles, 0, "Set the driving style that is used for the Drive to Waypoint and Drive Around Randomly functions.");
 
             // Scenarios (list can be found in the PedScenarios class)
-            UIMenuListItem playerScenarios = new UIMenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
-            UIMenuItem stopScenario = new UIMenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
+            MenuListItem playerScenarios = new MenuListItem("Player Scenarios", PedScenarios.Scenarios, 0, "Select a scenario and hit enter to start it. Selecting another scenario will override the current scenario. If you're already playing the selected scenario, selecting it again will stop the scenario.");
+            MenuItem stopScenario = new MenuItem("Force Stop Scenario", "This will force a playing scenario to stop immediately, without waiting for it to finish it's 'stopping' animation.");
             #endregion
 
             #region add items to menu based on permissions
             // Add all checkboxes to the menu. (keeping permissions in mind)
             if (IsAllowed(Permission.POGod))
             {
-                menu.AddItem(playerGodModeCheckbox);
+                menu.AddMenuItem(playerGodModeCheckbox);
             }
             if (IsAllowed(Permission.POInvisible))
             {
-                menu.AddItem(invisibleCheckbox);
+                menu.AddMenuItem(invisibleCheckbox);
             }
             if (IsAllowed(Permission.POUnlimitedStamina))
             {
-                menu.AddItem(unlimitedStaminaCheckbox);
+                menu.AddMenuItem(unlimitedStaminaCheckbox);
             }
             if (IsAllowed(Permission.POFastRun))
             {
-                menu.AddItem(fastRunCheckbox);
+                menu.AddMenuItem(fastRunCheckbox);
             }
             if (IsAllowed(Permission.POFastSwim))
             {
-                menu.AddItem(fastSwimCheckbox);
+                menu.AddMenuItem(fastSwimCheckbox);
             }
             if (IsAllowed(Permission.POSuperjump))
             {
-                menu.AddItem(superJumpCheckbox);
+                menu.AddMenuItem(superJumpCheckbox);
             }
             if (IsAllowed(Permission.PONoRagdoll))
             {
-                menu.AddItem(noRagdollCheckbox);
+                menu.AddMenuItem(noRagdollCheckbox);
             }
             if (IsAllowed(Permission.PONeverWanted))
             {
-                menu.AddItem(neverWantedCheckbox);
+                menu.AddMenuItem(neverWantedCheckbox);
             }
             if (IsAllowed(Permission.POSetWanted))
             {
-                menu.AddItem(setWantedLevel);
+                menu.AddMenuItem(setWantedLevel);
             }
             if (IsAllowed(Permission.POIgnored))
             {
-                menu.AddItem(everyoneIgnoresPlayerCheckbox);
+                menu.AddMenuItem(everyoneIgnoresPlayerCheckbox);
             }
             if (IsAllowed(Permission.POMaxHealth))
             {
-                menu.AddItem(healPlayerBtn);
+                menu.AddMenuItem(healPlayerBtn);
             }
             if (IsAllowed(Permission.POMaxArmor))
             {
-                menu.AddItem(setArmorItem);
+                menu.AddMenuItem(setArmorItem);
             }
             if (IsAllowed(Permission.POCleanPlayer))
             {
-                menu.AddItem(cleanPlayerBtn);
+                menu.AddMenuItem(cleanPlayerBtn);
             }
             if (IsAllowed(Permission.PODryPlayer))
             {
-                menu.AddItem(dryPlayerBtn);
+                menu.AddMenuItem(dryPlayerBtn);
             }
             if (IsAllowed(Permission.POWetPlayer))
             {
-                menu.AddItem(wetPlayerBtn);
+                menu.AddMenuItem(wetPlayerBtn);
             }
 
-            menu.AddItem(suicidePlayerBtn);
+            menu.AddMenuItem(suicidePlayerBtn);
 
             if (IsAllowed(Permission.POVehicleAutoPilotMenu))
             {
-                menu.AddItem(vehicleAutoPilotBtn);
-                menu.BindMenuToItem(vehicleAutoPilot, vehicleAutoPilotBtn);
+                menu.AddMenuItem(vehicleAutoPilotBtn);
+                MenuController.BindMenuItem(menu, vehicleAutoPilot, vehicleAutoPilotBtn);
 
-                vehicleAutoPilot.AddItem(drivingStyle);
+                vehicleAutoPilot.AddMenuItem(drivingStyle);
 
-                UIMenuItem startDrivingWaypoint = new UIMenuItem("Drive To Waypoint", "Make your player ped drive your vehicle to your waypoint.");
-                UIMenuItem startDrivingRandomly = new UIMenuItem("Drive Around Randomly", "Make your player ped drive your vehicle randomly around the map.");
-                UIMenuItem stopDriving = new UIMenuItem("Stop Driving", "The player ped will find a suitable place to stop the vehicle. The task will be stopped once the vehicle has reached the suitable stop location.");
-                UIMenuItem forceStopDriving = new UIMenuItem("Force Stop Driving", "This will stop the driving task immediately without finding a suitable place to stop.");
+                MenuItem startDrivingWaypoint = new MenuItem("Drive To Waypoint", "Make your player ped drive your vehicle to your waypoint.");
+                MenuItem startDrivingRandomly = new MenuItem("Drive Around Randomly", "Make your player ped drive your vehicle randomly around the map.");
+                MenuItem stopDriving = new MenuItem("Stop Driving", "The player ped will find a suitable place to stop the vehicle. The task will be stopped once the vehicle has reached the suitable stop location.");
+                MenuItem forceStopDriving = new MenuItem("Force Stop Driving", "This will stop the driving task immediately without finding a suitable place to stop.");
 
-                vehicleAutoPilot.AddItem(startDrivingWaypoint);
-                vehicleAutoPilot.AddItem(startDrivingRandomly);
-                vehicleAutoPilot.AddItem(stopDriving);
-                vehicleAutoPilot.AddItem(forceStopDriving);
+                vehicleAutoPilot.AddMenuItem(startDrivingWaypoint);
+                vehicleAutoPilot.AddMenuItem(startDrivingRandomly);
+                vehicleAutoPilot.AddMenuItem(stopDriving);
+                vehicleAutoPilot.AddMenuItem(forceStopDriving);
 
                 vehicleAutoPilot.RefreshIndex();
-                vehicleAutoPilot.UpdateScaleform();
 
                 vehicleAutoPilot.OnItemSelect += async (sender, item, index) =>
                 {
@@ -243,31 +242,31 @@ namespace vMenuClient
                     }
                 };
 
-                vehicleAutoPilot.OnListSelect += (sender, item, index) =>
+                vehicleAutoPilot.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
                 {
                     if (item == drivingStyle)
                     {
-                        int style = GetStyleFromIndex(index);
+                        int style = GetStyleFromIndex(listIndex);
                         SetDriveTaskDrivingStyle(Game.PlayerPed.Handle, style);
-                        Notify.Info($"Driving task style is now set to: ~r~{drivingStyles[index]}~s~.");
+                        Notify.Info($"Driving task style is now set to: ~r~{drivingStyles[listIndex]}~s~.");
                     }
                 };
             }
 
             if (IsAllowed(Permission.POFreeze))
             {
-                menu.AddItem(playerFrozenCheckbox);
+                menu.AddMenuItem(playerFrozenCheckbox);
             }
             if (IsAllowed(Permission.POScenarios))
             {
-                menu.AddItem(playerScenarios);
-                menu.AddItem(stopScenario);
+                menu.AddMenuItem(playerScenarios);
+                menu.AddMenuItem(stopScenario);
             }
             #endregion
 
             #region handle all events
             // Checkbox changes.
-            menu.OnCheckboxChange += (sender, item, _checked) =>
+            menu.OnCheckboxChange += (sender, item, itemIndex, _checked) =>
             {
                 // God Mode toggled.
                 if (item == playerGodModeCheckbox)
@@ -340,18 +339,18 @@ namespace vMenuClient
             };
 
             // List selections
-            menu.OnListSelect += (sender, listItem, index) =>
+            menu.OnListItemSelect += (sender, listItem, listIndex, itemIndex) =>
             {
                 // Set wanted Level
                 if (listItem == setWantedLevel)
                 {
-                    SetPlayerWantedLevel(Game.Player.Handle, index, false);
+                    SetPlayerWantedLevel(Game.Player.Handle, listIndex, false);
                     SetPlayerWantedLevelNow(Game.Player.Handle, false);
                 }
                 // Player Scenarios 
                 else if (listItem == playerScenarios)
                 {
-                    CommonFunctions.PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[index]]);
+                    PlayScenario(PedScenarios.ScenarioNames[PedScenarios.Scenarios[listIndex]]);
                 }
                 else if (listItem == setArmorItem)
                 {
@@ -427,7 +426,7 @@ namespace vMenuClient
         /// Then returns the menu.
         /// </summary>
         /// <returns>The Player Options Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

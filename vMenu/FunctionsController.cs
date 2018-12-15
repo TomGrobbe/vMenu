@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using CitizenFX.Core.UI;
@@ -24,7 +24,7 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
-        //private UIMenu lastOpenMenu = null;
+        //private Menu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -130,12 +130,12 @@ namespace vMenuClient
                 }
             }
 
-            if (MainMenu.Mp.IsAnyMenuOpen())
+            if (MenuController.IsAnyMenuOpen())
             {
                 if (UpdateOnscreenKeyboard() == 0)
                 {
                     await Delay(0);
-                    MainMenu.Mp.CloseAllMenus();
+                    MenuController.CloseAllMenus();
                 }
             }
         }
@@ -357,14 +357,14 @@ namespace vMenuClient
                 // When the player is not inside a vehicle:
                 else
                 {
-                    UIMenu[] vehicleSubmenus = new UIMenu[6];
+                    Menu[] vehicleSubmenus = new Menu[6];
                     vehicleSubmenus[0] = MainMenu.VehicleOptionsMenu.VehicleModMenu;
                     vehicleSubmenus[1] = MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu;
                     vehicleSubmenus[2] = MainMenu.VehicleOptionsMenu.VehicleColorsMenu;
                     vehicleSubmenus[3] = MainMenu.VehicleOptionsMenu.VehicleDoorsMenu;
                     vehicleSubmenus[4] = MainMenu.VehicleOptionsMenu.VehicleWindowsMenu;
                     vehicleSubmenus[5] = MainMenu.VehicleOptionsMenu.VehicleComponentsMenu;
-                    foreach (UIMenu m in vehicleSubmenus)
+                    foreach (Menu m in vehicleSubmenus)
                     {
                         if (m.Visible)
                         {
@@ -436,22 +436,22 @@ namespace vMenuClient
             {
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
-                    MainMenu.WeatherOptionsMenu.GetMenu().MenuItems.ForEach(mi => { if (mi.GetType() != typeof(UIMenuCheckboxItem)) mi.SetRightBadge(UIMenuItem.BadgeStyle.None); });
+                    MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems().ForEach(mi => { if (mi.GetType() != typeof(MenuCheckboxItem)) mi.RightIcon = MenuItem.Icon.NONE; });
                     var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
-                    item.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
+                    item.RightIcon = MenuItem.Icon.TICK;
                     if (IsAllowed(Permission.WODynamic))
                     {
-                        UIMenuCheckboxItem dynWeatherTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        MenuCheckboxItem dynWeatherTmp = (MenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems()[0];
                         dynWeatherTmp.Checked = EventManager.dynamicWeather;
                         if (IsAllowed(Permission.WOBlackout))
                         {
-                            UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[1];
+                            MenuCheckboxItem blackoutTmp = (MenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems()[1];
                             blackoutTmp.Checked = EventManager.blackoutMode;
                         }
                     }
                     else if (IsAllowed(Permission.WOBlackout))
                     {
-                        UIMenuCheckboxItem blackoutTmp = (UIMenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().MenuItems[0];
+                        MenuCheckboxItem blackoutTmp = (MenuCheckboxItem)MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems()[0];
                         blackoutTmp.Checked = EventManager.blackoutMode;
                     }
 
@@ -954,7 +954,7 @@ namespace vMenuClient
                     var minutes = GetClockMinutes();
                     var hoursString = hours < 10 ? "0" + hours.ToString() : hours.ToString();
                     var minutesString = minutes < 10 ? "0" + minutes.ToString() : minutes.ToString();
-                    MainMenu.TimeOptionsMenu.freezeTimeToggle.SetRightLabel($"(Current Time {hoursString}:{minutesString})");
+                    MainMenu.TimeOptionsMenu.freezeTimeToggle.Label = $"(Current Time {hoursString}:{minutesString})";
                 }
             }
             // This only needs to be updated once every 2 seconds so we can delay it.
@@ -1130,7 +1130,7 @@ namespace vMenuClient
                     {
                         if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
-                            int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentSelection;
+                            int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
@@ -1182,7 +1182,7 @@ namespace vMenuClient
                         }
                         else if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
                         {
-                            int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentSelection;
+                            int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
@@ -1226,7 +1226,7 @@ namespace vMenuClient
                         }
                         else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
                         {
-                            int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentSelection;
+                            int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
@@ -1278,7 +1278,7 @@ namespace vMenuClient
                         // tattoos
                         else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
                         {
-                            int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentSelection;
+                            int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
@@ -1851,7 +1851,7 @@ namespace vMenuClient
 
         private async Task FlaresAndBombsTick()
         {
-            if (!MainMenu.Mp.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Fading.IsFadedIn && !IsPlayerSwitchInProgress())
+            if (!MenuController.IsAnyMenuOpen() && !MainMenu.DontOpenMenus && !Game.IsPaused && Fading.IsFadedIn && !IsPlayerSwitchInProgress())
             {
                 if (flaresAllowed && CanShootFlares())
                 {
@@ -1877,7 +1877,7 @@ namespace vMenuClient
         private async Task AnimationsAndInteractions()
         {
 
-            if (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
+            if (!(MenuController.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead))
             {
                 // snowballs
                 if (Game.IsControlJustReleased(0, Control.Detonate))
@@ -1897,7 +1897,7 @@ namespace vMenuClient
                 if (Game.IsControlPressed(0, Control.SwitchVisor))
                 {
                     int timer = GetGameTimer();
-                    while (!(MainMenu.Mp.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
+                    while (!(MenuController.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
                     {
                         await Delay(0);
                         if (GetGameTimer() - timer > 400)

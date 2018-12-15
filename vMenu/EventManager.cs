@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -181,7 +181,7 @@ namespace vMenuClient
                 if (currentWeatherType != lastWeather)
                 {
                     Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
-                    
+
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);

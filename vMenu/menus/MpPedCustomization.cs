@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -16,16 +16,16 @@ namespace vMenuClient
     public class MpPedCustomization
     {
         // Variables
-        private UIMenu menu;
-        public UIMenu createCharacterMenu = new UIMenu("Create Character", "Create A New Character", RightAlignMenus());
-        public UIMenu savedCharactersMenu = new UIMenu("vMenu", "Manage Saved Characters", RightAlignMenus());
-        public UIMenu inheritanceMenu = new UIMenu("vMenu", "Character Inheritance Options", RightAlignMenus());
-        public UIMenu appearanceMenu = new UIMenu("vMenu", "Character Appearance Options", RightAlignMenus());
-        public UIMenu faceShapeMenu = new UIMenu("vMenu", "Character Face Shape Options", RightAlignMenus());
-        public UIMenu tattoosMenu = new UIMenu("vMenu", "Character Tattoo Options", RightAlignMenus());
-        public UIMenu clothesMenu = new UIMenu("vMenu", "Character Clothing Options", RightAlignMenus());
-        public UIMenu propsMenu = new UIMenu("vMenu", "Character Props Options", RightAlignMenus());
-        private UIMenu manageSavedCharacterMenu = new UIMenu("vMenu", "Manage MP Character", RightAlignMenus());
+        private Menu menu;
+        public Menu createCharacterMenu = new Menu("Create Character", "Create A New Character");
+        public Menu savedCharactersMenu = new Menu("vMenu", "Manage Saved Characters");
+        public Menu inheritanceMenu = new Menu("vMenu", "Character Inheritance Options");
+        public Menu appearanceMenu = new Menu("vMenu", "Character Appearance Options");
+        public Menu faceShapeMenu = new Menu("vMenu", "Character Face Shape Options");
+        public Menu tattoosMenu = new Menu("vMenu", "Character Tattoo Options");
+        public Menu clothesMenu = new Menu("vMenu", "Character Clothing Options");
+        public Menu propsMenu = new Menu("vMenu", "Character Props Options");
+        private Menu manageSavedCharacterMenu = new Menu("vMenu", "Manage MP Character");
         public static bool DontCloseMenus = false;
         public static bool DisableBackButton = false;
         string selectedSavedCharacterManageName = "";
@@ -64,98 +64,98 @@ namespace vMenuClient
                 currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
             }
 
-            appearanceMenu.Clear();
+            appearanceMenu.ClearMenuItems();
             //faceShapeMenu.Clear();
-            tattoosMenu.Clear();
-            clothesMenu.Clear();
-            propsMenu.Clear();
+            tattoosMenu.ClearMenuItems();
+            clothesMenu.ClearMenuItems();
+            propsMenu.ClearMenuItems();
 
             #region appearance menu.
 
 
-            List<dynamic> opacity = new List<dynamic>() { "0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0" };
+            List<string> opacity = new List<string>() { "0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%" };
 
-            List<dynamic> overlayColorsList = new List<dynamic>();
+            List<string> overlayColorsList = new List<string>();
             for (int i = 0; i < GetNumHairColors(); i++)
             {
                 overlayColorsList.Add($"Color #{i}");
             }
 
-            List<dynamic> hairStylesList = new List<dynamic>();
+            List<string> hairStylesList = new List<string>();
             for (int i = 0; i < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2); i++)
             {
                 hairStylesList.Add($"Style #{i}");
             }
             hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2)}");
 
-            List<dynamic> blemishesStyleList = new List<dynamic>();
+            List<string> blemishesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(0); i++)
             {
                 blemishesStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> beardStylesList = new List<dynamic>();
+            List<string> beardStylesList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(1); i++)
             {
                 beardStylesList.Add($"Style #{i}");
             }
 
-            List<dynamic> eyebrowsStyleList = new List<dynamic>();
+            List<string> eyebrowsStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(2); i++)
             {
                 eyebrowsStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> ageingStyleList = new List<dynamic>();
+            List<string> ageingStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(3); i++)
             {
                 ageingStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> makeupStyleList = new List<dynamic>();
+            List<string> makeupStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(4); i++)
             {
                 makeupStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> blushStyleList = new List<dynamic>();
+            List<string> blushStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(5); i++)
             {
                 blushStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> complexionStyleList = new List<dynamic>();
+            List<string> complexionStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(6); i++)
             {
                 complexionStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> sunDamageStyleList = new List<dynamic>();
+            List<string> sunDamageStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(7); i++)
             {
                 sunDamageStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> lipstickStyleList = new List<dynamic>();
+            List<string> lipstickStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(8); i++)
             {
                 lipstickStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> molesFrecklesStyleList = new List<dynamic>();
+            List<string> molesFrecklesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(9); i++)
             {
                 molesFrecklesStyleList.Add($"Style #{i}");
             }
 
-            List<dynamic> chestHairStyleList = new List<dynamic>();
+            List<string> chestHairStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(10); i++)
             {
                 chestHairStyleList.Add($"Style #{i}");
             }
 
 
-            List<dynamic> eyeColorList = new List<dynamic>();
+            List<string> eyeColorList = new List<string>();
             for (int i = 0; i < 32; i++)
             {
                 eyeColorList.Add($"Eye Color #{i}");
@@ -255,95 +255,109 @@ namespace vMenuClient
             int currentEyeColor = editPed ? currentCharacter.PedAppearance.eyeColor : 0;
             SetPedEyeColor(Game.PlayerPed.Handle, currentEyeColor);
 
-            UIMenuListItem hairStyles = new UIMenuListItem("Hair Style", hairStylesList, currentHairStyle, "Select a hair style.");
-            UIMenuListItem hairColors = new UIMenuListItem("Hair Color", overlayColorsList, currentHairColor, "Select a hair color.");
-            UIMenuListItem hairHighlightColors = new UIMenuListItem("Hair Highlight Color", overlayColorsList, currentHairHighlightColor, "Select a hair highlight color.");
+            MenuListItem hairStyles = new MenuListItem("Hair Style", hairStylesList, currentHairStyle, "Select a hair style.");
+            //MenuListItem hairColors = new MenuListItem("Hair Color", overlayColorsList, currentHairColor, "Select a hair color.");
+            MenuListItem hairColors = new MenuListItem("Hair Color", overlayColorsList, currentHairColor, "Select a hair color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            //MenuListItem hairHighlightColors = new MenuListItem("Hair Highlight Color", overlayColorsList, currentHairHighlightColor, "Select a hair highlight color.");
+            MenuListItem hairHighlightColors = new MenuListItem("Hair Highlight Color", overlayColorsList, currentHairHighlightColor, "Select a hair highlight color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
-            UIMenuListItem blemishesStyle = new UIMenuListItem("Blemishes Style", blemishesStyleList, currentBlemishesStyle, "Select a blemishes style.");
-            UIMenuSliderItem blemishesOpacity = new UIMenuSliderItem("Blemishes Opacity", opacity, (int)(currentBlemishesOpacity * 10f), "Select a blemishes opacity.");
+            MenuListItem blemishesStyle = new MenuListItem("Blemishes Style", blemishesStyleList, currentBlemishesStyle, "Select a blemishes style.");
+            //MenuSliderItem blemishesOpacity = new MenuSliderItem("Blemishes Opacity", "Select a blemishes opacity.", 0, 10, (int)(currentBlemishesOpacity * 10f), false);
+            MenuListItem blemishesOpacity = new MenuListItem("Blemishes Opacity", opacity, (int)(currentBlemishesOpacity * 10f), "Select a blemishes opacity.") { ShowOpacityPanel = true };
 
-            UIMenuListItem beardStyles = new UIMenuListItem("Beard Style", beardStylesList, currentBeardStyle, "Select a beard/facial hair style.");
-            UIMenuSliderItem beardOpacity = new UIMenuSliderItem("Beard Opacity", opacity, (int)(currentBeardOpacity * 10f), "Select the opacity for your beard/facial hair.");
-            UIMenuListItem beardColor = new UIMenuListItem("Beard Color", overlayColorsList, currentBeardColor, "Select a beard color");
+            MenuListItem beardStyles = new MenuListItem("Beard Style", beardStylesList, currentBeardStyle, "Select a beard/facial hair style.");
+            MenuListItem beardOpacity = new MenuListItem("Beard Opacity", opacity, (int)(currentBeardOpacity * 10f), "Select the opacity for your beard/facial hair.") { ShowOpacityPanel = true };
+            MenuListItem beardColor = new MenuListItem("Beard Color", overlayColorsList, currentBeardColor, "Select a beard color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            //MenuSliderItem beardOpacity = new MenuSliderItem("Beard Opacity", "Select the opacity for your beard/facial hair.", 0, 10, (int)(currentBeardOpacity * 10f), false);
+            //MenuListItem beardColor = new MenuListItem("Beard Color", overlayColorsList, currentBeardColor, "Select a beard color");
 
-            UIMenuListItem eyebrowStyle = new UIMenuListItem("Eyebrows Style", eyebrowsStyleList, currentEyebrowStyle, "Select an eyebrows style.");
-            UIMenuSliderItem eyebrowOpacity = new UIMenuSliderItem("Eyebrows Opacity", opacity, (int)(currentEyebrowOpacity * 10f), "Select the opacity for your eyebrows.");
-            UIMenuListItem eyebrowColor = new UIMenuListItem("Eyebrows Color", overlayColorsList, currentEyebrowColor, "Select an eyebrows color.");
+            MenuListItem eyebrowStyle = new MenuListItem("Eyebrows Style", eyebrowsStyleList, currentEyebrowStyle, "Select an eyebrows style.");
+            MenuListItem eyebrowOpacity = new MenuListItem("Eyebrows Opacity", opacity, (int)(currentEyebrowOpacity * 10f), "Select the opacity for your eyebrows.") { ShowOpacityPanel = true };
+            MenuListItem eyebrowColor = new MenuListItem("Eyebrows Color", overlayColorsList, currentEyebrowColor, "Select an eyebrows color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            //MenuSliderItem eyebrowOpacity = new MenuSliderItem("Eyebrows Opacity", "Select the opacity for your eyebrows.", 0, 10, (int)(currentEyebrowOpacity * 10f), false);
 
-            UIMenuListItem ageingStyle = new UIMenuListItem("Ageing Style", ageingStyleList, currentAgeingStyle, "Select an ageing style.");
-            UIMenuSliderItem ageingOpacity = new UIMenuSliderItem("Ageing Opacity", opacity, (int)(currentAgeingOpacity * 10f), "Select an ageing opacity.");
+            MenuListItem ageingStyle = new MenuListItem("Ageing Style", ageingStyleList, currentAgeingStyle, "Select an ageing style.");
+            MenuListItem ageingOpacity = new MenuListItem("Ageing Opacity", opacity, (int)(currentAgeingOpacity * 10f), "Select an ageing opacity.") { ShowOpacityPanel = true };
+            //MenuSliderItem ageingOpacity = new MenuSliderItem("Ageing Opacity", "Select an ageing opacity.", 0, 10, (int)(currentAgeingOpacity * 10f), false);
 
-            UIMenuListItem makeupStyle = new UIMenuListItem("Makeup Style", makeupStyleList, currentMakeupStyle, "Select a makeup style.");
-            UIMenuSliderItem makeupOpacity = new UIMenuSliderItem("Makeup Opacity", opacity, (int)(currentMakeupOpacity * 10f), "Select a makeup opacity.");
-            UIMenuListItem makeupColor = new UIMenuListItem("Makeup Color", overlayColorsList, currentMakeupColor, "Select a makeup color.");
+            MenuListItem makeupStyle = new MenuListItem("Makeup Style", makeupStyleList, currentMakeupStyle, "Select a makeup style.");
+            MenuListItem makeupOpacity = new MenuListItem("Makeup Opacity", opacity, (int)(currentMakeupOpacity * 10f), "Select a makeup opacity") { ShowOpacityPanel = true };
+            //MenuSliderItem makeupOpacity = new MenuSliderItem("Makeup Opacity", 0, 10, (int)(currentMakeupOpacity * 10f), "Select a makeup opacity.");
+            MenuListItem makeupColor = new MenuListItem("Makeup Color", overlayColorsList, currentMakeupColor, "Select a makeup color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            UIMenuListItem blushStyle = new UIMenuListItem("Blush Style", blushStyleList, currentBlushStyle, "Select a blush style.");
-            UIMenuSliderItem blushOpacity = new UIMenuSliderItem("Blush Opacity", opacity, (int)(currentBlushOpacity * 10f), "Select a blush opacity.");
-            UIMenuListItem blushColor = new UIMenuListItem("Blush Color", overlayColorsList, currentBlushColor, "Select a blush color.");
+            MenuListItem blushStyle = new MenuListItem("Blush Style", blushStyleList, currentBlushStyle, "Select a blush style.");
+            MenuListItem blushOpacity = new MenuListItem("Blush Opacity", opacity, (int)(currentBlushOpacity * 10f), "Select a blush opacity.") { ShowOpacityPanel = true };
+            //MenuSliderItem blushOpacity = new MenuSliderItem("Blush Opacity", 0, 10, (int)(currentBlushOpacity * 10f), "Select a blush opacity.");
+            MenuListItem blushColor = new MenuListItem("Blush Color", overlayColorsList, currentBlushColor, "Select a blush color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            UIMenuListItem complexionStyle = new UIMenuListItem("Complexion Style", complexionStyleList, currentComplexionStyle, "Select a complexion style.");
-            UIMenuSliderItem complexionOpacity = new UIMenuSliderItem("Complexion Opacity", opacity, (int)(currentComplexionOpacity * 10f), "Select a complexion opacity.");
+            MenuListItem complexionStyle = new MenuListItem("Complexion Style", complexionStyleList, currentComplexionStyle, "Select a complexion style.");
+            //MenuSliderItem complexionOpacity = new MenuSliderItem("Complexion Opacity", 0, 10, (int)(currentComplexionOpacity * 10f), "Select a complexion opacity.");
+            MenuListItem complexionOpacity = new MenuListItem("Complexion Opacity", opacity, (int)(currentComplexionOpacity * 10f), "Select a complexion opacity.") { ShowOpacityPanel = true };
 
-            UIMenuListItem sunDamageStyle = new UIMenuListItem("Sun Damage Style", sunDamageStyleList, currentSunDamageStyle, "Select a sun damage style.");
-            UIMenuSliderItem sunDamageOpacity = new UIMenuSliderItem("Sun Damage Opacity", opacity, (int)(currentSunDamageOpacity * 10f), "Select a sun damage opacity.");
+            MenuListItem sunDamageStyle = new MenuListItem("Sun Damage Style", sunDamageStyleList, currentSunDamageStyle, "Select a sun damage style.");
+            //MenuSliderItem sunDamageOpacity = new MenuSliderItem("Sun Damage Opacity", 0, 10, (int)(currentSunDamageOpacity * 10f), "Select a sun damage opacity.");
+            MenuListItem sunDamageOpacity = new MenuListItem("Sun Damage Opacity", opacity, (int)(currentSunDamageOpacity * 10f), "Select a sun damage opacity.") { ShowOpacityPanel = true };
 
-            UIMenuListItem lipstickStyle = new UIMenuListItem("Lipstick Style", lipstickStyleList, currentLipstickStyle, "Select a lipstick style.");
-            UIMenuSliderItem lipstickOpacity = new UIMenuSliderItem("Lipstick Opacity", opacity, (int)(currentLipstickOpacity * 10f), "Select a lipstick opacity.");
-            UIMenuListItem lipstickColor = new UIMenuListItem("Lipstick Color", overlayColorsList, currentLipstickColor, "Select a lipstick color.");
+            MenuListItem lipstickStyle = new MenuListItem("Lipstick Style", lipstickStyleList, currentLipstickStyle, "Select a lipstick style.");
+            //MenuSliderItem lipstickOpacity = new MenuSliderItem("Lipstick Opacity", 0, 10, (int)(currentLipstickOpacity * 10f), "Select a lipstick opacity.");
+            MenuListItem lipstickOpacity = new MenuListItem("Lipstick Opacity", opacity, (int)(currentLipstickOpacity * 10f), "Select a lipstick opacity.") { ShowOpacityPanel = true };
+            MenuListItem lipstickColor = new MenuListItem("Lipstick Color", overlayColorsList, currentLipstickColor, "Select a lipstick color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            UIMenuListItem molesFrecklesStyle = new UIMenuListItem("Moles and Freckles Style", molesFrecklesStyleList, currentMolesFrecklesStyle, "Select a moles and freckles style.");
-            UIMenuSliderItem molesFrecklesOpacity = new UIMenuSliderItem("Moles and Freckles Opacity", opacity, (int)(currentMolesFrecklesOpacity * 10f), "Select a moles and freckles opacity.");
+            MenuListItem molesFrecklesStyle = new MenuListItem("Moles and Freckles Style", molesFrecklesStyleList, currentMolesFrecklesStyle, "Select a moles and freckles style.");
+            //MenuSliderItem molesFrecklesOpacity = new MenuSliderItem("Moles and Freckles Opacity", 0, 10, (int)(currentMolesFrecklesOpacity * 10f), "Select a moles and freckles opacity.");
+            MenuListItem molesFrecklesOpacity = new MenuListItem("Moles and Freckles Opacity", opacity, (int)(currentMolesFrecklesOpacity * 10f), "Select a moles and freckles opacity.") { ShowOpacityPanel = true };
 
-            UIMenuListItem chestHairStyle = new UIMenuListItem("Chest Hair Style", chestHairStyleList, currentChesthairStyle, "Select a chest hair style.");
-            UIMenuSliderItem chestHairOpacity = new UIMenuSliderItem("Chest Hair Opacity", opacity, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.");
-            UIMenuListItem chestHairColor = new UIMenuListItem("Chest Hair Color", overlayColorsList, currentChesthairColor, "Select a chest hair color.");
+            MenuListItem chestHairStyle = new MenuListItem("Chest Hair Style", chestHairStyleList, currentChesthairStyle, "Select a chest hair style.");
+            //MenuSliderItem chestHairOpacity = new MenuSliderItem("Chest Hair Opacity", 0, 10, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.");
+            MenuListItem chestHairOpacity = new MenuListItem("Chest Hair Opacity", opacity, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.") { ShowOpacityPanel = true };
+            MenuListItem chestHairColor = new MenuListItem("Chest Hair Color", overlayColorsList, currentChesthairColor, "Select a chest hair color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
-            UIMenuListItem eyeColor = new UIMenuListItem("Eye Colors", eyeColorList, currentEyeColor, "Select an eye/contact lens color.");
+            MenuListItem eyeColor = new MenuListItem("Eye Colors", eyeColorList, currentEyeColor, "Select an eye/contact lens color.");
 
-            appearanceMenu.AddItem(hairStyles);
-            appearanceMenu.AddItem(hairColors);
-            appearanceMenu.AddItem(hairHighlightColors);
+            appearanceMenu.AddMenuItem(hairStyles);
+            appearanceMenu.AddMenuItem(hairColors);
+            appearanceMenu.AddMenuItem(hairHighlightColors);
 
-            appearanceMenu.AddItem(blemishesStyle);
-            appearanceMenu.AddItem(blemishesOpacity);
+            appearanceMenu.AddMenuItem(blemishesStyle);
+            appearanceMenu.AddMenuItem(blemishesOpacity);
 
-            appearanceMenu.AddItem(beardStyles);
-            appearanceMenu.AddItem(beardOpacity);
-            appearanceMenu.AddItem(beardColor);
+            appearanceMenu.AddMenuItem(beardStyles);
+            appearanceMenu.AddMenuItem(beardOpacity);
+            appearanceMenu.AddMenuItem(beardColor);
 
-            appearanceMenu.AddItem(eyebrowStyle);
-            appearanceMenu.AddItem(eyebrowOpacity);
-            appearanceMenu.AddItem(eyebrowColor);
+            appearanceMenu.AddMenuItem(eyebrowStyle);
+            appearanceMenu.AddMenuItem(eyebrowOpacity);
+            appearanceMenu.AddMenuItem(eyebrowColor);
 
-            appearanceMenu.AddItem(ageingStyle);
-            appearanceMenu.AddItem(ageingOpacity);
+            appearanceMenu.AddMenuItem(ageingStyle);
+            appearanceMenu.AddMenuItem(ageingOpacity);
 
-            appearanceMenu.AddItem(makeupStyle);
-            appearanceMenu.AddItem(makeupOpacity);
-            appearanceMenu.AddItem(makeupColor);
+            appearanceMenu.AddMenuItem(makeupStyle);
+            appearanceMenu.AddMenuItem(makeupOpacity);
+            appearanceMenu.AddMenuItem(makeupColor);
 
-            appearanceMenu.AddItem(blushStyle);
-            appearanceMenu.AddItem(blushOpacity);
-            appearanceMenu.AddItem(blushColor);
+            appearanceMenu.AddMenuItem(blushStyle);
+            appearanceMenu.AddMenuItem(blushOpacity);
+            appearanceMenu.AddMenuItem(blushColor);
 
-            appearanceMenu.AddItem(complexionStyle);
-            appearanceMenu.AddItem(complexionOpacity);
+            appearanceMenu.AddMenuItem(complexionStyle);
+            appearanceMenu.AddMenuItem(complexionOpacity);
 
-            appearanceMenu.AddItem(sunDamageStyle);
-            appearanceMenu.AddItem(sunDamageOpacity);
+            appearanceMenu.AddMenuItem(sunDamageStyle);
+            appearanceMenu.AddMenuItem(sunDamageOpacity);
 
-            appearanceMenu.AddItem(lipstickStyle);
-            appearanceMenu.AddItem(lipstickOpacity);
-            appearanceMenu.AddItem(lipstickColor);
+            appearanceMenu.AddMenuItem(lipstickStyle);
+            appearanceMenu.AddMenuItem(lipstickOpacity);
+            appearanceMenu.AddMenuItem(lipstickColor);
 
-            appearanceMenu.AddItem(molesFrecklesStyle);
-            appearanceMenu.AddItem(molesFrecklesOpacity);
+            appearanceMenu.AddMenuItem(molesFrecklesStyle);
+            appearanceMenu.AddMenuItem(molesFrecklesOpacity);
 
-            appearanceMenu.AddItem(chestHairStyle);
-            appearanceMenu.AddItem(chestHairOpacity);
-            appearanceMenu.AddItem(chestHairColor);
+            appearanceMenu.AddMenuItem(chestHairStyle);
+            appearanceMenu.AddMenuItem(chestHairOpacity);
+            appearanceMenu.AddMenuItem(chestHairColor);
 
-            appearanceMenu.AddItem(eyeColor);
+            appearanceMenu.AddMenuItem(eyeColor);
 
             if (male)
             {
@@ -352,69 +366,69 @@ namespace vMenuClient
 
                 /*
                 makeupStyle.Enabled = false;
-                makeupStyle.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                makeupStyle.LeftIcon = MenuItem.Icon.LOCK;
                 makeupStyle.Description = "This is not available for male characters.";
 
                 makeupOpacity.Enabled = false;
-                makeupOpacity.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                makeupOpacity.LeftIcon = MenuItem.Icon.LOCK;
                 makeupOpacity.Description = "This is not available for male characters.";
 
                 makeupColor.Enabled = false;
-                makeupColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                makeupColor.LeftIcon = MenuItem.Icon.LOCK;
                 makeupColor.Description = "This is not available for male characters.";
 
 
                 blushStyle.Enabled = false;
-                blushStyle.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                blushStyle.LeftIcon = MenuItem.Icon.LOCK;
                 blushStyle.Description = "This is not available for male characters.";
 
                 blushOpacity.Enabled = false;
-                blushOpacity.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                blushOpacity.LeftIcon = MenuItem.Icon.LOCK;
                 blushOpacity.Description = "This is not available for male characters.";
 
                 blushColor.Enabled = false;
-                blushColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                blushColor.LeftIcon = MenuItem.Icon.LOCK;
                 blushColor.Description = "This is not available for male characters.";
 
 
                 lipstickStyle.Enabled = false;
-                lipstickStyle.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                lipstickStyle.LeftIcon = MenuItem.Icon.LOCK;
                 lipstickStyle.Description = "This is not available for male characters.";
 
                 lipstickOpacity.Enabled = false;
-                lipstickOpacity.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                lipstickOpacity.LeftIcon = MenuItem.Icon.LOCK;
                 lipstickOpacity.Description = "This is not available for male characters.";
 
                 lipstickColor.Enabled = false;
-                lipstickColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                lipstickColor.LeftIcon = MenuItem.Icon.LOCK;
                 lipstickColor.Description = "This is not available for male characters.";
                 */
             }
             else
             {
                 beardStyles.Enabled = false;
-                beardStyles.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                beardStyles.LeftIcon = MenuItem.Icon.LOCK;
                 beardStyles.Description = "This is not available for female characters.";
 
                 beardOpacity.Enabled = false;
-                beardOpacity.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                beardOpacity.LeftIcon = MenuItem.Icon.LOCK;
                 beardOpacity.Description = "This is not available for female characters.";
 
                 beardColor.Enabled = false;
-                beardColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                beardColor.LeftIcon = MenuItem.Icon.LOCK;
                 beardColor.Description = "This is not available for female characters.";
 
 
                 chestHairStyle.Enabled = false;
-                chestHairStyle.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                chestHairStyle.LeftIcon = MenuItem.Icon.LOCK;
                 chestHairStyle.Description = "This is not available for female characters.";
 
                 chestHairOpacity.Enabled = false;
-                chestHairOpacity.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                chestHairOpacity.LeftIcon = MenuItem.Icon.LOCK;
                 chestHairOpacity.Description = "This is not available for female characters.";
 
                 chestHairColor.Enabled = false;
-                chestHairColor.SetLeftBadge(UIMenuItem.BadgeStyle.Lock);
+                chestHairColor.LeftIcon = MenuItem.Icon.LOCK;
                 chestHairColor.Description = "This is not available for female characters.";
             }
 
@@ -429,14 +443,14 @@ namespace vMenuClient
                     int currentVariationIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Key : GetPedDrawableVariation(Game.PlayerPed.Handle, i);
                     int currentVariationTextureIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Value : GetPedTextureVariation(Game.PlayerPed.Handle, i);
 
-                    List<dynamic> items = new List<dynamic>();
+                    List<string> items = new List<string>();
                     for (int x = 0; x < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i); x++)
                     {
                         items.Add($"Drawable #{x} (of {GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i)})");
                     }
 
-                    UIMenuListItem listItem = new UIMenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex}.");
-                    clothesMenu.AddItem(listItem);
+                    MenuListItem listItem = new MenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex}.");
+                    clothesMenu.AddMenuItem(listItem);
                 }
             }
             #endregion
@@ -454,7 +468,7 @@ namespace vMenuClient
                 int currentProp = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Key : GetPedPropIndex(Game.PlayerPed.Handle, propId);
                 int currentPropTexture = editPed && currentCharacter.PropVariations.props.ContainsKey(propId) ? currentCharacter.PropVariations.props[propId].Value : GetPedPropTextureIndex(Game.PlayerPed.Handle, propId);
 
-                List<dynamic> propsList = new List<dynamic>();
+                List<string> propsList = new List<string>();
                 for (int i = 0; i < GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId); i++)
                 {
                     propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId)})");
@@ -463,13 +477,13 @@ namespace vMenuClient
 
                 if (GetPedPropIndex(Game.PlayerPed.Handle, propId) != -1)
                 {
-                    UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
-                    propsMenu.AddItem(propListItem);
+                    MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
+                    propsMenu.AddMenuItem(propListItem);
                 }
                 else
                 {
-                    UIMenuListItem propListItem = new UIMenuListItem($"{propNames[x]}", propsList, currentProp, "Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.");
-                    propsMenu.AddItem(propListItem);
+                    MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, "Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.");
+                    propsMenu.AddMenuItem(propListItem);
                 }
 
 
@@ -477,7 +491,7 @@ namespace vMenuClient
             #endregion
 
             #region face features menu
-            foreach (UIMenuSliderItem item in faceShapeMenu.MenuItems)
+            foreach (MenuSliderItem item in faceShapeMenu.GetMenuItems())
             {
                 if (editPed)
                 {
@@ -487,33 +501,33 @@ namespace vMenuClient
                     }
                     else
                     {
-                        if (currentCharacter.FaceShapeFeatures.features.ContainsKey(faceShapeMenu.MenuItems.IndexOf(item)))
+                        if (currentCharacter.FaceShapeFeatures.features.ContainsKey(faceShapeMenu.GetMenuItems().IndexOf(item)))
                         {
-                            item.Index = (int)(currentCharacter.FaceShapeFeatures.features[faceShapeMenu.MenuItems.IndexOf(item)] * 10f) + 10;
-                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.MenuItems.IndexOf(item), currentCharacter.FaceShapeFeatures.features[faceShapeMenu.MenuItems.IndexOf(item)]);
+                            item.Position = (int)(currentCharacter.FaceShapeFeatures.features[faceShapeMenu.GetMenuItems().IndexOf(item)] * 10f) + 10;
+                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.GetMenuItems().IndexOf(item), currentCharacter.FaceShapeFeatures.features[faceShapeMenu.GetMenuItems().IndexOf(item)]);
                         }
                         else
                         {
-                            item.Index = 10;
-                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.MenuItems.IndexOf(item), 0f);
+                            item.Position = 10;
+                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.GetMenuItems().IndexOf(item), 0f);
                         }
                     }
                 }
                 else
                 {
-                    item.Index = 10;
-                    SetPedFaceFeature(PlayerPedId(), faceShapeMenu.MenuItems.IndexOf(item), 0f);
+                    item.Position = 10;
+                    SetPedFaceFeature(PlayerPedId(), faceShapeMenu.GetMenuItems().IndexOf(item), 0f);
                 }
             }
             #endregion
 
             #region Tattoos menu
-            List<dynamic> headTattoosList = new List<dynamic>();
-            List<dynamic> torsoTattoosList = new List<dynamic>();
-            List<dynamic> leftArmTattoosList = new List<dynamic>();
-            List<dynamic> rightArmTattoosList = new List<dynamic>();
-            List<dynamic> leftLegTattoosList = new List<dynamic>();
-            List<dynamic> rightLegTattoosList = new List<dynamic>();
+            List<string> headTattoosList = new List<string>();
+            List<string> torsoTattoosList = new List<string>();
+            List<string> leftArmTattoosList = new List<string>();
+            List<string> rightArmTattoosList = new List<string>();
+            List<string> leftLegTattoosList = new List<string>();
+            List<string> rightLegTattoosList = new List<string>();
 
             if (male)
             {
@@ -594,32 +608,32 @@ namespace vMenuClient
                 }
             }
 
-            UIMenuListItem headTatts = new UIMenuListItem("Head Tattoos", headTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
-            UIMenuListItem torsoTatts = new UIMenuListItem("Torso Tattoos", torsoTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
-            UIMenuListItem leftArmTatts = new UIMenuListItem("Left Arm Tattoos", leftArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
-            UIMenuListItem rightArmTatts = new UIMenuListItem("Right Arm Tattoos", rightArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
-            UIMenuListItem leftLegTatts = new UIMenuListItem("Left Leg Tattoos", leftLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
-            UIMenuListItem rightLegTatts = new UIMenuListItem("Right Leg Tattoos", rightLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem headTatts = new MenuListItem("Head Tattoos", headTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem torsoTatts = new MenuListItem("Torso Tattoos", torsoTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem leftArmTatts = new MenuListItem("Left Arm Tattoos", leftArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem rightArmTatts = new MenuListItem("Right Arm Tattoos", rightArmTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem leftLegTatts = new MenuListItem("Left Leg Tattoos", leftLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
+            MenuListItem rightLegTatts = new MenuListItem("Right Leg Tattoos", rightLegTattoosList, 0, "Choose a tattoo, then press enter to toggle that tattoo.");
 
-            tattoosMenu.AddItem(headTatts);
-            tattoosMenu.AddItem(torsoTatts);
-            tattoosMenu.AddItem(leftArmTatts);
-            tattoosMenu.AddItem(rightArmTatts);
-            tattoosMenu.AddItem(leftLegTatts);
-            tattoosMenu.AddItem(rightLegTatts);
+            tattoosMenu.AddMenuItem(headTatts);
+            tattoosMenu.AddMenuItem(torsoTatts);
+            tattoosMenu.AddMenuItem(leftArmTatts);
+            tattoosMenu.AddMenuItem(rightArmTatts);
+            tattoosMenu.AddMenuItem(leftLegTatts);
+            tattoosMenu.AddMenuItem(rightLegTatts);
             #endregion
 
             createCharacterMenu.RefreshIndex();
-            createCharacterMenu.UpdateScaleform();
+            //createCharacterMenu.UpdateScaleform();
 
             appearanceMenu.RefreshIndex();
-            appearanceMenu.UpdateScaleform();
+            //appearanceMenu.UpdateScaleform();
 
             inheritanceMenu.RefreshIndex();
-            inheritanceMenu.UpdateScaleform();
+            //inheritanceMenu.UpdateScaleform();
 
             tattoosMenu.RefreshIndex();
-            tattoosMenu.UpdateScaleform();
+            //tattoosMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -678,119 +692,123 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", RightAlignMenus());
+            menu = new Menu("vMenu", "About vMenu");
 
-            UIMenuItem createMale = new UIMenuItem("Create Male Character", "Create a new male character.");
-            createMale.SetRightLabel("→→→");
+            MenuItem createMale = new MenuItem("Create Male Character", "Create a new male character.");
+            createMale.Label = "→→→";
 
-            UIMenuItem createFemale = new UIMenuItem("Create Female Character", "Create a new female character.");
-            createFemale.SetRightLabel("→→→");
+            MenuItem createFemale = new MenuItem("Create Female Character", "Create a new female character.");
+            createFemale.Label = "→→→";
 
-            UIMenuItem savedCharacters = new UIMenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.");
-            savedCharacters.SetRightLabel("→→→");
+            MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.");
+            savedCharacters.Label = "→→→";
 
-            MainMenu.Mp.Add(createCharacterMenu);
-            MainMenu.Mp.Add(savedCharactersMenu);
-            MainMenu.Mp.Add(inheritanceMenu);
-            MainMenu.Mp.Add(appearanceMenu);
-            MainMenu.Mp.Add(faceShapeMenu);
-            MainMenu.Mp.Add(tattoosMenu);
-            MainMenu.Mp.Add(clothesMenu);
-            MainMenu.Mp.Add(propsMenu);
+            MenuController.AddMenu(createCharacterMenu);
+            //MainMenu.Mp.Add(createCharacterMenu);
+            MenuController.AddMenu(savedCharactersMenu);
+            MenuController.AddMenu(inheritanceMenu);
+            MenuController.AddMenu(appearanceMenu);
+            MenuController.AddMenu(faceShapeMenu);
+            MenuController.AddMenu(tattoosMenu);
+            MenuController.AddMenu(clothesMenu);
+            MenuController.AddMenu(propsMenu);
 
             CreateSavedPedsMenu();
 
-            menu.AddItem(createMale);
-            menu.BindMenuToItem(createCharacterMenu, createMale);
-            menu.AddItem(createFemale);
-            menu.BindMenuToItem(createCharacterMenu, createFemale);
-            menu.AddItem(savedCharacters);
-            menu.BindMenuToItem(savedCharactersMenu, savedCharacters);
+            menu.AddMenuItem(createMale);
+            MenuController.BindMenuItem(menu, createCharacterMenu, createMale);
+            //menu.BindMenuToItem(createCharacterMenu, createMale);
+            menu.AddMenuItem(createFemale);
+            MenuController.BindMenuItem(menu, createCharacterMenu, createFemale);
+            //menu.BindMenuToItem(createCharacterMenu, createFemale);
+            menu.AddMenuItem(savedCharacters);
+            MenuController.BindMenuItem(menu, savedCharactersMenu, savedCharacters);
+            //menu.BindMenuToItem(savedCharactersMenu, savedCharacters);
 
             menu.RefreshIndex();
-            menu.UpdateScaleform();
+            //menu.UpdateScaleform();
 
-            createCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            inheritanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            appearanceMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            faceShapeMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            clothesMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            propsMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Head"));
-            createCharacterMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            inheritanceMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            appearanceMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            faceShapeMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            clothesMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            propsMenu.AddInstructionalButton(new InstructionalButton(Control.PhoneExtraOption, "Turn Character"));
-            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.ParachuteBrakeLeft, "Turn Camera Left"));
-            tattoosMenu.AddInstructionalButton(new InstructionalButton(Control.ParachuteBrakeRight, "Turn Camera Right"));
+            createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            appearanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            faceShapeMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            faceShapeMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
 
-            UIMenuItem inheritanceButton = new UIMenuItem("Character Inheritance", "Character inheritance options.");
-            UIMenuItem appearanceButton = new UIMenuItem("Character Appearance", "Character appearance options.");
-            UIMenuItem faceButton = new UIMenuItem("Character Face Shape Options", "Character face shape options.");
-            UIMenuItem tattoosButton = new UIMenuItem("Character Tatttoo Options", "Character tattoo options.");
-            UIMenuItem clothesButton = new UIMenuItem("Character Clothes", "Character clothes.");
-            UIMenuItem propsButton = new UIMenuItem("Character Props", "Character props.");
-            UIMenuItem saveButton = new UIMenuItem("Save Character", "Save your character.");
-            UIMenuItem exitNoSave = new UIMenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
+            MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
+            MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
+            MenuItem faceButton = new MenuItem("Character Face Shape Options", "Character face shape options.");
+            MenuItem tattoosButton = new MenuItem("Character Tatttoo Options", "Character tattoo options.");
+            MenuItem clothesButton = new MenuItem("Character Clothes", "Character clothes.");
+            MenuItem propsButton = new MenuItem("Character Props", "Character props.");
+            MenuItem saveButton = new MenuItem("Save Character", "Save your character.");
+            MenuItem exitNoSave = new MenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
 
-            inheritanceButton.SetRightLabel("→→→");
-            appearanceButton.SetRightLabel("→→→");
-            faceButton.SetRightLabel("→→→");
-            tattoosButton.SetRightLabel("→→→");
-            clothesButton.SetRightLabel("→→→");
-            propsButton.SetRightLabel("→→→");
+            inheritanceButton.Label = "→→→";
+            appearanceButton.Label = "→→→";
+            faceButton.Label = "→→→";
+            tattoosButton.Label = "→→→";
+            clothesButton.Label = "→→→";
+            propsButton.Label = "→→→";
 
-            createCharacterMenu.AddItem(inheritanceButton);
-            createCharacterMenu.AddItem(appearanceButton);
-            createCharacterMenu.AddItem(faceButton);
-            createCharacterMenu.AddItem(tattoosButton);
-            createCharacterMenu.AddItem(clothesButton);
-            createCharacterMenu.AddItem(propsButton);
-            createCharacterMenu.AddItem(saveButton);
-            createCharacterMenu.AddItem(exitNoSave);
+            createCharacterMenu.AddMenuItem(inheritanceButton);
+            createCharacterMenu.AddMenuItem(appearanceButton);
+            createCharacterMenu.AddMenuItem(faceButton);
+            createCharacterMenu.AddMenuItem(tattoosButton);
+            createCharacterMenu.AddMenuItem(clothesButton);
+            createCharacterMenu.AddMenuItem(propsButton);
+            createCharacterMenu.AddMenuItem(saveButton);
+            createCharacterMenu.AddMenuItem(exitNoSave);
 
-            createCharacterMenu.BindMenuToItem(inheritanceMenu, inheritanceButton);
-            createCharacterMenu.BindMenuToItem(appearanceMenu, appearanceButton);
-            createCharacterMenu.BindMenuToItem(faceShapeMenu, faceButton);
-            createCharacterMenu.BindMenuToItem(tattoosMenu, tattoosButton);
-            createCharacterMenu.BindMenuToItem(clothesMenu, clothesButton);
-            createCharacterMenu.BindMenuToItem(propsMenu, propsButton);
+            MenuController.BindMenuItem(createCharacterMenu, inheritanceMenu, inheritanceButton);
+            MenuController.BindMenuItem(createCharacterMenu, appearanceMenu, appearanceButton);
+            MenuController.BindMenuItem(createCharacterMenu, faceShapeMenu, faceButton);
+            MenuController.BindMenuItem(createCharacterMenu, tattoosMenu, tattoosButton);
+            MenuController.BindMenuItem(createCharacterMenu, clothesMenu, clothesButton);
+            MenuController.BindMenuItem(createCharacterMenu, propsMenu, propsButton);
 
             #region inheritance
-            List<dynamic> parents = new List<dynamic>();
+            List<string> parents = new List<string>();
             for (int i = 0; i < 46; i++)
             {
                 parents.Add($"#{i}");
             }
 
-            var inheritanceDads = new UIMenuListItem("Father", parents, 0, "Select a father.");
-            var inheritanceMoms = new UIMenuListItem("Mother", parents, 0, "Select a mother.");
-            List<dynamic> mixValues = new List<dynamic>() { 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
-            var inheritanceShapeMix = new UIMenuSliderItem("Head Shape Mix", mixValues, 5, "Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", true);
-            var inheritanceSkinMix = new UIMenuSliderItem("Body Skin Mix", mixValues, 5, "Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", true);
+            var inheritanceDads = new MenuListItem("Father", parents, 0, "Select a father.");
+            var inheritanceMoms = new MenuListItem("Mother", parents, 0, "Select a mother.");
+            List<float> mixValues = new List<float>() { 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
+            var inheritanceShapeMix = new MenuSliderItem("Head Shape Mix", "Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
+            var inheritanceSkinMix = new MenuSliderItem("Body Skin Mix", "Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
 
-            inheritanceMenu.AddItem(inheritanceDads);
-            inheritanceMenu.AddItem(inheritanceMoms);
-            inheritanceMenu.AddItem(inheritanceShapeMix);
-            inheritanceMenu.AddItem(inheritanceSkinMix);
+            inheritanceMenu.AddMenuItem(inheritanceDads);
+            inheritanceMenu.AddMenuItem(inheritanceMoms);
+            inheritanceMenu.AddMenuItem(inheritanceShapeMix);
+            inheritanceMenu.AddMenuItem(inheritanceSkinMix);
 
             void SetHeadBlend()
             {
-                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.Index, inheritanceMoms.Index, 0, inheritanceDads.Index, inheritanceMoms.Index, 0, mixValues[inheritanceShapeMix.Index], mixValues[inheritanceSkinMix.Index], 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.Index, inheritanceMoms.Index, 0, inheritanceDads.Index, inheritanceMoms.Index, 0, mixValues[inheritanceShapeMix.Position], mixValues[inheritanceSkinMix.Position], 0f, false);
             }
 
-            inheritanceMenu.OnListChange += (sender, item, index) =>
+            inheritanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
                 SetHeadBlend();
             };
 
-            inheritanceMenu.OnSliderChange += (sender, item, index) =>
-            {
-                SetHeadBlend();
-            };
+            //inheritanceMenu.OnSliderChange += (sender, item, index) =>
+            //{
+            //    SetHeadBlend();
+            //};
             #endregion
 
             #region appearance
@@ -822,35 +840,35 @@ namespace vMenuClient
             };
 
             // manage the list changes for appearance items.
-            appearanceMenu.OnListChange += (sender, item, index) =>
+            appearanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
-                int itemIndex = sender.MenuItems.IndexOf(item);
+                //int itemIndex = sender.MenuItems.IndexOf(item);
                 if (itemIndex == 0) // hair style
                 {
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>("", "");
 
-                    if (index >= GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2))
+                    if (newSelectionIndex >= GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2))
                     {
                         SetPedComponentVariation(Game.PlayerPed.Handle, 2, 0, 0, 0);
                         currentCharacter.PedAppearance.hairStyle = 0;
                     }
                     else
                     {
-                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, index, 0, 0);
-                        currentCharacter.PedAppearance.hairStyle = index;
-                        if (hairOverlays.ContainsKey(index))
+                        SetPedComponentVariation(Game.PlayerPed.Handle, 2, newSelectionIndex, 0, 0);
+                        currentCharacter.PedAppearance.hairStyle = newSelectionIndex;
+                        if (hairOverlays.ContainsKey(newSelectionIndex))
                         {
-                            SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(hairOverlays[index].Key), (uint)GetHashKey(hairOverlays[index].Value));
-                            currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>(hairOverlays[index].Key, hairOverlays[index].Value);
+                            SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(hairOverlays[newSelectionIndex].Key), (uint)GetHashKey(hairOverlays[newSelectionIndex].Value));
+                            currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>(hairOverlays[newSelectionIndex].Key, hairOverlays[newSelectionIndex].Value);
                         }
                     }
                 }
                 else if (itemIndex == 1 || itemIndex == 2) // hair colors
                 {
-                    var tmp = (UIMenuListItem)sender.MenuItems[1];
+                    var tmp = (MenuListItem)_menu.GetMenuItems()[1];
                     int hairColor = tmp.Index;
-                    tmp = (UIMenuListItem)sender.MenuItems[2];
+                    tmp = (MenuListItem)_menu.GetMenuItems()[2];
                     int hairHighlightColor = tmp.Index;
 
                     SetPedHairColor(Game.PlayerPed.Handle, hairColor, hairHighlightColor);
@@ -860,20 +878,20 @@ namespace vMenuClient
                 }
                 else if (itemIndex == 31) // eye color
                 {
-                    int selection = ((UIMenuListItem)sender.MenuItems[itemIndex]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index;
                     SetPedEyeColor(Game.PlayerPed.Handle, selection);
                     currentCharacter.PedAppearance.eyeColor = selection;
                 }
                 else
                 {
-                    int selection = ((UIMenuListItem)sender.MenuItems[itemIndex]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index;
                     float opacity = 0f;
-                    if (sender.MenuItems[itemIndex + 1] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
-                    else if (sender.MenuItems[itemIndex - 1] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
-                    else if (sender.MenuItems[itemIndex] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex]).Index + 1) / 10f) - 0.1f;
+                    if (_menu.GetMenuItems()[itemIndex + 1] is MenuSliderItem)
+                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex - 1] is MenuSliderItem)
+                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex] is MenuSliderItem)
+                        opacity = (((float)((MenuSliderItem)_menu.GetMenuItems()[itemIndex]).Index + 1) / 10f) - 0.1f;
                     else
                         opacity = 1f;
                     switch (itemIndex)
@@ -962,21 +980,21 @@ namespace vMenuClient
             };
 
             // manage the slider changes for opacity on the appearance items.
-            appearanceMenu.OnSliderChange += (sender, item, index) =>
+            appearanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
-                int itemIndex = sender.MenuItems.IndexOf(item);
+                //int itemIndex = sender.MenuItems.IndexOf(item);
 
                 if (itemIndex > 2 && itemIndex < 31)
                 {
 
-                    int selection = ((UIMenuListItem)sender.MenuItems[itemIndex - 1]).Index;
+                    int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).Index;
                     float opacity = 0f;
-                    if (sender.MenuItems[itemIndex] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex]).Index + 1) / 10f) - 0.1f;
-                    else if (sender.MenuItems[itemIndex + 1] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
-                    else if (sender.MenuItems[itemIndex - 1] is UIMenuSliderItem)
-                        opacity = (((float)((UIMenuSliderItem)sender.MenuItems[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
+                    if (_menu.GetMenuItems()[itemIndex] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex]).Index + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex + 1] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex + 1]).Index + 1) / 10f) - 0.1f;
+                    else if (_menu.GetMenuItems()[itemIndex - 1] is MenuListItem)
+                        opacity = (((float)((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).Index + 1) / 10f) - 0.1f;
                     else
                         opacity = 1f;
                     switch (itemIndex)
@@ -1043,9 +1061,10 @@ namespace vMenuClient
             #endregion
 
             #region clothes
-            clothesMenu.OnListChange += (sender, item, index) =>
+            clothesMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, realIndex) =>
             {
-                int realIndex = sender.MenuItems.IndexOf(item);
+                //int realIndex = sender.MenuItems.IndexOf(item);
+
                 int componentIndex = realIndex + 1;
                 if (realIndex > 0)
                 {
@@ -1054,19 +1073,19 @@ namespace vMenuClient
 
                 int textureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, componentIndex);
                 int newTextureIndex = 0;
-                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, item.Index, newTextureIndex, 0);
+                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, newSelectionIndex, newTextureIndex, 0);
                 if (currentCharacter.DrawableVariations.clothes == null)
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
                 }
-                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
-                item.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                clothesMenu.UpdateScaleform();
+                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(newSelectionIndex, newTextureIndex);
+                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                //clothesMenu.UpdateScaleform();
             };
 
-            clothesMenu.OnListSelect += (sender, item, index) =>
+            clothesMenu.OnListItemSelect += (sender, listItem, listIndex, realIndex) =>
             {
-                int realIndex = sender.MenuItems.IndexOf(item);
+                //int realIndex = sender.MenuItems.IndexOf(item);
                 int componentIndex = realIndex + 1;
                 if (realIndex > 0)
                 {
@@ -1074,22 +1093,22 @@ namespace vMenuClient
                 }
 
                 int textureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, componentIndex);
-                int newTextureIndex = (GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
-                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, item.Index, newTextureIndex, 0);
+                int newTextureIndex = (GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, listIndex) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, listIndex, newTextureIndex, 0);
                 if (currentCharacter.DrawableVariations.clothes == null)
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
                 }
-                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
-                item.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                clothesMenu.UpdateScaleform();
+                currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(listIndex, newTextureIndex);
+                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
+                //clothesMenu.UpdateScaleform();
             };
             #endregion
 
             #region props
-            propsMenu.OnListChange += (sender, item, index) =>
+            propsMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, realIndex) =>
             {
-                int realIndex = sender.MenuItems.IndexOf(item);
+                //int realIndex = sender.MenuItems.IndexOf(item);
                 int propIndex = realIndex;
                 if (realIndex == 3)
                 {
@@ -1101,7 +1120,7 @@ namespace vMenuClient
                 }
 
                 int textureIndex = 0;
-                if (index >= GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex))
+                if (newSelectionIndex >= GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex))
                 {
                     SetPedPropIndex(Game.PlayerPed.Handle, propIndex, -1, -1, false);
                     ClearPedProp(Game.PlayerPed.Handle, propIndex);
@@ -1110,31 +1129,31 @@ namespace vMenuClient
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
-                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                    listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                 }
                 else
                 {
-                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, item.Index, textureIndex, true);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, newSelectionIndex, textureIndex, true);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
-                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, textureIndex);
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(newSelectionIndex, textureIndex);
                     if (GetPedPropIndex(Game.PlayerPed.Handle, propIndex) == -1)
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                     }
                     else
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1}).";
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, newSelectionIndex) - 1}).";
                     }
                 }
-                propsMenu.UpdateScaleform();
+                //propsMenu.UpdateScaleform();
             };
 
-            propsMenu.OnListSelect += (sender, item, index) =>
+            propsMenu.OnListItemSelect += (sender, listItem, listIndex, realIndex) =>
             {
-                int realIndex = sender.MenuItems.IndexOf(item);
+                //int realIndex = sender.MenuItems.IndexOf(item);
                 int propIndex = realIndex;
                 if (realIndex == 3)
                 {
@@ -1146,7 +1165,7 @@ namespace vMenuClient
                 }
 
                 int textureIndex = GetPedPropTextureIndex(Game.PlayerPed.Handle, propIndex);
-                int newTextureIndex = (GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
+                int newTextureIndex = (GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, listIndex) - 1) < (textureIndex + 1) ? 0 : textureIndex + 1;
                 if (textureIndex >= GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex))
                 {
                     SetPedPropIndex(Game.PlayerPed.Handle, propIndex, -1, -1, false);
@@ -1156,26 +1175,26 @@ namespace vMenuClient
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
                     currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(-1, -1);
-                    item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                    listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                 }
                 else
                 {
-                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, item.Index, newTextureIndex, true);
+                    SetPedPropIndex(Game.PlayerPed.Handle, propIndex, listIndex, newTextureIndex, true);
                     if (currentCharacter.PropVariations.props == null)
                     {
                         currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                     }
-                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(item.Index, newTextureIndex);
+                    currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(listIndex, newTextureIndex);
                     if (GetPedPropIndex(Game.PlayerPed.Handle, propIndex) == -1)
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
                     }
                     else
                     {
-                        item.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, item.Index) - 1}).";
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, listIndex) - 1}).";
                     }
                 }
-                propsMenu.UpdateScaleform();
+                //propsMenu.UpdateScaleform();
             };
             #endregion
 
@@ -1203,29 +1222,29 @@ namespace vMenuClient
             Neck_Thikness  
             */
 
-            List<dynamic> faceFeaturesValuesList = new List<dynamic>() { -1f, -.9f, -.8f, -.7f, -.6f, -.5f, -.4f, -.3f, -.2f, -.1f, 0f, .1f, .2f, .3f, .4f, .5f, .6f, .7f, .8f, .9f, 1f };
+            List<float> faceFeaturesValuesList = new List<float>() { -1f, -.9f, -.8f, -.7f, -.6f, -.5f, -.4f, -.3f, -.2f, -.1f, 0f, .1f, .2f, .3f, .4f, .5f, .6f, .7f, .8f, .9f, 1f };
             var faceFeaturesNamesList = new string[20] { "Nose Width", "Noes Peak Height", "Nose Peak Length", "Nose Bone Height", "Nose Peak Lowering", "Nose Bone Twist", "Eyebrows Height", "Eyebrows Depth", "Cheekbones Height", "Cheekbones Width", "Cheeks Width", "Eyes Opening", "Lips Thickness", "Jaw Bone Width", "Jaw Bone Depth/Length", "Chin Height", "Chin Depth/Length", "Chin Width", "Chin Hole Size", "Neck Thickness" };
             for (int i = 0; i < 19; i++)
             {
-                UIMenuSliderItem faceFeature = new UIMenuSliderItem(faceFeaturesNamesList[i], faceFeaturesValuesList, 10, $"Set the {faceFeaturesNamesList[i]} face feature value.", true);
-                faceShapeMenu.AddItem(faceFeature);
+                MenuSliderItem faceFeature = new MenuSliderItem(faceFeaturesNamesList[i], $"Set the {faceFeaturesNamesList[i]} face feature value.", -10, 10, 0, true);
+                faceShapeMenu.AddMenuItem(faceFeature);
             }
 
-            faceShapeMenu.OnSliderChange += (sender, item, index) =>
+            faceShapeMenu.OnSliderPositionChange += (sender, sliderItem, oldPosition, newPosition, itemIndex) =>
             {
                 if (currentCharacter.FaceShapeFeatures.features == null)
                 {
                     currentCharacter.FaceShapeFeatures.features = new Dictionary<int, float>();
                 }
-                float value = faceFeaturesValuesList[item.Index];
-                currentCharacter.FaceShapeFeatures.features[sender.MenuItems.IndexOf(item)] = value;
-                SetPedFaceFeature(Game.PlayerPed.Handle, sender.MenuItems.IndexOf(item), value);
+                float value = faceFeaturesValuesList[newPosition];
+                currentCharacter.FaceShapeFeatures.features[itemIndex] = value;
+                SetPedFaceFeature(Game.PlayerPed.Handle, itemIndex, value);
             };
 
             #endregion
 
             #region tattoos menu list select events
-            tattoosMenu.OnListSelect += (sender, item, index) =>
+            tattoosMenu.OnListItemSelect += (sender, item, tattooIndex, menuIndex) =>
             {
                 if (currentCharacter.PedTatttoos.HeadTattoos == null)
                 {
@@ -1252,12 +1271,11 @@ namespace vMenuClient
                     currentCharacter.PedTatttoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
                 }
 
-                int menuIndex = sender.MenuItems.IndexOf(item);
-                int tattooIndex = index;
+                //int menuIndex = sender.MenuItems.IndexOf(item);
 
                 if (menuIndex == 0) // head
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.HEAD.ElementAt(index) : TattoosData.FemaleTattoos.HEAD.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.HEAD.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.HEAD.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.HeadTattoos.Contains(tat))
                     {
@@ -1270,7 +1288,7 @@ namespace vMenuClient
                 }
                 else if (menuIndex == 1) // torso
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.TORSO.ElementAt(index) : TattoosData.FemaleTattoos.TORSO.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.TORSO.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.TORSO.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.TorsoTattoos.Contains(tat))
                     {
@@ -1283,7 +1301,7 @@ namespace vMenuClient
                 }
                 else if (menuIndex == 2) // left arm
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_ARM.ElementAt(index) : TattoosData.FemaleTattoos.LEFT_ARM.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_ARM.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.LEFT_ARM.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.LeftArmTattoos.Contains(tat))
                     {
@@ -1296,7 +1314,7 @@ namespace vMenuClient
                 }
                 else if (menuIndex == 3) // right arm
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_ARM.ElementAt(index) : TattoosData.FemaleTattoos.RIGHT_ARM.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_ARM.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.RIGHT_ARM.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.RightArmTattoos.Contains(tat))
                     {
@@ -1309,7 +1327,7 @@ namespace vMenuClient
                 }
                 else if (menuIndex == 4) // left leg
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_LEG.ElementAt(index) : TattoosData.FemaleTattoos.LEFT_LEG.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.LEFT_LEG.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.LEFT_LEG.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.LeftLegTattoos.Contains(tat))
                     {
@@ -1322,7 +1340,7 @@ namespace vMenuClient
                 }
                 else if (menuIndex == 5) // right leg
                 {
-                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_LEG.ElementAt(index) : TattoosData.FemaleTattoos.RIGHT_LEG.ElementAt(index);
+                    var Tattoo = currentCharacter.IsMale ? TattoosData.MaleTattoos.RIGHT_LEG.ElementAt(tattooIndex) : TattoosData.FemaleTattoos.RIGHT_LEG.ElementAt(tattooIndex);
                     KeyValuePair<string, string> tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (currentCharacter.PedTatttoos.RightLegTattoos.Contains(tat))
                     {
@@ -1379,7 +1397,7 @@ namespace vMenuClient
                 {
                     if (await SavePed())
                     {
-                        while (!MainMenu.Mp.IsAnyMenuOpen())
+                        while (!MenuController.IsAnyMenuOpen())
                         {
                             await BaseScript.Delay(0);
                         }
@@ -1432,12 +1450,12 @@ namespace vMenuClient
                 else if (item == inheritanceButton) // update the inheritance menu anytime it's opened to prevent some weird glitch where old data is used.
                 {
                     var data = Game.PlayerPed.GetHeadBlendData();
-                    inheritanceDads.Index = data.FirstFaceShape;
-                    inheritanceMoms.Index = data.SecondFaceShape;
-                    inheritanceShapeMix.Index = (int)(data.ParentFaceShapePercent * 10f);
-                    inheritanceSkinMix.Index = (int)(data.ParentSkinTonePercent * 10f);
+                    inheritanceDads.ListIndex = data.FirstFaceShape;
+                    inheritanceMoms.ListIndex = data.SecondFaceShape;
+                    inheritanceShapeMix.Position = (int)(data.ParentFaceShapePercent * 10f);
+                    inheritanceSkinMix.Position = (int)(data.ParentSkinTonePercent * 10f);
                     inheritanceMenu.RefreshIndex();
-                    inheritanceMenu.UpdateScaleform();
+                    //inheritanceMenu.UpdateScaleform();
                 }
             };
 
@@ -1674,21 +1692,23 @@ namespace vMenuClient
 
             UpdateSavedPedsMenu();
 
-            MainMenu.Mp.Add(manageSavedCharacterMenu);
+            MenuController.AddMenu(manageSavedCharacterMenu);
+            //MainMenu.Mp.Add(manageSavedCharacterMenu);
 
-            UIMenuItem spawnPed = new UIMenuItem("Spawn Saved Character", "Spawns the selected saved character.");
-            UIMenuItem editPed = new UIMenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
-            UIMenuItem clonePed = new UIMenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
-            UIMenuItem renameCharacter = new UIMenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
-            UIMenuItem delPed = new UIMenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
-            delPed.SetLeftBadge(UIMenuItem.BadgeStyle.Alert);
-            manageSavedCharacterMenu.AddItem(spawnPed);
-            manageSavedCharacterMenu.AddItem(editPed);
-            manageSavedCharacterMenu.AddItem(clonePed);
-            manageSavedCharacterMenu.AddItem(renameCharacter);
-            manageSavedCharacterMenu.AddItem(delPed);
+            MenuItem spawnPed = new MenuItem("Spawn Saved Character", "Spawns the selected saved character.");
+            MenuItem editPed = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
+            MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
+            MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
+            MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
+            delPed.LeftIcon = MenuItem.Icon.WARNING;
+            manageSavedCharacterMenu.AddMenuItem(spawnPed);
+            manageSavedCharacterMenu.AddMenuItem(editPed);
+            manageSavedCharacterMenu.AddMenuItem(clonePed);
+            manageSavedCharacterMenu.AddMenuItem(renameCharacter);
+            manageSavedCharacterMenu.AddMenuItem(delPed);
 
-            manageSavedCharacterMenu.BindMenuToItem(createCharacterMenu, editPed);
+            MenuController.BindMenuItem(manageSavedCharacterMenu, createCharacterMenu, editPed);
+            //manageSavedCharacterMenu.BindMenuToItem(createCharacterMenu, editPed);
             manageSavedCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == editPed)
@@ -1756,7 +1776,7 @@ namespace vMenuClient
                                 StorageManager.DeleteSavedStorageItem("mp_ped_" + selectedSavedCharacterManageName);
                                 Notify.Success($"Your character has been renamed to ~g~<C>{name}</C>~s~.");
                                 UpdateSavedPedsMenu();
-                                while (!MainMenu.Mp.IsAnyMenuOpen())
+                                while (!MenuController.IsAnyMenuOpen())
                                 {
                                     await BaseScript.Delay(0);
                                 }
@@ -1771,28 +1791,28 @@ namespace vMenuClient
                 }
                 else if (item == delPed)
                 {
-                    if (delPed.RightLabel == "Are you sure?")
+                    if (delPed.Label == "Are you sure?")
                     {
-                        delPed.SetRightLabel("");
+                        delPed.Label = "";
                         DeleteResourceKvp("mp_ped_" + selectedSavedCharacterManageName);
                         Notify.Success("Your saved character has been deleted.");
                         manageSavedCharacterMenu.GoBack();
                         UpdateSavedPedsMenu();
                         manageSavedCharacterMenu.RefreshIndex();
-                        manageSavedCharacterMenu.UpdateScaleform();
+                        //manageSavedCharacterMenu.UpdateScaleform();
                     }
                     else
                     {
-                        delPed.SetRightLabel("Are you sure?");
-                        manageSavedCharacterMenu.UpdateScaleform();
+                        delPed.Label = "Are you sure?";
+                        //manageSavedCharacterMenu.UpdateScaleform();
                     }
                 }
 
                 if (item != delPed)
                 {
-                    if (delPed.RightLabel == "Are you sure?")
+                    if (delPed.Label == "Are you sure?")
                     {
-                        delPed.SetRightLabel("");
+                        delPed.Label = "";
                     }
                 }
             };
@@ -1800,15 +1820,15 @@ namespace vMenuClient
             // reset the "are you sure" state.
             manageSavedCharacterMenu.OnMenuClose += (sender) =>
             {
-                manageSavedCharacterMenu.MenuItems[2].SetRightLabel("");
+                manageSavedCharacterMenu.GetMenuItems()[2].Label = "";
             };
 
             savedCharactersMenu.OnItemSelect += (sender, item, index) =>
             {
                 selectedSavedCharacterManageName = item.Text;
-                manageSavedCharacterMenu.Subtitle.Caption = item.Text;
+                manageSavedCharacterMenu.MenuSubtitle = item.Text;
                 manageSavedCharacterMenu.RefreshIndex();
-                manageSavedCharacterMenu.UpdateScaleform();
+                //manageSavedCharacterMenu.UpdateScaleform();
             };
         }
 
@@ -1832,21 +1852,22 @@ namespace vMenuClient
                 }
             }
             EndFindKvp(handle);
-            savedCharactersMenu.Clear();
+            savedCharactersMenu.ClearMenuItems();
             if (names.Count > 0)
             {
                 names.Sort((a, b) => { return a.ToLower().CompareTo(b.ToLower()); });
                 foreach (string item in names)
                 {
                     var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
-                    UIMenuItem btn = new UIMenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.");
-                    btn.SetRightLabel($"({(tmpData.IsMale ? "M" : "F")}) →→→");
-                    savedCharactersMenu.AddItem(btn);
-                    savedCharactersMenu.BindMenuToItem(manageSavedCharacterMenu, btn);
+                    MenuItem btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.");
+                    btn.Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→";
+                    savedCharactersMenu.AddMenuItem(btn);
+                    MenuController.BindMenuItem(savedCharactersMenu, manageSavedCharacterMenu, btn);
+                    //savedCharactersMenu.BindMenuToItem(manageSavedCharacterMenu, btn);
                 }
             }
             savedCharactersMenu.RefreshIndex();
-            savedCharactersMenu.UpdateScaleform();
+            //savedCharactersMenu.UpdateScaleform();
         }
 
 
@@ -1855,7 +1876,7 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

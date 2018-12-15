@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -15,7 +15,7 @@ namespace vMenuClient
     public class NoclipMenu : BaseScript
     {
         private bool setupDone = false;
-        private UIMenu noclipMenu = null;
+        private Menu noclipMenu = null;
         private int currentSpeed = 0;
 
         private List<string> speeds = new List<string>()
@@ -97,7 +97,7 @@ namespace vMenuClient
                                 {
                                     currentSpeed = 0;
                                 }
-                                noclipMenu.MenuItems[0].SetRightLabel(speeds[currentSpeed]);
+                                noclipMenu.GetMenuItems()[0].Label = speeds[currentSpeed];
                             }
 
                             if (Game.IsDisabledControlPressed(0, Control.MoveUpOnly))
@@ -165,32 +165,32 @@ namespace vMenuClient
         private void Setup()
         {
 
-            noclipMenu = new UIMenu("No Clip", "Controls", RightAlignMenus());
+            noclipMenu = new Menu("No Clip", "Controls") { IgnoreDontOpenMenus = true };
 
-            UIMenuItem speed = new UIMenuItem("Current Moving Speed", "This is your current moving speed.");
-            speed.SetRightLabel(speeds[currentSpeed]);
+            MenuItem speed = new MenuItem("Current Moving Speed", "This is your current moving speed.");
+            speed.Label = speeds[currentSpeed];
 
-            noclipMenu.AddItem(speed);
+            noclipMenu.AddMenuItem(speed);
 
-            noclipMenu.DisableInstructionalButtons(true);
-            noclipMenu.DisableInstructionalButtons(false);
+            //noclipMenu.DisableInstructionalButtons(true);
+            //noclipMenu.DisableInstructionalButtons(false);
 
             // Only disable the default instructional buttons (back & select) (requires modified NativeUI build.)
-            noclipMenu.DisableInstructionalButtons(false, disableDefaultButtons: true);
+            //noclipMenu.DisableInstructionalButtons(false, disableDefaultButtons: true);
 
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Sprint, "Change Speed"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveUpDown, "Go Forwards/Backwards"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MoveLeftRight, "Turn Left/Right"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.Cover, "Go Up"));
-            noclipMenu.AddInstructionalButton(new InstructionalButton(Control.MultiplayerInfo, "Go Down"));
+            noclipMenu.InstructionalButtons.Add(Control.Sprint, "Change Speed");
+            noclipMenu.InstructionalButtons.Add(Control.MoveUpDown, "Go Forwards/Backwards");
+            noclipMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Left/Right");
+            noclipMenu.InstructionalButtons.Add(Control.Cover, "Go Up");
+            noclipMenu.InstructionalButtons.Add(Control.MultiplayerInfo, "Go Down");
 
 
-            MainMenu.Mp.Add(noclipMenu);
+            MenuController.AddMenu(noclipMenu);
 
             setupDone = true;
         }
 
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             return noclipMenu;
         }
