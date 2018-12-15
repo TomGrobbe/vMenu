@@ -21,8 +21,8 @@ namespace vMenuClient
         private bool firstTick = true;
         public static bool PreSetupComplete = false;
 
-        private static int MenuToggleKey = 244; // M by default (InteractionMenu)
-        private static int NoClipKey = 289; // F2 by default (ReplayStartStopRecordingSecondary)
+        public static int MenuToggleKey { get; private set; } = 244; // M by default (InteractionMenu)
+        public static int NoClipKey { get; private set; } = 289; // F2 by default (ReplayStartStopRecordingSecondary)
         public static Menu Menu { get; private set; }
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
@@ -49,11 +49,11 @@ namespace vMenuClient
 
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool EnableExperimentalFeatures = /*true;*/ (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
-        public static bool DontOpenMenus { get; set; } = false;
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
-        public static bool DisableControls { get; set; } = false;
-        private Menu currentMenu = null;
+        public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
+        public static bool DisableControls { get { return MenuController.DisableMenuButtons; } set { MenuController.DisableMenuButtons = value; } }
+        //private Menu currentMenu = null;
         #endregion
 
         /// <summary>
