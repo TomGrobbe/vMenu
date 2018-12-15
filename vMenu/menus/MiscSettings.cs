@@ -50,6 +50,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
+            MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Misc Settings");
 
