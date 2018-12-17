@@ -1523,6 +1523,11 @@ namespace vMenuClient
                 // Create list for window tint
                 List<string> windowTints = new List<string>() { "Stock [1/7]", "None [2/7]", "Limo [3/7]", "Light Smoke [4/7]", "Dark Smoke [5/7]", "Pure Black [6/7]", "Green [7/7]" };
                 var currentTint = GetVehicleWindowTint(veh.Handle);
+                if (currentTint == -1)
+                {
+                    currentTint = 4; // stock
+                }
+
                 // Convert window tint to the correct index of the list above.
                 switch (currentTint)
                 {
