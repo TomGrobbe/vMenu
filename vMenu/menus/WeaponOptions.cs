@@ -42,7 +42,6 @@ namespace vMenuClient
             MenuCheckboxItem noReload = new MenuCheckboxItem("No Reload", "Never reload.", NoReload);
             MenuItem setAmmo = new MenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
             MenuItem refillMaxAmmo = new MenuItem("Refill All Ammo", "Give all your weapons max ammo.");
-            ValidWeapons vw = new ValidWeapons();
             MenuItem spawnByName = new MenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
 
             // Add items based on permissions
@@ -407,18 +406,17 @@ namespace vMenuClient
             #endregion
 
             #region Loop through all weapons, create menus for them and add all menu items and handle events.
-            foreach (ValidWeapon weapon in vw.WeaponList)
+            foreach (ValidWeapon weapon in ValidWeapons.WeaponList)
             {
                 uint cat = (uint)GetWeapontypeGroup(weapon.Hash);
-                if (weapon.Name != null && (IsAllowed(weapon.Perm) || IsAllowed(Permission.WPGetAll)))
+                if (!string.IsNullOrEmpty(weapon.Name) && (IsAllowed(weapon.Perm) || IsAllowed(Permission.WPGetAll)))
                 {
+                    //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
                     Menu weaponMenu = new Menu("Weapon Options", weapon.Name);
                     MenuItem weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
                     weaponItem.Label = "→→→";
                     weaponItem.LeftIcon = MenuItem.Icon.GUN;
-
-
 
                     weaponInfo.Add(weaponMenu, weapon);
 
@@ -428,7 +426,7 @@ namespace vMenuClient
                     if (!IsAllowed(Permission.WPSpawn))
                     {
                         getOrRemoveWeapon.Enabled = false;
-                        getOrRemoveWeapon.Description = "This option has been disabled by the server owner.";
+                        getOrRemoveWeapon.Description = "You do not have permission to use this option.";
                         getOrRemoveWeapon.LeftIcon = MenuItem.Icon.LOCK;
                     }
 
@@ -516,6 +514,7 @@ namespace vMenuClient
                         {
                             foreach (var comp in weapon.Components)
                             {
+                                //Log($"{weapon.Name} : {comp.Key}");
                                 MenuItem compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
                                 weaponComponents.Add(compItem, comp.Key);
                                 weaponMenu.AddMenuItem(compItem);
@@ -690,13 +689,20 @@ namespace vMenuClient
                 Ped ped = new Ped(Game.PlayerPed.Handle);
                 if (item == getAllWeapons)
                 {
-                    foreach (var weapon in ValidWeapons.Weapons)
+                    foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        var ammo = 255;
-                        GetMaxAmmo(Game.PlayerPed.Handle, weapon.Value, ref ammo);
-                        ped.Weapons.Give((WeaponHash)weapon.Value, ammo, weapon.Key == "Unarmed", true);
+                        if (IsAllowed(vw.Perm))
+                        {
+                            int ammo = 1;
+                            GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
+
+                            GiveWeaponToPed(Game.PlayerPed.Handle, vw.Hash, ammo, false, true);
+
+                            SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
+                        }
                     }
-                    ped.Weapons.Give(WeaponHash.Unarmed, 0, true, true);
+
+                    SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
                 }
                 else if (item == removeAllWeapons)
                 {
@@ -708,13 +714,13 @@ namespace vMenuClient
                 }
                 else if (item == refillMaxAmmo)
                 {
-                    foreach (var wp in ValidWeapons.Weapons)
+                    foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        if (ped.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                         {
-                            int maxammo = 200;
-                            GetMaxAmmo(ped.Handle, wp.Value, ref maxammo);
-                            SetPedAmmo(ped.Handle, wp.Value, maxammo);
+                            int ammo = 0;
+                            GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
+                            SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
                     }
                 }

@@ -1976,31 +1976,30 @@ namespace vMenuClient
         /// </summary>
         public static async Task SaveWeaponLoadout()
         {
-            //await Delay(1);
             weaponsList.Clear();
-            //await Delay(1);
-            foreach (var vw in ValidWeapons.Weapons)
+            foreach (ValidWeapon vw in ValidWeapons.WeaponList)
             {
-                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Value, false))
+                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                 {
                     List<uint> components = new List<uint>();
-                    foreach (var wc in ValidWeapons.weaponComponents)
+                    if (vw.Components != null && vw.Components.Count > 0)
                     {
-                        if (DoesWeaponTakeWeaponComponent(vw.Value, wc.Value))
+                        foreach (var c in vw.Components)
                         {
-                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Value, wc.Value))
+                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Hash, c.Value))
                             {
-                                components.Add(wc.Value);
+                                components.Add(c.Value);
                             }
                         }
                     }
                     weaponsList.Add(new WeaponInfo()
                     {
-                        Ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Value),
-                        Hash = vw.Value,
+                        Ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash),
                         Components = components,
-                        Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Value)
+                        Hash = vw.Hash,
+                        Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Hash)
                     });
+
                 }
             }
             await Delay(0);
@@ -2024,6 +2023,8 @@ namespace vMenuClient
                             GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, wc);
                         }
                     }
+                    // sometimes causes problems if this is not manually set.
+                    SetPedAmmo(Game.PlayerPed.Handle, wi.Hash, wi.Ammo);
                     SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
                 }
             }
@@ -2075,17 +2076,6 @@ namespace vMenuClient
         public static Menu GetOpenMenu()
         {
             return MenuController.GetCurrentMenu();
-            //if (MenuController.IsAnyMenuOpen())
-            //{
-            //    foreach (Menu m in MainMenu.Mp.ToList())
-            //    {
-            //        if (m.Visible)
-            //        {
-            //            return m;
-            //        }
-            //    }
-            //}
-            //return null;
         }
         #endregion
 
@@ -2100,11 +2090,11 @@ namespace vMenuClient
             {
                 if (int.TryParse(inputAmmo, out int ammo))
                 {
-                    foreach (var wp in ValidWeapons.Weapons)
+                    foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        if (Game.PlayerPed.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        if (HasPedGotWeapon(PlayerPedId(), vw.Hash, false))
                         {
-                            SetPedAmmo(Game.PlayerPed.Handle, wp.Value, ammo);
+                            SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
                     }
                 }
