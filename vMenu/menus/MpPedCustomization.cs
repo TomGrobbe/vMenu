@@ -622,19 +622,13 @@ namespace vMenuClient
             tattoosMenu.AddMenuItem(rightArmTatts);
             tattoosMenu.AddMenuItem(leftLegTatts);
             tattoosMenu.AddMenuItem(rightLegTatts);
+            tattoosMenu.AddMenuItem(new MenuItem("Remove All Tattoos", "Click this if you want to remove all tattoos and start over."));
             #endregion
 
             createCharacterMenu.RefreshIndex();
-            //createCharacterMenu.UpdateScaleform();
-
             appearanceMenu.RefreshIndex();
-            //appearanceMenu.UpdateScaleform();
-
             inheritanceMenu.RefreshIndex();
-            //inheritanceMenu.UpdateScaleform();
-
             tattoosMenu.RefreshIndex();
-            //tattoosMenu.UpdateScaleform();
         }
 
         /// <summary>
@@ -674,7 +668,7 @@ namespace vMenuClient
                     if (StorageManager.SaveJsonData("mp_ped_" + name, json, false))
                     {
                         Notify.Success($"Your character (~g~<C>{name}</C>~s~) has been saved.");
-                        Debug.WriteLine($"Saved Character {name}. Data: {json}");
+                        Log($"Saved Character {name}. Data: {json}");
                         return true;
                     }
                     else
@@ -1380,12 +1374,17 @@ namespace vMenuClient
                     SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
                 }
 
-                if (!string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Key) && !string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Value))
-                {
-                    // reset hair value
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Key), (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Value));
-                }
-
+            tattoosMenu.OnItemSelect += (sender, item, index) =>
+            {
+                Notify.Success("All tattoos have been removed.");
+                currentCharacter.PedTatttoos.HeadTattoos.Clear();
+                currentCharacter.PedTatttoos.TorsoTattoos.Clear();
+                currentCharacter.PedTatttoos.LeftArmTattoos.Clear();
+                currentCharacter.PedTatttoos.RightArmTattoos.Clear();
+                currentCharacter.PedTatttoos.LeftLegTattoos.Clear();
+                currentCharacter.PedTatttoos.RightLegTattoos.Clear();
+                ClearPedDecorations(Game.PlayerPed.Handle);
+            };
 
             };
             #endregion
