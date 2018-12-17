@@ -737,8 +737,8 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
 
             MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
             MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
@@ -1454,7 +1454,6 @@ namespace vMenuClient
                     inheritanceShapeMix.Position = (int)(data.ParentFaceShapePercent * 10f);
                     inheritanceSkinMix.Position = (int)(data.ParentSkinTonePercent * 10f);
                     inheritanceMenu.RefreshIndex();
-                    //inheritanceMenu.UpdateScaleform();
                 }
             };
 
@@ -1494,8 +1493,6 @@ namespace vMenuClient
                 }
             };
         }
-
-
 
         /// <summary>
         /// Spawns the ped from the data inside <see cref="currentCharacter"/>.
@@ -1682,17 +1679,14 @@ namespace vMenuClient
             }
         }
 
-
         /// <summary>
         /// Creates the saved mp characters menu.
         /// </summary>
         private void CreateSavedPedsMenu()
         {
-
             UpdateSavedPedsMenu();
 
             MenuController.AddMenu(manageSavedCharacterMenu);
-            //MainMenu.Mp.Add(manageSavedCharacterMenu);
 
             MenuItem spawnPed = new MenuItem("Spawn Saved Character", "Spawns the selected saved character.");
             MenuItem editPed = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
@@ -1707,7 +1701,7 @@ namespace vMenuClient
             manageSavedCharacterMenu.AddMenuItem(delPed);
 
             MenuController.BindMenuItem(manageSavedCharacterMenu, createCharacterMenu, editPed);
-            //manageSavedCharacterMenu.BindMenuToItem(createCharacterMenu, editPed);
+
             manageSavedCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == editPed)
@@ -1798,12 +1792,10 @@ namespace vMenuClient
                         manageSavedCharacterMenu.GoBack();
                         UpdateSavedPedsMenu();
                         manageSavedCharacterMenu.RefreshIndex();
-                        //manageSavedCharacterMenu.UpdateScaleform();
                     }
                     else
                     {
                         delPed.Label = "Are you sure?";
-                        //manageSavedCharacterMenu.UpdateScaleform();
                     }
                 }
 
@@ -1827,7 +1819,6 @@ namespace vMenuClient
                 selectedSavedCharacterManageName = item.Text;
                 manageSavedCharacterMenu.MenuSubtitle = item.Text;
                 manageSavedCharacterMenu.RefreshIndex();
-                //manageSavedCharacterMenu.UpdateScaleform();
             };
         }
 
@@ -1862,14 +1853,10 @@ namespace vMenuClient
                     btn.Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→";
                     savedCharactersMenu.AddMenuItem(btn);
                     MenuController.BindMenuItem(savedCharactersMenu, manageSavedCharacterMenu, btn);
-                    //savedCharactersMenu.BindMenuToItem(manageSavedCharacterMenu, btn);
                 }
             }
             savedCharactersMenu.RefreshIndex();
-            //savedCharactersMenu.UpdateScaleform();
         }
-
-
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.
@@ -1883,7 +1870,6 @@ namespace vMenuClient
             }
             return menu;
         }
-
 
     }
 }
