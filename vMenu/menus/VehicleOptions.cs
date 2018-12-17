@@ -1483,7 +1483,7 @@ namespace vMenuClient
                 veh = GetVehicle();
                 // Create the wheel types list & listitem and add it to the menu.
                 List<string> wheelTypes = new List<string>() { "Sports", "Muscle", "Lowrider", "SUV", "Offroad", "Tuner", "Bike Wheels", "High End" };
-                MenuListItem vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh.Handle), $"Choose a ~y~wheel type~s~ for your vehicle. ~r~Important:~s~ if you change the wheel type, you will need to back out of the Vehicle Mods menu for the Wheels List to update.");
+                MenuListItem vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, GetVehicleWheelType(veh.Handle), $"Choose a ~y~wheel type~s~ for your vehicle.");
                 VehicleModMenu.AddMenuItem(vehicleWheelType);
 
                 // Create the checkboxes for some options.
