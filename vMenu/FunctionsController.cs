@@ -96,6 +96,7 @@ namespace vMenuClient
             Tick += ModelDrawDimensions;
             Tick += GcTick;
         }
+
         int gcTimer = GetGameTimer();
         private async Task GcTick()
         {
@@ -461,6 +462,196 @@ namespace vMenuClient
         }
         #endregion
         #region Misc Settings Menu Tasks
+        private async void DrawMiscSettingsText()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+
+                // draw coordinates
+                if (MainMenu.MiscSettingsMenu.ShowCoordinates && IsAllowed(Permission.MSShowCoordinates))
+                {
+                    var pos = Game.PlayerPed.Position;
+                    double x = Math.Round(pos.X, 2), y = Math.Round(pos.Y, 2), z = Math.Round(pos.Z, 2), heading = Math.Round(Game.PlayerPed.Heading, 2);
+                    SetScriptGfxAlign(0, 84);
+                    SetScriptGfxAlignParams(0f, 0f, 0f, 0f);
+                    DrawTextOnScreen($"~r~X~s~ \t\t{x}\n~r~Y~s~ \t\t{y}\n~r~Z~s~ \t\t{z}\n~r~Heading~s~ \t{heading}", 0.5f - (30f / Resolution.Width), 0f, 0.5f, Alignment.Left, 6, false);
+                    ResetScriptGfxAlign();
+
+                }
+
+                // draw location
+                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
+                {
+                    SetScriptGfxAlign(0, 84);
+                    SetScriptGfxAlignParams(0f, 0f, 0f, 0f);
+                    ShowLocation();
+                    ResetScriptGfxAlign();
+                }
+
+                // draw time
+                if (MainMenu.MiscSettingsMenu.DrawTimeOnScreen)
+                {
+                    int hour = World.CurrentDayTime.Hours;
+                    int minute = World.CurrentDayTime.Minutes;
+                    string timestring = $"{(hour < 10 ? "0" + hour.ToString() : hour.ToString())}:{(minute < 10 ? "0" + minute.ToString() : minute.ToString())}";
+                    SetScriptGfxAlign(0, 84);
+                    SetScriptGfxAlignParams(0f, 0f, 0f, 0f);
+                    DrawTextOnScreen($"~c~{timestring}", 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.4f, 1), 0.40f, Alignment.Center);
+                    ResetScriptGfxAlign();
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh && Game.PlayerPed.IsInVehicle())
+                {
+                    ShowSpeedKmh();
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowSpeedoMph && Game.PlayerPed.IsInVehicle())
+                {
+                    ShowSpeedKmh();
+                }
+            }
+            else
+            {
+                await Delay(0);
+            }
+
+        }
+
+        #region Update Location for location display
+        /// <summary>
+        /// Updates the location for location display.
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateLocation()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
+                {
+                    // Get the current location.
+                    currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
+
+                    // Get the nearest vehicle node.
+                    nodePos = currentPos;
+                    node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
+                    heading = Game.PlayerPed.Heading;
+
+                    // Get the safezone size for x and y to be able to move with the minimap.
+                    safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
+                    safeZoneSizeY = GetSafeZoneSize() - 0.27f;
+                    //safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
+
+                    // Get the cross road.
+                    var p1 = (uint)1; // unused
+                    crossing = (uint)1;
+                    GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
+                    crossingName = GetStreetNameFromHashKey(crossing);
+
+                    // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
+                    suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
+
+                    await Delay(200);
+                }
+                else
+                {
+                    await Delay(1000);
+                }
+            }
+        }
+        #endregion
+
+        #region ShowLocation
+        /// <summary>
+        /// Show location function to show the player's location.
+        /// </summary>
+        private void ShowLocation()
+        {
+            // Create the default prefix.
+            var prefix = "~s~";
+
+            // If the vehicle node is further away than 1400f, then the player is not near a valid road.
+            // So we set the prefix to "Near " (<streetname>).
+            if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
+            {
+                prefix = "~m~Near ~s~";
+            }
+
+            string headingCharacter = "";
+
+            // Heading Facing North
+            if (heading > 320 || heading < 45)
+            {
+                headingCharacter = "N";
+            }
+            // Heading Facing West
+            else if (heading >= 45 && heading <= 135)
+            {
+                headingCharacter = "W";
+            }
+            // Heading Facing South
+            else if (heading > 135 && heading < 225)
+            {
+                headingCharacter = "S";
+            }
+            // Heading Facing East
+            else
+            {
+                headingCharacter = "E";
+            }
+
+            // Draw the street name + crossing.
+            SetTextWrap(0f, 1f);
+            DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.48f, 6) - GetTextScaleHeight(0.48f, 6)/*0.925f - safeZoneSizeY*/, 0.48f);
+
+            // Draw the zone name.
+            SetTextWrap(0f, 1f);
+            DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.45f, 6) - GetTextScaleHeight(0.95f, 6)/*0.9485f - safeZoneSizeY*/, 0.45f);
+
+            // Draw the left border for the heading character.
+            SetTextWrap(0f, 1f);
+            DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Left);
+
+            // Draw the heading character.
+            SetTextWrap(0f, 1f);
+            DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Center);
+
+            // Draw the right border for the heading character.
+            SetTextWrap(0f, 1f);
+            DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Right);
+        }
+        #endregion
+
+        #region Private ShowSpeed Functions
+        /// <summary>
+        /// Shows the current speed in km/h.
+        /// Must be in a vehicle.
+        /// </summary>
+        private void ShowSpeedKmh()
+        {
+            int speed = int.Parse(Math.Round(GetEntitySpeed(GetVehicle().Handle) * 3.6f).ToString());
+            DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
+        }
+
+        /// <summary>
+        /// Shows the current speed in mph.
+        /// Must be in a vehicle.
+        /// </summary>
+        private void ShowSpeedMph()
+        {
+            var speed = Math.Round(GetEntitySpeed(GetVehicle().Handle) * 2.23694f);
+
+            if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
+            {
+                DrawTextOnScreen($"{speed} MPH", 0.995f, 0.925f, 0.7f, Alignment.Right, 4);
+                HideHudComponentThisFrame((int)HudComponent.StreetName);
+            }
+            else
+            {
+                DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Run all tasks that need to be handeled for the Misc Settings Menu.
         /// </summary>
@@ -469,29 +660,10 @@ namespace vMenuClient
         {
             if (MainMenu.MiscSettingsMenu != null)
             {
+
+                DrawMiscSettingsText();
+
                 #region Misc Settings
-                // Show speedometer km/h
-                if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
-                {
-                    ShowSpeedKmh();
-                }
-
-                // Show speedometer mph
-                if (MainMenu.MiscSettingsMenu.ShowSpeedoMph)
-                {
-                    ShowSpeedMph();
-                }
-
-                // Show coordinates.
-                if (MainMenu.MiscSettingsMenu.ShowCoordinates && IsAllowed(Permission.MSShowCoordinates))
-                {
-                    var pos = GetEntityCoords(Game.PlayerPed.Handle, true);
-                    DrawTextOnScreen($"~r~X~t~: {Math.Round(pos.X, 2)}" +
-                        $"~n~~r~Y~t~: {Math.Round(pos.Y, 2)}" +
-                        $"~n~~r~Z~t~: {Math.Round(pos.Z, 2)}" +
-                        $"~n~~r~Heading~t~: {Math.Round(GetEntityHeading(Game.PlayerPed.Handle), 1)}", 0.45f, 0f, 0.38f, Alignment.Left, (int)Font.ChaletLondon);
-                }
-
                 // Hide radar.
                 if (MainMenu.MiscSettingsMenu.HideRadar)
                 {
@@ -501,22 +673,6 @@ namespace vMenuClient
                 else if (!IsRadarHidden()) // this should allow other resources to still disable it
                 {
                     DisplayRadar(IsRadarPreferenceSwitchedOn());
-                }
-                #endregion
-
-                #region Show Location
-                // Show location & time.
-                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
-                {
-                    ShowLocation();
-                }
-
-                if (MainMenu.MiscSettingsMenu.DrawTimeOnScreen)
-                {
-                    int hour = World.CurrentDayTime.Hours;
-                    int minute = World.CurrentDayTime.Minutes;
-                    string time = $"{(hour < 10 ? "0" + hour.ToString() : hour.ToString())}:{(minute < 10 ? "0" + minute.ToString() : minute.ToString())}";
-                    DrawTextOnScreen(time, 0.005f, 0.965f);
                 }
                 #endregion
 
@@ -538,6 +694,7 @@ namespace vMenuClient
                     SetGameplayCamRelativeHeading(cameraRotationHeading);
                 }
                 #endregion
+
                 if (MainMenu.MiscSettingsMenu.KbTpToWaypoint)
                 {
                     if (IsAllowed(Permission.MSTeleportToWp))
@@ -743,110 +900,6 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Update Location for location display
-        /// <summary>
-        /// Updates the location for location display.
-        /// </summary>
-        /// <returns></returns>
-        private async Task UpdateLocation()
-        {
-            if (MainMenu.MiscSettingsMenu != null)
-            {
-                if (MainMenu.MiscSettingsMenu.ShowLocation && IsAllowed(Permission.MSShowLocation))
-                {
-                    // Get the current location.
-                    currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
-
-                    // Get the nearest vehicle node.
-                    nodePos = currentPos;
-                    node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
-                    heading = Game.PlayerPed.Heading;
-
-                    // Get the safezone size for x and y to be able to move with the minimap.
-                    safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                    safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
-
-                    // Get the cross road.
-                    var p1 = (uint)1; // unused
-                    crossing = (uint)1;
-                    GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
-                    crossingName = GetStreetNameFromHashKey(crossing);
-
-                    // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
-                    suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
-
-                    await Delay(200);
-                }
-                else
-                {
-                    await Delay(100);
-                }
-            }
-        }
-        #endregion
-
-        #region ShowLocation
-        /// <summary>
-        /// Show location function to show the player's location.
-        /// </summary>
-        private void ShowLocation()
-        {
-            if (!IsPauseMenuActive() && !IsPauseMenuRestarting() && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsWarningMessageActive() && !IsHudHidden())
-            {
-                // Create the default prefix.
-                var prefix = "~s~";
-
-                // If the vehicle node is further away than 1400f, then the player is not near a valid road.
-                // So we set the prefix to "Near " (<streetname>).
-                if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
-                {
-                    prefix = "~m~Near ~s~";
-                }
-
-                string headingCharacter = "";
-
-                // Heading Facing North
-                if (heading > 320 || heading < 45)
-                {
-                    headingCharacter = "N";
-                }
-                // Heading Facing West
-                else if (heading >= 45 && heading <= 135)
-                {
-                    headingCharacter = "W";
-                }
-                // Heading Facing South
-                else if (heading > 135 && heading < 225)
-                {
-                    headingCharacter = "S";
-                }
-                // Heading Facing East
-                else
-                {
-                    headingCharacter = "E";
-                }
-
-                // Draw the street name + crossing.
-                DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, 0.925f - safeZoneSizeY, 0.48f);
-                // Draw the zone name.
-                DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, 0.9485f - safeZoneSizeY, 0.45f);
-
-                // Draw the left border for the heading character.
-                DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Left);
-                // Draw the heading character.
-                DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Center);
-                // Draw the right border for the heading character.
-                DrawTextOnScreen("~t~|", 0.228f + safeZoneSizeX, 0.915f - safeZoneSizeY, 1.2f, Alignment.Right);
-
-                //// Get and draw the time.
-                //var tth = GetClockHours();
-                //var ttm = GetClockMinutes();
-                //var th = (tth < 10) ? $"0{tth.ToString()}" : tth.ToString();
-                //var tm = (ttm < 10) ? $"0{ttm.ToString()}" : ttm.ToString();
-                //CommonFunctions.DrawTextOnScreen($"~c~{th}:{tm}", 0.208f + safeZoneSizeX, 0.9748f - safeZoneSizeY, 0.40f, Alignment.Center);
-            }
-        }
-        #endregion
         #endregion
         #region Voice Chat Tasks
         /// <summary>
@@ -2063,44 +2116,6 @@ namespace vMenuClient
         #endregion
 
 
-        /// Not task related
-        #region Private ShowSpeed Functions
-        /// <summary>
-        /// Shows the current speed in km/h.
-        /// Must be in a vehicle.
-        /// </summary>
-        private void ShowSpeedKmh()
-        {
-            if (Game.PlayerPed.IsInVehicle())
-            {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(GetVehicle().Handle) * 3.6f).ToString());
-                DrawTextOnScreen($"{speed} KM/h", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
-            }
-        }
-
-        /// <summary>
-        /// Shows the current speed in mph.
-        /// Must be in a vehicle.
-        /// </summary>
-        private void ShowSpeedMph()
-        {
-            if (Game.PlayerPed.IsInVehicle())
-            {
-                int speed = int.Parse(Math.Round(GetEntitySpeed(GetVehicle().Handle) * 2.23694f).ToString());
-
-                if (MainMenu.MiscSettingsMenu.ShowSpeedoKmh)
-                {
-                    DrawTextOnScreen($"{speed} MPH", 0.995f, 0.925f, 0.7f, Alignment.Right, 4);
-                    HideHudComponentThisFrame((int)HudComponent.StreetName);
-                }
-                else
-                {
-                    DrawTextOnScreen($"{speed} MPH", 0.995f, 0.955f, 0.7f, Alignment.Right, 4);
-                }
-            }
-        }
-        #endregion
-
         #region animation functions
         /// <summary>
         /// This triggers a helmet visor/goggles toggle if available.
@@ -2546,20 +2561,22 @@ namespace vMenuClient
                         }
                     }
                     TaskPlayAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 8f, 1f, -1, 0, 0f, false, false, false);
+                    bool fired = true;
                     while (!IsEntityPlayingAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 0))
                     {
                         await Delay(0);
-                        if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")) || HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                        if (!fired && HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")) || HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
                         {
-                            break;
+                            AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
+                            GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
+                            if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) > maxAmmo)
+                            {
+                                SetPedAmmo(Game.PlayerPed.Handle, snowball_hash, maxAmmo);
+                            }
+                            fired = true;
                         }
                     }
-                    AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
-                    GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
-                    if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) > maxAmmo)
-                    {
-                        SetPedAmmo(Game.PlayerPed.Handle, snowball_hash, maxAmmo);
-                    }
+
                 }
                 else
                 {
