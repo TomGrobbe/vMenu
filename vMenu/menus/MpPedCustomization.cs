@@ -1480,7 +1480,7 @@ namespace vMenuClient
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
-            };
+            tattoosMenu.OnMenuOpen += (sender) => { Notify.Info("TIP, take a look at the instructional buttons! If you can't see a specific tattoo, try turning the camera using those buttons (Q & E)."); };
             #endregion
 
             // handle button presses for the createCharacter menu.
