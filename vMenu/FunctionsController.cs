@@ -2561,19 +2561,38 @@ namespace vMenuClient
                         }
                     }
                     TaskPlayAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 8f, 1f, -1, 0, 0f, false, false, false);
-                    bool fired = true;
-                    while (!IsEntityPlayingAnim(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name, 0))
+                    bool fired = false;
+
+                    var dur = GetAnimDuration(snowball_anim_dict, snowball_anim_name);
+                    int timer = GetGameTimer();
+                    while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, snowball_anim_dict, snowball_anim_name) < 0.97f)
                     {
                         await Delay(0);
-                        if (!fired && HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")) || HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                        if (!fired)
                         {
-                            AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
-                            GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
-                            if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) > maxAmmo)
+                            if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")))
                             {
-                                SetPedAmmo(Game.PlayerPed.Handle, snowball_hash, maxAmmo);
+                                AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
+                                GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
+                                if (GetAmmoInPedWeapon(Game.PlayerPed.Handle, snowball_hash) > maxAmmo)
+                                {
+                                    SetPedAmmo(Game.PlayerPed.Handle, snowball_hash, maxAmmo);
+                                }
+                                fired = true;
                             }
-                            fired = true;
+                            else if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                            {
+                                break;
+                            }
+                        }
+                        else if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                        {
+                            break;
+                        }
+                        // fail safe just in case
+                        if (GetGameTimer() - timer > (dur * 1000f))
+                        {
+                            break;
                         }
                     }
 
