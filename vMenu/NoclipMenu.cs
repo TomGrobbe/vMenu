@@ -164,13 +164,17 @@ namespace vMenuClient
         /// </summary>
         private void Setup()
         {
-
             noclipMenu = new Menu("No Clip", "Controls") { IgnoreDontOpenMenus = true };
             MenuController.AddMenu(noclipMenu);
 
             MenuItem speed = new MenuItem("Current Moving Speed", "This is your current moving speed.")
             {
                 Label = speeds[currentSpeed]
+            };
+
+            noclipMenu.OnMenuOpen += (m) =>
+            {
+                HelpMessage.Custom("NoClip is now active. Look at the instructional buttons for all the keybinds. You can view your current moving speed all the way on the bottom right instructional button.");
             };
 
             noclipMenu.AddMenuItem(speed);
