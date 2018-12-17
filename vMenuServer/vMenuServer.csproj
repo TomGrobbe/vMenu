@@ -94,11 +94,11 @@
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
 )
 
-if defined COPY_CONFIG (
+if not defined DONT_COPY_CONFIG (
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\addons.json" "D:\FXserver\vMenu\resources\vMenu\config\"
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\locations.json" "D:\FXserver\vMenu\resources\vMenu\config\"
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\resources\vMenu\config\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\"
+    <!-- copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\" -->
 )
 </PostBuildEvent>
   </PropertyGroup>
