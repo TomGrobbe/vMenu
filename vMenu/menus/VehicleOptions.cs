@@ -1417,7 +1417,15 @@ namespace vMenuClient
             // If there are items, remove all of them.
             if (VehicleModMenu.Size > 0)
             {
-                VehicleModMenu.ClearMenuItems();
+                if (selectedIndex != 0)
+                {
+                    VehicleModMenu.ClearMenuItems(true);
+                }
+                else
+                {
+                    VehicleModMenu.ClearMenuItems(false);
+                }
+
             }
 
             // Get the vehicle.
@@ -1647,7 +1655,31 @@ namespace vMenuClient
                     else if (item2 == vehicleWheelType)
                     {
                         // Set the wheel type.
-                        SetVehicleWheelType(veh.Handle, newIndex);
+                        int nindex = newIndex;
+                        if (newIndex >= item2.ItemsCount)
+                        {
+                            nindex = 0;
+                        }
+                        else if (newIndex < 0)
+                        {
+                            nindex = item2.ItemsCount - 1;
+                        }
+
+                        // set the wheel type
+                        SetVehicleWheelType(veh.Handle, nindex);
+
+                        bool customWheels = GetVehicleModVariation(veh.Handle, 23);
+
+                        // reset the wheel mod index for front wheels
+                        SetVehicleMod(veh.Handle, 23, -1, customWheels);
+
+                        // if the model is a bike, do the same thing for the rear wheels.
+                        if (veh.Model.IsBike)
+                        {
+                            SetVehicleMod(veh.Handle, 24, -1, customWheels);
+                        }
+
+                        // Refresh the menu with the item index so that the view doesn't change
                         UpdateMods(selectedIndex: itemIndex);
                     }
                     // Tire smoke
