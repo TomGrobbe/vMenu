@@ -2,7 +2,7 @@ pull_requests:
   do_not_increment_build_number: false
 # branches:
   # only:
-  # - appveyor-deploy-tests
+  # - production
 image: Visual Studio 2017
 configuration: Release
 build:
@@ -17,12 +17,13 @@ after_build:
 artifacts:
   - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
 deploy:
-    # Deploy to GitHub Releases
   - provider: GitHub
+    release: [Release] vMenu $(APPVEYOR_REPO_TAG_NAME)
     artifact: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
     draft: true
     prerelease: false
     auth_token: $(github_auth)
     on:
-      branch: appveyor-deploy-tests # production release from master branch only
-      APPVEYOR_REPO_TAG: true       # deploy on tag push only
+      branch: production
+      APPVEYOR_REPO_TAG: true
+    description: "vMenu version $(APPVEYOR_REPO_TAG_NAME)."
