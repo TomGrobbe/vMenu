@@ -13,6 +13,8 @@ build:
 after_build:
   - copy README.md ..\build\README.md
   - copy LICENSE.md ..\build\LICENSE.md
+  - powershell echo '$APPVEYOR_REPO_TAG_NAME'
+  # - powershell.exe -nologo -noprofile -command "& echo($($APPVEYOR_REPO_TAG_NAME))"
   - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
   - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', ('vMenu-{0}.zip' -f $APPVEYOR_REPO_TAG_NAME)); }"
   - dir
