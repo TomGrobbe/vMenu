@@ -14,10 +14,12 @@ after_build:
   - copy README.md ..\build\README.md
   - copy LICENSE.md ..\build\LICENSE.md
   - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - 7z a vMenu-$(APPVEYOR_REPO_TAG_NAME).zip -r ..\build\
+  - 7z a vMenu-{APPVEYOR_REPO_TAG_NAME}.zip -r ..\build\
+  - 7z a vMenu2-$env:APPVEYOR_REPO_TAG_NAME.zip -r ..\build\
   - dir
 artifacts:
   - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
+  - path: vMenu2-$(APPVEYOR_REPO_TAG_NAME).zip
 deploy:
     # Deploy to GitHub Releases
   - provider: GitHub
@@ -26,4 +28,4 @@ deploy:
     prerelease: false
     on:
       branch: appveyor-deploy-tests # production release from master branch only
-      APPVEYOR_REPO_TAG: false       # deploy on tag push only
+      APPVEYOR_REPO_TAG: true       # deploy on tag push only
