@@ -6,9 +6,8 @@ pull_requests:
 image: Visual Studio 2017
 configuration: Release
 build:
-  parallel: true                  # enable MSBuild parallel builds
-  project: vMenu.sln              # path to Visual Studio solution or project
-  include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+  parallel: true
+  project: vMenu.sln
   verbosity: minimal
 after_build:
   - cmd: copy README.md ..\build\README.md
