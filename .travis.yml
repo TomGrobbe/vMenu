@@ -7,7 +7,7 @@ notifications:
       - https://vespura.com/travis-ci.php
 branches:
     except:
-        # - development
+        - appveyor-deploy-tests
 before_deploy:
     - cd /home/travis/build/TomGrobbe/build/ && rm *.pdb
     - cp ../vMenu/*.md ./
