@@ -13,20 +13,21 @@ after_build:
   - cmd: copy README.md ..\build\README.md
   - cmd: copy LICENSE.md ..\build\LICENSE.md
   - ps: Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - cmd: 7z a vMenu-%APPVEYOR_REPO_TAG_NAME%.zip -r ..\build\*
-artifacts:
-  - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
+  - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta)
+  - cmd: 7z a vMenu-%VERSION_NAME%.zip -r ..\build\*
+  - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
+  # - cmd: if %APPVEYOR_REPO_TAG%==false (7z a vMenu-beta.zip -r ..\build\*)
+  # - cmd: if %APPVEYOR_REPO_TAG%==false (appveyor PushArtifact vMenu-beta.zip)
 deploy:
   - provider: GitHub
-    release: "[Release] vMenu $(APPVEYOR_REPO_TAG_NAME)"
-    artifact: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
+    release: "[Release] vMenu $(VERSION_NAME)"
+    artifact: vMenu-$(VERSION_NAME).zip
     draft: true
     prerelease: false
     auth_token: $(github_auth)
     on:
-      branch: production
       APPVEYOR_REPO_TAG: true
-    description: "vMenu version $(APPVEYOR_REPO_TAG_NAME)."
+    description: "vMenu version $(VERSION_NAME)."
 before_build:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 start $env:WEBHOOK_URL
