@@ -207,6 +207,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
         }
 
+        public static bool MiscRespawnDefaultCharacter
+        {
+            get { return GetSettingsBool("miscRespawnDefaultCharacter"); }
+            set { SetSavedSettingsBool("miscRespawnDefaultCharacter", value); }
+        }
+
         public static bool MiscShowTime
         {
             get { return GetSettingsBool("miscShowTime"); }
@@ -285,7 +291,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -410,6 +416,9 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
+
+                MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
+                prefs.Add("miscRespawnDefaultCharacter", MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter);
 
                 MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
                 prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);

@@ -1530,9 +1530,24 @@ namespace vMenuClient
             {
                 if (MainMenu.MiscSettingsMenu != null)
                 {
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
+                    bool restoreDefault = false;
+                    if (MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter && !GetSettingsBool(Setting.vmenu_disable_spawning_as_default_character))
                     {
-                        SavePed("vMenu_tmp_saved_ped");
+                        if (!string.IsNullOrEmpty(GetResourceKvpString("vmenu_default_character")))
+                        {
+                            restoreDefault = true;
+                        }
+                        else
+                        {
+                            Notify.Error("You did not set a saved character to restore to. Do so in the ~g~MP Ped Customization~s~ > ~g~Saved Characters~s~ menu.");
+                        }
+                    }
+                    if (!restoreDefault)
+                    {
+                        if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
+                        {
+                            SavePed("vMenu_tmp_saved_ped");
+                        }
                     }
 
                     if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
@@ -1545,10 +1560,18 @@ namespace vMenuClient
                         await Delay(0);
                     }
 
-                    if (IsTempPedSaved() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
+                    if (restoreDefault)
                     {
-                        LoadSavedPed("vMenu_tmp_saved_ped", false);
+                        MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"));
                     }
+                    else
+                    {
+                        if (IsTempPedSaved() && MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
+                        {
+                            LoadSavedPed("vMenu_tmp_saved_ped", false);
+                        }
+                    }
+
                     if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
                     {
                         RestoreWeaponLoadout();

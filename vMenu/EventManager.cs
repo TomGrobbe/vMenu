@@ -45,8 +45,25 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
             EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
+            EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             Tick += WeatherSync;
             Tick += TimeSync;
+        }
+
+        private bool firstSpawn = true;
+        /// <summary>
+        /// Sets the saved character whenever the player first spawns.
+        /// </summary>
+        private void SetAppearanceOnFirstSpawn()
+        {
+            if (firstSpawn)
+            {
+                if (MainMenu.MiscSettingsMenu != null && MainMenu.MpPedCustomizationMenu != null && MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter && !string.IsNullOrEmpty(GetResourceKvpString("vmenu_default_character")) && !GetSettingsBool(Setting.vmenu_disable_spawning_as_default_character))
+                {
+                    MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"));
+                }
+                firstSpawn = false;
+            }
         }
 
         private void ConfigureClient(dynamic addonVehicles, dynamic addonPeds, dynamic addonWeapons, dynamic perms)

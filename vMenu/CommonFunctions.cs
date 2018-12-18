@@ -2064,7 +2064,7 @@ namespace vMenuClient
         /// <param name="data"></param>
         public static void Log(string data)
         {
-            if (MainMenu.DebugMode) Debug.Write(data + "\n");
+            if (MainMenu.DebugMode) Debug.WriteLine(@data);
         }
         #endregion
 

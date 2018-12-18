@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1589,6 +1589,16 @@ namespace vMenuClient
         }
 
         /// <summary>
+        /// Spawns this saved ped.
+        /// </summary>
+        /// <param name="name"></param>
+        internal async void SpawnThisCharacter(string name)
+        {
+            currentCharacter = StorageManager.GetSavedMpCharacterData(name);
+            await SpawnSavedPed();
+        }
+
+        /// <summary>
         /// Spawns the ped from the data inside <see cref="currentCharacter"/>.
         /// Character data MUST be set BEFORE calling this function.
         /// </summary>
@@ -1785,12 +1795,14 @@ namespace vMenuClient
             MenuItem spawnPed = new MenuItem("Spawn Saved Character", "Spawns the selected saved character.");
             MenuItem editPed = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
             MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
+            MenuItem setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
             MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
             MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
             delPed.LeftIcon = MenuItem.Icon.WARNING;
             manageSavedCharacterMenu.AddMenuItem(spawnPed);
             manageSavedCharacterMenu.AddMenuItem(editPed);
             manageSavedCharacterMenu.AddMenuItem(clonePed);
+            manageSavedCharacterMenu.AddMenuItem(setAsDefaultPed);
             manageSavedCharacterMenu.AddMenuItem(renameCharacter);
             manageSavedCharacterMenu.AddMenuItem(delPed);
 
@@ -1892,6 +1904,11 @@ namespace vMenuClient
                         delPed.Label = "Are you sure?";
                     }
                 }
+                else if (item == setAsDefaultPed)
+                {
+                    Notify.Success($"Your character <C>{selectedSavedCharacterManageName}</C> will now be used as your default character whenever you (re)spawn.");
+                    SetResourceKvp("vmenu_default_character", "mp_ped_" + selectedSavedCharacterManageName);
+                }
 
                 if (item != delPed)
                 {
@@ -1921,6 +1938,8 @@ namespace vMenuClient
         /// </summary>
         private void UpdateSavedPedsMenu()
         {
+            string defaultChar = GetResourceKvpString("vmenu_default_character") ?? "";
+
             List<string> names = new List<string>();
             var handle = StartFindKvp("mp_ped_");
             while (true)
@@ -1945,6 +1964,11 @@ namespace vMenuClient
                     var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
                     MenuItem btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.");
                     btn.Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→";
+                    if (defaultChar == "mp_ped_" + item)
+                    {
+                        btn.LeftIcon = MenuItem.Icon.TICK;
+                        btn.Description += " ~g~This character is currently set as your default character and will be used whenever you (re)spawn.";
+                    }
                     savedCharactersMenu.AddMenuItem(btn);
                     MenuController.BindMenuItem(savedCharactersMenu, manageSavedCharacterMenu, btn);
                 }

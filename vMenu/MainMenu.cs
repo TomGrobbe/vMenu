@@ -191,288 +191,6 @@ namespace vMenuClient
         }
         #endregion
 
-        /*
-        #region Process Menu Buttons
-        /// <summary>
-        /// Process the select & go back/cancel buttons.
-        /// </summary>
-        /// <returns></returns>
-        private async Task ProcessMainButtons()
-        {
-            if (MenuController.IsAnyMenuOpen())
-            {
-                currentMenu = GetOpenMenu();
-                if (MpPedCustomizationMenu != null)
-                {
-                    if (currentMenu == MpPedCustomizationMenu.createCharacterMenu)
-                    {
-                        MpPedCustomization.DisableBackButton = true;
-                        MpPedCustomization.DontCloseMenus = true;
-                    }
-                    else
-                    {
-                        MpPedCustomization.DisableBackButton = false;
-                        MpPedCustomization.DontCloseMenus = false;
-                    }
-                }
-                if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
-                {
-                    if (MpPedCustomization.DisableBackButton || MpPedCustomization.DontCloseMenus)
-                    {
-                        Game.DisableControlThisFrame(0, Control.FrontendPause);
-                        Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate);
-                    }
-                    if (currentMenu.Visible && !DisableControls)
-                    {
-                        // Select / Enter
-                        if (Game.IsDisabledControlJustReleased(0, Control.FrontendAccept) || Game.IsControlJustReleased(0, Control.FrontendAccept))
-                        {
-                            if (currentMenu.Size() > 0)
-                            {
-                                currentMenu.SelectItem();
-                            }
-                        }
-                        // Cancel / Go Back
-                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && !MpPedCustomization.DisableBackButton)
-                        {
-                            // Wait for the next frame to make sure the "cinematic camera" button doesn't get "re-enabled" before the menu gets closed.
-                            await Delay(0);
-                            currentMenu.GoBack();
-                        }
-                        else if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
-                        {
-                            await Delay(0);
-                            Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
-                        }
-                    }
-                }
-                else
-                {
-                    await Delay(0);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns true when one of the 'up' buttons is currently pressed, only if that button can be active according to some conditions.
-        /// </summary>
-        /// <returns></returns>
-        private bool IsUpPressed()
-        {
-            // return false (not pressed) if the pause menu is active.
-            if (Game.IsPaused)
-            {
-                return false;
-            }
-
-            // when the player is holding TAB, while not in a vehicle, and when the scrollwheel is being used, return false to prevent interferring with weapon selection.
-            if (!Game.PlayerPed.IsInVehicle())
-            {
-                if (Game.IsControlPressed(0, Control.SelectWeapon))
-                {
-                    if (Game.IsControlPressed(0, Control.SelectNextWeapon) || Game.IsControlPressed(0, Control.SelectPrevWeapon))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            // return true if the scrollwheel up or the arrow up key is being used at this frame.
-            if (Game.IsControlPressed(0, Control.FrontendUp) ||
-                Game.IsDisabledControlPressed(0, Control.FrontendUp) ||
-                Game.IsControlPressed(0, Control.PhoneScrollBackward) ||
-                Game.IsDisabledControlPressed(0, Control.PhoneScrollBackward))
-            {
-                return true;
-            }
-
-            // return false if none of the conditions matched.
-            return false;
-        }
-
-        private bool IsDownPressed()
-        {
-            // return false (not pressed) if the pause menu is active.
-            if (Game.IsPaused)
-            {
-                return false;
-            }
-
-            // when the player is holding TAB, while not in a vehicle, and when the scrollwheel is being used, return false to prevent interferring with weapon selection.
-            if (!Game.PlayerPed.IsInVehicle())
-            {
-                if (Game.IsControlPressed(0, Control.SelectWeapon))
-                {
-                    if (Game.IsControlPressed(0, Control.SelectNextWeapon) || Game.IsControlPressed(0, Control.SelectPrevWeapon))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            // return true if the scrollwheel down or the arrow down key is being used at this frame.
-            if (Game.IsControlPressed(0, Control.FrontendDown) ||
-                Game.IsDisabledControlPressed(0, Control.FrontendDown) ||
-                Game.IsControlPressed(0, Control.PhoneScrollForward) ||
-                Game.IsDisabledControlPressed(0, Control.PhoneScrollForward))
-            {
-                return true;
-            }
-
-            // return false if none of the conditions matched.
-            return false;
-        }
-
-        /// <summary>
-        /// Process left/right/up/down buttons (also holding down buttons will speed up after 3 iterations)
-        /// </summary>
-        /// <returns></returns>
-        private async Task ProcessDirectionalButtons()
-        {
-            if (Mp.IsAnyMenuOpen())
-            {
-                // Get the currently open menu.
-                Menu currentMenu = GetOpenMenu();
-                // If it exists.
-                if (currentMenu != null && !DontOpenMenus && Mp.IsAnyMenuOpen() && !NoClipEnabled)
-                {
-                    if (currentMenu.Visible && !DisableControls)
-                    {
-                        // Check if the Go Up controls are pressed.
-                        if (IsUpPressed())
-                        {
-                            // Update the currently selected item to the new one.
-                            currentMenu.GoUp();
-                            currentMenu.GoUpOverflow();
-
-                            // Get the current game time.
-                            var time = GetGameTimer();
-                            var times = 0;
-                            var delay = 200;
-
-                            // Do the following as long as the controls are being pressed.
-                            while (IsUpPressed() && Mp.IsAnyMenuOpen() && GetOpenMenu() != null)
-                            {
-                                // Update the current menu.
-                                currentMenu = GetOpenMenu();
-
-                                // Check if the game time has changed by "delay" amount.
-                                if (GetGameTimer() - time > delay)
-                                {
-                                    // Increment the "changed indexes" counter
-                                    times++;
-
-                                    // If the controls are still being held down after moving 3 indexes, reduce the delay between index changes.
-                                    if (times > 2)
-                                    {
-                                        delay = 150;
-                                    }
-
-                                    // Update the currently selected item to the new one.
-                                    currentMenu.GoUp();
-                                    currentMenu.GoUpOverflow();
-
-                                    // Reset the time to the current game timer.
-                                    time = GetGameTimer();
-                                }
-
-                                // Wait for the next game tick.
-                                await Delay(0);
-                            }
-                        }
-
-                        // Check if the Go Down controls are pressed.
-                        else if (IsDownPressed())
-                        {
-                            currentMenu.GoDown();
-                            currentMenu.GoDownOverflow();
-
-                            var time = GetGameTimer();
-                            var times = 0;
-                            var delay = 200;
-                            while (IsDownPressed() && GetOpenMenu() != null)
-                            {
-                                currentMenu = GetOpenMenu();
-                                if (GetGameTimer() - time > delay)
-                                {
-                                    times++;
-                                    if (times > 2)
-                                    {
-                                        delay = 150;
-                                    }
-                                    currentMenu.GoDown();
-                                    currentMenu.GoDownOverflow();
-
-                                    time = GetGameTimer();
-                                }
-                                await Delay(0);
-                            }
-                        }
-
-                        // Check if the Go Left controls are pressed.
-                        else if (Game.IsDisabledControlJustPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon))
-                        {
-                            if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
-                            {
-                                currentMenu.GoLeft();
-                                var time = GetGameTimer();
-                                var times = 0;
-                                var delay = 200;
-                                while (Game.IsDisabledControlPressed(0, Control.PhoneLeft) && !Game.IsControlPressed(0, Control.SelectWeapon) && GetOpenMenu() != null)
-                                {
-                                    currentMenu = GetOpenMenu();
-                                    if (GetGameTimer() - time > delay)
-                                    {
-                                        times++;
-                                        if (times > 2)
-                                        {
-                                            delay = 150;
-                                        }
-                                        currentMenu.GoLeft();
-                                        time = GetGameTimer();
-                                    }
-                                    await Delay(0);
-                                }
-                            }
-                        }
-
-                        // Check if the Go Right controls are pressed.
-                        else if (Game.IsDisabledControlJustPressed(0, Control.PhoneRight) && !Game.IsControlPressed(0, Control.SelectWeapon))
-                        {
-                            if (currentMenu.MenuItems[currentMenu.CurrentSelection].Enabled)
-                            {
-                                currentMenu.GoRight();
-                                var time = GetGameTimer();
-                                var times = 0;
-                                var delay = 200;
-                                while ((Game.IsDisabledControlPressed(0, Control.PhoneRight) || Game.IsControlPressed(0, Control.PhoneRight)) && !Game.IsControlPressed(0, Control.SelectWeapon) && GetOpenMenu() != null)
-                                {
-                                    currentMenu = GetOpenMenu();
-                                    if (GetGameTimer() - time > delay)
-                                    {
-                                        times++;
-                                        if (times > 2)
-                                        {
-                                            delay = 150;
-                                        }
-                                        currentMenu.GoRight();
-                                        time = GetGameTimer();
-                                    }
-                                    await Delay(0);
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            else
-            {
-                await Delay(0);
-            }
-        }
-        #endregion
-    */
 
         /// <summary>
         /// Main OnTick task runs every game tick and handles all the menu stuff.
@@ -545,53 +263,7 @@ namespace vMenuClient
             if (PreSetupComplete && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
-                // If menus can be opened.
-                //if (!DontOpenMenus && !IsPauseMenuActive())
-                //{
-                //    // If the player is using Keyboard & Mouse and they pressed the M key (interaction menu button) then...
-                //    if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && (Game.IsControlJustPressed(0, (Control)MenuToggleKey) || Game.IsDisabledControlJustPressed(0, (Control)MenuToggleKey)))
-                //    {
-                //        // If any menu is already open: close all menus.
-                //        if (Mp.IsAnyMenuOpen())
-                //        {
-                //            Mp.CloseAllMenus();
-                //        }
-                //        // Otherwise: toggle the main menu (to be safe, only open it if no other menus are open.)
-                //        else
-                //        {
-                //            Menu.Visible = !Mp.IsAnyMenuOpen();
-                //        }
-                //    }
 
-                //    // If the player is using a controller, and no menus are currently open.
-                //    else if (!Mp.IsAnyMenuOpen() && Game.CurrentInputMode == InputMode.GamePad)
-                //    {
-                //        // Create a timer and set it to the current game timer value.
-                //        int timer = GetGameTimer();
-
-                //        // While (and only if) the player keeps using only the controller, and keeps holding down the interactionmenu button (select on controller).
-                //        while (Game.CurrentInputMode == InputMode.GamePad && Game.IsControlPressed(0, Control.InteractionMenu))
-                //        {
-                //            // If debugging is enabled, show the progress using a timerbar.
-                //            if (DebugMode)
-                //            {
-                //                bt.Draw(0);
-                //                float percent = ((GetGameTimer() - timer) / 350f);
-                //                bt.Percentage = percent;
-                //            }
-
-                //            // If 900ms in real time have passed.
-                //            if (GetGameTimer() - timer > 350)
-                //            {
-                //                Menu.Visible = !Mp.IsAnyMenuOpen();
-                //                // Break the loop (resetting the timer).
-                //                break;
-                //            }
-
-                //            // Wait for the next game tick. 
-                //            await Delay(0);
-                //        }
-                //    }
 
                 var tmpMenu = GetOpenMenu();
                 if (MpPedCustomizationMenu != null)
@@ -635,10 +307,6 @@ namespace vMenuClient
                                     NoClipEnabled = !NoClipEnabled;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
                                 }
-                                //if (GetPedInVehicleSeat(CommonFunctions.GetVehicle(), -1) == Game.PlayerPed.Handle)
-                                //{
-                                //NoClipEnabled = !Mp.IsAnyMenuOpen();
-                                //}
                                 else
                                 {
                                     NoClipEnabled = false;
@@ -654,107 +322,18 @@ namespace vMenuClient
                         }
                     }
                 }
-                //}
-                //// If the pause menu is active or all menus should be closed, close all menus.
-                //else
-                //{
-                //    await Delay(1);
-                //    Mp.CloseAllMenus();
-                //}
+
                 if (NoClipEnabled)
                 {
                     MenuController.DontOpenAnyMenu = true;
                 }
-                //else
-                //{
-                //    MenuController.DontOpenAnyMenu = false;
-                //}
+
                 #endregion
 
                 // Menu toggle button.
                 Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
 
 
-                // now managed by the menu api itself.
-                #region Disable Inputs when any menu is open.
-
-                //if (MenuController.IsAnyMenuOpen())
-                //{
-                //// Close all menus when the player dies.
-                //if (Game.PlayerPed.IsDead)
-                //{
-                //    Mp.CloseAllMenus();
-                //}
-
-                //// Disable Gamepad/Controller Specific controls:
-                //if (Game.CurrentInputMode == InputMode.GamePad)
-                //{
-                //    Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
-                //    // when in a vehicle.
-                //    if (Game.PlayerPed.IsInVehicle())
-                //    {
-                //        Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
-                //        Game.DisableControlThisFrame(0, Control.VehicleDuck);
-                //    }
-                //}
-                //else // when not using a controller.
-                //{
-                //    Game.DisableControlThisFrame(0, Control.FrontendPauseAlternate); // disable the escape key opening the pause menu, pressing P still works.
-
-                //    // Disable the scrollwheel button changing weapons while the menu is open.
-                //    // Only if you press TAB (to show the weapon wheel) then it will allow you to change weapons.
-                //    if (!Game.IsControlPressed(0, Control.SelectWeapon))
-                //    {
-                //        Game.DisableControlThisFrame(24, Control.SelectNextWeapon);
-                //        Game.DisableControlThisFrame(24, Control.SelectPrevWeapon);
-                //    }
-                //}
-                //// Disable Shared Controls
-
-                //// Radio Inputs
-                //Game.DisableControlThisFrame(0, Control.RadioWheelLeftRight);
-                //Game.DisableControlThisFrame(0, Control.RadioWheelUpDown);
-                //Game.DisableControlThisFrame(0, Control.VehicleNextRadio);
-                //Game.DisableControlThisFrame(0, Control.VehicleRadioWheel);
-                //Game.DisableControlThisFrame(0, Control.VehiclePrevRadio);
-
-                //// Phone / Arrows Inputs
-                //Game.DisableControlThisFrame(0, Control.Phone);
-                //Game.DisableControlThisFrame(0, Control.PhoneCancel);
-                //Game.DisableControlThisFrame(0, Control.PhoneDown);
-                //Game.DisableControlThisFrame(0, Control.PhoneLeft);
-                //Game.DisableControlThisFrame(0, Control.PhoneRight);
-
-                //// Attack Controls
-                //Game.DisableControlThisFrame(0, Control.Attack);
-                //Game.DisableControlThisFrame(0, Control.Attack2);
-                //Game.DisableControlThisFrame(0, Control.MeleeAttack1);
-                //Game.DisableControlThisFrame(0, Control.MeleeAttack2);
-                //Game.DisableControlThisFrame(0, Control.MeleeAttackAlternate);
-                //Game.DisableControlThisFrame(0, Control.MeleeAttackHeavy);
-                //Game.DisableControlThisFrame(0, Control.MeleeAttackLight);
-                //Game.DisableControlThisFrame(0, Control.VehicleAttack);
-                //Game.DisableControlThisFrame(0, Control.VehicleAttack2);
-                //Game.DisableControlThisFrame(0, Control.VehicleFlyAttack);
-                //Game.DisableControlThisFrame(0, Control.VehiclePassengerAttack);
-                //Game.DisableControlThisFrame(0, Control.Aim);
-
-                //// When in a vehicle
-                //if (Game.PlayerPed.IsInVehicle())
-                //{
-                //    Game.DisableControlThisFrame(0, Control.VehicleSelectNextWeapon);
-                //    Game.DisableControlThisFrame(0, Control.VehicleSelectPrevWeapon);
-                //    Game.DisableControlThisFrame(0, Control.VehicleCinCam);
-                //}
-                //}
-                #endregion
-
-                // Process the menu. Draw it and reset the menu width offset to make sure any newly generated menus always have the right width offset.
-                //Mp.WidthOffset = 50;
-                //if (Mp.IsAnyMenuOpen())
-                //{
-                //    Mp.Draw();
-                //}
             }
         }
 
@@ -874,23 +453,12 @@ namespace vMenuClient
                 button.Label = "→→→";
                 AddMenu(menu, button);
 
-                //if (EnableExperimentalFeatures)
-                //{
                 MpPedCustomizationMenu = new MpPedCustomization();
                 Menu menu2 = MpPedCustomizationMenu.GetMenu();
                 MenuItem button2 = new MenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.");
                 button2.Label = "→→→";
                 AddMenu(menu2, button2);
-                //}
-                //else
-                //{
-                //    MpPedCustomizationMenu = new MpPedCustomization();
-                //    Menu menu2 = MpPedCustomizationMenu.GetMenu();
-                //    MenuItem button2 = new MenuItem("MP Ped Customization", "This option is coming VERY soon™. Please be patient, it will be worth the wait.");
-                //    button2.RightIcon = MenuItem.Icon.LOCK;
-                //    button2.Enabled = false;
-                //    AddMenu(menu2, button2);
-                //}
+
 
             }
 
@@ -957,8 +525,6 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
-
-
             // Add About Menu.
             AboutMenu = new About();
             Menu sub = AboutMenu.GetMenu();
@@ -968,17 +534,10 @@ namespace vMenuClient
 
             // Refresh everything.
             MenuController.Menus.ForEach((m) => m.RefreshIndex());
-            //Mp.RefreshIndex();
-            //Menu.UpdateScaleform();
-
-            // Globally disable the native ui controls disabling.
-            //Mp.ControlDisablingEnabled = false;
-            // Globally disable the "mouse edge" feature.
-            //Mp.MouseEdgeEnabled = false;
 
             if (!GetSettingsBool(Setting.vmenu_use_permissions))
             {
-                Notify.Info("vMenu is set up to ignore permissions.");
+                Notify.Alert("vMenu is set up to ignore permissions, default permissions will be used.");
             }
         }
         #endregion

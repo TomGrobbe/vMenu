@@ -30,6 +30,7 @@ namespace vMenuClient
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
+        public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
@@ -106,6 +107,7 @@ namespace vMenuClient
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
             MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
             MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
 
@@ -252,6 +254,8 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(clearArea);
             }
+            // always allowed, it just won't do anything if the server owner disabled the feature, but players can still toggle it.
+            menu.AddMenuItem(respawnDefaultCharacter);
             if (IsAllowed(Permission.MSRestoreAppearance))
             {
                 menu.AddMenuItem(restorePlayerAppearance);
@@ -343,6 +347,10 @@ namespace vMenuClient
                 else if (item == playerBlips)
                 {
                     ShowPlayerBlips = _checked;
+                }
+                else if (item == respawnDefaultCharacter)
+                {
+                    MiscRespawnDefaultCharacter = _checked;
                 }
                 else if (item == restorePlayerAppearance)
                 {
