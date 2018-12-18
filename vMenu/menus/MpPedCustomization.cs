@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1929,6 +1929,7 @@ namespace vMenuClient
             {
                 selectedSavedCharacterManageName = item.Text;
                 manageSavedCharacterMenu.MenuSubtitle = item.Text;
+                manageSavedCharacterMenu.CounterPreText = $"{(item.Label.Substring(0, 3) == "(M)" ? "(Male) " : "(Female) ")}";
                 manageSavedCharacterMenu.RefreshIndex();
             };
         }
