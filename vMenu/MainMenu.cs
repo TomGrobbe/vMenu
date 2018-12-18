@@ -53,7 +53,8 @@ namespace vMenuClient
 
         public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
         public static bool DisableControls { get { return MenuController.DisableMenuButtons; } set { MenuController.DisableMenuButtons = value; } }
-        //private Menu currentMenu = null;
+
+        private const int currentCleanupVersion = 1;
         #endregion
 
         /// <summary>
@@ -63,28 +64,66 @@ namespace vMenuClient
         {
             PlayersList = Players;
 
+            #region cleanup unused kvps
+            int tmp_kvp_handle = StartFindKvp("");
+            bool cleanupVersionChecked = false;
+            List<string> tmp_kvp_names = new List<string>();
+            while (true)
+            {
+                string k = FindKvp(tmp_kvp_handle);
+                if (string.IsNullOrEmpty(k))
+                {
+                    break;
+                }
+                if (k == "vmenu_cleanup_version")
+                {
+                    if (GetResourceKvpInt("vmenu_cleanup_version") >= currentCleanupVersion)
+                    {
+                        cleanupVersionChecked = true;
+                    }
+                }
+            }
+            EndFindKvp(tmp_kvp_handle);
+
+            if (!cleanupVersionChecked)
+            {
+                SetResourceKvpInt("vmenu_cleanup_version", currentCleanupVersion);
+                foreach (string kvp in tmp_kvp_names)
+                {
+                    if (currentCleanupVersion == 1)
+                    {
+                        if (!kvp.StartsWith("settings_") && !kvp.StartsWith("vmenu") && !kvp.StartsWith("veh_") && !kvp.StartsWith("ped_") && !kvp.StartsWith("mp_ped_"))
+                        {
+                            DeleteResourceKvp(kvp);
+                            Debug.WriteLine($"[vMenu] Old unused KVP cleaned up: {kvp}.");
+                        }
+                    }
+                }
+                Debug.WriteLine("[vMenu] Cleanup of old unused KVP items completed.");
+            }
+            #endregion
+
             if (EnableExperimentalFeatures || DebugMode)
             {
-                RegisterCommand("testped", new Action<dynamic, List<string>, string>((dynamic source, List<string> args, string rawCommand) =>
+                RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
                 {
                     PedHeadBlendData data = Game.PlayerPed.GetHeadBlendData();
                     Debug.WriteLine(JsonConvert.SerializeObject(data, Formatting.Indented));
                 }), false);
+
+                RegisterCommand("tattoo", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+                {
+                    if (args != null && args[0] != null && args[1] != null)
+                    {
+                        Debug.WriteLine(args[0].ToString() + " " + args[1].ToString());
+                        TattooCollectionData d = Game.GetTattooCollectionData(int.Parse(args[0].ToString()), int.Parse(args[1].ToString()));
+                        Debug.WriteLine("check");
+                        Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
+                    }
+                }), false);
             }
 
-            RegisterCommand("tattoo", new Action<dynamic, List<string>, string>((dynamic source, List<string> args, string rawCommand) =>
-            {
-                if (args != null && args[0] != null && args[1] != null)
-                {
-                    Debug.WriteLine(args[0].ToString() + " " + args[1].ToString());
-                    TattooCollectionData d = Game.GetTattooCollectionData(int.Parse(args[0].ToString()), int.Parse(args[1].ToString()));
-                    Debug.WriteLine("check");
-                    Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
-                }
-            }), false);
-
-
-            RegisterCommand("vmenuclient", new Action<dynamic, List<string>, string>((dynamic source, List<string> args, string rawCommand) =>
+            RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
                 if (args != null)
                 {
@@ -107,7 +146,85 @@ namespace vMenuClient
                         else if (args[0].ToString().ToLower() == "gc")
                         {
                             GC.Collect();
-                            Debug.WriteLine("Cleared memory.");
+                            Debug.Write("Cleared memory.\n");
+                        }
+                        else if (args[0].ToString().ToLower() == "dump")
+                        {
+                            Notify.Info("A full config dump will be made to the console. Check the log file. This can cause lag!");
+                            Debug.WriteLine("\n\n\n########################### vMenu ###########################");
+                            Debug.WriteLine($"Running vMenu Version: {Version}, Experimental features: {EnableExperimentalFeatures}, Debug mode: {DebugMode}.");
+                            Debug.WriteLine("\nDumping a list of all KVPs:");
+                            int handle = StartFindKvp("");
+                            List<string> names = new List<string>();
+                            while (true)
+                            {
+                                string k = FindKvp(handle);
+                                if (string.IsNullOrEmpty(k))
+                                {
+                                    break;
+                                }
+                                //if (!k.StartsWith("settings_") && !k.StartsWith("vmenu") && !k.StartsWith("veh_") && !k.StartsWith("ped_") && !k.StartsWith("mp_ped_"))
+                                //{
+                                //    DeleteResourceKvp(k);
+                                //}
+                                names.Add(k);
+                            }
+                            EndFindKvp(handle);
+
+                            Dictionary<string, dynamic> kvps = new Dictionary<string, dynamic>();
+                            foreach (var kvp in names)
+                            {
+                                int type = 0; // 0 = string, 1 = float, 2 = int.
+                                if (kvp.StartsWith("settings_"))
+                                {
+                                    if (kvp == "settings_voiceChatProximity") // float
+                                    {
+                                        type = 1;
+                                    }
+                                    else if (kvp == "settings_clothingAnimationType") // int
+                                    {
+                                        type = 2;
+                                    }
+                                }
+                                else if (kvp == "vmenu_cleanup_version") // int
+                                {
+                                    type = 2;
+                                }
+                                switch (type)
+                                {
+                                    case 0:
+                                        var s = GetResourceKvpString(kvp);
+                                        if (s.StartsWith("{") || s.StartsWith("["))
+                                        {
+                                            kvps.Add(kvp, JsonConvert.DeserializeObject(s));
+                                        }
+                                        else
+                                        {
+                                            kvps.Add(kvp, GetResourceKvpString(kvp));
+                                        }
+                                        break;
+                                    case 1:
+                                        kvps.Add(kvp, GetResourceKvpFloat(kvp));
+                                        break;
+                                    case 2:
+                                        kvps.Add(kvp, GetResourceKvpInt(kvp));
+                                        break;
+                                }
+                            }
+                            Debug.WriteLine(@JsonConvert.SerializeObject(kvps, Formatting.None) + "\n");
+
+                            Debug.WriteLine("\n\nDumping a list of allowed permissions:");
+                            Debug.WriteLine(@JsonConvert.SerializeObject(PermissionsManager.Permissions, Formatting.None));
+
+                            Debug.WriteLine("\n\nDumping vmenu server configuration settings:");
+                            var settings = new Dictionary<string, string>();
+                            foreach (var a in Enum.GetValues(typeof(Setting)))
+                            {
+                                settings.Add(a.ToString(), GetSettingsString((Setting)a));
+                            }
+                            Debug.WriteLine(@JsonConvert.SerializeObject(settings, Formatting.None));
+                            Debug.WriteLine("\nEnd of vMenu dump!");
+                            Debug.WriteLine("\n########################### vMenu ###########################");
                         }
                     }
                     else
