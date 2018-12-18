@@ -27,3 +27,19 @@ deploy:
       branch: production
       APPVEYOR_REPO_TAG: true
     description: "vMenu version $(APPVEYOR_REPO_TAG_NAME)."
+before_build:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 start $env:WEBHOOK_URL
+  - ps: rm send.ps1
+after_deploy:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 deploy $env:WEBHOOK_URL
+  - ps: rm send.ps1
+on_success:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 success $env:WEBHOOK_URL
+  - ps: rm send.ps1
+on_failure:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 failure $env:WEBHOOK_URL
+  - ps: rm send.ps1
