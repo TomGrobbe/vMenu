@@ -9,13 +9,12 @@ build:
   parallel: true                  # enable MSBuild parallel builds
   project: vMenu.sln              # path to Visual Studio solution or project
   include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
-  verbosity: detailed
+  verbosity: minimal
 after_build:
   - copy README.md ..\build\README.md
   - copy LICENSE.md ..\build\LICENSE.md
   - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - dir
-  - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', 'vMenu-$(APPVEYOR_REPO_TAG_NAME).zip'); }"
+  - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', ('vMenu-{0}.zip' -f $APPVEYOR_REPO_TAG_NAME)); }"
   - dir
 artifacts:
   - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
