@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -207,6 +207,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
         }
 
+        public static bool MiscRespawnDefaultCharacter
+        {
+            get { return GetSettingsBool("miscRespawnDefaultCharacter"); }
+            set { SetSavedSettingsBool("miscRespawnDefaultCharacter", value); }
+        }
+
         public static bool MiscShowTime
         {
             get { return GetSettingsBool("miscShowTime"); }
@@ -223,12 +229,12 @@ namespace vMenuClient
         public static bool KbTpToWaypoint
         {
             get { return GetSettingsBool("kbTpToWaypoint"); }
-            set { SetSavedSettingsBool("kbTpToWaypoint", true); }
+            set { SetSavedSettingsBool("kbTpToWaypoint", value); }
         }
         public static bool KbDriftMode
         {
             get { return GetSettingsBool("kbDriftMode"); }
-            set { SetSavedSettingsBool("kbDriftMode", true); }
+            set { SetSavedSettingsBool("kbDriftMode", value); }
         }
         #endregion
         #endregion
@@ -285,7 +291,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -410,6 +416,9 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
+
+                MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
+                prefs.Add("miscRespawnDefaultCharacter", MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter);
 
                 MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
                 prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);

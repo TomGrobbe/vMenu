@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -16,19 +16,19 @@ namespace vMenuClient
     public class Recording
     {
         // Variables
-        private UIMenu menu;
+        private Menu menu;
 
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("Recording", "Recording Options", RightAlignMenus());
+            menu = new Menu("Recording", "Recording Options");
 
-            UIMenuItem startRec = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
-            UIMenuItem stopRec = new UIMenuItem("Stop Recording", "Stop and save your current recording.");
-            UIMenuItem openEditor = new UIMenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
-            menu.AddItem(startRec);
-            menu.AddItem(stopRec);
-            menu.AddItem(openEditor);
+            MenuItem startRec = new MenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
+            MenuItem stopRec = new MenuItem("Stop Recording", "Stop and save your current recording.");
+            MenuItem openEditor = new MenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
+            menu.AddMenuItem(startRec);
+            menu.AddMenuItem(stopRec);
+            menu.AddMenuItem(openEditor);
 
             menu.OnItemSelect += async (sender, item, index) =>
             {
@@ -78,7 +78,7 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

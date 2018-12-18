@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -1303,7 +1303,7 @@ namespace vMenuClient
             var currentMenu = GetOpenMenu();
             if (currentMenu != null)
             {
-                MainMenu.Mp.CloseAllMenus();
+                MenuController.CloseAllMenus();
             }
             MainMenu.DisableControls = true;
             MainMenu.DontOpenMenus = true;
@@ -1312,13 +1312,13 @@ namespace vMenuClient
             var spacer = "\t";
             AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
 
-            async void ReopenMenuDelayed(UIMenu menu)
+            async void ReopenMenuDelayed(Menu menu)
             {
                 MainMenu.DontOpenMenus = false;
                 await Delay(100);
                 if (menu != null)
                 {
-                    menu.Visible = true;
+                    menu.OpenMenu();
                 }
                 await Delay(50);
                 MainMenu.DisableControls = false;
@@ -1976,31 +1976,30 @@ namespace vMenuClient
         /// </summary>
         public static async Task SaveWeaponLoadout()
         {
-            //await Delay(1);
             weaponsList.Clear();
-            //await Delay(1);
-            foreach (var vw in ValidWeapons.Weapons)
+            foreach (ValidWeapon vw in ValidWeapons.WeaponList)
             {
-                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Value, false))
+                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                 {
                     List<uint> components = new List<uint>();
-                    foreach (var wc in ValidWeapons.weaponComponents)
+                    if (vw.Components != null && vw.Components.Count > 0)
                     {
-                        if (DoesWeaponTakeWeaponComponent(vw.Value, wc.Value))
+                        foreach (var c in vw.Components)
                         {
-                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Value, wc.Value))
+                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Hash, c.Value))
                             {
-                                components.Add(wc.Value);
+                                components.Add(c.Value);
                             }
                         }
                     }
                     weaponsList.Add(new WeaponInfo()
                     {
-                        Ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Value),
-                        Hash = vw.Value,
+                        Ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash),
                         Components = components,
-                        Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Value)
+                        Hash = vw.Hash,
+                        Tint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Hash)
                     });
+
                 }
             }
             await Delay(0);
@@ -2024,6 +2023,8 @@ namespace vMenuClient
                             GiveWeaponComponentToPed(Game.PlayerPed.Handle, wi.Hash, wc);
                         }
                     }
+                    // sometimes causes problems if this is not manually set.
+                    SetPedAmmo(Game.PlayerPed.Handle, wi.Hash, wi.Ammo);
                     SetPedWeaponTintIndex(Game.PlayerPed.Handle, wi.Hash, wi.Tint);
                 }
             }
@@ -2032,12 +2033,12 @@ namespace vMenuClient
 
         #region Get "Header" Menu Item
         /// <summary>
-        /// Get a header menu item (text-centered, disabled UIMenuItem)
+        /// Get a header menu item (text-centered, disabled MenuItem)
         /// </summary>
         /// <param name="title"></param>
         /// <param name="description"></param>
         /// <returns></returns>
-        public static UIMenuItem GetSpacerMenuItem(string title, string description = null)
+        public static MenuItem GetSpacerMenuItem(string title, string description = null)
         {
             string output = "~h~";
             int length = title.Length;
@@ -2048,7 +2049,7 @@ namespace vMenuClient
                 output += " ";
             }
             output += title;
-            UIMenuItem item = new UIMenuItem(output, description ?? "")
+            MenuItem item = new MenuItem(output, description ?? "")
             {
                 Enabled = false
             };
@@ -2063,7 +2064,7 @@ namespace vMenuClient
         /// <param name="data"></param>
         public static void Log(string data)
         {
-            if (MainMenu.DebugMode) Debug.Write(data + "\n");
+            if (MainMenu.DebugMode) Debug.WriteLine(@data);
         }
         #endregion
 
@@ -2072,20 +2073,9 @@ namespace vMenuClient
         /// Returns the currently opened menu, if no menu is open, it'll return null.
         /// </summary>
         /// <returns></returns>
-        public static UIMenu GetOpenMenu()
+        public static Menu GetOpenMenu()
         {
-            if (MainMenu.Mp.IsAnyMenuOpen())
-            {
-                foreach (UIMenu m in MainMenu.Mp.ToList())
-                {
-                    if (m.Visible)
-                    {
-                        return m;
-                    }
-                }
-            }
-            return null;
-
+            return MenuController.GetCurrentMenu();
         }
         #endregion
 
@@ -2100,11 +2090,11 @@ namespace vMenuClient
             {
                 if (int.TryParse(inputAmmo, out int ammo))
                 {
-                    foreach (var wp in ValidWeapons.Weapons)
+                    foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        if (Game.PlayerPed.Weapons.HasWeapon((WeaponHash)wp.Value))
+                        if (HasPedGotWeapon(PlayerPedId(), vw.Hash, false))
                         {
-                            SetPedAmmo(Game.PlayerPed.Handle, wp.Value, ammo);
+                            SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
                     }
                 }

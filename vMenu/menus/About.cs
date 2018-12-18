@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -15,38 +15,40 @@ namespace vMenuClient
     public class About
     {
         // Variables
-        private UIMenu menu;
+        private Menu menu;
 
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("vMenu", "About vMenu", RightAlignMenus());
+            menu = new Menu("vMenu", "About vMenu");
 
             // Create menu items.
-            UIMenuItem version = new UIMenuItem("vMenu Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.");
-            version.SetRightLabel($"~h~{MainMenu.Version}~h~");
-            UIMenuItem credits = new UIMenuItem("About vMenu / Credits", $"vMenu is made by ~b~Vespura~s~. For more info, checkout ~b~www.vespura.com/vmenu~s~.");
+            MenuItem version = new MenuItem("vMenu Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.")
+            {
+                Label = $"~h~{MainMenu.Version}~h~"
+            };
+            MenuItem credits = new MenuItem("About vMenu / Credits", $"vMenu is made by ~b~Vespura~s~. For more info, checkout ~b~www.vespura.com/vmenu~s~.");
 
             string serverInfoMessage = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_message);
             if (!string.IsNullOrEmpty(serverInfoMessage))
             {
-                UIMenuItem serverInfo = new UIMenuItem("Server Info", serverInfoMessage);
+                MenuItem serverInfo = new MenuItem("Server Info", serverInfoMessage);
                 string siteUrl = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_website_url);
                 if (!string.IsNullOrEmpty(siteUrl))
                 {
-                    serverInfo.SetRightLabel($"{siteUrl}");
+                    serverInfo.Label = $"{siteUrl}";
                 }
-                menu.AddItem(serverInfo);
+                menu.AddMenuItem(serverInfo);
             }
-            menu.AddItem(version);
-            menu.AddItem(credits);
+            menu.AddMenuItem(version);
+            menu.AddMenuItem(credits);
         }
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

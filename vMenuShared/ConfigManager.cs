@@ -44,6 +44,8 @@ namespace vMenuShared
             vmenu_server_info_website_url,
 
             vmenu_teleport_to_wp_keybind_key,
+
+            vmenu_disable_spawning_as_default_character,
         }
 
         public static bool GetSettingsBool(Setting setting)

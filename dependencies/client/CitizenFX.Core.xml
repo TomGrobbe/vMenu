@@ -18730,6 +18730,20 @@
             Gets a value indicating whether this raycast collided with any <see cref="T:CitizenFX.Core.Entity"/>.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Entity,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Entity"/>.
+            </summary>
+            <param name="target"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Vector3,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Vector3"/> position.
+            </summary>
+            <param name="position"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
+        </member>
         <member name="P:CitizenFX.Core.Vehicle.DisplayName">
             <summary>
             Gets the display name of this <see cref="T:CitizenFX.Core.Vehicle"/>.
@@ -30145,7 +30159,7 @@
             Corrected p1. it's basically the 'carriage/trailer number'. So if the train has 3 trailers you'd call the native once with a var or 3 times with 1, 2, 3.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ACCELERATION">
+        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ALARM_TIME_LEFT">
             <summary>
             static - max acceleration
             </summary>
@@ -33636,20 +33650,20 @@
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.SET_BLIP_DISPLAY">
             <summary>
-            **displayId Behaviour** \\
-            0 = Doesn't show up, ever, anywhere. \\
-            1 = Doesn't show up, ever, anywhere. \\
-            2 = Shows on both main map and minimap. (Selectable on map) \\
-            3 = Shows on main map only. (Selectable on map) \\
-            4 = Shows on main map only. (Selectable on map) \\
-            5 = Shows on minimap only. \\
-            6 = Shows on both main map and minimap. (Selectable on map) \\
-            7 = Doesn't show up, ever, anywhere. \\
-            8 = Shows on both main map and minimap. (Not selectable on map) \\
-            9 = Shows on minimap only. \\
-            10 = Shows on both main map and minimap. (Not selectable on map) \\
-            Anything higher than 10 seems to be exactly the same as 10. \\
-             \\
+            **displayId Behaviour** &lt;br&gt;
+            0 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            1 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            2 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            3 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            4 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            5 = Shows on minimap only. &lt;br&gt;
+            6 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            7 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            8 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            9 = Shows on minimap only. &lt;br&gt;
+            10 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            Anything higher than 10 seems to be exactly the same as 10. &lt;br&gt;
+            &lt;br&gt;
             Rockstar seem to only use 0, 2, 3, 4, 5 and 8 in the decompiled scripts.
             </summary>
         </member>
@@ -39072,6 +39086,16 @@
             only documented to be continued...
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_HAIR_RGB_COLOR">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            
+            This is used with the hair color swatches scaleform.
+            
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_HELI_ENGINE_HEALTH">
             <summary>
             Max 1000.  
@@ -39135,6 +39159,16 @@
         <member name="F:CitizenFX.Core.Native.Hash._GET_LENGTH_OF_STRING">
             <summary>
             gets the length of a null terminated string, without checking unicode encodings
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_MAKEUP_RGB_COLOR">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            
+            This is used with the makeup color swatches scaleform.
+            
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_MAXIMUM_NUMBER_OF_PHOTOS_2">
@@ -39391,6 +39425,47 @@
             Returns false for nodes that aren't used for GPS routes.  
             Example:  
             Nodes in Fort Zancudo and LSIA are false
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_TATTOO_COLLECTION_DATA">
+            <summary>
+            Character types:
+            
+            ```
+            0 = Michael, 
+            1 = Franklin, 
+            2 = Trevor, 
+            3 = MPMale, 
+            4 = MPFemale
+            ```
+            
+            ```csharp
+            enum TattooZoneData  
+            {  
+                ZONE_TORSO = 0,  
+                ZONE_HEAD = 1,  
+                ZONE_LEFT_ARM = 2,  
+                ZONE_RIGHT_ARM = 3,  
+                ZONE_LEFT_LEG = 4,  
+                ZONE_RIGHT_LEG = 5,  
+                ZONE_UNKNOWN = 6,
+                ZONE_NONE = 7,  
+            };
+            
+            struct outComponent
+            {
+                // these vars are suffixed with 4 bytes of padding each.
+                uint unk;
+                int unk2;
+                uint tattooCollectionHash;
+                uint tattooNameHash;
+                int unk3;
+                TattooZoneData zoneId;
+                uint unk4;
+                uint unk5;
+                // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_TATTOO_ZONE">
@@ -47350,6 +47425,30 @@
             p1 may be a BOOL representing whether or not the group even exists
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.GetHairRgbColor(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            This is used with the hair color swatches scaleform.
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
+            </summary>
+            <param name="hairColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x4852fc386e2e1bb5(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            This is used with the hair color swatches scaleform.
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
+            </summary>
+            <param name="hairColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.GetHashKey(System.String)">
             <summary>
             Gets the (case-insensitive, lower-cased) hash value for the passed string. This uses the 'Jenkins one-at-a-time' hashing
@@ -47685,6 +47784,30 @@
             or use std::tm struct
             TIME::GET_LOCAL_TIME(&amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetMakeupRgbColor(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            This is used with the makeup color swatches scaleform.
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
+            </summary>
+            <param name="makeupColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x013e5cfc38cd5387(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            This is used with the makeup color swatches scaleform.
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
+            </summary>
+            <param name="makeupColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetMaxAmmoInClip(System.Int32,System.UInt32,System.Boolean)">
             <summary>
@@ -48947,62 +49070,62 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec3(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec32(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenEffectIsActive(System.String)">
@@ -49162,6 +49285,90 @@
             Example:
             Nodes in Fort Zancudo and LSIA are false
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetTattooCollectionData(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Character types:
+            ```
+            0 = Michael,
+            1 = Franklin,
+            2 = Trevor,
+            3 = MPMale,
+            4 = MPFemale
+            ```
+            ```csharp
+            enum TattooZoneData
+            {
+            ZONE_TORSO = 0,
+            ZONE_HEAD = 1,
+            ZONE_LEFT_ARM = 2,
+            ZONE_RIGHT_ARM = 3,
+            ZONE_LEFT_LEG = 4,
+            ZONE_RIGHT_LEG = 5,
+            ZONE_UNKNOWN = 6,
+            ZONE_NONE = 7,
+            };
+            struct outComponent
+            {
+            // these vars are suffixed with 4 bytes of padding each.
+            uint unk;
+            int unk2;
+            uint tattooCollectionHash;
+            uint tattooNameHash;
+            int unk3;
+            TattooZoneData zoneId;
+            uint unk4;
+            uint unk5;
+            // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale.</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and GetNumDecorations(characterType).</param>
+            <param name="outComponent">The referenced struct.</param>
+            <returns>A bool indicating that the tattoo data could be fetched(?)</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xff56381874f82086(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Character types:
+            ```
+            0 = Michael,
+            1 = Franklin,
+            2 = Trevor,
+            3 = MPMale,
+            4 = MPFemale
+            ```
+            ```csharp
+            enum TattooZoneData
+            {
+            ZONE_TORSO = 0,
+            ZONE_HEAD = 1,
+            ZONE_LEFT_ARM = 2,
+            ZONE_RIGHT_ARM = 3,
+            ZONE_LEFT_LEG = 4,
+            ZONE_RIGHT_LEG = 5,
+            ZONE_UNKNOWN = 6,
+            ZONE_NONE = 7,
+            };
+            struct outComponent
+            {
+            // these vars are suffixed with 4 bytes of padding each.
+            uint unk;
+            int unk2;
+            uint tattooCollectionHash;
+            uint tattooNameHash;
+            int unk3;
+            TattooZoneData zoneId;
+            uint unk4;
+            uint unk5;
+            // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale.</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and GetNumDecorations(characterType).</param>
+            <param name="outComponent">The referenced struct.</param>
+            <returns>A bool indicating that the tattoo data could be fetched(?)</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetTattooZone(System.UInt32,System.UInt32)">
             <summary>
@@ -57489,20 +57696,20 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetBlipDisplay(System.Int32,System.Int32)">
             <summary>
-            **displayId Behaviour** \\
-            0 = Doesn't show up, ever, anywhere. \\
-            1 = Doesn't show up, ever, anywhere. \\
-            2 = Shows on both main map and minimap. (Selectable on map) \\
-            3 = Shows on main map only. (Selectable on map) \\
-            4 = Shows on main map only. (Selectable on map) \\
-            5 = Shows on minimap only. \\
-            6 = Shows on both main map and minimap. (Selectable on map) \\
-            7 = Doesn't show up, ever, anywhere. \\
-            8 = Shows on both main map and minimap. (Not selectable on map) \\
-            9 = Shows on minimap only. \\
-            10 = Shows on both main map and minimap. (Not selectable on map) \\
-            Anything higher than 10 seems to be exactly the same as 10. \\
-            \\
+            **displayId Behaviour** &lt;br&gt;
+            0 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            1 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            2 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            3 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            4 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            5 = Shows on minimap only. &lt;br&gt;
+            6 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            7 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            8 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            9 = Shows on minimap only. &lt;br&gt;
+            10 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            Anything higher than 10 seems to be exactly the same as 10. &lt;br&gt;
+            &lt;br&gt;
             Rockstar seem to only use 0, 2, 3, 4, 5 and 8 in the decompiled scripts.
             </summary>
         </member>

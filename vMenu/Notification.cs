@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
@@ -269,4 +269,24 @@ namespace vMenuClient
         }
     }
     #endregion
+
+    public static class HelpMessage
+    {
+        public static void Custom(string message) => Custom(message, 6000, true);
+        public static void Custom(string message, int duration) => Custom(message, duration, true);
+        public static void Custom(string message, int duration, bool sound)
+        {
+            string[] array = CommonFunctions.StringToArray(message);
+            if (IsHelpMessageBeingDisplayed())
+            {
+                ClearAllHelpMessages();
+            }
+            BeginTextCommandDisplayHelp("CELL_EMAIL_BCON");
+            foreach (string s in array)
+            {
+                AddTextComponentSubstringPlayerName(s);
+            }
+            EndTextCommandDisplayHelp(0, false, sound, duration);
+        }
+    }
 }
