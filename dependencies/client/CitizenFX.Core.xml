@@ -17696,6 +17696,17 @@
             <param name="maxLength">The maximum length of input allowed.</param>
             <returns>The <see cref="T:System.String"/> of what the user entered, If the user cancelled <see cref="F:System.String.Empty"/> is returned</returns>
         </member>
+        <member name="M:CitizenFX.Core.Game.GetTattooCollectionData(System.Int32,System.Int32)">
+            <summary>
+            Returns a <see cref="T:CitizenFX.Core.TattooCollectionData"/> struct containing information about a specific tattoo.
+            Currently only the <see cref="F:CitizenFX.Core.TattooCollectionData.TattooCollectionHash"/>, <see cref="F:CitizenFX.Core.TattooCollectionData.TattooNameHash"/>
+            and <see cref="F:CitizenFX.Core.TattooCollectionData.TattooZone"/> are known. It's still unkown what the other values are used for or if 
+            they're even correctly offset in the byte array.
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and <see cref="M:CitizenFX.Core.Native.API.GetNumDecorations(System.Int32)"/></param>
+            <returns></returns>
+        </member>
         <member name="P:CitizenFX.Core.Model.Hash">
             <summary>
             Gets the hash for this <see cref="T:CitizenFX.Core.Model"/>.
@@ -17867,6 +17878,11 @@
         <member name="T:CitizenFX.Core.PedHeadBlendData">
             <summary>
             A struct containing all ped head blend data. Used for MP (freemode) characters.
+            </summary>
+        </member>
+        <member name="T:CitizenFX.Core.UnsafeTattooCollectionData">
+            <summary>
+            This is used to GET the data. The GetData() function returns the data into a usable struct for scripts to use safely.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.ParticleEffectsAsset.#ctor(System.String)">
@@ -18713,6 +18729,20 @@
             <summary>
             Gets a value indicating whether this raycast collided with any <see cref="T:CitizenFX.Core.Entity"/>.
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Entity,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Entity"/>.
+            </summary>
+            <param name="target"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Vector3,System.Int32)">
+            <summary>
+            Looks at the specified <see cref="T:CitizenFX.Core.Vector3"/> position.
+            </summary>
+            <param name="position"></param>
+            <param name="duration">Must be greater than 0 for the ped to actually move their head.</param>
         </member>
         <member name="P:CitizenFX.Core.Vehicle.DisplayName">
             <summary>
@@ -33620,20 +33650,20 @@
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.SET_BLIP_DISPLAY">
             <summary>
-            **displayId Behaviour** \\
-            0 = Doesn't show up, ever, anywhere. \\
-            1 = Doesn't show up, ever, anywhere. \\
-            2 = Shows on both main map and minimap. (Selectable on map) \\
-            3 = Shows on main map only. (Selectable on map) \\
-            4 = Shows on main map only. (Selectable on map) \\
-            5 = Shows on minimap only. \\
-            6 = Shows on both main map and minimap. (Selectable on map) \\
-            7 = Doesn't show up, ever, anywhere. \\
-            8 = Shows on both main map and minimap. (Not selectable on map) \\
-            9 = Shows on minimap only. \\
-            10 = Shows on both main map and minimap. (Not selectable on map) \\
-            Anything higher than 10 seems to be exactly the same as 10. \\
-             \\
+            **displayId Behaviour** &lt;br&gt;
+            0 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            1 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            2 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            3 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            4 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            5 = Shows on minimap only. &lt;br&gt;
+            6 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            7 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            8 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            9 = Shows on minimap only. &lt;br&gt;
+            10 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            Anything higher than 10 seems to be exactly the same as 10. &lt;br&gt;
+            &lt;br&gt;
             Rockstar seem to only use 0, 2, 3, 4, 5 and 8 in the decompiled scripts.
             </summary>
         </member>
@@ -38487,6 +38517,11 @@
             GAMEPLAY::_0x957838AAF91BD12D(x, y, z, radius, false, false, false, false); seem to make all objects go away, peds, vehicles etc. All booleans set to true doesn't seem to change anything.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._CLEAR_EXTRA_TIMECYCLE_MODIFIER">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._CLEAR_NOTIFICATIONS_POS">
             <summary>
             _CLEAR_NOTIFICATIONS_POS(0.5f);
@@ -39009,6 +39044,11 @@
             	GetEntityPopulationTypeName_t GetEntityPopulationTypeName = (GetEntityPopulationTypeName_t)FindPattern("44 0F B7 C1 4C 8D 0D ?? ?? ?? ?? 41 83 F8 07");
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_EXTRA_TIMECYCLE_MODIFIER_INDEX">
+            <summary>
+            See [`GetTimecycleModifierIndex`](#_0xFDF3D97C674AFB66) for use, works the same just for the secondary timecycle modifier.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_FIRST_PARENT_ID_FOR_PED_TYPE">
             <summary>
             Type equals 0 for male non-dlc, 1 for female non-dlc, 2 for male dlc, and 3 for female dlc.  
@@ -39044,6 +39084,16 @@
         <member name="F:CitizenFX.Core.Native.Hash._GET_GROUND_Z_COORD_WITH_OFFSETS">
             <summary>
             only documented to be continued...
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_HAIR_RGB_COLOR">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            
+            This is used with the hair color swatches scaleform.
+            
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_HELI_ENGINE_HEALTH">
@@ -39109,6 +39159,16 @@
         <member name="F:CitizenFX.Core.Native.Hash._GET_LENGTH_OF_STRING">
             <summary>
             gets the length of a null terminated string, without checking unicode encodings
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_MAKEUP_RGB_COLOR">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            
+            This is used with the makeup color swatches scaleform.
+            
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_MAXIMUM_NUMBER_OF_PHOTOS_2">
@@ -39365,6 +39425,47 @@
             Returns false for nodes that aren't used for GPS routes.  
             Example:  
             Nodes in Fort Zancudo and LSIA are false
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_TATTOO_COLLECTION_DATA">
+            <summary>
+            Character types:
+            
+            ```
+            0 = Michael, 
+            1 = Franklin, 
+            2 = Trevor, 
+            3 = MPMale, 
+            4 = MPFemale
+            ```
+            
+            ```csharp
+            enum TattooZoneData  
+            {  
+                ZONE_TORSO = 0,  
+                ZONE_HEAD = 1,  
+                ZONE_LEFT_ARM = 2,  
+                ZONE_RIGHT_ARM = 3,  
+                ZONE_LEFT_LEG = 4,  
+                ZONE_RIGHT_LEG = 5,  
+                ZONE_UNKNOWN = 6,
+                ZONE_NONE = 7,  
+            };
+            
+            struct outComponent
+            {
+                // these vars are suffixed with 4 bytes of padding each.
+                uint unk;
+                int unk2;
+                uint tattooCollectionHash;
+                uint tattooNameHash;
+                int unk3;
+                TattooZoneData zoneId;
+                uint unk4;
+                uint unk5;
+                // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_TATTOO_ZONE">
@@ -40313,6 +40414,11 @@
             Removes a notification instantly instead of waiting for it to disappear
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._REMOVE_PED_SCUBA_GEAR_NOW">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._REMOVE_SPEED_ZONE">
             <summary>
             Used to remove a speedzone.  
@@ -40395,6 +40501,11 @@
         <member name="F:CitizenFX.Core.Native.Hash._RESET_EDITOR_VALUES">
             <summary>
             Sets (almost, not sure) all Rockstar Editor values (bIsRecording etc) to 0.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._RESET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._RESET_LOCALPLAYER_STATE">
@@ -40725,6 +40836,16 @@
             	return false;  
             }  
             wot ?
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_EXTRA_TIMECYCLE_MODIFIER">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_EXTRA_TIMECYCLE_MODIFIER_STRENGTH">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_FAR_SHADOWS_SUPPRESSED">
@@ -43752,6 +43873,16 @@
             <summary>
             Resets the screen's draw-origin which was changed by the function GRAPHICS::SET_DRAW_ORIGIN(...) back to x=0,y=0.
             See GRAPHICS::SET_DRAW_ORIGIN(...) for further information.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.ClearExtraTimecycleModifier">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x92ccc17a7a2285da">
+            <summary>
+            Clears the secondary timecycle modifier usually set with [`SetExtraTimecycleModifier`](#_0X3B2FD68DB5F8331C)
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.ClearFloatingHelp(System.Int32,System.Boolean)">
@@ -47174,6 +47305,12 @@
             eventGroup: 0 = CEventGroupScriptAI, 1 = CEventGroupScriptNetwork
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.GetExtraTimecycleModifierIndex">
+            <summary>
+            See [`GetTimecycleModifierIndex`](#_0xFDF3D97C674AFB66) for use, works the same just for the secondary timecycle modifier.
+            </summary>
+            <returns>An integer representing the Timecycle modifier</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.GetFirstBlipInfoId(System.Int32)">
             <summary>
             8 = waypoint
@@ -47287,6 +47424,30 @@
             <summary>
             p1 may be a BOOL representing whether or not the group even exists
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetHairRgbColor(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            This is used with the hair color swatches scaleform.
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
+            </summary>
+            <param name="hairColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x4852fc386e2e1bb5(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Haircolor index, value between 0 and 63 (inclusive).
+            Output: RGB values for the haircolor specified in the input.
+            This is used with the hair color swatches scaleform.
+            Use [`_0x013E5CFC38CD5387`](#_0x013E5CFC38CD5387) to get the makeup colors.
+            </summary>
+            <param name="hairColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetHashKey(System.String)">
             <summary>
@@ -47623,6 +47784,30 @@
             or use std::tm struct
             TIME::GET_LOCAL_TIME(&amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetMakeupRgbColor(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            This is used with the makeup color swatches scaleform.
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
+            </summary>
+            <param name="makeupColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x013e5cfc38cd5387(System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            Input: Makeup color index, value between 0 and 63 (inclusive).
+            Output: RGB values for the makeup color specified in the input.
+            This is used with the makeup color swatches scaleform.
+            Use [`_0x4852FC386E2E1BB5`](#_0x4852FC386E2E1BB5) to get the hair colors.
+            </summary>
+            <param name="makeupColorIndex">The hair color index. Value between 0-63 (inclusive).</param>
+            <param name="outR">Output red value.</param>
+            <param name="outG">Output green value.</param>
+            <param name="outB">Output blue value.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetMaxAmmoInClip(System.Int32,System.UInt32,System.Boolean)">
             <summary>
@@ -48547,7 +48732,17 @@
             p1 is some kind of tolerance
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+        <member name="M:CitizenFX.Core.Native.API.GetPosixTime">
+            <summary>
+            Return POSIX timestamp.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c76">
+            <summary>
+            Return POSIX timestamp.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetPosixTime2(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
             <summary>
             Gets system time as year, month, day, hour, minute and second.
             Example usage:
@@ -48558,16 +48753,6 @@
             int minute;
             int second;
             TIME::GET_POSIX_TIME(&amp;year, &amp;month, &amp;day, &amp;hour, &amp;minute, &amp;second);
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime2">
-            <summary>
-            Return POSIX timestamp.
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c762">
-            <summary>
-            Return POSIX timestamp.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetPrevWeatherTypeHashName">
@@ -48885,62 +49070,62 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec3(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec32(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenEffectIsActive(System.String)">
@@ -49100,6 +49285,90 @@
             Example:
             Nodes in Fort Zancudo and LSIA are false
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetTattooCollectionData(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Character types:
+            ```
+            0 = Michael,
+            1 = Franklin,
+            2 = Trevor,
+            3 = MPMale,
+            4 = MPFemale
+            ```
+            ```csharp
+            enum TattooZoneData
+            {
+            ZONE_TORSO = 0,
+            ZONE_HEAD = 1,
+            ZONE_LEFT_ARM = 2,
+            ZONE_RIGHT_ARM = 3,
+            ZONE_LEFT_LEG = 4,
+            ZONE_RIGHT_LEG = 5,
+            ZONE_UNKNOWN = 6,
+            ZONE_NONE = 7,
+            };
+            struct outComponent
+            {
+            // these vars are suffixed with 4 bytes of padding each.
+            uint unk;
+            int unk2;
+            uint tattooCollectionHash;
+            uint tattooNameHash;
+            int unk3;
+            TattooZoneData zoneId;
+            uint unk4;
+            uint unk5;
+            // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale.</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and GetNumDecorations(characterType).</param>
+            <param name="outComponent">The referenced struct.</param>
+            <returns>A bool indicating that the tattoo data could be fetched(?)</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xff56381874f82086(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Character types:
+            ```
+            0 = Michael,
+            1 = Franklin,
+            2 = Trevor,
+            3 = MPMale,
+            4 = MPFemale
+            ```
+            ```csharp
+            enum TattooZoneData
+            {
+            ZONE_TORSO = 0,
+            ZONE_HEAD = 1,
+            ZONE_LEFT_ARM = 2,
+            ZONE_RIGHT_ARM = 3,
+            ZONE_LEFT_LEG = 4,
+            ZONE_RIGHT_LEG = 5,
+            ZONE_UNKNOWN = 6,
+            ZONE_NONE = 7,
+            };
+            struct outComponent
+            {
+            // these vars are suffixed with 4 bytes of padding each.
+            uint unk;
+            int unk2;
+            uint tattooCollectionHash;
+            uint tattooNameHash;
+            int unk3;
+            TattooZoneData zoneId;
+            uint unk4;
+            uint unk5;
+            // maybe more, not sure exactly, decompiled scripts are very vague around this part.
+            }
+            ```
+            </summary>
+            <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale.</param>
+            <param name="decorationIndex">Tattoo index, value between 0 and GetNumDecorations(characterType).</param>
+            <param name="outComponent">The referenced struct.</param>
+            <returns>A bool indicating that the tattoo data could be fetched(?)</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetTattooZone(System.UInt32,System.UInt32)">
             <summary>
@@ -49283,7 +49552,7 @@
             gets current UTC time
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration(System.Int32)">
+        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration2(System.Int32)">
             <summary>
             static - max acceleration
             </summary>
@@ -56292,6 +56561,18 @@
             Judging purely from a quick disassembly, if the ped is in a vehicle, the ped will be deleted immediately. If not, it'll be marked as no longer needed. - very elegant..
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.RemovePedScubaGearNow(System.Int32)">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+            <param name="ped">The ped to remove the scuba gear from.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xb50eb4ccb29704ac(System.Int32)">
+            <summary>
+            Removes the scubagear (for mp male: component id: 8, drawableId: 123, textureId: any) from peds. Does not play the 'remove scuba gear' animation, but instantly removes it.
+            </summary>
+            <param name="ped">The ped to remove the scuba gear from.</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.RemovePickUpRopeForCargobob(System.Int32)">
             <summary>
             Retracts the hook on the cargobob.
@@ -56730,6 +57011,16 @@
         <member name="M:CitizenFX.Core.Native.API.N_0x3353d13f09307691">
             <summary>
             Sets (almost, not sure) all Rockstar Editor values (bIsRecording etc) to 0.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.ResetExtraTimecycleModifierStrength">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x2bf72ad5b41aa739">
+            <summary>
+            Resets the extra timecycle modifier strength normally set with [`SetExtraTimecycleModifierStrength`](#_0x2C328AF17210F009)
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.ResetLocalplayerState">
@@ -57405,20 +57696,20 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetBlipDisplay(System.Int32,System.Int32)">
             <summary>
-            **displayId Behaviour** \\
-            0 = Doesn't show up, ever, anywhere. \\
-            1 = Doesn't show up, ever, anywhere. \\
-            2 = Shows on both main map and minimap. (Selectable on map) \\
-            3 = Shows on main map only. (Selectable on map) \\
-            4 = Shows on main map only. (Selectable on map) \\
-            5 = Shows on minimap only. \\
-            6 = Shows on both main map and minimap. (Selectable on map) \\
-            7 = Doesn't show up, ever, anywhere. \\
-            8 = Shows on both main map and minimap. (Not selectable on map) \\
-            9 = Shows on minimap only. \\
-            10 = Shows on both main map and minimap. (Not selectable on map) \\
-            Anything higher than 10 seems to be exactly the same as 10. \\
-            \\
+            **displayId Behaviour** &lt;br&gt;
+            0 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            1 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            2 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            3 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            4 = Shows on main map only. (Selectable on map) &lt;br&gt;
+            5 = Shows on minimap only. &lt;br&gt;
+            6 = Shows on both main map and minimap. (Selectable on map) &lt;br&gt;
+            7 = Doesn't show up, ever, anywhere. &lt;br&gt;
+            8 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            9 = Shows on minimap only. &lt;br&gt;
+            10 = Shows on both main map and minimap. (Not selectable on map) &lt;br&gt;
+            Anything higher than 10 seems to be exactly the same as 10. &lt;br&gt;
+            &lt;br&gt;
             Rockstar seem to only use 0, 2, 3, 4, 5 and 8 in the decompiled scripts.
             </summary>
         </member>
@@ -58294,6 +58585,28 @@
             "Triathlon_3"
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.SetExtraTimecycleModifier(System.String)">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c(System.String)">
+            <summary>
+            Sets a secondary timecycle modifier.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.SetExtraTimecycleModifierStrength(System.Single)">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
+            </summary>
+            <param name="strength">:</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x2c328af17210f009(System.Single)">
+            <summary>
+            The same as [`SetTimecycleModifierStrength`](#_0x82E7FFCD5B2326B3) but for the secondary tiemcycle modifier.
+            </summary>
+            <param name="strength">:</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.SetFadeInAfterDeathArrest(System.Boolean)">
             <summary>
             Sets whether the game should fade in after the player dies or is arrested.
@@ -59083,7 +59396,7 @@
             <param name="G">:</param>
             <param name="B">:</param>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:CitizenFX.Core.Native.API.N_0x3b2fd68db5f8331c2(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             Seems to set the colour of the prop. Haven't really tested it on other props.
             Only appears in am_mp_nightclub.c for the nightclub dancefloor.

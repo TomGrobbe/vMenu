@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace vMenuClient
 {
-    public class VehicleData
+    public static class VehicleData
     {
         #region Vehicle Colors
         #region Metallic and classic colors
         /// <summary>
         /// All Metallic vehicle colors (and classic, because those are the same).
         /// </summary>
-        public Dictionary<string, int> MetallicColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> MetallicColors = new Dictionary<string, int>()
         {
             ["Black"] = 0,
             ["Graphite Black"] = 1,
@@ -92,7 +92,7 @@ namespace vMenuClient
         /// <summary>
         /// All Worn vehicle colors.
         /// </summary>
-        public Dictionary<string, int> WornColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> WornColors = new Dictionary<string, int>()
         {
             ["Black"] = 21,
             ["Graphite"] = 22,
@@ -125,7 +125,7 @@ namespace vMenuClient
         /// <summary>
         /// Chrome color.
         /// </summary>
-        public Dictionary<string, int> Chrome = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> Chrome = new Dictionary<string, int>()
         {
             ["Chrome"] = 120
         };
@@ -134,7 +134,7 @@ namespace vMenuClient
         /// <summary>
         /// All Matte vehicle colors.
         /// </summary>
-        public Dictionary<string, int> MatteColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> MatteColors = new Dictionary<string, int>()
         {
             ["Matte Black"] = 12,
             ["Matte Gray"] = 13,
@@ -163,7 +163,7 @@ namespace vMenuClient
         /// <summary>
         /// All Util vehicle colors.
         /// </summary>
-        public Dictionary<string, int> UtilColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> UtilColors = new Dictionary<string, int>()
         {
             ["Black"] = 15,
             ["Black Poly"] = 16,
@@ -193,7 +193,7 @@ namespace vMenuClient
         /// <summary>
         /// All Metal vehicle colors.
         /// </summary>
-        public Dictionary<string, int> MetalColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> MetalColors = new Dictionary<string, int>()
         {
             ["Brushed Steel"] = 117,
             ["Brushed Black Steel"] = 118,
@@ -206,7 +206,7 @@ namespace vMenuClient
         /// <summary>
         /// Not sure in which category these are supposed to go...
         /// </summary>
-        public Dictionary<string, int> UnknownColors = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> UnknownColors = new Dictionary<string, int>()
         {
             ["Police Car Blue"] = 127,
             ["Pure White"] = 134,

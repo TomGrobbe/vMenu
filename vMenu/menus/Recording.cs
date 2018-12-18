@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MenuAPI;
+using Newtonsoft.Json;
 using CitizenFX.Core;
+using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
-using NativeUI;
+using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
@@ -13,25 +16,19 @@ namespace vMenuClient
     public class Recording
     {
         // Variables
-        private UIMenu menu;
+        private Menu menu;
 
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new UIMenu("Recording", "Recording Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new Menu("Recording", "Recording Options");
 
-            UIMenuItem startRec = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
-            UIMenuItem stopRec = new UIMenuItem("Stop Recording", "Stop and save your current recording.");
-            UIMenuItem openEditor = new UIMenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
-            menu.AddItem(startRec);
-            menu.AddItem(stopRec);
-            menu.AddItem(openEditor);
+            MenuItem startRec = new MenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
+            MenuItem stopRec = new MenuItem("Stop Recording", "Stop and save your current recording.");
+            MenuItem openEditor = new MenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
+            menu.AddMenuItem(startRec);
+            menu.AddMenuItem(stopRec);
+            menu.AddMenuItem(openEditor);
 
             menu.OnItemSelect += async (sender, item, index) =>
             {
@@ -61,7 +58,7 @@ namespace vMenuClient
                 {
                     if (GetSettingsBool(Setting.vmenu_quit_session_in_rockstar_editor))
                     {
-                        MainMenu.Cf.QuitSession();
+                        QuitSession();
                     }
                     ActivateRockstarEditor();
                     // wait for the editor to be closed again.
@@ -81,7 +78,7 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {

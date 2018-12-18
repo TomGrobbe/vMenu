@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MenuAPI;
+using Newtonsoft.Json;
 using CitizenFX.Core;
+using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
+using static vMenuClient.CommonFunctions;
 
 namespace vMenuClient
 {
@@ -112,15 +116,10 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Custom(string message, bool blink = true, bool saveToBrief = true)
         {
-            SetNotificationTextEntry("THREESTRINGS");
-            string[] messages = MainMenu.Cf.StringToArray(message);
-            foreach (string msg in messages)
+            SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
-                if (msg != null)
-                {
-                    AddTextComponentSubstringPlayerName(msg);
-                }
-
+                AddTextComponentSubstringPlayerName(s);
             }
             DrawNotification(blink, saveToBrief);
         }
@@ -213,11 +212,10 @@ namespace vMenuClient
         /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
         public static void Custom(string message, int duration = 2500, bool drawImmediately = true)
         {
-            BeginTextCommandPrint("THREESTRINGS");
-            var messages = MainMenu.Cf.StringToArray(message);
-            foreach (var msg in messages)
+            BeginTextCommandPrint("CELL_EMAIL_BCON"); // 10x ~a~
+            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
-                AddTextComponentSubstringPlayerName(msg);
+                AddTextComponentSubstringPlayerName(s);
             }
             EndTextCommandPrint(duration, drawImmediately);
         }
@@ -271,4 +269,24 @@ namespace vMenuClient
         }
     }
     #endregion
+
+    public static class HelpMessage
+    {
+        public static void Custom(string message) => Custom(message, 6000, true);
+        public static void Custom(string message, int duration) => Custom(message, duration, true);
+        public static void Custom(string message, int duration, bool sound)
+        {
+            string[] array = CommonFunctions.StringToArray(message);
+            if (IsHelpMessageBeingDisplayed())
+            {
+                ClearAllHelpMessages();
+            }
+            BeginTextCommandDisplayHelp("CELL_EMAIL_BCON");
+            foreach (string s in array)
+            {
+                AddTextComponentSubstringPlayerName(s);
+            }
+            EndTextCommandDisplayHelp(0, false, sound, duration);
+        }
+    }
 }

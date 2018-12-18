@@ -10,7 +10,6 @@ namespace vMenuShared
 {
     public static class ConfigManager
     {
-
         public enum Setting
         {
             vmenu_use_permissions,
@@ -39,7 +38,14 @@ namespace vMenuShared
             vmenu_outdated_version_notify_players,
 
             vmenu_use_els_compatibility_mode,
-            vmenu_quit_session_in_rockstar_editor
+            vmenu_quit_session_in_rockstar_editor,
+
+            vmenu_server_info_message,
+            vmenu_server_info_website_url,
+
+            vmenu_teleport_to_wp_keybind_key,
+
+            vmenu_disable_spawning_as_default_character,
         }
 
         public static bool GetSettingsBool(Setting setting)

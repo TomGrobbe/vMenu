@@ -133,6 +133,7 @@ namespace vMenuServer
             "OPTeleport",
             "OPWaypoint",
             "OPSpectate",
+            "OPIdentifiers",
             "OPSummon",
             "OPKill",
             "OPKick",
@@ -364,6 +365,7 @@ namespace vMenuServer
             "MSConnectionMenu",
             "MSRestoreAppearance",
             "MSRestoreWeapons",
+            "MSDriftMode",
 
             // Voice Chat
             "VCMenu",
@@ -574,6 +576,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
                 EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
+                EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
 
                 string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
@@ -917,7 +920,7 @@ namespace vMenuServer
                 if (targetPlayer != null)
                 {
                     // Trigger the client event on the target player to make them kill themselves. R.I.P.
-                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe");
+                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe", args: source.Name);
                     return;
                 }
                 TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
@@ -961,9 +964,16 @@ namespace vMenuServer
         /// <param name="player"></param>
         private async void SendPermissionsAsync([FromSource] Player player)
         {
-
             // Get Permissions
             Dictionary<string, bool> perms = new Dictionary<string, bool>();
+
+            // Add all permissions if the vMenu.Dev permission is added for Vespura only. Can be disable in the permissions.cfg
+            // This is only used in case I need to debug an issue on your server related to vMenu. It only works for me, and does not give me any access outside of
+            // vMenu at all! Feel free to remove it (in the permissions.cfg) if you don't want this, however I will not be able to help you without this.
+            if (player.Identifiers.ToList().Any((id) => id == "license:4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev"))
+            {
+                perms.Add("vMenu.Everything", true);
+            }
             foreach (string ace in aceNames)
             {
                 var realAceName = GetRealAceName(ace);
@@ -979,11 +989,11 @@ namespace vMenuServer
             {
                 await Delay(0);
             }
+            await Delay(8000);
             if (!UpToDate)
             {
                 TriggerClientEvent(player, "vMenu:OutdatedResource");
             }
-            await Delay(8000);
             TriggerClientEvent("vMenu:updatePedDecors");
         }
 

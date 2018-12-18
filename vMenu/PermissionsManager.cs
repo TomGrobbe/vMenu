@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MenuAPI;
+using Newtonsoft.Json;
 using CitizenFX.Core;
+using static CitizenFX.Core.UI.Screen;
+using static CitizenFX.Core.Native.API;
+using static vMenuClient.CommonFunctions;
 
 namespace vMenuClient
 {
@@ -33,7 +38,7 @@ namespace vMenuClient
                 //if (Permissions.Contains("Everything"))
                 if (allowEverything)
                 {
-                    //MainMenu.Cf.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
+                    //CommonFunctions.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
                     return true;
                 }
                 else
@@ -41,7 +46,7 @@ namespace vMenuClient
                     //var allowed = false;
                     if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
                     {
-                        //MainMenu.Cf.Log(".All was allowed.");
+                        //CommonFunctions.Log(".All was allowed.");
                         //allowed = true;
                         return true;
                     }
@@ -55,7 +60,7 @@ namespace vMenuClient
             }
             else // if permissions are not used...
             {   // then check for .everything and some specific admin stuff and disable that, but for everything else return true (allowed)
-                if (permission == Permission.Everything || permission == Permission.OPAll || permission == Permission.OPKick || permission == Permission.OPKill || permission == Permission.OPPermBan || permission == Permission.OPTempBan || permission == Permission.OPUnban)
+                if (permission == Permission.Everything || permission == Permission.OPAll || permission == Permission.OPKick || permission == Permission.OPKill || permission == Permission.OPPermBan || permission == Permission.OPTempBan || permission == Permission.OPUnban || permission == Permission.OPIdentifiers || permission == Permission.OPViewBannedPlayers)
                 {
                     return false;
                 }

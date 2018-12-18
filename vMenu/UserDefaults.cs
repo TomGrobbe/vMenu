@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
+using MenuAPI;
 using Newtonsoft.Json;
+using CitizenFX.Core;
+using static CitizenFX.Core.UI.Screen;
+using static CitizenFX.Core.Native.API;
+using static vMenuClient.CommonFunctions;
 
 namespace vMenuClient
 {
@@ -204,11 +207,36 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscRestorePlayerWeapons", value); }
         }
 
+        public static bool MiscRespawnDefaultCharacter
+        {
+            get { return GetSettingsBool("miscRespawnDefaultCharacter"); }
+            set { SetSavedSettingsBool("miscRespawnDefaultCharacter", value); }
+        }
+
         public static bool MiscShowTime
         {
             get { return GetSettingsBool("miscShowTime"); }
             set { SetSavedSettingsBool("miscShowTime", value); }
         }
+
+        public static bool MiscRightAlignMenu
+        {
+            get { return GetSettingsBool("miscRightAlignMenu"); }
+            set { SetSavedSettingsBool("miscRightAlignMenu", value); }
+        }
+
+        #region keybind menu
+        public static bool KbTpToWaypoint
+        {
+            get { return GetSettingsBool("kbTpToWaypoint"); }
+            set { SetSavedSettingsBool("kbTpToWaypoint", value); }
+        }
+        public static bool KbDriftMode
+        {
+            get { return GetSettingsBool("kbDriftMode"); }
+            set { SetSavedSettingsBool("kbDriftMode", value); }
+        }
+        #endregion
         #endregion
 
         #region Voice Chat Settings
@@ -258,12 +286,12 @@ namespace vMenuClient
             // Get the current value.
             string savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
             // Check if it exists.
-            bool exists = savedValue != "" && savedValue != null;
+            bool exists = !string.IsNullOrEmpty(savedValue);
             // If not, create it and save the new default value of false.
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -389,6 +417,9 @@ namespace vMenuClient
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
 
+                MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
+                prefs.Add("miscRespawnDefaultCharacter", MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter);
+
                 MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
                 prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);
 
@@ -397,6 +428,15 @@ namespace vMenuClient
 
                 MiscShowTime = MainMenu.MiscSettingsMenu.DrawTimeOnScreen;
                 prefs.Add("miscShowTime", MainMenu.MiscSettingsMenu.DrawTimeOnScreen);
+
+                MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
+                prefs.Add("miscRightAlignMenu", MainMenu.MiscSettingsMenu.MiscRightAlignMenu);
+
+                KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
+                prefs.Add("kbTpToWaypoint", MainMenu.MiscSettingsMenu.KbTpToWaypoint);
+
+                KbDriftMode = MainMenu.MiscSettingsMenu.KbDriftMode;
+                prefs.Add("kbDriftMode", MainMenu.MiscSettingsMenu.KbDriftMode);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
@@ -467,7 +507,7 @@ namespace vMenuClient
 
             Notify.Success("Your settings have been saved.");
 
-            MainMenu.Cf.Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
+            Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
         }
 
         #endregion

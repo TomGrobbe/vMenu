@@ -14,6 +14,7 @@
         OPTeleport,
         OPWaypoint,
         OPSpectate,
+        OPIdentifiers,
         OPSummon,
         OPKill,
         OPKick,
@@ -238,7 +239,6 @@
         WPWrench,
 
         // Misc Settings
-        //MSMenu, (removed because this menu should always be allowed).
         MSAll,
         MSClearArea,
         MSTeleportToWp,
@@ -254,6 +254,7 @@
         MSConnectionMenu,
         MSRestoreAppearance,
         MSRestoreWeapons,
+        MSDriftMode,
 
         // Voice Chat
         VCMenu,

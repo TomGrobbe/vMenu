@@ -30,14 +30,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CitizenFX.Core">
       <HintPath>..\dependencies\client\CitizenFX.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NativeUI">
-      <HintPath>..\dependencies\client\NativeUI.dll</HintPath>
+    <Reference Include="MenuAPI.net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dependencies\client\MenuAPI.net.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -60,7 +62,6 @@
   <ItemGroup>
     <Compile Include="BlipInfo.cs" />
     <Compile Include="CommonFunctions.cs" />
-    <Compile Include="Configuration.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="menus\PlayerAppearance.cs" />
     <Compile Include="menus\Recording.cs" />
     <Compile Include="menus\SavedVehicles.cs" />
+    <Compile Include="TattoosData.cs" />
     <Compile Include="menus\TimeOptions.cs" />
     <Compile Include="menus\VehicleOptions.cs" />
     <Compile Include="menus\VehicleSpawner.cs" />
@@ -97,7 +99,7 @@
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\NativeUI.dll" "D:\FXserver\vMenu\resources\vMenu\"
+    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\MenuAPI.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
     copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
     REM copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
 )</PostBuildEvent>

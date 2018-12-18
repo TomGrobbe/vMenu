@@ -2,18 +2,44 @@ pull_requests:
   do_not_increment_build_number: false
 # branches:
   # only:
-  # - appveyor-test
+  # - production
 image: Visual Studio 2017
 configuration: Release
 build:
-  parallel: true                  # enable MSBuild parallel builds
-  project: vMenu.sln              # path to Visual Studio solution or project
-  include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+  parallel: true
+  project: vMenu.sln
   verbosity: minimal
 after_build:
-  - copy README.md ..\build\README.md
-  - copy LICENSE.md ..\build\LICENSE.md
-  - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('..\build', 'vMenu.zip'); }"
+  - cmd: copy README.md ..\build\README.md
+  - cmd: copy LICENSE.md ..\build\LICENSE.md
+  - ps: Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
+  - cmd: 7z a vMenu-%APPVEYOR_REPO_TAG_NAME%.zip -r ..\build\*
 artifacts:
-  - path: vMenu.zip
+  - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
+deploy:
+  - provider: GitHub
+    release: [Release] vMenu $(APPVEYOR_REPO_TAG_NAME)
+    artifact: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
+    draft: true
+    prerelease: false
+    auth_token: $(github_auth)
+    on:
+      branch: production
+      APPVEYOR_REPO_TAG: true
+    description: "vMenu version $(APPVEYOR_REPO_TAG_NAME)."
+before_build:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 start $env:WEBHOOK_URL
+  - ps: rm send.ps1
+after_deploy:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 deploy $env:WEBHOOK_URL
+  - ps: rm send.ps1
+on_success:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 success $env:WEBHOOK_URL
+  - ps: rm send.ps1
+on_failure:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 failure $env:WEBHOOK_URL
+  - ps: rm send.ps1

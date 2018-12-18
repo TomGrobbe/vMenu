@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
-using NativeUI;
+using MenuAPI;
 using Newtonsoft.Json;
+using CitizenFX.Core;
+using static CitizenFX.Core.UI.Screen;
+using static CitizenFX.Core.Native.API;
+using static vMenuClient.CommonFunctions;
 
 namespace vMenuClient
 {
     public class MiscSettings
     {
         // Variables
-        private UIMenu menu;
-        private CommonFunctions cf = MainMenu.Cf;
+        private Menu menu;
 
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
@@ -29,9 +30,19 @@ namespace vMenuClient
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
+        public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
-        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime; // TODO
+        public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
+        public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+
+        // keybind states
+        public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
+        public int KbTpToWaypointKey { get; } = vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key) != -1
+            ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
+            : 168; // 168 (F7 by default)
+        public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
+
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
 
@@ -40,84 +51,101 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-
+            MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
             // Create the menu.
-            menu = new UIMenu(GetPlayerName(Game.Player.Handle), "Misc Settings", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
+            menu = new Menu(Game.Player.Name, "Misc Settings");
 
-            UIMenu teleportMenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Teleport Locations", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            UIMenuItem teleportMenuBtn = new UIMenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
-            menu.BindMenuToItem(teleportMenu, teleportMenuBtn);
-            MainMenu.Mp.Add(teleportMenu);
+            // teleport menu
+            Menu teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
+            MenuItem teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            MenuController.AddSubmenu(menu, teleportMenu);
+            MenuController.BindMenuItem(menu, teleportMenu, teleportMenuBtn);
+
+            // keybind settings menu
+            Menu keybindMenu = new Menu(Game.Player.Name, "Keybind Settings");
+            MenuItem keybindMenuBtn = new MenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
+            MenuController.AddSubmenu(menu, keybindMenu);
+            MenuController.BindMenuItem(menu, keybindMenu, keybindMenuBtn);
+
+            // keybind settings menu items
+            MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
+            MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
+            MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
-            UIMenuItem tptowp = new UIMenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
-            UIMenuCheckboxItem speedKmh = new UIMenuCheckboxItem("Show Speed KM/H", ShowSpeedoKmh, "Show a speedometer on your screen indicating your speed in KM/h.");
-            UIMenuCheckboxItem speedMph = new UIMenuCheckboxItem("Show Speed MPH", ShowSpeedoMph, "Show a speedometer on your screen indicating your speed in MPH.");
-            UIMenuCheckboxItem coords = new UIMenuCheckboxItem("Show Coordinates", ShowCoordinates, "Show your current coordinates at the top of your screen.");
-            UIMenuCheckboxItem hideRadar = new UIMenuCheckboxItem("Hide Radar", HideRadar, "Hide the radar/minimap.");
-            UIMenuCheckboxItem hideHud = new UIMenuCheckboxItem("Hide Hud", HideHud, "Hide all hud elements.");
-            UIMenuCheckboxItem showLocation = new UIMenuCheckboxItem("Location Display", ShowLocation, "Shows your current location and heading, as well as the nearest cross road. Just like PLD.");
-            UIMenuCheckboxItem drawTime = new UIMenuCheckboxItem("Show Time On Screen", DrawTimeOnScreen, "Shows you the current time on screen.");
-            UIMenuItem saveSettings = new UIMenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
-            saveSettings.SetRightBadge(UIMenuItem.BadgeStyle.Tick);
-            UIMenuCheckboxItem joinQuitNotifs = new UIMenuCheckboxItem("Join / Quit Notifications", JoinQuitNotifications, "Receive notifications when someone joins or leaves the server.");
-            UIMenuCheckboxItem deathNotifs = new UIMenuCheckboxItem("Death Notifications", DeathNotifications, "Receive notifications when someone dies or gets killed.");
-            UIMenuCheckboxItem nightVision = new UIMenuCheckboxItem("Toggle Night Vision", false, "Enable or disable night vision.");
-            UIMenuCheckboxItem thermalVision = new UIMenuCheckboxItem("Toggle Thermal Vision", false, "Enable or disable thermal vision.");
-            UIMenuCheckboxItem modelDimensions = new UIMenuCheckboxItem("Show Vehicle Dimensions", ShowVehicleModelDimensions, "Draws lines for the model dimensions of your vehicle (debug function).");
+            MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+            MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
+            MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
+            MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
+            MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
+            MenuCheckboxItem hideRadar = new MenuCheckboxItem("Hide Radar", "Hide the radar/minimap.", HideRadar);
+            MenuCheckboxItem hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
+            MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take about 1.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
+            MenuCheckboxItem drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
+            MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
+            saveSettings.RightIcon = MenuItem.Icon.TICK;
+            MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
+            MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
+            MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
+            MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
+            MenuCheckboxItem modelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws lines for the model dimensions of your vehicle (debug function).", ShowVehicleModelDimensions);
 
-            UIMenuItem clearArea = new UIMenuItem("Clear Area", "Clears the area around your player (100 meters) of everything! Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up and reset.");
-            UIMenuCheckboxItem lockCamX = new UIMenuCheckboxItem("Lock Camera Horizontal Rotation", false, "Locks your camera horizontal rotation. Could be useful in helicopters I guess.");
-            UIMenuCheckboxItem lockCamY = new UIMenuCheckboxItem("Lock Camera Vertical Rotation", false, "Locks your camera vertical rotation. Could be useful in helicopters I guess.");
+            MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
+            MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
+            MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
 
-            UIMenu connectionSubmenu = new UIMenu(GetPlayerName(Game.Player.Handle), "Connection Options", true)
-            {
-                ScaleWithSafezone = false,
-                MouseControlsEnabled = false,
-                MouseEdgeEnabled = false,
-                ControlDisablingEnabled = false
-            };
-            UIMenuItem connectionSubmenuBtn = new UIMenuItem("Connection Options", "Server connection/game quit options.");
-            UIMenuItem quitSession = new UIMenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
+            Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
+            MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
+            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
                 "Use this if you need to have addons streamed but want to use the rockstar editor.");
-            UIMenuItem quitGame = new UIMenuItem("Quit Game", "Exits the game after 5 seconds.");
-            UIMenuItem disconnectFromServer = new UIMenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
+            MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
+            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
                 "~r~This feature is not recommended, quit the game instead for a better experience.");
-            connectionSubmenu.AddItem(quitSession);
-            connectionSubmenu.AddItem(quitGame);
-            connectionSubmenu.AddItem(disconnectFromServer);
+            connectionSubmenu.AddMenuItem(quitSession);
+            connectionSubmenu.AddMenuItem(quitGame);
+            connectionSubmenu.AddMenuItem(disconnectFromServer);
 
-            UIMenuCheckboxItem locationBlips = new UIMenuCheckboxItem("Location Blips", ShowLocationBlips, "Shows blips on the map for some common locations.");
-            UIMenuCheckboxItem playerBlips = new UIMenuCheckboxItem("Show Player Blips", ShowPlayerBlips, "Shows blips on the map for all players.");
-            UIMenuCheckboxItem restorePlayerAppearance = new UIMenuCheckboxItem("Restore Player Appearance", RestorePlayerAppearance, "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.");
-            UIMenuCheckboxItem restorePlayerWeapons = new UIMenuCheckboxItem("Restore Player Weapons", RestorePlayerWeapons, "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.");
+            MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
+            MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
+            MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
+            MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
 
-            MainMenu.Mp.Add(connectionSubmenu);
-            connectionSubmenu.RefreshIndex();
-            connectionSubmenu.UpdateScaleform();
-            menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
+            MenuController.AddSubmenu(menu, connectionSubmenu);
+            MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
+            //MainMenu.Mp.Add(connectionSubmenu);
+            //connectionSubmenu.RefreshIndex();
+            //connectionSubmenu.UpdateScaleform();
+            //menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
+
+            keybindMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+            {
+                if (item == kbTpToWaypoint)
+                {
+                    KbTpToWaypoint = _checked;
+                }
+                else if (item == kbDriftMode)
+                {
+                    KbDriftMode = _checked;
+                }
+            };
+            keybindMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == backBtn)
+                {
+                    keybindMenu.GoBack();
+                }
+            };
 
             connectionSubmenu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == quitGame)
                 {
-                    cf.QuitGame();
+                    QuitGame();
                 }
                 else if (item == quitSession)
                 {
-                    cf.QuitSession();
+                    QuitSession();
                 }
                 else if (item == disconnectFromServer)
                 {
@@ -126,58 +154,69 @@ namespace vMenuClient
             };
 
             // Add menu items to the menu.
-            if (cf.IsAllowed(Permission.MSTeleportToWp))
+            if (IsAllowed(Permission.MSTeleportToWp))
             {
-                menu.AddItem(tptowp);
+                menu.AddMenuItem(tptowp);
+                keybindMenu.AddMenuItem(kbTpToWaypoint);
             }
 
+            if (IsAllowed(Permission.MSDriftMode))
+            {
+                keybindMenu.AddMenuItem(kbDriftMode);
+            }
+
+            keybindMenu.AddMenuItem(backBtn);
+
             // Always allowed
-            menu.AddItem(speedKmh);
-            menu.AddItem(speedMph);
-            menu.AddItem(modelDimensions);
-            if (cf.IsAllowed(Permission.MSConnectionMenu))
+            menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(speedKmh);
+            menu.AddMenuItem(speedMph);
+            menu.AddMenuItem(modelDimensions);
+            menu.AddMenuItem(keybindMenuBtn);
+            keybindMenuBtn.Label = "→→→";
+            if (IsAllowed(Permission.MSConnectionMenu))
             {
-                menu.AddItem(connectionSubmenuBtn);
-                connectionSubmenuBtn.SetRightLabel("→→→");
+                menu.AddMenuItem(connectionSubmenuBtn);
+                connectionSubmenuBtn.Label = "→→→";
             }
-            if (cf.IsAllowed(Permission.MSShowCoordinates))
+            if (IsAllowed(Permission.MSShowCoordinates))
             {
-                menu.AddItem(coords);
+                menu.AddMenuItem(coords);
             }
-            if (cf.IsAllowed(Permission.MSShowLocation))
+            if (IsAllowed(Permission.MSShowLocation))
             {
-                menu.AddItem(showLocation);
+                menu.AddMenuItem(showLocation);
             }
-            menu.AddItem(drawTime); // always allowed
-            if (cf.IsAllowed(Permission.MSJoinQuitNotifs))
+            menu.AddMenuItem(drawTime); // always allowed
+            if (IsAllowed(Permission.MSJoinQuitNotifs))
             {
-                menu.AddItem(deathNotifs);
+                menu.AddMenuItem(deathNotifs);
             }
-            if (cf.IsAllowed(Permission.MSDeathNotifs))
+            if (IsAllowed(Permission.MSDeathNotifs))
             {
-                menu.AddItem(joinQuitNotifs);
+                menu.AddMenuItem(joinQuitNotifs);
             }
-            if (cf.IsAllowed(Permission.MSNightVision))
+            if (IsAllowed(Permission.MSNightVision))
             {
-                menu.AddItem(nightVision);
+                menu.AddMenuItem(nightVision);
             }
-            if (cf.IsAllowed(Permission.MSThermalVision))
+            if (IsAllowed(Permission.MSThermalVision))
             {
-                menu.AddItem(thermalVision);
+                menu.AddMenuItem(thermalVision);
             }
-            if (cf.IsAllowed(Permission.MSLocationBlips))
+            if (IsAllowed(Permission.MSLocationBlips))
             {
-                menu.AddItem(locationBlips);
+                menu.AddMenuItem(locationBlips);
                 ToggleBlips(ShowLocationBlips);
             }
-            if (cf.IsAllowed(Permission.MSPlayerBlips))
+            if (IsAllowed(Permission.MSPlayerBlips))
             {
-                menu.AddItem(playerBlips);
+                menu.AddMenuItem(playerBlips);
             }
-            if (cf.IsAllowed(Permission.MSTeleportLocations))
+            if (IsAllowed(Permission.MSTeleportLocations))
             {
-                menu.AddItem(teleportMenuBtn);
-                teleportMenuBtn.SetRightLabel("→→→");
+                menu.AddMenuItem(teleportMenuBtn);
+                teleportMenuBtn.Label = "→→→";
 
                 string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
                 if (string.IsNullOrEmpty(json))
@@ -194,14 +233,14 @@ namespace vMenuClient
                             string name = teleport["name"].ToString();
                             float heading = (float)teleport["heading"];
                             Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
-                            UIMenuItem tpBtn = new UIMenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
-                            teleportMenu.AddItem(tpBtn);
+                            MenuItem tpBtn = new MenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
+                            teleportMenu.AddMenuItem(tpBtn);
                             tpLocations.Add(coordinates);
                             tpLocationsHeading.Add(heading);
                         }
                         teleportMenu.OnItemSelect += async (sender, item, index) =>
                         {
-                            await cf.TeleportToCoords(tpLocations[index], true);
+                            await TeleportToCoords(tpLocations[index], true);
                             SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
                         };
                     }
@@ -211,30 +250,38 @@ namespace vMenuClient
                     }
                 }
             }
-            if (cf.IsAllowed(Permission.MSClearArea))
+            if (IsAllowed(Permission.MSClearArea))
             {
-                menu.AddItem(clearArea);
+                menu.AddMenuItem(clearArea);
             }
-            if (cf.IsAllowed(Permission.MSRestoreAppearance))
+            // always allowed, it just won't do anything if the server owner disabled the feature, but players can still toggle it.
+            menu.AddMenuItem(respawnDefaultCharacter);
+            if (IsAllowed(Permission.MSRestoreAppearance))
             {
-                menu.AddItem(restorePlayerAppearance);
+                menu.AddMenuItem(restorePlayerAppearance);
             }
-            if (cf.IsAllowed(Permission.MSRestoreWeapons))
+            if (IsAllowed(Permission.MSRestoreWeapons))
             {
-                menu.AddItem(restorePlayerWeapons);
+                menu.AddMenuItem(restorePlayerWeapons);
             }
-
 
             // Always allowed
-            menu.AddItem(hideRadar);
-            menu.AddItem(hideHud);
-            menu.AddItem(lockCamX);
-            menu.AddItem(lockCamY);
-            menu.AddItem(saveSettings);
+            menu.AddMenuItem(hideRadar);
+            menu.AddMenuItem(hideHud);
+            menu.AddMenuItem(lockCamX);
+            menu.AddMenuItem(lockCamY);
+            menu.AddMenuItem(saveSettings);
 
             // Handle checkbox changes.
-            menu.OnCheckboxChange += (sender, item, _checked) =>
+            menu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
+                if (item == rightAlignMenu)
+                {
+                    MiscRightAlignMenu = _checked;
+                    UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
+                    MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+                    //Notify.Alert("You must restart your game before this option takes affect.");
+                }
                 if (item == speedKmh)
                 {
                     ShowSpeedoKmh = _checked;
@@ -301,6 +348,10 @@ namespace vMenuClient
                 {
                     ShowPlayerBlips = _checked;
                 }
+                else if (item == respawnDefaultCharacter)
+                {
+                    MiscRespawnDefaultCharacter = _checked;
+                }
                 else if (item == restorePlayerAppearance)
                 {
                     RestorePlayerAppearance = _checked;
@@ -321,7 +372,7 @@ namespace vMenuClient
                 // Teleport to waypoint.
                 if (item == tptowp)
                 {
-                    cf.TeleportToWp();
+                    TeleportToWp();
                 }
                 // save settings
                 else if (item == saveSettings)
@@ -335,17 +386,13 @@ namespace vMenuClient
                     BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
                 }
             };
-
-
-
-
         }
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public UIMenu GetMenu()
+        public Menu GetMenu()
         {
             if (menu == null)
             {
