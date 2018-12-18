@@ -18,7 +18,7 @@ artifacts:
   - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
 deploy:
   - provider: GitHub
-    release: [Release] vMenu $(APPVEYOR_REPO_TAG_NAME)
+    release: "[Release] vMenu $(APPVEYOR_REPO_TAG_NAME)"
     artifact: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
     draft: true
     prerelease: false
