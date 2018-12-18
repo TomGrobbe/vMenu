@@ -11,15 +11,13 @@ build:
   include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
   verbosity: minimal
 after_build:
-  - copy README.md ..\build\README.md
-  - copy LICENSE.md ..\build\LICENSE.md
-  - powershell Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - 7z a vMenu-{APPVEYOR_REPO_TAG_NAME}.zip -r ..\build\
-  - 7z a vMenu2-$env:APPVEYOR_REPO_TAG_NAME.zip -r ..\build\
-  - dir
+  - cmd: copy README.md ..\build\README.md
+  - cmd: copy LICENSE.md ..\build\LICENSE.md
+  - ps: Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
+  - cmd: 7z a vMenu-%APPVEYOR_REPO_TAG_NAME%.zip -r ..\build\
+  - cmd: dir
 artifacts:
   - path: vMenu-$(APPVEYOR_REPO_TAG_NAME).zip
-  - path: vMenu2-$(APPVEYOR_REPO_TAG_NAME).zip
 deploy:
     # Deploy to GitHub Releases
   - provider: GitHub
