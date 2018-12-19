@@ -507,7 +507,7 @@ namespace vMenuClient
 
                 if (MainMenu.MiscSettingsMenu.ShowSpeedoMph && Game.PlayerPed.IsInVehicle())
                 {
-                    ShowSpeedKmh();
+                    ShowSpeedMph();
                 }
             }
             else
