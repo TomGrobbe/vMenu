@@ -21,7 +21,7 @@ namespace vMenuClient
         private bool firstTick = true;
         public static bool PreSetupComplete = false;
 
-        public static int MenuToggleKey { get; private set; } = 244; // M by default (InteractionMenu)
+        public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
         public static int NoClipKey { get; private set; } = 289; // F2 by default (ReplayStartStopRecordingSecondary)
         public static Menu Menu { get; private set; }
 
@@ -335,7 +335,7 @@ namespace vMenuClient
                 {
                     if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
                     {
-                        MenuController.MenuToggleKey = (Control)GetSettingsInt(Setting.vmenu_menu_toggle_key);
+                        MenuToggleKey = (Control)GetSettingsInt(Setting.vmenu_menu_toggle_key);
                         //MenuToggleKey = GetSettingsInt(Setting.vmenu_menu_toggle_key);
                     }
                     if (GetSettingsInt(Setting.vmenu_noclip_toggle_key) != -1)
@@ -448,7 +448,7 @@ namespace vMenuClient
                 #endregion
 
                 // Menu toggle button.
-                Game.DisableControlThisFrame(0, (Control)MenuToggleKey);
+                Game.DisableControlThisFrame(0, MenuToggleKey);
 
 
             }
