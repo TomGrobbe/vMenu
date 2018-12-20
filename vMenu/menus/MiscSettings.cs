@@ -51,7 +51,19 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-            MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+            try
+            {
+                MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+            }
+            catch (AspectRatioException)
+            {
+                Notify.Error(CommonErrors.RightAlignedNotSupported);
+                // (re)set the default to left just in case so they don't get this error again in the future.
+                MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+                MiscRightAlignMenu = false;
+                UserDefaults.MiscRightAlignMenu = false;
+            }
+
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Misc Settings");
 
@@ -277,10 +289,20 @@ namespace vMenuClient
             {
                 if (item == rightAlignMenu)
                 {
-                    MiscRightAlignMenu = _checked;
-                    UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
-                    MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
-                    //Notify.Alert("You must restart your game before this option takes affect.");
+                    try
+                    {
+                        MenuController.MenuAlignment = _checked ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+                        MiscRightAlignMenu = _checked;
+                        UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
+                    }
+                    catch (AspectRatioException)
+                    {
+                        Notify.Error(CommonErrors.RightAlignedNotSupported);
+                        // (re)set the default to left just in case so they don't get this error again in the future.
+                        MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+                        MiscRightAlignMenu = false;
+                        UserDefaults.MiscRightAlignMenu = false;
+                    }
                 }
                 if (item == speedKmh)
                 {
