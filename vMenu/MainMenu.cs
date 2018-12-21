@@ -242,7 +242,6 @@ namespace vMenuClient
 
             if (GetCurrentResourceName() != "vMenu")
             {
-
                 Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
                 try
                 {
@@ -253,16 +252,15 @@ namespace vMenuClient
                     Log(e.Message);
                 }
                 TriggerEvent("chatMessage", "^3IMPORTANT: vMenu IS NOT SETUP CORRECTLY. PLEASE CHECK THE SERVER LOG FOR MORE INFO.");
+                MenuController.MainMenu = null;
+                MenuController.DontOpenAnyMenu = true;
+                MenuController.DisableMenuButtons = true;
             }
             else
             {
                 Tick += OnTick;
-                //Tick += ProcessMainButtons;
-                //Tick += ProcessDirectionalButtons;
             }
-
             SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-
         }
 
         #region Set Permissions function
@@ -349,11 +347,15 @@ namespace vMenuClient
                     MenuController.AddMenu(Menu);
                     MenuController.MainMenu = Menu;
 
-                    Menu.RefreshIndex();
-                    //Menu.UpdateScaleform();
-
                     // Create all (sub)menus.
                     CreateSubmenus();
+                }
+                else
+                {
+                    MenuController.MainMenu = null;
+                    MenuController.DisableMenuButtons = true;
+                    MenuController.DontOpenAnyMenu = true;
+                    MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
                 }
 
                 // Manage Stamina
