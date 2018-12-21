@@ -743,7 +743,7 @@ namespace vMenuClient
             MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
             MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
             MenuItem faceButton = new MenuItem("Character Face Shape Options", "Character face shape options.");
-            MenuItem tattoosButton = new MenuItem("Character Tatttoo Options", "Character tattoo options.");
+            MenuItem tattoosButton = new MenuItem("Character Tattoo Options", "Character tattoo options.");
             MenuItem clothesButton = new MenuItem("Character Clothes", "Character clothes.");
             MenuItem propsButton = new MenuItem("Character Props", "Character props.");
             MenuItem saveButton = new MenuItem("Save Character", "Save your character.");
