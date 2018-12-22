@@ -19,6 +19,10 @@ namespace vMenuClient
         public Dictionary<string, uint> Components;
         public Permission Perm;
         public string SpawnName;
+        public int GetMaxAmmo { get { int ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, this.Hash, ref ammo); return ammo; } }
+        public int CurrentAmmo;
+        public int CurrentTint;
+        public int AmmoInClip;
     }
 
     public static class ValidWeapons

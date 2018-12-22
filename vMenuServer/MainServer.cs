@@ -348,6 +348,11 @@ namespace vMenuServer
             "WPCarbineRifleMk2",
             "WPParachute",
             "WPSmokeGrenade",
+            
+            // Weapon Loadouts Menu
+            "WLMenu",
+            "WLEquip",
+            "WLEquipOnRespawn",
 
             // Misc Settings
             "MSAll",
@@ -1037,6 +1042,10 @@ namespace vMenuServer
             else if (prefix == "WP")
             {
                 outputString = "vMenu.WeaponOptions." + inputString.Substring(2);
+            }
+            else if (prefix == "WL")
+            {
+                outputString = "vMenu.WeaponLoadouts." + inputString.Substring(2);
             }
             else if (prefix == "MS")
             {

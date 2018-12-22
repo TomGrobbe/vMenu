@@ -1552,7 +1552,15 @@ namespace vMenuClient
 
                     if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
                     {
-                        await SaveWeaponLoadout();
+                        //await SaveWeaponLoadout();
+                        if (SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn"))
+                        {
+                            Log($"weapons saved {GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn")}");
+                        }
+                        else
+                        {
+                            Log("save failed from restore weapons after death");
+                        }
                     }
 
                     while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
@@ -1562,7 +1570,7 @@ namespace vMenuClient
 
                     if (restoreDefault)
                     {
-                        MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"));
+                        MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"), false);
                     }
                     else
                     {
@@ -1574,8 +1582,12 @@ namespace vMenuClient
 
                     if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
                     {
-                        RestoreWeaponLoadout();
+                        await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                        Log("weapons restored, deleting kvp");
+                        DeleteResourceKvp("vmenu_temp_weapons_loadout_before_respawn");
                     }
+
+
                 }
 
             }

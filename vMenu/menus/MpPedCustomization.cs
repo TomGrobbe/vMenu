@@ -1592,10 +1592,10 @@ namespace vMenuClient
         /// Spawns this saved ped.
         /// </summary>
         /// <param name="name"></param>
-        internal async void SpawnThisCharacter(string name)
+        internal async void SpawnThisCharacter(string name, bool restoreWeapons)
         {
             currentCharacter = StorageManager.GetSavedMpCharacterData(name);
-            await SpawnSavedPed();
+            await SpawnSavedPed(restoreWeapons);
         }
 
         /// <summary>
@@ -1603,7 +1603,7 @@ namespace vMenuClient
         /// Character data MUST be set BEFORE calling this function.
         /// </summary>
         /// <returns></returns>
-        private async Task SpawnSavedPed()
+        private async Task SpawnSavedPed(bool restoreWeapons)
         {
             if (currentCharacter.Version < 1)
             {
@@ -1622,7 +1622,7 @@ namespace vMenuClient
 
                 // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
                 // and female ped at the same time.. really fucking weird. Only the CommonFunctions.SetPlayerSkin function seems to work some how. I really have no clue.
-                await SetPlayerSkin(currentCharacter.ModelHash, new PedInfo() { version = -1 }, true);
+                await SetPlayerSkin(currentCharacter.ModelHash, new PedInfo() { version = -1 }, restoreWeapons);
                 // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
                 // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
 
@@ -1814,7 +1814,7 @@ namespace vMenuClient
                 {
                     currentCharacter = StorageManager.GetSavedMpCharacterData(selectedSavedCharacterManageName);
 
-                    await SpawnSavedPed();
+                    await SpawnSavedPed(true);
 
                     MakeCreateCharacterMenu(male: currentCharacter.IsMale, editPed: true);
                 }
@@ -1822,7 +1822,7 @@ namespace vMenuClient
                 {
                     currentCharacter = StorageManager.GetSavedMpCharacterData(selectedSavedCharacterManageName);
 
-                    await SpawnSavedPed();
+                    await SpawnSavedPed(true);
                 }
                 else if (item == clonePed)
                 {

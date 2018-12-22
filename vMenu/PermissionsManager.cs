@@ -19,6 +19,11 @@ namespace vMenuClient
 
         private static bool allowEverything = false;
 
+        /// <summary>
+        /// Sets the permission locally.
+        /// </summary>
+        /// <param name="permissionName"></param>
+        /// <param name="allowed"></param>
         public static void SetPermission(string permissionName, bool allowed)
         {
             if (allowed)
@@ -31,14 +36,17 @@ namespace vMenuClient
             }
         }
 
+        /// <summary>
+        /// Returns true if the specific permission, or a parent permission, is allowed.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <returns></returns>
         public static bool IsAllowed(Permission permission)
         {
             if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_permissions))
             {
-                //if (Permissions.Contains("Everything"))
                 if (allowEverything)
                 {
-                    //CommonFunctions.Log($"Everything is allowed, no need to check for \"{permission.ToString()}\" specifically.");
                     return true;
                 }
                 else
@@ -46,15 +54,8 @@ namespace vMenuClient
                     //var allowed = false;
                     if (Permissions.Contains(permission.ToString().Substring(0, 2) + "All"))
                     {
-                        //CommonFunctions.Log(".All was allowed.");
-                        //allowed = true;
                         return true;
                     }
-                    //if (!allowed)
-                    //{
-                    //allowed = Permissions.Contains(permission.ToString());
-                    //}
-                    //return allowed;
                     return Permissions.Contains(permission.ToString());
                 }
             }

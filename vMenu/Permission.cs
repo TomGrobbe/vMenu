@@ -238,6 +238,11 @@
         WPVintagePistol,
         WPWrench,
 
+        // Weapon Loadouts Menu
+        WLMenu,
+        WLEquip,
+        WLEquipOnRespawn,
+
         // Misc Settings
         MSAll,
         MSClearArea,

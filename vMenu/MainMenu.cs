@@ -36,6 +36,7 @@ namespace vMenuClient
         public static TimeOptions TimeOptionsMenu { get; private set; }
         public static WeatherOptions WeatherOptionsMenu { get; private set; }
         public static WeaponOptions WeaponOptionsMenu { get; private set; }
+        public static WeaponLoadouts WeaponLoadoutsMenu { get; private set; }
         public static Recording RecordingMenu { get; private set; }
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
@@ -608,8 +609,22 @@ namespace vMenuClient
             {
                 WeaponOptionsMenu = new WeaponOptions();
                 Menu menu = WeaponOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(menu, button);
+            }
+
+            // Add Weapon Loadouts menu.
+            if (IsAllowed(Permission.WLMenu))
+            {
+                WeaponLoadoutsMenu = new WeaponLoadouts();
+                Menu menu = WeaponLoadoutsMenu.GetMenu();
+                MenuItem button = new MenuItem("Weapon Loadouts", "Mange, and spawn saved weapon loadouts.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
