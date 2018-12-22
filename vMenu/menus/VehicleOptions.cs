@@ -1499,7 +1499,7 @@ namespace vMenuClient
                 VehicleModMenu.AddMenuItem(bulletProofTires);
                 // Create a list of tire smoke options.
                 List<string> tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
-                Dictionary<String, int[]> tireSmokeColors = new Dictionary<string, int[]>()
+                Dictionary<string, int[]> tireSmokeColors = new Dictionary<string, int[]>()
                 {
                     ["Red"] = new int[] { 244, 65, 65 },
                     ["Orange"] = new int[] { 244, 167, 66 },
@@ -1513,7 +1513,16 @@ namespace vMenuClient
                     ["Pink"] = new int[] { 192, 24, 172 },
                     ["Black"] = new int[] { 1, 1, 1 }
                 };
-                MenuListItem tireSmoke = new MenuListItem("Tire Smoke Color", tireSmokes, 0, $"Choose a ~y~wheel type~s~ for your vehicle.");
+                int smoker = 0, smokeg = 0, smokeb = 0;
+                GetVehicleTyreSmokeColor(veh.Handle, ref smoker, ref smokeg, ref smokeb);
+                var item = tireSmokeColors.ToList().Find((f) => { return (f.Value[0] == smoker && f.Value[1] == smokeg && f.Value[2] == smokeb); });
+                int index = tireSmokeColors.ToList().IndexOf(item);
+                if (index < 0)
+                {
+                    index = 0;
+                }
+
+                MenuListItem tireSmoke = new MenuListItem("Tire Smoke Color", tireSmokes, index, $"Choose a ~y~wheel type~s~ for your vehicle.");
                 VehicleModMenu.AddMenuItem(tireSmoke);
 
                 // Create the checkbox to enable/disable the tiresmoke.
