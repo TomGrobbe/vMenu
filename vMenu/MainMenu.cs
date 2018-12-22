@@ -485,8 +485,10 @@ namespace vMenuClient
             {
                 OnlinePlayersMenu = new OnlinePlayers();
                 Menu menu = OnlinePlayersMenu.GetMenu();
-                MenuItem button = new MenuItem("Online Players", "All currently connected players.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Online Players", "All currently connected players.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
                 Menu.OnItemSelect += (sender, item, index) =>
                 {
@@ -502,8 +504,10 @@ namespace vMenuClient
             {
                 BannedPlayersMenu = new BannedPlayers();
                 Menu menu = BannedPlayersMenu.GetMenu();
-                MenuItem button = new MenuItem("Banned Players", "View and manage all banned players in this menu.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Banned Players", "View and manage all banned players in this menu.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
                 Menu.OnItemSelect += (sender, item, index) =>
                 {
@@ -521,8 +525,10 @@ namespace vMenuClient
             {
                 PlayerOptionsMenu = new PlayerOptions();
                 Menu menu = PlayerOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Player Options", "Common player options can be accessed here.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Player Options", "Common player options can be accessed here.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -531,8 +537,10 @@ namespace vMenuClient
             {
                 VehicleOptionsMenu = new VehicleOptions();
                 Menu menu = VehicleOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -542,8 +550,10 @@ namespace vMenuClient
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
                 Menu menu = VehicleSpawnerMenu.GetMenu();
-                MenuItem button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -552,8 +562,10 @@ namespace vMenuClient
             {
                 SavedVehiclesMenu = new SavedVehicles();
                 Menu menu = SavedVehiclesMenu.GetMenu();
-                MenuItem button = new MenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
                 Menu.OnItemSelect += (sender, item, index) =>
                 {
@@ -569,14 +581,18 @@ namespace vMenuClient
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
                 Menu menu = PlayerAppearanceMenu.GetMenu();
-                MenuItem button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
 
                 MpPedCustomizationMenu = new MpPedCustomization();
                 Menu menu2 = MpPedCustomizationMenu.GetMenu();
-                MenuItem button2 = new MenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.");
-                button2.Label = "→→→";
+                MenuItem button2 = new MenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu2, button2);
 
 
@@ -588,8 +604,10 @@ namespace vMenuClient
             {
                 TimeOptionsMenu = new TimeOptions();
                 Menu menu = TimeOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Time Options", "Change the time, and edit other time related options.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Time Options", "Change the time, and edit other time related options.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -599,8 +617,10 @@ namespace vMenuClient
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 Menu menu = WeatherOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Weather Options", "Change all weather related options here.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Weather Options", "Change all weather related options here.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -633,16 +653,20 @@ namespace vMenuClient
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 Menu menu = VoiceChatSettingsMenu.GetMenu();
-                MenuItem button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
             {
                 RecordingMenu = new Recording();
                 Menu menu = RecordingMenu.GetMenu();
-                MenuItem button = new MenuItem("Recording Options", "In-game recording options.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Recording Options", "In-game recording options.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
@@ -654,16 +678,20 @@ namespace vMenuClient
             {
                 MiscSettingsMenu = new MiscSettings();
                 Menu menu = MiscSettingsMenu.GetMenu();
-                MenuItem button = new MenuItem("Misc Settings", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu.");
-                button.Label = "→→→";
+                MenuItem button = new MenuItem("Misc Settings", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu.")
+                {
+                    Label = "→→→"
+                };
                 AddMenu(menu, button);
             }
 
             // Add About Menu.
             AboutMenu = new About();
             Menu sub = AboutMenu.GetMenu();
-            MenuItem btn = new MenuItem("About vMenu", "Information about vMenu.");
-            btn.Label = "→→→";
+            MenuItem btn = new MenuItem("About vMenu", "Information about vMenu.")
+            {
+                Label = "→→→"
+            };
             AddMenu(sub, btn);
 
             // Refresh everything.
