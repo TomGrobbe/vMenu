@@ -497,7 +497,8 @@ namespace vMenuClient
                             {
                                 var ammo = 900;
                                 GetMaxAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ref ammo);
-                                SetAmmoInClip(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
+                                //SetAmmoInClip(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
+                                SetPedAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
                             }
                             else
                             {
@@ -531,11 +532,21 @@ namespace vMenuClient
                                             if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, Weapon.Hash, componentHash))
                                             {
                                                 RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
+
                                                 Subtitle.Custom("Component removed.");
                                             }
                                             else
                                             {
+                                                int ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, Weapon.Hash);
+
+                                                int clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, false);
+                                                GetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, ref clipAmmo);
+
                                                 GiveWeaponComponentToPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
+
+                                                SetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, clipAmmo);
+
+                                                SetPedAmmo(Game.PlayerPed.Handle, Weapon.Hash, ammo);
                                                 Subtitle.Custom("Component equiped.");
                                             }
                                         }
@@ -693,11 +704,15 @@ namespace vMenuClient
                     {
                         if (IsAllowed(vw.Perm))
                         {
-                            int ammo = 1;
+                            //int ammo = 1;
+                            //GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
+
+                            GiveWeaponToPed(Game.PlayerPed.Handle, vw.Hash, vw.GetMaxAmmo, false, true);
+
+                            int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, vw.Hash, false);
+                            SetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ammoInClip);
+                            int ammo = 0;
                             GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
-
-                            GiveWeaponToPed(Game.PlayerPed.Handle, vw.Hash, ammo, false, true);
-
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
                     }
@@ -718,6 +733,8 @@ namespace vMenuClient
                     {
                         if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                         {
+                            int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, vw.Hash, false);
+                            SetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ammoInClip);
                             int ammo = 0;
                             GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
