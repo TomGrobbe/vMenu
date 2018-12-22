@@ -474,10 +474,13 @@ namespace vMenuClient
                     #region Handle weapon specific button presses
                     weaponMenu.OnItemSelect += (sender, item, index) =>
                     {
+                        var info = weaponInfo[sender];
+                        uint hash = info.Hash;
+
+                        SetCurrentPedWeapon(Game.PlayerPed.Handle, hash, true);
+
                         if (item == getOrRemoveWeapon)
                         {
-                            var info = weaponInfo[sender];
-                            uint hash = info.Hash;
                             if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
@@ -493,12 +496,12 @@ namespace vMenuClient
                         }
                         else if (item == fillAmmo)
                         {
-                            if (HasPedGotWeapon(Game.PlayerPed.Handle, weaponInfo[sender].Hash, false))
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 var ammo = 900;
-                                GetMaxAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ref ammo);
+                                GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
                                 //SetAmmoInClip(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
-                                SetPedAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
+                                SetPedAmmo(Game.PlayerPed.Handle, hash, ammo);
                             }
                             else
                             {
@@ -529,6 +532,7 @@ namespace vMenuClient
                                         var componentHash = Weapon.Components[weaponComponents[item]];
                                         if (HasPedGotWeapon(Game.PlayerPed.Handle, Weapon.Hash, false))
                                         {
+                                            SetCurrentPedWeapon(Game.PlayerPed.Handle, Weapon.Hash, true);
                                             if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, Weapon.Hash, componentHash))
                                             {
                                                 RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);

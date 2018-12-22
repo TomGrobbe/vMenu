@@ -2148,17 +2148,30 @@ namespace vMenuClient
         {
             if (saveName == "vmenu_temp_weapons_loadout_before_respawn")
             {
-                string kvp = GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+                string name = GetResourceKvpString("vmenu_string_default_loadout") ?? saveName;
+
+                string kvp = GetResourceKvpString(name) ?? GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+
+                // if not allowed to use loadouts, fall back to normal restoring of weapons.
+                if (MainMenu.WeaponLoadoutsMenu == null || !MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn || !IsAllowed(Permission.WLEquipOnRespawn))
+                {
+                    kvp = GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+
+                    if (!MainMenu.MiscSettingsMenu.RestorePlayerWeapons || !IsAllowed(Permission.MSRestoreWeapons))
+                    {
+                        // return because normal weapon restoring is not enabled or not allowed.
+                        return new List<ValidWeapon>();
+                    }
+                }
+
                 if (string.IsNullOrEmpty(kvp))
                 {
-                    Log("fucked");
                     return new List<ValidWeapon>();
                 }
                 else
                 {
                     return JsonConvert.DeserializeObject<List<ValidWeapon>>(kvp);
                 }
-
             }
             else
             {

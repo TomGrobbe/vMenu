@@ -54,15 +54,23 @@ namespace vMenuClient
         /// <summary>
         /// Sets the saved character whenever the player first spawns.
         /// </summary>
-        private void SetAppearanceOnFirstSpawn()
+        private async void SetAppearanceOnFirstSpawn()
         {
             if (firstSpawn)
             {
+                firstSpawn = false;
                 if (MainMenu.MiscSettingsMenu != null && MainMenu.MpPedCustomizationMenu != null && MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter && !string.IsNullOrEmpty(GetResourceKvpString("vmenu_default_character")) && !GetSettingsBool(Setting.vmenu_disable_spawning_as_default_character))
                 {
                     MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"), false);
                 }
-                firstSpawn = false;
+                while (!IsScreenFadedIn() || IsPlayerSwitchInProgress() || IsPauseMenuActive() || GetIsLoadingScreenActive())
+                {
+                    await Delay(0);
+                }
+                if (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn))
+                {
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                }
             }
         }
 

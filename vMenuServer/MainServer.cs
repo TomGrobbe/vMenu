@@ -351,6 +351,7 @@ namespace vMenuServer
             
             // Weapon Loadouts Menu
             "WLMenu",
+            "WLAll",
             "WLEquip",
             "WLEquipOnRespawn",
 

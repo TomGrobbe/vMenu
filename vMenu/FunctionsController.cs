@@ -1550,7 +1550,7 @@ namespace vMenuClient
                         }
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
                     {
                         //await SaveWeaponLoadout();
                         if (SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn"))
@@ -1580,7 +1580,7 @@ namespace vMenuClient
                         }
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
                     {
                         await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
                         Log("weapons restored, deleting kvp");
