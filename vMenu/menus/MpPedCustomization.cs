@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +27,7 @@ namespace vMenuClient
         public Menu propsMenu = new Menu("vMenu", "Character Props Options");
         private Menu manageSavedCharacterMenu = new Menu("vMenu", "Manage MP Character");
         public static bool DontCloseMenus { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
-        public static bool DisableBackButton { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
+        public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
         string selectedSavedCharacterManageName = "";
         private bool isEdidtingPed = false;
 

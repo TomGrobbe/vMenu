@@ -388,9 +388,28 @@ namespace vMenuClient
                 var tmpMenu = GetOpenMenu();
                 if (MpPedCustomizationMenu != null)
                 {
-                    if (tmpMenu == MpPedCustomizationMenu.createCharacterMenu)
+                    bool IsOpen()
                     {
-                        MpPedCustomization.DisableBackButton = true;
+                        return
+                            MpPedCustomizationMenu.appearanceMenu.Visible ||
+                            MpPedCustomizationMenu.faceShapeMenu.Visible ||
+                            MpPedCustomizationMenu.createCharacterMenu.Visible ||
+                            MpPedCustomizationMenu.inheritanceMenu.Visible ||
+                            MpPedCustomizationMenu.propsMenu.Visible ||
+                            MpPedCustomizationMenu.clothesMenu.Visible ||
+                            MpPedCustomizationMenu.tattoosMenu.Visible;
+                    }
+
+                    if (IsOpen())
+                    {
+                        if (tmpMenu == MpPedCustomizationMenu.createCharacterMenu)
+                        {
+                            MpPedCustomization.DisableBackButton = true;
+                        }
+                        else
+                        {
+                            MpPedCustomization.DisableBackButton = false;
+                        }
                         MpPedCustomization.DontCloseMenus = true;
                     }
                     else
