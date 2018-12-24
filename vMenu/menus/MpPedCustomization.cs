@@ -64,8 +64,8 @@ namespace vMenuClient
                 currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
             }
 
+
             appearanceMenu.ClearMenuItems();
-            //faceShapeMenu.Clear();
             tattoosMenu.ClearMenuItems();
             clothesMenu.ClearMenuItems();
             propsMenu.ClearMenuItems();
@@ -748,6 +748,7 @@ namespace vMenuClient
             MenuItem propsButton = new MenuItem("Character Props", "Character props.");
             MenuItem saveButton = new MenuItem("Save Character", "Save your character.");
             MenuItem exitNoSave = new MenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
+            MenuListItem faceExpressionList = new MenuListItem("Facial Expression", new List<string> { "Normal", "Happy", "Angry", "Aiming", "Injured", "Stressed" }, 0, "Set a facial expression that will be used whenever your ped is idling.");
 
             inheritanceButton.Label = "→→→";
             appearanceButton.Label = "→→→";
@@ -762,6 +763,7 @@ namespace vMenuClient
             createCharacterMenu.AddMenuItem(tattoosButton);
             createCharacterMenu.AddMenuItem(clothesButton);
             createCharacterMenu.AddMenuItem(propsButton);
+            createCharacterMenu.AddMenuItem(faceExpressionList);
             createCharacterMenu.AddMenuItem(saveButton);
             createCharacterMenu.AddMenuItem(exitNoSave);
 
