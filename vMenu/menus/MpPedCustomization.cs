@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,6 +30,7 @@ namespace vMenuClient
         public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
         string selectedSavedCharacterManageName = "";
         private bool isEdidtingPed = false;
+        private readonly List<string> facial_expressions = new List<string>() { "mood_Normal_1", "mood_Happy_1", "mood_Angry_1", "mood_Aiming_1", "mood_Injured_1", "mood_stressed_1", "mood_smug_1", "mood_sulk_1", };
 
         private MultiplayerPedData currentCharacter = new MultiplayerPedData();
 
@@ -64,6 +65,22 @@ namespace vMenuClient
                 currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
             }
 
+            // Set the facial expression to default in case it doesn't exist yet, or keep the current one if it does.
+            currentCharacter.FacialExpression = currentCharacter.FacialExpression ?? facial_expressions[0];
+
+            // Set the facial expression on the ped itself.
+            SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
+
+            // Set the facial expression item list to the correct saved index.
+            if (createCharacterMenu.GetMenuItems().ElementAt(6) is MenuListItem li)
+            {
+                int index = facial_expressions.IndexOf(currentCharacter.FacialExpression ?? facial_expressions[0]);
+                if (index < 0)
+                {
+                    index = 0;
+                }
+                li.ListIndex = index;
+            }
 
             appearanceMenu.ClearMenuItems();
             tattoosMenu.ClearMenuItems();
@@ -748,7 +765,7 @@ namespace vMenuClient
             MenuItem propsButton = new MenuItem("Character Props", "Character props.");
             MenuItem saveButton = new MenuItem("Save Character", "Save your character.");
             MenuItem exitNoSave = new MenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
-            MenuListItem faceExpressionList = new MenuListItem("Facial Expression", new List<string> { "Normal", "Happy", "Angry", "Aiming", "Injured", "Stressed" }, 0, "Set a facial expression that will be used whenever your ped is idling.");
+            MenuListItem faceExpressionList = new MenuListItem("Facial Expression", new List<string> { "Normal", "Happy", "Angry", "Aiming", "Injured", "Stressed", "Smug", "Sulk" }, 0, "Set a facial expression that will be used whenever your ped is idling.");
 
             inheritanceButton.Label = "→→→";
             appearanceButton.Label = "→→→";
@@ -1470,6 +1487,7 @@ namespace vMenuClient
 
             };
 
+            // eventhandler for when a tattoo is selected.
             tattoosMenu.OnItemSelect += (sender, item, index) =>
             {
                 Notify.Success("All tattoos have been removed.");
@@ -1482,8 +1500,20 @@ namespace vMenuClient
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
+            // eventhandler for when the tattoos menu is openend.
             tattoosMenu.OnMenuOpen += (sender) => { Notify.Info("TIP, take a look at the instructional buttons! If you can't see a specific tattoo, try turning the camera using those buttons (Q & E)."); };
             #endregion
+
+
+            // handle list changes in the character creator menu.
+            createCharacterMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) =>
+            {
+                if (item == faceExpressionList)
+                {
+                    currentCharacter.FacialExpression = facial_expressions[newListIndex];
+                    SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
+                }
+            };
 
             // handle button presses for the createCharacter menu.
             createCharacterMenu.OnItemSelect += async (sender, item, index) =>
@@ -1553,6 +1583,7 @@ namespace vMenuClient
                 }
             };
 
+            // eventhandler for whenever a menu item is selected in the main mp characters menu.
             menu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == createMale)
@@ -1783,6 +1814,9 @@ namespace vMenuClient
                 }
                 #endregion
             }
+
+            // Set the facial expression, or set it to 'normal' if it wasn't saved/set before.
+            SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
         }
 
         /// <summary>
@@ -1829,7 +1863,7 @@ namespace vMenuClient
                 else if (item == clonePed)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await GetUserInput(windowTitle: "Enter a name for the cloned character", maxInputLength: 30);
+                    string name = await GetUserInput(windowTitle: "Enter a name for the cloned character", defaultText: tmpCharacter.SaveName.Substring(7), maxInputLength: 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidSaveName);

@@ -1149,9 +1149,6 @@ namespace vMenuClient
 
                     Game.PlayerPed.Task.ClearAllImmediately();
 
-                    SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
-                    //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
-
                     /* 
                      * Camera positions and PointAt locations.
                     
@@ -1400,8 +1397,18 @@ namespace vMenuClient
                         }
                         else
                         {
-                            camera.Position = camPositions[0].Key;
-                            camera.PointAt(camPositions[0].Value);
+                            if (MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible && MainMenu.MpPedCustomizationMenu.createCharacterMenu.CurrentIndex == 6)
+                            {
+                                // head level
+                                camera.Position = camPositions[1].Key;
+                                camera.PointAt(camPositions[1].Value);
+                            }
+                            else
+                            {
+                                camera.Position = camPositions[0].Key;
+                                camera.PointAt(camPositions[0].Value);
+                            }
+
                         }
                     }
 
