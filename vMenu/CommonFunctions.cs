@@ -991,6 +991,8 @@ namespace vMenuClient
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Right, vehicleInfo.neonRight);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Front, vehicleInfo.neonFront);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Back, vehicleInfo.neonBack);
+
+                vehicle.CanTiresBurst = !vehicleInfo.bulletProofTires;
             }
 
             // Set the previous vehicle to the new vehicle.
@@ -1034,6 +1036,7 @@ namespace vMenuClient
             public int wheelType;
             public int windowTint;
             public bool xenonHeadlights;
+            public bool bulletProofTires;
         };
         #endregion
 
@@ -1125,7 +1128,8 @@ namespace vMenuClient
                         version = 1,
                         wheelType = GetVehicleWheelType(veh.Handle),
                         windowTint = (int)veh.Mods.WindowTint,
-                        xenonHeadlights = IsToggleModOn(veh.Handle, 22)
+                        xenonHeadlights = IsToggleModOn(veh.Handle, 22),
+                        bulletProofTires = !veh.CanTiresBurst
                     };
 
                     #endregion

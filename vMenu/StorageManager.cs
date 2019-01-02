@@ -122,114 +122,115 @@ namespace vMenuClient
         public static VehicleInfo GetSavedVehicleInfo(string saveName)
         {
             string json = GetResourceKvpString(saveName);
-            var vi = new VehicleInfo() { };
-            dynamic data = JsonConvert.DeserializeObject(json);
-            if (data.ContainsKey("version"))
-            {
-                //CommonFunctions.Log("New Version: " + data["version"] + "\n");
-                var colors = new Dictionary<string, int>();
-                foreach (Newtonsoft.Json.Linq.JProperty c in data["colors"])
-                {
-                    colors.Add(c.Name, (int)c.Value);
-                }
-                vi.colors = colors;
-                vi.customWheels = (bool)data["customWheels"];
-                var extras = new Dictionary<int, bool>();
-                foreach (Newtonsoft.Json.Linq.JProperty e in data["extras"])
-                {
-                    extras.Add(int.Parse(e.Name), (bool)e.Value);
-                }
-                vi.extras = extras;
-                vi.livery = (int)data["livery"];
-                vi.model = (uint)data["model"];
-                var mods = new Dictionary<int, int>();
-                foreach (Newtonsoft.Json.Linq.JProperty m in data["mods"])
-                {
-                    mods.Add(int.Parse(m.Name.ToString()), (int)m.Value);
-                }
-                vi.mods = mods;
-                vi.name = (string)data["name"];
-                vi.neonBack = (bool)data["neonBack"];
-                vi.neonFront = (bool)data["neonFront"];
-                vi.neonLeft = (bool)data["neonLeft"];
-                vi.neonRight = (bool)data["neonRight"];
-                vi.plateStyle = (int)data["plateStyle"];
-                vi.plateText = (string)data["plateText"];
-                vi.turbo = (bool)data["turbo"];
-                vi.tyreSmoke = (bool)data["tyreSmoke"];
-                vi.version = (int)data["version"];
-                vi.wheelType = (int)data["wheelType"];
-                vi.windowTint = (int)data["windowTint"];
-                vi.xenonHeadlights = (bool)data["xenonHeadlights"];
-            }
-            else
-            {
-                //CommonFunctions.Log("Old: " + json + "\n");
-                var dict = JsonToDictionary(json);
-                var colors = new Dictionary<string, int>()
-                {
-                    ["primary"] = int.Parse(dict["primaryColor"]),
-                    ["secondary"] = int.Parse(dict["secondaryColor"]),
-                    ["pearlescent"] = int.Parse(dict["pearlescentColor"]),
-                    ["wheels"] = int.Parse(dict["wheelsColor"]),
-                    ["dash"] = int.Parse(dict["dashboardColor"]),
-                    ["trim"] = int.Parse(dict["interiorColor"]),
-                    ["neonR"] = 255,
-                    ["neonG"] = 255,
-                    ["neonB"] = 255,
-                    ["tyresmokeR"] = int.Parse(dict["tireSmokeR"]),
-                    ["tyresmokeG"] = int.Parse(dict["tireSmokeG"]),
-                    ["tyresmokeB"] = int.Parse(dict["tireSmokeB"]),
-                };
-                var extras = new Dictionary<int, bool>();
-                for (int i = 0; i < 15; i++)
-                {
-                    if (dict["extra" + i] == "true")
-                    {
-                        extras.Add(i, true);
-                    }
-                    else
-                    {
-                        extras.Add(i, false);
-                    }
-                }
+            return JsonConvert.DeserializeObject<VehicleInfo>(json);
+            //var vi = new VehicleInfo() { };
+            //dynamic data = JsonConvert.DeserializeObject(json);
+            //if (data.ContainsKey("version"))
+            //{
+            //    //CommonFunctions.Log("New Version: " + data["version"] + "\n");
+            //    var colors = new Dictionary<string, int>();
+            //    foreach (Newtonsoft.Json.Linq.JProperty c in data["colors"])
+            //    {
+            //        colors.Add(c.Name, (int)c.Value);
+            //    }
+            //    vi.colors = colors;
+            //    vi.customWheels = (bool)data["customWheels"];
+            //    var extras = new Dictionary<int, bool>();
+            //    foreach (Newtonsoft.Json.Linq.JProperty e in data["extras"])
+            //    {
+            //        extras.Add(int.Parse(e.Name), (bool)e.Value);
+            //    }
+            //    vi.extras = extras;
+            //    vi.livery = (int)data["livery"];
+            //    vi.model = (uint)data["model"];
+            //    var mods = new Dictionary<int, int>();
+            //    foreach (Newtonsoft.Json.Linq.JProperty m in data["mods"])
+            //    {
+            //        mods.Add(int.Parse(m.Name.ToString()), (int)m.Value);
+            //    }
+            //    vi.mods = mods;
+            //    vi.name = (string)data["name"];
+            //    vi.neonBack = (bool)data["neonBack"];
+            //    vi.neonFront = (bool)data["neonFront"];
+            //    vi.neonLeft = (bool)data["neonLeft"];
+            //    vi.neonRight = (bool)data["neonRight"];
+            //    vi.plateStyle = (int)data["plateStyle"];
+            //    vi.plateText = (string)data["plateText"];
+            //    vi.turbo = (bool)data["turbo"];
+            //    vi.tyreSmoke = (bool)data["tyreSmoke"];
+            //    vi.version = (int)data["version"];
+            //    vi.wheelType = (int)data["wheelType"];
+            //    vi.windowTint = (int)data["windowTint"];
+            //    vi.xenonHeadlights = (bool)data["xenonHeadlights"];
+            //}
+            //else
+            //{
+            //    //CommonFunctions.Log("Old: " + json + "\n");
+            //    var dict = JsonToDictionary(json);
+            //    var colors = new Dictionary<string, int>()
+            //    {
+            //        ["primary"] = int.Parse(dict["primaryColor"]),
+            //        ["secondary"] = int.Parse(dict["secondaryColor"]),
+            //        ["pearlescent"] = int.Parse(dict["pearlescentColor"]),
+            //        ["wheels"] = int.Parse(dict["wheelsColor"]),
+            //        ["dash"] = int.Parse(dict["dashboardColor"]),
+            //        ["trim"] = int.Parse(dict["interiorColor"]),
+            //        ["neonR"] = 255,
+            //        ["neonG"] = 255,
+            //        ["neonB"] = 255,
+            //        ["tyresmokeR"] = int.Parse(dict["tireSmokeR"]),
+            //        ["tyresmokeG"] = int.Parse(dict["tireSmokeG"]),
+            //        ["tyresmokeB"] = int.Parse(dict["tireSmokeB"]),
+            //    };
+            //    var extras = new Dictionary<int, bool>();
+            //    for (int i = 0; i < 15; i++)
+            //    {
+            //        if (dict["extra" + i] == "true")
+            //        {
+            //            extras.Add(i, true);
+            //        }
+            //        else
+            //        {
+            //            extras.Add(i, false);
+            //        }
+            //    }
 
-                var mods = new Dictionary<int, int>();
-                int skip = 8 + 24 + 2 + 1;
-                foreach (var mod in dict)
-                {
-                    skip--;
-                    if (skip < 0)
-                    {
-                        var key = int.Parse(mod.Key);
-                        var val = int.Parse(mod.Value);
-                        mods.Add(key, val);
-                    }
-                }
+            //    var mods = new Dictionary<int, int>();
+            //    int skip = 8 + 24 + 2 + 1;
+            //    foreach (var mod in dict)
+            //    {
+            //        skip--;
+            //        if (skip < 0)
+            //        {
+            //            var key = int.Parse(mod.Key);
+            //            var val = int.Parse(mod.Value);
+            //            mods.Add(key, val);
+            //        }
+            //    }
 
-                vi.colors = colors;
-                vi.customWheels = dict["customWheels"] == "true";
-                vi.extras = extras;
-                vi.livery = int.Parse(dict["oldLivery"]);
-                vi.model = (uint)Int64.Parse(dict["model"]);
-                vi.mods = mods;
-                vi.name = dict["name"];
-                vi.neonBack = false;
-                vi.neonFront = false;
-                vi.neonLeft = false;
-                vi.neonRight = false;
-                vi.plateStyle = int.Parse(dict["plateStyle"]);
-                vi.plateText = dict["plate"];
-                vi.turbo = dict["turbo"] == "true";
-                vi.tyreSmoke = dict["tireSmoke"] == "true";
-                vi.version = 1;
-                vi.wheelType = int.Parse(dict["wheelType"]);
-                vi.windowTint = int.Parse(dict["windowTint"]);
-                vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
-                SaveVehicleInfo(saveName, vi, true);
-            }
-            //CommonFunctions.Log(json + "\n");
-            return vi;
+            //    vi.colors = colors;
+            //    vi.customWheels = dict["customWheels"] == "true";
+            //    vi.extras = extras;
+            //    vi.livery = int.Parse(dict["oldLivery"]);
+            //    vi.model = (uint)Int64.Parse(dict["model"]);
+            //    vi.mods = mods;
+            //    vi.name = dict["name"];
+            //    vi.neonBack = false;
+            //    vi.neonFront = false;
+            //    vi.neonLeft = false;
+            //    vi.neonRight = false;
+            //    vi.plateStyle = int.Parse(dict["plateStyle"]);
+            //    vi.plateText = dict["plate"];
+            //    vi.turbo = dict["turbo"] == "true";
+            //    vi.tyreSmoke = dict["tireSmoke"] == "true";
+            //    vi.version = 1;
+            //    vi.wheelType = int.Parse(dict["wheelType"]);
+            //    vi.windowTint = int.Parse(dict["windowTint"]);
+            //    vi.xenonHeadlights = dict["xenonHeadlights"] == "true";
+            //    SaveVehicleInfo(saveName, vi, true);
+            //}
+            ////CommonFunctions.Log(json + "\n");
+            //return vi;
         }
 
         /// <summary>
