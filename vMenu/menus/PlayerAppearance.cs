@@ -156,37 +156,47 @@ namespace vMenuClient
 
             // Add the spawn by name button after the addon peds menu item.
             menu.AddMenuItem(spawnByName);
-
+            if (!IsAllowed(Permission.PASpawnNew))
+            {
+                spawnByName.Enabled = false;
+                spawnByName.Description = "This option is disabled by the server owner or you are not allowed to use it.";
+                spawnByName.LeftIcon = MenuItem.Icon.LOCK;
+            }
 
 
             // Loop through all the modelNames and create lists of max 50 ped names each.
-            for (int i = 0; i < (modelNames.Count / 50) + 1; i++)
+            if (IsAllowed(Permission.PASpawnNew))
             {
-                List<string> pedList = new List<string>();
-                for (int ii = 0; ii < 50; ii++)
+                for (int i = 0; i < (modelNames.Count / 50) + 1; i++)
                 {
-                    int index = ((i * 50) + ii);
-                    if (index >= modelNames.Count)
+                    List<string> pedList = new List<string>();
+                    for (int ii = 0; ii < 50; ii++)
                     {
-                        break;
+                        int index = ((i * 50) + ii);
+                        if (index >= modelNames.Count)
+                        {
+                            break;
+                        }
+                        int max = ((modelNames.Count / 50) != i) ? 50 : modelNames.Count % 50;
+                        pedList.Add(modelNames[index] + $" ({(ii + 1).ToString()}/{max.ToString()})");
                     }
-                    int max = ((modelNames.Count / 50) != i) ? 50 : modelNames.Count % 50;
-                    pedList.Add(modelNames[index] + $" ({(ii + 1).ToString()}/{max.ToString()})");
-                }
-                MenuListItem pedl = new MenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
+                    MenuListItem pedl = new MenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
 
-                menu.AddMenuItem(pedl);
-                if (!IsAllowed(Permission.PASpawnNew))
-                {
-                    pedl.Enabled = false;
-                    pedl.LeftIcon = MenuItem.Icon.LOCK;
-                    pedl.Description = "This option has been disabled by the server owner.";
+                    menu.AddMenuItem(pedl);
+                    if (!IsAllowed(Permission.PASpawnNew))
+                    {
+                        pedl.Enabled = false;
+                        pedl.LeftIcon = MenuItem.Icon.LOCK;
+                        pedl.Description = "This option has been disabled by the server owner.";
+                    }
                 }
             }
+
 
             // Handle list selections.
             menu.OnListItemSelect += async (sender, item, listIndex, itemIndex) =>
             {
+
                 if (item == walkingStyle)
                 {
                     if (MainMenu.DebugMode) Subtitle.Custom("Ped is: " + IsPedMale(Game.PlayerPed.Handle));
@@ -196,14 +206,11 @@ namespace vMenuClient
                 {
                     ClothingAnimationType = item.ListIndex;
                 }
-                else
+                else if (IsAllowed(Permission.PASpawnNew))
                 {
                     int i = ((itemIndex - 8) * 50) + listIndex;
                     string modelName = modelNames[i];
-                    if (IsAllowed(Permission.PASpawnNew))
-                    {
-                        await SetPlayerSkin(modelName, new PedInfo() { version = -1 });
-                    }
+                    await SetPlayerSkin(modelName, new PedInfo() { version = -1 });
                 }
             };
 
