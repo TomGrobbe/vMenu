@@ -48,8 +48,10 @@ namespace vMenuServer
                     SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
                 }
                 // sets the UUID convar.
-                ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
-                ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
+                SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.LastIndexOf('-')));
+                SetConvarServerInfo("vMenuVersion", MainServer.Version);
+                //ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
+                //ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
 
 
                 // Get a response from the specified url.
