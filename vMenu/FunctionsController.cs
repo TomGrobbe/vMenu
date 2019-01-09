@@ -2171,7 +2171,7 @@ namespace vMenuClient
             await Delay(1);
             int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
             await Delay(1);
-            if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+            if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
             {
                 int newHelmet = 0;
                 string animName = "visor_up";

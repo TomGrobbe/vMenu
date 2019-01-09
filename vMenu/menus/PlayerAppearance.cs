@@ -196,7 +196,6 @@ namespace vMenuClient
             // Handle list selections.
             menu.OnListItemSelect += async (sender, item, listIndex, itemIndex) =>
             {
-
                 if (item == walkingStyle)
                 {
                     if (MainMenu.DebugMode) Subtitle.Custom("Ped is: " + IsPedMale(Game.PlayerPed.Handle));
@@ -273,7 +272,7 @@ namespace vMenuClient
                         int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                         int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                         int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+                        if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor. 
                         {
                             if (!IsHelpMessageBeingDisplayed())
                             {
