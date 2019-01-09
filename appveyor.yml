@@ -21,6 +21,7 @@ after_build:
 deploy:
   - provider: GitHub
     release: "[Release] vMenu $(VERSION_NAME)"
+    tag: $(VERSION_NAME)
     artifact: vMenu-$(VERSION_NAME).zip
     draft: true
     prerelease: false
