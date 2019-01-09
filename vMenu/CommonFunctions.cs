@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -866,7 +867,7 @@ namespace vMenuClient
                     (_previousVehicle.Occupants.Count() == 0 || _previousVehicle.Driver.Handle == Game.PlayerPed.Handle))
                 {
                     // If the previous vehicle should be deleted:
-                    if (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious))
+                    if (replacePrevious || !IsAllowed(Permission.VSDisableReplacePrevious))
                     {
                         // Delete it.
                         _previousVehicle.PreviouslyOwnedByPlayer = false;
@@ -888,7 +889,7 @@ namespace vMenuClient
                 }
             }
 
-            if (Game.PlayerPed.IsInVehicle() && (replacePrevious || !PermissionsManager.IsAllowed(Permission.VSDisableReplacePrevious)))
+            if (Game.PlayerPed.IsInVehicle() && (replacePrevious || !IsAllowed(Permission.VSDisableReplacePrevious)))
             {
                 if (GetVehicle().Driver == Game.PlayerPed)// && IsVehiclePreviouslyOwnedByPlayer(GetVehicle()))
                 {
@@ -1432,7 +1433,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission) => PermissionsManager.IsAllowed(permission);
+        //public static bool IsAllowed(vMenuShared.PermissionsManager.Permission permission) => vMenuShared.PermissionsManager.IsAllowed(permission);//PermissionsManager.IsAllowed(permission);
         #endregion
 
         #region Play Scenarios

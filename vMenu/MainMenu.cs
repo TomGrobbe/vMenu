@@ -10,6 +10,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -19,7 +20,8 @@ namespace vMenuClient
         //public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        public static bool PreSetupComplete = false;
+        public static bool PermissionsSetupComplete = false;
+        public static bool ConfigOptionsSetupComplete = false;
 
         public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
         public static int NoClipKey { get; private set; } = 289; // F2 by default (ReplayStartStopRecordingSecondary)
@@ -215,7 +217,7 @@ namespace vMenuClient
                             Debug.WriteLine(@JsonConvert.SerializeObject(kvps, Formatting.None) + "\n");
 
                             Debug.WriteLine("\n\nDumping a list of allowed permissions:");
-                            Debug.WriteLine(@JsonConvert.SerializeObject(PermissionsManager.Permissions, Formatting.None));
+                            Debug.WriteLine(@JsonConvert.SerializeObject(Permissions, Formatting.None));
 
                             Debug.WriteLine("\n\nDumping vmenu server configuration settings:");
                             var settings = new Dictionary<string, string>();
@@ -269,15 +271,9 @@ namespace vMenuClient
         /// Set the permissions for this client.
         /// </summary>
         /// <param name="dict"></param>
-        public static void SetPermissions(dynamic dict)
+        public static void SetPermissions(string permissionsList)
         {
-            // Loop through the dynamic object and get the keys and values.
-            foreach (dynamic permission in dict)
-            {
-                // Add the new permission to the dictionary.
-                PermissionsManager.SetPermission(permission.Key.ToString(), permission.Value);
-            }
-            Log(JsonConvert.SerializeObject(PermissionsManager.Permissions).ToString());
+            vMenuShared.PermissionsManager.SetPermissions(permissionsList);
 
             VehicleSpawner.allowedCategories = new List<bool>()
             {
@@ -304,6 +300,8 @@ namespace vMenuClient
                 IsAllowed(Permission.VSCommercial),
                 IsAllowed(Permission.VSTrains),
             };
+
+            PermissionsSetupComplete = true;
         }
         #endregion
 
@@ -323,10 +321,10 @@ namespace vMenuClient
                 ClearBrief();
 
                 // Request the permissions data from the server.
-                TriggerServerEvent("vMenu:RequestPermissions", Game.Player.Handle);
+                TriggerServerEvent("vMenu:RequestPermissions");
 
                 // Wait until the data is received and the player's name is loaded correctly.
-                while (!PreSetupComplete || Game.Player.Name == "**Invalid**" || Game.Player.Name == "** Invalid **")
+                while (!ConfigOptionsSetupComplete || !PermissionsSetupComplete || Game.Player.Name == "**Invalid**" || Game.Player.Name == "** Invalid **")
                 {
                     await Delay(0);
                 }
@@ -380,7 +378,7 @@ namespace vMenuClient
 
 
             // If the setup (permissions) is done, and it's not the first tick, then do this:
-            if (PreSetupComplete && !firstTick)
+            if (ConfigOptionsSetupComplete && !firstTick)
             {
                 #region Handle Opening/Closing of the menu.
 

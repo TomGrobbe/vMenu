@@ -10,6 +10,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -33,7 +34,9 @@ namespace vMenuClient
         {
             // Add event handlers.
             // Handle the SetPermissions event.
-            EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
+            //EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
+            EventHandlers.Add("vMenu:SetAddons", new Action(SetAddons));
+            EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
@@ -74,51 +77,53 @@ namespace vMenuClient
             }
         }
 
-        private void ConfigureClient(dynamic addonVehicles, dynamic addonPeds, dynamic addonWeapons, dynamic perms)
+        private void SetAddons()
         {
-            MainMenu.SetPermissions(perms);
-
-            FunctionsController.flaresAllowed = IsAllowed(Permission.VOFlares);
-            FunctionsController.bombsAllowed = IsAllowed(Permission.VOPlaneBombs);
-
+            // reset addons
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
-            foreach (var addon in addonVehicles)
-            {
-                string modelName = addon.ToString();
-                uint modelHash = (uint)GetHashKey(modelName);
-                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
-
-                if (!VehicleSpawner.AddonVehicles.ContainsKey(modelName))
-                {
-                    VehicleSpawner.AddonVehicles.Add(modelName, modelHash);
-                }
-            }
-
-            PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
-            foreach (var addon in addonPeds)
-            {
-                string modelName = addon.ToString();
-                uint modelHash = (uint)GetHashKey(modelName);
-                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
-
-                if (!PlayerAppearance.AddonPeds.ContainsKey(modelName))
-                {
-                    PlayerAppearance.AddonPeds.Add(modelName, modelHash);
-                }
-            }
-
             WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
-            foreach (var addon in addonWeapons)
-            {
-                string modelName = addon.ToString();
-                uint modelHash = (uint)GetHashKey(modelName);
-                Log($"Addon Name: {modelName}\tAddon Hash (uint): {modelHash}.");
+            PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
 
-                if (!WeaponOptions.AddonWeapons.ContainsKey(modelName))
+            string jsonData = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+            try
+            {
+                // load new addons.
+                var addons = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
+
+                // load vehicles
+                if (addons.ContainsKey("vehicles"))
                 {
-                    WeaponOptions.AddonWeapons.Add(modelName, modelHash);
+                    foreach (string addon in addons["vehicles"])
+                    {
+                        VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                    }
+                }
+
+                // load weapons
+                if (addons.ContainsKey("weapons"))
+                {
+                    foreach (string addon in addons["weapons"])
+                    {
+                        WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                    }
+                }
+
+                // load peds.
+                if (addons.ContainsKey("peds"))
+                {
+                    foreach (string addon in addons["peds"])
+                    {
+                        PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                    }
                 }
             }
+            catch (JsonReaderException ex)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
+            }
+
+            FunctionsController.flaresAllowed = false;
+            FunctionsController.bombsAllowed = false;
 
             currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
             currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
@@ -130,7 +135,7 @@ namespace vMenuClient
 
             UpdateWeatherParticlesOnce();
 
-            MainMenu.PreSetupComplete = true;
+            MainMenu.ConfigOptionsSetupComplete = true;
         }
 
         /// <summary>
