@@ -89,6 +89,7 @@ namespace vMenuClient
             colorsMenuBtn.Label = "→→→";
             MenuItem underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!");
             underglowMenuBtn.Label = "→→→";
+            MenuItem enableLSUR = new MenuItem("Enable LSUR", "Enables the Los Santos Underground Radio station.");
             MenuItem flipVehicle = new MenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             MenuItem vehicleAlarm = new MenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             MenuItem cycleSeats = new MenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
@@ -229,6 +230,7 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(flipVehicle);
             }
+            menu.AddMenuItem(enableLSUR); // ENABLE LSUR (LOS SANTOS UNDERGROUND RADIO)
             if (IsAllowed(Permission.VOAlarm)) // TOGGLE VEHICLE ALARM
             {
                 menu.AddMenuItem(vehicleAlarm);
@@ -345,6 +347,14 @@ namespace vMenuClient
                         else if (item == flipVehicle)
                         {
                             SetVehicleOnGroundProperly(vehicle.Handle);
+                        }
+                        else if (item == enableLSUR)
+                        {
+                            // void _UPDATE_LSUR(BOOL enableMixes); // 0x47AED84213A47510
+                            // void _SET_RADIO_STATION_DISABLED(const char* radioStationName, BOOL toggle); // 0x477D9DB48F889591
+                            // Thanks @Xinerki https://forum.fivem.net/t/enabling-lsur/207391?u=vespura
+                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x47AED84213A47510, true);
+                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x477D9DB48F889591, "RADIO_22_DLC_BATTLE_MIX1_RADIO", false);
                         }
                         // Toggle alarm.
                         else if (item == vehicleAlarm)
