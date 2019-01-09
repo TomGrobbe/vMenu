@@ -265,6 +265,10 @@ namespace vMenuClient
             ["weapon_unarmed"] = Permission.WPUnarmed,
             ["weapon_vintagepistol"] = Permission.WPVintagePistol,
             ["weapon_wrench"] = Permission.WPWrench,
+            // DLC CHRISTMAS2018 (v 1604)
+            ["weapon_raypistol"] = Permission.WPPlasmaPistol,
+            ["weapon_raycarbine"] = Permission.WPPlasmaCarbine,
+            ["weapon_rayminigun"] = Permission.WPPlasmaMinigun,
         };
         #endregion
 

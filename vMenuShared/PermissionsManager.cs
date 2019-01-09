@@ -248,6 +248,9 @@ namespace vMenuShared
             WPUnarmed,
             WPVintagePistol,
             WPWrench,
+            WPPlasmaPistol, // xmas 2018 dlc (1604)
+            WPPlasmaCarbine, // xmas 2018 dlc (1604)
+            WPPlasmaMinigun, // xmas 2018 dlc (1604)
 
             // Weapon Loadouts Menu
             WLMenu,
