@@ -33,6 +33,7 @@ namespace vMenuShared
             vmenu_ingame_minute_duration,
 
             vmenu_auto_ban_cheaters,
+            vmenu_auto_ban_cheaters_ban_message,
             vmenu_log_ban_actions,
             vmenu_log_kick_actions,
             vmenu_outdated_version_notify_players,

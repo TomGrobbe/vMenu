@@ -457,15 +457,20 @@ namespace vMenuServer
         /// <param name="source"></param>
         public static async void BanCheater(Player source)
         {
-            //bool enabled = (GetConvar("vMenuBanCheaters", "false") ?? "false") == "true";
             bool enabled = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters);
             if (enabled)
             {
+                string reason = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters_ban_message);
+
+                if (string.IsNullOrEmpty(reason))
+                {
+                    reason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.";
+                }
                 var ban = new BanRecord()
                 {
                     bannedBy = "vMenu Auto Ban",
                     bannedUntil = new DateTime(3000, 1, 1),
-                    banReason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.",
+                    banReason = reason,
                     identifiers = source.Identifiers.ToList(),
                     playerName = GetSafePlayerName(source.Name)
                 };
