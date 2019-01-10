@@ -32,6 +32,7 @@ namespace vMenuClient
         PedNotFound,
         WalkingStyleNotForMale,
         WalkingStyleNotForFemale,
+        RightAlignedNotSupported,
     };
 
     /// <summary>
@@ -89,6 +90,9 @@ namespace vMenuClient
                     break;
                 case CommonErrors.WalkingStyleNotForFemale:
                     outputMessage = $"This walking style is not available for female peds.{placeholder}";
+                    break;
+                case CommonErrors.RightAlignedNotSupported:
+                    outputMessage = $"Right aligned menus are not supported for ultra wide aspect ratios.{placeholder}";
                     break;
 
                 case CommonErrors.UnknownError:

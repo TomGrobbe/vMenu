@@ -30159,7 +30159,7 @@
             Corrected p1. it's basically the 'carriage/trailer number'. So if the train has 3 trailers you'd call the native once with a var or 3 times with 1, 2, 3.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ALARM_TIME_LEFT">
+        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ACCELERATION">
             <summary>
             static - max acceleration
             </summary>
@@ -32850,6 +32850,19 @@
             **Experimental**: This native may be altered or removed in future versions of CitizenFX without warning.
             
             Registers a set of archetypes with the game engine. These should match `CBaseArchetypeDef` class information from the game.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.REGISTER_COMMAND">
+            <summary>
+            Registered commands can be executed by entering them in the client console (this works for client side and server side registered commands). Or by entering them in the server console/through an RCON client (only works for server side registered commands). Or if you use a supported chat resource, like the default one provided in the cfx-server-data repository, then you can enter the command in chat by prefixing it with a `/`.
+            
+            Commands registered using this function can also be executed by resources, using the [`ExecuteCommand` native](#_0x561C060B).
+            
+            The restricted bool is not used on the client side. Permissions can only be checked on the server side, so if you want to limit your command with an ace permission automatically, make it a server command (by registering it in a server script).
+            
+            **Example result**:
+            
+            ![](https://i.imgur.com/TaCnG09.png)
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.REGISTER_ENTITIES">
@@ -40393,6 +40406,14 @@
             Pushes an integer for the Scaleform function onto the stack.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._PUSH_SCALEFORM_MOVIE_METHOD_PARAMETER_STRING_2">
+            <summary>
+            GRAPHICS::\_0x77FE3402004CD1B0(HUD::\_GET_LABEL_TEXT("YACHT_GSY"));
+            GRAPHICS::\_0x77FE3402004CD1B0(PLAYER::GET_PLAYER_NAME(PLAYER::PLAYER_ID()));
+            
+            Both \_0xBA7148484BD90365 / \_0x77FE3402004CD1B0 works, but \_0x77FE3402004CD1B0 is usually used for "name" (organisation, players..).
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._REMOVE_CURRENT_RISE">
             <summary>
             p0 is the handle returned from _0xFDBF4CDBC07E1706
@@ -41472,6 +41493,15 @@
             3 = Back
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_VEHICLE_ROOF_LIVERY">
+            <summary>
+            Used to set the tornado custom (convertible) rooftop livery.
+            
+            Livery value that works for tornado custom is between 0 and 9 from what i can tell. Maybe 0-8 even.
+            
+            Might work on other custom vehicles but im not sure what those might be, only confirmed it working with the tornado custom.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_VEHICLE_SILENT">
             <summary>
             If set to TRUE, it seems to suppress door noises and doesn't allow the horn to be continuous.
@@ -41662,6 +41692,11 @@
         <member name="F:CitizenFX.Core.Native.Hash._STOP_RECORDING_AND_SAVE_CLIP">
             <summary>
             Stops recording and saves the recorded clip.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._STOP_RECORDING_THIS_FRAME">
+            <summary>
+            This disable the recording feature and has to be called every frame.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._STOP_SCREEN_EFFECT">
@@ -53941,6 +53976,30 @@
             1.0.335.2, 1.0.350.1/2, 1.0.372.2, 1.0.393.2, 1.0.393.4, 1.0.463.1;
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xd40aac51e8e4c663(System.UInt32)">
+            <summary>
+            Decompiled scripts have this listed as `FILES::_GET_NUM_DLC_PED_PROPS_UNK`, but that seems wrong.
+            Has something to do with ped (dlc) helmet props.
+            This native returns 1/true when the player helmet has a visor (there is another prop index for the same helmet with closed/opened visor variant) that can be toggled, 0/false if there's no alternative version with a visor for this helmet prop.
+            So something like `_DOES_HELMET_HASH_HAVE_A_VISOR`, anyone that knows the joaat hash?
+            Decompiled scripts handle this as an int. But the result is always 0 or 1 (after testing every prop hash on freemode peds). So might actually be a bool?
+            ```
+            iVar16 = PED::GET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), 0);
+            iVar17 = PED::GET_PED_PROP_TEXTURE_INDEX(PLAYER::PLAYER_PED_ID(), 0);
+            iVar18 = FILES::GET_HASH_NAME_FOR_PROP(PLAYER::PLAYER_PED_ID(), 0, iVar16, iVar17);
+            if (FILES::_GET_NUM_DLC_PED_PROPS_UNK(iVar18) &gt; 0) // _0xD40AAC51E8E4C663
+            {
+            HUD::BEGIN_TEXT_COMMAND_DISPLAY_HELP("VISOR_TOGGLE");
+            HUD::END_TEXT_COMMAND_DISPLAY_HELP(0, 0, true, 6000);
+            iVar15++;
+            func_12660(7668, iVar15, -1, 1);
+            MISC::SET_BIT(&amp;(Global_2512581.f_1710), 24);
+            }
+            ```
+            </summary>
+            <param name="propHash">Ped helmet prop hash</param>
+            <returns>This native returns 1 when the player helmet has a visor (there is another prop index for the same helmet with closed/opened visor variant) that can be toggled. 0 if there's no alternative version with a visor for this helmet prop.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.N_0xd4c4642cb7f50b5d(System.Int32)">
             <summary>
             Only used like this:
@@ -56380,12 +56439,38 @@
             Pushes an integer for the Scaleform function onto the stack.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.PushScaleformMovieMethodParameterString_2(System.String)">
+            <summary>
+            GRAPHICS::\_0x77FE3402004CD1B0(HUD::\_GET_LABEL_TEXT("YACHT_GSY"));
+            GRAPHICS::\_0x77FE3402004CD1B0(PLAYER::GET_PLAYER_NAME(PLAYER::PLAYER_ID()));
+            Both \_0xBA7148484BD90365 / \_0x77FE3402004CD1B0 works, but \_0x77FE3402004CD1B0 is usually used for "name" (organisation, players..).
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x77fe3402004cd1b0(System.String)">
+            <summary>
+            GRAPHICS::\_0x77FE3402004CD1B0(HUD::\_GET_LABEL_TEXT("YACHT_GSY"));
+            GRAPHICS::\_0x77FE3402004CD1B0(PLAYER::GET_PLAYER_NAME(PLAYER::PLAYER_ID()));
+            Both \_0xBA7148484BD90365 / \_0x77FE3402004CD1B0 works, but \_0x77FE3402004CD1B0 is usually used for "name" (organisation, players..).
+            </summary>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.RegisterArchetypes(CitizenFX.Core.Native.InputArgument)">
             <summary>
             **Experimental**: This native may be altered or removed in future versions of CitizenFX without warning.
             Registers a set of archetypes with the game engine. These should match `CBaseArchetypeDef` class information from the game.
             </summary>
             <param name="factory">A function returning a list of archetypes.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.RegisterCommand(System.String,CitizenFX.Core.Native.InputArgument,System.Boolean)">
+            <summary>
+            Registered commands can be executed by entering them in the client console (this works for client side and server side registered commands). Or by entering them in the server console/through an RCON client (only works for server side registered commands). Or if you use a supported chat resource, like the default one provided in the cfx-server-data repository, then you can enter the command in chat by prefixing it with a `/`.
+            Commands registered using this function can also be executed by resources, using the [`ExecuteCommand` native](#_0x561C060B).
+            The restricted bool is not used on the client side. Permissions can only be checked on the server side, so if you want to limit your command with an ace permission automatically, make it a server command (by registering it in a server script).
+            **Example result**:
+            ![](https://i.imgur.com/TaCnG09.png)
+            </summary>
+            <param name="commandName">The command you want to register.</param>
+            <param name="handler">A handler function that gets called whenever the command is executed.</param>
+            <param name="restricted">If this is a server command and you set this to true, then players will need the command.yourCommandName ace permission to execute this command.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.RegisterEntities(CitizenFX.Core.Native.InputArgument)">
             <summary>
@@ -62092,6 +62177,24 @@
             Reduces grip significantly so it's hard to go anywhere.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.SetVehicleRoofLivery(System.Int32,System.Int32)">
+            <summary>
+            Used to set the tornado custom (convertible) rooftop livery.
+            Livery value that works for tornado custom is between 0 and 9 from what i can tell. Maybe 0-8 even.
+            Might work on other custom vehicles but im not sure what those might be, only confirmed it working with the tornado custom.
+            </summary>
+            <param name="vehicle">The vehicle handle.</param>
+            <param name="livery">Livery index.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xa6d3a8750dc73270(System.Int32,System.Int32)">
+            <summary>
+            Used to set the tornado custom (convertible) rooftop livery.
+            Livery value that works for tornado custom is between 0 and 9 from what i can tell. Maybe 0-8 even.
+            Might work on other custom vehicles but im not sure what those might be, only confirmed it working with the tornado custom.
+            </summary>
+            <param name="vehicle">The vehicle handle.</param>
+            <param name="livery">Livery index.</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.SetVehicleSearchlight(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Only works during nighttime.
@@ -63311,6 +63414,16 @@
         <member name="M:CitizenFX.Core.Native.API.StopRecording">
             <summary>
             Stops recording and saves the recorded clip.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.StopRecordingThisFrame">
+            <summary>
+            This disable the recording feature and has to be called every frame.
+            </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xeb2d525b57f42b40">
+            <summary>
+            This disable the recording feature and has to be called every frame.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.StopScreenEffect(System.String)">

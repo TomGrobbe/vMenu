@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>embedded</DebugType>
@@ -31,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CitizenFX.Core">
@@ -60,7 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlipInfo.cs" />
+    <Compile Include="data\BlipInfo.cs" />
     <Compile Include="CommonFunctions.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />
@@ -73,7 +75,8 @@
     <Compile Include="menus\PlayerAppearance.cs" />
     <Compile Include="menus\Recording.cs" />
     <Compile Include="menus\SavedVehicles.cs" />
-    <Compile Include="TattoosData.cs" />
+    <Compile Include="menus\WeaponLoadouts.cs" />
+    <Compile Include="data\TattoosData.cs" />
     <Compile Include="menus\TimeOptions.cs" />
     <Compile Include="menus\VehicleOptions.cs" />
     <Compile Include="menus\VehicleSpawner.cs" />
@@ -81,27 +84,24 @@
     <Compile Include="menus\WeaponOptions.cs" />
     <Compile Include="menus\WeatherOptions.cs" />
     <Compile Include="MpPedDataManager.cs" />
-    <Compile Include="NoclipMenu.cs" />
+    <Compile Include="menus\NoclipMenu.cs" />
     <Compile Include="Notification.cs" />
-    <Compile Include="PedScenarios.cs" />
+    <Compile Include="data\PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
-    <Compile Include="Permission.cs" />
-    <Compile Include="PermissionsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="UserDefaults.cs" />
-    <Compile Include="ValidWeapon.cs" />
-    <Compile Include="VehicleData.cs" />
-    <Compile Include="Vehicles.cs" />
+    <Compile Include="data\ValidWeapon.cs" />
+    <Compile Include="data\VehicleData.cs" />
+    <Compile Include="data\Vehicles.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
     </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\MenuAPI.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vMenu\resources\vMenu\"
-    REM copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\mp_ped_data.js" "D:\FXserver\vMenu\resources\vMenu\"
+    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\MenuAPI.net.dll" "D:\FXserver\vmenu\resources\vMenu\"
+    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vmenu\resources\vMenu\"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

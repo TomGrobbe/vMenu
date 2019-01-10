@@ -65,7 +65,7 @@ vMenu v2.0.0 and earlier was [using a modified version of NativeUI](https://gith
 
 Tom Grobbe - https://www.vespura.com/
 
-Copyright © 2017-2018
+Copyright © 2017-2019
 
 
 THIS PROJECT USES A CUSTOM LICENSE. MAKE SURE TO READ IT BEFORE THINKING ABOUT DOING ANYTHING WITH VMENU.

@@ -1,6 +1,6 @@
 Tom Grobbe - https://www.vespura.com/
 
-Copyright © 2017-2018
+Copyright © 2017-2019
 
 -----
 

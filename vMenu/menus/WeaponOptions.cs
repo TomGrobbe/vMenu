@@ -9,6 +9,7 @@ using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -474,10 +475,13 @@ namespace vMenuClient
                     #region Handle weapon specific button presses
                     weaponMenu.OnItemSelect += (sender, item, index) =>
                     {
+                        var info = weaponInfo[sender];
+                        uint hash = info.Hash;
+
+                        SetCurrentPedWeapon(Game.PlayerPed.Handle, hash, true);
+
                         if (item == getOrRemoveWeapon)
                         {
-                            var info = weaponInfo[sender];
-                            uint hash = info.Hash;
                             if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
@@ -493,11 +497,11 @@ namespace vMenuClient
                         }
                         else if (item == fillAmmo)
                         {
-                            if (HasPedGotWeapon(Game.PlayerPed.Handle, weaponInfo[sender].Hash, false))
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 var ammo = 900;
-                                GetMaxAmmo(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ref ammo);
-                                SetAmmoInClip(Game.PlayerPed.Handle, weaponInfo[sender].Hash, ammo);
+                                GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
+                                SetPedAmmo(Game.PlayerPed.Handle, hash, ammo);
                             }
                             else
                             {
@@ -528,14 +532,25 @@ namespace vMenuClient
                                         var componentHash = Weapon.Components[weaponComponents[item]];
                                         if (HasPedGotWeapon(Game.PlayerPed.Handle, Weapon.Hash, false))
                                         {
+                                            SetCurrentPedWeapon(Game.PlayerPed.Handle, Weapon.Hash, true);
                                             if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, Weapon.Hash, componentHash))
                                             {
                                                 RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
+
                                                 Subtitle.Custom("Component removed.");
                                             }
                                             else
                                             {
+                                                int ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, Weapon.Hash);
+
+                                                int clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, false);
+                                                GetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, ref clipAmmo);
+
                                                 GiveWeaponComponentToPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
+
+                                                SetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, clipAmmo);
+
+                                                SetPedAmmo(Game.PlayerPed.Handle, Weapon.Hash, ammo);
                                                 Subtitle.Custom("Component equiped.");
                                             }
                                         }
@@ -553,72 +568,54 @@ namespace vMenuClient
 
                     // refresh and add to menu.
                     weaponMenu.RefreshIndex();
-                    //weaponMenu.UpdateScaleform();
 
                     if (cat == 970310034) // 970310034 rifles
                     {
-                        //MainMenu.Mp.Add(weaponMenu);
                         MenuController.AddSubmenu(rifles, weaponMenu);
                         MenuController.BindMenuItem(rifles, weaponMenu, weaponItem);
                         rifles.AddMenuItem(weaponItem);
-                        //rifles.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 416676503 || cat == 690389602) // 416676503 hand guns // 690389602 stun gun
                     {
                         MenuController.AddSubmenu(handGuns, weaponMenu);
                         MenuController.BindMenuItem(handGuns, weaponMenu, weaponItem);
                         handGuns.AddMenuItem(weaponItem);
-
-                        //handGuns.AddMenuItem(weaponItem);
-                        //handGuns.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 860033945) // 860033945 shotguns
                     {
                         MenuController.AddSubmenu(shotguns, weaponMenu);
                         MenuController.BindMenuItem(shotguns, weaponMenu, weaponItem);
                         shotguns.AddMenuItem(weaponItem);
-                        //shotguns.AddMenuItem(weaponItem);
-                        //shotguns.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 3337201093 || cat == 1159398588) // 3337201093 sub machine guns // 1159398588 light machine guns
                     {
                         MenuController.AddSubmenu(smgs, weaponMenu);
                         MenuController.BindMenuItem(smgs, weaponMenu, weaponItem);
                         smgs.AddMenuItem(weaponItem);
-                        //smgs.AddMenuItem(weaponItem);
-                        //smgs.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 1548507267 || cat == 4257178988 || cat == 1595662460) // 1548507267 throwables // 4257178988 fire extinghuiser // jerry can
                     {
                         MenuController.AddSubmenu(throwables, weaponMenu);
                         MenuController.BindMenuItem(throwables, weaponMenu, weaponItem);
                         throwables.AddMenuItem(weaponItem);
-                        //throwables.AddMenuItem(weaponItem);
-                        //throwables.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 3566412244 || cat == 2685387236) // 3566412244 melee weapons // 2685387236 knuckle duster
                     {
                         MenuController.AddSubmenu(melee, weaponMenu);
                         MenuController.BindMenuItem(melee, weaponMenu, weaponItem);
                         melee.AddMenuItem(weaponItem);
-                        //melee.AddMenuItem(weaponItem);
-                        //melee.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 2725924767) // 2725924767 heavy weapons
                     {
                         MenuController.AddSubmenu(heavy, weaponMenu);
                         MenuController.BindMenuItem(heavy, weaponMenu, weaponItem);
                         heavy.AddMenuItem(weaponItem);
-                        //heavy.AddMenuItem(weaponItem);
-                        //heavy.BindMenuToItem(weaponMenu, weaponItem);
                     }
                     else if (cat == 3082541095) // 3082541095 sniper rifles
                     {
                         MenuController.AddSubmenu(snipers, weaponMenu);
                         MenuController.BindMenuItem(snipers, weaponMenu, weaponItem);
                         snipers.AddMenuItem(weaponItem);
-                        //snipers.AddMenuItem(weaponItem);
-                        //snipers.BindMenuToItem(weaponMenu, weaponItem);
                     }
                 }
             }
@@ -627,56 +624,48 @@ namespace vMenuClient
             #region Disable submenus if no weapons in that category are allowed.
             if (handGuns.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(handGunsBtn);
                 handGunsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 handGunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 handGunsBtn.Enabled = false;
             }
             if (rifles.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(riflesBtn);
                 riflesBtn.LeftIcon = MenuItem.Icon.LOCK;
                 riflesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 riflesBtn.Enabled = false;
             }
             if (shotguns.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(shotgunsBtn);
                 shotgunsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 shotgunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 shotgunsBtn.Enabled = false;
             }
             if (smgs.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(smgsBtn);
                 smgsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 smgsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 smgsBtn.Enabled = false;
             }
             if (throwables.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(throwablesBtn);
                 throwablesBtn.LeftIcon = MenuItem.Icon.LOCK;
                 throwablesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 throwablesBtn.Enabled = false;
             }
             if (melee.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(meleeBtn);
                 meleeBtn.LeftIcon = MenuItem.Icon.LOCK;
                 meleeBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 meleeBtn.Enabled = false;
             }
             if (heavy.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(heavyBtn);
                 heavyBtn.LeftIcon = MenuItem.Icon.LOCK;
                 heavyBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 heavyBtn.Enabled = false;
             }
             if (snipers.Size == 0)
             {
-                //menu.ReleaseMenuFromItem(snipersBtn);
                 snipersBtn.LeftIcon = MenuItem.Icon.LOCK;
                 snipersBtn.Description = "The server owner removed the permissions for all weapons in this category.";
                 snipersBtn.Enabled = false;
@@ -693,11 +682,12 @@ namespace vMenuClient
                     {
                         if (IsAllowed(vw.Perm))
                         {
-                            int ammo = 1;
+                            GiveWeaponToPed(Game.PlayerPed.Handle, vw.Hash, vw.GetMaxAmmo, false, true);
+
+                            int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, vw.Hash, false);
+                            SetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ammoInClip);
+                            int ammo = 0;
                             GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
-
-                            GiveWeaponToPed(Game.PlayerPed.Handle, vw.Hash, ammo, false, true);
-
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
                     }
@@ -718,6 +708,8 @@ namespace vMenuClient
                     {
                         if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                         {
+                            int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, vw.Hash, false);
+                            SetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ammoInClip);
                             int ammo = 0;
                             GetMaxAmmo(Game.PlayerPed.Handle, vw.Hash, ref ammo);
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);

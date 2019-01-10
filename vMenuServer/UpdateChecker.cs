@@ -48,8 +48,10 @@ namespace vMenuServer
                     SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
                 }
                 // sets the UUID convar.
-                ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
-                ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
+                SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.LastIndexOf('-')));
+                SetConvarServerInfo("vMenuVersion", MainServer.Version);
+                //ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
+                //ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
 
 
                 // Get a response from the specified url.
@@ -63,17 +65,21 @@ namespace vMenuServer
                 {
                     case System.Net.HttpStatusCode.OK:
                         dynamic UpdateData = JsonConvert.DeserializeObject(result.content);
+                        if (!string.IsNullOrEmpty(UpdateData["message"].ToString() ?? ""))
+                        {
+                            Debug.WriteLine($"^5[vMenu] {UpdateData["message"]}^0");
+                        }
                         if ((bool)UpdateData["up_to_date"])
                         {
                             Debug.WriteLine("^2[vMenu] Your version of vMenu is up to date! Good job!^7\n");
                         }
                         else
                         {
-                            Debug.WriteLine("^3[vMenu] WARNING:^7 Your version of vMenu is OUTDATED!");
-                            Debug.WriteLine("^3[vMenu] WARNING:^7 Your version: " + MainServer.Version);
-                            Debug.WriteLine("^3[vMenu] WARNING:^7 Latest version: " + UpdateData["latest_version"]);
-                            Debug.WriteLine("^3[vMenu] WARNING:^7 Release date: " + UpdateData["release_date"]);
-                            Debug.WriteLine("^3[vMenu] WARNING:^7 Changelog summary: " + UpdateData["update_message"]);
+                            Debug.WriteLine("^3[vMenu] WARNING:^7 Your version of vMenu does ^1NOT ^7match the latest version!");
+                            Debug.WriteLine($"^3[vMenu] WARNING:^7 Your version: {MainServer.Version}^7");
+                            Debug.WriteLine($"^3[vMenu] WARNING:^7 Latest version: {UpdateData["latest_version"]}^7");
+                            Debug.WriteLine($"^3[vMenu] WARNING:^7 Release date: {UpdateData["release_date"]}^7");
+                            Debug.WriteLine($"^3[vMenu] WARNING:^7 Changelog summary: {UpdateData["update_message"]}^7");
                             Debug.WriteLine("^3[vMenu] WARNING:^7 Please update as soon as possible!");
                             Debug.WriteLine("^3[vMenu] WARNING:^7 Download: https://github.com/tomgrobbe/vMenu/releases/");
                             Debug.WriteLine("\n");

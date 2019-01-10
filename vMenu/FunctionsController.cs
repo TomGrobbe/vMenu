@@ -11,6 +11,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -507,7 +508,7 @@ namespace vMenuClient
 
                 if (MainMenu.MiscSettingsMenu.ShowSpeedoMph && Game.PlayerPed.IsInVehicle())
                 {
-                    ShowSpeedKmh();
+                    ShowSpeedMph();
                 }
             }
             else
@@ -1149,9 +1150,6 @@ namespace vMenuClient
 
                     Game.PlayerPed.Task.ClearAllImmediately();
 
-                    SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_Happy_1", null);
-                    //SetFacialIdleAnimOverride(Game.PlayerPed.Handle, "mood_normal_1", null);
-
                     /* 
                      * Camera positions and PointAt locations.
                     
@@ -1400,8 +1398,18 @@ namespace vMenuClient
                         }
                         else
                         {
-                            camera.Position = camPositions[0].Key;
-                            camera.PointAt(camPositions[0].Value);
+                            if (MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible && MainMenu.MpPedCustomizationMenu.createCharacterMenu.CurrentIndex == 6)
+                            {
+                                // head level
+                                camera.Position = camPositions[1].Key;
+                                camera.PointAt(camPositions[1].Value);
+                            }
+                            else
+                            {
+                                camera.Position = camPositions[0].Key;
+                                camera.PointAt(camPositions[0].Value);
+                            }
+
                         }
                     }
 
@@ -1550,9 +1558,17 @@ namespace vMenuClient
                         }
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
                     {
-                        await SaveWeaponLoadout();
+                        //await SaveWeaponLoadout();
+                        if (SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn"))
+                        {
+                            Log($"weapons saved {GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn")}");
+                        }
+                        else
+                        {
+                            Log("save failed from restore weapons after death");
+                        }
                     }
 
                     while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
@@ -1562,7 +1578,7 @@ namespace vMenuClient
 
                     if (restoreDefault)
                     {
-                        MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"));
+                        await MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"), false);
                     }
                     else
                     {
@@ -1572,10 +1588,14 @@ namespace vMenuClient
                         }
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons))
+                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
                     {
-                        RestoreWeaponLoadout();
+                        await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                        Log("weapons restored, deleting kvp");
+                        DeleteResourceKvp("vmenu_temp_weapons_loadout_before_respawn");
                     }
+
+
                 }
 
             }
@@ -2152,7 +2172,7 @@ namespace vMenuClient
             await Delay(1);
             int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
             await Delay(1);
-            if (N_0xd40aac51e8e4c663(compHash) > 0) // helmet has visor.
+            if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
             {
                 int newHelmet = 0;
                 string animName = "visor_up";

@@ -118,265 +118,268 @@ namespace vMenuServer
             "HALLOWEEN"
         };
 
-        public List<string> aceNames = new List<string>()
-        {
-            // Global
-            "Everything",
-            "DontKickMe",
-            "DontBanMe",
-            "NoClip",
-            "Staff",
+        //public List<string> aceNames = new List<string>()
+        //{
+        //    // Global
+        //    "Everything",
+        //    "DontKickMe",
+        //    "DontBanMe",
+        //    "NoClip",
+        //    "Staff",
 
-            // Online Players
-            "OPMenu",
-            "OPAll",
-            "OPTeleport",
-            "OPWaypoint",
-            "OPSpectate",
-            "OPIdentifiers",
-            "OPSummon",
-            "OPKill",
-            "OPKick",
-            "OPPermBan",
-            "OPTempBan",
-            "OPUnban",
-            "OPViewBannedPlayers",
+        //    // Online Players
+        //    "OPMenu",
+        //    "OPAll",
+        //    "OPTeleport",
+        //    "OPWaypoint",
+        //    "OPSpectate",
+        //    "OPIdentifiers",
+        //    "OPSummon",
+        //    "OPKill",
+        //    "OPKick",
+        //    "OPPermBan",
+        //    "OPTempBan",
+        //    "OPUnban",
+        //    "OPViewBannedPlayers",
 
-            // Player Options
-            "POMenu",
-            "POAll",
-            "POGod",
-            "POInvisible",
-            "POFastRun",
-            "POFastSwim",
-            "POSuperjump",
-            "PONoRagdoll",
-            "PONeverWanted",
-            "POSetWanted",
-            "POIgnored",
-            "POMaxHealth",
-            "POMaxArmor",
-            "POCleanPlayer",
-            "PODryPlayer",
-            "POWetPlayer",
-            "POVehicleAutoPilotMenu",
-            "POFreeze",
-            "POScenarios",
-            "POUnlimitedStamina",
+        //    // Player Options
+        //    "POMenu",
+        //    "POAll",
+        //    "POGod",
+        //    "POInvisible",
+        //    "POFastRun",
+        //    "POFastSwim",
+        //    "POSuperjump",
+        //    "PONoRagdoll",
+        //    "PONeverWanted",
+        //    "POSetWanted",
+        //    "POIgnored",
+        //    "POMaxHealth",
+        //    "POMaxArmor",
+        //    "POCleanPlayer",
+        //    "PODryPlayer",
+        //    "POWetPlayer",
+        //    "POVehicleAutoPilotMenu",
+        //    "POFreeze",
+        //    "POScenarios",
+        //    "POUnlimitedStamina",
 
-            // Vehicle Options
-            "VOMenu",
-            "VOAll",
-            "VOGod",
-            "VOSpecialGod",
-            "VOKeepClean",
-            "VORepair",
-            "VOWash",
-            "VOEngine",
-            "VOSpeedLimiter",
-            "VOChangePlate",
-            "VOMod",
-            "VOColors",
-            "VOLiveries",
-            "VOComponents",
-            "VODoors",
-            "VOWindows",
-            "VOFreeze",
-            "VOTorqueMultiplier",
-            "VOPowerMultiplier",
-            "VOFlip",
-            "VOAlarm",
-            "VOCycleSeats",
-            "VOEngineAlwaysOn",
-            "VONoSiren",
-            "VONoHelmet",
-            "VOLights",
-            "VODelete",
-            "VOUnderglow",
-            "VOFlashHighbeamsOnHonk",
-            "VODisableTurbulence",
-            "VOFlares",
-            "VOPlaneBombs",
-            
-            // Vehicle Spawner
-            "VSMenu",
-            "VSAll",
-            "VSDisableReplacePrevious",
-            "VSSpawnByName",
-            "VSAddon",
-            "VSCompacts",
-            "VSSedans",
-            "VSSUVs",
-            "VSCoupes",
-            "VSMuscle",
-            "VSSportsClassic",
-            "VSSports",
-            "VSSuper",
-            "VSMotorcycles",
-            "VSOffRoad",
-            "VSIndustrial",
-            "VSUtility",
-            "VSVans",
-            "VSCycles",
-            "VSBoats",
-            "VSHelicopters",
-            "VSPlanes",
-            "VSService",
-            "VSEmergency",
-            "VSMilitary",
-            "VSCommercial",
-            "VSTrains",
+        //    // Vehicle Options
+        //    "VOMenu",
+        //    "VOAll",
+        //    "VOGod",
+        //    "VOSpecialGod",
+        //    "VOKeepClean",
+        //    "VORepair",
+        //    "VOWash",
+        //    "VOEngine",
+        //    "VOSpeedLimiter",
+        //    "VOChangePlate",
+        //    "VOMod",
+        //    "VOColors",
+        //    "VOLiveries",
+        //    "VOComponents",
+        //    "VODoors",
+        //    "VOWindows",
+        //    "VOFreeze",
+        //    "VOTorqueMultiplier",
+        //    "VOPowerMultiplier",
+        //    "VOFlip",
+        //    "VOAlarm",
+        //    "VOCycleSeats",
+        //    "VOEngineAlwaysOn",
+        //    "VONoSiren",
+        //    "VONoHelmet",
+        //    "VOLights",
+        //    "VODelete",
+        //    "VOUnderglow",
+        //    "VOFlashHighbeamsOnHonk",
+        //    "VODisableTurbulence",
+        //    "VOFlares",
+        //    "VOPlaneBombs",
 
-            // Saved Vehicles
-            "SVMenu",
-            "SVAll",
-            "SVSpawn",
+        //    // Vehicle Spawner
+        //    "VSMenu",
+        //    "VSAll",
+        //    "VSDisableReplacePrevious",
+        //    "VSSpawnByName",
+        //    "VSAddon",
+        //    "VSCompacts",
+        //    "VSSedans",
+        //    "VSSUVs",
+        //    "VSCoupes",
+        //    "VSMuscle",
+        //    "VSSportsClassic",
+        //    "VSSports",
+        //    "VSSuper",
+        //    "VSMotorcycles",
+        //    "VSOffRoad",
+        //    "VSIndustrial",
+        //    "VSUtility",
+        //    "VSVans",
+        //    "VSCycles",
+        //    "VSBoats",
+        //    "VSHelicopters",
+        //    "VSPlanes",
+        //    "VSService",
+        //    "VSEmergency",
+        //    "VSMilitary",
+        //    "VSCommercial",
+        //    "VSTrains",
 
-            // Player Appearance
-            "PAMenu",
-            "PAAll",
-            "PACustomize",
-            "PASpawnSaved",
-            "PASpawnNew",
+        //    // Saved Vehicles
+        //    "SVMenu",
+        //    "SVAll",
+        //    "SVSpawn",
 
-            // Time Options
-            "TOMenu",
-            "TOAll",
-            "TOFreezeTime",
-            "TOSetTime",
+        //    // Player Appearance
+        //    "PAMenu",
+        //    "PAAll",
+        //    "PACustomize",
+        //    "PASpawnSaved",
+        //    "PASpawnNew",
 
-            // Weather Options
-            "WOMenu",
-            "WOAll",
-            "WODynamic",
-            "WOBlackout",
-            "WOSetWeather",
-            "WORemoveClouds",
-            "WORandomizeClouds",
+        //    // Time Options
+        //    "TOMenu",
+        //    "TOAll",
+        //    "TOFreezeTime",
+        //    "TOSetTime",
 
-            // Weapon Options
-            "WPMenu",
-            "WPAll",
-            "WPGetAll",
-            "WPRemoveAll",
-            "WPUnlimitedAmmo",
-            "WPNoReload",
-            "WPSpawn",
-            "WPSpawnByName",
-            "WPSetAllAmmo",
-            
-            // Weapons Permissions
-            "WPSniperRifle",
-            "WPFireExtinguisher",
-            "WPCompactGrenadeLauncher",
-            "WPSnowball",
-            "WPVintagePistol",
-            "WPCombatPDW",
-            "WPHeavySniperMk2",
-            "WPHeavySniper",
-            "WPSweeperShotgun",
-            "WPMicroSMG",
-            "WPWrench",
-            "WPPistol",
-            "WPPumpShotgun",
-            "WPAPPistol",
-            "WPBall",
-            "WPMolotov",
-            "WPSMG",
-            "WPStickyBomb",
-            "WPPetrolCan",
-            "WPStunGun",
-            "WPAssaultRifleMk2",
-            "WPHeavyShotgun",
-            "WPMinigun",
-            "WPGolfClub",
-            "WPFlareGun",
-            "WPFlare",
-            "WPGrenadeLauncherSmoke",
-            "WPHammer",
-            "WPCombatPistol",
-            "WPGusenberg",
-            "WPCompactRifle",
-            "WPHomingLauncher",
-            "WPNightstick",
-            "WPRailgun",
-            "WPSawnOffShotgun",
-            "WPSMGMk2",
-            "WPBullpupRifle",
-            "WPFirework",
-            "WPCombatMG",
-            "WPCarbineRifle",
-            "WPCrowbar",
-            "WPFlashlight",
-            "WPDagger",
-            "WPGrenade",
-            "WPPoolCue",
-            "WPBat",
-            "WPPistol50",
-            "WPKnife",
-            "WPMG",
-            "WPBullpupShotgun",
-            "WPBZGas",
-            "WPUnarmed",
-            "WPGrenadeLauncher",
-            "WPNightVision",
-            "WPMusket",
-            "WPProximityMine",
-            "WPAdvancedRifle",
-            "WPRPG",
-            "WPPipeBomb",
-            "WPMiniSMG",
-            "WPSNSPistol",
-            "WPPistolMk2",
-            "WPAssaultRifle",
-            "WPSpecialCarbine",
-            "WPRevolver",
-            "WPMarksmanRifle",
-            "WPBattleAxe",
-            "WPHeavyPistol",
-            "WPKnuckleDuster",
-            "WPMachinePistol",
-            "WPCombatMGMk2",
-            "WPMarksmanPistol",
-            "WPMachete",
-            "WPSwitchBlade",
-            "WPAssaultShotgun",
-            "WPDoubleBarrelShotgun",
-            "WPAssaultSMG",
-            "WPHatchet",
-            "WPBottle",
-            "WPCarbineRifleMk2",
-            "WPParachute",
-            "WPSmokeGrenade",
+        //    // Weather Options
+        //    "WOMenu",
+        //    "WOAll",
+        //    "WODynamic",
+        //    "WOBlackout",
+        //    "WOSetWeather",
+        //    "WORemoveClouds",
+        //    "WORandomizeClouds",
 
-            // Misc Settings
-            "MSAll",
-            "MSClearArea",
-            "MSTeleportToWp",
-            "MSShowCoordinates",
-            "MSShowLocation",
-            "MSJoinQuitNotifs",
-            "MSDeathNotifs",
-            "MSNightVision",
-            "MSThermalVision",
-            "MSLocationBlips",
-            "MSPlayerBlips",
-            "MSTeleportLocations",
-            "MSConnectionMenu",
-            "MSRestoreAppearance",
-            "MSRestoreWeapons",
-            "MSDriftMode",
+        //    // Weapon Options
+        //    "WPMenu",
+        //    "WPAll",
+        //    "WPGetAll",
+        //    "WPRemoveAll",
+        //    "WPUnlimitedAmmo",
+        //    "WPNoReload",
+        //    "WPSpawn",
+        //    "WPSpawnByName",
+        //    "WPSetAllAmmo",
 
-            // Voice Chat
-            "VCMenu",
-            "VCAll",
-            "VCEnable",
-            "VCShowSpeaker",
-            "VCStaffChannel",
-        };
-        public List<string> addonVehicles = new List<string>();
-        public List<string> addonPeds = new List<string>();
-        public List<string> addonWeapons = new List<string>();
+        //    // Weapons Permissions
+        //    "WPSniperRifle",
+        //    "WPFireExtinguisher",
+        //    "WPCompactGrenadeLauncher",
+        //    "WPSnowball",
+        //    "WPVintagePistol",
+        //    "WPCombatPDW",
+        //    "WPHeavySniperMk2",
+        //    "WPHeavySniper",
+        //    "WPSweeperShotgun",
+        //    "WPMicroSMG",
+        //    "WPWrench",
+        //    "WPPistol",
+        //    "WPPumpShotgun",
+        //    "WPAPPistol",
+        //    "WPBall",
+        //    "WPMolotov",
+        //    "WPSMG",
+        //    "WPStickyBomb",
+        //    "WPPetrolCan",
+        //    "WPStunGun",
+        //    "WPAssaultRifleMk2",
+        //    "WPHeavyShotgun",
+        //    "WPMinigun",
+        //    "WPGolfClub",
+        //    "WPFlareGun",
+        //    "WPFlare",
+        //    "WPGrenadeLauncherSmoke",
+        //    "WPHammer",
+        //    "WPCombatPistol",
+        //    "WPGusenberg",
+        //    "WPCompactRifle",
+        //    "WPHomingLauncher",
+        //    "WPNightstick",
+        //    "WPRailgun",
+        //    "WPSawnOffShotgun",
+        //    "WPSMGMk2",
+        //    "WPBullpupRifle",
+        //    "WPFirework",
+        //    "WPCombatMG",
+        //    "WPCarbineRifle",
+        //    "WPCrowbar",
+        //    "WPFlashlight",
+        //    "WPDagger",
+        //    "WPGrenade",
+        //    "WPPoolCue",
+        //    "WPBat",
+        //    "WPPistol50",
+        //    "WPKnife",
+        //    "WPMG",
+        //    "WPBullpupShotgun",
+        //    "WPBZGas",
+        //    "WPUnarmed",
+        //    "WPGrenadeLauncher",
+        //    "WPNightVision",
+        //    "WPMusket",
+        //    "WPProximityMine",
+        //    "WPAdvancedRifle",
+        //    "WPRPG",
+        //    "WPPipeBomb",
+        //    "WPMiniSMG",
+        //    "WPSNSPistol",
+        //    "WPPistolMk2",
+        //    "WPAssaultRifle",
+        //    "WPSpecialCarbine",
+        //    "WPRevolver",
+        //    "WPMarksmanRifle",
+        //    "WPBattleAxe",
+        //    "WPHeavyPistol",
+        //    "WPKnuckleDuster",
+        //    "WPMachinePistol",
+        //    "WPCombatMGMk2",
+        //    "WPMarksmanPistol",
+        //    "WPMachete",
+        //    "WPSwitchBlade",
+        //    "WPAssaultShotgun",
+        //    "WPDoubleBarrelShotgun",
+        //    "WPAssaultSMG",
+        //    "WPHatchet",
+        //    "WPBottle",
+        //    "WPCarbineRifleMk2",
+        //    "WPParachute",
+        //    "WPSmokeGrenade",
+
+        //    // Weapon Loadouts Menu
+        //    "WLMenu",
+        //    "WLAll",
+        //    "WLEquip",
+        //    "WLEquipOnRespawn",
+
+        //    // Misc Settings
+        //    "MSAll",
+        //    "MSClearArea",
+        //    "MSTeleportToWp",
+        //    "MSShowCoordinates",
+        //    "MSShowLocation",
+        //    "MSJoinQuitNotifs",
+        //    "MSDeathNotifs",
+        //    "MSNightVision",
+        //    "MSThermalVision",
+        //    "MSLocationBlips",
+        //    "MSPlayerBlips",
+        //    "MSTeleportLocations",
+        //    "MSConnectionMenu",
+        //    "MSRestoreAppearance",
+        //    "MSRestoreWeapons",
+        //    "MSDriftMode",
+
+        //    // Voice Chat
+        //    "VCMenu",
+        //    "VCAll",
+        //    "VCEnable",
+        //    "VCShowSpeaker",
+        //    "VCStaffChannel",
+        //};
 
         #region Constructor
         /// <summary>
@@ -565,12 +568,11 @@ namespace vMenuServer
             }
             else
             {
-                //InitializeConfig();
                 // Add event handlers.
                 EventHandlers.Add("vMenu:SummonPlayer", new Action<Player, int>(SummonPlayer));
                 EventHandlers.Add("vMenu:KillPlayer", new Action<Player, int>(KillPlayer));
                 EventHandlers.Add("vMenu:KickPlayer", new Action<Player, int, string>(KickPlayer));
-                EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(SendPermissionsAsync));
+                EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(vMenuShared.PermissionsManager.SetPermissionsForPlayer));
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
@@ -578,36 +580,11 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
                 EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
 
-                string addons = LoadResourceFile(GetCurrentResourceName(), "addons.json") ?? LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+                string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
                 {
-                    Dictionary<string, List<string>> json = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
-                    if (json.ContainsKey("vehicles"))
-                    {
-                        foreach (var modelName in json["vehicles"])
-                        {
-                            Log("Addon vehicle loaded: " + modelName);
-                            addonVehicles.Add(modelName);
-                        }
-                    }
-
-                    if (json.ContainsKey("peds"))
-                    {
-                        foreach (var modelName in json["peds"])
-                        {
-                            Log("Addon ped loaded:" + modelName);
-                            addonPeds.Add(modelName);
-                        }
-                    }
-
-                    if (json.ContainsKey("weapons"))
-                    {
-                        foreach (var modelName in json["weapons"])
-                        {
-                            Log("Addon weapon loaded:" + modelName);
-                            addonWeapons.Add(modelName);
-                        }
-                    }
+                    JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+                    // If the above crashes, then the json is invalid and it'll throw warnings in the console.
                 }
                 catch (JsonReaderException ex)
                 {
@@ -620,8 +597,6 @@ namespace vMenuServer
                 {
                     dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
                 }
-
-
 
                 string defaultWeather = GetSettingsString(Setting.vmenu_default_weather);
 
@@ -637,7 +612,6 @@ namespace vMenuServer
                 currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
                 currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
                 currentMinutes = (currentMinutes >= 0 && currentMinutes < 60) ? currentMinutes : 0;
-
 
                 minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
                 minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
@@ -954,104 +928,6 @@ namespace vMenuServer
             {
                 BanManager.BanCheater(source);
             }
-        }
-        #endregion
-
-        #region Send Permissions & Settings to the requesting client
-        /// <summary>
-        /// Send the permissions to the client that requested it.
-        /// </summary>
-        /// <param name="player"></param>
-        private async void SendPermissionsAsync([FromSource] Player player)
-        {
-            // Get Permissions
-            Dictionary<string, bool> perms = new Dictionary<string, bool>();
-
-            // Add all permissions if the vMenu.Dev permission is added for Vespura only. Can be disable in the permissions.cfg
-            // This is only used in case I need to debug an issue on your server related to vMenu. It only works for me, and does not give me any access outside of
-            // vMenu at all! Feel free to remove it (in the permissions.cfg) if you don't want this, however I will not be able to help you without this.
-            if (player.Identifiers.ToList().Any((id) => id == "license:4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev"))
-            {
-                perms.Add("vMenu.Everything", true);
-            }
-            foreach (string ace in aceNames)
-            {
-                var realAceName = GetRealAceName(ace);
-                var allowed = IsPlayerAceAllowed(player.Handle, realAceName);
-                perms.Add(ace, allowed);
-            }
-
-
-            player.TriggerEvent("vMenu:ConfigureClient", addonVehicles, addonPeds, addonWeapons, perms);
-
-
-            while (!UpdateChecker.CheckedForUpdates)
-            {
-                await Delay(0);
-            }
-            await Delay(8000);
-            if (!UpToDate)
-            {
-                TriggerClientEvent(player, "vMenu:OutdatedResource");
-            }
-            TriggerClientEvent("vMenu:updatePedDecors");
-        }
-
-        private string GetRealAceName(string inputString)
-        {
-            string outputString = inputString;
-            var prefix = inputString.Substring(0, 2);
-
-            if (prefix == "OP")
-            {
-                outputString = "vMenu.OnlinePlayers." + inputString.Substring(2);
-            }
-            else if (prefix == "PO")
-            {
-                outputString = "vMenu.PlayerOptions." + inputString.Substring(2);
-            }
-            else if (prefix == "VO")
-            {
-                outputString = "vMenu.VehicleOptions." + inputString.Substring(2);
-            }
-            else if (prefix == "VS")
-            {
-                outputString = "vMenu.VehicleSpawner." + inputString.Substring(2);
-            }
-            else if (prefix == "SV")
-            {
-                outputString = "vMenu.SavedVehicles." + inputString.Substring(2);
-            }
-            else if (prefix == "PA")
-            {
-                outputString = "vMenu.PlayerAppearance." + inputString.Substring(2);
-            }
-            else if (prefix == "TO")
-            {
-                outputString = "vMenu.TimeOptions." + inputString.Substring(2);
-            }
-            else if (prefix == "WO")
-            {
-                outputString = "vMenu.WeatherOptions." + inputString.Substring(2);
-            }
-            else if (prefix == "WP")
-            {
-                outputString = "vMenu.WeaponOptions." + inputString.Substring(2);
-            }
-            else if (prefix == "MS")
-            {
-                outputString = "vMenu.MiscSettings." + inputString.Substring(2);
-            }
-            else if (prefix == "VC")
-            {
-                outputString = "vMenu.VoiceChat." + inputString.Substring(2);
-            }
-            else
-            {
-                outputString = "vMenu." + inputString;
-            }
-
-            return outputString;
         }
         #endregion
 

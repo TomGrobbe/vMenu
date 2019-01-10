@@ -29,7 +29,7 @@ namespace vMenuClient
             public Dictionary<int, float> features;
         }
 
-        public struct PedTatttoos
+        public struct PedTattoos
         {
             public List<KeyValuePair<string, string>> TorsoTattoos;
             public List<KeyValuePair<string, string>> HeadTattoos;
@@ -109,7 +109,7 @@ namespace vMenuClient
             public PropVariations PropVariations;
             public FaceShapeFeatures FaceShapeFeatures;
             public PedAppearance PedAppearance;
-            public PedTatttoos PedTatttoos;
+            public PedTattoos PedTatttoos;
             public PedFacePaints PedFacePaints;
             public bool IsMale;
             public uint ModelHash;

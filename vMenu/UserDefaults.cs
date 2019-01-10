@@ -9,6 +9,7 @@ using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -272,6 +273,14 @@ namespace vMenuClient
             set { SetSavedSettingsInt("clothingAnimationType", value >= 0 ? value : 0); }
         }
         #endregion
+
+        #region Weapon Loadouts
+        public static bool WeaponLoadoutsSetLoadoutOnRespawn
+        {
+            get { return GetSettingsBool("weaponLoadoutsSetLoadoutOnRespawn"); }
+            set { SetSavedSettingsBool("weaponLoadoutsSetLoadoutOnRespawn", value); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -503,6 +512,12 @@ namespace vMenuClient
             {
                 PAClothingAnimationType = PlayerAppearance.ClothingAnimationType;
                 prefs.Add("clothingAnimationType", PlayerAppearance.ClothingAnimationType);
+            }
+
+            if (MainMenu.WeaponLoadoutsMenu != null)
+            {
+                WeaponLoadoutsSetLoadoutOnRespawn = MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn;
+                prefs.Add("weaponLoadoutsSetLoadoutOnRespawn", MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn);
             }
 
             Notify.Success("Your settings have been saved.");

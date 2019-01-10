@@ -9,6 +9,7 @@ using CitizenFX.Core;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -48,6 +49,14 @@ namespace vMenuClient
             if (!setupDone)
             {
                 Setup();
+
+                // wait for setup in MainMenu (permissions and addons) to be done before adding the noclip menu.
+                while (!MainMenu.ConfigOptionsSetupComplete || !MainMenu.PermissionsSetupComplete)
+                {
+                    await Delay(0);
+                }
+                // Add the noclip menu
+                MenuController.AddMenu(noclipMenu);
             }
             // Setup is done.
             else
@@ -165,7 +174,6 @@ namespace vMenuClient
         private void Setup()
         {
             noclipMenu = new Menu("No Clip", "Controls") { IgnoreDontOpenMenus = true };
-            MenuController.AddMenu(noclipMenu);
 
             MenuItem speed = new MenuItem("Current Moving Speed", "This is your current moving speed.")
             {
@@ -174,7 +182,8 @@ namespace vMenuClient
 
             noclipMenu.OnMenuOpen += (m) =>
             {
-                HelpMessage.Custom("NoClip is now active. Look at the instructional buttons for all the keybinds. You can view your current moving speed all the way on the bottom right instructional button.");
+                if (MainMenu.NoClipEnabled)
+                    HelpMessage.Custom("NoClip is now active. Look at the instructional buttons for all the keybinds. You can view your current moving speed all the way on the bottom right instructional button.");
             };
 
             noclipMenu.AddMenuItem(speed);
