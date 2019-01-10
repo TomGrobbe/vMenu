@@ -1496,6 +1496,13 @@ namespace vMenuClient
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
                 VehicleModMenu.AddMenuItem(xenonHeadlights);
+                int currentHeadlightColor = _GET_VEHICLE_HEADLIGHTS_COLOR(veh);
+                if (currentHeadlightColor < 0 || currentHeadlightColor > 12)
+                {
+                    currentHeadlightColor = 13;
+                }
+                MenuListItem headlightColor = new MenuListItem("Headlight Color", new List<string>() { "White", "Blue", "Electric Blue", "Mint Green", "Lime Green", "Yellow", "Golden Shower", "Orange", "Red", "Pony Pink", "Hot Pink", "Purple", "Blacklight", "Default Xenon" }, currentHeadlightColor, "New in the Arena Wars GTA V update: Colored headlights. Note you must enable Xenon Headlights first.");
+                VehicleModMenu.AddMenuItem(headlightColor);
                 VehicleModMenu.AddMenuItem(turbo);
                 VehicleModMenu.AddMenuItem(bulletProofTires);
                 // Create a list of tire smoke options.
@@ -1642,7 +1649,7 @@ namespace vMenuClient
 
                     #region handle the dynamic (vehicle-specific) mods
                     // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
-                    if (itemIndex < sender2.Size - 8)
+                    if (itemIndex < sender2.Size - 9)
                     {
                         // Get all mods available on this vehicle.
                         mods = veh.Mods.GetAllMods();
@@ -1745,6 +1752,17 @@ namespace vMenuClient
                                 break;
                         }
                     }
+                    else if (item2 == headlightColor)
+                    {
+                        if (newIndex == 13) // default
+                        {
+                            _SET_VEHICLE_HEADLIGHTS_COLOR(veh, 255);
+                        }
+                        else if (newIndex > -1 && newIndex < 13)
+                        {
+                            _SET_VEHICLE_HEADLIGHTS_COLOR(veh, newIndex);
+                        }
+                    }
                     #endregion
                 };
 
@@ -1763,6 +1781,38 @@ namespace vMenuClient
             // selected item back to the "wheelsType" list so the user doesn't have to scroll down each time they
             // change the wheels type.
             //VehicleModMenu.CurrentIndex = selectedIndex;
+        }
+
+        internal static void _SET_VEHICLE_HEADLIGHTS_COLOR(Vehicle veh, int newIndex)
+        {
+            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
+            {
+                if (newIndex > -1 && newIndex < 13)
+                {
+                    CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xE41033B25D003A07, veh.Handle, newIndex);
+                }
+                else
+                {
+                    CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xE41033B25D003A07, veh.Handle, -1);
+                }
+            }
+        }
+
+        internal static int _GET_VEHICLE_HEADLIGHTS_COLOR(Vehicle vehicle)
+        {
+            if (vehicle != null && vehicle.Exists())
+            {
+                if (IsToggleModOn(vehicle.Handle, 22))
+                {
+                    int val = CitizenFX.Core.Native.Function.Call<int>((CitizenFX.Core.Native.Hash)0x3DFF319A831E0CDB, vehicle.Handle);
+                    if (val > -1 && val < 13)
+                    {
+                        return val;
+                    }
+                    return -1;
+                }
+            }
+            return -1;
         }
         #endregion
 
