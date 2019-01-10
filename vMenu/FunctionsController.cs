@@ -1578,7 +1578,7 @@ namespace vMenuClient
 
                     if (restoreDefault)
                     {
-                        MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"), false);
+                        await MainMenu.MpPedCustomizationMenu.SpawnThisCharacter(GetResourceKvpString("vmenu_default_character"), false);
                     }
                     else
                     {

@@ -1626,7 +1626,7 @@ namespace vMenuClient
         /// Spawns this saved ped.
         /// </summary>
         /// <param name="name"></param>
-        internal async void SpawnThisCharacter(string name, bool restoreWeapons)
+        internal async Task SpawnThisCharacter(string name, bool restoreWeapons)
         {
             currentCharacter = StorageManager.GetSavedMpCharacterData(name);
             await SpawnSavedPed(restoreWeapons);
