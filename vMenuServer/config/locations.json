@@ -476,6 +476,16 @@
       "spriteID": 71,
       "color": 0,
       "coordinates": {
+        "x": 1212.17,
+        "y": -472.87,
+        "z": 66.21
+      }
+    },
+    {
+      "name": "Barber",
+      "spriteID": 71,
+      "color": 0,
+      "coordinates": {
         "x": 1933.21,
         "y": 3727.99,
         "z": 32.84
