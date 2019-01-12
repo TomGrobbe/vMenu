@@ -506,6 +506,16 @@
       "spriteID": 52,
       "color": 0,
       "coordinates": {
+        "x": 1159.44,
+        "y": -323.77,
+        "z": 69.21
+      }
+    },
+    {
+      "name": "Store",
+      "spriteID": 52,
+      "color": 0,
+      "coordinates": {
         "x": 1166.78,
         "y": 2708.10,
         "z": 38.15
