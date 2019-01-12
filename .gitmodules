@@ -1,0 +1,3 @@
+[submodule "external\\bob74_ipl"]
+	path = external\\bob74_ipl
+	url = https://github.com/TomGrobbe/bob74_ipl.git
