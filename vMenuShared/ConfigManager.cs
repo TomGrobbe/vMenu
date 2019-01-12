@@ -47,6 +47,7 @@ namespace vMenuShared
             vmenu_teleport_to_wp_keybind_key,
 
             vmenu_disable_spawning_as_default_character,
+            vmenu_enable_bob74_ipl_integration,
         }
 
         public static bool GetSettingsBool(Setting setting)

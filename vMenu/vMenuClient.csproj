@@ -66,6 +66,8 @@
     <Compile Include="CommonFunctions.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />
+    <Compile Include="IplManager.cs" />
+    <Compile Include="menus\IplMenu.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="menus\About.cs" />
     <Compile Include="menus\BannedPlayers.cs" />

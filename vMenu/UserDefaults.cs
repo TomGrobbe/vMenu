@@ -281,6 +281,14 @@ namespace vMenuClient
             set { SetSavedSettingsBool("weaponLoadoutsSetLoadoutOnRespawn", value); }
         }
         #endregion
+
+        #region IPL Management menu
+        public static bool IPLEnableTeleports
+        {
+            get { return GetSettingsBool("iplEnableTeleports"); }
+            set { SetSavedSettingsBool("iplEnableTeleports", value); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -300,7 +308,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter" || kvpString == "iplEnableTeleports")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
