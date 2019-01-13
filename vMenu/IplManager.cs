@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -113,10 +113,12 @@ namespace vMenuClient
                     posExt = Vector3.Zero,
                 });
 
-                //AddInterior(new Apartment()
-                //{
-
-                //});
+                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetExecApartment1Object(),
+                    posInt = new Vector3(-787.7805f, 334.9232f, 215.8384f),
+                    posExt = Vector3.Zero
+                });
 
             }
 
@@ -372,6 +374,45 @@ namespace vMenuClient
                 };
 
             }
+        }
+
+        internal class Penthouse : Interior
+        {
+            internal int Style { get; private set; } = 0;
+            List<dynamic> styles = new List<dynamic>();
+
+            internal Penthouse(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+                MenuListItem stylesList = new MenuListItem("Penthouse Style", new List<string>() { "Modern", "Moody", "Vibrant", "Sharp", "Monochrome", "Seductive", "Regal", "Aqua" }, 0, "Select a penthouse style.");
+                Menu.AddMenuItem(stylesList);
+
+                Menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+                {
+                    if (item == stylesList)
+                    {
+                        SetStyle(newIndex);
+                    }
+                };
+            }
+
+            internal void SetStyle(int styleIndex)
+            {
+                if (styles.Count == 0)
+                {
+                    styles.Add(iplObject.Style.Theme.modern);
+                    styles.Add(iplObject.Style.Theme.moody);
+                    styles.Add(iplObject.Style.Theme.vibrant);
+                    styles.Add(iplObject.Style.Theme.sharp);
+                    styles.Add(iplObject.Style.Theme.monochrome);
+                    styles.Add(iplObject.Style.Theme.seductive);
+                    styles.Add(iplObject.Style.Theme.regal);
+                    styles.Add(iplObject.Style.Theme.aqua);
+                }
+                Style = styleIndex;
+
+                iplObject.Style.Set(styles[styleIndex], true);
+            }
+
         }
 
     }
