@@ -73,6 +73,7 @@
     <None Include="config\addons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="config\iplconfig.json" />
     <None Include="config\locations.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
