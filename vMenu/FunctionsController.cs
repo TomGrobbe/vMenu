@@ -99,113 +99,7 @@ namespace vMenuClient
             Tick += InteriorManagement;
         }
 
-        private async Task InteriorManagement()
-        {
-            var interior = GetInteriorFromEntity(Game.PlayerPed.Handle);
 
-            if (interior != 0)
-            {
-                if (IplManager.interiors.Any((inter) => inter.InteriorId == interior))
-                {
-                    //apartment buildings:
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_11_flats"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_ss1_emissive_a"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_detail01b"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_Flats_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_LOD_01_02_08_09_10_11"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_SLOD1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_20_build2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("dt1_20_dt1_emissive_dt1_20"));
-                    HideMapObjectThisFrame((uint)GetHashKey("sm_14_emissive"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_sm_14_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_09_bld_01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_09_ema"));
-                    HideMapObjectThisFrame((uint)GetHashKey("prop_wall_light_12a"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_03_build1x"));
-                    HideMapObjectThisFrame((uint)GetHashKey("DT1_Emissive_DT1_03_b1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("dt1_03_dt1_Emissive_b1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_emissive_bh1_08"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_bld2_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_em"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_Emissive_SS1_02a_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_02_ss1_emissive_ss1_02"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
-                    // houses:
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_d"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_a_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house02_railings"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01a_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01_balcony"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09b_House08_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05c_b4"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_emissive_07"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_decals_05"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_B4_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs07"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_build_11_07_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_build_11_07_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_hs07_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09c_House11_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02b_details"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09b_botpoolHouse02_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02_balcony"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_12b_house03mc"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_house03_MC_a_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_railing_06"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01_d"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_b_LOD"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
-                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
-                }
-
-                await Task.FromResult(0);
-            }
-
-        }
-
-        int gcTimer = GetGameTimer();
-        private async Task GcTick()
-        {
-            if (GetGameTimer() - gcTimer > 60000)
-            {
-                gcTimer = GetGameTimer();
-                GC.Collect();
-                Log($"[vMenu] GC at {GetGameTimer()} ({GetTimeAsString(GetGameTimer())}).");
-
-            }
-            await Delay(1000);
-        }
 
         /// Task related
         #region General Tasks
@@ -2253,7 +2147,116 @@ namespace vMenuClient
             }
         }
         #endregion
+        #region garbadge collection stuff
+        int gcTimer = GetGameTimer();
+        private async Task GcTick()
+        {
+            if (GetGameTimer() - gcTimer > 60000)
+            {
+                gcTimer = GetGameTimer();
+                GC.Collect();
+                Log($"[vMenu] GC at {GetGameTimer()} ({GetTimeAsString(GetGameTimer())}).");
 
+            }
+            await Delay(1000);
+        }
+        #endregion
+        #region Interior management
+        private async Task InteriorManagement()
+        {
+            var interior = GetInteriorFromEntity(Game.PlayerPed.Handle);
+
+            if (interior != 0)
+            {
+                if (IplManager.interiors.Any((inter) => inter.InteriorId == interior))
+                {
+                    //apartment buildings:
+                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_11_flats"));
+                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_ss1_emissive_a"));
+                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_detail01b"));
+                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_Flats_LOD"));
+                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
+                    HideMapObjectThisFrame((uint)GetHashKey("SS1_LOD_01_02_08_09_10_11"));
+                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_SLOD1"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_20_build2"));
+                    HideMapObjectThisFrame((uint)GetHashKey("dt1_20_dt1_emissive_dt1_20"));
+                    HideMapObjectThisFrame((uint)GetHashKey("sm_14_emissive"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_sm_14_bld2"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_09_bld_01"));
+                    HideMapObjectThisFrame((uint)GetHashKey("bh1_09_ema"));
+                    HideMapObjectThisFrame((uint)GetHashKey("prop_wall_light_12a"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_03_build1x"));
+                    HideMapObjectThisFrame((uint)GetHashKey("DT1_Emissive_DT1_03_b1"));
+                    HideMapObjectThisFrame((uint)GetHashKey("dt1_03_dt1_Emissive_b1"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
+                    HideMapObjectThisFrame((uint)GetHashKey("bh1_emissive_bh1_08"));
+                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_bld2_LOD"));
+                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
+                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_em"));
+                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
+                    HideMapObjectThisFrame((uint)GetHashKey("SS1_Emissive_SS1_02a_LOD"));
+                    HideMapObjectThisFrame((uint)GetHashKey("ss1_02_ss1_emissive_ss1_02"));
+                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
+                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
+                    // houses:
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_d"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_a_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house02_railings"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01a_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01_balcony"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09b_House08_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05c_b4"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_emissive_07"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_decals_05"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_B4_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs07"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_build_11_07_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_build_11_07_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_hs07_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09c_House11_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02b_details"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_09b_botpoolHouse02_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02_balcony"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_12b_house03mc"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_house03_MC_a_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_railing_06"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01_d"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_b_LOD"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
+                    //HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
+                }
+
+                await Task.FromResult(0);
+            }
+
+        }
+        #endregion
 
         #region animation functions
         /// <summary>
