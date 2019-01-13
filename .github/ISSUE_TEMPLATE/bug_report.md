@@ -30,3 +30,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+Such as:
+
+- A list of allowed permissions for the player that is having this issue.
+- A list of enabled/disabled vMenu features.
+
+Both of these can very easily be provided by using `/vmenuclient dump` while in-game and sending the CitizenFX.log file (`FiveM Application Data\CitizenFX.log`) from that same game session.
