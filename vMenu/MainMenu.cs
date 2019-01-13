@@ -42,6 +42,7 @@ namespace vMenuClient
         public static Recording RecordingMenu { get; private set; }
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
+        public static IplMenu IplManagementMenu { get; private set; }
         public static About AboutMenu { get; private set; }
         public static Menu NoClipMenu { get; } = new NoclipMenu().GetMenu();
         public static bool NoClipEnabled { get; set; } = false;
@@ -677,6 +678,7 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
+            // Recording menu is always allowed, config options/permissions are only managed inside the menu itself.
             {
                 RecordingMenu = new Recording();
                 Menu menu = RecordingMenu.GetMenu();
@@ -687,11 +689,23 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
+            // Enable the IPL menu if enabled via config and if the dependency is loaded and enabled.
+            if (IplManager.IsDependencyPresentAndEnabled() && IplManager.IsIplIntegrationEnabled())
+            {
+                IplManagementMenu = new IplMenu();
+                Menu menu = IplManagementMenu.GetMenu();
+                MenuItem button = new MenuItem("IPL Manager", "Special interior (IPL) management menu that uses the bob74_ipl resource to customize interiors.")
+                {
+                    Label = "→→→"
+                };
+                if (DebugMode || EnableExperimentalFeatures)
+                    Notify.Success("bob74_ipl dependency found and is enabled per config, enabling the IPL options menu.");
+                AddMenu(menu, button);
+
+                IplManager.LoadAllInteriors();
+            }
+
             // Add misc settings menu.
-            //if (CommonFunctions.IsAllowed(Permission.MSMenu))
-            // removed the permissions check, because the misc menu should've never been restricted in the first place.
-            // not sure why I even added this before... saving of preferences and similar functions should always be allowed.
-            // no matter what.
             {
                 MiscSettingsMenu = new MiscSettings();
                 Menu menu = MiscSettingsMenu.GetMenu();
