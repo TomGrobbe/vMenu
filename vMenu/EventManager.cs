@@ -72,7 +72,12 @@ namespace vMenuClient
                 }
                 if (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn))
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                    var savename = GetResourceKvpString("vmenu_string_default_loadout");
+                    if (!string.IsNullOrEmpty(savename))
+                    {
+                        await SpawnWeaponLoadoutAsync(savename, true, false);
+                    }
+                    
                 }
             }
         }
