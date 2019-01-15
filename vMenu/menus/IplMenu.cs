@@ -34,6 +34,9 @@ namespace vMenuClient
 
     public class IplMenu
     {
+
+        public Menu EnterInteriorMenu = new Menu(null, "~w~Enter a building");
+
         // Variables
         private Menu menu;
 
@@ -48,7 +51,18 @@ namespace vMenuClient
         public Menu officesMenu = new Menu("CEO Offices", "CEO Offices Menu");
         public Menu warehousesMenu = new Menu("Warehouses", "Warehouses Menu");
 
-        public IplMenu() { }
+        public IplMenu()
+        {
+            EnterInteriorMenu.OnItemSelect += (sender, item, index) =>
+            {
+                var interior = interiors.Find(inter => inter.name == item.Text);
+                if (interior != null)
+                {
+                    interior.TeleportToInterior();
+                    sender.CloseMenu();
+                }
+            };
+        }
 
         public void CreateMenu()
         {
@@ -56,6 +70,8 @@ namespace vMenuClient
             menu = new Menu("IPL Manager", "customize ipls using bob74_ipl");
 
             MenuController.AddSubmenu(menu, apartmentsMenu);
+
+            MenuController.AddMenu(EnterInteriorMenu);
 
             // create checkbox items
             MenuCheckboxItem enableInteriorTeleportMarkers = new MenuCheckboxItem("Enable Interior Teleport Markers", "Enables or disables the markers and teleporting options for interiors loaded by the bob74_ipl resource.", EnableIplTeleports);
