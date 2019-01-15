@@ -97,8 +97,9 @@ namespace vMenuClient
             Tick += ModelDrawDimensions;
             Tick += GcTick;
             Tick += InteriorHideExterior;
-            //Tick += InteriorChecker;
+            Tick += InteriorChecker;
             Tick += InteriorTv;
+            Tick += InteriorTpManager;
         }
 
 
@@ -2311,11 +2312,12 @@ namespace vMenuClient
 
         private async Task InteriorHideExterior()
         {
-            var interior = GetInteriorFromEntity(Game.PlayerPed.Handle);
-
-            if (interior != 0)
+            if (currentInterior != null)
             {
-                if (IplManager.interiors.Any((inter) => (inter is IplManager.Apartment || inter is IplManager.Penthouse) && inter.InteriorId == interior))
+                // make a copy just in case the currentInterior object becomes null while in this loop.
+                var inter = currentInterior;
+
+                if ((inter is IplManager.Apartment || inter is IplManager.Penthouse) && ((inter is IplManager.House) == false))
                 {
                     //apartment buildings:
                     HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_11_flats"));
@@ -2346,9 +2348,9 @@ namespace vMenuClient
                     HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
                     HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
                 }
-
-                else if (IplManager.interiors.Any((inter) => inter is IplManager.House && inter.InteriorId == interior))
+                else if (inter is IplManager.House)
                 {
+                    //Debug.WriteLine("test");
                     // houses:
                     HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5"));
                     HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5_LOD"));
@@ -2401,10 +2403,10 @@ namespace vMenuClient
                     HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_b_LOD"));
                     HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
                     HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
-
                 }
-                await Task.FromResult(0);
             }
+            await Task.FromResult(0);
+        }
 
         }
 
