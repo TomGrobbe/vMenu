@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -446,11 +446,20 @@ namespace vMenuClient
             /// </summary>
             /// <param name="name"></param>
             /// <param name="parentMenu"></param>
-            internal Penthouse(string name, Menu parentMenu) : base(name, parentMenu)
+            internal Penthouse(string name, Menu parentMenu) : this(name, parentMenu, 0) { }
+            /// <summary>
+            /// Constructor overload with style option.
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="parentMenu"></param>
+            /// <param name="style"></param>
+            internal Penthouse(string name, Menu parentMenu, int style) : base(name, parentMenu)
             {
-                MenuListItem stylesList = new MenuListItem("Penthouse Style", new List<string>() { "Modern", "Moody", "Vibrant", "Sharp", "Monochrome", "Seductive", "Regal", "Aqua" }, 0, "Select a penthouse style.");
+                Style = style;
+
+                MenuListItem stylesList = new MenuListItem("Penthouse Style", new List<string>() { "Modern", "Moody", "Vibrant", "Sharp", "Monochrome", "Seductive", "Regal", "Aqua" }, Style, "Select a penthouse style.");
                 Menu.AddMenuItem(stylesList);
-                
+
                 Menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
                 {
                     if (item == stylesList)
