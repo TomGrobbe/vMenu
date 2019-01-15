@@ -300,6 +300,7 @@ namespace vMenuClient
             const string toggle_prop_desc = "Toggle this interior prop.";
             public Apartment(string name, Menu parentMenu) : base(name, parentMenu)
             {
+                Menu propsSubmenu = new Menu("Interior Props", "enable or disable props");
 
                 MenuCheckboxItem stripABtn = new MenuCheckboxItem("Strip A", toggle_prop_desc, StripA);
                 MenuCheckboxItem stripBBtn = new MenuCheckboxItem("Strip B", toggle_prop_desc, StripB);
@@ -313,20 +314,73 @@ namespace vMenuClient
                 MenuCheckboxItem smokeBBtn = new MenuCheckboxItem("Smoke B", toggle_prop_desc, SmokeB);
                 MenuCheckboxItem smokeCBtn = new MenuCheckboxItem("Smoke C", toggle_prop_desc, SmokeC);
 
+                int stage = SmokeA ? 1 : SmokeB ? 2 : SmokeC ? 3 : 0;
+                MenuListItem smokeList = new MenuListItem("Smoke Stage", new List<string>() { "No Smoke", "Smoke Stage A", "Smoke Stage B", "Smoke Stage C" }, stage, "Set a smoke props stage/style.");
 
-                Menu.AddMenuItem(stripABtn);
-                Menu.AddMenuItem(stripBBtn);
-                Menu.AddMenuItem(stripCBtn);
+                propsSubmenu.AddMenuItem(stripABtn);
+                propsSubmenu.AddMenuItem(stripBBtn);
+                propsSubmenu.AddMenuItem(stripCBtn);
 
-                Menu.AddMenuItem(boozeABtn);
-                Menu.AddMenuItem(boozeBBtn);
-                Menu.AddMenuItem(boozeCBtn);
+                propsSubmenu.AddMenuItem(boozeABtn);
+                propsSubmenu.AddMenuItem(boozeBBtn);
+                propsSubmenu.AddMenuItem(boozeCBtn);
 
-                Menu.AddMenuItem(smokeABtn);
-                Menu.AddMenuItem(smokeBBtn);
-                Menu.AddMenuItem(smokeCBtn);
+                if (IsMidOrLowEnd || this is Penthouse)
+                {
+                    propsSubmenu.AddMenuItem(smokeList);
+                }
+                else
+                {
+                    propsSubmenu.AddMenuItem(smokeABtn);
+                    propsSubmenu.AddMenuItem(smokeBBtn);
+                    propsSubmenu.AddMenuItem(smokeCBtn);
+                }
 
-                Menu.OnCheckboxChange += (sender, item, index, _checked) =>
+
+                propsSubmenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+                {
+                    if (item == smokeList)
+                    {
+                        if (newIndex == 0)
+                        {
+                            SmokeA = false;
+                            SmokeB = false;
+                            SmokeC = false;
+                        }
+                        else if (newIndex == 1)
+                        {
+                            SmokeA = true;
+                            SmokeB = false;
+                            SmokeC = false;
+                        }
+                        else if (newIndex == 2)
+                        {
+                            SmokeA = false;
+                            SmokeB = true;
+                            SmokeC = false;
+                        }
+                        else if (newIndex == 3)
+                        {
+                            SmokeA = false;
+                            SmokeB = false;
+                            SmokeC = true;
+                        }
+                        SetSmoke(SmokeA, SmokeB, SmokeC, true);
+                    }
+                };
+
+
+                MenuController.AddSubmenu(Menu, propsSubmenu);
+
+                MenuItem propsMenuBtn = new MenuItem("Interior Props", "Enable or disable interior props.") { Label = "→→→" };
+
+                Menu.AddMenuItem(propsMenuBtn);
+
+                MenuController.BindMenuItem(Menu, propsSubmenu, propsMenuBtn);
+
+
+
+                propsSubmenu.OnCheckboxChange += (sender, item, index, _checked) =>
                 {
                     // smoke
                     if (item == smokeABtn)
@@ -379,7 +433,6 @@ namespace vMenuClient
                         SetStrip(StripA, StripB, StripC, true);
                     }
                 };
-
             }
         }
 
