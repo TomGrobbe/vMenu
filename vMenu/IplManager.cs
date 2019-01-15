@@ -121,7 +121,12 @@ namespace vMenuClient
                     TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
                 });
                 #endregion
-                AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
+
+                // High Life apartments
+                #region High Life Apartments
+
+                #endregion
+
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posInt = new Vector3(-35.3127f, -580.4199f, 88.71221f),
