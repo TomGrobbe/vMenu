@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -281,7 +281,7 @@ namespace vMenuClient
                 SmokeB = smokeB;
                 SmokeC = smokeC;
 
-                if (IsMidOrLowEnd)
+                if (IsMidOrLowEnd || this is Penthouse)
                 {
                     // clear smoke
                     iplObject.Smoke.Clear(refresh);
@@ -436,16 +436,21 @@ namespace vMenuClient
             }
         }
 
-        internal class Penthouse : Interior
+        internal class Penthouse : Apartment
         {
             internal int Style { get; private set; } = 0;
             List<dynamic> styles = new List<dynamic>();
 
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="parentMenu"></param>
             internal Penthouse(string name, Menu parentMenu) : base(name, parentMenu)
             {
                 MenuListItem stylesList = new MenuListItem("Penthouse Style", new List<string>() { "Modern", "Moody", "Vibrant", "Sharp", "Monochrome", "Seductive", "Regal", "Aqua" }, 0, "Select a penthouse style.");
                 Menu.AddMenuItem(stylesList);
-
+                
                 Menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
                 {
                     if (item == stylesList)
@@ -455,6 +460,11 @@ namespace vMenuClient
                 };
             }
 
+
+            /// <summary>
+            /// Set the interior penthouse style.
+            /// </summary>
+            /// <param name="styleIndex"></param>
             internal void SetStyle(int styleIndex)
             {
                 if (styles.Count == 0)
@@ -471,10 +481,22 @@ namespace vMenuClient
                 Style = styleIndex;
 
                 iplObject.Style.Set(styles[styleIndex], true);
+
+                SetStrip(StripA, StripB, StripC, true);
+                SetBooze(BoozeA, BoozeB, BoozeC, true);
+                SetSmoke(SmokeA, SmokeB, SmokeC, true);
             }
 
         }
 
+
+        internal class House : Apartment
+        {
+            internal House(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+
+            }
+        }
     }
 
 
