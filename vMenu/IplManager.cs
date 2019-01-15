@@ -127,6 +127,38 @@ namespace vMenuClient
 
                 #endregion
 
+                // Penthouses 
+                #region penthouses
+                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetExecApartment1Object(),
+                    posTpInt = new Vector3(-781.7f, 318.62f, 217.67f),
+                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    teleportHeading = 40.98f,
+                    interiorLocation = new Vector3(-786.9f, 330.32f, 217.04f),
+                    TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
+                });
+
+                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
+                {
+                    iplObject = Exports[resourceName].GetExecApartment2Object(),
+                    posTpInt = new Vector3(-779.25f, 338.95f, 196.69f),
+                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    teleportHeading = 40.98f,
+                    interiorLocation = new Vector3(-773.2258f, 322.8252f, 194.8862f),
+                    TvPosition = new Vector3(-780.61f, 319.28f, 194.88f),
+                });
+
+                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
+                {
+                    iplObject = Exports[resourceName].GetExecApartment3Object(),
+                    posTpInt = new Vector3(-781.82f, 318.93f, 187.92f),
+                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    teleportHeading = 40.98f,
+                    interiorLocation = new Vector3(-787.7805f, 334.9232f, 186.1134f),
+                    TvPosition = new Vector3(-780.36f, 338.47f, 186.11f),
+                });
+                #endregion
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posInt = new Vector3(-35.3127f, -580.4199f, 88.71221f),
