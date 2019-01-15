@@ -2474,41 +2474,15 @@ namespace vMenuClient
             }
             await Delay(100);
         }
-        }
-
-        private int tvObject = 0;
-
-        private readonly List<uint> tvModels = new List<uint>()
-        {
-            (uint)GetHashKey("prop_tv_flat_01"), // 1036195894
-            unchecked((uint)(-1546399138)),
-            330240957,
-            unchecked((uint)(-1223496606)),
-            unchecked((uint)(-1073182005)),
-            unchecked((uint)(-1820646534))
-        };
-
-        private readonly List<string> tvChannels = new List<string>() {
-            "PL_STD_CNT",
-            "PL_STD_WZL_FOS_EP2",
-            //"PL_STD_WZL",
-            //"PL_LO_WZL",
-            "PL_SP_WORKOUT",
-            //"PL_SP_PLSH1_INTRO",
-            "PL_LES1_FAME_OR_SHAME",
-            //"PL_STD_WZL_FOS_EP2",
-            "PL_MP_WEAZEL",
-            "PL_MP_CCTV",
-        };
 
         private async Task InteriorTv()
         {
-            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs)
+            if (EnableTvs && currentInterior != null)
             {
-                int interiorId = GetInteriorFromEntity(Game.PlayerPed.Handle);
-                if (interiorId != 0 && IplManager.interiors.Any((inter) => inter.InteriorId == interiorId && !inter.TvPosition.IsZero))
+                var interior = currentInterior;
+
+                if (interior.TvPosition != Vector3.Zero)
                 {
-                    //SetRadarAsInteriorThisFrame()
                     if (tvObject != 0 && DoesEntityExist(tvObject))
                     {
                         int newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
@@ -2532,10 +2506,8 @@ namespace vMenuClient
                         SetTvChannel(channel);
                         SetTvVolume(100f);
                         SetTvAudioFrontend(false);
-                        //SetTvVolume(0.0f);
 
-
-                        while (interiorId == GetInteriorFromEntity(Game.PlayerPed.Handle) && DoesEntityExist(tvObject) && MainMenu.IplManagementMenu.EnableIplTvs)
+                        while (EnableTvs && currentInterior != null && DoesEntityExist(tvObject))
                         {
                             await Delay(0);
 
@@ -2566,9 +2538,6 @@ namespace vMenuClient
                             SetScriptGfxDrawOrder(4);
                             SetScriptGfxDrawBehindPausemenu(true);
 
-                            //SetTvAudioFrontend(false);
-
-
                             DrawTvChannel(0.5f, 0.5f, 1f, 1f, 0f, 255, 255, 255, 255);
 
                             //CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x35FB78DC42B7BD21, tvObject, 16);
@@ -2576,13 +2545,14 @@ namespace vMenuClient
 
                             SetScriptGfxDrawBehindPausemenu(false);
                             SetTextRenderId(1);
-
                         }
+
+                        // Disable movie subtitles.
+                        EnableMovieSubtitles(false);
+                        SetTvChannel(-1); // disable tv.
                     }
                     else
                     {
-                        var interior = IplManager.interiors.Find((inter) => inter.InteriorId == interiorId);
-                        //Debug.WriteLine($"Model : {interior.TvModel.ToString("X")}");
                         foreach (uint model in tvModels)
                         {
                             tvObject = GetClosestObjectOfType(interior.TvPosition.X, interior.TvPosition.Y, interior.TvPosition.Z, 2f, model, false, false, false);
@@ -2595,8 +2565,6 @@ namespace vMenuClient
                     }
                 }
             }
-
-
         }
         #endregion
 
