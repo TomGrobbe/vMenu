@@ -2408,6 +2408,72 @@ namespace vMenuClient
             await Task.FromResult(0);
         }
 
+        private async Task InteriorChecker()
+        {
+            if (MainMenu.IplManagementMenu != null)
+            {
+                Vector3 playerPos = Game.PlayerPed.Position;
+
+                bool inInterior = false;
+
+                foreach (IplManager.Interior interior in IplManager.interiors)
+                {
+                    if (interior.InteriorId == GetInteriorFromEntity(Game.PlayerPed.Handle))
+                    {
+                        currentInterior = interior;
+                        inInterior = true;
+                        break;
+                    }
+                }
+
+                if (!inInterior)
+                {
+                    currentInterior = null;
+                }
+
+                if (currentInterior == null || !(currentInterior is IplManager.House))
+                {
+                    foreach (string ipl in stiltHouseIplsExteriors)
+                    {
+                        if (IsIplActive(ipl))
+                        {
+                            RemoveIpl(ipl);
+                        }
+                    }
+                }
+                else if (currentInterior != null && currentInterior is IplManager.House)
+                {
+                    foreach (string ipl in stiltHouseIplsExteriors)
+                    {
+                        if (!IsIplActive(ipl))
+                        {
+                            RequestIpl(ipl);
+                        }
+                    }
+                }
+
+
+                foreach (MenuItem item in MainMenu.IplManagementMenu.apartmentsMenu.GetMenuItems())
+                {
+                    if (currentInterior != null)
+                    {
+                        if (currentInterior.name == item.Text)
+                        {
+                            item.LeftIcon = MenuItem.Icon.TICK;
+                        }
+                        else if (item.LeftIcon == MenuItem.Icon.TICK)
+                        {
+                            item.LeftIcon = MenuItem.Icon.NONE;
+                        }
+                    }
+                    else if (item.LeftIcon == MenuItem.Icon.TICK)
+                    {
+                        item.LeftIcon = MenuItem.Icon.NONE;
+                    }
+                }
+            }
+            await Delay(100);
+        }
         }
 
         private int tvObject = 0;
