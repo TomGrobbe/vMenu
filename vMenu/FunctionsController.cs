@@ -2164,6 +2164,151 @@ namespace vMenuClient
         }
         #endregion
         #region Interior management
+
+
+        private IplManager.Interior currentInterior = null;
+        private int tvObject = 0;
+        private bool EnableTvs => MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs;
+        private int CurrentTvChannel => MainMenu.IplManagementMenu != null ? MainMenu.IplManagementMenu.SelectedTvChannel : 0;
+        private readonly List<uint> tvModels = new List<uint>()
+        {
+            (uint)GetHashKey("prop_tv_flat_01"), // 1036195894
+            unchecked((uint)(-1546399138)),
+            330240957,
+            unchecked((uint)(-1223496606)),
+            unchecked((uint)(-1073182005)),
+            unchecked((uint)(-1820646534)),
+            170618079,
+            1653710254,
+
+        };
+        private readonly List<string> tvChannels = new List<string>() {
+            "PL_STD_CNT",
+            "PL_STD_WZL_FOS_EP2",
+            //"PL_STD_WZL",
+            //"PL_LO_WZL",
+            "PL_SP_WORKOUT",
+            //"PL_SP_PLSH1_INTRO",
+            "PL_LES1_FAME_OR_SHAME",
+            //"PL_STD_WZL_FOS_EP2",
+            "PL_MP_WEAZEL",
+            "PL_MP_CCTV",
+        };
+
+        private readonly List<string> stiltHouseIplsExteriors = new List<string>()
+        {
+            "apa_stilt_ch2_04_ext1", // 2044 North Conker Avenue
+            "apa_stilt_ch2_04_ext2", // 2045 North Conker Avenue
+            "apa_stilt_ch2_05c_ext1", // 3677 Whispymound Drive
+            "apa_stilt_ch2_05e_ext1", // 3655 Wild Oats Drive
+            "apa_stilt_ch2_09b_ext2", // 2874 Hillcrest Avenue
+            "apa_stilt_ch2_09b_ext3", // 2868 Hillcrest Avenue
+            "apa_stilt_ch2_09c_ext1", // 2866 Hilcrest Avenue
+            "apa_stilt_ch2_09c_ext2", // 2862 Hillcrest Avenue
+            "apa_stilt_ch2_09c_ext3", // 2117 Milton Road
+            "apa_stilt_ch2_12b_ext1", // 2113 Mad Wayne Thunder
+        };
+
+        //private readonly Dictionary<string, string> stiltHouseIplsExteriors = new Dictionary<string, string>()
+        //{
+        //    ["House, 2044 North Conker Avenue"] = "apa_stilt_ch2_04_ext1", // 2044 North Conker Avenue
+        //    ["House, 2045 North Conker Avenue"] = "apa_stilt_ch2_04_ext2", // 2045 North Conker Avenue
+        //    ["House, 2677 Whispymound Drive"] = "apa_stilt_ch2_05c_ext1", // 3677 Whispymound Drive
+        //    ["House, 3655 Wild Oats Drive"] = "apa_stilt_ch2_05e_ext1", // 3655 Wild Oats Drive
+        //    ["House, 2874 Hillcrest Avenue"] = "apa_stilt_ch2_09b_ext2", // 2874 Hillcrest Avenue
+        //    ["House, 2868 Hillcrest Avenue"] = "apa_stilt_ch2_09b_ext3", // 2868 Hillcrest Avenue
+        //    //[""] = "apa_stilt_ch2_09c_ext1", // 2866 Hilcrest Avenue
+        //    ["House, 2862 Hillcrest Avenue"] = "apa_stilt_ch2_09c_ext2", // 2862 Hillcrest Avenue
+        //    //[""] = "apa_stilt_ch2_09c_ext3", // 2117 Milton Road
+        //    ["House, 2113 Mad Wayne Thunder"] = "apa_stilt_ch2_12b_ext1", // 2113 Mad Wayne Thunder
+        //};
+
+
+
+        private async Task InteriorTpManager()
+        {
+            if (currentInterior != null)
+            {
+                var outsidePos = currentInterior.posTpExt;
+                var insidePos = currentInterior.posTpInt;
+                var heading = currentInterior.teleportHeading - 180;
+
+                DrawMarker(1, insidePos.X, insidePos.Y, insidePos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+
+                if (Game.PlayerPed.Position.DistanceToSquared2D(insidePos) < 0.5f)
+                {
+                    HelpMessage.CustomLooped(HelpMessage.Label.EXIT_INTERIOR_HELP_MESSAGE);
+                    if (Game.IsControlJustReleased(0, Control.Context) && Game.PlayerPed.Position.DistanceToSquared2D(insidePos) < 0.5f)
+                    {
+                        DoScreenFadeOut(500);
+                        while (!IsScreenFadedOut())
+                        {
+                            await Delay(0);
+                        }
+                        RequestCollisionAtCoord(outsidePos.X, outsidePos.Y, outsidePos.Z);
+                        SetEntityCoords(Game.PlayerPed.Handle, outsidePos.X, outsidePos.Y, outsidePos.Z, false, false, false, true);
+                        DoScreenFadeIn(500);
+                        SetEntityHeading(Game.PlayerPed.Handle, heading);
+                    }
+                }
+            }
+            else
+            {
+                if (IplManager.interiors.Any(inter => inter.posTpExt.DistanceToSquared2D(Game.PlayerPed.Position) < 500f))
+                {
+                    var positions = new List<Vector3>();
+
+                    foreach (var inter in IplManager.interiors)
+                    {
+                        if (inter.posTpExt.DistanceToSquared2D(Game.PlayerPed.Position) < 500f)
+                        {
+                            if (!positions.Contains(inter.posTpExt))
+                            {
+                                positions.Add(inter.posTpExt);
+
+                                DrawMarker(1, inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                            }
+
+                            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnterInteriorMenu != null)
+                            {
+                                if (Game.PlayerPed.Position.DistanceToSquared2D(inter.posTpExt) < 0.5f)
+                                {
+                                    var menu = MainMenu.IplManagementMenu.EnterInteriorMenu;
+                                    menu.ClearMenuItems();
+                                    MenuController.CloseAllMenus();
+
+                                    //var possibleInteriors = new List<IplManager.Interior>();
+                                    foreach (IplManager.Interior tmpInter in IplManager.interiors)
+                                    {
+                                        if (tmpInter.posTpExt == inter.posTpExt)
+                                        {
+                                            //possibleInteriors.Add(tmpInter);
+                                            var menuItem = new MenuItem(tmpInter.name);
+                                            menu.AddMenuItem(menuItem);
+                                        }
+                                    }
+                                    var oldValue = MenuController.MenuAlignment;
+                                    //menu.LeftAligned = true;
+                                    MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+                                    menu.OpenMenu();
+                                    while (Game.PlayerPed.Position.DistanceToSquared2D(inter.posTpExt) < 0.5f)
+                                    {
+                                        await Delay(0);
+                                        DrawMarker(1, inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                                    }
+                                    menu.CloseMenu();
+                                    MenuController.MenuAlignment = oldValue;
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+            await Task.FromResult(0);
+        }
+
         private async Task InteriorHideExterior()
         {
             var interior = GetInteriorFromEntity(Game.PlayerPed.Handle);
