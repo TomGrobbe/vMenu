@@ -99,6 +99,28 @@ namespace vMenuClient
         {
             if (IsIplIntegrationEnabled())
             {
+                // Apartments
+                #region apartments
+                AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
+                    posTpInt = new Vector3(-18.61f, -581.87f, 90.11f),
+                    posTpExt = new Vector3(-48.95f, -588.96f, 37.59f),
+                    teleportHeading = 73.58f,
+                    interiorLocation = new Vector3(-29.49f, -581.29f, 88.71f),
+                    TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
+                });
+
+                AddInterior(new Apartment("Dell Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
+                    posTpInt = new Vector3(-1458.32f, -520.78f, 56.93f),
+                    posTpExt = new Vector3(-1446.7f, -538.99f, 34.74f),
+                    teleportHeading = 126.62f,
+                    interiorLocation = new Vector3(-1465.84f, -530.33f, 55.53f),
+                    TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
+                });
+                #endregion
                 AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
@@ -162,17 +184,19 @@ namespace vMenuClient
         /// </summary>
         internal class Interior
         {
+            internal string name = null; // The interior display name.
+            internal dynamic iplObject;
+
+            internal Vector3 posTpInt = Vector3.Zero; // interior teleport location in the world.
+            internal Vector3 posTpExt = Vector3.Zero; // exterior teleport location in the world.
+
+            internal float teleportHeading = 0f;
+            internal Vector3 interiorLocation = Vector3.Zero; // used to get the interior ID, interior ID at the posInt (entrance) is usually NOT the correct interior ID.
 
             internal Vector3 TvPosition { get; set; } = Vector3.Zero;
-            //internal uint TvModel { get; set; } = (uint)GetHashKey("prop_tv_flat_01"); // 1036195894
 
-            internal string name = null; // the display name.
-            //internal string exportName = null; // the function name to get this object
-            internal dynamic iplObject;
-            internal Vector3 posInt = Vector3.Zero; // interior location in the world.
-            internal Vector3 posExt = Vector3.Zero; // exterior location in the world.
-            internal int InteriorId => GetInteriorAtCoords(posInt.X, posInt.Y, posInt.Z);
-            internal float teleportHeading = 0f;
+            //internal int InteriorId => iplObject != null ? (((System.Dynamic.ExpandoObject)iplObject).Any(k => k.Key == "interiorId")) ? (int)iplObject.interiorId : (int)iplObject.currentInteriorId : 0;
+            internal int InteriorId => GetInteriorAtCoords(interiorLocation.X, interiorLocation.Y, interiorLocation.Z);
 
             internal Menu Menu { get; set; }
             internal MenuItem tpButton = new MenuItem("Teleport To Interior", "Teleport directly to the interior.");
@@ -197,14 +221,14 @@ namespace vMenuClient
 
             internal async void TeleportToInterior()
             {
-                RequestCollisionAtCoord(posInt.X, posInt.Y, posInt.Z);
+                RequestCollisionAtCoord(posTpInt.X, posTpInt.Y, posTpInt.Z);
                 DoScreenFadeOut(500);
                 while (!IsScreenFadedOut())
                 {
                     await Delay(0);
                 }
-                RequestCollisionAtCoord(posInt.X, posInt.Y, posInt.Z);
-                SetEntityCoords(PlayerPedId(), posInt.X, posInt.Y, posInt.Z, false, false, false, true);
+                RequestCollisionAtCoord(posTpInt.X, posTpInt.Y, posTpInt.Z);
+                SetEntityCoordsNoOffset(PlayerPedId(), posTpInt.X, posTpInt.Y, posTpInt.Z, false, false, false);
                 DoScreenFadeIn(500);
             }
         }
