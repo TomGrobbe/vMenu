@@ -229,6 +229,7 @@ namespace vMenuClient
                 }
                 RequestCollisionAtCoord(posTpInt.X, posTpInt.Y, posTpInt.Z);
                 SetEntityCoordsNoOffset(PlayerPedId(), posTpInt.X, posTpInt.Y, posTpInt.Z, false, false, false);
+                SetEntityHeading(Game.PlayerPed.Handle, teleportHeading);
                 DoScreenFadeIn(500);
             }
         }
