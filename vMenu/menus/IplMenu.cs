@@ -38,6 +38,8 @@ namespace vMenuClient
         private Menu menu;
 
         public bool EnableIplTeleports { get; private set; } = UserDefaults.IPLEnableTeleports;
+        public bool EnableIplTvs { get; private set; } = UserDefaults.IPLEnableTVs;
+        public int SelectedTvChannel { get; private set; } = 0;
 
         public Menu hangarsMenu = new Menu("Aircraft Hangars", "Aircraft Hangars Menu");
         public Menu apartmentsMenu = new Menu("Apartments", "Apartments and houses");
@@ -64,6 +66,19 @@ namespace vMenuClient
             MenuItem offices = new MenuItem("CEO Offices", "Customze the CEO Offices interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
             MenuItem warehouses = new MenuItem("Warehouses", "Customize the warehouses interior. (Coming soon)") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
 
+            MenuCheckboxItem enableTvs = new MenuCheckboxItem("Enable TV's", "Enable or disable TV's in all interiors.", EnableIplTvs);
+            /*
+            "PL_STD_CNT",
+            "PL_STD_WZL",
+            //"PL_LO_WZL",
+            "PL_SP_WORKOUT",
+            //"PL_SP_PLSH1_INTRO",
+            "PL_LES1_FAME_OR_SHAME",
+            "PL_STD_WZL_FOS_EP2",
+            "PL_MP_WEAZEL",
+            "PL_MP_CCTV",
+            */
+            MenuListItem tvChannel = new MenuListItem("TV Channel", new List<string>() { "CNT", "Weazel", "Workout", "Fame or Shame", "Weazel News Logo", "CCTV Static" }, 0, "Select a TV channel.");
             MenuItem about = new MenuItem("About IPL Manager", "This submenu uses the bob74_ipl resource to customize interiors. Changes made are synced for everyone on the server, and will be automatically saved to the server. They will be restored next time the server starts.");
 
             // add items to the menu.
@@ -78,7 +93,8 @@ namespace vMenuClient
 
             MenuController.BindMenuItem(menu, apartmentsMenu, apartments);
 
-
+            menu.AddMenuItem(enableTvs);
+            menu.AddMenuItem(tvChannel);
             menu.AddMenuItem(about);
 
             // check for checkbox changes.
@@ -87,6 +103,19 @@ namespace vMenuClient
                 if (item == enableInteriorTeleportMarkers)
                 {
                     EnableIplTeleports = _checked;
+                }
+                else if (item == enableTvs)
+                {
+                    EnableIplTvs = _checked;
+                }
+            };
+
+            // list changes
+            menu.OnListIndexChange += (sender, item, oldSelectionIndex, newSelectionIndex, itemIndex) =>
+            {
+                if (item == tvChannel)
+                {
+                    SelectedTvChannel = newSelectionIndex;
                 }
             };
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -104,6 +104,7 @@ namespace vMenuClient
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posInt = new Vector3(-35.3127f, -580.4199f, 88.71221f),
                     posExt = Vector3.Zero,
+                    TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
                 });
 
                 AddInterior(new Apartment("Dell Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
@@ -111,13 +112,15 @@ namespace vMenuClient
                     iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
                     posInt = new Vector3(-1477.14f, -538.7499f, 55.5264f),
                     posExt = Vector3.Zero,
+                    TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
                 });
 
                 AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetExecApartment1Object(),
                     posInt = new Vector3(-787.7805f, 334.9232f, 215.8384f),
-                    posExt = Vector3.Zero
+                    posExt = Vector3.Zero,
+                    TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
                 });
 
             }
@@ -159,6 +162,10 @@ namespace vMenuClient
         /// </summary>
         internal class Interior
         {
+
+            internal Vector3 TvPosition { get; set; } = Vector3.Zero;
+            //internal uint TvModel { get; set; } = (uint)GetHashKey("prop_tv_flat_01"); // 1036195894
+
             internal string name = null; // the display name.
             //internal string exportName = null; // the function name to get this object
             internal dynamic iplObject;

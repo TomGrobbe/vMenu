@@ -2263,8 +2263,126 @@ namespace vMenuClient
 
         }
 
-                await Task.FromResult(0);
+        private int tvObject = 0;
+
+        private readonly List<uint> tvModels = new List<uint>()
+        {
+            (uint)GetHashKey("prop_tv_flat_01"), // 1036195894
+            unchecked((uint)(-1546399138)),
+            330240957,
+            unchecked((uint)(-1223496606)),
+            unchecked((uint)(-1073182005)),
+            unchecked((uint)(-1820646534))
+        };
+
+        private readonly List<string> tvChannels = new List<string>() {
+            "PL_STD_CNT",
+            "PL_STD_WZL_FOS_EP2",
+            //"PL_STD_WZL",
+            //"PL_LO_WZL",
+            "PL_SP_WORKOUT",
+            //"PL_SP_PLSH1_INTRO",
+            "PL_LES1_FAME_OR_SHAME",
+            //"PL_STD_WZL_FOS_EP2",
+            "PL_MP_WEAZEL",
+            "PL_MP_CCTV",
+        };
+
+        private async Task InteriorTv()
+        {
+            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs)
+            {
+                int interiorId = GetInteriorFromEntity(Game.PlayerPed.Handle);
+                if (interiorId != 0 && IplManager.interiors.Any((inter) => inter.InteriorId == interiorId && !inter.TvPosition.IsZero))
+                {
+                    //SetRadarAsInteriorThisFrame()
+                    if (tvObject != 0 && DoesEntityExist(tvObject))
+                    {
+                        int newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
+                        int channel = 0;
+                        LoadTvChannelSequence(channel, tvChannels[MainMenu.IplManagementMenu.SelectedTvChannel], false);
+
+                        uint tvModel = (uint)GetEntityModel(tvObject);
+
+                        if (!IsNamedRendertargetRegistered("tvscreen"))
+                        {
+                            RegisterNamedRendertarget("tvscreen", false);
+                        }
+
+                        if (!IsNamedRendertargetLinked(tvModel))
+                        {
+                            LinkNamedRendertarget(tvModel);
+                        }
+
+                        var renderHandle = GetNamedRendertargetRenderId("tvscreen");
+
+                        SetTvChannel(channel);
+                        SetTvVolume(100f);
+                        SetTvAudioFrontend(false);
+                        //SetTvVolume(0.0f);
+
+
+                        while (interiorId == GetInteriorFromEntity(Game.PlayerPed.Handle) && DoesEntityExist(tvObject) && MainMenu.IplManagementMenu.EnableIplTvs)
+                        {
+                            await Delay(0);
+
+                            EnableMovieSubtitles(IsSubtitlePreferenceSwitchedOn());
+
+                            if (newChannelIndex != MainMenu.IplManagementMenu.SelectedTvChannel)
+                            {
+                                newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
+                                if ((float)newChannelIndex % 2f != 0f)
+                                {
+                                    channel = 1;
+                                }
+                                else
+                                {
+                                    channel = 0;
+                                }
+
+                                LoadTvChannelSequence(channel, tvChannels[newChannelIndex], false);
+
+                                SetTvChannel(channel);
+
+                                SetTvVolume(100f);
+
+                                SetTvAudioFrontend(false);
+                            }
+
+                            SetTextRenderId(renderHandle);
+                            SetScriptGfxDrawOrder(4);
+                            SetScriptGfxDrawBehindPausemenu(true);
+
+                            //SetTvAudioFrontend(false);
+
+
+                            DrawTvChannel(0.5f, 0.5f, 1f, 1f, 0f, 255, 255, 255, 255);
+
+                            //CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x35FB78DC42B7BD21, tvObject, 16);
+                            AttachTvAudioToEntity(tvObject);
+
+                            SetScriptGfxDrawBehindPausemenu(false);
+                            SetTextRenderId(1);
+
+                        }
+                    }
+                    else
+                    {
+                        var interior = IplManager.interiors.Find((inter) => inter.InteriorId == interiorId);
+                        //Debug.WriteLine($"Model : {interior.TvModel.ToString("X")}");
+                        foreach (uint model in tvModels)
+                        {
+                            tvObject = GetClosestObjectOfType(interior.TvPosition.X, interior.TvPosition.Y, interior.TvPosition.Z, 2f, model, false, false, false);
+                            if (DoesEntityExist(tvObject))
+                            {
+                                break;
+                            }
+                        }
+
+                    }
+                }
             }
+
 
         }
         #endregion

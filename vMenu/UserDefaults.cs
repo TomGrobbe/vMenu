@@ -288,6 +288,13 @@ namespace vMenuClient
             get { return GetSettingsBool("iplEnableTeleports"); }
             set { SetSavedSettingsBool("iplEnableTeleports", value); }
         }
+
+        public static bool IPLEnableTVs
+        {
+            get { return GetSettingsBool("iplEnableTVs"); }
+            set { SetSavedSettingsBool("iplEnableTVs", value); }
+        }
+
         #endregion
         #endregion
 
@@ -526,6 +533,15 @@ namespace vMenuClient
             {
                 WeaponLoadoutsSetLoadoutOnRespawn = MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn;
                 prefs.Add("weaponLoadoutsSetLoadoutOnRespawn", MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn);
+            }
+
+            if (MainMenu.IplManagementMenu != null)
+            {
+                IPLEnableTVs = MainMenu.IplManagementMenu.EnableIplTvs;
+                prefs.Add("iplEnableTVs", IPLEnableTVs);
+
+                IPLEnableTeleports = MainMenu.IplManagementMenu.EnableIplTeleports;
+                prefs.Add("iplEnableTeleports", IPLEnableTeleports);
             }
 
             Notify.Success("Your settings have been saved.");
