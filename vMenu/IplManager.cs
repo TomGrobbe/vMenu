@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -242,29 +242,24 @@ namespace vMenuClient
                     TvPosition = new Vector3(-1281.54f, 432.17f, 96.5f),
                 });
                 #endregion
-                {
-                    iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
-                    posInt = new Vector3(-35.3127f, -580.4199f, 88.71221f),
-                    posExt = Vector3.Zero,
-                    TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
-                });
 
-                AddInterior(new Apartment("Dell Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
+                var blipLocations = new List<Vector3>();
+                foreach (Interior inter in interiors)
                 {
-                    iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
-                    posInt = new Vector3(-1477.14f, -538.7499f, 55.5264f),
-                    posExt = Vector3.Zero,
-                    TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
-                });
-
-                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
-                {
-                    iplObject = Exports[resourceName].GetExecApartment1Object(),
-                    posInt = new Vector3(-787.7805f, 334.9232f, 215.8384f),
-                    posExt = Vector3.Zero,
-                    TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
-                });
-
+                    if (inter is Apartment || inter is Penthouse || inter is House)
+                    {
+                        if (inter.posTpExt != Vector3.Zero)
+                        {
+                            if (!blipLocations.Contains(inter.posTpExt))
+                            {
+                                var b = AddBlipForCoord(inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z);
+                                SetBlipSprite(b, 40);
+                                blipLocations.Add(inter.posTpExt);
+                                SetBlipAsShortRange(b, true);
+                            }
+                        }
+                    }
+                }
             }
 
         }
