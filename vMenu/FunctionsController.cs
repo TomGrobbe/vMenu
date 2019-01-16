@@ -2182,7 +2182,8 @@ namespace vMenuClient
             unchecked((uint)(-1820646534)),
             170618079,
             1653710254,
-
+            777010715,
+            1020451759,
         };
         private readonly List<string> tvChannels = new List<string>() {
             "PL_STD_CNT",
