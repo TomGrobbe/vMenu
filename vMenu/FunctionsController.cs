@@ -99,6 +99,7 @@ namespace vMenuClient
             Tick += InteriorHideExterior;
             Tick += InteriorChecker;
             Tick += InteriorTv;
+            Tick += InteriorRadio;
             Tick += InteriorTpManager;
         }
 
@@ -2473,6 +2474,119 @@ namespace vMenuClient
                 }
             }
             await Delay(100);
+        }
+
+        private void SetRadioEmitters(IplManager.Interior interior, bool enabled)
+        {
+            var list = new List<string>();
+            if (interior is IplManager.Hanger inter)
+            {
+                // bedroom
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Living_Quarters_01", enabled && inter.BedroomStyle > 0);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Living_Quarters_02", enabled && inter.BedroomStyle > 0);
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Living_Quarters_01", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Living_Quarters_02", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                // office
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_01", enabled);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_02", enabled);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_03", enabled);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_04", enabled);
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Office_01", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Office_02", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Office_03", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Office_04", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                // mod area
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Mechanic", enabled && inter.ModArea);
+                SetEmitterRadioStation("SE_DLC_SM_Hangar_Radio_Mechanic", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+            }
+            else
+            {
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Living_Quarters_01", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Living_Quarters_02", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_01", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_02", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_03", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Office_04", false);
+                SetStaticEmitterEnabled("SE_DLC_SM_Hangar_Radio_Mechanic", false);
+            }
+
+            if (interior is IplManager.Apartment)
+            {
+                for (var i = 0; i < 18; i++)
+                {
+                    for (var b = 1; b < 4; b++)
+                    {
+                        SetStaticEmitterEnabled($"SE_MP_APT_{i}_{b}", enabled);
+                        SetEmitterRadioStation($"SE_MP_APT_{i}_{b}", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                    }
+                }
+                for (var i = 0; i < 5; i++)
+                {
+                    for (var b = 1; b < 4; b++)
+                    {
+                        SetStaticEmitterEnabled($"SE_MP_APT_NEW_{i}_{b}", enabled);
+                        SetEmitterRadioStation($"SE_MP_APT_NEW_{i}_{b}", GetRadioStationName(MainMenu.IplManagementMenu.SelectedRadioStation));
+                    }
+                }
+            }
+            else
+            {
+                for (var i = 0; i < 40; i++)
+                {
+                    for (var b = 1; b < 4; b++)
+                    {
+                        SetStaticEmitterEnabled($"SE_MP_APT_{i}_{b}", false);
+                    }
+                }
+                for (var i = 0; i < 5; i++)
+                {
+                    for (var b = 1; b < 4; b++)
+                    {
+                        SetStaticEmitterEnabled($"SE_MP_APT_NEW_{i}_{b}", false);
+                    }
+                }
+            }
+        }
+
+        private async Task InteriorRadio()
+        {
+            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplRadios)
+            {
+                var interior = currentInterior;
+                if (interior != null)
+                {
+                    if (!EnableTvs)
+                    {
+                        SetRadioEmitters(interior, true);
+
+                        int selection = MainMenu.IplManagementMenu.SelectedRadioStation;
+
+                        while (!EnableTvs && MainMenu.IplManagementMenu.EnableIplRadios && currentInterior != null && currentInterior == interior)
+                        {
+                            if (selection != MainMenu.IplManagementMenu.SelectedRadioStation)
+                            {
+                                selection = MainMenu.IplManagementMenu.SelectedRadioStation;
+                                if (!(selection > -1 && selection < MaxRadioStationIndex()))
+                                {
+                                    selection = 0;
+                                }
+                                SetRadioEmitters(interior, true);
+                            }
+                            await Delay(0);
+                        }
+
+                        SetRadioEmitters(interior, false);
+
+                    }
+
+
+
+                }
+            }
+
+
+
+            await Task.FromResult(0);
         }
 
         private async Task InteriorTv()

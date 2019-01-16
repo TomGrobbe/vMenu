@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -295,6 +295,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("iplEnableTVs", value); }
         }
 
+        public static bool IPLEnableRadios
+        {
+            get { return GetSettingsBool("iplEnableRadios"); }
+            set { SetSavedSettingsBool("iplEnableRadios", value); }
+        }
+
         #endregion
         #endregion
 
@@ -315,7 +321,7 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter" || kvpString == "iplEnableTeleports")
+                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter" || kvpString == "iplEnableTeleports" || kvpString == "iplEnableRadios")
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -537,6 +543,9 @@ namespace vMenuClient
 
             if (MainMenu.IplManagementMenu != null)
             {
+                IPLEnableRadios = MainMenu.IplManagementMenu.EnableIplRadios;
+                prefs.Add("iplEnableRadios", IPLEnableRadios);
+
                 IPLEnableTVs = MainMenu.IplManagementMenu.EnableIplTvs;
                 prefs.Add("iplEnableTVs", IPLEnableTVs);
 

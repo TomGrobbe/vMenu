@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -319,6 +319,7 @@ namespace vMenuClient
             internal Interior(string name, Menu parentMenu)
             {
                 this.name = name;
+
                 Menu = new Menu("Interior Options", name ?? "n/a");
                 Menu.AddMenuItem(tpButton);
                 Menu.OnItemSelect += (sender, item, index) =>
@@ -576,6 +577,9 @@ namespace vMenuClient
             }
         }
 
+        /// <summary>
+        /// Penthouse class, inherits from Apartment.
+        /// </summary>
         internal class Penthouse : Apartment
         {
             internal int Style { get; private set; } = 0;
@@ -638,7 +642,9 @@ namespace vMenuClient
 
         }
 
-
+        /// <summary>
+        /// House class, inherits from Apartment.
+        /// </summary>
         internal class House : Apartment
         {
             internal House(string name, Menu parentMenu) : base(name, parentMenu)

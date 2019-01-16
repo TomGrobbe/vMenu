@@ -27,11 +27,6 @@ namespace vMenuClient
     /// 
     /// </summary>
 
-
-
-
-
-
     public class IplMenu
     {
 
@@ -43,6 +38,8 @@ namespace vMenuClient
         public bool EnableIplTeleports { get; private set; } = UserDefaults.IPLEnableTeleports;
         public bool EnableIplTvs { get; private set; } = UserDefaults.IPLEnableTVs;
         public int SelectedTvChannel { get; private set; } = 0;
+        public bool EnableIplRadios { get; private set; } = UserDefaults.IPLEnableRadios;
+        public int SelectedRadioStation { get; private set; } = 0;
 
         public Menu hangarsMenu = new Menu("Aircraft Hangars", "Aircraft Hangars Menu");
         public Menu apartmentsMenu = new Menu("Apartments", "Apartments and houses");
@@ -58,6 +55,10 @@ namespace vMenuClient
                 var interior = interiors.Find(inter => inter.name == item.Text);
                 if (interior != null)
                 {
+                    if (interior is Hanger han)
+                    {
+                        han.outPos = han.posTpExt.Find(l => l.DistanceToSquared2D(Game.PlayerPed.Position) < 10f);
+                    }
                     interior.TeleportToInterior();
                     sender.CloseMenu();
                 }
@@ -69,13 +70,14 @@ namespace vMenuClient
             // create the menu
             menu = new Menu("IPL Manager", "customize ipls using bob74_ipl");
 
+            MenuController.AddSubmenu(menu, hangarsMenu);
             MenuController.AddSubmenu(menu, apartmentsMenu);
 
             MenuController.AddMenu(EnterInteriorMenu);
 
             // create checkbox items
             MenuCheckboxItem enableInteriorTeleportMarkers = new MenuCheckboxItem("Enable Interior Teleport Markers", "Enables or disables the markers and teleporting options for interiors loaded by the bob74_ipl resource.", EnableIplTeleports);
-            MenuItem hangars = new MenuItem("Aircraft Hangars", "Customize the aircraft hanger interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
+            MenuItem hangars = new MenuItem("Aircraft Hangars", "Customize the aircraft hanger interior.") { Label = "→→→" };
             MenuItem apartments = new MenuItem("Apartments", "Every apartment can have it's own style, customize them all here.") { Label = "→→→" };
             MenuItem bunkers = new MenuItem("Bunkers", "Customize the bunker interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
             MenuItem nightclubs = new MenuItem("Nightclubs", "Customze the Night Clubs interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
@@ -83,18 +85,15 @@ namespace vMenuClient
             MenuItem warehouses = new MenuItem("Warehouses", "Customize the warehouses interior. (Coming soon)") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
 
             MenuCheckboxItem enableTvs = new MenuCheckboxItem("Enable TV's", "Enable or disable TV's in all interiors.", EnableIplTvs);
-            /*
-            "PL_STD_CNT",
-            "PL_STD_WZL",
-            //"PL_LO_WZL",
-            "PL_SP_WORKOUT",
-            //"PL_SP_PLSH1_INTRO",
-            "PL_LES1_FAME_OR_SHAME",
-            "PL_STD_WZL_FOS_EP2",
-            "PL_MP_WEAZEL",
-            "PL_MP_CCTV",
-            */
             MenuListItem tvChannel = new MenuListItem("TV Channel", new List<string>() { "CNT", "Weazel", "Workout", "Fame or Shame", "Weazel News Logo", "CCTV Static" }, 0, "Select a TV channel.");
+            MenuCheckboxItem enableRadios = new MenuCheckboxItem("Enable Radios", "Enable or disable the radio while in an interior.", EnableIplRadios);
+            List<string> radioStations = new List<string>();
+            for (int i = 0; i < MaxRadioStationIndex(); i++)
+            {
+                string name = GetLabelText(GetRadioStationName(i));
+                radioStations.Add(name);
+            }
+            MenuListItem radioStationsList = new MenuListItem("Radio Station", radioStations, SelectedRadioStation, "Select a radio station.");
             MenuItem about = new MenuItem("About IPL Manager", "This submenu uses the bob74_ipl resource to customize interiors. Changes made are synced for everyone on the server, and will be automatically saved to the server. They will be restored next time the server starts.");
 
             // add items to the menu.
@@ -107,10 +106,13 @@ namespace vMenuClient
             menu.AddMenuItem(offices);
             menu.AddMenuItem(warehouses);
 
+            MenuController.BindMenuItem(menu, hangarsMenu, hangars);
             MenuController.BindMenuItem(menu, apartmentsMenu, apartments);
 
             menu.AddMenuItem(enableTvs);
             menu.AddMenuItem(tvChannel);
+            menu.AddMenuItem(enableRadios);
+            menu.AddMenuItem(radioStationsList);
             menu.AddMenuItem(about);
 
             // check for checkbox changes.
@@ -124,6 +126,10 @@ namespace vMenuClient
                 {
                     EnableIplTvs = _checked;
                 }
+                else if (item == enableRadios)
+                {
+                    EnableIplRadios = _checked;
+                }
             };
 
             // list changes
@@ -132,6 +138,10 @@ namespace vMenuClient
                 if (item == tvChannel)
                 {
                     SelectedTvChannel = newSelectionIndex;
+                }
+                else if (item == radioStationsList)
+                {
+                    SelectedRadioStation = newSelectionIndex;
                 }
             };
 
