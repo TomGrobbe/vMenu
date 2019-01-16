@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -91,6 +91,8 @@ namespace vMenuClient
             }
             return false;
         }
+
+        public static bool AreInteriorsLoaded { get; private set; } = false;
 
         /// <summary>
         /// Loads interiors from default setup.
