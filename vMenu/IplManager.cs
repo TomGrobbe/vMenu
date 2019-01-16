@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -894,7 +894,78 @@ namespace vMenuClient
             }
         }
 
+        internal class Nightclub : Interior
+        {
+            internal Nightclub(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+
+            }
+        }
+
+        internal class Facility : Interior
+        {
+            internal Facility(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+
+            }
+        }
+
+        #region Biker stuff (clubhouse, cocaine, forgery, etc) DLC_BIKERS
+        internal class BikerGang
+        {
+
+        }
+
+        internal class Clubhouse : Interior
+        {
+            internal Clubhouse(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class BikerBusiness : Interior
+        {
+            internal BikerBusiness(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class Cocaine : BikerBusiness
+        {
+            internal Cocaine(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class Meth : BikerBusiness
+        {
+            internal Meth(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class Weed : BikerBusiness
+        {
+            internal Weed(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class CounterfeitCash : BikerBusiness
+        {
+            internal CounterfeitCash(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+
+        internal class DocumentForgery : BikerBusiness
+        {
+            internal DocumentForgery(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+            }
+        }
+        #endregion
+
+
     }
-
-
 }
