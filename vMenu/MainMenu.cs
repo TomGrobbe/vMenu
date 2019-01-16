@@ -348,7 +348,7 @@ namespace vMenuClient
                     MenuController.MainMenu = Menu;
 
                     // Create all (sub)menus.
-                    CreateSubmenus();
+                    await CreateSubmenus();
                 }
                 else
                 {
@@ -496,7 +496,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.
         /// </summary>
-        private void CreateSubmenus()
+        private async Task CreateSubmenus()
         {
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
@@ -518,6 +518,7 @@ namespace vMenuClient
                     }
                 };
             }
+            await Delay(0);
             if (IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers))
             {
                 BannedPlayersMenu = new BannedPlayers();
@@ -537,7 +538,7 @@ namespace vMenuClient
                     }
                 };
             }
-
+            await Delay(0);
             // Add the player options menu.
             if (IsAllowed(Permission.POMenu))
             {
@@ -549,7 +550,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add the vehicle options Menu.
             if (IsAllowed(Permission.VOMenu))
             {
@@ -561,7 +562,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
             if (IsAllowed(Permission.VSMenu))
@@ -574,7 +575,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add Saved Vehicles menu.
             if (IsAllowed(Permission.SVMenu))
             {
@@ -593,7 +594,7 @@ namespace vMenuClient
                     }
                 };
             }
-
+            await Delay(0);
             // Add the player appearance menu.
             if (IsAllowed(Permission.PAMenu))
             {
@@ -612,10 +613,8 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(menu2, button2);
-
-
             }
-
+            await Delay(0);
             // Add the time options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
             if (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync))
@@ -628,7 +627,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add the weather options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
             if (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
@@ -641,7 +640,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add the weapons menu.
             if (IsAllowed(Permission.WPMenu))
             {
@@ -653,7 +652,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add Weapon Loadouts menu.
             if (IsAllowed(Permission.WLMenu))
             {
@@ -665,7 +664,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add Voice Chat Menu.
             if (IsAllowed(Permission.VCMenu))
             {
@@ -677,7 +676,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Recording menu is always allowed, config options/permissions are only managed inside the menu itself.
             {
                 RecordingMenu = new Recording();
@@ -688,7 +687,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Enable the IPL menu if enabled via config and if the dependency is loaded and enabled.
             if (IplManager.IsDependencyPresentAndEnabled() && IplManager.IsIplIntegrationEnabled())
             {
@@ -702,9 +701,9 @@ namespace vMenuClient
                     Notify.Success("bob74_ipl dependency found and is enabled per config, enabling the IPL options menu.");
                 AddMenu(menu, button);
 
-                IplManager.LoadAllInteriors();
+                await IplManager.LoadAllInteriors();
             }
-
+            await Delay(0);
             // Add misc settings menu.
             {
                 MiscSettingsMenu = new MiscSettings();
@@ -715,7 +714,7 @@ namespace vMenuClient
                 };
                 AddMenu(menu, button);
             }
-
+            await Delay(0);
             // Add About Menu.
             AboutMenu = new About();
             Menu sub = AboutMenu.GetMenu();

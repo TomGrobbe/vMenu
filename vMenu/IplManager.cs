@@ -97,7 +97,7 @@ namespace vMenuClient
         /// <summary>
         /// Loads interiors from default setup.
         /// </summary>
-        internal static void LoadAllInteriors()
+        internal static async Task LoadAllInteriors()
         {
             if (IsIplIntegrationEnabled())
             {
@@ -106,7 +106,7 @@ namespace vMenuClient
                 #region High End & High Life Apartments
 
                 // 4 Integrity Way
-                AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posTpInt = new Vector3(-18.61f, -581.87f, 90.11f),
@@ -116,7 +116,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
                 });
 
-                AddInterior(new Apartment("4 Integrity Way, Apt 28", MainMenu.IplManagementMenu.apartmentsMenu) // 35, 30, 28
+                await AddInterior(new Apartment("4 Integrity Way, Apt 28", MainMenu.IplManagementMenu.apartmentsMenu) // 35, 30, 28
                 {
                     iplObject = Exports[resourceName].GetHLApartment5Object(),
                     posTpInt = new Vector3(-23.27f, -598.06f, 80.03f),
@@ -127,7 +127,7 @@ namespace vMenuClient
                 });
 
                 // Del Perro Heights
-                AddInterior(new Apartment("Del Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment("Del Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
                     posTpInt = new Vector3(-1458.32f, -520.78f, 56.93f),
@@ -137,7 +137,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
                 });
 
-                AddInterior(new Apartment("Del Perro Heights, Apt 4", MainMenu.IplManagementMenu.apartmentsMenu) // 4, 20, 7
+                await AddInterior(new Apartment("Del Perro Heights, Apt 4", MainMenu.IplManagementMenu.apartmentsMenu) // 4, 20, 7
                 {
                     iplObject = Exports[resourceName].GetHLApartment1Object(),
                     posTpInt = new Vector3(-1457.06f, -533.43f, 74.04f),
@@ -148,7 +148,7 @@ namespace vMenuClient
                 });
 
                 // Richards Majestic
-                AddInterior(new Apartment("Richards Majestic, Apt 2", MainMenu.IplManagementMenu.apartmentsMenu) // 4 & 51
+                await AddInterior(new Apartment("Richards Majestic, Apt 2", MainMenu.IplManagementMenu.apartmentsMenu) // 4 & 51
                 {
                     iplObject = Exports[resourceName].GetHLApartment2Object(),
                     posTpInt = new Vector3(-920.10f, -368.91f, 114.27f),
@@ -159,7 +159,7 @@ namespace vMenuClient
                 });
 
                 // Tinsel Towers
-                AddInterior(new Apartment("Tinsel Towers, Apt 42", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment("Tinsel Towers, Apt 42", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetHLApartment3Object(),
                     posTpInt = new Vector3(-611.32f, 58.89f, 98.2f),
@@ -170,7 +170,7 @@ namespace vMenuClient
                 });
 
                 // Eclipse Towers
-                AddInterior(new Apartment("Eclipse Towers, Apt 3", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment("Eclipse Towers, Apt 3", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetHLApartment4Object(),
                     posTpInt = new Vector3(-776.57f, 323.57f, 212f),
@@ -184,7 +184,7 @@ namespace vMenuClient
 
                 // Penthouses 
                 #region penthouses
-                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetExecApartment1Object(),
                     posTpInt = new Vector3(-781.7f, 318.62f, 217.67f),
@@ -194,7 +194,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
                 });
 
-                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
+                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
                 {
                     iplObject = Exports[resourceName].GetExecApartment2Object(),
                     posTpInt = new Vector3(-779.25f, 338.95f, 196.69f),
@@ -204,7 +204,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-780.61f, 319.28f, 194.88f),
                 });
 
-                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
+                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
                 {
                     iplObject = Exports[resourceName].GetExecApartment3Object(),
                     posTpInt = new Vector3(-781.82f, 318.93f, 187.92f),
@@ -217,7 +217,7 @@ namespace vMenuClient
 
                 // High end houses
                 #region High end Houses
-                AddInterior(new House("Stilt House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi1Object(),
                     posTpInt = new Vector3(-174.26f, 497.18f, 137.67f),
@@ -227,7 +227,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-161.66f, 482.89f, 136.24f),
                 });
 
-                AddInterior(new House("Stilt House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi2Object(),
                     posTpInt = new Vector3(341.27f, 437.41f, 149.39f),
@@ -237,7 +237,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(331.13f, 421.66f, 147.97f),
                 });
 
-                AddInterior(new House("Stilt House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi3Object(),
                     posTpInt = new Vector3(373.51f, 423.02f, 145.91f),
@@ -247,7 +247,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(377.44f, 404.72f, 144.51f),
                 });
 
-                AddInterior(new House("Stilt House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi4Object(),
                     posTpInt = new Vector3(-681.95f, 591.94f, 145.39f),
@@ -257,7 +257,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-664.1f, 585.9f, 143.69f),
                 });
 
-                AddInterior(new House("Stilt House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi5Object(),
                     posTpInt = new Vector3(-759.09f, 618.69f, 144.15f),
@@ -267,7 +267,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-771.4f, 604.58f, 142.73f),
                 });
 
-                AddInterior(new House("Stilt House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi6Object(),
                     posTpInt = new Vector3(-859.82f, 690.7f, 152.86f),
@@ -277,7 +277,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(-850.26f, 674.47f, 151.46f),
                 });
 
-                AddInterior(new House("Stilt House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi7Object(),
                     posTpInt = new Vector3(117.34f, 559.17f, 184.3f),
@@ -287,7 +287,7 @@ namespace vMenuClient
                     TvPosition = new Vector3(127.29f, 543.4f, 182.9f),
                 });
 
-                AddInterior(new House("Stilt House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House("Stilt House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi8Object(),
                     posTpInt = new Vector3(-1290.16f, 449.12f, 97.9f),
@@ -321,6 +321,7 @@ namespace vMenuClient
                 }
                 #endregion
 
+                #region Hangars
                 interiors.Add(new Hanger("Aircraft Hanger", MainMenu.IplManagementMenu.hangarsMenu)
                 {
                     iplObject = Exports[resourceName].GetSmugglerHangarObject(),
@@ -334,7 +335,10 @@ namespace vMenuClient
                     interiorLocation = new Vector3(-1267.0f, -3013.135f, -49.5f),
                     TvPosition = new Vector3(-1235.24f, -3010.3f, -42.88f),
                 });
-                interiors.Last().iplObject.LoadDefault();
+                //interiors.Last().iplObject.LoadDefault();
+                #endregion
+
+                AreInteriorsLoaded = true;
             }
 
         }
@@ -361,9 +365,10 @@ namespace vMenuClient
         /// </summary>
         /// <param name="interior"></param>
         /// <returns>Returns the interior that was added.</returns>
-        private static Interior AddInterior(Interior interior)
+        private static async Task<Interior> AddInterior(Interior interior)
         {
             interiors.Add(interior);
+            await Delay(0);
             return interior;
         }
 
