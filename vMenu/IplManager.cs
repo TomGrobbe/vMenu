@@ -319,6 +319,22 @@ namespace vMenuClient
                 }
                 #endregion
 
+                interiors.Add(new Hanger("Aircraft Hanger", MainMenu.IplManagementMenu.hangarsMenu)
+                {
+                    iplObject = Exports[resourceName].GetSmugglerHangarObject(),
+                    posTpInt = new Vector3(-1279.75f, -3048.1f, -48.49f),
+                    posTpExt = new List<Vector3>()
+                    {
+                        new Vector3(-1150.38f, -3412.7f, 13.95f),
+                        new Vector3(-1395.34f, -3266.47f, 13.94f),
+                    },
+                    teleportHeading = 325.96f,
+                    interiorLocation = new Vector3(-1267.0f, -3013.135f, -49.5f),
+                    TvPosition = new Vector3(-1235.24f, -3010.3f, -42.88f),
+                });
+                interiors.Last().iplObject.LoadDefault();
+            }
+
         }
 
         /// <summary>
@@ -708,6 +724,156 @@ namespace vMenuClient
             {
 
             }
+        }
+
+        /// <summary>
+        /// Hanger class, (aircraft hangers) inherits from Interior
+        /// </summary>
+        internal class Hanger : Interior
+        {
+            internal Vector3 outPos = Vector3.Zero;
+            //internal List<Vector3> outTpLocations = new List<Vector3>();
+
+            internal bool ModArea { get; private set; } = true;
+
+            internal bool Cranes { get; private set; } = true;
+
+            internal int WallsColor { get; private set; } = 0;
+
+            internal int FloorStyle { get; private set; } = 1;
+            internal int FloorDecals { get; private set; } = 0;
+            internal int FloorDecalsColor { get; private set; } = 0;
+
+            internal int LightingCeiling { get; private set; } = 0;
+            internal int LightingWalls { get; private set; } = 0;
+            internal int LightingFakeLights { get; private set; } = 0;
+
+            internal int OfficeStyle { get; private set; } = 0;
+
+            internal int BedroomStyle { get; private set; } = 1;
+            internal int BedroomStyleColor { get; private set; } = 0;
+            internal bool BedroomBlindsOpen { get; private set; } = false;
+            internal bool DetailsBedroomClutter { get; private set; } = false;
+
+            internal Hanger(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+                var wallStyles = new List<string>()
+                {
+                    "Sable, red, gray.", // 1
+                    "White, blue, orange.", // 2
+                    "Gray, orange, blue.", // 3
+                    "Gray, blue, orange.", // 4
+                    "Gray, light gray, red.", // 5
+                    "Yellow, gray, light gray.", // 6
+                    "(Light) Black and white.", // 7
+                    "(Dark) Black and white.", // 8
+                    "Sable and gray." // 9
+                };
+                var floorStyle = new List<string>()
+                {
+                    "Raw concrete ground.",
+                    "Plain concrete ground"
+                };
+                var officeStyles = new List<string>()
+                {
+                    "Basic office",
+                    "Modern office",
+                    "Traditional office"
+                };
+
+
+                MenuListItem walls = new MenuListItem("Walls Color", wallStyles, WallsColor, "Set the color scheme of the hangar walls.");
+                MenuListItem floors = new MenuListItem("Floor Style", floorStyle, FloorStyle, "Set the floor style.");
+                MenuListItem office = new MenuListItem("Office Style", officeStyles, OfficeStyle, "Set a office style.");
+
+                Menu.AddMenuItem(walls);
+                Menu.AddMenuItem(floors);
+                Menu.AddMenuItem(office);
+
+                Menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+                {
+                    if (item == walls)
+                    {
+                        SetWallsColor(newIndex);
+                    }
+                    else if (item == floors)
+                    {
+                        SetFloorStyle(newIndex);
+                    }
+                    else if (item == office)
+                    {
+                        SetOfficeStyle(newIndex);
+                    }
+                };
+            }
+
+            internal void SetOfficeStyle(int newStyle)
+            {
+                OfficeStyle = newStyle;
+                if (newStyle == 0)
+                {
+                    iplObject.Office.Set(iplObject.Office.basic, true);
+                }
+                else if (newStyle == 1)
+                {
+                    iplObject.Office.Set(iplObject.Office.modern, true);
+                }
+                else if (newStyle == 2)
+                {
+                    iplObject.Office.Set(iplObject.Office.traditional, true);
+                }
+            }
+
+            internal void SetFloorStyle(int newStyle)
+            {
+                FloorStyle = newStyle;
+                if (newStyle == 0)
+                {
+                    iplObject.Floor.Style.Set(iplObject.Floor.Style.raw, true);
+                }
+                else if (newStyle == 1)
+                {
+                    iplObject.Floor.Style.Set(iplObject.Floor.Style.plain, true);
+                }
+            }
+
+            internal void SetWallsColor(int newStyle)
+            {
+                WallsColor = newStyle;
+                dynamic style = null;
+                switch (newStyle)
+                {
+                    case 0:
+                        style = iplObject.Colors.colorSet1;
+                        break;
+                    case 1:
+                        style = iplObject.Colors.colorSet2;
+                        break;
+                    case 2:
+                        style = iplObject.Colors.colorSet3;
+                        break;
+                    case 3:
+                        style = iplObject.Colors.colorSet4;
+                        break;
+                    case 4:
+                        style = iplObject.Colors.colorSet5;
+                        break;
+                    case 5:
+                        style = iplObject.Colors.colorSet6;
+                        break;
+                    case 6:
+                        style = iplObject.Colors.colorSet7;
+                        break;
+                    case 7:
+                        style = iplObject.Colors.colorSet8;
+                        break;
+                    case 8:
+                        style = iplObject.Colors.colorSet9;
+                        break;
+                }
+                iplObject.Walls.SetColor(style, true);
+            }
+
         }
     }
 
