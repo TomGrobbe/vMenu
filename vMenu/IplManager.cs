@@ -105,7 +105,7 @@ namespace vMenuClient
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posTpInt = new Vector3(-18.61f, -581.87f, 90.11f),
-                    posTpExt = new Vector3(-48.95f, -588.96f, 37.59f),
+                    posTpExt = new List<Vector3>() { new Vector3(-48.95f, -588.96f, 37.95f) },
                     teleportHeading = 73.58f,
                     interiorLocation = new Vector3(-29.49f, -581.29f, 88.71f),
                     TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
@@ -248,17 +248,20 @@ namespace vMenuClient
                 {
                     if (inter is Apartment || inter is Penthouse || inter is House)
                     {
-                        if (inter.posTpExt != Vector3.Zero)
+                        foreach (var pos in inter.posTpExt)
                         {
-                            if (!blipLocations.Contains(inter.posTpExt))
+                            if (pos != Vector3.Zero)
                             {
-                                var b = AddBlipForCoord(inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z);
-                                SetBlipSprite(b, 40);
-                                blipLocations.Add(inter.posTpExt);
-                                SetBlipAsShortRange(b, true);
+                                if (!blipLocations.Contains(pos))
+                                {
+                                    var b = AddBlipForCoord(pos.X, pos.Y, pos.Z);
+                                    SetBlipSprite(b, 40);
+                                    blipLocations.Add(pos);
+                                    SetBlipAsShortRange(b, true);
+                                }
                             }
                         }
-                    }
+
                 }
             }
 
@@ -303,7 +306,7 @@ namespace vMenuClient
             internal dynamic iplObject;
 
             internal Vector3 posTpInt = Vector3.Zero; // interior teleport location in the world.
-            internal Vector3 posTpExt = Vector3.Zero; // exterior teleport location in the world.
+            internal List<Vector3> posTpExt = new List<Vector3>() { Vector3.Zero }; // exterior teleport location in the world.
 
             internal float teleportHeading = 0f;
             internal Vector3 interiorLocation = Vector3.Zero; // used to get the interior ID, interior ID at the posInt (entrance) is usually NOT the correct interior ID.

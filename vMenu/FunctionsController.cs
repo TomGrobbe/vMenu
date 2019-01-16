@@ -2230,85 +2230,178 @@ namespace vMenuClient
 
         private async Task InteriorTpManager()
         {
-            if (currentInterior != null)
+            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTeleports)
             {
-                var outsidePos = currentInterior.posTpExt;
-                var insidePos = currentInterior.posTpInt;
-                var heading = currentInterior.teleportHeading - 180;
-
-                DrawMarker(1, insidePos.X, insidePos.Y, insidePos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
-
-                if (Game.PlayerPed.Position.DistanceToSquared2D(insidePos) < 0.5f)
+                if (currentInterior != null)
                 {
-                    HelpMessage.CustomLooped(HelpMessage.Label.EXIT_INTERIOR_HELP_MESSAGE);
-                    if (Game.IsControlJustReleased(0, Control.Context) && Game.PlayerPed.Position.DistanceToSquared2D(insidePos) < 0.5f)
+                    foreach (var outsidePos in currentInterior.posTpExt)
                     {
-                        DoScreenFadeOut(500);
-                        while (!IsScreenFadedOut())
+                        var insidePos = currentInterior.posTpInt;
+                        var heading = currentInterior.teleportHeading - 180;
+
+                        DrawMarker(1, insidePos.X, insidePos.Y, insidePos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+
+                        if (Game.PlayerPed.Position.DistanceToSquared(insidePos) < 0.5f)
                         {
-                            await Delay(0);
-                        }
-                        RequestCollisionAtCoord(outsidePos.X, outsidePos.Y, outsidePos.Z);
-                        SetEntityCoords(Game.PlayerPed.Handle, outsidePos.X, outsidePos.Y, outsidePos.Z, false, false, false, true);
-                        DoScreenFadeIn(500);
-                        SetEntityHeading(Game.PlayerPed.Handle, heading);
-                    }
-                }
-            }
-            else
-            {
-                if (IplManager.interiors.Any(inter => inter.posTpExt.DistanceToSquared2D(Game.PlayerPed.Position) < 500f))
-                {
-                    var positions = new List<Vector3>();
-
-                    foreach (var inter in IplManager.interiors)
-                    {
-                        if (inter.posTpExt.DistanceToSquared2D(Game.PlayerPed.Position) < 500f)
-                        {
-                            if (!positions.Contains(inter.posTpExt))
+                            HelpMessage.CustomLooped(HelpMessage.Label.EXIT_INTERIOR_HELP_MESSAGE);
+                            if (Game.IsControlJustReleased(0, Control.Context) && Game.PlayerPed.Position.DistanceToSquared(insidePos) < 0.5f)
                             {
-                                positions.Add(inter.posTpExt);
-
-                                DrawMarker(1, inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
-                            }
-
-                            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnterInteriorMenu != null)
-                            {
-                                if (Game.PlayerPed.Position.DistanceToSquared2D(inter.posTpExt) < 0.5f)
+                                var posOut = outsidePos;
+                                if (currentInterior is IplManager.Hanger han)
                                 {
-                                    var menu = MainMenu.IplManagementMenu.EnterInteriorMenu;
-                                    menu.ClearMenuItems();
-                                    MenuController.CloseAllMenus();
-
-                                    //var possibleInteriors = new List<IplManager.Interior>();
-                                    foreach (IplManager.Interior tmpInter in IplManager.interiors)
+                                    if (han.outPos == Vector3.Zero)
                                     {
-                                        if (tmpInter.posTpExt == inter.posTpExt)
+                                        han.outPos = outsidePos;
+                                    }
+                                    posOut = han.outPos;
+                                }
+                                DoScreenFadeOut(500);
+                                while (!IsScreenFadedOut())
+                                {
+                                    await Delay(0);
+                                }
+                                RequestCollisionAtCoord(posOut.X, posOut.Y, posOut.Z);
+                                SetEntityCoords(Game.PlayerPed.Handle, posOut.X, posOut.Y, posOut.Z, false, false, false, true);
+                                DoScreenFadeIn(500);
+                                SetEntityHeading(Game.PlayerPed.Handle, heading);
+                            }
+                        }
+                    }
+                    //var outsidePos = currentInterior.posTpExt;
+                    //if (currentInterior is IplManager.Hanger han)
+                    //{
+                    //    outsidePos = han.outPos;
+                    //    if (outsidePos.IsZero)
+                    //    {
+                    //        outsidePos = han.posTpExt;
+                    //    }
+                    //}
+
+                }
+                else
+                {
+                    foreach (IplManager.Interior interior in IplManager.interiors)
+                    {
+                        var pedPos = Game.PlayerPed.Position;
+                        var locations = new List<Vector3>();
+                        foreach (Vector3 pos in interior.posTpExt)
+                        {
+                            if (pedPos.DistanceToSquared(pos) < 500f)
+                            {
+                                if (!locations.Contains(pos))
+                                {
+                                    locations.Add(pos);
+                                    DrawMarker(1, pos.X, pos.Y, pos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.3f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                                    if (pedPos.DistanceToSquared(pos) < 0.5f)
+                                    {
+                                        var menu = MainMenu.IplManagementMenu.EnterInteriorMenu;
+                                        var oldMenu = MenuController.GetCurrentMenu();
+                                        MenuController.CloseAllMenus();
+                                        menu.ClearMenuItems();
+                                        foreach (IplManager.Interior tmpInter in IplManager.interiors)
                                         {
-                                            //possibleInteriors.Add(tmpInter);
-                                            var menuItem = new MenuItem(tmpInter.name);
-                                            menu.AddMenuItem(menuItem);
+                                            if (tmpInter.posTpExt.Contains(pos))
+                                            {
+                                                var menuItem = new MenuItem(tmpInter.name);
+                                                menu.AddMenuItem(menuItem);
+                                            }
+                                        }
+
+                                        var oldValue = MenuController.MenuAlignment;
+                                        MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+                                        menu.OpenMenu();
+                                        while (Game.PlayerPed.Position.DistanceToSquared(pos) < 0.5f)
+                                        {
+                                            await Delay(0);
+                                            DrawMarker(1, pos.X, pos.Y, pos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.3f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                                        }
+                                        menu.CloseMenu();
+                                        MenuController.MenuAlignment = oldValue;
+                                        if (oldMenu != null)
+                                        {
+                                            oldMenu.OpenMenu();
                                         }
                                     }
-                                    var oldValue = MenuController.MenuAlignment;
-                                    //menu.LeftAligned = true;
-                                    MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
-                                    menu.OpenMenu();
-                                    while (Game.PlayerPed.Position.DistanceToSquared2D(inter.posTpExt) < 0.5f)
-                                    {
-                                        await Delay(0);
-                                        DrawMarker(1, inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
-                                    }
-                                    menu.CloseMenu();
-                                    MenuController.MenuAlignment = oldValue;
                                 }
                             }
-
                         }
                     }
+                    //if (IplManager.interiors.Any(inter => (inter is IplManager.Hanger han && han.outTpLocations.Any(d => d.DistanceToSquared2D(Game.PlayerPed.Position) < 500f)) || (inter.posTpExt.DistanceToSquared2D(Game.PlayerPed.Position) < 500f)))
+                    //{
+                    //    var positions = new List<Vector3>();
 
+                    //    foreach (var inter in IplManager.interiors)
+                    //    {
+                    //        var locations = new List<Vector3>
+                    //        {
+                    //            inter.posTpExt
+                    //        };
+                    //        if (inter is IplManager.Hanger han)
+                    //        {
+                    //            locations.AddRange(han.outTpLocations);
+                    //        }
+                    //        //if (locations.Any(d => d.DistanceToSquared2D(Game.PlayerPed.Position) < 500f))
+                    //        {
+                    //            //if (foreach!positions.Contains(inter.posTpExt))
+
+                    //            foreach (Vector3 pos in locations)
+                    //            {
+                    //                if (!positions.Contains(pos))
+                    //                {
+                    //                    if (pos.DistanceToSquared2D(Game.PlayerPed.Position) < 500f)
+                    //                    {
+                    //                        DrawMarker(1, pos.X, pos.Y, pos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.3f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                    //                        positions.Add(pos);
+                    //                    }
+                    //                }
+                    //            }
+
+                    //{
+                    //    positions.Add(inter.posTpExt);
+
+                    //    DrawMarker(1, inter.posTpExt.X, inter.posTpExt.Y, inter.posTpExt.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.3f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                    //}
+
+                    //            foreach (Vector3 pos in positions)
+                    //            {
+                    //                if (Game.PlayerPed.Position.DistanceToSquared2D(pos) < 0.5f)
+                    //                {
+                    //                    var menu = MainMenu.IplManagementMenu.EnterInteriorMenu;
+                    //                    menu.ClearMenuItems();
+                    //                    MenuController.CloseAllMenus();
+
+                    //                    //var possibleInteriors = new List<IplManager.Interior>();
+                    //                    foreach (IplManager.Interior tmpInter in IplManager.interiors)
+                    //                    {
+                    //                        if (tmpInter.posTpExt == pos)
+                    //                        {
+                    //                            //possibleInteriors.Add(tmpInter);
+                    //                            var menuItem = new MenuItem(tmpInter.name);
+                    //                            menu.AddMenuItem(menuItem);
+                    //                        }
+                    //                    }
+                    //                    var oldValue = MenuController.MenuAlignment;
+                    //                    //menu.LeftAligned = true;
+                    //                    MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+                    //                    menu.OpenMenu();
+
+                    //                    while (Game.PlayerPed.Position.DistanceToSquared2D(pos) < 0.5f)
+                    //                    {
+                    //                        await Delay(0);
+                    //                        DrawMarker(1, pos.X, pos.Y, pos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.3f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
+                    //                    }
+                    //                    menu.CloseMenu();
+                    //                    MenuController.MenuAlignment = oldValue;
+                    //                }
+                    //            }
+
+                    //        }
+                    //    }
+                    //}
+                    //await Delay(1);
                 }
             }
+
             await Task.FromResult(0);
         }
 
