@@ -55,8 +55,7 @@ namespace vMenuClient
         private bool showSnowballInfo = false;
 
         /// I made these seperate bools that only get set once after initial load 
-        /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick. 
-        /// Values are set in <see cref="EventManager.ConfigureClient(dynamic, dynamic, dynamic, dynamic)"/>
+        /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick.
         public static bool flaresAllowed = false;
         public static bool bombsAllowed = false;
 
@@ -79,10 +78,9 @@ namespace vMenuClient
             Tick += MoreVehicleOptions;
             Tick += VoiceChat;
             Tick += TimeOptions;
-            Tick += _WeatherOptions;
+            Tick += WeatherOptions;
             Tick += WeaponOptions;
             Tick += OnlinePlayersTasks;
-
             Tick += MiscSettings;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
@@ -425,7 +423,7 @@ namespace vMenuClient
         }
         #endregion
         #region Weather Options
-        private async Task _WeatherOptions()
+        private async Task WeatherOptions()
         {
             await Delay(1000);
             if (MainMenu.WeatherOptionsMenu != null && IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
@@ -433,7 +431,7 @@ namespace vMenuClient
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
                     MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems().ForEach(mi => { if (mi.GetType() != typeof(MenuCheckboxItem)) mi.RightIcon = MenuItem.Icon.NONE; });
-                    var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
+                    var item = vMenuClient.WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
                     item.RightIcon = MenuItem.Icon.TICK;
                     if (IsAllowed(Permission.WODynamic))
                     {
