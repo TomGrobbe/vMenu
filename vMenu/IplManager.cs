@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -875,6 +875,18 @@ namespace vMenuClient
             }
 
         }
+
+        /// <summary>
+        /// Bunker class, inherits from Interior
+        /// </summary>
+        internal class Bunker : Interior
+        {
+            internal Bunker(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+
+            }
+        }
+
     }
 
 
