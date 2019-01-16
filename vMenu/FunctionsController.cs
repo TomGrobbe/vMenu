@@ -2170,12 +2170,10 @@ namespace vMenuClient
         }
         #endregion
         #region Interior management
-
-
         private IplManager.Interior currentInterior = null;
         private int tvObject = 0;
-        private bool EnableTvs => MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs;
-        private int CurrentTvChannel => MainMenu.IplManagementMenu != null ? MainMenu.IplManagementMenu.SelectedTvChannel : 0;
+        private bool EnableTvs => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs;
+        private int CurrentTvChannel => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null ? MainMenu.IplManagementMenu.SelectedTvChannel : 0;
         private readonly List<uint> tvModels = new List<uint>()
         {
             (uint)GetHashKey("prop_tv_flat_01"), // 1036195894
@@ -2409,153 +2407,155 @@ namespace vMenuClient
             await Task.FromResult(0);
         }
 
-        private async Task InteriorHideExterior()
+        private async Task InteriorHideExteriorAndSetRadar()
         {
-            if (currentInterior != null)
+            if (IplManager.AreInteriorsLoaded)
             {
-                // make a copy just in case the currentInterior object becomes null while in this loop.
-                var inter = currentInterior;
-
-                if (inter is IplManager.Hanger interior)
+                if (currentInterior != null)
                 {
-                    string interiorRadarHash = "sm_SmugDLC_Int_01";
-                    int zoom = 0;
-                    Vector3 pos = Game.PlayerPed.Position;
-                    bool s = false;
-                    if (pos.Z < -45.5f)
+                    // make a copy just in case the currentInterior object becomes null while in this loop.
+                    var inter = currentInterior;
+
+                    if (inter is IplManager.Hanger interior)
                     {
-                        zoom = 0;
-                        if (interior.ModArea) // condition 1 func_348
+                        string interiorRadarHash = "sm_SmugDLC_Int_01";
+                        int zoom = 0;
+                        Vector3 pos = Game.PlayerPed.Position;
+                        if (pos.Z < -45.5f)
                         {
-                            interiorRadarHash = "sm_SmugDLC_Int_01_level_0_ModArea";
-                        }
-                        else
-                        {
-                            interiorRadarHash = "sm_SmugDLC_Int_01_level_0_NoModArea";
-                        }
-                    }
-                    else if (pos.Z < -39.25f)
-                    {
-                        zoom = 1;
-                        if (interior.BedroomStyle > 0) // condition 1 func_351 || func_350
-                        {
-                            if (interior.ModArea) // condition 2 func_348
+                            zoom = 0;
+                            if (interior.ModArea) // condition 1 func_348
                             {
-                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_ModArea";
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_0_ModArea";
                             }
                             else
                             {
-                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_NoModArea";
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_0_NoModArea";
                             }
                         }
-                        else if (interior.ModArea) // condition 2 func_348
+                        else if (pos.Z < -39.25f)
                         {
-                            interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_ModArea";
+                            zoom = 1;
+                            if (interior.BedroomStyle > 0) // condition 1 func_351 || func_350
+                            {
+                                if (interior.ModArea) // condition 2 func_348
+                                {
+                                    interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_ModArea";
+                                }
+                                else
+                                {
+                                    interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_NoModArea";
+                                }
+                            }
+                            else if (interior.ModArea) // condition 2 func_348
+                            {
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_ModArea";
+                            }
+                            else
+                            {
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_NoModArea";
+                            }
                         }
-                        else
+                        else if (pos.Z < -34.75f)
                         {
-                            interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_NoModArea";
+                            zoom = 2;
+                            interiorRadarHash = "sm_SmugDLC_Int_01_lvl_2";
                         }
+                        else if (pos.Z < -23f)
+                        {
+                            zoom = 3;
+                            interiorRadarHash = "sm_SmugDLC_Int_01_lvl_3";
+                        }
+                        SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
                     }
-                    else if (pos.Z < -34.75f)
-                    {
-                        zoom = 2;
-                        interiorRadarHash = "sm_SmugDLC_Int_01_lvl_2";
-                    }
-                    else if (pos.Z < -23f)
-                    {
-                        zoom = 3;
-                        interiorRadarHash = "sm_SmugDLC_Int_01_lvl_3";
-                    }
-                    SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
-                }
 
-                if ((inter is IplManager.Apartment || inter is IplManager.Penthouse) && ((inter is IplManager.House) == false))
-                {
-                    //apartment buildings:
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_11_flats"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_ss1_emissive_a"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_detail01b"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_11_Flats_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_LOD_01_02_08_09_10_11"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_SLOD1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_20_build2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("dt1_20_dt1_emissive_dt1_20"));
-                    HideMapObjectThisFrame((uint)GetHashKey("sm_14_emissive"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_sm_14_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_09_bld_01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_09_ema"));
-                    HideMapObjectThisFrame((uint)GetHashKey("prop_wall_light_12a"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_03_build1x"));
-                    HideMapObjectThisFrame((uint)GetHashKey("DT1_Emissive_DT1_03_b1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("dt1_03_dt1_Emissive_b1"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_emissive_bh1_08"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_bld2_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
-                    HideMapObjectThisFrame((uint)GetHashKey("bh1_08_em"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_Emissive_SS1_02a_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ss1_02_ss1_emissive_ss1_02"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
-                }
-                else if (inter is IplManager.House)
-                {
-                    //Debug.WriteLine("test");
-                    // houses:
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_d"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_a_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house02_railings"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01a_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01_balcony"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09b_House08_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11"));
-                    HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05c_b4"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_emissive_07"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_decals_05"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_B4_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs07"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_build_11_07_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_build_11_07_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_hs07_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09c_House11_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02b_details"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_09b_botpoolHouse02_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02_balcony"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_12b_house03mc"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_house03_MC_a_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_railing_06"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01_d"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_b_LOD"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
-                    HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
+                    if ((inter is IplManager.Apartment || inter is IplManager.Penthouse) && ((inter is IplManager.House) == false))
+                    {
+                        //apartment buildings:
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_11_flats"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ss1_11_ss1_emissive_a"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ss1_11_detail01b"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ss1_11_Flats_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("SS1_LOD_01_02_08_09_10_11"));
+                        HideMapObjectThisFrame((uint)GetHashKey("SS1_02_SLOD1"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_20_build2"));
+                        HideMapObjectThisFrame((uint)GetHashKey("dt1_20_dt1_emissive_dt1_20"));
+                        HideMapObjectThisFrame((uint)GetHashKey("sm_14_emissive"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_sm_14_bld2"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_09_bld_01"));
+                        HideMapObjectThisFrame((uint)GetHashKey("bh1_09_ema"));
+                        HideMapObjectThisFrame((uint)GetHashKey("prop_wall_light_12a"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_dt1_03_build1x"));
+                        HideMapObjectThisFrame((uint)GetHashKey("DT1_Emissive_DT1_03_b1"));
+                        HideMapObjectThisFrame((uint)GetHashKey("dt1_03_dt1_Emissive_b1"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
+                        HideMapObjectThisFrame((uint)GetHashKey("bh1_emissive_bh1_08"));
+                        HideMapObjectThisFrame((uint)GetHashKey("bh1_08_bld2_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("hei_bh1_08_bld2"));
+                        HideMapObjectThisFrame((uint)GetHashKey("bh1_08_em"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
+                        HideMapObjectThisFrame((uint)GetHashKey("SS1_Emissive_SS1_02a_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ss1_02_ss1_emissive_ss1_02"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ss1_02_building01"));
+                        HideMapObjectThisFrame((uint)GetHashKey("SS1_02_Building01_LOD"));
+                    }
+                    else if (inter is IplManager.House)
+                    {
+                        //Debug.WriteLine("test");
+                        // houses:
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05e_res5_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_d"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_a_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house02_railings"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_04_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house02_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01a_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs01_balcony"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_11"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09b_House08_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11"));
+                        HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_11"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs11_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_05c_b4"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_emissive_07"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_decals_05"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_05c_B4_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs07"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_build_11_07_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_build_11_07_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_hs07_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("CH2_09c_Emissive_07"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09c_hs13_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_CH2_09c_House11_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_09c_Emissive_13"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02b_details"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_09b_botpoolHouse02_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_Emissive_09"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_09b_hs02_balcony"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_12b_house03mc"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_house03_MC_a_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_emissive_02_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_12b_railing_06"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_house01_d"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("apa_ch2_04_M_b_LOD"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
+                        HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
+                    }
                 }
             }
             await Task.FromResult(0);
@@ -2563,7 +2563,7 @@ namespace vMenuClient
 
         private async Task InteriorChecker()
         {
-            if (MainMenu.IplManagementMenu != null)
+            if (MainMenu.IplManagementMenu != null && IplManager.AreInteriorsLoaded)
             {
                 Vector3 playerPos = Game.PlayerPed.Position;
 
@@ -2702,7 +2702,7 @@ namespace vMenuClient
 
         private async Task InteriorRadio()
         {
-            if (MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplRadios)
+            if (IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplRadios)
             {
                 var interior = currentInterior;
                 if (interior != null)
@@ -2736,14 +2736,12 @@ namespace vMenuClient
                 }
             }
 
-
-
             await Task.FromResult(0);
         }
 
         private async Task InteriorTv()
         {
-            if (EnableTvs && currentInterior != null)
+            if (IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null && EnableTvs && currentInterior != null)
             {
                 var interior = currentInterior;
 
@@ -2833,7 +2831,7 @@ namespace vMenuClient
             }
         }
         #endregion
-
+        /// Visor and snowball stuff.
         #region animation functions
         /// <summary>
         /// This triggers a helmet visor/goggles toggle if available.
