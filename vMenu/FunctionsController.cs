@@ -94,16 +94,18 @@ namespace vMenuClient
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
             Tick += GcTick;
-            Tick += InteriorHideExterior;
-            Tick += InteriorChecker;
-            Tick += InteriorTv;
-            Tick += InteriorRadio;
-            Tick += InteriorTpManager;
+
+            if (IplManager.IsIplIntegrationEnabled())
+            {
+                Tick += InteriorHideExteriorAndSetRadar;
+                Tick += InteriorChecker;
+                Tick += InteriorTv;
+                Tick += InteriorRadio;
+                Tick += InteriorTpManager;
+            }
         }
 
-
-
-        /// Task related
+        /// All tasks.
         #region General Tasks
         /// <summary>
         /// All general tasks that run every game tick (and are not (sub)menu specific).
