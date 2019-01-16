@@ -387,6 +387,10 @@ namespace vMenuClient
                 await Delay(1);
             }
         }
+        /// <summary>
+        /// Only used for highbeams on honk.
+        /// </summary>
+        /// <returns></returns>
         private async Task MoreVehicleOptions()
         {
             if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && IsAllowed(Permission.VOFlashHighbeamsOnHonk))
