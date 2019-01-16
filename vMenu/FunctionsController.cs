@@ -2412,6 +2412,60 @@ namespace vMenuClient
                 // make a copy just in case the currentInterior object becomes null while in this loop.
                 var inter = currentInterior;
 
+                if (inter is IplManager.Hanger interior)
+                {
+                    string interiorRadarHash = "sm_SmugDLC_Int_01";
+                    int zoom = 0;
+                    Vector3 pos = Game.PlayerPed.Position;
+                    bool s = false;
+                    if (pos.Z < -45.5f)
+                    {
+                        zoom = 0;
+                        if (interior.ModArea) // condition 1 func_348
+                        {
+                            interiorRadarHash = "sm_SmugDLC_Int_01_level_0_ModArea";
+                        }
+                        else
+                        {
+                            interiorRadarHash = "sm_SmugDLC_Int_01_level_0_NoModArea";
+                        }
+                    }
+                    else if (pos.Z < -39.25f)
+                    {
+                        zoom = 1;
+                        if (interior.BedroomStyle > 0) // condition 1 func_351 || func_350
+                        {
+                            if (interior.ModArea) // condition 2 func_348
+                            {
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_ModArea";
+                            }
+                            else
+                            {
+                                interiorRadarHash = "sm_SmugDLC_Int_01_level_1_Bed_NoModArea";
+                            }
+                        }
+                        else if (interior.ModArea) // condition 2 func_348
+                        {
+                            interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_ModArea";
+                        }
+                        else
+                        {
+                            interiorRadarHash = "sm_SmugDLC_Int_01_level_1_NoBed_NoModArea";
+                        }
+                    }
+                    else if (pos.Z < -34.75f)
+                    {
+                        zoom = 2;
+                        interiorRadarHash = "sm_SmugDLC_Int_01_lvl_2";
+                    }
+                    else if (pos.Z < -23f)
+                    {
+                        zoom = 3;
+                        interiorRadarHash = "sm_SmugDLC_Int_01_lvl_3";
+                    }
+                    SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
+                }
+
                 if ((inter is IplManager.Apartment || inter is IplManager.Penthouse) && ((inter is IplManager.House) == false))
                 {
                     //apartment buildings:
