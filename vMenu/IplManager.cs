@@ -99,8 +99,11 @@ namespace vMenuClient
         {
             if (IsIplIntegrationEnabled())
             {
-                // Apartments
-                #region apartments
+                #region apartments, houses, penthouses
+                // High End & High Life Apartments
+                #region High End & High Life Apartments
+
+                // 4 Integrity Way
                 AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
@@ -111,49 +114,99 @@ namespace vMenuClient
                     TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
                 });
 
-                AddInterior(new Apartment("Dell Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new Apartment("4 Integrity Way, Apt 28", MainMenu.IplManagementMenu.apartmentsMenu) // 35, 30, 28
+                {
+                    iplObject = Exports[resourceName].GetHLApartment5Object(),
+                    posTpInt = new Vector3(-23.27f, -598.06f, 80.03f),
+                    posTpExt = new List<Vector3>() { new Vector3(-48.95f, -588.96f, 37.95f) },
+                    teleportHeading = 250.22f,
+                    interiorLocation = new Vector3(-23.27f, -598.06f, 80.03f),
+                    TvPosition = new Vector3(-21.86f, -578.69f, 78.23f)
+                });
+
+                // Del Perro Heights
+                AddInterior(new Apartment("Del Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
                     posTpInt = new Vector3(-1458.32f, -520.78f, 56.93f),
-                    posTpExt = new Vector3(-1446.7f, -538.99f, 34.74f),
+                    posTpExt = new List<Vector3>() { new Vector3(-1441.51f, -544.53f, 34.74f) },
                     teleportHeading = 126.62f,
                     interiorLocation = new Vector3(-1465.84f, -530.33f, 55.53f),
                     TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
                 });
-                #endregion
 
-                // High Life apartments
-                #region High Life Apartments
+                AddInterior(new Apartment("Del Perro Heights, Apt 4", MainMenu.IplManagementMenu.apartmentsMenu) // 4, 20, 7
+                {
+                    iplObject = Exports[resourceName].GetHLApartment1Object(),
+                    posTpInt = new Vector3(-1457.06f, -533.43f, 74.04f),
+                    posTpExt = new List<Vector3>() { new Vector3(-1441.51f, -544.53f, 34.74f) },
+                    teleportHeading = 33.81f,
+                    interiorLocation = new Vector3(-1462.28100000f, -539.62760000f, 72.44434000f),
+                    TvPosition = new Vector3(-1469.47f, -548.6f, 72.24f)
+                });
+
+                // Richards Majestic
+                AddInterior(new Apartment("Richards Majestic, Apt 2", MainMenu.IplManagementMenu.apartmentsMenu) // 4 & 51
+                {
+                    iplObject = Exports[resourceName].GetHLApartment2Object(),
+                    posTpInt = new Vector3(-920.10f, -368.91f, 114.27f),
+                    posTpExt = new List<Vector3>() { new Vector3(-935.01f, -380.46f, 38.96f) },
+                    teleportHeading = 115.6f,
+                    interiorLocation = new Vector3(-915.39f, -378.57f, 113.67f),
+                    TvPosition = new Vector3(-907.03f, -383.24f, 112.47f)
+                });
+
+                // Tinsel Towers
+                AddInterior(new Apartment("Tinsel Towers, Apt 42", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetHLApartment3Object(),
+                    posTpInt = new Vector3(-611.32f, 58.89f, 98.2f),
+                    posTpExt = new List<Vector3>() { new Vector3(-614.56f, 37f, 43.57f) },
+                    teleportHeading = 89.65f,
+                    interiorLocation = new Vector3(-612.94f, 49.82f, 97.6f),
+                    TvPosition = new Vector3(-606.35f, 40.25f, 96.39f)
+                });
+
+                // Eclipse Towers
+                AddInterior(new Apartment("Eclipse Towers, Apt 3", MainMenu.IplManagementMenu.apartmentsMenu)
+                {
+                    iplObject = Exports[resourceName].GetHLApartment4Object(),
+                    posTpInt = new Vector3(-776.57f, 323.57f, 212f),
+                    posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
+                    teleportHeading = 270.98f,
+                    interiorLocation = new Vector3(-776.57f, 323.57f, 212f),
+                    TvPosition = new Vector3(-781.74f, 342.33f, 210.19f)
+                });
 
                 #endregion
 
                 // Penthouses 
                 #region penthouses
-                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetExecApartment1Object(),
                     posTpInt = new Vector3(-781.7f, 318.62f, 217.67f),
-                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
                     interiorLocation = new Vector3(-786.9f, 330.32f, 217.04f),
                     TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
                 });
 
-                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
+                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
                 {
                     iplObject = Exports[resourceName].GetExecApartment2Object(),
                     posTpInt = new Vector3(-779.25f, 338.95f, 196.69f),
-                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
                     interiorLocation = new Vector3(-773.2258f, 322.8252f, 194.8862f),
                     TvPosition = new Vector3(-780.61f, 319.28f, 194.88f),
                 });
 
-                AddInterior(new Penthouse("EclipseTowers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
+                AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
                 {
                     iplObject = Exports[resourceName].GetExecApartment3Object(),
                     posTpInt = new Vector3(-781.82f, 318.93f, 187.92f),
-                    posTpExt = new Vector3(-777.48f, 312.71f, 85.7f),
+                    posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
                     interiorLocation = new Vector3(-787.7805f, 334.9232f, 186.1134f),
                     TvPosition = new Vector3(-780.36f, 338.47f, 186.11f),
@@ -162,81 +215,81 @@ namespace vMenuClient
 
                 // High end houses
                 #region High end Houses
-                AddInterior(new House("House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi1Object(),
                     posTpInt = new Vector3(-174.26f, 497.18f, 137.67f),
-                    posTpExt = new Vector3(-175.6f, 501.42f, 137.42f),
+                    posTpExt = new List<Vector3>() { new Vector3(-175.6f, 501.42f, 137.42f) },
                     teleportHeading = 209.6f,
                     interiorLocation = new Vector3(-174.26f, 497.18f, 137.67f),
                     TvPosition = new Vector3(-161.66f, 482.89f, 136.24f),
                 });
 
-                AddInterior(new House("House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi2Object(),
                     posTpInt = new Vector3(341.27f, 437.41f, 149.39f),
-                    posTpExt = new Vector3(347.1f, 441.02f, 147.7f),
+                    posTpExt = new List<Vector3>() { new Vector3(347.1f, 441.02f, 147.7f) },
                     teleportHeading = 141.24f,
                     interiorLocation = new Vector3(341.27f, 437.41f, 149.39f),
                     TvPosition = new Vector3(331.13f, 421.66f, 147.97f),
                 });
 
-                AddInterior(new House("House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi3Object(),
                     posTpInt = new Vector3(373.51f, 423.02f, 145.91f),
-                    posTpExt = new Vector3(373.02f, 428.12f, 145.68f),
+                    posTpExt = new List<Vector3>() { new Vector3(373.02f, 428.12f, 145.68f) },
                     teleportHeading = 182.56f,
                     interiorLocation = new Vector3(373.51f, 423.02f, 145.91f),
                     TvPosition = new Vector3(377.44f, 404.72f, 144.51f),
                 });
 
-                AddInterior(new House("House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi4Object(),
                     posTpInt = new Vector3(-681.95f, 591.94f, 145.39f),
-                    posTpExt = new Vector3(-686.57f, 596.89f, 143.64f),
+                    posTpExt = new List<Vector3>() { new Vector3(-686.57f, 596.89f, 143.64f) },
                     teleportHeading = 228.75f,
                     interiorLocation = new Vector3(-681.95f, 591.94f, 145.39f),
                     TvPosition = new Vector3(-664.1f, 585.9f, 143.69f),
                 });
 
-                AddInterior(new House("House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi5Object(),
                     posTpInt = new Vector3(-759.09f, 618.69f, 144.15f),
-                    posTpExt = new Vector3(-751.47f, 621.01f, 142.24f),
+                    posTpExt = new List<Vector3>() { new Vector3(-751.47f, 621.01f, 142.24f) },
                     teleportHeading = 109.83f,
                     interiorLocation = new Vector3(-759.09f, 618.69f, 144.15f),
                     TvPosition = new Vector3(-771.4f, 604.58f, 142.73f),
                 });
 
-                AddInterior(new House("House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi6Object(),
                     posTpInt = new Vector3(-859.82f, 690.7f, 152.86f),
-                    posTpExt = new Vector3(-853.14f, 696.42f, 148.78f),
+                    posTpExt = new List<Vector3>() { new Vector3(-853.14f, 696.42f, 148.78f) },
                     teleportHeading = 199.17f,
                     interiorLocation = new Vector3(-859.82f, 690.7f, 152.86f),
-                    TvPosition = new Vector3(-805.26f, 674.47f, 151.46f),
+                    TvPosition = new Vector3(-850.26f, 674.47f, 151.46f),
                 });
 
-                AddInterior(new House("House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi7Object(),
                     posTpInt = new Vector3(117.34f, 559.17f, 184.3f),
-                    posTpExt = new Vector3(119.38f, 564.83f, 183.96f),
+                    posTpExt = new List<Vector3>() { new Vector3(119.38f, 564.83f, 183.96f) },
                     teleportHeading = 187.86f,
                     interiorLocation = new Vector3(117.34f, 559.17f, 184.3f),
                     TvPosition = new Vector3(127.29f, 543.4f, 182.9f),
                 });
 
-                AddInterior(new House("House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
+                AddInterior(new House("Stilt House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
                     iplObject = Exports[resourceName].GetGTAOHouseHi8Object(),
                     posTpInt = new Vector3(-1290.16f, 449.12f, 97.9f),
-                    posTpExt = new Vector3(-1294.39f, 455.2f, 97.4f),
+                    posTpExt = new List<Vector3>() { new Vector3(-1294.39f, 455.2f, 97.4f) },
                     teleportHeading = 187.31f,
                     interiorLocation = new Vector3(-1290.16f, 449.12f, 97.9f),
                     TvPosition = new Vector3(-1281.54f, 432.17f, 96.5f),
@@ -262,8 +315,9 @@ namespace vMenuClient
                             }
                         }
 
+                    }
                 }
-            }
+                #endregion
 
         }
 
