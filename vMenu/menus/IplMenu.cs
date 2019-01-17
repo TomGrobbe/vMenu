@@ -55,9 +55,9 @@ namespace vMenuClient
                 var interior = interiors.Find(inter => inter.name == item.Text);
                 if (interior != null)
                 {
-                    if (interior is Hanger han)
+                    if (interior is Hanger || interior is Nightclub)
                     {
-                        han.outPos = han.posTpExt.Find(l => l.DistanceToSquared2D(Game.PlayerPed.Position) < 10f);
+                        interior.outPos = interior.posTpExt.Find(l => l.DistanceToSquared2D(Game.PlayerPed.Position) < 10f);
                     }
                     interior.TeleportToInterior();
                     sender.CloseMenu();
@@ -72,6 +72,7 @@ namespace vMenuClient
 
             MenuController.AddSubmenu(menu, hangarsMenu);
             MenuController.AddSubmenu(menu, apartmentsMenu);
+            MenuController.AddSubmenu(menu, nightclubsMenu);
 
             MenuController.AddMenu(EnterInteriorMenu);
 
@@ -80,7 +81,7 @@ namespace vMenuClient
             MenuItem hangars = new MenuItem("Aircraft Hangars", "Customize the aircraft hanger interior.") { Label = "→→→" };
             MenuItem apartments = new MenuItem("Apartments", "Every apartment can have it's own style, customize them all here.") { Label = "→→→" };
             MenuItem bunkers = new MenuItem("Bunkers", "Customize the bunker interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
-            MenuItem nightclubs = new MenuItem("Nightclubs", "Customze the Night Clubs interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
+            MenuItem nightclubs = new MenuItem("Nightclubs", "Customze the Night Clubs interior.") { Label = "→→→" };
             MenuItem offices = new MenuItem("CEO Offices", "Customze the CEO Offices interior.") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
             MenuItem warehouses = new MenuItem("Warehouses", "Customize the warehouses interior. (Coming soon)") { Label = "→→→", Enabled = false, LeftIcon = MenuItem.Icon.LOCK };
 
@@ -108,6 +109,7 @@ namespace vMenuClient
 
             MenuController.BindMenuItem(menu, hangarsMenu, hangars);
             MenuController.BindMenuItem(menu, apartmentsMenu, apartments);
+            MenuController.BindMenuItem(menu, nightclubsMenu, nightclubs);
 
             menu.AddMenuItem(enableTvs);
             menu.AddMenuItem(tvChannel);

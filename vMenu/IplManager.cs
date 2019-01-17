@@ -338,9 +338,43 @@ namespace vMenuClient
                 //interiors.Last().iplObject.LoadDefault();
                 #endregion
 
+                #region Night club
+                interiors.Add(new Nightclub("Nightclub", MainMenu.IplManagementMenu.nightclubsMenu)
+                {
+                    iplObject = Exports[resourceName].GetAfterHoursNightclubsObject(),
+                    posTpInt = new Vector3(-1569.44f, -3016.43f, -74.41f),
+                    posTpExt = new List<Vector3>()
+                    {
+                        new Vector3(-676.18f, -2458.81f, 13.94f),   // Airport 
+                        new Vector3(870.8f, -2100.33f, 30.46f),     // Cypress Flats
+                        new Vector3(-1285.78f, -651.23f, 26.58f),   // Del Perro
+                        new Vector3(194.89f, -3168.45f, 5.79f),     // Elysian Island
+                        new Vector3(757.34f, -1332.71f, 27.28f),    // La Mesa
+                        new Vector3(346.11f, -978.37f, 29.37f),     // Mission Row
+                        new Vector3(-120.4f, -1259.77f, 29.31f),    // Srawberry
+                        new Vector3(-1174.12f, -1152.86f, 5.66f),   // Vespucci
+                        new Vector3(372.56f, 253.09f, 103.01f),     // Vinewood
+                        new Vector3(5.65f, 220.6f, 107.8f),         // Vinewood West
+                    },
+                    teleportHeading = 0f,
+                    interiorLocation = new Vector3(-1604.664f, -3012.583f, -78.000f),
+                    //TvPosition = new Vector3(-1604.664f, -3012.583f, -80.00f)
+                    TvPosition = new Vector3(-1601.286f, -3012.74f, -78.3553f)
+                });
+
+                foreach (Vector3 v in interiors.Last().posTpExt)
+                {
+                    if (!v.IsZero)
+                    {
+                        var b = AddBlipForCoord(v.X, v.Y, v.Z);
+                        SetBlipSprite(b, 614);
+                        SetBlipAsShortRange(b, true);
+                    }
+                }
+                #endregion
+
                 AreInteriorsLoaded = true;
             }
-
         }
 
         /// <summary>
@@ -384,6 +418,7 @@ namespace vMenuClient
 
             internal Vector3 posTpInt = Vector3.Zero; // interior teleport location in the world.
             internal List<Vector3> posTpExt = new List<Vector3>() { Vector3.Zero }; // exterior teleport location in the world.
+            internal Vector3 outPos = Vector3.Zero;
 
             internal float teleportHeading = 0f;
             internal Vector3 interiorLocation = Vector3.Zero; // used to get the interior ID, interior ID at the posInt (entrance) is usually NOT the correct interior ID.
@@ -738,7 +773,6 @@ namespace vMenuClient
         /// </summary>
         internal class Hanger : Interior
         {
-            internal Vector3 outPos = Vector3.Zero;
             //internal List<Vector3> outTpLocations = new List<Vector3>();
 
             internal bool ModArea { get; private set; } = true;
@@ -896,10 +930,694 @@ namespace vMenuClient
 
         internal class Nightclub : Interior
         {
-            internal Nightclub(string name, Menu parentMenu) : base(name, parentMenu)
+            #region interior options
+
+            #region interior variables
+            // Styles etc.
+            internal int ClubName { get; private set; } = 0;
+
+            internal int ClubStyle { get; private set; } = 1;
+
+            internal int ClubPodiumStyle { get; private set; } = 1;
+
+            internal int ClubSpeakers { get; private set; } = 2;
+
+            internal bool ClubSecurity { get; private set; } = true;
+
+            internal int ClubTurntables { get; private set; } = 1;
+
+            internal bool ClubBar { get; private set; } = true;
+
+            // Booze
+            internal bool BoozeA { get; private set; } = true;
+            internal bool BoozeB { get; private set; } = true;
+            internal bool BoozeC { get; private set; } = true;
+
+            // Trophies
+            internal int TrophyNumber1 { get; private set; } = 3; // 0 = disabled, 1 = bronze, 2 = silver, 3 = gold
+            internal int TrophyBattler { get; private set; } = 0;
+            internal int TrophyDancer { get; private set; } = 0;
+
+            // Details (props)
+            internal bool Clutter { get; private set; } = false;
+            internal bool Worklamps { get; private set; } = false;
+            internal bool Truck { get; private set; } = false;
+            internal bool DryIce { get; private set; } = false;
+            internal bool LightRigsOff { get; private set; } = false;
+            internal bool RoofLightsOff { get; private set; } = false;
+            internal bool FloorTradLights { get; private set; } = false;
+            internal bool Chest { get; private set; } = false;
+            internal bool VaultAmmo { get; private set; } = false;
+            internal bool VaultMeth { get; private set; } = false;
+            internal bool VaultFakeID { get; private set; } = false;
+            internal bool VaultWeed { get; private set; } = false;
+            internal bool VaultCoke { get; private set; } = false;
+            internal bool VaultCash { get; private set; } = false;
+
+            // Lights
+            internal int DropletLights { get; private set; } = 0;
+            internal int NeonLights { get; private set; } = 0;
+            internal int BandLights { get; private set; } = 3;
+            internal int LaserLights { get; private set; } = 0;
+            #endregion
+
+            #region interior options menu setup
+            private Menu interiorOptions = new Menu("Nightclub", "Nightclub Interior Options");
+
+            internal void CreateInteriorOptionsMenu()
             {
+                // Other details submenu
+                Menu otherDetails = new Menu("Nightclub Details", "Nightclub Interior Details Options");
+                MenuController.AddSubmenu(interiorOptions, otherDetails);
+                var otherDetailsBtn = new MenuItem("Other interior details", "Mangage other interior details, mostly props.") { Label = "→→→" };
+                MenuController.BindMenuItem(interiorOptions, otherDetails, otherDetailsBtn);
+
+                // Other details submenu menu items
+                MenuCheckboxItem clutter = new MenuCheckboxItem("Clutter and graffiti", Clutter);
+                MenuCheckboxItem worklamps = new MenuCheckboxItem("Work lamps and trash", Worklamps);
+                MenuCheckboxItem truck = new MenuCheckboxItem("Boxtruck in garage", Truck);
+                MenuCheckboxItem dryIce = new MenuCheckboxItem("Dry ice machines", DryIce);
+                MenuCheckboxItem lightRigsOff = new MenuCheckboxItem("Disabled Light Racks", "This adds all light rigs but in the disabled state, might glitch out if you have this turned on while you also have other lights setup in the previous menu.", LightRigsOff);
+                MenuCheckboxItem roofLigthsOff = new MenuCheckboxItem("Fake lights", RoofLightsOff);
+                MenuCheckboxItem floorTradLights = new MenuCheckboxItem("Floor and wall lights", "These lights are supposed to be only added on the traditional club style, they might not work correctly for other club styles.", FloorTradLights);
+                MenuCheckboxItem chest = new MenuCheckboxItem("Chest", "A chest on the desk in the VIP room upstairs.", Chest);
+                MenuCheckboxItem vaultAmmunations = new MenuCheckboxItem("Vault Ammo", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultAmmo);
+                MenuCheckboxItem vaultMeth = new MenuCheckboxItem("Vault Meth", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultMeth);
+                MenuCheckboxItem vaultFakeID = new MenuCheckboxItem("Vault Fake ID", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultFakeID);
+                MenuCheckboxItem vaultWeed = new MenuCheckboxItem("Vault Weed", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultWeed);
+                MenuCheckboxItem vaultCoke = new MenuCheckboxItem("Vault Coke", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultCoke);
+                MenuCheckboxItem vaultCash = new MenuCheckboxItem("Vault Cash", "Style of the inside of the vault in the VIP room upstairs (inside is not visible).", VaultCash);
+
+                otherDetails.AddMenuItem(clutter);
+                otherDetails.AddMenuItem(worklamps);
+                otherDetails.AddMenuItem(truck);
+                otherDetails.AddMenuItem(dryIce);
+                otherDetails.AddMenuItem(lightRigsOff);
+                otherDetails.AddMenuItem(roofLigthsOff);
+                otherDetails.AddMenuItem(floorTradLights);
+                otherDetails.AddMenuItem(chest);
+                otherDetails.AddMenuItem(vaultAmmunations);
+                otherDetails.AddMenuItem(vaultMeth);
+                otherDetails.AddMenuItem(vaultFakeID);
+                otherDetails.AddMenuItem(vaultWeed);
+                otherDetails.AddMenuItem(vaultCoke);
+                otherDetails.AddMenuItem(vaultCash);
+
+                otherDetails.OnCheckboxChange += (sender, item, index, enabled) =>
+                {
+                    SetProp(index, enabled);
+                };
+
+
+                // Create the items.
+                MenuListItem clubName = new MenuListItem("Club Name", new List<string>() { "Galaxy", "Studio", "Omega", "Technologie", "Gefangnis", "Maisonette", "Tony", "Palace", "Paradise" }, ClubName, "Select a club name for the Nightclub interior.");
+
+                MenuListItem clubStyle = new MenuListItem("Club Style", new List<string>() { "Traditional", "Edgy", "Glamorous" }, ClubStyle, "Select a club style for the Nightclub interior.");
+
+                MenuListItem clubPodiumStyle = new MenuListItem("Podium Style", new List<string>() { "Traditional", "Edgy", "Glamorous" }, ClubPodiumStyle, "Select a podium style for the Nightclub interior.");
+
+                MenuListItem clubSpeakers = new MenuListItem("Speakers", new List<string>() { "No Speakers", "Basic Speakers", "Upgraded Speakers" }, ClubSpeakers, "Select the speakers type for the Nightclub interior.");
+
+                MenuCheckboxItem clubSecurity = new MenuCheckboxItem("Security Cameras", "Enable or disable club security cameras in the Nightclub interior.", ClubSecurity);
+
+                MenuListItem turntables = new MenuListItem("Turntables", new List<string>() { "No turntables", "Style 1", "Style 2", "Style 3", "Style 4" }, ClubTurntables, "Select a turntables variant for the Nightclub interior.");
+
+                MenuCheckboxItem bar = new MenuCheckboxItem("Bar", "Enable or disable the bar.", ClubBar);
+
+                MenuCheckboxItem boozeA = new MenuCheckboxItem("Booze A", "Enable or disable Booze style A.", BoozeA);
+                MenuCheckboxItem boozeB = new MenuCheckboxItem("Booze B", "Enable or disable Booze style C.", BoozeB);
+                MenuCheckboxItem boozeC = new MenuCheckboxItem("Booze C", "Enable or disable Booze style B.", BoozeC);
+
+                MenuListItem trophyNumberOne = new MenuListItem("Trophy - Number 1", new List<string>() { "No trophy", "Bronze", "Silver", "Gold" }, TrophyNumber1, "Select a 'Number One' trophy variation. Trophies are on the desk in the VIP room upstairs.");
+                MenuListItem trophyBattler = new MenuListItem("Trophy - Battler", new List<string>() { "No trophy", "Bronze", "Silver", "Gold" }, TrophyBattler, "Select a 'Battler' trophy variation. Trophies are on the desk in the VIP room upstairs.");
+                MenuListItem trophyDancer = new MenuListItem("Trophy - Dancer", new List<string>() { "No trophy", "Bronze", "Silver", "Gold" }, TrophyDancer, "Select a 'Dancer' trophy variation. Trophies are on the desk in the VIP room upstairs.");
+
+                MenuListItem dropletsLights = new MenuListItem("Droplet Lights", new List<string>() { "No droplet lights", "Yellow", "Green", "White", "Purple" }, DropletLights, "Droplet lights variation.");
+                MenuListItem neonsLights = new MenuListItem("Neon Lights", new List<string>() { "No neon lights", "Yellow", "White", "Purple", "Cyan" }, NeonLights, "Neon lights variation.");
+                MenuListItem bandsLights = new MenuListItem("Band Lights", new List<string>() { "No band lights", "Yellow", "Green", "white", "Cyan" }, BandLights, "Band lights variation.");
+                MenuListItem lasersLights = new MenuListItem("Laser Lights", new List<string>() { "No laser lights", "Yellow", "Green", "White", "Purple" }, LaserLights, "Laser lights variation.");
+
+
+                // Add items to the menu.
+                // misc options
+                interiorOptions.AddMenuItem(otherDetailsBtn);
+                interiorOptions.AddMenuItem(clubName);
+                interiorOptions.AddMenuItem(clubStyle);
+                interiorOptions.AddMenuItem(clubPodiumStyle);
+                interiorOptions.AddMenuItem(clubSpeakers);
+                interiorOptions.AddMenuItem(clubSecurity);
+                interiorOptions.AddMenuItem(turntables);
+                interiorOptions.AddMenuItem(bar);
+                // booze
+                interiorOptions.AddMenuItem(boozeA);
+                interiorOptions.AddMenuItem(boozeB);
+                interiorOptions.AddMenuItem(boozeC);
+                // trophies
+                interiorOptions.AddMenuItem(trophyNumberOne);
+                interiorOptions.AddMenuItem(trophyBattler);
+                interiorOptions.AddMenuItem(trophyDancer);
+                // lights
+                interiorOptions.AddMenuItem(dropletsLights);
+                interiorOptions.AddMenuItem(neonsLights);
+                interiorOptions.AddMenuItem(bandsLights);
+                interiorOptions.AddMenuItem(lasersLights);
+
+                // Checkbox changes.
+                interiorOptions.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    if (item == clubSecurity)
+                    {
+                        ClubSecurity = _checked;
+                        SetClubSecurity(ClubSecurity);
+                    }
+                    else if (item == bar)
+                    {
+                        ClubBar = _checked;
+                        SetClubBar(ClubBar);
+                    }
+                    else if (item == boozeA)
+                    {
+                        BoozeA = _checked;
+                        SetBooze(BoozeA, BoozeB, BoozeC);
+                    }
+                    else if (item == boozeB)
+                    {
+                        BoozeB = _checked;
+                        SetBooze(BoozeA, BoozeB, BoozeC);
+                    }
+                    else if (item == boozeC)
+                    {
+                        BoozeC = _checked;
+                        SetBooze(BoozeA, BoozeB, BoozeC);
+                    }
+                };
+
+                // List changes
+                interiorOptions.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+                {
+                    if (item == clubName)
+                    {
+                        ClubName = newIndex;
+                        SetClubName(ClubName);
+                    }
+                    else if (item == clubStyle)
+                    {
+                        ClubStyle = newIndex;
+                        SetClubStyle(ClubStyle);
+                    }
+                    else if (item == clubPodiumStyle)
+                    {
+                        ClubPodiumStyle = newIndex;
+                        SetClubPodiumStyle(ClubPodiumStyle);
+                    }
+                    else if (item == clubSpeakers)
+                    {
+                        ClubSpeakers = newIndex;
+                        SetClubSpeakers(ClubSpeakers);
+                    }
+                    else if (item == turntables)
+                    {
+                        ClubTurntables = newIndex;
+                        SetClubTurntables(ClubTurntables);
+                    }
+                    else if (item == trophyNumberOne)
+                    {
+                        TrophyNumber1 = newIndex;
+                        SetTrophy(0, TrophyNumber1);
+                    }
+                    else if (item == trophyBattler)
+                    {
+                        TrophyBattler = newIndex;
+                        SetTrophy(1, TrophyBattler);
+                    }
+                    else if (item == trophyDancer)
+                    {
+                        TrophyDancer = newIndex;
+                        SetTrophy(2, TrophyDancer);
+                    }
+                    else if (item == dropletsLights)
+                    {
+                        DropletLights = newIndex;
+                        SetLights(0, DropletLights);
+                    }
+                    else if (item == neonsLights)
+                    {
+                        NeonLights = newIndex;
+                        SetLights(1, NeonLights);
+                    }
+                    else if (item == bandsLights)
+                    {
+                        BandLights = newIndex;
+                        SetLights(2, BandLights);
+                    }
+                    else if (item == lasersLights)
+                    {
+                        LaserLights = newIndex;
+                        SetLights(3, LaserLights);
+                    }
+                };
+
+                // manage binding and setup for the submenu.
+                MenuController.AddSubmenu(Menu, interiorOptions);
+                var btn = new MenuItem("Nightclub Interior Options", "Configure interior options for the nightclub.") { Label = "→→→" };
+                Menu.AddMenuItem(btn);
+                MenuController.BindMenuItem(Menu, interiorOptions, btn);
+            }
+            #endregion
+
+            #region interior options set functions
+            /// <summary>
+            /// Sets the club name.
+            /// </summary>
+            /// <param name="index"></param>
+            internal async void SetClubName(int index)
+            {
+                ClubName = index;
+                dynamic name = null;
+                switch (index)
+                {
+                    case 0:
+                        name = iplObject.Interior.Name.galaxy;
+                        break;
+                    case 1:
+                        name = iplObject.Interior.Name.studio;
+                        break;
+                    case 2:
+                        name = iplObject.Interior.Name.omega;
+                        break;
+                    case 3:
+                        name = iplObject.Interior.Name.technologie;
+                        break;
+                    case 4:
+                        name = iplObject.Interior.Name.gefangnis;
+                        break;
+                    case 5:
+                        name = iplObject.Interior.Name.maisonette;
+                        break;
+                    case 6:
+                        name = iplObject.Interior.Name.tony;
+                        break;
+                    case 7:
+                        name = iplObject.Interior.Name.palace;
+                        break;
+                    case 8:
+                        name = iplObject.Interior.Name.paradise;
+                        break;
+                }
+                iplObject.Interior.Name.Set(name ?? "", false);
+                await Delay(100);
+                RefreshInterior(InteriorId);
+            }
+
+            /// <summary>
+            /// Sets the club style.
+            /// </summary>
+            /// <param name="index"></param>
+            internal void SetClubStyle(int index)
+            {
+                ClubStyle = index;
+                dynamic style = null;
+                switch (index)
+                {
+                    case 0:
+                        style = iplObject.Interior.Style.trad;
+                        break;
+                    case 1:
+                        style = iplObject.Interior.Style.edgy;
+                        break;
+                    case 2:
+                        style = iplObject.Interior.Style.glam;
+                        break;
+                }
+
+                iplObject.Interior.Style.Set(style, true);
+            }
+
+            /// <summary>
+            /// Sets the club podium style.
+            /// </summary>
+            /// <param name="index"></param>
+            internal void SetClubPodiumStyle(int index)
+            {
+                ClubPodiumStyle = index;
+                dynamic podium = null;
+                switch (index)
+                {
+                    case 0:
+                        podium = iplObject.Interior.Podium.trad;
+                        break;
+                    case 1:
+                        podium = iplObject.Interior.Podium.edgy;
+                        break;
+                    case 2:
+                        podium = iplObject.Interior.Podium.glam;
+                        break;
+                }
+                iplObject.Interior.Podium.Set(podium, true);
+            }
+
+            /// <summary>
+            /// Sets the club speakers style, not using API here because that one is bugged somehow.
+            /// </summary>
+            /// <param name="index"></param>
+            internal void SetClubSpeakers(int index)
+            {
+                ClubSpeakers = index;
+                // Clubspeakers are buggy as fuck when using the api, i'll just manually enable/disable them for a better result.
+                string basic = "Int01_ba_equipment_setup";
+                string upgraded = "Int01_ba_equipment_upgrade";
+
+                DisableInteriorProp(InteriorId, upgraded);
+                DisableInteriorProp(InteriorId, basic);
+                if (index == 1)
+                {
+                    EnableInteriorProp(InteriorId, basic);
+                }
+                else if (index == 2)
+                {
+                    EnableInteriorProp(InteriorId, basic);
+                    EnableInteriorProp(InteriorId, upgraded);
+                }
+                RefreshInterior(InteriorId);
+            }
+
+            /// <summary>
+            /// Enables or disables the club security cameras.
+            /// </summary>
+            /// <param name="enabled"></param>
+            internal void SetClubSecurity(bool enabled)
+            {
+                ClubSecurity = enabled;
+                if (enabled)
+                    iplObject.Interior.Security.Set(iplObject.Interior.Security.on, true);
+                else
+                    iplObject.Interior.Security.Set(iplObject.Interior.Security.off, true);
+            }
+
+            /// <summary>
+            /// Sets the club turntables style.
+            /// </summary>
+            /// <param name="index"></param>
+            internal void SetClubTurntables(int index)
+            {
+                ClubTurntables = index;
+                dynamic turntable = null;
+                switch (index)
+                {
+                    case 0:
+                        turntable = iplObject.Interior.Turntables.none;
+                        break;
+                    case 1:
+                        turntable = iplObject.Interior.Turntables.style01;
+                        break;
+                    case 2:
+                        turntable = iplObject.Interior.Turntables.style02;
+                        break;
+                    case 3:
+                        turntable = iplObject.Interior.Turntables.style03;
+                        break;
+                    case 4:
+                        turntable = iplObject.Interior.Turntables.style04;
+                        break;
+                }
+                iplObject.Interior.Turntables.Set(turntable, true);
+            }
+
+            /// <summary>
+            /// Enables or disables the club bar.
+            /// </summary>
+            /// <param name="enabled"></param>
+            internal void SetClubBar(bool enabled)
+            {
+                ClubBar = enabled;
+                if (enabled)
+                    iplObject.Interior.Bar.Enable(true, true);
+                else
+                    iplObject.Interior.Bar.Enable(false, true);
+            }
+
+            /// <summary>
+            /// Sets the booze states for a, b and c.
+            /// </summary>
+            /// <param name="bA"></param>
+            /// <param name="bB"></param>
+            /// <param name="bC"></param>
+            internal void SetBooze(bool bA, bool bB, bool bC)
+            {
+                BoozeA = bA;
+                BoozeB = bB;
+                BoozeC = bC;
+
+                iplObject.Interior.Booze.Enable(iplObject.Interior.Booze.A, bA, false);
+                iplObject.Interior.Booze.Enable(iplObject.Interior.Booze.B, bB, false);
+                iplObject.Interior.Booze.Enable(iplObject.Interior.Booze.C, bC, false);
+
+                RefreshInterior(InteriorId);
+            }
+
+            /// <summary>
+            /// Sets the state and style for each trophy.
+            /// </summary>
+            /// <param name="trophyIndex"></param>
+            /// <param name="trophyStyle"></param>
+            internal void SetTrophy(int trophyIndex, int trophyStyle)
+            {
+                // Select the style object.
+                dynamic style = null;
+                switch (trophyStyle)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        style = iplObject.Interior.Trophy.Color.bronze;
+                        break;
+                    case 2:
+                        style = iplObject.Interior.Trophy.Color.silver;
+                        break;
+                    case 3:
+                        style = iplObject.Interior.Trophy.Color.gold;
+                        break;
+                }
+
+                // Select the trophy object.
+                dynamic trophy = null;
+                switch (trophyIndex)
+                {
+                    case 0:
+                        TrophyNumber1 = trophyStyle;
+                        trophy = iplObject.Interior.Trophy.number1;
+                        break;
+                    case 1:
+                        TrophyBattler = trophyStyle;
+                        trophy = iplObject.Interior.Trophy.battler;
+                        break;
+                    case 2:
+                        TrophyDancer = trophyStyle;
+                        trophy = iplObject.Interior.Trophy.dancer;
+                        break;
+                }
+
+                // Disable the trophy.
+                if (style == null)
+                {
+                    iplObject.Interior.Trophy.Enable(trophy, false, style, true);
+                }
+                // Enable it.
+                else
+                {
+                    iplObject.Interior.Trophy.Enable(trophy, true, style, true);
+                }
+            }
+
+            /// <summary>
+            /// Sets the prop enabled or disabled.
+            /// </summary>
+            /// <param name="index"></param>
+            /// <param name="enabled"></param>
+            internal void SetProp(int index, bool enabled)
+            {
+                dynamic prop = null;
+                switch (index)
+                {
+                    case 0:
+                        prop = iplObject.Interior.Details.clutter;
+                        Clutter = enabled;
+                        break;
+                    case 1:
+                        prop = iplObject.Interior.Details.worklamps;
+                        Worklamps = enabled;
+                        break;
+                    case 2:
+                        prop = iplObject.Interior.Details.truck;
+                        Truck = enabled;
+                        break;
+                    case 3:
+                        prop = iplObject.Interior.Details.dryIce;
+                        DryIce = enabled;
+                        break;
+                    case 4:
+                        prop = iplObject.Interior.Details.lightRigsOff;
+                        LightRigsOff = enabled;
+                        break;
+                    case 5:
+                        prop = iplObject.Interior.Details.roofLigthsOff;
+                        RoofLightsOff = enabled;
+                        break;
+                    case 6:
+                        prop = iplObject.Interior.Details.floorTradLights;
+                        FloorTradLights = enabled;
+                        break;
+                    case 7:
+                        prop = iplObject.Interior.Details.chest;
+                        Chest = enabled;
+                        break;
+                    case 8:
+                        prop = iplObject.Interior.Details.vaultAmmunations;
+                        VaultAmmo = enabled;
+                        break;
+                    case 9:
+                        prop = iplObject.Interior.Details.vaultMeth;
+                        VaultMeth = enabled;
+                        break;
+                    case 10:
+                        prop = iplObject.Interior.Details.vaultFakeID;
+                        VaultFakeID = enabled;
+                        break;
+                    case 11:
+                        prop = iplObject.Interior.Details.vaultWeed;
+                        VaultWeed = enabled;
+                        break;
+                    case 12:
+                        prop = iplObject.Interior.Details.vaultCoke;
+                        VaultCoke = enabled;
+                        break;
+                    case 13:
+                        prop = iplObject.Interior.Details.vaultCash;
+                        VaultCash = enabled;
+                        break;
+                }
+                iplObject.Interior.Details.Enable(prop, enabled, true);
+            }
+
+            /// <summary>
+            /// Sets the lights state.
+            /// </summary>
+            /// <param name="lightType"></param>
+            /// <param name="lightColor"></param>
+            internal void SetLights(int lightType, int lightColor)
+            {
+                dynamic light = null;
+                dynamic style = null;
+
+                // Determine the light object and style object based on the index.
+                switch (lightType)
+                {
+                    case 0:
+                        DropletLights = lightColor;
+                        light = iplObject.Interior.Lights.Droplets;
+                        switch (lightColor)
+                        {
+                            case 1:
+                                style = light.yellow;
+                                break;
+                            case 2:
+                                style = light.green;
+                                break;
+                            case 3:
+                                style = light.white;
+                                break;
+                            case 4:
+                                style = light.purple;
+                                break;
+                        }
+                        break;
+                    case 1:
+                        NeonLights = lightColor;
+                        light = iplObject.Interior.Lights.Neons;
+                        switch (lightColor)
+                        {
+                            case 1:
+                                style = light.yellow;
+                                break;
+                            case 2:
+                                style = light.white;
+                                break;
+                            case 3:
+                                style = light.purple;
+                                break;
+                            case 4:
+                                style = light.cyan;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        BandLights = lightColor;
+                        light = iplObject.Interior.Lights.Bands;
+                        switch (lightColor)
+                        {
+                            case 1:
+                                style = light.yellow;
+                                break;
+                            case 2:
+                                style = light.green;
+                                break;
+                            case 3:
+                                style = light.white;
+                                break;
+                            case 4:
+                                style = light.cyan;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        LaserLights = lightColor;
+                        light = iplObject.Interior.Lights.Lasers;
+                        switch (lightColor)
+                        {
+                            case 1:
+                                style = light.yellow;
+                                break;
+                            case 2:
+                                style = light.green;
+                                break;
+                            case 3:
+                                style = light.white;
+                                break;
+                            case 4:
+                                style = light.purple;
+                                break;
+                        }
+                        break;
+                }
+
+                // set the style for that specific light, or disable it all together.
+                if (light != null)
+                {
+                    if (style == null)
+                    {
+                        light.Clear(true);
+                    }
+                    else
+                    {
+                        light.Set(style, true);
+                    }
+                }
 
             }
+            #endregion
+            #endregion
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="parentMenu"></param>
+            internal Nightclub(string name, Menu parentMenu) : base(name, parentMenu)
+            {
+                CreateInteriorOptionsMenu();
+            }
+
+
         }
 
         internal class Facility : Interior
