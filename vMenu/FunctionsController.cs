@@ -2214,7 +2214,6 @@ namespace vMenuClient
             "PL_MP_WEAZEL",
             "PL_MP_CCTV",
         };
-
         private readonly List<string> stiltHouseIplsExteriors = new List<string>()
         {
             "apa_stilt_ch2_04_ext1", // 2044 North Conker Avenue
@@ -2251,12 +2250,12 @@ namespace vMenuClient
             {
                 if (currentInterior != null)
                 {
+                    var insidePos = currentInterior.posTpInt;
+                    var heading = currentInterior.teleportHeading - 180;
+
+                    DrawMarker(1, insidePos.X, insidePos.Y, insidePos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
                     foreach (var outsidePos in currentInterior.posTpExt)
                     {
-                        var insidePos = currentInterior.posTpInt;
-                        var heading = currentInterior.teleportHeading - 180;
-
-                        DrawMarker(1, insidePos.X, insidePos.Y, insidePos.Z - 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0.8f, 0.8f, 0.2f, 25, 140, 255, 150, false, false, 0, false, null, null, false);
 
                         if (Game.PlayerPed.Position.DistanceToSquared(insidePos) < 0.5f)
                         {
@@ -2264,13 +2263,13 @@ namespace vMenuClient
                             if (Game.IsControlJustReleased(0, Control.Context) && Game.PlayerPed.Position.DistanceToSquared(insidePos) < 0.5f)
                             {
                                 var posOut = outsidePos;
-                                if (currentInterior is IplManager.Hanger han)
+                                if (currentInterior is IplManager.Hanger || currentInterior is IplManager.Nightclub)
                                 {
-                                    if (han.outPos == Vector3.Zero)
+                                    if (currentInterior.outPos.IsZero)
                                     {
-                                        han.outPos = outsidePos;
+                                        currentInterior.outPos = outsidePos;
                                     }
-                                    posOut = han.outPos;
+                                    posOut = currentInterior.outPos;
                                 }
                                 DoScreenFadeOut(500);
                                 while (!IsScreenFadedOut())
@@ -2284,16 +2283,6 @@ namespace vMenuClient
                             }
                         }
                     }
-                    //var outsidePos = currentInterior.posTpExt;
-                    //if (currentInterior is IplManager.Hanger han)
-                    //{
-                    //    outsidePos = han.outPos;
-                    //    if (outsidePos.IsZero)
-                    //    {
-                    //        outsidePos = han.posTpExt;
-                    //    }
-                    //}
-
                 }
                 else
                 {
