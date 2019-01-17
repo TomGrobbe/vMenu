@@ -2174,6 +2174,21 @@ namespace vMenuClient
         private int tvObject = 0;
         private bool EnableTvs => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs;
         private int CurrentTvChannel => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null ? MainMenu.IplManagementMenu.SelectedTvChannel : 0;
+        private List<int> dryIceParticles = new List<int>() { 0, 0, 0, 0 };
+        private readonly List<Vector3> dryIcePositions = new List<Vector3>()
+        {
+            new Vector3(-1602.932f, -3019.1f, -79.99f),
+            new Vector3(-1593.238f, -3017.05f, -79.99f),
+            new Vector3(-1597.134f, -3008.2f, -79.99f),
+            new Vector3(-1589.966f, -3008.518f, -79.99f)
+        };
+        private readonly List<Vector3> dryIceRotations = new List<Vector3>()
+        {
+            new Vector3(0f, -10f, 66f),
+            new Vector3(0f, -10f, 110f),
+            new Vector3(0f, -10f, -122.53f),
+            new Vector3(0f, -10f, -166.97f),
+        };
         private readonly List<uint> tvModels = new List<uint>()
         {
             (uint)GetHashKey("prop_tv_flat_01"), // 1036195894
@@ -2561,6 +2576,24 @@ namespace vMenuClient
             await Task.FromResult(0);
         }
 
+
+        private void RemoveSmokeParticles()
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                int handle = dryIceParticles[i];
+                if (DoesParticleFxLoopedExist(handle))
+                {
+                    RemoveParticleFx(handle, true);
+                    dryIceParticles[i] = 0;
+                }
+            }
+            if (HasNamedPtfxAssetLoaded("scr_ba_club"))
+            {
+                RemoveNamedPtfxAsset("scr_ba_club");
+            }
+        }
+
         private async Task InteriorChecker()
         {
             if (MainMenu.IplManagementMenu != null && IplManager.AreInteriorsLoaded)
@@ -2623,6 +2656,51 @@ namespace vMenuClient
                     {
                         item.LeftIcon = MenuItem.Icon.NONE;
                     }
+                }
+
+                if (currentInterior != null)
+                {
+                    if (currentInterior is IplManager.Nightclub club)
+                    {
+                        if (club.DryIce || IsInteriorPropEnabled(club.InteriorId, club.iplObject.Interior.Details.dryIce))
+                        {
+                            if (!HasNamedPtfxAssetLoaded("scr_ba_club"))
+                            {
+                                RequestNamedPtfxAsset("scr_ba_club");
+                            }
+                            while (!HasNamedPtfxAssetLoaded("scr_ba_club"))
+                            {
+                                await Delay(0);
+                            }
+
+                            for (var i = 0; i < 4; i++)
+                            {
+                                int handle = dryIceParticles[i];
+                                Vector3 pos = dryIcePositions[i];
+                                Vector3 rotation = dryIceRotations[i];
+
+                                if (!DoesParticleFxLoopedExist(handle))
+                                {
+                                    UseParticleFxAssetNextCall("scr_ba_club");
+                                    dryIceParticles[i] = StartParticleFxLoopedAtCoord("scr_ba_club_smoke_machine", pos.X, pos.Y, pos.Z, rotation.X, rotation.Y, rotation.Z, 5f, false, false, false, true);
+                                    SetParticleFxLoopedColour(dryIceParticles[i], 0.11f, 0.1f, 0.11f, true);
+                                }
+                                // Prop_Screen_Nightclub
+                            }
+                        }
+                        else
+                        {
+                            RemoveSmokeParticles();
+                        }
+                    }
+                    else
+                    {
+                        RemoveSmokeParticles();
+                    }
+                }
+                else
+                {
+                    RemoveSmokeParticles();
                 }
             }
             await Delay(100);
