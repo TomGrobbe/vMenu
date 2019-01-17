@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 dependencies/shared/vMenuShared\.net\.dll
+
+external/
