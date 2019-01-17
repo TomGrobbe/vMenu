@@ -2174,9 +2174,15 @@ namespace vMenuClient
         private int tvObject = 0;
         private bool EnableTvs => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null && MainMenu.IplManagementMenu.EnableIplTvs;
         private int CurrentTvChannel => IplManager.AreInteriorsLoaded && MainMenu.IplManagementMenu != null ? MainMenu.IplManagementMenu.SelectedTvChannel : 0;
-        private List<int> dryIceParticles = new List<int>() { 0, 0, 0, 0 };
+        private List<int> dryIceParticles = new List<int>() { 0, 0, 0, 0, 0, 0, 0 };
         private readonly List<Vector3> dryIcePositions = new List<Vector3>()
         {
+            // ambient
+            new Vector3(-1600f, -3012f, -80f),
+            new Vector3(-1595f, -3012f, -80f),
+            new Vector3(-1590f, -3012f, -80f),
+
+            // machines
             new Vector3(-1602.932f, -3019.1f, -79.99f),
             new Vector3(-1593.238f, -3017.05f, -79.99f),
             new Vector3(-1597.134f, -3008.2f, -79.99f),
@@ -2184,6 +2190,12 @@ namespace vMenuClient
         };
         private readonly List<Vector3> dryIceRotations = new List<Vector3>()
         {
+            // ambient
+            new Vector3(0f, 0f, 0f),
+            new Vector3(0f, 0f, 0f),
+            new Vector3(0f, 0f, 0f),
+
+            // machines
             new Vector3(0f, -10f, 66f),
             new Vector3(0f, -10f, 110f),
             new Vector3(0f, -10f, -122.53f),
@@ -2615,7 +2627,7 @@ namespace vMenuClient
 
         private void RemoveSmokeParticles()
         {
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 7; i++)
             {
                 int handle = dryIceParticles[i];
                 if (DoesParticleFxLoopedExist(handle))
@@ -2709,16 +2721,18 @@ namespace vMenuClient
                                 await Delay(0);
                             }
 
-                            for (var i = 0; i < 4; i++)
+                            for (var i = 0; i < 7; i++)
                             {
                                 int handle = dryIceParticles[i];
                                 Vector3 pos = dryIcePositions[i];
                                 Vector3 rotation = dryIceRotations[i];
-
+                                string particleName = i < 3 ? "scr_ba_club_smoke" : "scr_ba_club_smoke_machine";
+                                float scale = i < 3 ? 1f : 5f;
                                 if (!DoesParticleFxLoopedExist(handle))
                                 {
                                     UseParticleFxAssetNextCall("scr_ba_club");
-                                    dryIceParticles[i] = StartParticleFxLoopedAtCoord("scr_ba_club_smoke_machine", pos.X, pos.Y, pos.Z, rotation.X, rotation.Y, rotation.Z, 5f, false, false, false, true);
+                                    var z = pos.Z + (i < 3 ? 1f : 0f);
+                                    dryIceParticles[i] = StartParticleFxLoopedAtCoord(particleName, pos.X, pos.Y, z, rotation.X, rotation.Y, rotation.Z, scale, false, false, false, true);
                                     SetParticleFxLoopedColour(dryIceParticles[i], 0.11f, 0.1f, 0.11f, true);
                                 }
                                 // Prop_Screen_Nightclub
