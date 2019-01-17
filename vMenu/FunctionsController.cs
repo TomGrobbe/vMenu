@@ -2420,8 +2420,33 @@ namespace vMenuClient
                     // make a copy just in case the currentInterior object becomes null while in this loop.
                     var inter = currentInterior;
 
+                    /*
+    
+                    local something = vector3(-120.7218, -1529.115, 34.02131)
+                    -- local off = GetOffsetFromEntityGivenWorldCoords(PlayerPedId(), something)
+
+    
+    
+                    while true do
+                        Wait(0)
+                        local offsetx = -318.452 - (something.x - GetEntityCoords(PlayerPedId()).x) -- off.x
+                        local offsety = -1969.256 - (something.y - GetEntityCoords(PlayerPedId()).y) -- off.y
+                        SetPlayerBlipPositionThisFrame(offsetx, offsety)
+                        SetRadarAsInteriorThisFrame("hei_dlc_apart_high_new", -318.452, -1969.256, 0.0, 1)
+                        LockMinimapPosition(offsetx, offsety)
+                    end
+
+                    */
+
                     if (inter is IplManager.Hanger interior)
                     {
+                        //Vector2 origPos = new Vector2(-1266.95f, -3013.36f);
+                        // -1266.802f, -3014.836f
+                        //Vector3 hanpos = new Vector3(-1175.57f, -3445.092f, 37.80507f);
+                        //var offsetX = hanpos.X - (origPos.X - Game.PlayerPed.Position.X);
+                        //var offsetY = hanpos.Y - (origPos.Y - Game.PlayerPed.Position.Y);
+
+
                         string interiorRadarHash = "sm_SmugDLC_Int_01";
                         int zoom = 0;
                         Vector3 pos = Game.PlayerPed.Position;
@@ -2470,7 +2495,25 @@ namespace vMenuClient
                             zoom = 3;
                             interiorRadarHash = "sm_SmugDLC_Int_01_lvl_3";
                         }
-                        SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
+                        //SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
+
+                        //-1266.802f, -3014.836f
+                        if (!IsPauseMenuActive())
+                        {
+                            SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), -1266.802f, -3014.836f, 0, zoom);
+
+
+                            //SetPlayerBlipPositionThisFrame(offsetX, offsetY);
+                            //UnlockMinimapPosition();
+                        }
+                        //else
+                        //{
+                        //    //SetRadarAsExteriorThisFrame();
+                        //    SetPlayerBlipPositionThisFrame(offsetX, offsetY);
+                        //    SetRadarAsInteriorThisFrame((uint)GetHashKey(interiorRadarHash), hanpos.X, hanpos.Y, -30, zoom);
+                        //    LockMinimapPosition(offsetX, offsetY);
+                        //}
+
                     }
 
                     if ((inter is IplManager.Apartment || inter is IplManager.Penthouse) && ((inter is IplManager.House) == false))
@@ -2560,6 +2603,10 @@ namespace vMenuClient
                         HideMapObjectThisFrame((uint)GetHashKey("ch2_04_emissive_05"));
                         HideMapObjectThisFrame((uint)GetHashKey("ch2_04_house01_details"));
                     }
+                }
+                else
+                {
+                    //UnlockMinimapPosition();
                 }
             }
             await Task.FromResult(0);
@@ -2812,19 +2859,66 @@ namespace vMenuClient
             {
                 var interior = currentInterior;
 
+                string renderTargetName = "tvscreen";
+                if (interior is IplManager.Nightclub)
+                {
+                    renderTargetName = "club_projector";
+                }
                 if (interior.TvPosition != Vector3.Zero)
                 {
-                    if (tvObject != 0 && DoesEntityExist(tvObject))
+                    if ((tvObject != 0 && DoesEntityExist(tvObject)) || interior is IplManager.Nightclub)
                     {
                         int newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
                         int channel = 0;
-                        LoadTvChannelSequence(channel, tvChannels[MainMenu.IplManagementMenu.SelectedTvChannel], false);
+                        if (interior is IplManager.Nightclub nc)
+                        {
+                            channel = GetTvChannel() == 2 ? 3 : 2;
+                            switch (nc.ClubName)
+                            {
+                                case 0:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_GALAXY", false); // galaxy
+                                    break;
+                                case 1:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_LOS", false); // studio
+                                    break;
+                                case 2:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_OMEGA", false); // omega
+                                    break;
+                                case 3:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_TECH", false); // technologie
+                                    break;
+                                case 4:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_GEFANGNIS", false); // gefangnis
+                                    break;
+                                case 5:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_MAIS", false); // maisonette
+                                    break;
+                                case 6:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_FUNHOUSE", false); // tony
+                                    break;
+                                case 7:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_PALACE", false); // palace
+                                    break;
+                                case 8:
+                                    LoadTvChannelSequence(channel, "PL_TOU_LSER_PARADISE", false); // paradise
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            LoadTvChannelSequence(channel, tvChannels[MainMenu.IplManagementMenu.SelectedTvChannel], false);
+                        }
+
 
                         uint tvModel = (uint)GetEntityModel(tvObject);
-
-                        if (!IsNamedRendertargetRegistered("tvscreen"))
+                        if (interior is IplManager.Nightclub)
                         {
-                            RegisterNamedRendertarget("tvscreen", false);
+                            tvModel = (uint)GetHashKey("ba_prop_club_screens_01");
+                        }
+
+                        if (!IsNamedRendertargetRegistered(renderTargetName))
+                        {
+                            RegisterNamedRendertarget(renderTargetName, false);
                         }
 
                         if (!IsNamedRendertargetLinked(tvModel))
@@ -2832,37 +2926,81 @@ namespace vMenuClient
                             LinkNamedRendertarget(tvModel);
                         }
 
-                        var renderHandle = GetNamedRendertargetRenderId("tvscreen");
+                        var renderHandle = GetNamedRendertargetRenderId(renderTargetName);
+
 
                         SetTvChannel(channel);
                         SetTvVolume(100f);
                         SetTvAudioFrontend(false);
 
-                        while (EnableTvs && currentInterior != null && DoesEntityExist(tvObject))
+                        int name = -1;
+                        if (interior is IplManager.Nightclub nct)
+                        {
+                            name = nct.ClubName;
+                        }
+                        while (EnableTvs && currentInterior != null && (DoesEntityExist(tvObject) || currentInterior is IplManager.Nightclub))
                         {
                             await Delay(0);
 
                             EnableMovieSubtitles(IsSubtitlePreferenceSwitchedOn());
 
-                            if (newChannelIndex != MainMenu.IplManagementMenu.SelectedTvChannel)
+                            if ((newChannelIndex != MainMenu.IplManagementMenu.SelectedTvChannel && !(interior is IplManager.Nightclub)) || (interior is IplManager.Nightclub club && name != club.ClubName))
                             {
-                                newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
-                                if ((float)newChannelIndex % 2f != 0f)
+                                if (interior is IplManager.Nightclub nclub)
                                 {
-                                    channel = 1;
+                                    int newChannel = GetTvChannel() == 2 ? 3 : 2;
+                                    switch (nclub.ClubName)
+                                    {
+                                        case 0:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_GALAXY", false); // galaxy
+                                            break;
+                                        case 1:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_LOS", false); // studio
+                                            break;
+                                        case 2:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_OMEGA", false); // omega
+                                            break;
+                                        case 3:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_TECH", false); // technologie
+                                            break;
+                                        case 4:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_GEFANGNIS", false); // gefangnis
+                                            break;
+                                        case 5:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_MAIS", false); // maisonette
+                                            break;
+                                        case 6:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_FUNHOUSE", false); // tony
+                                            break;
+                                        case 7:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_PALACE", false); // palace
+                                            break;
+                                        case 8:
+                                            LoadTvChannelSequence(newChannel, "PL_TOU_LSER_PARADISE", false); // paradise
+                                            break;
+                                    }
+                                    SetTvChannel(newChannel);
                                 }
                                 else
                                 {
-                                    channel = 0;
+                                    newChannelIndex = MainMenu.IplManagementMenu.SelectedTvChannel;
+                                    if ((float)newChannelIndex % 2f != 0f)
+                                    {
+                                        channel = 1;
+                                    }
+                                    else
+                                    {
+                                        channel = 0;
+                                    }
+
+                                    LoadTvChannelSequence(channel, tvChannels[newChannelIndex], false);
+
+                                    SetTvChannel(channel);
+
+                                    SetTvVolume(100f);
+
+                                    SetTvAudioFrontend(false);
                                 }
-
-                                LoadTvChannelSequence(channel, tvChannels[newChannelIndex], false);
-
-                                SetTvChannel(channel);
-
-                                SetTvVolume(100f);
-
-                                SetTvAudioFrontend(false);
                             }
 
                             SetTextRenderId(renderHandle);
@@ -2872,10 +3010,12 @@ namespace vMenuClient
                             DrawTvChannel(0.5f, 0.5f, 1f, 1f, 0f, 255, 255, 255, 255);
 
                             //CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x35FB78DC42B7BD21, tvObject, 16);
-                            AttachTvAudioToEntity(tvObject);
+
+                            if (DoesEntityExist(tvObject))
+                                AttachTvAudioToEntity(tvObject);
 
                             SetScriptGfxDrawBehindPausemenu(false);
-                            SetTextRenderId(1);
+                            SetTextRenderId(GetDefaultScriptRendertargetRenderId());
                         }
 
                         // Disable movie subtitles.
@@ -2884,15 +3024,21 @@ namespace vMenuClient
                     }
                     else
                     {
-                        foreach (uint model in tvModels)
+                        //if (currentInterior is IplManager.Nightclub)
+                        //{
+                        //    tvObject = GetNamedRendertargetRenderId("club_projector");
+                        //}
+                        //else
                         {
-                            tvObject = GetClosestObjectOfType(interior.TvPosition.X, interior.TvPosition.Y, interior.TvPosition.Z, 2f, model, false, false, false);
-                            if (DoesEntityExist(tvObject))
+                            foreach (uint model in tvModels)
                             {
-                                break;
+                                tvObject = GetClosestObjectOfType(interior.TvPosition.X, interior.TvPosition.Y, interior.TvPosition.Z, 5f, model, false, false, false);
+                                if (DoesEntityExist(tvObject))
+                                {
+                                    break;
+                                }
                             }
                         }
-
                     }
                 }
             }
