@@ -172,7 +172,8 @@ namespace vMenuClient
             // DLC CHRISTMAS2018 (v 1604)
             { "weapon_raypistol", GetLabelText("WT_RAYPISTOL") },
             { "weapon_raycarbine", GetLabelText("WT_RAYCARBINE") },
-            { "weapon_rayminigun", GetLabelText("WT_RAYMINIGUN") }
+            { "weapon_rayminigun", GetLabelText("WT_RAYMINIGUN") },
+            { "weapon_stone_hatchet", GetLabelText("WT_SHATCHET") }
         };
         #endregion
 
@@ -269,6 +270,7 @@ namespace vMenuClient
             ["weapon_raypistol"] = Permission.WPPlasmaPistol,
             ["weapon_raycarbine"] = Permission.WPPlasmaCarbine,
             ["weapon_rayminigun"] = Permission.WPPlasmaMinigun,
+            ["weapon_stone_hatchet"] = Permission.WPStoneHatchet,
         };
         #endregion
 
