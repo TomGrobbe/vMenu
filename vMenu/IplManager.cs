@@ -9,6 +9,7 @@ using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 using static CitizenFX.Core.BaseScript;
 using MenuAPI;
+using System.Dynamic;
 
 namespace vMenuClient
 {
@@ -17,7 +18,7 @@ namespace vMenuClient
         // Exports dictionary used to call exports. This is impossible to do directly from BaseScript itself for some stupid reason.
         private static readonly ExportDictionary Exports = new ExportDictionary();
 
-        private static string resourceName = "bob74_ipl";
+        internal static string resourceName { get; private set; } = "bob74_ipl";
 
         internal static List<Interior> interiors = new List<Interior>();
 
@@ -106,9 +107,8 @@ namespace vMenuClient
                 #region High End & High Life Apartments
 
                 // 4 Integrity Way
-                await AddInterior(new Apartment("4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment(Exports[resourceName].GetGTAOApartmentHi1Object(), "4 Integrity Way, Apt 30", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOApartmentHi1Object(),
                     posTpInt = new Vector3(-18.61f, -581.87f, 90.11f),
                     posTpExt = new List<Vector3>() { new Vector3(-48.95f, -588.96f, 37.95f) },
                     teleportHeading = 73.58f,
@@ -116,9 +116,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-40.24f, -571.05f, 88.92f)
                 });
 
-                await AddInterior(new Apartment("4 Integrity Way, Apt 28", MainMenu.IplManagementMenu.apartmentsMenu) // 35, 30, 28
+                await AddInterior(new Apartment(Exports[resourceName].GetHLApartment5Object(), "4 Integrity Way, Apt 28", MainMenu.IplManagementMenu.apartmentsMenu) // 35, 30, 28
                 {
-                    iplObject = Exports[resourceName].GetHLApartment5Object(),
                     posTpInt = new Vector3(-23.27f, -598.06f, 80.03f),
                     posTpExt = new List<Vector3>() { new Vector3(-48.95f, -588.96f, 37.95f) },
                     teleportHeading = 250.22f,
@@ -127,9 +126,8 @@ namespace vMenuClient
                 });
 
                 // Del Perro Heights
-                await AddInterior(new Apartment("Del Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment(Exports[resourceName].GetGTAOApartmentHi2Object(), "Del Perro Heights, Apt 7", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOApartmentHi2Object(),
                     posTpInt = new Vector3(-1458.32f, -520.78f, 56.93f),
                     posTpExt = new List<Vector3>() { new Vector3(-1441.51f, -544.53f, 34.74f) },
                     teleportHeading = 126.62f,
@@ -137,9 +135,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-1479.18f, -531.98f, 55.74f),
                 });
 
-                await AddInterior(new Apartment("Del Perro Heights, Apt 4", MainMenu.IplManagementMenu.apartmentsMenu) // 4, 20, 7
+                await AddInterior(new Apartment(Exports[resourceName].GetHLApartment1Object(), "Del Perro Heights, Apt 4", MainMenu.IplManagementMenu.apartmentsMenu) // 4, 20, 7
                 {
-                    iplObject = Exports[resourceName].GetHLApartment1Object(),
                     posTpInt = new Vector3(-1457.06f, -533.43f, 74.04f),
                     posTpExt = new List<Vector3>() { new Vector3(-1441.51f, -544.53f, 34.74f) },
                     teleportHeading = 33.81f,
@@ -148,9 +145,8 @@ namespace vMenuClient
                 });
 
                 // Richards Majestic
-                await AddInterior(new Apartment("Richards Majestic, Apt 2", MainMenu.IplManagementMenu.apartmentsMenu) // 4 & 51
+                await AddInterior(new Apartment(Exports[resourceName].GetHLApartment2Object(), "Richards Majestic, Apt 2", MainMenu.IplManagementMenu.apartmentsMenu) // 4 & 51
                 {
-                    iplObject = Exports[resourceName].GetHLApartment2Object(),
                     posTpInt = new Vector3(-920.10f, -368.91f, 114.27f),
                     posTpExt = new List<Vector3>() { new Vector3(-935.01f, -380.46f, 38.96f) },
                     teleportHeading = 115.6f,
@@ -159,9 +155,8 @@ namespace vMenuClient
                 });
 
                 // Tinsel Towers
-                await AddInterior(new Apartment("Tinsel Towers, Apt 42", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment(Exports[resourceName].GetHLApartment3Object(), "Tinsel Towers, Apt 42", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetHLApartment3Object(),
                     posTpInt = new Vector3(-611.32f, 58.89f, 98.2f),
                     posTpExt = new List<Vector3>() { new Vector3(-614.56f, 37f, 43.57f) },
                     teleportHeading = 89.65f,
@@ -170,9 +165,8 @@ namespace vMenuClient
                 });
 
                 // Eclipse Towers
-                await AddInterior(new Apartment("Eclipse Towers, Apt 3", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Apartment(Exports[resourceName].GetHLApartment4Object(), "Eclipse Towers, Apt 3", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetHLApartment4Object(),
                     posTpInt = new Vector3(-776.57f, 323.57f, 212f),
                     posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 270.98f,
@@ -184,9 +178,8 @@ namespace vMenuClient
 
                 // Penthouses 
                 #region penthouses
-                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new Penthouse(Exports[resourceName].GetExecApartment1Object(), "Eclipse Towers, Penthouse Suite 1", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetExecApartment1Object(),
                     posTpInt = new Vector3(-781.7f, 318.62f, 217.67f),
                     posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
@@ -194,9 +187,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-781.74f, 337.91f, 216.84f),
                 });
 
-                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
+                await AddInterior(new Penthouse(Exports[resourceName].GetExecApartment2Object(), "Eclipse Towers, Penthouse Suite 2", MainMenu.IplManagementMenu.apartmentsMenu, 5)
                 {
-                    iplObject = Exports[resourceName].GetExecApartment2Object(),
                     posTpInt = new Vector3(-779.25f, 338.95f, 196.69f),
                     posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
@@ -204,9 +196,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-780.61f, 319.28f, 194.88f),
                 });
 
-                await AddInterior(new Penthouse("Eclipse Towers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
+                await AddInterior(new Penthouse(Exports[resourceName].GetExecApartment3Object(), "Eclipse Towers, Penthouse Suite 3", MainMenu.IplManagementMenu.apartmentsMenu, 3)
                 {
-                    iplObject = Exports[resourceName].GetExecApartment3Object(),
                     posTpInt = new Vector3(-781.82f, 318.93f, 187.92f),
                     posTpExt = new List<Vector3>() { new Vector3(-777.48f, 312.71f, 85.7f) },
                     teleportHeading = 40.98f,
@@ -217,9 +208,8 @@ namespace vMenuClient
 
                 // High end houses
                 #region High end Houses
-                await AddInterior(new House("Stilt House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi1Object(), "Stilt House, 3655 Wild Oats Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi1Object(),
                     posTpInt = new Vector3(-174.26f, 497.18f, 137.67f),
                     posTpExt = new List<Vector3>() { new Vector3(-175.6f, 501.42f, 137.42f) },
                     teleportHeading = 209.6f,
@@ -227,9 +217,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-161.66f, 482.89f, 136.24f),
                 });
 
-                await AddInterior(new House("Stilt House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi2Object(), "Stilt House, 2044 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi2Object(),
                     posTpInt = new Vector3(341.27f, 437.41f, 149.39f),
                     posTpExt = new List<Vector3>() { new Vector3(347.1f, 441.02f, 147.7f) },
                     teleportHeading = 141.24f,
@@ -237,9 +226,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(331.13f, 421.66f, 147.97f),
                 });
 
-                await AddInterior(new House("Stilt House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi3Object(), "Stilt House, 2045 North Conker Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi3Object(),
                     posTpInt = new Vector3(373.51f, 423.02f, 145.91f),
                     posTpExt = new List<Vector3>() { new Vector3(373.02f, 428.12f, 145.68f) },
                     teleportHeading = 182.56f,
@@ -247,9 +235,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(377.44f, 404.72f, 144.51f),
                 });
 
-                await AddInterior(new House("Stilt House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi4Object(), "Stilt House, 2862 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi4Object(),
                     posTpInt = new Vector3(-681.95f, 591.94f, 145.39f),
                     posTpExt = new List<Vector3>() { new Vector3(-686.57f, 596.89f, 143.64f) },
                     teleportHeading = 228.75f,
@@ -257,9 +244,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-664.1f, 585.9f, 143.69f),
                 });
 
-                await AddInterior(new House("Stilt House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi5Object(), "Stilt House, 2868 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi5Object(),
                     posTpInt = new Vector3(-759.09f, 618.69f, 144.15f),
                     posTpExt = new List<Vector3>() { new Vector3(-751.47f, 621.01f, 142.24f) },
                     teleportHeading = 109.83f,
@@ -267,9 +253,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-771.4f, 604.58f, 142.73f),
                 });
 
-                await AddInterior(new House("Stilt House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi6Object(), "Stilt House, 2874 Hillcrest Avenue", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi6Object(),
                     posTpInt = new Vector3(-859.82f, 690.7f, 152.86f),
                     posTpExt = new List<Vector3>() { new Vector3(-853.14f, 696.42f, 148.78f) },
                     teleportHeading = 199.17f,
@@ -277,9 +262,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(-850.26f, 674.47f, 151.46f),
                 });
 
-                await AddInterior(new House("Stilt House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi7Object(), "Stilt House, 2677 Whispymound Drive", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi7Object(),
                     posTpInt = new Vector3(117.34f, 559.17f, 184.3f),
                     posTpExt = new List<Vector3>() { new Vector3(119.38f, 564.83f, 183.96f) },
                     teleportHeading = 187.86f,
@@ -287,9 +271,8 @@ namespace vMenuClient
                     TvPosition = new Vector3(127.29f, 543.4f, 182.9f),
                 });
 
-                await AddInterior(new House("Stilt House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
+                await AddInterior(new House(Exports[resourceName].GetGTAOHouseHi8Object(), "Stilt House, 2113 Mad Wayne Thunder", MainMenu.IplManagementMenu.apartmentsMenu)
                 {
-                    iplObject = Exports[resourceName].GetGTAOHouseHi8Object(),
                     posTpInt = new Vector3(-1290.16f, 449.12f, 97.9f),
                     posTpExt = new List<Vector3>() { new Vector3(-1294.39f, 455.2f, 97.4f) },
                     teleportHeading = 187.31f,
@@ -322,9 +305,8 @@ namespace vMenuClient
                 #endregion
 
                 #region Hangars
-                interiors.Add(new Hanger("Aircraft Hanger", MainMenu.IplManagementMenu.hangarsMenu)
+                interiors.Add(new Hanger(Exports[resourceName].GetSmugglerHangarObject(), "Aircraft Hanger", MainMenu.IplManagementMenu.hangarsMenu)
                 {
-                    iplObject = Exports[resourceName].GetSmugglerHangarObject(),
                     posTpInt = new Vector3(-1279.75f, -3048.1f, -48.49f),
                     posTpExt = new List<Vector3>()
                     {
@@ -339,9 +321,8 @@ namespace vMenuClient
                 #endregion
 
                 #region Night club
-                interiors.Add(new Nightclub("Nightclub", MainMenu.IplManagementMenu.nightclubsMenu)
+                interiors.Add(new Nightclub(Exports[resourceName].GetAfterHoursNightclubsObject(), "Nightclub", MainMenu.IplManagementMenu.nightclubsMenu)
                 {
-                    iplObject = Exports[resourceName].GetAfterHoursNightclubsObject(),
                     posTpInt = new Vector3(-1569.44f, -3016.43f, -74.41f),
                     posTpExt = new List<Vector3>()
                     {
@@ -431,8 +412,9 @@ namespace vMenuClient
             internal Menu Menu { get; set; }
             internal MenuItem tpButton = new MenuItem("Teleport To Interior", "Teleport directly to the interior.");
 
-            internal Interior(string name, Menu parentMenu)
+            internal Interior(dynamic apiObject, string name, Menu parentMenu)
             {
+                this.iplObject = apiObject;
                 this.name = name;
 
                 Menu = new Menu("Interior Options", name ?? "n/a");
@@ -462,6 +444,11 @@ namespace vMenuClient
                 SetEntityCoordsNoOffset(PlayerPedId(), posTpInt.X, posTpInt.Y, posTpInt.Z, false, false, false);
                 SetEntityHeading(Game.PlayerPed.Handle, teleportHeading);
                 DoScreenFadeIn(500);
+            }
+
+            internal virtual void SyncInterior()
+            {
+
             }
         }
 
@@ -554,7 +541,7 @@ namespace vMenuClient
             }
 
             const string toggle_prop_desc = "Toggle this interior prop.";
-            public Apartment(string name, Menu parentMenu) : base(name, parentMenu)
+            public Apartment(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
                 Menu propsSubmenu = new Menu("Interior Props", "enable or disable props");
 
@@ -690,6 +677,13 @@ namespace vMenuClient
                     }
                 };
             }
+
+            override internal void SyncInterior()
+            {
+                base.SyncInterior();
+
+
+            }
         }
 
         /// <summary>
@@ -705,14 +699,14 @@ namespace vMenuClient
             /// </summary>
             /// <param name="name"></param>
             /// <param name="parentMenu"></param>
-            internal Penthouse(string name, Menu parentMenu) : this(name, parentMenu, 0) { }
+            internal Penthouse(dynamic apiObject, string name, Menu parentMenu) : this((ExpandoObject)apiObject, name, parentMenu, 0) { }
             /// <summary>
             /// Constructor overload with style option.
             /// </summary>
             /// <param name="name"></param>
             /// <param name="parentMenu"></param>
             /// <param name="style"></param>
-            internal Penthouse(string name, Menu parentMenu, int style) : base(name, parentMenu)
+            internal Penthouse(dynamic apiObject, string name, Menu parentMenu, int style) : base((ExpandoObject)apiObject, name, parentMenu)
             {
                 Style = style;
 
@@ -728,6 +722,10 @@ namespace vMenuClient
                 };
             }
 
+            override internal void SyncInterior()
+            {
+                base.SyncInterior();
+            }
 
             /// <summary>
             /// Set the interior penthouse style.
@@ -762,9 +760,14 @@ namespace vMenuClient
         /// </summary>
         internal class House : Apartment
         {
-            internal House(string name, Menu parentMenu) : base(name, parentMenu)
+            internal House(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
 
+            }
+
+            override internal void SyncInterior()
+            {
+                base.SyncInterior();
             }
         }
 
@@ -796,7 +799,7 @@ namespace vMenuClient
             internal bool BedroomBlindsOpen { get; private set; } = false;
             internal bool DetailsBedroomClutter { get; private set; } = false;
 
-            internal Hanger(string name, Menu parentMenu) : base(name, parentMenu)
+            internal Hanger(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
                 var wallStyles = new List<string>()
                 {
@@ -846,6 +849,11 @@ namespace vMenuClient
                         SetOfficeStyle(newIndex);
                     }
                 };
+            }
+
+            override internal void SyncInterior()
+            {
+                base.SyncInterior();
             }
 
             internal void SetOfficeStyle(int newStyle)
@@ -922,19 +930,206 @@ namespace vMenuClient
         /// </summary>
         internal class Bunker : Interior
         {
-            internal Bunker(string name, Menu parentMenu) : base(name, parentMenu)
+            internal Bunker(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
 
             }
+
+            override internal void SyncInterior()
+            {
+                base.SyncInterior();
+            }
+        }
+
+        public static int[] lightObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static int[] lampObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static int[] beams { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        private static Vector3[] lightPositions = new Vector3[9]
+        {
+            new Vector3(-1591.597f, -3013.749f, -77.3800f),
+            new Vector3(-1591.597f, -3010.702f, -77.3800f),
+            new Vector3(-1594.379f, -3008.334f, -77.3800f),
+            new Vector3(-1597.731f, -3008.334f, -77.3800f),
+            new Vector3(-1602.168f, -3010.862f, -76.9113f),
+            new Vector3(-1602.168f, -3014.519f, -76.9113f),
+            new Vector3(-1606.630f, -3010.431f, -75.7108f),
+            new Vector3(-1606.629f, -3014.947f, -75.7108f),
+            new Vector3(-1602.368f, -3018.949f, -77.3800f),
+        };
+        private static Vector3[] lampPositions = new Vector3[9]
+        {
+            new Vector3(-1591.597f, -3013.749f, -77.1822f),
+            new Vector3(-1591.597f, -3010.702f, -77.1822f),
+            new Vector3(-1594.379f, -3008.334f, -77.1822f),
+            new Vector3(-1597.731f, -3008.334f, -77.1822f),
+            new Vector3(-1602.168f, -3010.862f, -76.7135f),
+            new Vector3(-1602.168f, -3014.519f, -76.7135f),
+            new Vector3(-1606.63f, -3010.431f, -75.513f),
+            new Vector3(-1606.629f, -3014.947f, -75.513f),
+            new Vector3(-1602.368f, -3018.949f, -77.1822f),
+        };
+
+        private static Vector3[] lightRotations = new Vector3[9]
+        {
+            new Vector3(0f, 0f, 180f),
+            new Vector3(0f, 0f, 180f),
+            new Vector3(0f, 0f, -90f),
+            new Vector3(0f, 0f, -90f),
+            new Vector3(0f, 0f, 0f),
+            new Vector3(0f, 0f, 0f),
+            new Vector3(0f, 0f, -30f),
+            new Vector3(0f, 0f, 30f),
+            new Vector3(0f, 0f, 40f),
+        };
+
+        internal static async void EnableLights(Nightclub interior)
+        {
+            while (!IsInteriorReady(interior.InteriorId))
+            {
+                await Delay(0);
+            }
+            uint model = (uint)GetHashKey("ba_prop_battle_lights_fx_lamp");
+            for (var i = 0; i < lightObjects.Length; i++)
+            {
+                var obj = lightObjects[i];
+                if (!DoesEntityExist(obj))
+                {
+
+                    var tmp = GetClosestObjectOfType(lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, 3f, model, false, false, false);
+                    if (DoesEntityExist(tmp))
+                    {
+                        DeleteObject(ref tmp);
+                    }
+
+                    if (interior.ClubCeilingLights)
+                    {
+                        if (!HasModelLoaded(model))
+                        {
+                            RequestModel(model);
+                            while (!HasModelLoaded(model))
+                            {
+                                await Delay(0);
+                            }
+                        }
+
+                        lightObjects[i] = CreateObjectNoOffset(model, lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, false, false, false);
+                    }
+                }
+                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
+                if (interior.ClubCeilingLights)
+                {
+                    CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
+                    SetEntityRotation(lightObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+                }
+            }
+
+            SetModelAsNoLongerNeeded(model);
+
+
+
+            model = (uint)GetHashKey("ba_prop_battle_lights_fx_rotator");
+            for (var i = 0; i < lampObjects.Length; i++)
+            {
+                var obj = lampObjects[i];
+                if (DoesEntityExist(obj))
+                {
+                    DeleteObject(ref obj);
+                }
+                var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
+                if (DoesEntityExist(tmp))
+                {
+                    DeleteObject(ref tmp);
+                }
+
+                if (interior.ClubCeilingLights)
+                {
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                    lampObjects[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, false);
+                }
+                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
+
+                if (interior.ClubCeilingLights)
+                {
+                    CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
+                    SetEntityRotation(lampObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+                }
+            }
+
+            SetModelAsNoLongerNeeded(model);
+
+            for (var i = 0; i < beams.Length; i++)
+            {
+                var a = new List<string>() { "a", "b", "c", "d", "e", "f", "g", "h" };
+                model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rigd");
+                //model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rig{a[i]}");
+
+                var obj = beams[i];
+                if (DoesEntityExist(obj))
+                {
+                    DeleteObject(ref obj);
+                }
+                var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
+                if (DoesEntityExist(tmp))
+                {
+                    DeleteObject(ref tmp);
+                }
+
+                if (interior.ClubCeilingLights)
+                {
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await Delay(0);
+                        }
+                    }
+                    beams[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, true);
+                    SetEntityRotation(beams[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+                    SetEntityAlpha(beams[i], 255, 0);
+
+                    // _SetLightBeamRGB idk stupid name but whatever, that's what it does at least.
+                    CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, beams[i], 1, 202, 28, 255);
+                }
+            }
+
+
+            if (interior.ClubCeilingLights)
+            {
+                for (int i = 0; i < lampObjects.Length; i++)
+                {
+                    AttachEntityToEntity(lampObjects[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+                }
+                for (int i = 0; i < beams.Length; i++)
+                {
+
+                    AttachEntityToEntity(beams[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+                }
+            }
+
+            SetModelAsNoLongerNeeded(model);
         }
 
         internal class Nightclub : Interior
         {
+
+            /*
             #region interior options
 
             #region interior variables
             // Styles etc.
-            internal int ClubName { get; private set; } = 0;
+            internal int ClubName { get; private set; }
+
+            internal int ScreenType { get; private set; } = 1;
+
+            internal int DJ { get; private set; } = 0;
 
             internal int ClubStyle { get; private set; } = 1;
 
@@ -1190,10 +1385,10 @@ namespace vMenuClient
             /// Sets the club name.
             /// </summary>
             /// <param name="index"></param>
-            internal async void SetClubName(int index)
+            internal void SetClubName(int index)
             {
                 ClubName = index;
-                dynamic name = null;
+                string name = null;
                 switch (index)
                 {
                     case 0:
@@ -1225,7 +1420,6 @@ namespace vMenuClient
                         break;
                 }
                 iplObject.Interior.Name.Set(name ?? "", false);
-                await Delay(100);
                 RefreshInterior(InteriorId);
             }
 
@@ -1606,23 +1800,485 @@ namespace vMenuClient
             }
             #endregion
             #endregion
+            */
+
+            internal readonly MenuListItem clubNamesList = new MenuListItem("Club Name", new List<string>() { "Galaxy", "Studio Los Santos", "Omega", "Technologie", "Gefängnis", "Maisonette Los Santos", "Tony's Fun House", "The Palace", "Paradise" }, 0, "Select a name for the Nightclub.");
+            internal readonly MenuListItem clubStylesList = new MenuListItem("Club Style", new List<string>() { "Traditional", "Edgy", "Glamorous" }, 0, "Select a club style.");
+            internal readonly MenuListItem clubSpeakersList = new MenuListItem("Speakers Variation", new List<string>() { "No Speakers", "Basic Speakers", "Upgraded Speakers" }, 0, "Select a Speakers variation.");
+            internal readonly MenuCheckboxItem clubPodiumsCheckbox = new MenuCheckboxItem("Enable Podiums", "Enable the podiums for the 2 dancers. This does ~h~not~h~ spawn the dancers themselves.", true);
+            internal readonly MenuCheckboxItem clubDryIceCheckbox = new MenuCheckboxItem("Enable Dry Ice", "Enable the dry ice machines and fog effects.", false);
+            internal readonly MenuListItem clubDJList = new MenuListItem("DJ", new List<string>() { "Solomun 25/8 (Solomun)", "Afterlight (Tale of Us)", "Wilderness (Dixon)", "We Believe (The Black Madonna)" }, 0, "This does ~h~NOT~h~ spawn the DJ ped, it is just used to play the correct music and video playlists on the screens.");
+            internal readonly MenuListItem clubLightsSetupList = new MenuListItem("Lights Rig", new List<string>() {
+                "No Lights",
+
+                "Yellow (Lasers)",
+                "Green (Lasers)",
+                "White (Lasers)",
+                "Purple (Lasers)",
+
+                "Yellow (Ribbon Bands)",
+                "Green (Ribbon Bands)",
+                "White (Ribbon Bands)",
+                "Cyan (Ribbon Bands)",
+
+                "Yellow (Neon Tubes)",
+                "White (Neon Tubes)",
+                "Purple (Neon Tubes)",
+                "Cyan (Neon Tubes)",
+
+                "Yellow (Led Droplets)",
+                "Green (Led Droplets)",
+                "White (Led Droplets)",
+                "Purple (Led Droplets)",
+
+            }, 0, "Select a lights rig.");
+            internal readonly MenuCheckboxItem clubCeilingLightsCheckbox = new MenuCheckboxItem("Ceiling Lights", false);
+
+            internal int ClubName
+            {
+                get
+                {
+                    dynamic obj = iplObject.Interior.Name;
+                    if (IsInteriorPropEnabled(InteriorId, obj.galaxy))
+                    {
+                        return 0;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.studio))
+                    {
+                        return 1;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.omega))
+                    {
+                        return 2;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.technologie))
+                    {
+                        return 3;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.gefangnis))
+                    {
+                        return 4;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.maisonette))
+                    {
+                        return 5;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.tony))
+                    {
+                        return 6;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.palace))
+                    {
+                        return 7;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, obj.paradise))
+                    {
+                        return 8;
+                    }
+                    return 0;
+                }
+                set
+                {
+                    switch (value)
+                    {
+                        case 0:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.galaxy);
+                            break;
+                        case 1:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.studio);
+                            break;
+                        case 2:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.omega);
+                            break;
+                        case 3:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.technologie);
+                            break;
+                        case 4:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.gefangnis);
+                            break;
+                        case 5:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.maisonette);
+                            break;
+                        case 6:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.tony);
+                            break;
+                        case 7:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.palace);
+                            break;
+                        case 8:
+                            iplObject.Interior.Name.Set(iplObject.Interior.Name.paradise);
+                            break;
+                    }
+                    RefreshInterior(InteriorId);
+                    FunctionsController.UpdateTvChannel = true;
+                }
+            }
+
+            internal int ClubStyle
+            {
+                get
+                {
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Style.trad))
+                    {
+                        return 0;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Style.edgy))
+                    {
+                        return 1;
+                    }
+                    else if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Style.glam))
+                    {
+                        return 2;
+                    }
+                    // no style?!
+                    return 0;
+                }
+                set
+                {
+                    switch (value)
+                    {
+                        case 0:
+                            iplObject.Interior.Style.Set(iplObject.Interior.Style.trad);
+                            break;
+                        case 1:
+                            iplObject.Interior.Style.Set(iplObject.Interior.Style.edgy);
+                            break;
+                        case 2:
+                            iplObject.Interior.Style.Set(iplObject.Interior.Style.glam);
+                            break;
+                    }
+
+                    // Looks silly, but it works to refresh them. :p
+                    ClubPodium = ClubPodium;
+                }
+            }
+
+            internal bool ClubPodium
+            {
+                get
+                {
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Podium.trad) || IsInteriorPropEnabled(InteriorId, iplObject.Interior.Podium.edgy) || IsInteriorPropEnabled(InteriorId, iplObject.Interior.Podium.glam))
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                set
+                {
+                    if (value)
+                    {
+                        switch (ClubStyle)
+                        {
+                            case 0:
+                                iplObject.Interior.Podium.Set(iplObject.Interior.Podium.trad);
+                                break;
+                            case 1:
+                                iplObject.Interior.Podium.Set(iplObject.Interior.Podium.edgy);
+                                break;
+                            case 2:
+                                iplObject.Interior.Podium.Set(iplObject.Interior.Podium.glam);
+                                break;
+
+                            // impossible but whatever
+                            default:
+                                iplObject.Interior.Podium.Set(iplObject.Interior.Podium.none);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        iplObject.Interior.Podium.Set(iplObject.Interior.Podium.none);
+                    }
+                    RefreshInterior(InteriorId);
+                }
+            }
+
+            internal bool ClubCeilingLights
+            {
+                get
+                {
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Details.roofLightsOff)) // Int01_ba_lightgrid_01
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                set
+                {
+                    // ba_prop_battle_lights_fx_lamp / 3390658461
+                    iplObject.Interior.Details.Enable(iplObject.Interior.Details.roofLightsOff, value);
+                    RefreshInterior(InteriorId);
+                    EnableLights(this);
+                }
+            }
+
+            // This is bugged in bob's resource somehow, so I'm doing the getting + setting manualy.
+            internal int ClubSpeakers
+            {
+                get
+                {
+                    string basic = "Int01_ba_equipment_setup";
+                    string upgrade = "Int01_ba_equipment_upgrade";
+
+
+                    if (IsInteriorPropEnabled(InteriorId, basic))
+                    {
+                        // Both are enabled, so it's upgraded version.
+                        if (IsInteriorPropEnabled(InteriorId, upgrade))
+                        {
+                            return 2;
+                        }
+                        // Only basic is enabled.
+                        return 1;
+                    }
+                    // Both are disabled, no speakers.
+                    return 0;
+                }
+                set
+                {
+                    string basic = "Int01_ba_equipment_setup";
+                    string upgrade = "Int01_ba_equipment_upgrade";
+
+                    DisableInteriorProp(InteriorId, basic);
+                    DisableInteriorProp(InteriorId, upgrade);
+
+                    if (value > 0)
+                    {
+                        // enable at basic no matter what, because it's more than 0 (none).
+                        EnableInteriorProp(InteriorId, basic);
+
+                        // also enable upgraded if selected
+                        if (value == 2)
+                        {
+                            EnableInteriorProp(InteriorId, upgrade);
+                        }
+                    }
+
+                    RefreshInterior(InteriorId);
+                }
+            }
+
+            private int _dj = 0;
+            internal int DJ
+            {
+                get
+                {
+                    return _dj;
+                }
+                set
+                {
+                    _dj = value;
+                    FunctionsController.UpdateTvChannel = true;
+                }
+            }
+
+            internal int LightsSetup
+            {
+                get
+                {
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Lasers.yellow)) return 1;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Lasers.green)) return 2;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Lasers.white)) return 3;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Lasers.purple)) return 4;
+
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Bands.yellow)) return 5;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Bands.green)) return 6;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Bands.white)) return 7;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Bands.cyan)) return 8;
+
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Neons.yellow)) return 9;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Neons.white)) return 10;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Neons.purple)) return 11;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Neons.cyan)) return 12;
+
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Droplets.yellow)) return 13;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Droplets.green)) return 14;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Droplets.white)) return 15;
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Lights.Droplets.purple)) return 16;
+
+                    return 0;
+                }
+                set
+                {
+                    // Clear all lights
+                    iplObject.Interior.Lights.Clear();
+
+                    switch (value)
+                    {
+                        case 1: // lasers - yellow
+                            iplObject.Interior.Lights.Lasers.Set(iplObject.Interior.Lights.Lasers.yellow);
+                            break;
+                        case 2: // lasers - green
+                            iplObject.Interior.Lights.Lasers.Set(iplObject.Interior.Lights.Lasers.green);
+                            break;
+                        case 3: // lasers - white
+                            iplObject.Interior.Lights.Lasers.Set(iplObject.Interior.Lights.Lasers.white);
+                            break;
+                        case 4: // lasers - purple
+                            iplObject.Interior.Lights.Lasers.Set(iplObject.Interior.Lights.Lasers.purple);
+                            break;
+
+                        case 5: // bands - yellow
+                            iplObject.Interior.Lights.Bands.Set(iplObject.Interior.Lights.Bands.yellow);
+                            break;
+                        case 6: // bands - green
+                            iplObject.Interior.Lights.Bands.Set(iplObject.Interior.Lights.Bands.green);
+                            break;
+                        case 7: // bands - white
+                            iplObject.Interior.Lights.Bands.Set(iplObject.Interior.Lights.Bands.white);
+                            break;
+                        case 8: // bands - cyan
+                            iplObject.Interior.Lights.Bands.Set(iplObject.Interior.Lights.Bands.cyan);
+                            break;
+
+                        case 9: // neons - yellow
+                            iplObject.Interior.Lights.Neons.Set(iplObject.Interior.Lights.Neons.yellow);
+                            break;
+                        case 10: // neons - white
+                            iplObject.Interior.Lights.Neons.Set(iplObject.Interior.Lights.Neons.white);
+                            break;
+                        case 11: // neons - purple
+                            iplObject.Interior.Lights.Neons.Set(iplObject.Interior.Lights.Neons.purple);
+                            break;
+                        case 12: // neons - cyan
+                            iplObject.Interior.Lights.Neons.Set(iplObject.Interior.Lights.Neons.cyan);
+                            break;
+
+                        case 13: // droplets - yellow
+                            iplObject.Interior.Lights.Droplets.Set(iplObject.Interior.Lights.Droplets.yellow);
+                            break;
+                        case 14: // droplets - green
+                            iplObject.Interior.Lights.Droplets.Set(iplObject.Interior.Lights.Droplets.green);
+                            break;
+                        case 15: // droplets - white
+                            iplObject.Interior.Lights.Droplets.Set(iplObject.Interior.Lights.Droplets.white);
+                            break;
+                        case 16: // droplets - purple
+                            iplObject.Interior.Lights.Droplets.Set(iplObject.Interior.Lights.Droplets.purple);
+                            break;
+                    }
+                    FunctionsController.UpdateTvChannel = true;
+                    RefreshInterior(InteriorId);
+                }
+            }
+
+            internal bool DryIce
+            {
+                get
+                {
+                    if (IsInteriorPropEnabled(InteriorId, iplObject.Interior.Details.dryIce))
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+                set
+                {
+                    iplObject.Interior.Details.Enable(iplObject.Interior.Details.dryIce, value);
+                    RefreshInterior(InteriorId);
+                }
+            }
+
+            private async void DoSetup()
+            {
+                // Wait for the interior to be loaded before trying to get data from that interior.
+                while (InteriorId == 0)
+                {
+                    await Delay(0);
+                }
+
+                // Set the list indexes to the current style according to the current customization.
+                clubNamesList.ListIndex = ClubName;
+                clubStylesList.ListIndex = ClubStyle;
+                clubSpeakersList.ListIndex = ClubSpeakers;
+                clubLightsSetupList.ListIndex = LightsSetup;
+                clubDJList.ListIndex = DJ;
+                clubPodiumsCheckbox.Checked = ClubPodium;
+                clubDryIceCheckbox.Checked = DryIce;
+                clubCeilingLightsCheckbox.Checked = ClubCeilingLights;
+
+                // Add the menu items.
+                Menu.AddMenuItem(clubNamesList);
+                Menu.AddMenuItem(clubStylesList);
+                Menu.AddMenuItem(clubSpeakersList);
+                Menu.AddMenuItem(clubDJList);
+                Menu.AddMenuItem(clubLightsSetupList);
+                Menu.AddMenuItem(clubPodiumsCheckbox);
+                Menu.AddMenuItem(clubDryIceCheckbox);
+                Menu.AddMenuItem(clubCeilingLightsCheckbox);
+
+                Menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+                {
+                    if (item == clubNamesList)
+                    {
+                        ClubName = newIndex;
+                    }
+                    else if (item == clubStylesList)
+                    {
+                        ClubStyle = newIndex;
+                    }
+                    else if (item == clubSpeakersList)
+                    {
+                        ClubSpeakers = newIndex;
+                    }
+                    else if (item == clubDJList)
+                    {
+                        DJ = newIndex;
+                    }
+                    else if (item == clubLightsSetupList)
+                    {
+                        LightsSetup = newIndex;
+                    }
+
+                    SyncInterior();
+                };
+
+                Menu.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    if (item == clubPodiumsCheckbox)
+                    {
+                        ClubPodium = _checked;
+                    }
+                    else if (item == clubDryIceCheckbox)
+                    {
+                        DryIce = _checked;
+                    }
+                    else if (item == clubCeilingLightsCheckbox)
+                    {
+                        ClubCeilingLights = _checked;
+                    }
+
+                    SyncInterior();
+                };
+            }
 
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="name"></param>
             /// <param name="parentMenu"></param>
-            internal Nightclub(string name, Menu parentMenu) : base(name, parentMenu)
+            internal Nightclub(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
-                CreateInteriorOptionsMenu();
+                DoSetup();
             }
+
+            override internal void SyncInterior()
+            {
+                TriggerServerEvent("vMenu:SyncInterior", "nightclub", interiors.IndexOf(this), Newtonsoft.Json.JsonConvert.SerializeObject(this));
+            }
+
+            internal void SetNewData(string json)
+            {
+
+            }
+
 
 
         }
 
         internal class Facility : Interior
         {
-            internal Facility(string name, Menu parentMenu) : base(name, parentMenu)
+            internal Facility(dynamic apiObject, string name, Menu parentMenu) : base((ExpandoObject)apiObject, name, parentMenu)
             {
 
             }
@@ -1634,54 +2290,54 @@ namespace vMenuClient
 
         }
 
-        internal class Clubhouse : Interior
-        {
-            internal Clubhouse(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class Clubhouse : Interior
+        //{
+        //    internal Clubhouse(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class BikerBusiness : Interior
-        {
-            internal BikerBusiness(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class BikerBusiness : Interior
+        //{
+        //    internal BikerBusiness(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class Cocaine : BikerBusiness
-        {
-            internal Cocaine(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class Cocaine : BikerBusiness
+        //{
+        //    internal Cocaine(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class Meth : BikerBusiness
-        {
-            internal Meth(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class Meth : BikerBusiness
+        //{
+        //    internal Meth(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class Weed : BikerBusiness
-        {
-            internal Weed(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class Weed : BikerBusiness
+        //{
+        //    internal Weed(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class CounterfeitCash : BikerBusiness
-        {
-            internal CounterfeitCash(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class CounterfeitCash : BikerBusiness
+        //{
+        //    internal CounterfeitCash(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
 
-        internal class DocumentForgery : BikerBusiness
-        {
-            internal DocumentForgery(string name, Menu parentMenu) : base(name, parentMenu)
-            {
-            }
-        }
+        //internal class DocumentForgery : BikerBusiness
+        //{
+        //    internal DocumentForgery(string name, Menu parentMenu) : base(name, parentMenu)
+        //    {
+        //    }
+        //}
         #endregion
 
 

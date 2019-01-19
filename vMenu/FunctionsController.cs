@@ -2570,6 +2570,9 @@ namespace vMenuClient
             }
         }
 
+        bool reverse = false;
+        int timer = GetGameTimer();
+        int randomer = new Random().Next(100, 1000);
         private async Task InteriorChecker()
         {
             if (MainMenu.IplManagementMenu != null && IplManager.AreInteriorsLoaded)
@@ -2638,6 +2641,115 @@ namespace vMenuClient
                 {
                     if (currentInterior is IplManager.Nightclub club)
                     {
+                        if (!DoesEntityExist(IplManager.lightObjects[1]) && club.ClubCeilingLights)
+                        {
+                            IplManager.EnableLights(club);
+                        }
+                        else
+                        {
+                            //var ii = 0;
+                            var index = 0;
+                            foreach (var obj in IplManager.lightObjects)
+                            {
+                                if (DoesEntityExist(obj))
+                                {
+                                    var rot = GetEntityRotation(obj, 2);
+                                    if (index == 1)
+                                    {
+                                        if (rot.Z > 0f)
+                                        {
+                                            reverse = true;
+                                        }
+                                        else if (rot.Z > -100f)
+                                        {
+                                            reverse = false;
+                                        }
+                                    }
+
+
+                                    if (index == 0 || index == 2 || index == 4 || index == 6 || index == 8)
+                                    {
+                                        if (reverse)
+                                        {
+                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
+                                        }
+                                        else
+                                        {
+                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (reverse)
+                                        {
+                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
+                                        }
+                                        else
+                                        {
+                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
+                                        }
+                                    }
+                                    //var rot = GetEntityRotation(obj, 2);
+
+                                    //if (ii == 1)
+                                    //{
+                                    //    if (rot.Z > -120f)
+                                    //    {
+                                    //        reverse = true;
+                                    //    }
+                                    //    else if (rot.Z < -170f || rot.Z > 0f)
+                                    //    {
+                                    //        reverse = false;
+                                    //    }
+                                    //}
+
+                                    //if ((reverse && ii % 2 == 0) || (!reverse && ii % 2 == 0))
+                                    //{
+                                    //    SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
+                                    //}
+                                    //else
+                                    //{
+                                    //    SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
+                                    //}
+
+                                    ////var aobj = IplManager.beams[ii];
+
+                                    //if (GetGameTimer() - timer > randomer)
+                                    //{
+                                    //    for (var b = 0; b < IplManager.beams.Length; b++)
+                                    //    {
+                                    //        var alpha = 0;
+                                    //        var aobj = IplManager.beams[b];
+                                    //        if (b % 2 == 0)
+                                    //        {
+                                    //            if (GetEntityAlpha(aobj) == 255)
+                                    //            {
+                                    //                SetEntityAlpha(aobj, 0, 0);
+                                    //                alpha = 255;
+                                    //            }
+                                    //            else
+                                    //            {
+                                    //                SetEntityAlpha(aobj, 255, 0);
+                                    //                alpha = 0;
+                                    //            }
+
+                                    //        }
+                                    //        else
+                                    //        {
+                                    //            SetEntityAlpha(aobj, alpha, 0);
+                                    //        }
+                                    //    }
+
+                                    //    timer = GetGameTimer();
+                                    //}
+
+                                }
+                                //ii++;
+                                index++;
+                            }
+                        }
+
+
                         if (club.DryIce || IsInteriorPropEnabled(club.InteriorId, club.iplObject.Interior.Details.dryIce))
                         {
                             if (!HasNamedPtfxAssetLoaded("scr_ba_club"))
