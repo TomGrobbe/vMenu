@@ -2583,10 +2583,10 @@ namespace vMenuClient
         {
             if (currentInterior != null && currentInterior is IplManager.Nightclub club)
             {
-                if (!DoesEntityExist(IplManager.beamObjects[0]) && club.ClubCeilingLights)
+                if ((!DoesEntityExist(IplManager.beamObjects[0]) || !IsInteriorReady(club.InteriorId)) && club.ClubCeilingLights)
                 {
                     IplManager.EnableLights(club);
-                    await Delay(1000);
+                    //await Delay(1000);
                 }
                 else if (club.ClubCeilingLights)
                 {
@@ -2653,8 +2653,8 @@ namespace vMenuClient
                                             CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, 255, 255, 255);
                                         }
                                     }
-                                    
-                                    
+
+
                                 }
 
                             }
@@ -2779,6 +2779,15 @@ namespace vMenuClient
                 {
                     if (currentInterior is IplManager.Nightclub club)
                     {
+                        if (club.LightsSetup > 0)
+                        {
+                            CreateModelHide(-1605.643f, -3012.672f, -77.79608f, 1f, (uint)GetHashKey("ba_prop_club_screens_02"), true);
+                        }
+                        else
+                        {
+                            CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, -1605.643f, -3012.672f, -77.79608f, 1f, (uint)GetHashKey("ba_prop_club_screens_02"), false);
+                        }
+
                         if (club.DryIce || IsInteriorPropEnabled(club.InteriorId, club.iplObject.Interior.Details.dryIce))
                         {
                             if (!HasNamedPtfxAssetLoaded("scr_ba_club"))

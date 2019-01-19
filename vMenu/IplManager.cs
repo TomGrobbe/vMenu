@@ -1075,7 +1075,7 @@ namespace vMenuClient
 
         internal static async void EnableLights(Nightclub interior)
         {
-            await Delay(1000);
+            //await Delay(1000);
             while (interior.InteriorId == 0 || !IsInteriorReady(interior.InteriorId))
             {
                 await Delay(0);
