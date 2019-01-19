@@ -2578,7 +2578,27 @@ namespace vMenuClient
         int newLightTimer2 = GetGameTimer() + 2000;
         int newLightTimer3 = GetGameTimer() + 4000;
         int newLightTimer4 = GetGameTimer() + 6000;
+
+        internal static List<int[]> lightColors = new List<int[]>()
+        {
+                       //  r    g    b    a
+            new int[4] { 255,   7, 255, 160 }, // 0 - pink/purple
+            //new int[4] { 255, 255, 145,   0 }, // 1 - soft yellow
+            new int[4] { 145, 145, 253, 255 }, // 2 - light violet/purple/white/blue
+
+            new int[4] { 255, 226, 57, 160 }, // 3 - bright yellow
+            new int[4] { 50, 200, 255,   0 }, // 4 - bright blue
+            new int[4] { 255, 255, 255,   0 }, // 4 - white
+            //new int[4] { 145, 145, 253, 255 }, // 5
+            //new int[4] { 255,   7, 255, 160 }, // 3
+            //new int[4] { 255, 255, 145,   0 }, // 4
+            //new int[4] { 145, 145, 253, 255 }, // 5
+            //new int[4] { 255,   7, 255, 160 }, // 6
+            //new int[4] { 255, 255, 145,   0 }, // 7
+            //new int[4] { 145, 145, 253, 255 }, // 8
+        };
         Random randomizer = new Random();
+        int step = 0;
         private async Task NightClubLightAnimations()
         {
             if (currentInterior != null && currentInterior is IplManager.Nightclub club)
@@ -2590,29 +2610,26 @@ namespace vMenuClient
                 }
                 else if (club.ClubCeilingLights)
                 {
-                    if (GetGameTimer() - newLightTimer1 > 1500)
+                    if (GetGameTimer() - newLightTimer1 > 800)
                     {
                         newLightTimer1 = GetGameTimer();
                         IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
                     }
-                    if (GetGameTimer() - newLightTimer2 > 1600)
+                    if (GetGameTimer() - newLightTimer2 > 900)
                     {
                         newLightTimer2 = GetGameTimer();
                         IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
                     }
-                    if (GetGameTimer() - newLightTimer3 > 1700)
+                    if (GetGameTimer() - newLightTimer3 > 1000)
                     {
                         newLightTimer3 = GetGameTimer();
                         IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
                     }
-                    if (GetGameTimer() - newLightTimer4 > 1800)
+                    if (GetGameTimer() - newLightTimer4 > 1100)
                     {
                         newLightTimer4 = GetGameTimer();
                         IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
                     }
-
-                    //var obj = IplManager.lampObjects[0];
-
 
 
                     //var ii = 0;
@@ -2626,83 +2643,125 @@ namespace vMenuClient
                         var rot = GetEntityRotation(obj, 2);
                         if (DoesEntityExist(obj))
                         {
-                            //var rot = GetEntityRotation(obj, 2);
-                            if (index == 1)
+                            if (step < 4)
                             {
-                                //while (rot.Y < -130f)
-                                //{
-                                //    a
-                                //}
-                                if (rot.Y < -130f)
+                                if (index == 1)
                                 {
-                                    await Delay(100);
-                                    reverse = false;
-                                }
-                                else if (rot.Y > 80f)
-                                {
-                                    await Delay(100);
-                                    reverse = true;
-                                    foreach (var c in IplManager.beamObjects)
+                                    if (rot.Y < -100f)
                                     {
-                                        if (randomizer.Next(0, 2) == 1)
-                                        {
-                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, 202, 28, 255);
-                                        }
-                                        else
-                                        {
-                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, 255, 255, 255);
-                                        }
+                                        await Delay(100);
+                                        reverse = false;
                                     }
-
-
+                                    else if (rot.Y > 70f)
+                                    {
+                                        await Delay(100);
+                                        reverse = true;
+                                        foreach (var c in IplManager.beamObjects)
+                                        {
+                                            var color = IplManager.GetRandomLightColor();
+                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, color[0], color[1], color[2]);
+                                        }
+                                        step++;
+                                    }
                                 }
 
+                                if (reverse)
+                                {
+                                    SetEntityRotation(obj, rot.X, rot.Y - 4f, rot.Z, 2, true);
+                                }
+                                else
+                                {
+                                    SetEntityRotation(obj, rot.X, rot.Y + 4f, rot.Z, 2, true);
+                                }
                             }
-
-                            //if (reverse)
-                            //{
-                            //    if (index % 2 == 0)
-                            //        SetEntityAlpha(beam, 255, 0);
-                            //    else
-                            //        SetEntityAlpha(beam, 0, 0);
-                            //}
-                            //else
-                            //{
-                            //    if (index % 2 == 0)
-                            //        SetEntityAlpha(beam, 0, 0);
-                            //    else
-                            //        SetEntityAlpha(beam, 255, 0);
-                            //}
-
-                            if (reverse)
+                            else if (step < 5)
                             {
-                                SetEntityRotation(obj, rot.X, rot.Y - 4f, rot.Z, 2, true);
+                                foreach (var tmpBeam in IplManager.beamObjects)
+                                {
+                                    SetEntityAlpha(tmpBeam, 0, 0);
+                                }
+
+                                await Delay(500);
+
+                                var iter = 0;
+                                foreach (var lamp in IplManager.lampObjects)
+                                {
+                                    SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                    SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                    iter++;
+                                }
+
+                                await Delay(500);
+
+                                foreach (var tmpBeam in IplManager.beamObjects)
+                                {
+                                    SetEntityAlpha(tmpBeam, 255, 0);
+                                }
+                                step++;
+                                break;
                             }
-                            else
+                            else if (step < 9)
                             {
-                                SetEntityRotation(obj, rot.X, rot.Y + 4f, rot.Z, 2, true);
+                                if (index == 1)
+                                {
+                                    if (rot.Y < -20)
+                                    {
+                                        reverse = false;
+                                    }
+                                    else if (rot.Y > 70)
+                                    {
+                                        reverse = true;
+
+                                        foreach (var c in IplManager.beamObjects)
+                                        {
+                                            var color = IplManager.GetRandomLightColor();
+                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, color[0], color[1], color[2]);
+                                        }
+
+                                        step++;
+                                    }
+                                }
+
+                                var lr = step > 5 ? 0.3f : -0.3f;
+                                var rot2 = GetEntityRotation(IplManager.rotatorObjects[index], 2);
+                                if (reverse)
+                                {
+                                    SetEntityRotation(obj, rot.X, rot.Y - 1f, rot.Z + lr, 2, true);
+                                    SetEntityRotation(IplManager.rotatorObjects[index], rot2.X, rot2.Y, rot2.Z + lr, 2, true);
+                                }
+                                else
+                                {
+                                    SetEntityRotation(obj, rot.X, rot.Y + 1f, rot.Z - lr, 2, true);
+                                    SetEntityRotation(IplManager.rotatorObjects[index], rot2.X, rot2.Y, rot2.Z - lr, 2, true);
+                                }
                             }
+                            else if (step >= 8)
+                            {
+                                step = 0;
+                                foreach (var tmpBeam in IplManager.beamObjects)
+                                {
+                                    SetEntityAlpha(tmpBeam, 0, 0);
+                                }
 
+                                await Delay(500);
 
+                                var iter = 0;
+                                foreach (var lamp in IplManager.lampObjects)
+                                {
+                                    SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                    SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                    iter++;
+                                }
 
+                                await Delay(500);
 
-                            //if (index == 0 || index == 2 || index == 4 || index == 6 || index == 8)
-                            //{
-
-                            //}
-                            //else
-                            //{
-                            //    if (reverse)
-                            //    {
-                            //        SetEntityRotation(obj, rot.X, rot.Y + 1f, rot.Z, 2, true);
-                            //    }
-                            //    else
-                            //    {
-                            //        SetEntityRotation(obj, rot.X, rot.Y - 1f, rot.Z, 2, true);
-                            //    }
-                            //}
+                                foreach (var tmpBeam in IplManager.beamObjects)
+                                {
+                                    SetEntityAlpha(tmpBeam, 255, 0);
+                                }
+                                break;
+                            }
                         }
-                        //ii++;
                         index++;
                     }
                 }
@@ -2710,6 +2769,37 @@ namespace vMenuClient
 
         }
 
+        private List<string> emitters = new List<string>()
+        {
+            "SE_BA_DLC_INT_01_BOGS",
+            "SE_BA_DLC_INT_01_ENTRY_HALL",
+            "SE_BA_DLC_INT_01_ENTRY_STAIRS",
+            "SE_BA_DLC_INT_01_GARAGE",
+            "SE_BA_DLC_INT_01_MAIN_AREA_2",
+            "SE_BA_DLC_INT_01_MAIN_AREA",
+            "SE_BA_DLC_INT_01_OFFICE",
+            "SE_BA_DLC_INT_01_REAR_L_CORRIDOR",
+        };
+
+        private List<string> djRadioStations = new List<string>()
+        {
+            "RADIO_22_DLC_BATTLE_MIX1_CLUB",
+            "RADIO_23_DLC_BATTLE_MIX2_CLUB",
+            "RADIO_24_DLC_BATTLE_MIX3_CLUB",
+            "RADIO_25_DLC_BATTLE_MIX4_CLUB",
+        };
+        /*
+         
+            SE_ba_dlc_int_01_Bogs", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Hall", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Stairs", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_garage", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_main_area_2", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_main_area", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_office", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                            SetEmitterRadioStation("SE_ba_dlc_int_01_rear_L_corridor", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+
+             */
 
         private async Task InteriorChecker()
         {
@@ -2777,8 +2867,40 @@ namespace vMenuClient
 
                 if (currentInterior != null)
                 {
+
                     if (currentInterior is IplManager.Nightclub club)
                     {
+                        if (!IsAudioSceneActive("DLC_Ba_NightClub_Scene"))
+                        {
+                            StartAudioScene("DLC_Ba_NightClub_Scene");
+                        }
+                        foreach (string s in emitters)
+                        {
+                            SetEmitterRadioStation(s, djRadioStations[club.DJ]);
+                        }
+                        //if (club.DJ == 0)
+                        //{
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Bogs", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Hall", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Stairs", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_garage", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_main_area_2", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_main_area", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_office", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_rear_L_corridor", "RADIO_25_DLC_BATTLE_MIX4_CLUB");
+                        //}
+                        //else
+                        //{
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Bogs", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Hall", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_Entry_Stairs", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_garage", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_main_area_2", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_main_area", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_office", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //    SetEmitterRadioStation("SE_ba_dlc_int_01_rear_L_corridor", "RADIO_22_DLC_BATTLE_MIX1_CLUB");
+                        //}
+
                         if (club.LightsSetup > 0)
                         {
                             CreateModelHide(-1605.643f, -3012.672f, -77.79608f, 1f, (uint)GetHashKey("ba_prop_club_screens_02"), true);
@@ -2823,6 +2945,10 @@ namespace vMenuClient
                     }
                     else
                     {
+                        if (IsAudioSceneActive("DLC_Ba_NightClub_Scene"))
+                        {
+                            StopAudioScene("DLC_Ba_NightClub_Scene");
+                        }
                         RemoveSmokeParticles();
                     }
                 }
