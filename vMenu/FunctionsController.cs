@@ -102,6 +102,7 @@ namespace vMenuClient
                 Tick += InteriorTv;
                 Tick += InteriorRadio;
                 Tick += InteriorTpManager;
+                Tick += NightClubLightAnimations;
             }
         }
 
@@ -2571,8 +2572,145 @@ namespace vMenuClient
         }
 
         bool reverse = false;
-        int timer = GetGameTimer();
-        int randomer = new Random().Next(100, 1000);
+        //int timer = GetGameTimer();
+        //int randomer = new Random().Next(100, 1000);
+        int newLightTimer1 = GetGameTimer();
+        int newLightTimer2 = GetGameTimer() + 2000;
+        int newLightTimer3 = GetGameTimer() + 4000;
+        int newLightTimer4 = GetGameTimer() + 6000;
+        Random randomizer = new Random();
+        private async Task NightClubLightAnimations()
+        {
+            if (currentInterior != null && currentInterior is IplManager.Nightclub club)
+            {
+                if (!DoesEntityExist(IplManager.beamObjects[0]) && club.ClubCeilingLights)
+                {
+                    IplManager.EnableLights(club);
+                    await Delay(1000);
+                }
+                else if (club.ClubCeilingLights)
+                {
+                    if (GetGameTimer() - newLightTimer1 > 1500)
+                    {
+                        newLightTimer1 = GetGameTimer();
+                        IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
+                    }
+                    if (GetGameTimer() - newLightTimer2 > 1600)
+                    {
+                        newLightTimer2 = GetGameTimer();
+                        IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
+                    }
+                    if (GetGameTimer() - newLightTimer3 > 1700)
+                    {
+                        newLightTimer3 = GetGameTimer();
+                        IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
+                    }
+                    if (GetGameTimer() - newLightTimer4 > 1800)
+                    {
+                        newLightTimer4 = GetGameTimer();
+                        IplManager.CreateLight(club, randomizer.Next(0, 5), randomizer.Next(0, 6));
+                    }
+
+                    //var obj = IplManager.lampObjects[0];
+
+
+
+                    //var ii = 0;
+                    var index = 0;
+
+                    foreach (var obj in IplManager.lampObjects)
+                    {
+
+                        var beam = IplManager.beamObjects[index];
+
+                        var rot = GetEntityRotation(obj, 2);
+                        if (DoesEntityExist(obj))
+                        {
+                            //var rot = GetEntityRotation(obj, 2);
+                            if (index == 1)
+                            {
+                                //while (rot.Y < -130f)
+                                //{
+                                //    a
+                                //}
+                                if (rot.Y < -130f)
+                                {
+                                    await Delay(100);
+                                    reverse = false;
+                                }
+                                else if (rot.Y > 80f)
+                                {
+                                    await Delay(100);
+                                    reverse = true;
+                                    foreach (var c in IplManager.beamObjects)
+                                    {
+                                        if (randomizer.Next(0, 2) == 1)
+                                        {
+                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, 202, 28, 255);
+                                        }
+                                        else
+                                        {
+                                            CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, c, 1, 255, 255, 255);
+                                        }
+                                    }
+                                    
+                                    
+                                }
+
+                            }
+
+                            //if (reverse)
+                            //{
+                            //    if (index % 2 == 0)
+                            //        SetEntityAlpha(beam, 255, 0);
+                            //    else
+                            //        SetEntityAlpha(beam, 0, 0);
+                            //}
+                            //else
+                            //{
+                            //    if (index % 2 == 0)
+                            //        SetEntityAlpha(beam, 0, 0);
+                            //    else
+                            //        SetEntityAlpha(beam, 255, 0);
+                            //}
+
+                            if (reverse)
+                            {
+                                SetEntityRotation(obj, rot.X, rot.Y - 4f, rot.Z, 2, true);
+                            }
+                            else
+                            {
+                                SetEntityRotation(obj, rot.X, rot.Y + 4f, rot.Z, 2, true);
+                            }
+
+
+
+
+                            //if (index == 0 || index == 2 || index == 4 || index == 6 || index == 8)
+                            //{
+
+                            //}
+                            //else
+                            //{
+                            //    if (reverse)
+                            //    {
+                            //        SetEntityRotation(obj, rot.X, rot.Y + 1f, rot.Z, 2, true);
+                            //    }
+                            //    else
+                            //    {
+                            //        SetEntityRotation(obj, rot.X, rot.Y - 1f, rot.Z, 2, true);
+                            //    }
+                            //}
+                        }
+                        //ii++;
+                        index++;
+                    }
+                }
+            }
+
+        }
+
+
         private async Task InteriorChecker()
         {
             if (MainMenu.IplManagementMenu != null && IplManager.AreInteriorsLoaded)
@@ -2641,115 +2779,6 @@ namespace vMenuClient
                 {
                     if (currentInterior is IplManager.Nightclub club)
                     {
-                        if (!DoesEntityExist(IplManager.lightObjects[1]) && club.ClubCeilingLights)
-                        {
-                            IplManager.EnableLights(club);
-                        }
-                        else
-                        {
-                            //var ii = 0;
-                            var index = 0;
-                            foreach (var obj in IplManager.lightObjects)
-                            {
-                                if (DoesEntityExist(obj))
-                                {
-                                    var rot = GetEntityRotation(obj, 2);
-                                    if (index == 1)
-                                    {
-                                        if (rot.Z > 0f)
-                                        {
-                                            reverse = true;
-                                        }
-                                        else if (rot.Z > -100f)
-                                        {
-                                            reverse = false;
-                                        }
-                                    }
-
-
-                                    if (index == 0 || index == 2 || index == 4 || index == 6 || index == 8)
-                                    {
-                                        if (reverse)
-                                        {
-                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
-                                        }
-                                        else
-                                        {
-                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (reverse)
-                                        {
-                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
-                                        }
-                                        else
-                                        {
-                                            SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
-                                        }
-                                    }
-                                    //var rot = GetEntityRotation(obj, 2);
-
-                                    //if (ii == 1)
-                                    //{
-                                    //    if (rot.Z > -120f)
-                                    //    {
-                                    //        reverse = true;
-                                    //    }
-                                    //    else if (rot.Z < -170f || rot.Z > 0f)
-                                    //    {
-                                    //        reverse = false;
-                                    //    }
-                                    //}
-
-                                    //if ((reverse && ii % 2 == 0) || (!reverse && ii % 2 == 0))
-                                    //{
-                                    //    SetEntityRotation(obj, rot.X, rot.Y, rot.Z - 1f, 2, true);
-                                    //}
-                                    //else
-                                    //{
-                                    //    SetEntityRotation(obj, rot.X, rot.Y, rot.Z + 1f, 2, true);
-                                    //}
-
-                                    ////var aobj = IplManager.beams[ii];
-
-                                    //if (GetGameTimer() - timer > randomer)
-                                    //{
-                                    //    for (var b = 0; b < IplManager.beams.Length; b++)
-                                    //    {
-                                    //        var alpha = 0;
-                                    //        var aobj = IplManager.beams[b];
-                                    //        if (b % 2 == 0)
-                                    //        {
-                                    //            if (GetEntityAlpha(aobj) == 255)
-                                    //            {
-                                    //                SetEntityAlpha(aobj, 0, 0);
-                                    //                alpha = 255;
-                                    //            }
-                                    //            else
-                                    //            {
-                                    //                SetEntityAlpha(aobj, 255, 0);
-                                    //                alpha = 0;
-                                    //            }
-
-                                    //        }
-                                    //        else
-                                    //        {
-                                    //            SetEntityAlpha(aobj, alpha, 0);
-                                    //        }
-                                    //    }
-
-                                    //    timer = GetGameTimer();
-                                    //}
-
-                                }
-                                //ii++;
-                                index++;
-                            }
-                        }
-
-
                         if (club.DryIce || IsInteriorPropEnabled(club.InteriorId, club.iplObject.Interior.Details.dryIce))
                         {
                             if (!HasNamedPtfxAssetLoaded("scr_ba_club"))
@@ -3084,6 +3113,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         /// Visor and snowball stuff.
         #region animation functions
         /// <summary>

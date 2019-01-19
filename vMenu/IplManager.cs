@@ -941,10 +941,10 @@ namespace vMenuClient
             }
         }
 
-        public static int[] lightObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public static int[] lampObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] beams { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        private static Vector3[] lightPositions = new Vector3[9]
+        public static int[] rotatorObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static int[] beamObjects { get; private set; } = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        private static Vector3[] lampPositions = new Vector3[9]
         {
             new Vector3(-1591.597f, -3013.749f, -77.3800f),
             new Vector3(-1591.597f, -3010.702f, -77.3800f),
@@ -956,7 +956,7 @@ namespace vMenuClient
             new Vector3(-1606.629f, -3014.947f, -75.7108f),
             new Vector3(-1602.368f, -3018.949f, -77.3800f),
         };
-        private static Vector3[] lampPositions = new Vector3[9]
+        private static Vector3[] rotatorPositions = new Vector3[9]
         {
             new Vector3(-1591.597f, -3013.749f, -77.1822f),
             new Vector3(-1591.597f, -3010.702f, -77.1822f),
@@ -969,7 +969,7 @@ namespace vMenuClient
             new Vector3(-1602.368f, -3018.949f, -77.1822f),
         };
 
-        private static Vector3[] lightRotations = new Vector3[9]
+        private static Vector3[] lampRotations = new Vector3[9]
         {
             new Vector3(0f, 0f, 180f),
             new Vector3(0f, 0f, 180f),
@@ -982,139 +982,327 @@ namespace vMenuClient
             new Vector3(0f, 0f, 40f),
         };
 
-        internal static async void EnableLights(Nightclub interior)
+        private static List<List<Vector3>> roofLightsCoords = new List<List<Vector3>>()
         {
-            while (!IsInteriorReady(interior.InteriorId))
+            new List<Vector3>()
+            {
+                new Vector3(3.7219f, 3.4921f, 5.721f),
+                new Vector3(3.7219f, 2.1514f, 5.4099f),
+                new Vector3(3.7219f, 0.7985f, 5.721f),
+                new Vector3(3.7219f, -1.0028f, 5.721f),
+                new Vector3(3.7219f, -2.3244f, 5.4099f),
+                new Vector3(3.7219f, -3.7085f, 5.721f)
+            },
+            new List<Vector3>()
+            {
+                new Vector3(5.8927f, 3.4921f, 5.721f),
+                new Vector3(5.8927f, 2.1514f, 5.4099f),
+                new Vector3(5.8927f, 0.7985f, 5.721f),
+                new Vector3(5.8927f, -1.0028f, 5.721f),
+                new Vector3(5.8927f, -2.3244f, 5.4099f),
+                new Vector3(5.8927f, -3.7085f, 5.721f)
+            },
+            new List<Vector3>()
+            {
+                new Vector3(8.0635f, 3.4921f, 5.721f),
+                new Vector3(8.0635f, 2.1514f, 5.4099f),
+                new Vector3(8.0635f, 0.7985f, 5.721f),
+                new Vector3(8.0635f, -1.0028f, 5.721f),
+                new Vector3(8.0635f, -2.3244f, 5.4099f),
+                new Vector3(8.0635f, -3.7085f, 5.721f)
+            },
+            new List<Vector3>()
+            {
+                new Vector3(10.2343f, 3.4921f, 5.721f),
+                new Vector3(10.2343f, 2.1514f, 5.4099f),
+                new Vector3(10.2343f, 0.7985f, 5.721f),
+                new Vector3(10.2343f, -1.0028f, 5.721f),
+                new Vector3(10.2343f, -2.3244f, 5.4099f),
+                new Vector3(10.2343f, -3.7085f, 5.721f)
+            },
+            new List<Vector3>()
+            {
+                new Vector3(12.4051f, 3.4921f, 5.721f),
+                new Vector3(12.4051f, 2.1514f, 5.4099f),
+                new Vector3(12.4051f, 0.7985f, 5.721f),
+                new Vector3(12.4051f, -1.0028f, 5.721f),
+                new Vector3(12.4051f, -2.3244f, 5.4099f),
+                new Vector3(12.4051f, -3.7085f, 5.721f)
+            }
+        };
+
+        internal static async void CreateLight(Nightclub club, int firstRandom, int secondRandom)
+        {
+
+            var modellamp = (uint)GetHashKey("ba_prop_club_emis_rig_10_shad");
+            RequestModel(modellamp);
+            while (!HasModelLoaded(modellamp))
             {
                 await Delay(0);
             }
-            uint model = (uint)GetHashKey("ba_prop_battle_lights_fx_lamp");
-            for (var i = 0; i < lightObjects.Length; i++)
+
+            var c = roofLightsCoords[firstRandom][secondRandom];
+
+            var pos = GetObjectOffsetFromCoords(c.X, c.Y, c.Z, 0f, club.interiorLocation.X, club.interiorLocation.Y, club.interiorLocation.Z - 2f);
+            if (DoesObjectOfTypeExistAtCoords(pos.X, pos.Y, pos.Z, 0.1f, modellamp, false))
             {
-                var obj = lightObjects[i];
-                if (!DoesEntityExist(obj))
-                {
-
-                    var tmp = GetClosestObjectOfType(lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, 3f, model, false, false, false);
-                    if (DoesEntityExist(tmp))
-                    {
-                        DeleteObject(ref tmp);
-                    }
-
-                    if (interior.ClubCeilingLights)
-                    {
-                        if (!HasModelLoaded(model))
-                        {
-                            RequestModel(model);
-                            while (!HasModelLoaded(model))
-                            {
-                                await Delay(0);
-                            }
-                        }
-
-                        lightObjects[i] = CreateObjectNoOffset(model, lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, false, false, false);
-                    }
-                }
-                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
-                if (interior.ClubCeilingLights)
-                {
-                    CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
-                    SetEntityRotation(lightObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
-                }
+                var tmp = GetClosestObjectOfType(pos.X, pos.Y, pos.Z, 0.1f, modellamp, false, false, false);
+                DeleteObject(ref tmp);
             }
 
-            SetModelAsNoLongerNeeded(model);
-
-
-
-            model = (uint)GetHashKey("ba_prop_battle_lights_fx_rotator");
-            for (var i = 0; i < lampObjects.Length; i++)
+            var objs = CreateObjectNoOffset(modellamp, pos.X, pos.Y, pos.Z, false, false, false);
+            Random rand = new Random();
+            int r = rand.Next(0, 2);
+            if (r == 0)
             {
-                var obj = lampObjects[i];
-                if (DoesEntityExist(obj))
-                {
-                    DeleteObject(ref obj);
-                }
-                var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
-                if (DoesEntityExist(tmp))
-                {
-                    DeleteObject(ref tmp);
-                }
-
-                if (interior.ClubCeilingLights)
-                {
-                    if (!HasModelLoaded(model))
-                    {
-                        RequestModel(model);
-                        while (!HasModelLoaded(model))
-                        {
-                            await Delay(0);
-                        }
-                    }
-                    lampObjects[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, false);
-                }
-                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
-
-                if (interior.ClubCeilingLights)
-                {
-                    CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
-                    SetEntityRotation(lampObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
-                }
-            }
-
-            SetModelAsNoLongerNeeded(model);
-
-            for (var i = 0; i < beams.Length; i++)
-            {
-                var a = new List<string>() { "a", "b", "c", "d", "e", "f", "g", "h" };
-                model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rigd");
-                //model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rig{a[i]}");
-
-                var obj = beams[i];
-                if (DoesEntityExist(obj))
-                {
-                    DeleteObject(ref obj);
-                }
-                var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
-                if (DoesEntityExist(tmp))
-                {
-                    DeleteObject(ref tmp);
-                }
-
-                if (interior.ClubCeilingLights)
-                {
-                    if (!HasModelLoaded(model))
-                    {
-                        RequestModel(model);
-                        while (!HasModelLoaded(model))
-                        {
-                            await Delay(0);
-                        }
-                    }
-                    beams[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, true);
-                    SetEntityRotation(beams[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
-                    SetEntityAlpha(beams[i], 255, 0);
-
-                    // _SetLightBeamRGB idk stupid name but whatever, that's what it does at least.
-                    CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, beams[i], 1, 202, 28, 255);
-                }
+                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, objs, 1, 202, 28, 255);
             }
 
 
-            if (interior.ClubCeilingLights)
+            for (var i = 0; i < (255 / 4); i++)
             {
-                for (int i = 0; i < lampObjects.Length; i++)
-                {
-                    AttachEntityToEntity(lampObjects[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
-                }
-                for (int i = 0; i < beams.Length; i++)
-                {
+                SetEntityAlpha(objs, i * 4, 0);
+                await Delay(0);
+            }
+            for (var i = (255 / 4); i > 0; i--)
+            {
+                SetEntityAlpha(objs, i * 4, 0);
+                await Delay(0);
+            }
+            //await Delay(3000);
+            DeleteObject(ref objs);
+        }
 
-                    AttachEntityToEntity(beams[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+        internal static async void EnableLights(Nightclub interior)
+        {
+            await Delay(1000);
+            while (interior.InteriorId == 0 || !IsInteriorReady(interior.InteriorId))
+            {
+                await Delay(0);
+            }
+            uint lampModel = (uint)GetHashKey("ba_prop_battle_lights_fx_lamp");
+            uint rotatorModel = (uint)GetHashKey("ba_prop_battle_lights_fx_rotator");
+            string lightBeamName = "ba_prop_battle_lights_fx_rig";
+
+            for (var i = 0; i < 9; i++)
+            {
+                var lamp = lampObjects[i];
+                var rotator = rotatorObjects[i];
+                var beam = beamObjects[i];
+                Vector3 lampPos = lampPositions[i];
+                Vector3 rotatorPos = rotatorPositions[i];
+                Vector3 beamPos = rotatorPositions[i];
+                uint beamModel = (uint)GetHashKey(lightBeamName + (i % 2 == 0 ? "f" : "d"));
+
+                if (DoesEntityExist(beam))
+                {
+                    DeleteObject(ref beam);
+                    beamObjects[i] = 0;
+                }
+                if (DoesEntityExist(rotator))
+                {
+                    DeleteObject(ref rotator);
+                    rotatorObjects[i] = 0;
+                }
+                if (DoesEntityExist(lamp))
+                {
+                    DeleteObject(ref lamp);
+                    lampObjects[i] = 0;
+                }
+
+                lamp = GetClosestObjectOfType(lampPos.X, lampPos.Y, lampPos.Z, 3f, lampModel, false, false, false);
+                rotator = GetClosestObjectOfType(rotatorPos.X, rotatorPos.Y, rotatorPos.Z, 3f, rotatorModel, false, false, false);
+                beam = GetClosestObjectOfType(beamPos.X, beamPos.Y, beamPos.Z, 3f, beamModel, false, false, false);
+
+                if (DoesEntityExist(beam))
+                {
+                    DeleteObject(ref beam);
+                }
+                if (DoesEntityExist(rotator))
+                {
+                    DeleteObject(ref rotator);
+                }
+                if (DoesEntityExist(lamp))
+                {
+                    DeleteObject(ref lamp);
+                }
+
+                beam = 0;
+                rotator = 0;
+                lamp = 0;
+
+                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPos.X, lampPos.Y, lampPos.Z, 3f, lampModel, false);
+                CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, rotatorPos.X, rotatorPos.Y, rotatorPos.Z, 3f, rotatorModel, false);
+                if (interior.ClubCeilingLights)
+                {
+                    lamp = CreateObjectNoOffset(lampModel, lampPos.X, lampPos.Y, lampPos.Z, false, false, false);
+                    rotator = CreateObjectNoOffset(rotatorModel, rotatorPos.X, rotatorPos.Y, rotatorPos.Z, false, false, false);
+                    beam = CreateObjectNoOffset(beamModel, beamPos.X, beamPos.Y, beamPos.Z, false, false, true);
+
+                    ForceRoomForEntity(lamp, interior.InteriorId, 2937632879);
+                    ForceRoomForEntity(rotator, interior.InteriorId, 2937632879);
+                    ForceRoomForEntity(beam, interior.InteriorId, 2937632879);
+
+                    SetEntityRotation(lamp, lampRotations[i].X, lampRotations[i].Y, lampRotations[i].Z, 2, true);
+                    SetEntityRotation(rotator, lampRotations[i].X, lampRotations[i].Y, lampRotations[i].Z, 2, true);
+                    //SetEntityRotation(beam, lampRotations[i].X, lampRotations[i].Y, lampRotations[i].Z, 2, true);
+
+                    //AttachEntityToEntity(rotator, lamp, -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+                    AttachEntityToEntity(beam, lamp, -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+
+                    CreateModelHideExcludingScriptObjects(lampPos.X, lampPos.Y, lampPos.Z, 3f, lampModel, true);
+                    CreateModelHideExcludingScriptObjects(rotatorPos.X, rotatorPos.Y, rotatorPos.Z, 3f, rotatorModel, true);
+
+                    SetEntityAlpha(beam, 255, 0);
+
+                    if (i % 2 == 0)
+                    {
+                        //SetObjectColour(beam, 1, 202, 28, 255);
+                        //SetObjectColour(beam, 1, 202, 28, 255);
+                        // _SetLightBeamRGB idk stupid name but whatever, that's what it does at least.
+                        CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, beam, 1, 202, 28, 255);
+                    }
+
+                    lampObjects[i] = lamp;
+                    rotatorObjects[i] = rotator;
+                    beamObjects[i] = beam;
+
+                    //SetEntityAlpha(lamp, 180, 0);
+                    //SetEntityAlpha(rotator, 51, 0);
+
+
+                    // ba_prop_club_emis_rig_10_shad            AC028888   -1409120120   2885847176
+
+
+
                 }
             }
+            //for (var i = 0; i < lightObjects.Length; i++)
+            //{
+            //    var obj = lightObjects[i];
+            //    if (DoesEntityExist(obj))
+            //    {
+            //        DeleteObject(ref obj);
+            //    }
 
-            SetModelAsNoLongerNeeded(model);
+            //    var tmp = GetClosestObjectOfType(lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, 3f, model, false, false, false);
+            //    if (DoesEntityExist(tmp))
+            //    {
+            //        DeleteObject(ref tmp);
+            //    }
+
+            //    if (interior.ClubCeilingLights)
+            //    {
+            //        if (!HasModelLoaded(model))
+            //        {
+            //            RequestModel(model);
+            //            while (!HasModelLoaded(model))
+            //            {
+            //                await Delay(0);
+            //            }
+            //        }
+
+            //        lightObjects[i] = CreateObjectNoOffset(model, lightPositions[i].X, lightPositions[i].Y, lightPositions[i].Z, false, false, false);
+            //    }
+            //    CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
+            //    if (interior.ClubCeilingLights)
+            //    {
+            //        CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
+            //        SetEntityRotation(lightObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+            //    }
+            //}
+
+            //SetModelAsNoLongerNeeded(model);
+
+
+
+            //model = (uint)GetHashKey("ba_prop_battle_lights_fx_rotator");
+            //for (var i = 0; i < lampObjects.Length; i++)
+            //{
+            //    var obj = lampObjects[i];
+            //    if (DoesEntityExist(obj))
+            //    {
+            //        DeleteObject(ref obj);
+            //    }
+            //    var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
+            //    if (DoesEntityExist(tmp))
+            //    {
+            //        DeleteObject(ref tmp);
+            //    }
+
+            //    if (interior.ClubCeilingLights)
+            //    {
+            //        if (!HasModelLoaded(model))
+            //        {
+            //            RequestModel(model);
+            //            while (!HasModelLoaded(model))
+            //            {
+            //                await Delay(0);
+            //            }
+            //        }
+            //        lampObjects[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, false);
+            //    }
+            //    CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false);
+            //    if (interior.ClubCeilingLights)
+            //    {
+            //        CreateModelHideExcludingScriptObjects(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, true);
+            //        SetEntityRotation(lampObjects[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+            //    }
+            //}
+
+            //SetModelAsNoLongerNeeded(model);
+
+            //for (var i = 0; i < beams.Length; i++)
+            //{
+            //    var a = new List<string>() { "a", "b", "c", "d", "e", "f", "g", "h" };
+            //    model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rigd");
+            //    //model = (uint)GetHashKey($"ba_prop_battle_lights_fx_rig{a[i]}");
+
+            //    var obj = beams[i];
+            //    if (DoesEntityExist(obj))
+            //    {
+            //        DeleteObject(ref obj);
+            //    }
+            //    var tmp = GetClosestObjectOfType(lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, 3f, model, false, false, false);
+            //    if (DoesEntityExist(tmp))
+            //    {
+            //        DeleteObject(ref tmp);
+            //    }
+
+            //    if (interior.ClubCeilingLights)
+            //    {
+            //        if (!HasModelLoaded(model))
+            //        {
+            //            RequestModel(model);
+            //            while (!HasModelLoaded(model))
+            //            {
+            //                await Delay(0);
+            //            }
+            //        }
+            //        beams[i] = CreateObjectNoOffset(model, lampPositions[i].X, lampPositions[i].Y, lampPositions[i].Z, false, false, true);
+            //        SetEntityRotation(beams[i], lightRotations[i].X, lightRotations[i].Y, lightRotations[i].Z, 2, true);
+            //        SetEntityAlpha(beams[i], 255, 0);
+
+            //        // _SetLightBeamRGB idk stupid name but whatever, that's what it does at least.
+            //        CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, beams[i], 1, 202, 28, 255);
+            //    }
+            //}
+
+
+            //if (interior.ClubCeilingLights)
+            //{
+            //    for (int i = 0; i < lampObjects.Length; i++)
+            //    {
+            //        AttachEntityToEntity(lampObjects[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+            //    }
+            //    for (int i = 0; i < beams.Length; i++)
+            //    {
+
+            //        AttachEntityToEntity(beams[i], lightObjects[i], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+            //    }
+            //}
+
+            //SetModelAsNoLongerNeeded(model);
         }
 
         internal class Nightclub : Interior
@@ -2102,6 +2290,15 @@ namespace vMenuClient
                 {
                     // Clear all lights
                     iplObject.Interior.Lights.Clear();
+
+                    if (value > 0)
+                    {
+                        CreateModelHide(-1605.643f, -3012.672f, -77.79608f, 1f, (uint)GetHashKey("ba_prop_club_screens_02"), true);
+                    }
+                    else
+                    {
+                        CitizenFX.Core.Native.Function.Call(CitizenFX.Core.Native.Hash.REMOVE_MODEL_HIDE, -1605.643f, -3012.672f, -77.79608f, 1f, (uint)GetHashKey("ba_prop_club_screens_02"), false);
+                    }
 
                     switch (value)
                     {
