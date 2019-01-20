@@ -2599,7 +2599,45 @@ namespace vMenuClient
             //new int[4] { 145, 145, 253, 255 }, // 8
         };
         Random randomizer = new Random();
+        string RandomBeam => new string[8] { "ba_prop_battle_lights_fx_riga", "ba_prop_battle_lights_fx_rigb", "ba_prop_battle_lights_fx_rigc", "ba_prop_battle_lights_fx_rigd", "ba_prop_battle_lights_fx_rige", "ba_prop_battle_lights_fx_rigf", "ba_prop_battle_lights_fx_rigg", "ba_prop_battle_lights_fx_righ" }[randomizer.Next(0, 8)];
         int step = 0;
+        private async Task RefreshLights(IplManager.Nightclub club)
+        {
+            foreach (var tmpBeam in IplManager.beamObjects)
+            {
+                SetEntityAlpha(tmpBeam, 0, 0);
+            }
+
+            await Delay(500);
+
+            var iter = 0;
+            foreach (var lamp in IplManager.lampObjects)
+            {
+                SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                iter++;
+            }
+
+            await Delay(500);
+
+            for (var bi = 0; bi < IplManager.beamObjects.Length; bi++)
+            {
+                var tmpbeam = IplManager.beamObjects[bi];
+                DeleteEntity(ref tmpbeam);
+                var newBeam = CreateObjectNoOffset((uint)GetHashKey(RandomBeam), IplManager.rotatorPositions[bi].X, IplManager.rotatorPositions[bi].Y, IplManager.rotatorPositions[bi].Z, false, false, true);
+                ForceRoomForEntity(newBeam, club.InteriorId, 2937632879);
+
+                AttachEntityToEntity(newBeam, IplManager.lampObjects[bi], -1, 0f, 0f, 0.21f, 0f, 0f, 0f, false, false, false, false, 2, true);
+                IplManager.beamObjects[bi] = newBeam;
+            }
+            foreach (var tmpBeam in IplManager.beamObjects)
+            {
+                SetEntityAlpha(tmpBeam, 255, 0);
+                var color = IplManager.GetRandomLightColor();
+                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0xDF7B44882EE79164, tmpBeam, 1, color[0], color[1], color[2]);
+            }
+        }
+
         private async Task NightClubLightAnimations()
         {
             if (currentInterior != null && currentInterior is IplManager.Nightclub club)
@@ -2677,27 +2715,7 @@ namespace vMenuClient
                             }
                             else if (step < 5)
                             {
-                                foreach (var tmpBeam in IplManager.beamObjects)
-                                {
-                                    SetEntityAlpha(tmpBeam, 0, 0);
-                                }
-
-                                await Delay(500);
-
-                                var iter = 0;
-                                foreach (var lamp in IplManager.lampObjects)
-                                {
-                                    SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
-                                    SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
-                                    iter++;
-                                }
-
-                                await Delay(500);
-
-                                foreach (var tmpBeam in IplManager.beamObjects)
-                                {
-                                    SetEntityAlpha(tmpBeam, 255, 0);
-                                }
+                                await RefreshLights(club);
                                 step++;
                                 break;
                             }
@@ -2723,7 +2741,8 @@ namespace vMenuClient
                                     }
                                 }
 
-                                var lr = step > 5 ? 0.3f : -0.3f;
+                                //var lr = step > 6 ? 0.3f : -0.3f;
+                                var lr = step % 2 == 0 ? (reverse ? 0.3f : -0.3f) : (reverse ? -0.3f : 0.3f);
                                 var rot2 = GetEntityRotation(IplManager.rotatorObjects[index], 2);
                                 if (reverse)
                                 {
@@ -2736,30 +2755,31 @@ namespace vMenuClient
                                     SetEntityRotation(IplManager.rotatorObjects[index], rot2.X, rot2.Y, rot2.Z - lr, 2, true);
                                 }
                             }
-                            else if (step >= 8)
+                            else if (step >= 9)
                             {
                                 step = 0;
-                                foreach (var tmpBeam in IplManager.beamObjects)
-                                {
-                                    SetEntityAlpha(tmpBeam, 0, 0);
-                                }
+                                //foreach (var tmpBeam in IplManager.beamObjects)
+                                //{
+                                //    SetEntityAlpha(tmpBeam, 0, 0);
+                                //}
 
-                                await Delay(500);
+                                //await Delay(500);
 
-                                var iter = 0;
-                                foreach (var lamp in IplManager.lampObjects)
-                                {
-                                    SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
-                                    SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
-                                    iter++;
-                                }
+                                //var iter = 0;
+                                //foreach (var lamp in IplManager.lampObjects)
+                                //{
+                                //    SetEntityRotation(lamp, IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                //    SetEntityRotation(IplManager.rotatorObjects[iter], IplManager.lampRotations[iter].X, IplManager.lampRotations[iter].Y, IplManager.lampRotations[iter].Z, 2, true);
+                                //    iter++;
+                                //}
 
-                                await Delay(500);
+                                //await Delay(500);
 
-                                foreach (var tmpBeam in IplManager.beamObjects)
-                                {
-                                    SetEntityAlpha(tmpBeam, 255, 0);
-                                }
+                                //foreach (var tmpBeam in IplManager.beamObjects)
+                                //{
+                                //    SetEntityAlpha(tmpBeam, 255, 0);
+                                //}
+                                await RefreshLights(club);
                                 break;
                             }
                         }
