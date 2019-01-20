@@ -328,6 +328,10 @@ namespace vMenuServer
                     Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
+                if (!GetSettingsBool(Setting.vmenu_use_permissions))
+                {
+                    Debug.WriteLine("^3[vMenu] [WARNING] vMenu is set up to ignore permissions!\nIf you did this on purpose then you can ignore this warning.\nIf you did not set this on purpose, then you must have made a mistake while setting up vMenu.\nPlease read the vMenu documentation (^5https://docs.vespura.com/vmenu^3).\nMost likely you are not executing the permissions.cfg (correctly).^7");
+                }
 
                 dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
                 if (GetSettingsInt(Setting.vmenu_dynamic_weather_timer) != -1)
