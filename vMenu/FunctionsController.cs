@@ -2589,6 +2589,7 @@ namespace vMenuClient
             new int[4] { 255, 226, 57, 160 }, // 3 - bright yellow
             new int[4] { 50, 200, 255,   0 }, // 4 - bright blue
             new int[4] { 255, 255, 255,   0 }, // 4 - white
+            new int[4] { 20, 255, 20,   0 }, // 4 - green
             //new int[4] { 145, 145, 253, 255 }, // 5
             //new int[4] { 255,   7, 255, 160 }, // 3
             //new int[4] { 255, 255, 145,   0 }, // 4
