@@ -80,5 +80,17 @@ namespace vMenuShared
         {
             return GetConvar(setting.ToString(), "");
         }
+
+        public static bool DebugMode => IsDuplicityVersion() ? IsServerDebugModeEnabled() : IsClientDebugModeEnabled();
+
+        public static bool IsServerDebugModeEnabled()
+        {
+            return GetResourceMetadata("vMenu", "server_debug_mode", 0).ToLower() == "true";
+        }
+
+        public static bool IsClientDebugModeEnabled()
+        {
+            return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
+        }
     }
 }

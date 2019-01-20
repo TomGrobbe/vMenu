@@ -1,15 +1,15 @@
 {
-   "teleports":[
-      {
-         "name":"Example Location",
-         "coordinates":{
-            "x":472.94,
-            "y":-3035.96,
-            "z":6.2
-         },
-         "heading":356.1
-      }
-   ],
+  "teleports": [
+    {
+      "name": "Example Location",
+      "coordinates": {
+        "x": 472.94,
+        "y": -3035.96,
+        "z": 6.2
+      },
+      "heading": 356.1
+    }
+  ],
   "blips": [
     {
       "name": "Police Station",
@@ -476,6 +476,16 @@
       "spriteID": 71,
       "color": 0,
       "coordinates": {
+        "x": 1212.17,
+        "y": -472.87,
+        "z": 66.21
+      }
+    },
+    {
+      "name": "Barber",
+      "spriteID": 71,
+      "color": 0,
+      "coordinates": {
         "x": 1933.21,
         "y": 3727.99,
         "z": 32.84
@@ -489,6 +499,16 @@
         "x": 134.77,
         "y": -1710.31,
         "z": 29.29
+      }
+    },
+    {
+      "name": "Store",
+      "spriteID": 52,
+      "color": 0,
+      "coordinates": {
+        "x": 1159.44,
+        "y": -323.77,
+        "z": 69.21
       }
     },
     {

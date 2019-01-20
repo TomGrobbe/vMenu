@@ -72,7 +72,12 @@ namespace vMenuClient
                 }
                 if (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn))
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                    var savename = GetResourceKvpString("vmenu_string_default_loadout");
+                    if (!string.IsNullOrEmpty(savename))
+                    {
+                        await SpawnWeaponLoadoutAsync(savename, true, false);
+                    }
+
                 }
             }
         }
@@ -95,7 +100,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["vehicles"])
                     {
-                        VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                        if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
+                            VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
 
@@ -104,7 +110,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["weapons"])
                     {
-                        WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                        if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
+                            WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
 
@@ -113,7 +120,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["peds"])
                     {
-                        PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                        if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
+                            PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
             }
