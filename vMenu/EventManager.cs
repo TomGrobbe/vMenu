@@ -77,7 +77,7 @@ namespace vMenuClient
                     {
                         await SpawnWeaponLoadoutAsync(savename, true, false);
                     }
-                    
+
                 }
             }
         }
@@ -100,7 +100,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["vehicles"])
                     {
-                        VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                        if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
+                            VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
 
@@ -109,7 +110,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["weapons"])
                     {
-                        WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                        if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
+                            WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
 
@@ -118,7 +120,8 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["peds"])
                     {
-                        PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                        if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
+                            PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
                     }
                 }
             }
