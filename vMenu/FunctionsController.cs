@@ -221,6 +221,9 @@ namespace vMenuClient
                     Notify.Custom("Destination reached, the car will now stop driving!");
                     DriveToWpTaskActive = false;
                 }
+
+
+                SetPedCanBeDraggedOut(Game.PlayerPed.Handle, !MainMenu.PlayerOptionsMenu.PlayerStayInVehicle);
             }
             else
             {
