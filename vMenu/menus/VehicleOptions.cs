@@ -56,7 +56,7 @@ namespace vMenuClient
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Vehicle Options");
 
-            #region menu variables
+            #region menu items variables
             // Create Checkboxes.
             MenuCheckboxItem vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Your vehicle will not be able to take visual or physical damage.", VehicleGodMode);
             MenuCheckboxItem vehicleSpecialGod = new MenuCheckboxItem("Special Vehicle God Mode", "This option repairs your vehicle immediately when it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.", VehicleSpecialGodMode);
@@ -102,6 +102,11 @@ namespace vMenuClient
                 "Helicopter Spotlight",
             };
             MenuListItem vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+
+            var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
+            MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
+            //MenuListItem destroyTireList = new MenuListItem("Destroy Tires", tiresList, 0, "Destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
+
             MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
             deleteBtn.LeftIcon = MenuItem.Icon.WARNING;
             deleteBtn.Label = "→→→";
@@ -240,6 +245,11 @@ namespace vMenuClient
             if (IsAllowed(Permission.VOLights)) // VEHICLE LIGHTS LIST
             {
                 menu.AddMenuItem(vehicleLights);
+            }
+            if (IsAllowed(Permission.VOFixOrDestroyTires))
+            {
+                menu.AddMenuItem(vehicleTiresList);
+                //menu.AddMenuItem(destroyTireList);
             }
             if (IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
@@ -693,6 +703,60 @@ namespace vMenuClient
                                 }
                             }
                         }
+                    }
+                }
+                else if (item == vehicleTiresList)
+                {
+                    //bool fix = item == vehicleTiresList;
+
+                    var veh = GetVehicle();
+                    if (veh != null && veh.Exists())
+                    {
+                        if (Game.PlayerPed == veh.Driver)
+                        {
+                            if (listIndex == 0)
+                            {
+                                if (IsVehicleTyreBurst(veh.Handle, 0, false))
+                                {
+                                    for (var i = 0; i < 8; i++)
+                                    {
+                                        SetVehicleTyreFixed(veh.Handle, i);
+                                    }
+                                    Notify.Success("All vehicle tyres have been fixed.");
+                                }
+                                else
+                                {
+                                    for (var i = 0; i < 8; i++)
+                                    {
+                                        SetVehicleTyreBurst(veh.Handle, i, false, 1f);
+                                    }
+                                    Notify.Success("All vehicle tyres have been destroyed.");
+                                }
+                            }
+                            else
+                            {
+                                int index = listIndex - 1;
+                                if (IsVehicleTyreBurst(veh.Handle, index, false))
+                                {
+                                    SetVehicleTyreFixed(veh.Handle, index);
+                                    Notify.Success($"Vehicle tyre #{listIndex} has been fixed.");
+                                }
+                                else
+                                {
+                                    SetVehicleTyreBurst(veh.Handle, index, false, 1f);
+                                    Notify.Success($"Vehicle tyre #{listIndex} has been destroyed.");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Notify.Error(CommonErrors.NeedToBeTheDriver);
+                        }
+
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
                     }
                 }
             };

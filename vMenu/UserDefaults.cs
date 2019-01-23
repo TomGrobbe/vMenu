@@ -27,6 +27,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("playerGodMode", value); }
         }
 
+        public static bool PlayerStayInVehicle
+        {
+            get { return GetSettingsBool("playerStayInVehicle"); }
+            set { SetSavedSettingsBool("playerStayInVehicle", value); }
+        }
+
         public static bool UnlimitedStamina
         {
             get { return GetSettingsBool("unlimitedStamina"); }
@@ -416,6 +422,9 @@ namespace vMenuClient
 
                 PlayerGodMode = MainMenu.PlayerOptionsMenu.PlayerGodMode;
                 prefs.Add("playerGodMode", PlayerGodMode);
+
+                PlayerStayInVehicle = MainMenu.PlayerOptionsMenu.PlayerStayInVehicle;
+                prefs.Add("playerStayInVehicle", PlayerStayInVehicle);
 
                 SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
                 prefs.Add("superJump", SuperJump);
