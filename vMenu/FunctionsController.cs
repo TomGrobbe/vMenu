@@ -94,6 +94,7 @@ namespace vMenuClient
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
             Tick += GcTick;
+            Tick += PersonalVehicleOptions;
         }
 
         int gcTimer = GetGameTimer();
@@ -387,7 +388,6 @@ namespace vMenuClient
                     if (GetVehicle(true) != null)
                         SetVehicleEngineOn(GetVehicle(true).Handle, true, true, true);
                 }
-
             }
             else
             {
@@ -2156,6 +2156,64 @@ namespace vMenuClient
             {
                 await Delay(0);
             }
+        }
+        #endregion
+        #region Personal Vehicle options
+        private bool messageCooldown = false;
+        private async void StartMessageCooldown()
+        {
+            messageCooldown = true;
+            await Delay(10 * 60000); // wait at least 10 minutes before checking if this should be showed again, to prevent repeatedly spamming the user.
+            messageCooldown = false;
+        }
+        int time = 0;
+        private async Task PersonalVehicleOptions()
+        {
+            if (MainMenu.PersonalVehicleMenu != null && IsAllowed(Permission.PVLockDoors) && MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle != null)
+            {
+                if (!Game.PlayerPed.IsInVehicle(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle))
+                {
+                    if (Game.PlayerPed.Position.DistanceToSquared(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Position) < 30.0f)
+                    {
+                        if (Game.IsControlJustReleased(0, Control.VehicleHorn))
+                        {
+                            // check if it was recently pressed (within the last 500 ms).
+                            if (GetGameTimer() - time < 500)
+                            {
+                                // lock or unlock the vehicle
+                                bool lockDoors = !GetVehicleDoorsLockedForPlayer(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
+                                LockOrUnlockDoors(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle, lockDoors);
+
+                                // reset the timer.
+                                time = 0;
+                            }
+                            // otherwise count this as the first one.
+                            else
+                            {
+                                time = GetGameTimer();
+                            }
+                        }
+                        if (!messageCooldown)
+                        {
+                            HelpMessage.Custom("When you are close to your personal vehicle, you can double tap ~INPUT_VEH_HORN~ to lock or unlock it.", 10000, true);
+                            StartMessageCooldown();
+                        }
+                    }
+                    else
+                    {
+                        await Delay(100);
+                    }
+                }
+                else
+                {
+                    await Delay(100);
+                }
+            }
+            else
+            {
+                await Delay(100);
+            }
+            await Task.FromResult(0);
         }
         #endregion
 
