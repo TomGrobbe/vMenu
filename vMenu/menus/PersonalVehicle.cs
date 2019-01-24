@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,19 +87,71 @@ namespace vMenuClient
             //if (IsAllowed(Permission.PVToggleEngine)) { }
 
 
+            // Handle list presses
+            menu.OnListItemSelect += (sender, item, itemIndex, index) =>
+            {
+                var veh = CurrentPersonalVehicle;
+                if (veh != null && veh.Exists())
+                {
+                    if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
+                    {
+                        if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
+                        {
+                            Notify.Error("Someone else is currently using your vehicle. These features are currently unavailable while they are using your car.");
+                            return;
+                        }
+                    }
+
+                    if (item == toggleLights)
+                    {
+                        if (itemIndex == 0)
+                        {
+                            SetVehicleLights(CurrentPersonalVehicle.Handle, 3);
+                        }
+                        else if (itemIndex == 1)
+                        {
+                            SetVehicleLights(CurrentPersonalVehicle.Handle, 1);
+                        }
+                        else
+                        {
+                            SetVehicleLights(CurrentPersonalVehicle.Handle, 0);
+                        }
+                    }
+                }
+                else
+                {
+                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                }
+
+            };
+
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == setVehice)
                 {
-                    if (CurrentPersonalVehicle == null)
+                    if (Game.PlayerPed.IsInVehicle())
                     {
-                        if (Game.PlayerPed.IsInVehicle())
+                        var veh = GetVehicle();
+                        if (veh != null && veh.Exists())
                         {
-                            var veh = GetVehicle();
                             if (Game.PlayerPed == veh.Driver)
                             {
-
+                                CurrentPersonalVehicle = veh;
+                                veh.PreviouslyOwnedByPlayer = true;
+                                veh.IsPersistent = true;
+                                if (EnableVehicleBlip)
+                                {
+                                    veh.AttachBlip();
+                                    veh.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
+                                    //veh.AttachedBlip.Name = "Personal Vehicle";
+                                }
+                                var name = GetLabelText(veh.DisplayName);
+                                if (string.IsNullOrEmpty(name) || name.ToLower() == "null")
+                                {
+                                    name = veh.DisplayName;
+                                }
+                                item.Label = $"Current Vehicle: {name}";
                             }
                             else
                             {
@@ -113,32 +165,91 @@ namespace vMenuClient
                     }
                     else
                     {
-
+                        Notify.Error(CommonErrors.NoVehicle);
                     }
-                    
                 }
-
-                else if (item == toggleEngine)
+                else if (CurrentPersonalVehicle != null && CurrentPersonalVehicle.Exists())
                 {
+                    if (item == kickAllPassengers)
+                    {
+                        if (CurrentPersonalVehicle.Occupants.Count() > 0 && CurrentPersonalVehicle.Occupants.Any(p => p != Game.PlayerPed))
+                        {
+                            var netId = VehToNet(CurrentPersonalVehicle.Handle);
+                            TriggerServerEvent("vMenu:GetOutOfCar", netId, Game.Player.ServerId);
+                        }
+                        else
+                        {
+                            Notify.Info("There are no other players in your vehicle that need to be kicked out.");
+                        }
+                    }
+                    else
+                    {
+                        if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
+                        {
+                            if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
+                            {
+                                Notify.Error("Someone else is currently using your vehicle. These features are currently unavailable while they are using your car.");
+                                return;
+                            }
+                        }
 
+                        if (item == toggleEngine)
+                        {
+                            SetVehicleEngineOn(CurrentPersonalVehicle.Handle, !CurrentPersonalVehicle.IsEngineRunning, true, true);
+                        }
+
+                        else if (item == lockDoors || item == unlockDoors)
+                        {
+                            bool _lock = item == lockDoors;
+                            LockOrUnlockDoors(CurrentPersonalVehicle, _lock);
+                        }
+
+                        else if (item == soundHorn)
+                        {
+                            SoundHorn(CurrentPersonalVehicle);
+                        }
+
+                        else if (item == toggleAlarm)
+                        {
+                            ToggleVehicleAlarm(CurrentPersonalVehicle);
+                        }
+                    }
                 }
-
-                else if (item == toggleLights)
+                else
                 {
-
-                }
-
-                else if (item == kickAllPassengers)
-                {
-
-                }
-
-                else if (item == lockDoors || item == unlockDoors)
-                {
-                    bool _lock = item == lockDoors;
-
+                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
                 }
             };
+        }
+
+        private async void SoundHorn(Vehicle veh)
+        {
+            if (veh != null && veh.Exists())
+            {
+                int timer = GetGameTimer();
+                while (GetGameTimer() - timer < 1000)
+                {
+                    SoundVehicleHornThisFrame(veh.Handle);
+                    await Delay(0);
+                }
+            }
+        }
+
+        private async void LockOrUnlockDoors(Vehicle veh, bool lockDoors)
+        {
+            if (veh != null && veh.Exists())
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int timer = GetGameTimer();
+                    while (GetGameTimer() - timer < 50)
+                    {
+                        SoundVehicleHornThisFrame(veh.Handle);
+                        await Delay(0);
+                    }
+                    await Delay(50);
+                }
+            }
         }
 
         public Menu GetMenu()
