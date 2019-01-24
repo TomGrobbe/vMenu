@@ -263,7 +263,16 @@ namespace vMenuClient
             {
                 Tick += OnTick;
             }
-            SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            try
+            {
+                SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            }
+            catch (InvalidTimeZoneException timeEx)
+            {
+                Debug.WriteLine($"[vMenu] [Error] Could not set the in-game day, month and year because of an invalid timezone(?).");
+                Debug.WriteLine($"[vMenu] [Error] InvalidTimeZoneException: {timeEx.Message}");
+                Debug.WriteLine($"[vMenu] [Error] vMenu will continue to work normally.");
+            }
         }
 
         #region Set Permissions function
