@@ -366,9 +366,8 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static List<Permission> GetPermissionAndParentPermissions(Permission permission)
+        public static List<Permission> GetPermissionAndParentPermissions(Permission permission)
         {
-
             if (parentPermissions.ContainsKey(permission))
             {
                 return parentPermissions[permission];
@@ -390,7 +389,7 @@ namespace vMenuShared
                 {
                     // do nothing
                 }
-                Console.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
+                //Debug.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
                 parentPermissions[permission] = list;
                 return list;
             }
