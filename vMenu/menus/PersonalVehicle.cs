@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,6 +43,7 @@ namespace vMenuClient
             MenuItem unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
             MenuItem soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
             MenuItem toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
+            MenuCheckboxItem enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip);
 
             // This is always allowed if this submenu is created/allowed.
             menu.AddMenuItem(setVehice);
@@ -74,17 +75,23 @@ namespace vMenuClient
                 menu.AddMenuItem(unlockDoors);
             }
 
+            // Sound horn
             if (IsAllowed(Permission.PVSoundHorn))
             {
                 menu.AddMenuItem(soundHorn);
             }
 
+            // Toggle alarm sound
             if (IsAllowed(Permission.PVToggleAlarm))
             {
                 menu.AddMenuItem(toggleAlarm);
             }
-            // more coming soon
-            //if (IsAllowed(Permission.PVToggleEngine)) { }
+
+            // Enable blip for personal vehicle
+            if (IsAllowed(Permission.PVAddBlip))
+            {
+                menu.AddMenuItem(enableBlip);
+            }
 
 
             // Handle list presses
@@ -122,7 +129,39 @@ namespace vMenuClient
                 {
                     Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
                 }
+            };
 
+            // Handle checkbox changes
+            menu.OnCheckboxChange += (sender, item, index, _checked) =>
+            {
+                if (item == enableBlip)
+                {
+                    EnableVehicleBlip = _checked;
+                    if (EnableVehicleBlip)
+                    {
+                        if (CurrentPersonalVehicle != null && CurrentPersonalVehicle.Exists())
+                        {
+                            if (CurrentPersonalVehicle.AttachedBlip == null || !CurrentPersonalVehicle.AttachedBlip.Exists())
+                            {
+                                CurrentPersonalVehicle.AttachBlip();
+                            }
+                            CurrentPersonalVehicle.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
+                            CurrentPersonalVehicle.AttachedBlip.Name = "Personal Vehicle";
+                        }
+                        else
+                        {
+                            Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                        }
+
+                    }
+                    else
+                    {
+                        if (CurrentPersonalVehicle != null && CurrentPersonalVehicle.Exists() && CurrentPersonalVehicle.AttachedBlip != null && CurrentPersonalVehicle.AttachedBlip.Exists())
+                        {
+                            CurrentPersonalVehicle.AttachedBlip.Delete();
+                        }
+                    }
+                }
             };
 
             // Handle button presses.
@@ -140,11 +179,14 @@ namespace vMenuClient
                                 CurrentPersonalVehicle = veh;
                                 veh.PreviouslyOwnedByPlayer = true;
                                 veh.IsPersistent = true;
-                                if (EnableVehicleBlip)
+                                if (EnableVehicleBlip && IsAllowed(Permission.PVAddBlip))
                                 {
-                                    veh.AttachBlip();
+                                    if (veh.AttachedBlip == null || !veh.AttachedBlip.Exists())
+                                    {
+                                        veh.AttachBlip();
+                                    }
                                     veh.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
-                                    //veh.AttachedBlip.Name = "Personal Vehicle";
+                                    veh.AttachedBlip.Name = "Personal Vehicle";
                                 }
                                 var name = GetLabelText(veh.DisplayName);
                                 if (string.IsNullOrEmpty(name) || name.ToLower() == "null")
