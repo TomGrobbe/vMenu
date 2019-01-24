@@ -359,19 +359,7 @@ namespace vMenuClient
                         // Toggle alarm.
                         else if (item == vehicleAlarm)
                         {
-                            if (vehicle.IsAlarmSounding)
-                            {
-                                // Set the duration to 0;
-                                vehicle.AlarmTimeLeft = 0;
-                                vehicle.IsAlarmSet = false;
-                            }
-                            else
-                            {
-                                // Randomize duration of the alarm and start the alarm.
-                                vehicle.IsAlarmSet = true;
-                                vehicle.AlarmTimeLeft = new Random().Next(8000, 45000);
-                                vehicle.StartAlarm();
-                            }
+                            ToggleVehicleAlarm(vehicle);
                         }
                         // Toggle engine
                         else if (item == toggleEngine)

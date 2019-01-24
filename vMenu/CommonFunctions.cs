@@ -67,6 +67,28 @@ namespace vMenuClient
         public static string GetLocalizedName(string label) => GetLabelText(label);
         #endregion
 
+        #region Toggle vehicle alarm
+        public static void ToggleVehicleAlarm(Vehicle vehicle)
+        {
+            if (vehicle != null && vehicle.Exists())
+            {
+                if (vehicle.IsAlarmSounding)
+                {
+                    // Set the duration to 0;
+                    vehicle.AlarmTimeLeft = 0;
+                    vehicle.IsAlarmSet = false;
+                }
+                else
+                {
+                    // Randomize duration of the alarm and start the alarm.
+                    vehicle.IsAlarmSet = true;
+                    vehicle.AlarmTimeLeft = new Random().Next(8000, 45000);
+                    vehicle.StartAlarm();
+                }
+            }
+        }
+        #endregion
+
         #region Get Localized Vehicle Display Name
         /// <summary>
         /// Get the localized model name.
