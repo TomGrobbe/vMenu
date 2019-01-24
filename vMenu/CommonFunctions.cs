@@ -89,6 +89,37 @@ namespace vMenuClient
         }
         #endregion
 
+        #region lock or unlock vehicle doors
+        public static async void LockOrUnlockDoors(Vehicle veh, bool lockDoors)
+        {
+            if (veh != null && veh.Exists())
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int timer = GetGameTimer();
+                    while (GetGameTimer() - timer < 50)
+                    {
+                        SoundVehicleHornThisFrame(veh.Handle);
+                        await Delay(0);
+                    }
+                    await Delay(50);
+                }
+                if (lockDoors)
+                {
+                    Subtitle.Custom("Vehicle doors are now locked.");
+                    //SetVehicleDoorsLocked(veh.Handle, 2);
+                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, true);
+                }
+                else
+                {
+                    Subtitle.Custom("Vehicle doors are now unlocked.");
+                    //SetVehicleDoorsLocked(veh.Handle, 1);
+                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, false);
+                }
+            }
+        }
+        #endregion
+
         #region Get Localized Vehicle Display Name
         /// <summary>
         /// Get the localized model name.
