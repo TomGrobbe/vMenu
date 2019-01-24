@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -231,23 +231,6 @@ namespace vMenuClient
                 {
                     SoundVehicleHornThisFrame(veh.Handle);
                     await Delay(0);
-                }
-            }
-        }
-
-        private async void LockOrUnlockDoors(Vehicle veh, bool lockDoors)
-        {
-            if (veh != null && veh.Exists())
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    int timer = GetGameTimer();
-                    while (GetGameTimer() - timer < 50)
-                    {
-                        SoundVehicleHornThisFrame(veh.Handle);
-                        await Delay(0);
-                    }
-                    await Delay(50);
                 }
             }
         }
