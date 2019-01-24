@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -135,6 +135,7 @@ namespace vMenuShared
             PVKickPassengers,
             PVLockDoors,
             PVAddBlip,
+            PVSoundHorn,
 
             // Player Appearance
             PAMenu,

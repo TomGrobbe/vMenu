@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +41,7 @@ namespace vMenuClient
             //MenuItem
             MenuItem lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
             MenuItem unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
+            MenuItem soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
 
             // This is always allowed if this submenu is created/allowed.
             menu.AddMenuItem(setVehice);
@@ -70,6 +71,11 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(lockDoors);
                 menu.AddMenuItem(unlockDoors);
+            }
+
+            if (IsAllowed(Permission.PVSoundHorn))
+            {
+                menu.AddMenuItem(soundHorn);
             }
             // more coming soon
             //if (IsAllowed(Permission.PVToggleEngine)) { }
