@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -126,6 +126,15 @@ namespace vMenuShared
             SVMenu,
             SVAll,
             SVSpawn,
+
+            // Personal Vehicle
+            PVMenu,
+            PVAll,
+            PVToggleEngine,
+            PVToggleLights,
+            PVKickPassengers,
+            PVLockDoors,
+            PVAddBlip,
 
             // Player Appearance
             PAMenu,
@@ -497,6 +506,9 @@ namespace vMenuShared
                     break;
                 case "SV":
                     prefix += "SavedVehicles";
+                    break;
+                case "PV":
+                    prefix += "PersonalVehicle";
                     break;
                 case "PA":
                     prefix += "PlayerAppearance";
