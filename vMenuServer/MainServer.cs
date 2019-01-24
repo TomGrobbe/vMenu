@@ -162,14 +162,12 @@ namespace vMenuServer
                                     {
                                         Debug.WriteLine("Could not unban the player, are you sure this player is actually banned?");
                                     }
-
                                 }
                                 else
                                 {
                                     Debug.WriteLine($"Could not find a banned player by the name of '{name}'.");
                                 }
                                 bans = null;
-
                             }
                             else
                             {
@@ -274,19 +272,98 @@ namespace vMenuServer
                                 Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
                             }
                         }
+                        else if (args[0].ToString().ToLower() == "ban" && source < 1)  // only do this via server console (server id < 1)
+                        {
+                            if (args.Count > 3)
+                            {
+                                Player p = null;
+
+                                bool findByServerId = args[1].ToString().ToLower() == "id";
+                                string identifier = args[2].ToString().ToLower();
+
+                                if (findByServerId)
+                                {
+                                    if (Players.Any(player => player.Handle == identifier))
+                                    {
+                                        p = Players.Single(pl => pl.Handle == identifier);
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("[vMenu] Could not find this player, make sure they are online.");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Players.Any(player => player.Name.ToLower() == identifier.ToLower()))
+                                    {
+                                        p = Players.Single(pl => pl.Name.ToLower() == identifier.ToLower());
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("[vMenu] Could not find this player, make sure they are online.");
+                                        return;
+                                    }
+                                }
+
+                                string reason = "Banned by staff for:";
+                                args.GetRange(3, args.Count - 3).ForEach(arg => reason += " " + arg);
+
+                                if (p != null)
+                                {
+                                    var ban = new BanManager.BanRecord()
+                                    {
+                                        bannedBy = "Server Console",
+                                        bannedUntil = new DateTime(3000, 1, 1),
+                                        banReason = reason,
+                                        identifiers = p.Identifiers.ToList(),
+                                        playerName = BanManager.GetSafePlayerName(p.Name)
+                                    };
+
+                                    if (await BanManager.AddBan(ban))
+                                    {
+                                        BanManager.BanLog($"[vMenu] Player {p.Name}^7 has been banned by Server Console for [{reason}].");
+                                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                                        string timeRemaining = BanManager.GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                                        p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                                    }
+                                    else
+                                    {
+                                        // ban failed
+                                        Debug.WriteLine("[vMenu] Banning player failed, reason unknown.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("[vMenu] Player not found, could not ban player.");
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("[vMenu] Not enough arguments, syntax: ^5vmenuserver ban <id|name> <server id|username> <reason>^7.");
+                            }
+                        }
+                        else if (args[0].ToString().ToLower() == "help")
+                        {
+                            Debug.WriteLine("Available commands:");
+                            Debug.WriteLine("(server console only): vmenuserver ban <id|name> <server id|username> <reason>");
+                            Debug.WriteLine("(server console only): vmenuserver unban <\"player name\">");
+                            Debug.WriteLine("vmenuserver weather <new weather type | dynamic <true | false>>");
+                            Debug.WriteLine("vmenuserver time <freeze|<hour> <minute>>");
+                        }
                         else
                         {
-                            Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                            Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                         }
                     }
                     else
                     {
-                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                        Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                    Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                 }
             }), true);
 

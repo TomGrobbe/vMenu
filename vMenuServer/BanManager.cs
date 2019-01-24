@@ -307,7 +307,7 @@ namespace vMenuServer
         /// </summary>
         /// <param name="remainingTime"></param>
         /// <returns></returns>
-        private string GetRemainingTimeMessage(TimeSpan remainingTime)
+        internal static string GetRemainingTimeMessage(TimeSpan remainingTime)
         {
             var message = "";
             if (remainingTime.Days > 0)
@@ -334,7 +334,7 @@ namespace vMenuServer
         /// </summary>
         /// <param name="ban"></param>
         /// <returns></returns>
-        private static async Task<bool> AddBan(BanRecord ban)
+        internal static async Task<bool> AddBan(BanRecord ban)
         {
 
             Log("Refreshing banned players list.", LogLevel.info);
