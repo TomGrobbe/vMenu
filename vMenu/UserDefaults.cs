@@ -287,6 +287,14 @@ namespace vMenuClient
             set { SetSavedSettingsBool("weaponLoadoutsSetLoadoutOnRespawn", value); }
         }
         #endregion
+
+        #region Personal Vehicle
+        public static bool PVEnableVehicleBlip
+        {
+            get { return GetSettingsBool("pvEnableVehicleBlip"); }
+            set { SetSavedSettingsBool("pvEnableVehicleBlip", value); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -527,6 +535,12 @@ namespace vMenuClient
             {
                 WeaponLoadoutsSetLoadoutOnRespawn = MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn;
                 prefs.Add("weaponLoadoutsSetLoadoutOnRespawn", WeaponLoadoutsSetLoadoutOnRespawn);
+            }
+
+            if (MainMenu.PersonalVehicleMenu != null)
+            {
+                PVEnableVehicleBlip = MainMenu.PersonalVehicleMenu.EnableVehicleBlip;
+                prefs.Add("pvEnableVehicleBlip", PVEnableVehicleBlip);
             }
 
             Notify.Success("Your settings have been saved.");
