@@ -17,7 +17,7 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        //public bool EnableVehicleBlip { get; private set; } = UserDefaults.PVEnableVehicleBlip;
+        public bool EnableVehicleBlip { get; private set; } = UserDefaults.PVEnableVehicleBlip;
 
         // Empty constructor
         public PersonalVehicle() { }
