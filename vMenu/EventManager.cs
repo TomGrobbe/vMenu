@@ -102,6 +102,8 @@ namespace vMenuClient
                     {
                         if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
                             VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same vehicle name! ({addon}) Please remove duplicate lines!");
                     }
                 }
 
@@ -112,6 +114,8 @@ namespace vMenuClient
                     {
                         if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
                             WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same weapon name! ({addon}) Please remove duplicate lines!");
                     }
                 }
 
@@ -122,6 +126,8 @@ namespace vMenuClient
                     {
                         if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
                             PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same ped name! ({addon}) Please remove duplicate lines!");
                     }
                 }
             }
