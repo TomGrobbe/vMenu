@@ -28,6 +28,7 @@ namespace vMenuClient
         public bool PlayerNoRagdoll { get; private set; } = UserDefaults.NoRagdoll;
         public bool PlayerNeverWanted { get; private set; } = UserDefaults.NeverWanted;
         public bool PlayerIsIgnored { get; private set; } = UserDefaults.EveryoneIgnorePlayer;
+        public bool PlayerStayInVehicle { get; private set; } = UserDefaults.PlayerStayInVehicle;
         public bool PlayerFrozen { get; private set; } = false;
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace vMenuClient
             MenuCheckboxItem noRagdollCheckbox = new MenuCheckboxItem("No Ragdoll", "Disables player ragdoll, makes you not fall off your bike anymore.", PlayerNoRagdoll);
             MenuCheckboxItem neverWantedCheckbox = new MenuCheckboxItem("Never Wanted", "Disables all wanted levels.", PlayerNeverWanted);
             MenuCheckboxItem everyoneIgnoresPlayerCheckbox = new MenuCheckboxItem("Everyone Ignore Player", "Everyone will leave you alone.", PlayerIsIgnored);
+            MenuCheckboxItem playerStayInVehicleCheckbox = new MenuCheckboxItem("Stay In Vehicle", "When this is enabled, NPCs will not be able to drag you out of your vehicle if they get angry at you.", PlayerStayInVehicle);
             MenuCheckboxItem playerFrozenCheckbox = new MenuCheckboxItem("Freeze Player", "Freezes your current location.", PlayerFrozen);
 
             // Wanted level options
@@ -120,6 +122,10 @@ namespace vMenuClient
             if (IsAllowed(Permission.POIgnored))
             {
                 menu.AddMenuItem(everyoneIgnoresPlayerCheckbox);
+            }
+            if (IsAllowed(Permission.POStayInVehicle))
+            {
+                menu.AddMenuItem(playerStayInVehicleCheckbox);
             }
             if (IsAllowed(Permission.POMaxHealth))
             {
@@ -322,6 +328,10 @@ namespace vMenuClient
                     SetEveryoneIgnorePlayer(Game.Player.Handle, PlayerIsIgnored);
                     SetPoliceIgnorePlayer(Game.Player.Handle, PlayerIsIgnored);
                     SetPlayerCanBeHassledByGangs(Game.Player.Handle, !PlayerIsIgnored);
+                }
+                else if (item == playerStayInVehicleCheckbox)
+                {
+                    PlayerStayInVehicle = _checked;
                 }
                 // Freeze player toggled.
                 else if (item == playerFrozenCheckbox)

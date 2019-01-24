@@ -27,6 +27,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("playerGodMode", value); }
         }
 
+        public static bool PlayerStayInVehicle
+        {
+            get { return GetSettingsBool("playerStayInVehicle"); }
+            set { SetSavedSettingsBool("playerStayInVehicle", value); }
+        }
+
         public static bool UnlimitedStamina
         {
             get { return GetSettingsBool("unlimitedStamina"); }
@@ -281,6 +287,14 @@ namespace vMenuClient
             set { SetSavedSettingsBool("weaponLoadoutsSetLoadoutOnRespawn", value); }
         }
         #endregion
+
+        #region Personal Vehicle
+        public static bool PVEnableVehicleBlip
+        {
+            get { return GetSettingsBool("pvEnableVehicleBlip"); }
+            set { SetSavedSettingsBool("pvEnableVehicleBlip", value); }
+        }
+        #endregion
         #endregion
 
         #region Private functions
@@ -379,145 +393,154 @@ namespace vMenuClient
             if (MainMenu.PlayerOptionsMenu != null)
             {
                 EveryoneIgnorePlayer = MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
-                prefs.Add("everyoneIgnorePlayer", MainMenu.PlayerOptionsMenu.PlayerIsIgnored);
+                prefs.Add("everyoneIgnorePlayer", EveryoneIgnorePlayer);
 
                 FastRun = MainMenu.PlayerOptionsMenu.PlayerFastRun;
-                prefs.Add("fastRun", MainMenu.PlayerOptionsMenu.PlayerFastRun);
+                prefs.Add("fastRun", FastRun);
 
                 FastSwim = MainMenu.PlayerOptionsMenu.PlayerFastSwim;
-                prefs.Add("fastSwim", MainMenu.PlayerOptionsMenu.PlayerFastSwim);
+                prefs.Add("fastSwim", FastSwim);
 
                 NeverWanted = MainMenu.PlayerOptionsMenu.PlayerNeverWanted;
-                prefs.Add("neverWanted", MainMenu.PlayerOptionsMenu.PlayerNeverWanted);
+                prefs.Add("neverWanted", NeverWanted);
 
                 NoRagdoll = MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
-                prefs.Add("noRagdoll", MainMenu.PlayerOptionsMenu.PlayerNoRagdoll);
+                prefs.Add("noRagdoll", NoRagdoll);
 
                 PlayerGodMode = MainMenu.PlayerOptionsMenu.PlayerGodMode;
-                prefs.Add("playerGodMode", MainMenu.PlayerOptionsMenu.PlayerGodMode);
+                prefs.Add("playerGodMode", PlayerGodMode);
+
+                PlayerStayInVehicle = MainMenu.PlayerOptionsMenu.PlayerStayInVehicle;
+                prefs.Add("playerStayInVehicle", PlayerStayInVehicle);
 
                 SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
-                prefs.Add("superJump", MainMenu.PlayerOptionsMenu.PlayerSuperJump);
+                prefs.Add("superJump", SuperJump);
 
                 UnlimitedStamina = MainMenu.PlayerOptionsMenu.PlayerStamina;
-                prefs.Add("unlimitedStamina", MainMenu.PlayerOptionsMenu.PlayerStamina);
+                prefs.Add("unlimitedStamina", UnlimitedStamina);
             }
 
             if (MainMenu.MiscSettingsMenu != null)
             {
                 MiscDeathNotifications = MainMenu.MiscSettingsMenu.DeathNotifications;
-                prefs.Add("miscDeathNotifications", MainMenu.MiscSettingsMenu.DeathNotifications);
+                prefs.Add("miscDeathNotifications", MiscDeathNotifications);
 
                 MiscJoinQuitNotifications = MainMenu.MiscSettingsMenu.JoinQuitNotifications;
-                prefs.Add("miscJoinQuitNotifications", MainMenu.MiscSettingsMenu.JoinQuitNotifications);
+                prefs.Add("miscJoinQuitNotifications", MiscJoinQuitNotifications);
 
                 MiscSpeedKmh = MainMenu.MiscSettingsMenu.ShowSpeedoKmh;
-                prefs.Add("miscSpeedKmh", MainMenu.MiscSettingsMenu.ShowSpeedoKmh);
+                prefs.Add("miscSpeedKmh", MiscSpeedKmh);
 
                 MiscSpeedMph = MainMenu.MiscSettingsMenu.ShowSpeedoMph;
-                prefs.Add("miscSpeedMph", MainMenu.MiscSettingsMenu.ShowSpeedoMph);
+                prefs.Add("miscSpeedMph", MiscSpeedMph);
 
                 MiscShowLocation = MainMenu.MiscSettingsMenu.ShowLocation;
-                prefs.Add("miscShowLocation", MainMenu.MiscSettingsMenu.ShowLocation);
+                prefs.Add("miscShowLocation", MiscShowLocation);
 
                 MiscLocationBlips = MainMenu.MiscSettingsMenu.ShowLocationBlips;
-                prefs.Add("miscLocationBlips", MainMenu.MiscSettingsMenu.ShowLocationBlips);
+                prefs.Add("miscLocationBlips", MiscLocationBlips);
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
-                prefs.Add("miscShowPlayerBlips", MainMenu.MiscSettingsMenu.ShowPlayerBlips);
+                prefs.Add("miscShowPlayerBlips", MiscShowPlayerBlips);
 
                 MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
-                prefs.Add("miscRespawnDefaultCharacter", MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter);
+                prefs.Add("miscRespawnDefaultCharacter", MiscRespawnDefaultCharacter);
 
                 MiscRestorePlayerAppearance = MainMenu.MiscSettingsMenu.RestorePlayerAppearance;
-                prefs.Add("miscRestorePlayerAppearance", MainMenu.MiscSettingsMenu.RestorePlayerAppearance);
+                prefs.Add("miscRestorePlayerAppearance", MiscRestorePlayerAppearance);
 
                 MiscRestorePlayerWeapons = MainMenu.MiscSettingsMenu.RestorePlayerWeapons;
-                prefs.Add("miscRestorePlayerWeapons", MainMenu.MiscSettingsMenu.RestorePlayerWeapons);
+                prefs.Add("miscRestorePlayerWeapons", MiscRestorePlayerWeapons);
 
                 MiscShowTime = MainMenu.MiscSettingsMenu.DrawTimeOnScreen;
-                prefs.Add("miscShowTime", MainMenu.MiscSettingsMenu.DrawTimeOnScreen);
+                prefs.Add("miscShowTime", MiscShowTime);
 
                 MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
-                prefs.Add("miscRightAlignMenu", MainMenu.MiscSettingsMenu.MiscRightAlignMenu);
+                prefs.Add("miscRightAlignMenu", MiscRightAlignMenu);
 
                 KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
-                prefs.Add("kbTpToWaypoint", MainMenu.MiscSettingsMenu.KbTpToWaypoint);
+                prefs.Add("kbTpToWaypoint", KbTpToWaypoint);
 
                 KbDriftMode = MainMenu.MiscSettingsMenu.KbDriftMode;
-                prefs.Add("kbDriftMode", MainMenu.MiscSettingsMenu.KbDriftMode);
+                prefs.Add("kbDriftMode", KbDriftMode);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
             {
                 VehicleEngineAlwaysOn = MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn;
-                prefs.Add("vehicleEngineAlwaysOn", MainMenu.VehicleOptionsMenu.VehicleEngineAlwaysOn);
+                prefs.Add("vehicleEngineAlwaysOn", VehicleEngineAlwaysOn);
 
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
-                prefs.Add("vehicleGodMode", MainMenu.VehicleOptionsMenu.VehicleGodMode);
+                prefs.Add("vehicleGodMode", VehicleGodMode);
 
                 VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
-                prefs.Add("vehicleSpecialGodMode", MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode);
+                prefs.Add("vehicleSpecialGodMode", VehicleSpecialGodMode);
 
                 VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
-                prefs.Add("vehicleNeverDirty", MainMenu.VehicleOptionsMenu.VehicleNeverDirty);
+                prefs.Add("vehicleNeverDirty", VehicleNeverDirty);
 
                 VehicleNoBikeHelmet = MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet;
-                prefs.Add("vehicleNoBikeHelmet", MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet);
+                prefs.Add("vehicleNoBikeHelmet", VehicleNoBikeHelmet);
 
                 VehicleNoSiren = MainMenu.VehicleOptionsMenu.VehicleNoSiren;
-                prefs.Add("vehicleNoSiren", MainMenu.VehicleOptionsMenu.VehicleNoSiren);
+                prefs.Add("vehicleNoSiren", VehicleNoSiren);
 
                 VehicleHighbeamsOnHonk = MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk;
-                prefs.Add("vehicleHighbeamsOnHonk", MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk);
+                prefs.Add("vehicleHighbeamsOnHonk", VehicleHighbeamsOnHonk);
 
                 VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
-                prefs.Add("vehicleDisablePlaneTurbulence", MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence);
+                prefs.Add("vehicleDisablePlaneTurbulence", VehicleDisablePlaneTurbulence);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)
             {
                 VehicleSpawnerReplacePrevious = MainMenu.VehicleSpawnerMenu.ReplaceVehicle;
-                prefs.Add("vehicleSpawnerReplacePrevious", MainMenu.VehicleSpawnerMenu.ReplaceVehicle);
+                prefs.Add("vehicleSpawnerReplacePrevious", VehicleSpawnerReplacePrevious);
 
                 VehicleSpawnerSpawnInside = MainMenu.VehicleSpawnerMenu.SpawnInVehicle;
-                prefs.Add("vehicleSpawnerSpawnInside", MainMenu.VehicleSpawnerMenu.SpawnInVehicle);
+                prefs.Add("vehicleSpawnerSpawnInside", VehicleSpawnerSpawnInside);
             }
 
             if (MainMenu.VoiceChatSettingsMenu != null)
             {
                 VoiceChatEnabled = MainMenu.VoiceChatSettingsMenu.EnableVoicechat;
-                prefs.Add("voiceChatEnabled", MainMenu.VoiceChatSettingsMenu.EnableVoicechat);
+                prefs.Add("voiceChatEnabled", VoiceChatEnabled);
 
                 VoiceChatProximity = MainMenu.VoiceChatSettingsMenu.currentProximity;
-                prefs.Add("voiceChatProximity", MainMenu.VoiceChatSettingsMenu.currentProximity);
+                prefs.Add("voiceChatProximity", VoiceChatProximity);
 
                 ShowCurrentSpeaker = MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker;
-                prefs.Add("voiceChatShowSpeaker", MainMenu.VoiceChatSettingsMenu.ShowCurrentSpeaker);
+                prefs.Add("voiceChatShowSpeaker", ShowCurrentSpeaker);
 
                 ShowVoiceStatus = MainMenu.VoiceChatSettingsMenu.ShowVoiceStatus;
-                prefs.Add("voiceChatShowVoiceStatus", MainMenu.VoiceChatSettingsMenu.ShowVoiceStatus);
+                prefs.Add("voiceChatShowVoiceStatus", ShowVoiceStatus);
             }
 
             if (MainMenu.WeaponOptionsMenu != null)
             {
                 WeaponsNoReload = MainMenu.WeaponOptionsMenu.NoReload;
-                prefs.Add("weaponsNoReload", MainMenu.WeaponOptionsMenu.NoReload);
+                prefs.Add("weaponsNoReload", WeaponsNoReload);
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
-                prefs.Add("weaponsUnlimitedAmmo", MainMenu.WeaponOptionsMenu.UnlimitedAmmo);
+                prefs.Add("weaponsUnlimitedAmmo", WeaponsUnlimitedAmmo);
             }
 
             if (PlayerAppearance.ClothingAnimationType >= 0)
             {
                 PAClothingAnimationType = PlayerAppearance.ClothingAnimationType;
-                prefs.Add("clothingAnimationType", PlayerAppearance.ClothingAnimationType);
+                prefs.Add("clothingAnimationType", PAClothingAnimationType);
             }
 
             if (MainMenu.WeaponLoadoutsMenu != null)
             {
                 WeaponLoadoutsSetLoadoutOnRespawn = MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn;
-                prefs.Add("weaponLoadoutsSetLoadoutOnRespawn", MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn);
+                prefs.Add("weaponLoadoutsSetLoadoutOnRespawn", WeaponLoadoutsSetLoadoutOnRespawn);
+            }
+
+            if (MainMenu.PersonalVehicleMenu != null)
+            {
+                PVEnableVehicleBlip = MainMenu.PersonalVehicleMenu.EnableVehicleBlip;
+                prefs.Add("pvEnableVehicleBlip", PVEnableVehicleBlip);
             }
 
             Notify.Success("Your settings have been saved.");

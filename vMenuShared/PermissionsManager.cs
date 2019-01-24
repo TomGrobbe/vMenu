@@ -46,6 +46,7 @@ namespace vMenuShared
             PONeverWanted,
             POSetWanted,
             POIgnored,
+            POStayInVehicle,
             POMaxHealth,
             POMaxArmor,
             POCleanPlayer,
@@ -83,6 +84,7 @@ namespace vMenuShared
             VONoSiren,
             VONoHelmet,
             VOLights,
+            VOFixOrDestroyTires,
             VODelete,
             VOUnderglow,
             VOFlashHighbeamsOnHonk,
@@ -124,6 +126,17 @@ namespace vMenuShared
             SVMenu,
             SVAll,
             SVSpawn,
+
+            // Personal Vehicle
+            PVMenu,
+            PVAll,
+            PVToggleEngine,
+            PVToggleLights,
+            PVKickPassengers,
+            PVLockDoors,
+            PVAddBlip,
+            PVSoundHorn,
+            PVToggleAlarm,
 
             // Player Appearance
             PAMenu,
@@ -251,6 +264,7 @@ namespace vMenuShared
             WPPlasmaPistol, // xmas 2018 dlc (1604)
             WPPlasmaCarbine, // xmas 2018 dlc (1604)
             WPPlasmaMinigun, // xmas 2018 dlc (1604)
+            WPStoneHatchet, // xmas 2018 dlc (1604)
 
             // Weapon Loadouts Menu
             WLMenu,
@@ -353,9 +367,8 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static List<Permission> GetPermissionAndParentPermissions(Permission permission)
+        public static List<Permission> GetPermissionAndParentPermissions(Permission permission)
         {
-
             if (parentPermissions.ContainsKey(permission))
             {
                 return parentPermissions[permission];
@@ -377,7 +390,7 @@ namespace vMenuShared
                 {
                     // do nothing
                 }
-                Console.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
+                //Debug.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
                 parentPermissions[permission] = list;
                 return list;
             }
@@ -398,10 +411,10 @@ namespace vMenuShared
 
             Dictionary<Permission, bool> perms = new Dictionary<Permission, bool>();
 
-            // Add all permissions if the vMenu.Dev permission is added for Vespura only. Can be disable in the permissions.cfg
-            // This is only used in case I need to debug an issue on your server related to vMenu. It only works for me, and does not give me any access outside of
-            // vMenu at all! Feel free to remove it (in the permissions.cfg) if you don't want this, however I will not be able to help you without this.
-            if (player.Identifiers.ToList().Any(id => id == "4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev"))
+            // If enabled in the permissions.cfg (disabled by default) then this will give me (only me) the option to trigger some debug commands and 
+            // try out menu options. This only works if I'm in-game on your server, and you have enabled server debugging mode, this way I will never
+            // be able to do something without you actually allowing it.
+            if (player.Identifiers.ToList().Any(id => id == "4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev") && ConfigManager.DebugMode)
             {
                 perms.Add(Permission.Everything, true);
             }
@@ -494,6 +507,9 @@ namespace vMenuShared
                     break;
                 case "SV":
                     prefix += "SavedVehicles";
+                    break;
+                case "PV":
+                    prefix += "PersonalVehicle";
                     break;
                 case "PA":
                     prefix += "PlayerAppearance";

@@ -49,6 +49,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
+            EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
@@ -72,7 +73,12 @@ namespace vMenuClient
                 }
                 if (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn))
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                    var savename = GetResourceKvpString("vmenu_string_default_loadout");
+                    if (!string.IsNullOrEmpty(savename))
+                    {
+                        await SpawnWeaponLoadoutAsync(savename, true, false);
+                    }
+
                 }
             }
         }
@@ -95,7 +101,10 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["vehicles"])
                     {
-                        VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                        if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
+                            VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same vehicle name! ({addon}) Please remove duplicate lines!");
                     }
                 }
 
@@ -104,7 +113,10 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["weapons"])
                     {
-                        WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                        if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
+                            WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same weapon name! ({addon}) Please remove duplicate lines!");
                     }
                 }
 
@@ -113,7 +125,10 @@ namespace vMenuClient
                 {
                     foreach (string addon in addons["peds"])
                     {
-                        PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                        if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
+                            PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                        else
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same ped name! ({addon}) Please remove duplicate lines!");
                     }
                 }
             }
@@ -371,6 +386,61 @@ namespace vMenuClient
         private void ClearAreaNearPos(float x, float y, float z)
         {
             ClearAreaOfEverything(x, y, z, 100f, false, false, false, false);
+        }
+
+        /// <summary>
+        /// Kicks the current player from the specified vehicle if they're inside and don't own the vehicle themselves.
+        /// </summary>
+        /// <param name="vehNetId"></param>
+        /// <param name="vehicleOwnedBy"></param>
+        private async void GetOutOfCar(int vehNetId, int vehicleOwnedBy)
+        {
+            if (NetworkDoesNetworkIdExist(vehNetId))
+            {
+                int veh = NetToVeh(vehNetId);
+                if (DoesEntityExist(veh))
+                {
+                    Vehicle vehicle = new Vehicle(veh);
+
+                    if (vehicle == null || !vehicle.Exists())
+                        return;
+
+                    if (Game.PlayerPed.IsInVehicle(vehicle) && vehicleOwnedBy != Game.Player.ServerId)
+                    {
+                        if (!vehicle.IsStopped)
+                        {
+                            Notify.Alert("The owner of this vehicle is reclaiming their personal vehicle. You will be kicked from this vehicle in about 10 seconds. Stop the vehicle now to avoid taking damage.", false, true);
+                        }
+
+                        // Wait for the vehicle to come to a stop, or 10 seconds, whichever is faster.
+                        var timer = GetGameTimer();
+                        while (vehicle != null && vehicle.Exists() && !vehicle.IsStopped)
+                        {
+                            await Delay(0);
+                            if (GetGameTimer() - timer > (10 * 1000)) // 10 second timeout
+                            {
+                                break;
+                            }
+                        }
+
+                        // just to make sure they're actually still inside the vehicle and the vehicle still exists.
+                        if (vehicle != null && vehicle.Exists() && Game.PlayerPed.IsInVehicle(vehicle))
+                        {
+                            // Make the ped jump out because the car isn't stopped yet.
+                            if (!vehicle.IsStopped)
+                            {
+                                Notify.Info("You were warned, now you'll have to suffer the consequences!");
+                                TaskLeaveVehicle(Game.PlayerPed.Handle, vehicle.Handle, 4160);
+                            }
+                            // Make the ped exit gently.
+                            else
+                            {
+                                TaskLeaveVehicle(Game.PlayerPed.Handle, vehicle.Handle, 0);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private async void UpdatePedDecors()

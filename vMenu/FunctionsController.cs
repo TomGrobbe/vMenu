@@ -55,8 +55,7 @@ namespace vMenuClient
         private bool showSnowballInfo = false;
 
         /// I made these seperate bools that only get set once after initial load 
-        /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick. 
-        /// Values are set in <see cref="EventManager.ConfigureClient(dynamic, dynamic, dynamic, dynamic)"/>
+        /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick.
         public static bool flaresAllowed = false;
         public static bool bombsAllowed = false;
 
@@ -79,10 +78,9 @@ namespace vMenuClient
             Tick += MoreVehicleOptions;
             Tick += VoiceChat;
             Tick += TimeOptions;
-            Tick += _WeatherOptions;
+            Tick += WeatherOptions;
             Tick += WeaponOptions;
             Tick += OnlinePlayersTasks;
-
             Tick += MiscSettings;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
@@ -96,6 +94,7 @@ namespace vMenuClient
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
             Tick += GcTick;
+            Tick += PersonalVehicleOptions;
         }
 
         int gcTimer = GetGameTimer();
@@ -223,6 +222,9 @@ namespace vMenuClient
                     Notify.Custom("Destination reached, the car will now stop driving!");
                     DriveToWpTaskActive = false;
                 }
+
+
+                SetPedCanBeDraggedOut(Game.PlayerPed.Handle, !MainMenu.PlayerOptionsMenu.PlayerStayInVehicle);
             }
             else
             {
@@ -386,7 +388,6 @@ namespace vMenuClient
                     if (GetVehicle(true) != null)
                         SetVehicleEngineOn(GetVehicle(true).Handle, true, true, true);
                 }
-
             }
             else
             {
@@ -431,7 +432,7 @@ namespace vMenuClient
         }
         #endregion
         #region Weather Options
-        private async Task _WeatherOptions()
+        private async Task WeatherOptions()
         {
             await Delay(1000);
             if (MainMenu.WeatherOptionsMenu != null && IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
@@ -439,7 +440,7 @@ namespace vMenuClient
                 if (MainMenu.WeatherOptionsMenu.GetMenu().Visible)
                 {
                     MainMenu.WeatherOptionsMenu.GetMenu().GetMenuItems().ForEach(mi => { if (mi.GetType() != typeof(MenuCheckboxItem)) mi.RightIcon = MenuItem.Icon.NONE; });
-                    var item = WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
+                    var item = vMenuClient.WeatherOptions.weatherHashMenuIndex[GetNextWeatherTypeHashName().ToString()];
                     item.RightIcon = MenuItem.Icon.TICK;
                     if (IsAllowed(Permission.WODynamic))
                     {
@@ -1588,9 +1589,9 @@ namespace vMenuClient
                         }
                     }
 
-                    if (MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
+                    if (MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.RestorePlayerWeapons && IsAllowed(Permission.MSRestoreWeapons) || (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn)))
                     {
-                        await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true);
+                        await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", true, false);
                         Log("weapons restored, deleting kvp");
                         DeleteResourceKvp("vmenu_temp_weapons_loadout_before_respawn");
                     }
@@ -2155,6 +2156,64 @@ namespace vMenuClient
             {
                 await Delay(0);
             }
+        }
+        #endregion
+        #region Personal Vehicle options
+        private bool messageCooldown = false;
+        private async void StartMessageCooldown()
+        {
+            messageCooldown = true;
+            await Delay(10 * 60000); // wait at least 10 minutes before checking if this should be showed again, to prevent repeatedly spamming the user.
+            messageCooldown = false;
+        }
+        int time = 0;
+        private async Task PersonalVehicleOptions()
+        {
+            if (MainMenu.PersonalVehicleMenu != null && IsAllowed(Permission.PVLockDoors) && MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle != null)
+            {
+                if (!Game.PlayerPed.IsInVehicle(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle))
+                {
+                    if (Game.PlayerPed.Position.DistanceToSquared(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Position) < 30.0f)
+                    {
+                        if (Game.IsControlJustReleased(0, Control.VehicleHorn))
+                        {
+                            // check if it was recently pressed (within the last 500 ms).
+                            if (GetGameTimer() - time < 500)
+                            {
+                                // lock or unlock the vehicle
+                                bool lockDoors = !GetVehicleDoorsLockedForPlayer(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
+                                LockOrUnlockDoors(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle, lockDoors);
+
+                                // reset the timer.
+                                time = 0;
+                            }
+                            // otherwise count this as the first one.
+                            else
+                            {
+                                time = GetGameTimer();
+                            }
+                        }
+                        if (!messageCooldown)
+                        {
+                            HelpMessage.Custom("When you are close to your personal vehicle, you can double tap ~INPUT_VEH_HORN~ to lock or unlock it.", 10000, true);
+                            StartMessageCooldown();
+                        }
+                    }
+                    else
+                    {
+                        await Delay(100);
+                    }
+                }
+                else
+                {
+                    await Delay(100);
+                }
+            }
+            else
+            {
+                await Delay(100);
+            }
+            await Task.FromResult(0);
         }
         #endregion
 

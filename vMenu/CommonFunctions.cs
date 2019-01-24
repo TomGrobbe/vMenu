@@ -67,6 +67,59 @@ namespace vMenuClient
         public static string GetLocalizedName(string label) => GetLabelText(label);
         #endregion
 
+        #region Toggle vehicle alarm
+        public static void ToggleVehicleAlarm(Vehicle vehicle)
+        {
+            if (vehicle != null && vehicle.Exists())
+            {
+                if (vehicle.IsAlarmSounding)
+                {
+                    // Set the duration to 0;
+                    vehicle.AlarmTimeLeft = 0;
+                    vehicle.IsAlarmSet = false;
+                }
+                else
+                {
+                    // Randomize duration of the alarm and start the alarm.
+                    vehicle.IsAlarmSet = true;
+                    vehicle.AlarmTimeLeft = new Random().Next(8000, 45000);
+                    vehicle.StartAlarm();
+                }
+            }
+        }
+        #endregion
+
+        #region lock or unlock vehicle doors
+        public static async void LockOrUnlockDoors(Vehicle veh, bool lockDoors)
+        {
+            if (veh != null && veh.Exists())
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    int timer = GetGameTimer();
+                    while (GetGameTimer() - timer < 50)
+                    {
+                        SoundVehicleHornThisFrame(veh.Handle);
+                        await Delay(0);
+                    }
+                    await Delay(50);
+                }
+                if (lockDoors)
+                {
+                    Subtitle.Custom("Vehicle doors are now locked.");
+                    //SetVehicleDoorsLocked(veh.Handle, 2);
+                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, true);
+                }
+                else
+                {
+                    Subtitle.Custom("Vehicle doors are now unlocked.");
+                    //SetVehicleDoorsLocked(veh.Handle, 1);
+                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, false);
+                }
+            }
+        }
+        #endregion
+
         #region Get Localized Vehicle Display Name
         /// <summary>
         /// Get the localized model name.
@@ -1787,7 +1840,7 @@ namespace vMenuClient
                 }
                 if (keepWeapons)
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true);
                 }
                 if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
                 {
@@ -2175,30 +2228,7 @@ namespace vMenuClient
         {
             if (saveName == "vmenu_temp_weapons_loadout_before_respawn")
             {
-                string name = GetResourceKvpString("vmenu_string_default_loadout") ?? saveName;
-
-                string kvp = GetResourceKvpString(name) ?? GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
-
-                // if not allowed to use loadouts, fall back to normal restoring of weapons.
-                if (MainMenu.WeaponLoadoutsMenu == null || !MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn || !IsAllowed(Permission.WLEquipOnRespawn))
-                {
-                    kvp = GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
-
-                    if (!MainMenu.MiscSettingsMenu.RestorePlayerWeapons || !IsAllowed(Permission.MSRestoreWeapons))
-                    {
-                        // return because normal weapon restoring is not enabled or not allowed.
-                        return new List<ValidWeapon>();
-                    }
-                }
-
-                if (string.IsNullOrEmpty(kvp))
-                {
-                    return new List<ValidWeapon>();
-                }
-                else
-                {
-                    return JsonConvert.DeserializeObject<List<ValidWeapon>>(kvp);
-                }
+                return JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn") ?? "{}");
             }
             else
             {
@@ -2216,9 +2246,39 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName"></param>
         /// <param name="appendWeapons"></param>
-        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons)
+        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms)
         {
+
             var loadout = GetSavedWeaponLoadout(saveName);
+
+            if (!ignoreSettingsAndPerms && saveName == "vmenu_temp_weapons_loadout_before_respawn")
+            {
+                string name = GetResourceKvpString("vmenu_string_default_loadout") ?? saveName;
+
+                string kvp = GetResourceKvpString(name) ?? GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+
+                // if not allowed to use loadouts, fall back to normal restoring of weapons.
+                if (MainMenu.WeaponLoadoutsMenu == null || !MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn || !IsAllowed(Permission.WLEquipOnRespawn))
+                {
+                    kvp = GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+
+                    if (!MainMenu.MiscSettingsMenu.RestorePlayerWeapons || !IsAllowed(Permission.MSRestoreWeapons))
+                    {
+                        // return because normal weapon restoring is not enabled or not allowed.
+                        loadout = new List<ValidWeapon>();
+                    }
+                }
+
+                if (string.IsNullOrEmpty(kvp))
+                {
+                    loadout = new List<ValidWeapon>();
+                }
+                else
+                {
+                    loadout = JsonConvert.DeserializeObject<List<ValidWeapon>>(kvp);
+                }
+            }
+
             Log(JsonConvert.SerializeObject(loadout));
             if (loadout.Count > 0)
             {

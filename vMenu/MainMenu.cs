@@ -31,6 +31,7 @@ namespace vMenuClient
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
         public static BannedPlayers BannedPlayersMenu { get; private set; }
         public static SavedVehicles SavedVehiclesMenu { get; private set; }
+        public static PersonalVehicle PersonalVehicleMenu { get; private set; }
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
         public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
         public static PlayerAppearance PlayerAppearanceMenu { get; private set; }
@@ -263,7 +264,16 @@ namespace vMenuClient
             {
                 Tick += OnTick;
             }
-            SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            try
+            {
+                SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            }
+            catch (InvalidTimeZoneException timeEx)
+            {
+                Debug.WriteLine($"[vMenu] [Error] Could not set the in-game day, month and year because of an invalid timezone(?).");
+                Debug.WriteLine($"[vMenu] [Error] InvalidTimeZoneException: {timeEx.Message}");
+                Debug.WriteLine($"[vMenu] [Error] vMenu will continue to work normally.");
+            }
         }
 
         #region Set Permissions function
@@ -593,6 +603,18 @@ namespace vMenuClient
                 };
             }
 
+            // Add the Personal Vehicle menu.
+            if (IsAllowed(Permission.PVMenu))
+            {
+                PersonalVehicleMenu = new PersonalVehicle();
+                Menu menu = PersonalVehicleMenu.GetMenu();
+                MenuItem button = new MenuItem("Personal Vehicle", "Set a vehicle as your personal vehicle, and control some things about that vehicle when you're not inside.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(menu, button);
+            }
+
             // Add the player appearance menu.
             if (IsAllowed(Permission.PAMenu))
             {
@@ -611,8 +633,6 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(menu2, button2);
-
-
             }
 
             // Add the time options menu.

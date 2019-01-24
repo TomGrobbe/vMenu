@@ -57,6 +57,7 @@ namespace vMenuServer
 
     public class MainServer : BaseScript
     {
+        #region vars
         public static bool UpToDate = true;
         // Debug shows more information when doing certain things. Leave it off to improve performance!
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
@@ -117,269 +118,7 @@ namespace vMenuServer
             "XMAS",
             "HALLOWEEN"
         };
-
-        //public List<string> aceNames = new List<string>()
-        //{
-        //    // Global
-        //    "Everything",
-        //    "DontKickMe",
-        //    "DontBanMe",
-        //    "NoClip",
-        //    "Staff",
-
-        //    // Online Players
-        //    "OPMenu",
-        //    "OPAll",
-        //    "OPTeleport",
-        //    "OPWaypoint",
-        //    "OPSpectate",
-        //    "OPIdentifiers",
-        //    "OPSummon",
-        //    "OPKill",
-        //    "OPKick",
-        //    "OPPermBan",
-        //    "OPTempBan",
-        //    "OPUnban",
-        //    "OPViewBannedPlayers",
-
-        //    // Player Options
-        //    "POMenu",
-        //    "POAll",
-        //    "POGod",
-        //    "POInvisible",
-        //    "POFastRun",
-        //    "POFastSwim",
-        //    "POSuperjump",
-        //    "PONoRagdoll",
-        //    "PONeverWanted",
-        //    "POSetWanted",
-        //    "POIgnored",
-        //    "POMaxHealth",
-        //    "POMaxArmor",
-        //    "POCleanPlayer",
-        //    "PODryPlayer",
-        //    "POWetPlayer",
-        //    "POVehicleAutoPilotMenu",
-        //    "POFreeze",
-        //    "POScenarios",
-        //    "POUnlimitedStamina",
-
-        //    // Vehicle Options
-        //    "VOMenu",
-        //    "VOAll",
-        //    "VOGod",
-        //    "VOSpecialGod",
-        //    "VOKeepClean",
-        //    "VORepair",
-        //    "VOWash",
-        //    "VOEngine",
-        //    "VOSpeedLimiter",
-        //    "VOChangePlate",
-        //    "VOMod",
-        //    "VOColors",
-        //    "VOLiveries",
-        //    "VOComponents",
-        //    "VODoors",
-        //    "VOWindows",
-        //    "VOFreeze",
-        //    "VOTorqueMultiplier",
-        //    "VOPowerMultiplier",
-        //    "VOFlip",
-        //    "VOAlarm",
-        //    "VOCycleSeats",
-        //    "VOEngineAlwaysOn",
-        //    "VONoSiren",
-        //    "VONoHelmet",
-        //    "VOLights",
-        //    "VODelete",
-        //    "VOUnderglow",
-        //    "VOFlashHighbeamsOnHonk",
-        //    "VODisableTurbulence",
-        //    "VOFlares",
-        //    "VOPlaneBombs",
-
-        //    // Vehicle Spawner
-        //    "VSMenu",
-        //    "VSAll",
-        //    "VSDisableReplacePrevious",
-        //    "VSSpawnByName",
-        //    "VSAddon",
-        //    "VSCompacts",
-        //    "VSSedans",
-        //    "VSSUVs",
-        //    "VSCoupes",
-        //    "VSMuscle",
-        //    "VSSportsClassic",
-        //    "VSSports",
-        //    "VSSuper",
-        //    "VSMotorcycles",
-        //    "VSOffRoad",
-        //    "VSIndustrial",
-        //    "VSUtility",
-        //    "VSVans",
-        //    "VSCycles",
-        //    "VSBoats",
-        //    "VSHelicopters",
-        //    "VSPlanes",
-        //    "VSService",
-        //    "VSEmergency",
-        //    "VSMilitary",
-        //    "VSCommercial",
-        //    "VSTrains",
-
-        //    // Saved Vehicles
-        //    "SVMenu",
-        //    "SVAll",
-        //    "SVSpawn",
-
-        //    // Player Appearance
-        //    "PAMenu",
-        //    "PAAll",
-        //    "PACustomize",
-        //    "PASpawnSaved",
-        //    "PASpawnNew",
-
-        //    // Time Options
-        //    "TOMenu",
-        //    "TOAll",
-        //    "TOFreezeTime",
-        //    "TOSetTime",
-
-        //    // Weather Options
-        //    "WOMenu",
-        //    "WOAll",
-        //    "WODynamic",
-        //    "WOBlackout",
-        //    "WOSetWeather",
-        //    "WORemoveClouds",
-        //    "WORandomizeClouds",
-
-        //    // Weapon Options
-        //    "WPMenu",
-        //    "WPAll",
-        //    "WPGetAll",
-        //    "WPRemoveAll",
-        //    "WPUnlimitedAmmo",
-        //    "WPNoReload",
-        //    "WPSpawn",
-        //    "WPSpawnByName",
-        //    "WPSetAllAmmo",
-
-        //    // Weapons Permissions
-        //    "WPSniperRifle",
-        //    "WPFireExtinguisher",
-        //    "WPCompactGrenadeLauncher",
-        //    "WPSnowball",
-        //    "WPVintagePistol",
-        //    "WPCombatPDW",
-        //    "WPHeavySniperMk2",
-        //    "WPHeavySniper",
-        //    "WPSweeperShotgun",
-        //    "WPMicroSMG",
-        //    "WPWrench",
-        //    "WPPistol",
-        //    "WPPumpShotgun",
-        //    "WPAPPistol",
-        //    "WPBall",
-        //    "WPMolotov",
-        //    "WPSMG",
-        //    "WPStickyBomb",
-        //    "WPPetrolCan",
-        //    "WPStunGun",
-        //    "WPAssaultRifleMk2",
-        //    "WPHeavyShotgun",
-        //    "WPMinigun",
-        //    "WPGolfClub",
-        //    "WPFlareGun",
-        //    "WPFlare",
-        //    "WPGrenadeLauncherSmoke",
-        //    "WPHammer",
-        //    "WPCombatPistol",
-        //    "WPGusenberg",
-        //    "WPCompactRifle",
-        //    "WPHomingLauncher",
-        //    "WPNightstick",
-        //    "WPRailgun",
-        //    "WPSawnOffShotgun",
-        //    "WPSMGMk2",
-        //    "WPBullpupRifle",
-        //    "WPFirework",
-        //    "WPCombatMG",
-        //    "WPCarbineRifle",
-        //    "WPCrowbar",
-        //    "WPFlashlight",
-        //    "WPDagger",
-        //    "WPGrenade",
-        //    "WPPoolCue",
-        //    "WPBat",
-        //    "WPPistol50",
-        //    "WPKnife",
-        //    "WPMG",
-        //    "WPBullpupShotgun",
-        //    "WPBZGas",
-        //    "WPUnarmed",
-        //    "WPGrenadeLauncher",
-        //    "WPNightVision",
-        //    "WPMusket",
-        //    "WPProximityMine",
-        //    "WPAdvancedRifle",
-        //    "WPRPG",
-        //    "WPPipeBomb",
-        //    "WPMiniSMG",
-        //    "WPSNSPistol",
-        //    "WPPistolMk2",
-        //    "WPAssaultRifle",
-        //    "WPSpecialCarbine",
-        //    "WPRevolver",
-        //    "WPMarksmanRifle",
-        //    "WPBattleAxe",
-        //    "WPHeavyPistol",
-        //    "WPKnuckleDuster",
-        //    "WPMachinePistol",
-        //    "WPCombatMGMk2",
-        //    "WPMarksmanPistol",
-        //    "WPMachete",
-        //    "WPSwitchBlade",
-        //    "WPAssaultShotgun",
-        //    "WPDoubleBarrelShotgun",
-        //    "WPAssaultSMG",
-        //    "WPHatchet",
-        //    "WPBottle",
-        //    "WPCarbineRifleMk2",
-        //    "WPParachute",
-        //    "WPSmokeGrenade",
-
-        //    // Weapon Loadouts Menu
-        //    "WLMenu",
-        //    "WLAll",
-        //    "WLEquip",
-        //    "WLEquipOnRespawn",
-
-        //    // Misc Settings
-        //    "MSAll",
-        //    "MSClearArea",
-        //    "MSTeleportToWp",
-        //    "MSShowCoordinates",
-        //    "MSShowLocation",
-        //    "MSJoinQuitNotifs",
-        //    "MSDeathNotifs",
-        //    "MSNightVision",
-        //    "MSThermalVision",
-        //    "MSLocationBlips",
-        //    "MSPlayerBlips",
-        //    "MSTeleportLocations",
-        //    "MSConnectionMenu",
-        //    "MSRestoreAppearance",
-        //    "MSRestoreWeapons",
-        //    "MSDriftMode",
-
-        //    // Voice Chat
-        //    "VCMenu",
-        //    "VCAll",
-        //    "VCEnable",
-        //    "VCShowSpeaker",
-        //    "VCStaffChannel",
-        //};
+        #endregion
 
         #region Constructor
         /// <summary>
@@ -387,6 +126,7 @@ namespace vMenuServer
         /// </summary>
         public MainServer()
         {
+            #region command
             RegisterCommand("vmenuserver", new Action<int, List<object>, string>(async (int source, List<object> args, string rawCommand) =>
             {
                 if (args != null)
@@ -425,14 +165,12 @@ namespace vMenuServer
                                     {
                                         Debug.WriteLine("Could not unban the player, are you sure this player is actually banned?");
                                     }
-
                                 }
                                 else
                                 {
                                     Debug.WriteLine($"Could not find a banned player by the name of '{name}'.");
                                 }
                                 bans = null;
-
                             }
                             else
                             {
@@ -537,22 +275,103 @@ namespace vMenuServer
                                 Debug.WriteLine("Invalid syntax. Use: ^5vmenuserver time <freeze|<hour> <minute>>^7 instead.");
                             }
                         }
+                        else if (args[0].ToString().ToLower() == "ban" && source < 1)  // only do this via server console (server id < 1)
+                        {
+                            if (args.Count > 3)
+                            {
+                                Player p = null;
+
+                                bool findByServerId = args[1].ToString().ToLower() == "id";
+                                string identifier = args[2].ToString().ToLower();
+
+                                if (findByServerId)
+                                {
+                                    if (Players.Any(player => player.Handle == identifier))
+                                    {
+                                        p = Players.Single(pl => pl.Handle == identifier);
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("[vMenu] Could not find this player, make sure they are online.");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Players.Any(player => player.Name.ToLower() == identifier.ToLower()))
+                                    {
+                                        p = Players.Single(pl => pl.Name.ToLower() == identifier.ToLower());
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine("[vMenu] Could not find this player, make sure they are online.");
+                                        return;
+                                    }
+                                }
+
+                                string reason = "Banned by staff for:";
+                                args.GetRange(3, args.Count - 3).ForEach(arg => reason += " " + arg);
+
+                                if (p != null)
+                                {
+                                    var ban = new BanManager.BanRecord()
+                                    {
+                                        bannedBy = "Server Console",
+                                        bannedUntil = new DateTime(3000, 1, 1),
+                                        banReason = reason,
+                                        identifiers = p.Identifiers.ToList(),
+                                        playerName = BanManager.GetSafePlayerName(p.Name)
+                                    };
+
+                                    if (await BanManager.AddBan(ban))
+                                    {
+                                        BanManager.BanLog($"[vMenu] Player {p.Name}^7 has been banned by Server Console for [{reason}].");
+                                        TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                                        string timeRemaining = BanManager.GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                                        p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                                    }
+                                    else
+                                    {
+                                        // ban failed
+                                        Debug.WriteLine("[vMenu] Banning player failed, reason unknown.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("[vMenu] Player not found, could not ban player.");
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("[vMenu] Not enough arguments, syntax: ^5vmenuserver ban <id|name> <server id|username> <reason>^7.");
+                            }
+                        }
+                        else if (args[0].ToString().ToLower() == "help")
+                        {
+                            Debug.WriteLine("Available commands:");
+                            Debug.WriteLine("(server console only): vmenuserver ban <id|name> <server id|username> <reason>");
+                            Debug.WriteLine("(server console only): vmenuserver unban <\"player name\">");
+                            Debug.WriteLine("vmenuserver weather <new weather type | dynamic <true | false>>");
+                            Debug.WriteLine("vmenuserver time <freeze|<hour> <minute>>");
+                        }
                         else
                         {
-                            Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                            Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                         }
                     }
                     else
                     {
-                        Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                        Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"vMenu is currently running version: {Version}.");
+                    Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
                 }
             }), true);
+            #endregion
 
+            // name check
             if (GetCurrentResourceName() != "vMenu")
             {
                 Exception InvalidNameException = new Exception("\r\n\r\n^1[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. " +
@@ -579,7 +398,10 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
                 EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
+                EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
 
+
+                // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
                 {
@@ -591,7 +413,13 @@ namespace vMenuServer
                     Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
 
+                // check if permissions are setup (correctly)
+                if (!GetSettingsBool(Setting.vmenu_use_permissions))
+                {
+                    Debug.WriteLine("^3[vMenu] [WARNING] vMenu is set up to ignore permissions!\nIf you did this on purpose then you can ignore this warning.\nIf you did not set this on purpose, then you must have made a mistake while setting up vMenu.\nPlease read the vMenu documentation (^5https://docs.vespura.com/vmenu^3).\nMost likely you are not executing the permissions.cfg (correctly).^7");
+                }
 
+                // manage weather and time sync stuff for first setup.
                 dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
                 if (GetSettingsInt(Setting.vmenu_dynamic_weather_timer) != -1)
                 {
@@ -616,12 +444,28 @@ namespace vMenuServer
                 minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
                 minuteClockSpeed = (minuteClockSpeed > 0) ? minuteClockSpeed : 2000;
 
+                // Start the loops
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
             }
         }
         #endregion
 
+        #region kick players from personal vehicle
+        private void GetOutOfCar([FromSource]Player source, int vehicleNetId, int playerOwner)
+        {
+            if (source != null)
+            {
+                if (vMenuShared.PermissionsManager.GetPermissionAndParentPermissions(vMenuShared.PermissionsManager.Permission.PVKickPassengers).Any(perm => vMenuShared.PermissionsManager.IsAllowed(perm, source)))
+                {
+                    TriggerClientEvent("vMenu:GetOutOfCar", vehicleNetId, playerOwner);
+                    source.TriggerEvent("vMenu:Notify", "All passengers will be kicked out as soon as the vehicle stops moving, or after 10 seconds if they refuse to stop the vehicle.");
+                }
+            }
+        }
+        #endregion
+
+        #region clear area near pos
         /// <summary>
         /// Clear the area near this point for all players.
         /// </summary>
@@ -632,8 +476,9 @@ namespace vMenuServer
         {
             TriggerClientEvent("vMenu:ClearArea", x, y, z);
         }
+        #endregion
 
-
+        #region disconnect player
         /// <summary>
         /// Disconnect the source player because they used the disconnect menu button.
         /// </summary>
@@ -642,6 +487,8 @@ namespace vMenuServer
         {
             src.Drop("You disconnected yourself.");
         }
+        #endregion
+
         #region Manage weather and time changes.
         /// <summary>
         /// Loop used for syncing and keeping track of the time in-game.
@@ -930,7 +777,6 @@ namespace vMenuServer
             }
         }
         #endregion
-
 
         /// <summary>
         /// If enabled using convars, will log all kick actions to the server console as well as an external file.
