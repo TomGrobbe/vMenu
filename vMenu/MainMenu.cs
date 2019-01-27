@@ -571,7 +571,6 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
-            var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
             if (IsAllowed(Permission.VSMenu))
             {
