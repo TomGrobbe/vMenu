@@ -94,7 +94,6 @@
     <Compile Include="UserDefaults.cs" />
     <Compile Include="data\ValidWeapon.cs" />
     <Compile Include="data\VehicleData.cs" />
-    <Compile Include="data\Vehicles.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
