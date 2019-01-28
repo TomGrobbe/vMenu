@@ -89,6 +89,7 @@ namespace vMenuClient
             colorsMenuBtn.Label = "→→→";
             MenuItem underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!");
             underglowMenuBtn.Label = "→→→";
+            MenuItem vehicleInvisible = new MenuItem("Toggle Vehicle Visibility", "Makes your vehicle visible/invisible. ~r~Your vehicle will be made visible again as soon as you leave the vehicle. Otherwise you would not be able to get back in.");
             MenuItem flipVehicle = new MenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             MenuItem vehicleAlarm = new MenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             MenuItem cycleSeats = new MenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
@@ -102,6 +103,7 @@ namespace vMenuClient
                 "Helicopter Spotlight",
             };
             MenuListItem vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -255,6 +257,10 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(vehicleFreeze);
             }
+            if (IsAllowed(Permission.VOInvisible)) // MAKE VEHICLE INVISIBLE
+            {
+                menu.AddMenuItem(vehicleInvisible);
+            }
             if (IsAllowed(Permission.VOEngineAlwaysOn)) // LEAVE ENGINE RUNNING
             {
                 menu.AddMenuItem(vehicleEngineAO);
@@ -370,6 +376,32 @@ namespace vMenuClient
                         else if (item == setLicensePlateText)
                         {
                             SetLicensePlateCustomText();
+                        }
+                        else if (item == vehicleInvisible) // Make vehicle invisible.
+                        {
+                            if (vehicle.IsVisible)
+                            {
+                                // Check the visibility of all peds inside before setting the vehicle as invisible.
+                                Dictionary<Ped, bool> visiblePeds = new Dictionary<Ped, bool>();
+                                foreach (Ped p in vehicle.Occupants)
+                                {
+                                    visiblePeds.Add(p, p.IsVisible);
+                                }
+
+                                // Set the vehicle invisible or invincivble.
+                                vehicle.IsVisible = !vehicle.IsVisible;
+
+                                // Restore visibility for each ped.
+                                foreach (var pe in visiblePeds)
+                                {
+                                    pe.Key.IsVisible = pe.Value;
+                                }
+                            }
+                            else
+                            {
+                                // Set the vehicle invisible or invincivble.
+                                vehicle.IsVisible = !vehicle.IsVisible;
+                            }
                         }
                     }
 

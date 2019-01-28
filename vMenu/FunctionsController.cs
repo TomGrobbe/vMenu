@@ -364,6 +364,15 @@ namespace vMenuClient
                 // When the player is not inside a vehicle:
                 else
                 {
+                    var lastVehicle = GetVehicle(true);
+                    if (lastVehicle != null && lastVehicle.Exists())
+                    {
+                        if (!lastVehicle.IsVisible)
+                        {
+                            lastVehicle.IsVisible = true;
+                        }
+                    }
+
                     var subMenus = new List<Menu>()
                     {
                         MainMenu.VehicleOptionsMenu.DeleteConfirmMenu,

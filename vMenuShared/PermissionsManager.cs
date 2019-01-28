@@ -75,6 +75,7 @@ namespace vMenuShared
             VODoors,
             VOWindows,
             VOFreeze,
+            VOInvisible,
             VOTorqueMultiplier,
             VOPowerMultiplier,
             VOFlip,
