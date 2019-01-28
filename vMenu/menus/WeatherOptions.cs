@@ -17,7 +17,7 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        public static Dictionary<string, MenuItem> weatherHashMenuIndex = new Dictionary<string, MenuItem>();
+        public static Dictionary<uint, MenuItem> weatherHashMenuIndex = new Dictionary<uint, MenuItem>();
         public MenuCheckboxItem dynamicWeatherEnabled;
         public MenuCheckboxItem blackout;
 
@@ -59,21 +59,21 @@ namespace vMenuClient
             }
             if (IsAllowed(Permission.WOSetWeather))
             {
-                weatherHashMenuIndex.Add("-1750463879", extrasunny);
-                weatherHashMenuIndex.Add("916995460", clear);
-                weatherHashMenuIndex.Add("-1530260698", neutral);
-                weatherHashMenuIndex.Add("282916021", smog);
-                weatherHashMenuIndex.Add("-1368164796", foggy);
-                weatherHashMenuIndex.Add("821931868", clouds);
-                weatherHashMenuIndex.Add("-1148613331", overcast);
-                weatherHashMenuIndex.Add("1840358669", clearing);
-                weatherHashMenuIndex.Add("1420204096", rain);
-                weatherHashMenuIndex.Add("-1233681761", thunder);
-                weatherHashMenuIndex.Add("669657108", blizzard);
-                weatherHashMenuIndex.Add("-273223690", snow);
-                weatherHashMenuIndex.Add("603685163", snowlight);
-                weatherHashMenuIndex.Add("-1429616491", xmas);
-                weatherHashMenuIndex.Add("-921030142", halloween);
+                weatherHashMenuIndex.Add((uint)GetHashKey("EXTRASUNNY"), extrasunny);
+                weatherHashMenuIndex.Add((uint)GetHashKey("CLEAR"), clear);
+                weatherHashMenuIndex.Add((uint)GetHashKey("NEUTRAL"), neutral);
+                weatherHashMenuIndex.Add((uint)GetHashKey("SMOG"), smog);
+                weatherHashMenuIndex.Add((uint)GetHashKey("FOGGY"), foggy);
+                weatherHashMenuIndex.Add((uint)GetHashKey("CLOUDS"), clouds);
+                weatherHashMenuIndex.Add((uint)GetHashKey("OVERCAST"), overcast);
+                weatherHashMenuIndex.Add((uint)GetHashKey("CLEARING"), clearing);
+                weatherHashMenuIndex.Add((uint)GetHashKey("RAIN"), rain);
+                weatherHashMenuIndex.Add((uint)GetHashKey("THUNDER"), thunder);
+                weatherHashMenuIndex.Add((uint)GetHashKey("BLIZZARD"), blizzard);
+                weatherHashMenuIndex.Add((uint)GetHashKey("SNOW"), snow);
+                weatherHashMenuIndex.Add((uint)GetHashKey("SNOWLIGHT"), snowlight);
+                weatherHashMenuIndex.Add((uint)GetHashKey("XMAS"), xmas);
+                weatherHashMenuIndex.Add((uint)GetHashKey("HALLOWEEN"), halloween);
 
                 menu.AddMenuItem(extrasunny);
                 menu.AddMenuItem(clear);
@@ -126,7 +126,7 @@ namespace vMenuClient
                 // A weather type is selected.
                 if (index >= 2 && index <= 16)
                 {
-                    Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 45 seconds.");
+                    Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 30 seconds.");
                     UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
                 }
                 if (item == removeclouds)

@@ -17,6 +17,7 @@ namespace vMenuClient
     public class EventManager : BaseScript
     {
         // common functions.
+        public static bool CurrentlySwitchingWeather { get; private set; } = false;
         public static string currentWeatherType = GetSettingsString(Setting.vmenu_default_weather);
         public static bool blackoutMode = false;
         public static bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
@@ -226,20 +227,21 @@ namespace vMenuClient
                 if (currentWeatherType != lastWeather)
                 {
                     Log($"Start changing weather type.\nOld weather: {lastWeather}.\nNew weather type: {currentWeatherType}.\nBlackout? {blackoutMode}.\nThis change will take 45.5 seconds!");
-
+                    CurrentlySwitchingWeather = true;
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
                     lastWeather = currentWeatherType;
-                    SetWeatherTypeOverTime(currentWeatherType, 45f);
+                    SetWeatherTypeOverTime(currentWeatherType, 30f);
                     int tmpTimer = GetGameTimer();
-                    while (GetGameTimer() - tmpTimer < 45500) // wait 45.5 _real_ seconds
+                    while (GetGameTimer() - tmpTimer < 30000) // wait 30 _real_ seconds
                     {
                         await Delay(0);
                     }
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
                     Log("done changing weather type (duration: 45.5 seconds)");
+                    CurrentlySwitchingWeather = false;
                 }
                 if (!justChanged)
                 {
