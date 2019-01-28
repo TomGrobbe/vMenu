@@ -1417,30 +1417,41 @@ namespace vMenuClient
         /// </summary>
         public static async void SetLicensePlateCustomText()
         {
-            // Get the input.
-            var text = await GetUserInput(windowTitle: "Enter License Plate", maxInputLength: 8);
-            // If the input is valid.
-            if (!string.IsNullOrEmpty(text))
+            // Get the vehicle.
+            var veh = GetVehicle();
+            // If it exists.
+            if (veh != null && veh.Exists())
             {
-                // Get the vehicle.
-                var veh = GetVehicle();
-                // If it exists.
-                if (veh != null && veh.Exists())
+                if (Game.PlayerPed == veh.Driver)
                 {
-                    // Set the license plate.
-                    SetVehicleNumberPlateText(veh.Handle, text);
+                    // Get the input.
+                    var text = await GetUserInput(windowTitle: "Enter License Plate", defaultText: veh.Mods.LicensePlate ?? "", maxInputLength: 8);
+                    // If the input is valid.
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        // Set the license plate.
+                        SetVehicleNumberPlateText(veh.Handle, text);
+                    }
+                    // No valid text was given.
+                    else
+                    {
+                        Notify.Error(CommonErrors.InvalidInput);
+                    }
                 }
-                // If it doesn't exist, notify the user.
                 else
                 {
-                    Notify.Error(CommonErrors.NoVehicle);
+                    Notify.Error(CommonErrors.NeedToBeTheDriver);
                 }
+
+
+
             }
-            // No valid text was given.
+            // If it doesn't exist, notify the user.
             else
             {
-                Notify.Error(CommonErrors.InvalidInput);
+                Notify.Error(CommonErrors.NoVehicle);
             }
+
 
         }
         #endregion
