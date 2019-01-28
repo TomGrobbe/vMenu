@@ -295,6 +295,17 @@ namespace vMenuClient
                             // Only needs to be set once.
                             SwitchedVehicle = false;
 
+                            // Get the license plate type index.
+                            var plateIndex = GetVehicleNumberPlateTextIndex(veh.Handle);
+                            if (plateIndex < 0 || plateIndex > GetNumberOfVehicleNumberPlates() - 1)
+                                plateIndex = 0;
+
+                            // Set the license plate index list item to the correct index.
+                            if (IsAllowed(Permission.VOChangePlate) && MainMenu.VehicleOptionsMenu.GetMenu().GetMenuItems().Find(mi => mi is MenuListItem li && li.ListItems.Any(liText => liText == GetLabelText("CMOD_PLA_0"))) is MenuListItem listItem)
+                            {
+                                listItem.ListIndex = plateIndex;
+                            }
+
                             // Vehicle engine power multiplier. Enable it once the player switched vehicles.
                             // Only do this if the option is enabled AND the player has permissions for it.
                             if (MainMenu.VehicleOptionsMenu.VehiclePowerMultiplier && IsAllowed(Permission.VOPowerMultiplier))
@@ -327,14 +338,6 @@ namespace vMenuClient
                                     SetPlaneTurbulenceMultiplier(veh.Handle, 1.0f);
                                 }
                             }
-
-                            /// TODO: add help message on how to toggle flares/bombs.
-                            /*
-                            if (CanShootFlares())
-                            {
-                                BeginTextCommandDisplayHelp("STRING")
-                            }
-                            */
                         }
 
                         // Manage "no helmet"
