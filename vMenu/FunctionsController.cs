@@ -364,19 +364,24 @@ namespace vMenuClient
                 // When the player is not inside a vehicle:
                 else
                 {
-                    Menu[] vehicleSubmenus = new Menu[6];
-                    vehicleSubmenus[0] = MainMenu.VehicleOptionsMenu.VehicleModMenu;
-                    vehicleSubmenus[1] = MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu;
-                    vehicleSubmenus[2] = MainMenu.VehicleOptionsMenu.VehicleColorsMenu;
-                    vehicleSubmenus[3] = MainMenu.VehicleOptionsMenu.VehicleDoorsMenu;
-                    vehicleSubmenus[4] = MainMenu.VehicleOptionsMenu.VehicleWindowsMenu;
-                    vehicleSubmenus[5] = MainMenu.VehicleOptionsMenu.VehicleComponentsMenu;
-                    foreach (Menu m in vehicleSubmenus)
+                    var subMenus = new List<Menu>()
+                    {
+                        MainMenu.VehicleOptionsMenu.DeleteConfirmMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleColorsMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleComponentsMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleDoorsMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleLiveriesMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleModMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleUnderglowMenu,
+                        MainMenu.VehicleOptionsMenu.VehicleWindowsMenu,
+                    };
+                    foreach (Menu m in subMenus)
                     {
                         if (m.Visible)
                         {
-                            MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
-                            m.CloseMenu();
+                            //MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
+                            //m.CloseMenu();
+                            m.GoBack();
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
                     }
