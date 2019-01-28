@@ -1,4 +1,4 @@
-﻿using GHMatti.Http;
+using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -547,6 +547,12 @@ namespace vMenuServer
             {
                 if (dynamicWeather)
                 {
+                    if (currentWeather == "XMAS" || currentWeather == "HALLOWHEEN" || currentWeather == "NEUTRAL")
+                    {
+                        // Disable dynamic weather because these weather types shouldn't randomly change.
+                        dynamicWeather = false;
+                        return;
+                    }
                     if (resetBlackout && GetGameTimer() - weatherTimer > 60000) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
                     {
                         resetBlackout = false;
