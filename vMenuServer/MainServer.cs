@@ -1,4 +1,4 @@
-using GHMatti.Http;
+﻿using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -655,9 +655,15 @@ namespace vMenuServer
         /// <param name="dynamicWeatherNew"></param>
         private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew)
         {
+            // Update the new weather related variables.
             currentWeather = newWeather;
             blackout = blackoutNew;
             dynamicWeather = dynamicWeatherNew;
+
+            // Reset the dynamic weather loop timer to another (default) 10 mintues.
+            weatherTimer = GetGameTimer();
+
+            // Update all clients.
             TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
 
