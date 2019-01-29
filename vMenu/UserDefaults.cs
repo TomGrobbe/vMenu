@@ -123,6 +123,12 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleDisablePlaneTurbulence"); }
             set { SetSavedSettingsBool("vehicleDisablePlaneTurbulence", value); }
         }
+
+        public static bool VehicleBikeSeatbelt
+        {
+            get { return GetSettingsBool("vehicleBikeSeatbelt"); }
+            set { SetSavedSettingsBool("vehicleBikeSeatbelt", value); }
+        }
         #endregion
 
         #region Vehicle Spawner Options
@@ -490,6 +496,9 @@ namespace vMenuClient
 
                 VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
                 prefs.Add("vehicleDisablePlaneTurbulence", VehicleDisablePlaneTurbulence);
+
+                VehicleBikeSeatbelt = MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
+                prefs.Add("vehicleBikeSeatbelt", VehicleBikeSeatbelt);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)

@@ -74,6 +74,7 @@ namespace vMenuClient
             // Add all tick events.
             Tick += GeneralTasks;
             Tick += PlayerOptions;
+            Tick += DoPlayerAndVehicleChecks;
             Tick += VehicleOptions;
             Tick += MoreVehicleOptions;
             Tick += VoiceChat;
@@ -189,26 +190,6 @@ namespace vMenuClient
                     (!noRagdollAllowed));
 
 
-                // Fall off bike / dragged out of car.
-                if (MainMenu.VehicleOptionsMenu != null)
-                {
-                    SetPedCanBeKnockedOffVehicle(Game.PlayerPed.Handle, (((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed)
-                        || (MainMenu.VehicleOptionsMenu.VehicleGodMode) && vehicleGodModeAllowed) ? 1 : 0));
-
-                    SetPedCanBeDraggedOut(Game.PlayerPed.Handle, ((MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed) ||
-                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed) ||
-                        (MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed)));
-
-                    SetPedCanBeShotInVehicle(Game.PlayerPed.Handle, !((MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed) ||
-                        (MainMenu.VehicleOptionsMenu.VehicleGodMode && vehicleGodModeAllowed)));
-                }
-                else
-                {
-                    SetPedCanBeKnockedOffVehicle(Game.PlayerPed.Handle, ((MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ? 1 : 0));
-                    SetPedCanBeDraggedOut(Game.PlayerPed.Handle, (MainMenu.PlayerOptionsMenu.PlayerIsIgnored && ignorePlayerAllowed));
-                    SetPedCanBeShotInVehicle(Game.PlayerPed.Handle, !(MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed));
-                }
-
                 // Manage never wanted.
                 if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(Game.Player.Handle) > 0 && IsAllowed(Permission.PONeverWanted))
                 {
@@ -231,6 +212,47 @@ namespace vMenuClient
             {
                 await Delay(0);
             }
+
+
+        }
+        #endregion
+        #region shared player options and vehicle options
+        /// <summary>
+        /// Slow tick that does some basic checks for shared vehicle/player options.
+        /// </summary>
+        /// <returns></returns>
+        private async Task DoPlayerAndVehicleChecks()
+        {
+            bool god = IsAllowed(Permission.POGod) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerGodMode;
+            await Delay(100);
+
+            bool vehGod = IsAllowed(Permission.VOGod) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleGodMode;
+            await Delay(100);
+
+            bool specGod = IsAllowed(Permission.VOSpecialGod) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
+            await Delay(100);
+
+            bool ignored = IsAllowed(Permission.POIgnored) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
+            await Delay(100);
+
+            bool stayInVeh = IsAllowed(Permission.POStayInVehicle) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerStayInVehicle;
+            await Delay(100);
+
+            bool bikeSeatbelt = IsAllowed(Permission.VOBikeSeatbelt) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
+            await Delay(100);
+
+            bool noRagdoll = IsAllowed(Permission.PONoRagdoll) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
+            await Delay(100);
+
+            bool cantBeKnockedOff = god || vehGod || specGod || bikeSeatbelt || noRagdoll;
+            bool cantBeDraggedOut = god || vehGod || specGod || ignored || stayInVeh;
+            bool cantBeShotInVehicle = god || vehGod || specGod;
+
+            Game.PlayerPed.CanBeDraggedOutOfVehicle = !cantBeDraggedOut;
+            Game.PlayerPed.CanBeShotInVehicle = !cantBeShotInVehicle;
+            Game.PlayerPed.CanBeKnockedOffBike = !cantBeKnockedOff;
+
+            await Delay(1000);
         }
         #endregion
         #region Vehicle Options Tasks

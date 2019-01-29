@@ -66,6 +66,7 @@ namespace vMenuShared
             VORepair,
             VOWash,
             VOEngine,
+            VOBikeSeatbelt,
             VOSpeedLimiter,
             VOChangePlate,
             VOMod,
