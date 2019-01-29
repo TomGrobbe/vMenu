@@ -118,220 +118,46 @@ namespace vMenuClient
                 addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
             }
             #endregion
-
-            //addonWeaponsMenu.
             addonWeaponsMenu.RefreshIndex();
-            //addonWeaponsMenu.UpdateScaleform();
             #endregion
 
             #region parachute options menu
-            #region parachute buttons and submenus
-            MenuItem parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.");
-            Menu parachuteMenu = new Menu("Parachute Options", "Parachute Options");
 
-            Menu primaryChute = new Menu("Parachute Options", "Select A Primary Parachute");
-
-            Menu secondaryChute = new Menu("Parachute Options", "Select A Reserve Parachute");
-
-            MenuItem chute = new MenuItem("No Style", "Default parachute.");
-            MenuItem chute0 = new MenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
-            MenuItem chute1 = new MenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
-            MenuItem chute2 = new MenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
-            MenuItem chute3 = new MenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
-            MenuItem chute4 = new MenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
-            MenuItem chute5 = new MenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
-            MenuItem chute6 = new MenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
-            MenuItem chute7 = new MenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
-            MenuItem chute8 = new MenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
-            MenuItem chute9 = new MenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
-            MenuItem chute10 = new MenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
-            MenuItem chute11 = new MenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
-            MenuItem chute12 = new MenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
-            MenuItem chute13 = new MenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
-            MenuItem rchute = new MenuItem("No Style", "Default parachute.");
-            MenuItem rchute0 = new MenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
-            MenuItem rchute1 = new MenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
-            MenuItem rchute2 = new MenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
-            MenuItem rchute3 = new MenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
-            MenuItem rchute4 = new MenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
-            MenuItem rchute5 = new MenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
-            MenuItem rchute6 = new MenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
-            MenuItem rchute7 = new MenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
-            MenuItem rchute8 = new MenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
-            MenuItem rchute9 = new MenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
-            MenuItem rchute10 = new MenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
-            MenuItem rchute11 = new MenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
-            MenuItem rchute12 = new MenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
-            MenuItem rchute13 = new MenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
-
-            primaryChute.AddMenuItem(chute);
-            primaryChute.AddMenuItem(chute0);
-            primaryChute.AddMenuItem(chute1);
-            primaryChute.AddMenuItem(chute2);
-            primaryChute.AddMenuItem(chute3);
-            primaryChute.AddMenuItem(chute4);
-            primaryChute.AddMenuItem(chute5);
-            primaryChute.AddMenuItem(chute6);
-            primaryChute.AddMenuItem(chute7);
-            primaryChute.AddMenuItem(chute8);
-            primaryChute.AddMenuItem(chute9);
-            primaryChute.AddMenuItem(chute10);
-            primaryChute.AddMenuItem(chute11);
-            primaryChute.AddMenuItem(chute12);
-            primaryChute.AddMenuItem(chute13);
-
-            secondaryChute.AddMenuItem(rchute);
-            secondaryChute.AddMenuItem(rchute0);
-            secondaryChute.AddMenuItem(rchute1);
-            secondaryChute.AddMenuItem(rchute2);
-            secondaryChute.AddMenuItem(rchute3);
-            secondaryChute.AddMenuItem(rchute4);
-            secondaryChute.AddMenuItem(rchute5);
-            secondaryChute.AddMenuItem(rchute6);
-            secondaryChute.AddMenuItem(rchute7);
-            secondaryChute.AddMenuItem(rchute8);
-            secondaryChute.AddMenuItem(rchute9);
-            secondaryChute.AddMenuItem(rchute10);
-            secondaryChute.AddMenuItem(rchute11);
-            secondaryChute.AddMenuItem(rchute12);
-            secondaryChute.AddMenuItem(rchute13);
-            #endregion
-
-            #region handle events
-            primaryChute.OnItemSelect += (sender, item, index) =>
+            if (IsAllowed(Permission.WPParachute))
             {
-                SetPedParachuteTintIndex(Game.PlayerPed.Handle, index - 1);
-                Subtitle.Custom($"Primary parachute style selected: ~r~{item.Text}~s~.");
-            };
+                // main parachute options menu setup
+                Menu parachuteMenu = new Menu("Parachute Options", "Parachute Options");
+                MenuItem parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.") { Label = "→→→" };
 
-            secondaryChute.OnItemSelect += (sender, item, index) =>
-            {
-                SetPlayerReserveParachuteTintIndex(Game.Player.Handle, index - 1);
-                Subtitle.Custom($"Reserve parachute style selected: ~r~{item.Text}~s~.");
-            };
-            #endregion
+                MenuController.AddSubmenu(menu, parachuteMenu);
+                menu.AddMenuItem(parachuteBtn);
+                MenuController.BindMenuItem(menu, parachuteMenu, parachuteBtn);
 
-            #region create more buttons
-            MenuItem primaryChuteBtn = new MenuItem("Primary Parachute Style", "Select a primary parachute.");
-            MenuItem secondaryChuteBtn = new MenuItem("Reserve Parachute Style", "Select a reserve parachute.");
 
-            parachuteMenu.AddMenuItem(primaryChuteBtn);
-            primaryChuteBtn.Label = "→→→";
-            parachuteMenu.AddMenuItem(secondaryChuteBtn);
-            secondaryChuteBtn.Label = "→→→";
+                // primary and reserve chute submenu setup
+                Menu primaryChutesMenu = new Menu("Parachute Style", "primary parachute styles");
+                Menu reserveChutesMenu = new Menu("Parachute Style", "reserve parachute styles");
 
-            MenuController.BindMenuItem(parachuteMenu, primaryChute, primaryChuteBtn);
-            MenuController.BindMenuItem(parachuteMenu, secondaryChute, secondaryChuteBtn);
+                MenuItem primaryChutes = new MenuItem("Primary Chute Style", "Select a primary parachute style. The style will be used the next time you open your primary parachute. It does not update your current one if you're currently using one.");
+                MenuItem secondaryChutes = new MenuItem("Reserve Chute Style", "Select a reserve parachute style. The style will be used the next time you open your reserve parachute. It does not update your current one if you're currently using one.");
 
-            MenuCheckboxItem autoEquipParachute = new MenuCheckboxItem("Auto Equip Parachute", "Automatically equip a parachute whenever you enter a plane/helicopter.", AutoEquipChute);
-            parachuteMenu.AddMenuItem(autoEquipParachute);
 
-            MenuItem togglePrimary = new MenuItem("Get / Remove Primary Parachute", "Equip a primary parachute.");
-            MenuItem toggleSecondary = new MenuItem("Get Reserve Parachute", "Equip a reserve parachute, you need to get a primary parachute first before equipping a reserve parachute.");
-
-            parachuteMenu.AddMenuItem(togglePrimary);
-            parachuteMenu.AddMenuItem(toggleSecondary);
-            #endregion
-
-            #region handle parachute menu events
-            parachuteMenu.OnItemSelect += (sender, item, index) =>
-            {
-                if (item == togglePrimary)
+                // smoke color list
+                List<string> smokeColorsList = new List<string>()
                 {
-                    if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, false))
-                    {
-                        RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute);
-                        Notify.Success("Primary parachute ~r~removed~s~.", true);
-                    }
-                    else
-                    {
-                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, false);
-                        Notify.Success("Primary parachute ~g~equippped~s~.", true);
-                    }
-                }
-                else if (item == toggleSecondary)
-                {
-                    SetPlayerHasReserveParachute(Game.Player.Handle);
-                    Notify.Success("Reserve parachute ~g~equippped~s~.", true);
-                }
-            };
+                    "PM_TINT8", // no smoke
+                    "PM_TINT8", // red
+                    "PM_TINT8", // orange
+                    "PM_TINT8", // yellow
+                    "PM_TINT8", // blue
+                    "PM_TINT8", // black
+                    "PM_TINT8", // crew
+                    "PM_TINT8", // patriot
+                };
+                //MenuListItem smokeColors = new MenuListItem();
+            }
+            
 
-            parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
-            {
-                if (item == autoEquipParachute)
-                {
-                    AutoEquipChute = _checked;
-                }
-            };
-            #endregion
-
-            #region parachute smoke trail colors
-            List<string> smokeColor = new List<string>()
-            {
-                "White",
-                "Yellow",
-                "Red",
-                "Green",
-                "Blue",
-                "Dark Gray",
-            };
-
-            MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColor, 0, "Select a parachute smoke trail color.");
-            parachuteMenu.AddMenuItem(smokeColors);
-            parachuteMenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
-            {
-                if (item == smokeColors)
-                {
-                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, false);
-                    if (newIndex == 0)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 255);
-                    }
-                    else if (newIndex == 1)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 0);
-                    }
-                    else if (newIndex == 2)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 0, 0);
-                    }
-                    else if (newIndex == 3)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 255, 0);
-                    }
-                    else if (newIndex == 4)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 0, 255);
-                    }
-                    else if (newIndex == 5)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 1, 1, 1);
-                    }
-
-                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, true);
-                }
-            };
-            #endregion
-
-            #region misc parachute menu setup
-            menu.AddMenuItem(parachuteBtn);
-            parachuteBtn.Label = "→→→";
-            MenuController.BindMenuItem(menu, parachuteMenu, parachuteBtn);
-
-            parachuteMenu.RefreshIndex();
-            //parachuteMenu.UpdateScaleform();
-
-            primaryChute.RefreshIndex();
-            //primaryChute.UpdateScaleform();
-
-            secondaryChute.RefreshIndex();
-            //secondaryChute.UpdateScaleform();
-
-            MenuController.AddSubmenu(menu, addonWeaponsMenu);
-            MenuController.AddSubmenu(menu, parachuteMenu);
-            MenuController.AddSubmenu(menu, primaryChute);
-            MenuController.AddSubmenu(menu, secondaryChute);
-            #endregion
             #endregion
 
             #region Create Weapon Category Submenus
