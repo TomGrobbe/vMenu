@@ -301,6 +301,7 @@ namespace vMenuShared
         };
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
+        public static bool ArePermissionsSetup { get; set; } = false;
 
         /// <summary>
         /// Public function to check if a permission is allowed.
@@ -318,24 +319,26 @@ namespace vMenuShared
         /// <returns></returns>
         private static bool IsAllowedClient(Permission permission)
         {
-            if (allowedPerms.ContainsKey(permission))
+            if (ArePermissionsSetup)
             {
-                return allowedPerms[permission];
+                if (allowedPerms.ContainsKey(permission))
+                {
+                    return allowedPerms[permission];
+                }
+
+                allowedPerms[permission] = false;
+
+                // Get a list of all permissions that are (parents) of the current permission, including the current permission.
+                List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
+
+                // Check if any of those permissions is allowed, if so, return true.
+                if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
+                {
+                    allowedPerms[permission] = true;
+                    return true;
+                }
             }
-
-            allowedPerms[permission] = false;
-
-            // Get a list of all permissions that are (parents) of the current permission, including the current permission.
-            List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
-
-            // Check if any of those permissions is allowed, if so, return true.
-            if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
-            {
-                allowedPerms[permission] = true;
-                return true;
-            }
-
-
+            
             // Return false if nothing is allowed.
             return false;
         }

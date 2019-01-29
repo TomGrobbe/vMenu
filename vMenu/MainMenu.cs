@@ -20,7 +20,7 @@ namespace vMenuClient
         //public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        public static bool PermissionsSetupComplete = false;
+        public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
         public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
@@ -311,7 +311,7 @@ namespace vMenuClient
                 IsAllowed(Permission.VSTrains),
             };
 
-            PermissionsSetupComplete = true;
+            ArePermissionsSetup = true;
         }
         #endregion
 
