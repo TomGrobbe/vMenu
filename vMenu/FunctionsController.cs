@@ -178,7 +178,6 @@ namespace vMenuClient
                     }
                 }
 
-
                 // Manage Super jump.
                 if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && IsAllowed(Permission.POSuperjump))
                 {
@@ -214,6 +213,10 @@ namespace vMenuClient
                 if (MainMenu.PlayerOptionsMenu.PlayerNeverWanted && GetPlayerWantedLevel(Game.Player.Handle) > 0 && IsAllowed(Permission.PONeverWanted))
                 {
                     ClearPlayerWantedLevel(Game.Player.Handle);
+                    if (GetMaxWantedLevel() > 0)
+                    {
+                        SetMaxWantedLevel(0);
+                    }
                 }
 
                 if (DriveToWpTaskActive && !Game.IsWaypointActive)
@@ -223,8 +226,6 @@ namespace vMenuClient
                     DriveToWpTaskActive = false;
                 }
 
-
-                SetPedCanBeDraggedOut(Game.PlayerPed.Handle, !MainMenu.PlayerOptionsMenu.PlayerStayInVehicle);
             }
             else
             {
@@ -264,6 +265,7 @@ namespace vMenuClient
                         {
                             vehicleDoor.CanBeBroken = !god;
                         }
+
                         bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
                         if (specialgod && veh.EngineHealth < 1000)
                         {
@@ -411,6 +413,11 @@ namespace vMenuClient
                 await Delay(1);
             }
         }
+
+        /// <summary>
+        /// Vehicle control options for flashing highbeams.
+        /// </summary>
+        /// <returns></returns>
         private async Task MoreVehicleOptions()
         {
             if (MainMenu.VehicleOptionsMenu != null && IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && MainMenu.VehicleOptionsMenu.FlashHighbeamsOnHonk && IsAllowed(Permission.VOFlashHighbeamsOnHonk))
@@ -445,7 +452,6 @@ namespace vMenuClient
             {
                 await Delay(1);
             }
-
         }
         #endregion
         #region Weather Options

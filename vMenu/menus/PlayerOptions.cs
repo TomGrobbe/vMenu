@@ -318,6 +318,14 @@ namespace vMenuClient
                 else if (item == neverWantedCheckbox)
                 {
                     PlayerNeverWanted = _checked;
+                    if (!_checked)
+                    {
+                        SetMaxWantedLevel(5);
+                    }
+                    else
+                    {
+                        SetMaxWantedLevel(0);
+                    }
                 }
                 // Everyone ignores player toggled.
                 else if (item == everyoneIgnoresPlayerCheckbox)
