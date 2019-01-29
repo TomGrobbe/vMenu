@@ -2220,11 +2220,10 @@ namespace vMenuClient
                 {
                     Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
                 }
-
             }
             else
             {
-                Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name.");
+                Notify.Error(CommonErrors.InvalidInput);
             }
         }
         #endregion
