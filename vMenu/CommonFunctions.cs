@@ -973,7 +973,9 @@ namespace vMenuClient
             {
                 NeedsToBeHotwired = false,
                 PreviouslyOwnedByPlayer = true,
-                IsPersistent = true
+                IsPersistent = true,
+                IsStolen = false,
+                IsWanted = false
             };
 
             Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} " +
