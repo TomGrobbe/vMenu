@@ -76,6 +76,7 @@ namespace vMenuClient
             Tick += PlayerOptions;
             Tick += DoPlayerAndVehicleChecks;
             Tick += VehicleOptions;
+            Tick += VehicleModMenuControls;
             Tick += MoreVehicleOptions;
             Tick += VoiceChat;
             Tick += TimeOptions;
@@ -472,6 +473,40 @@ namespace vMenuClient
             else
             {
                 await Delay(1);
+            }
+        }
+
+        private async Task VehicleModMenuControls()
+        {
+            if (MainMenu.PermissionsSetupComplete &&
+                MainMenu.VehicleOptionsMenu != null &&
+                MainMenu.VehicleOptionsMenu.VehicleModMenu != null &&
+                MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
+            {
+                if (Game.IsControlJustPressed(0, Control.Jump))
+                {
+                    var veh = GetVehicle();
+                    if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                    {
+                        var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
+
+                        if (open)
+                        {
+                            for (var i = 0; i < 8; i++)
+                            {
+                                SetVehicleDoorOpen(veh.Handle, i, false, false);
+                            }
+                        }
+                        else
+                        {
+                            SetVehicleDoorsShut(veh.Handle, false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                await Delay(100);
             }
         }
         #endregion

@@ -137,6 +137,7 @@ namespace vMenuClient
             #region Submenus
             // Submenu's
             VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
+            VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
             VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
             VehicleWindowsMenu = new Menu("Vehicle Windows", "Vehicle Windows Management");
             VehicleComponentsMenu = new Menu("Vehicle Extras", "Vehicle Extras/Components");
