@@ -285,6 +285,7 @@ namespace vMenuClient
         {
             vMenuShared.PermissionsManager.SetPermissions(permissionsList);
 
+            ArePermissionsSetup = true;
             VehicleSpawner.allowedCategories = new List<bool>()
             {
                 IsAllowed(Permission.VSCompacts),
@@ -311,7 +312,6 @@ namespace vMenuClient
                 IsAllowed(Permission.VSTrains),
             };
 
-            ArePermissionsSetup = true;
         }
         #endregion
 
