@@ -134,30 +134,78 @@ namespace vMenuClient
                 menu.AddMenuItem(parachuteBtn);
                 MenuController.BindMenuItem(menu, parachuteMenu, parachuteBtn);
 
+                List<string> chutes = new List<string>()
+                {
+                    GetLabelText("PM_TINT0"),
+                    GetLabelText("PM_TINT1"),
+                    GetLabelText("PM_TINT2"),
+                    GetLabelText("PM_TINT3"),
+                    GetLabelText("PM_TINT4"),
+                    GetLabelText("PM_TINT5"),
+                    GetLabelText("PM_TINT6"),
+                    GetLabelText("PM_TINT7"),
 
-                // primary and reserve chute submenu setup
-                Menu primaryChutesMenu = new Menu("Parachute Style", "primary parachute styles");
-                Menu reserveChutesMenu = new Menu("Parachute Style", "reserve parachute styles");
+                    // broken in FiveM for some weird reason:
+                    GetLabelText("PS_CAN_0"),
+                    GetLabelText("PS_CAN_1"),
+                    GetLabelText("PS_CAN_2"),
+                    GetLabelText("PS_CAN_3"),
+                    GetLabelText("PS_CAN_4"),
+                    GetLabelText("PS_CAN_5")
+                };
+                List<string> chuteDescriptions = new List<string>()
+                {
+                    GetLabelText("PD_TINT0"),
+                    GetLabelText("PD_TINT1"),
+                    GetLabelText("PD_TINT2"),
+                    GetLabelText("PD_TINT3"),
+                    GetLabelText("PD_TINT4"),
+                    GetLabelText("PD_TINT5"),
+                    GetLabelText("PD_TINT6"),
+                    GetLabelText("PD_TINT7"),
 
-                MenuItem primaryChutes = new MenuItem("Primary Chute Style", "Select a primary parachute style. The style will be used the next time you open your primary parachute. It does not update your current one if you're currently using one.");
-                MenuItem secondaryChutes = new MenuItem("Reserve Chute Style", "Select a reserve parachute style. The style will be used the next time you open your reserve parachute. It does not update your current one if you're currently using one.");
+                    // broken in FiveM for some weird reason:
+                    GetLabelText("PSD_CAN_0") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_1") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_2") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_3") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_4") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_5") + " ~r~For some reason this one doesn't seem to work in FiveM."
+                };
 
+                MenuListItem primaryChutes = new MenuListItem("Primary Chute Style", chutes, 0, $"Primary chute: {chuteDescriptions[0]}");
+                MenuListItem secondaryChutes = new MenuListItem("Reserve Chute Style", chutes, 0, $"Reserve chute: {chuteDescriptions[0]}");
                 MenuCheckboxItem unlimitedParachutes = new MenuCheckboxItem("Unlimited Parachutes", "Enable unlimited parachutes and reserve parachutes.", UnlimitedParachutes);
 
                 // smoke color list
                 List<string> smokeColorsList = new List<string>()
                 {
-                    "PM_TINT8", // no smoke
-                    "PM_TINT8", // red
-                    "PM_TINT8", // orange
-                    "PM_TINT8", // yellow
-                    "PM_TINT8", // blue
-                    "PM_TINT8", // black
-                    "PM_TINT8", // crew
-                    "PM_TINT8", // patriot
+                    GetLabelText("PM_TINT8"), // no smoke
+                    GetLabelText("PM_TINT9"), // red
+                    GetLabelText("PM_TINT10"), // orange
+                    GetLabelText("PM_TINT11"), // yellow
+                    GetLabelText("PM_TINT12"), // blue
+                    GetLabelText("PM_TINT13"), // black
                 };
-                //MenuListItem smokeColors = new MenuListItem();
+                List<int[]> colors = new List<int[]>()
+                {
+                    new int[3] { 255, 255, 255 },
+                    new int[3] { 255, 0, 0 },
+                    new int[3] { 255, 165, 0 },
+                    new int[3] { 255, 255, 0 },
+                    new int[3] { 0, 0, 255 },
+                    new int[3] { 20, 20, 20 },
+                };
+
                 MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColorsList, 0, "Choose a smoke trail color, then press select to change it. Changing colors takes 4 seconds, you can not use your smoke while the color is being changed.");
+
+                parachuteMenu.AddMenuItem(unlimitedParachutes);
+                parachuteMenu.AddMenuItem(smokeColors);
+                parachuteMenu.AddMenuItem(primaryChutes);
+                parachuteMenu.AddMenuItem(secondaryChutes);
+
+                bool switching = false;
+
                 parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
                 {
                     if (item == unlimitedParachutes)
@@ -165,8 +213,36 @@ namespace vMenuClient
                         UnlimitedParachutes = _checked;
                     }
                 };
-            
 
+                async void IndexChangedEventHandler(Menu sender, MenuListItem item, int oldIndex, int newIndex, int itemIndex)
+                {
+                    if (item == smokeColors && oldIndex == -1)
+                    {
+                        if (!switching)
+                        {
+                            switching = true;
+                            SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), false);
+                            await Delay(4000);
+                            int[] color = colors[newIndex];
+                            SetPlayerParachuteSmokeTrailColor(PlayerId(), color[0], color[1], color[2]);
+                            SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), newIndex != 0);
+                            switching = false;
+                        }
+                    }
+                    else if (item == primaryChutes)
+                    {
+                        item.Description = $"Primary chute: {chuteDescriptions[newIndex]}";
+                        SetPlayerParachuteTintIndex(Game.Player.Handle, newIndex);
+                    }
+                    else if (item == secondaryChutes)
+                    {
+                        item.Description = $"Reserve chute: {chuteDescriptions[newIndex]}";
+                        SetPlayerReserveParachuteTintIndex(Game.Player.Handle, newIndex);
+                    }
+                }
+
+                parachuteMenu.OnListItemSelect += (sender, item, index, itemIndex) => IndexChangedEventHandler(sender, item, -1, index, itemIndex);
+                parachuteMenu.OnListIndexChange += IndexChangedEventHandler;
             }
             #endregion
 
