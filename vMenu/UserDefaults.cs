@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -541,6 +541,9 @@ namespace vMenuClient
 
                 WeaponsUnlimitedParachutes = MainMenu.WeaponOptionsMenu.UnlimitedParachutes;
                 prefs.Add("weaponsUnlimitedParachutes", WeaponsUnlimitedParachutes);
+
+                AutoEquipChute = MainMenu.WeaponOptionsMenu.AutoEquipChute;
+                prefs.Add("autoEquipParachuteWhenInPlane", AutoEquipChute);
             }
 
             if (PlayerAppearance.ClothingAnimationType >= 0)
