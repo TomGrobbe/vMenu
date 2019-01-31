@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -156,6 +156,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("weaponsUnlimitedAmmo"); }
             set { SetSavedSettingsBool("weaponsUnlimitedAmmo", value); }
+        }
+
+        public static bool WeaponsUnlimitedParachutes
+        {
+            get { return GetSettingsBool("weaponsUnlimitedParachutes"); }
+            set { SetSavedSettingsBool("weaponsUnlimitedParachutes", value); }
         }
 
         public static bool AutoEquipChute
@@ -532,6 +538,9 @@ namespace vMenuClient
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
                 prefs.Add("weaponsUnlimitedAmmo", WeaponsUnlimitedAmmo);
+
+                WeaponsUnlimitedParachutes = MainMenu.WeaponOptionsMenu.UnlimitedParachutes;
+                prefs.Add("weaponsUnlimitedParachutes", WeaponsUnlimitedParachutes);
             }
 
             if (PlayerAppearance.ClothingAnimationType >= 0)
