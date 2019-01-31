@@ -1131,6 +1131,19 @@ namespace vMenuClient
                         SetPlayerCanLeaveParachuteSmokeTrail(Game.PlayerPed.Handle, true);
                     }
                 }
+
+                if (MainMenu.WeaponOptionsMenu.UnlimitedParachutes)
+                {
+                    if (!HasPedGotWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), false))
+                    {
+                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), 0, false, false);
+                    }
+
+                    if (!GetPlayerHasReserveParachute(Game.Player.Handle))
+                    {
+                        SetPlayerHasReserveParachute(Game.Player.Handle);
+                    }
+                }
             }
             else
             {

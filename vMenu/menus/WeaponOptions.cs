@@ -21,6 +21,7 @@ namespace vMenuClient
         public bool UnlimitedAmmo { get; private set; } = UserDefaults.WeaponsUnlimitedAmmo;
         public bool NoReload { get; private set; } = UserDefaults.WeaponsNoReload;
         public bool AutoEquipChute { get; private set; } = UserDefaults.AutoEquipChute;
+        public bool UnlimitedParachutes { get; private set; } = UserDefaults.WeaponsUnlimitedParachutes;
 
         public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
 
@@ -141,6 +142,7 @@ namespace vMenuClient
                 MenuItem primaryChutes = new MenuItem("Primary Chute Style", "Select a primary parachute style. The style will be used the next time you open your primary parachute. It does not update your current one if you're currently using one.");
                 MenuItem secondaryChutes = new MenuItem("Reserve Chute Style", "Select a reserve parachute style. The style will be used the next time you open your reserve parachute. It does not update your current one if you're currently using one.");
 
+                MenuCheckboxItem unlimitedParachutes = new MenuCheckboxItem("Unlimited Parachutes", "Enable unlimited parachutes and reserve parachutes.", UnlimitedParachutes);
 
                 // smoke color list
                 List<string> smokeColorsList = new List<string>()
@@ -155,9 +157,17 @@ namespace vMenuClient
                     "PM_TINT8", // patriot
                 };
                 //MenuListItem smokeColors = new MenuListItem();
-            }
+                MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColorsList, 0, "Choose a smoke trail color, then press select to change it. Changing colors takes 4 seconds, you can not use your smoke while the color is being changed.");
+                parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    if (item == unlimitedParachutes)
+                    {
+                        UnlimitedParachutes = _checked;
+                    }
+                };
             
 
+            }
             #endregion
 
             #region Create Weapon Category Submenus
@@ -241,14 +251,18 @@ namespace vMenuClient
                     //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
                     Menu weaponMenu = new Menu("Weapon Options", weapon.Name);
-                    MenuItem weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
-                    weaponItem.Label = "→→→";
-                    weaponItem.LeftIcon = MenuItem.Icon.GUN;
+                    MenuItem weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.")
+                    {
+                        Label = "→→→",
+                        LeftIcon = MenuItem.Icon.GUN
+                    };
 
                     weaponInfo.Add(weaponMenu, weapon);
 
-                    MenuItem getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.");
-                    getOrRemoveWeapon.LeftIcon = MenuItem.Icon.GUN;
+                    MenuItem getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.")
+                    {
+                        LeftIcon = MenuItem.Icon.GUN
+                    };
                     weaponMenu.AddMenuItem(getOrRemoveWeapon);
                     if (!IsAllowed(Permission.WPSpawn))
                     {
@@ -257,8 +271,10 @@ namespace vMenuClient
                         getOrRemoveWeapon.LeftIcon = MenuItem.Icon.LOCK;
                     }
 
-                    MenuItem fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.");
-                    fillAmmo.LeftIcon = MenuItem.Icon.AMMO;
+                    MenuItem fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.")
+                    {
+                        LeftIcon = MenuItem.Icon.AMMO
+                    };
                     weaponMenu.AddMenuItem(fillAmmo);
 
                     List<string> tints = new List<string>();
@@ -565,6 +581,8 @@ namespace vMenuClient
             };
             #endregion
         }
+
+
         #endregion
 
         /// <summary>
