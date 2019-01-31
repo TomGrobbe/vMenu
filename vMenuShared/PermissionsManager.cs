@@ -308,8 +308,9 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <param name="source"></param>
+        /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, Player source = null) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission);
+        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission, checkAnyway);
 
         private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
@@ -317,9 +318,9 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static bool IsAllowedClient(Permission permission)
+        private static bool IsAllowedClient(Permission permission, bool checkAnyway)
         {
-            if (ArePermissionsSetup)
+            if (ArePermissionsSetup || checkAnyway)
             {
                 if (allowedPerms.ContainsKey(permission))
                 {
@@ -338,7 +339,7 @@ namespace vMenuShared
                     return true;
                 }
             }
-            
+
             // Return false if nothing is allowed.
             return false;
         }

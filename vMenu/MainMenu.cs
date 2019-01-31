@@ -285,32 +285,32 @@ namespace vMenuClient
         {
             vMenuShared.PermissionsManager.SetPermissions(permissionsList);
 
-            ArePermissionsSetup = true;
             VehicleSpawner.allowedCategories = new List<bool>()
             {
-                IsAllowed(Permission.VSCompacts),
-                IsAllowed(Permission.VSSedans),
-                IsAllowed(Permission.VSSUVs),
-                IsAllowed(Permission.VSCoupes),
-                IsAllowed(Permission.VSMuscle),
-                IsAllowed(Permission.VSSportsClassic),
-                IsAllowed(Permission.VSSports),
-                IsAllowed(Permission.VSSuper),
-                IsAllowed(Permission.VSMotorcycles),
-                IsAllowed(Permission.VSOffRoad),
-                IsAllowed(Permission.VSIndustrial),
-                IsAllowed(Permission.VSUtility),
-                IsAllowed(Permission.VSVans),
-                IsAllowed(Permission.VSCycles),
-                IsAllowed(Permission.VSBoats),
-                IsAllowed(Permission.VSHelicopters),
-                IsAllowed(Permission.VSPlanes),
-                IsAllowed(Permission.VSService),
-                IsAllowed(Permission.VSEmergency),
-                IsAllowed(Permission.VSMilitary),
-                IsAllowed(Permission.VSCommercial),
-                IsAllowed(Permission.VSTrains),
+                IsAllowed(Permission.VSCompacts, checkAnyway: true),
+                IsAllowed(Permission.VSSedans, checkAnyway: true),
+                IsAllowed(Permission.VSSUVs, checkAnyway: true),
+                IsAllowed(Permission.VSCoupes, checkAnyway: true),
+                IsAllowed(Permission.VSMuscle, checkAnyway: true),
+                IsAllowed(Permission.VSSportsClassic, checkAnyway: true),
+                IsAllowed(Permission.VSSports, checkAnyway: true),
+                IsAllowed(Permission.VSSuper, checkAnyway: true),
+                IsAllowed(Permission.VSMotorcycles, checkAnyway: true),
+                IsAllowed(Permission.VSOffRoad, checkAnyway: true),
+                IsAllowed(Permission.VSIndustrial, checkAnyway: true),
+                IsAllowed(Permission.VSUtility, checkAnyway: true),
+                IsAllowed(Permission.VSVans, checkAnyway: true),
+                IsAllowed(Permission.VSCycles, checkAnyway: true),
+                IsAllowed(Permission.VSBoats, checkAnyway: true),
+                IsAllowed(Permission.VSHelicopters, checkAnyway: true),
+                IsAllowed(Permission.VSPlanes, checkAnyway: true),
+                IsAllowed(Permission.VSService, checkAnyway: true),
+                IsAllowed(Permission.VSEmergency, checkAnyway: true),
+                IsAllowed(Permission.VSMilitary, checkAnyway: true),
+                IsAllowed(Permission.VSCommercial, checkAnyway: true),
+                IsAllowed(Permission.VSTrains, checkAnyway: true),
             };
+            ArePermissionsSetup = true;
 
         }
         #endregion
