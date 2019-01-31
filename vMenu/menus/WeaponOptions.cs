@@ -173,9 +173,12 @@ namespace vMenuClient
                     GetLabelText("PSD_CAN_5") + " ~r~For some reason this one doesn't seem to work in FiveM."
                 };
 
+                MenuItem togglePrimary = new MenuItem("Toggle Primary Parachute", "Equip or remove the primary parachute");
+                MenuItem toggleReserve = new MenuItem("Enable Reserve Parachute", "Enables the reserve parachute. Only works if you enabled the primary parachute first. Reserve parachute can not be removed from the player once it's activated.");
                 MenuListItem primaryChutes = new MenuListItem("Primary Chute Style", chutes, 0, $"Primary chute: {chuteDescriptions[0]}");
                 MenuListItem secondaryChutes = new MenuListItem("Reserve Chute Style", chutes, 0, $"Reserve chute: {chuteDescriptions[0]}");
                 MenuCheckboxItem unlimitedParachutes = new MenuCheckboxItem("Unlimited Parachutes", "Enable unlimited parachutes and reserve parachutes.", UnlimitedParachutes);
+                MenuCheckboxItem autoEquipParachutes = new MenuCheckboxItem("Auto Equip Parachutes", "Automatically equip a parachute and reserve parachute when entering planes/helicopters.", AutoEquipChute);
 
                 // smoke color list
                 List<string> smokeColorsList = new List<string>()
@@ -199,12 +202,36 @@ namespace vMenuClient
 
                 MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColorsList, 0, "Choose a smoke trail color, then press select to change it. Changing colors takes 4 seconds, you can not use your smoke while the color is being changed.");
 
+                parachuteMenu.AddMenuItem(togglePrimary);
+                parachuteMenu.AddMenuItem(toggleReserve);
+                parachuteMenu.AddMenuItem(autoEquipParachutes);
                 parachuteMenu.AddMenuItem(unlimitedParachutes);
                 parachuteMenu.AddMenuItem(smokeColors);
                 parachuteMenu.AddMenuItem(primaryChutes);
                 parachuteMenu.AddMenuItem(secondaryChutes);
 
-                bool switching = false;
+                parachuteMenu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == togglePrimary)
+                    {
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), false))
+                        {
+                            Subtitle.Custom("Primary parachute removed.");
+                            RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"));
+                        }
+                        else
+                        {
+                            Subtitle.Custom("Primary parachute added.");
+                            GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), 0, false, false);
+                        }
+                    }
+                    else if (item == toggleReserve)
+                    {
+                        SetPlayerHasReserveParachute(Game.Player.Handle);
+                        Subtitle.Custom("Reserve parachute has been added.");
+
+                    }
+                };
 
                 parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
                 {
@@ -212,8 +239,13 @@ namespace vMenuClient
                     {
                         UnlimitedParachutes = _checked;
                     }
+                    else if (item == autoEquipParachutes)
+                    {
+                        AutoEquipChute = _checked;
+                    }
                 };
 
+                bool switching = false;
                 async void IndexChangedEventHandler(Menu sender, MenuListItem item, int oldIndex, int newIndex, int itemIndex)
                 {
                     if (item == smokeColors && oldIndex == -1)
