@@ -38,6 +38,7 @@ namespace vMenuClient
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
+        public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
@@ -61,6 +62,7 @@ namespace vMenuClient
             MenuCheckboxItem vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Your vehicle will not be able to take visual or physical damage.", VehicleGodMode);
             MenuCheckboxItem vehicleSpecialGod = new MenuCheckboxItem("Special Vehicle God Mode", "This option repairs your vehicle immediately when it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.", VehicleSpecialGodMode);
             MenuCheckboxItem vehicleNeverDirty = new MenuCheckboxItem("Keep Vehicle Clean", "This will constantly clean your car if the vehicle dirt level goes above 0. Note that this only cleans ~o~dust~s~ or ~o~dirt~s~. This does not clean mud, snow or other ~r~damage decals~s~. Repair your vehicle to remove them.", VehicleNeverDirty);
+            MenuCheckboxItem vehicleBikeSeatbelt = new MenuCheckboxItem("Bike Seatbelt", "Prevents you from being knocked off your bike, bicyle, ATV or similar.", VehicleBikeSeatbelt);
             MenuCheckboxItem vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
             MenuCheckboxItem vehicleNoTurbulence = new MenuCheckboxItem("Disable Plane Turbulence", "Disables the turbulence for all planes. Note only works for planes. Helicopters and other flying vehicles are not supported.", DisablePlaneTurbulence);
             MenuCheckboxItem vehicleNoSiren = new MenuCheckboxItem("Disable Siren", "Disables your vehicle's siren. Only works if your vehicle actually has a siren.", VehicleNoSiren);
@@ -89,6 +91,7 @@ namespace vMenuClient
             colorsMenuBtn.Label = "→→→";
             MenuItem underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!");
             underglowMenuBtn.Label = "→→→";
+            MenuItem vehicleInvisible = new MenuItem("Toggle Vehicle Visibility", "Makes your vehicle visible/invisible. ~r~Your vehicle will be made visible again as soon as you leave the vehicle. Otherwise you would not be able to get back in.");
             MenuItem flipVehicle = new MenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             MenuItem vehicleAlarm = new MenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
             MenuItem cycleSeats = new MenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
@@ -102,6 +105,7 @@ namespace vMenuClient
                 "Helicopter Spotlight",
             };
             MenuListItem vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -133,6 +137,7 @@ namespace vMenuClient
             #region Submenus
             // Submenu's
             VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
+            VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
             VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
             VehicleWindowsMenu = new Menu("Vehicle Windows", "Vehicle Windows Management");
             VehicleComponentsMenu = new Menu("Vehicle Extras", "Vehicle Extras/Components");
@@ -177,6 +182,10 @@ namespace vMenuClient
             if (IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
             {
                 menu.AddMenuItem(toggleEngine);
+            }
+            if (IsAllowed(Permission.VOBikeSeatbelt))
+            {
+                menu.AddMenuItem(vehicleBikeSeatbelt);
             }
             if (IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
             {
@@ -254,6 +263,10 @@ namespace vMenuClient
             if (IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
                 menu.AddMenuItem(vehicleFreeze);
+            }
+            if (IsAllowed(Permission.VOInvisible)) // MAKE VEHICLE INVISIBLE
+            {
+                menu.AddMenuItem(vehicleInvisible);
             }
             if (IsAllowed(Permission.VOEngineAlwaysOn)) // LEAVE ENGINE RUNNING
             {
@@ -371,6 +384,32 @@ namespace vMenuClient
                         {
                             SetLicensePlateCustomText();
                         }
+                        else if (item == vehicleInvisible) // Make vehicle invisible.
+                        {
+                            if (vehicle.IsVisible)
+                            {
+                                // Check the visibility of all peds inside before setting the vehicle as invisible.
+                                Dictionary<Ped, bool> visiblePeds = new Dictionary<Ped, bool>();
+                                foreach (Ped p in vehicle.Occupants)
+                                {
+                                    visiblePeds.Add(p, p.IsVisible);
+                                }
+
+                                // Set the vehicle invisible or invincivble.
+                                vehicle.IsVisible = !vehicle.IsVisible;
+
+                                // Restore visibility for each ped.
+                                foreach (var pe in visiblePeds)
+                                {
+                                    pe.Key.IsVisible = pe.Value;
+                                }
+                            }
+                            else
+                            {
+                                // Set the vehicle invisible or invincivble.
+                                vehicle.IsVisible = !vehicle.IsVisible;
+                            }
+                        }
                     }
 
                     // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
@@ -468,6 +507,10 @@ namespace vMenuClient
                 else if (item == vehicleNeverDirty)
                 {
                     VehicleNeverDirty = _checked;
+                }
+                else if (item == vehicleBikeSeatbelt)
+                {
+                    VehicleBikeSeatbelt = _checked;
                 }
             };
             #endregion
@@ -740,7 +783,6 @@ namespace vMenuClient
                         {
                             Notify.Error(CommonErrors.NeedToBeTheDriver);
                         }
-
                     }
                     else
                     {
@@ -751,282 +793,242 @@ namespace vMenuClient
             #endregion
 
             #region Vehicle Colors Submenu Stuff
+            // primary menu
+            Menu primaryColorsMenu = new Menu("Vehicle Colors", "Primary Colors");
+            MenuController.AddSubmenu(VehicleColorsMenu, primaryColorsMenu);
 
-            #region Create lists for each color.
-            // Metallic Colors
-            List<string> Metallic = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
+            MenuItem primaryColorsBtn = new MenuItem("Primary Color") { Label = "→→→" };
+            VehicleColorsMenu.AddMenuItem(primaryColorsBtn);
+            MenuController.BindMenuItem(VehicleColorsMenu, primaryColorsMenu, primaryColorsBtn);
+
+            // secondary menu
+            Menu secondaryColorsMenu = new Menu("Vehicle Colors", "Secondary Colors");
+            MenuController.AddSubmenu(VehicleColorsMenu, secondaryColorsMenu);
+
+            MenuItem secondaryColorsBtn = new MenuItem("Secondary Color") { Label = "→→→" };
+            VehicleColorsMenu.AddMenuItem(secondaryColorsBtn);
+            MenuController.BindMenuItem(VehicleColorsMenu, secondaryColorsMenu, secondaryColorsBtn);
+
+            // color lists
+            List<string> classic = new List<string>();
+            List<string> matte = new List<string>();
+            List<string> metals = new List<string>();
+            List<string> util = new List<string>();
+            List<string> worn = new List<string>();
+            List<string> wheelColors = new List<string>() { "Default Alloy" };
+
+            // Just quick and dirty solution to put this in a new enclosed section so that we can still use 'i' as a counter in the other code parts.
             {
-                Metallic.Add(color.Key.ToString());
-            }
-
-            // Matte colors
-            List<string> Matte = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MatteColors)
-            {
-                Matte.Add(color.Key.ToString());
-            }
-
-            // Metal colors
-            List<string> Metals = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MetalColors)
-            {
-                Metals.Add(color.Key.ToString());
-            }
-
-            // Util Colors
-            List<string> Utils = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.UtilColors)
-            {
-                Utils.Add(color.Key.ToString());
-            }
-
-            // Worn colors
-            List<string> Worn = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.WornColors)
-            {
-                Worn.Add(color.Key.ToString());
-            }
-
-            // Pearlescent colors
-            List<string> Pearlescent = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
-            {
-                Pearlescent.Add(color.Key.ToString());
-            }
-
-            // Wheel colors
-            List<string> Wheels = new List<string>
-            {
-                "Default Alloy Color"
-            };
-            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
-            {
-                Wheels.Add(color.Key.ToString());
-            }
-
-            // Dashboard Trim Colors
-            List<string> DashboardColor = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
-            {
-                DashboardColor.Add(color.Key.ToString());
-            }
-
-            // Extra Accent Colors
-            List<string> TrimColor = new List<string>();
-            foreach (KeyValuePair<string, int> color in VehicleData.MetallicColors)
-            {
-                TrimColor.Add(color.Key.ToString());
-            }
-            #endregion
-
-            #region Create the headers + menu list items
-            // Headers
-            MenuItem primaryColorsHeader = GetSpacerMenuItem("PRIMARY COLORS");
-            MenuItem secondaryColorsHeader = GetSpacerMenuItem("SECONDARY COLORS");
-            MenuItem otherColorsHeader = GetSpacerMenuItem("OTHER COLORS");
-
-            // Primary Colors
-            MenuListItem classicColors = new MenuListItem("Classic", Metallic, 0, "Select a Classic primary color.");
-            // Metallic == Classic + Pearlescent
-            MenuListItem metallicColors = new MenuListItem("Metallic", Metallic, 0, "Select a Metallic primary color.");
-            MenuListItem matteColors = new MenuListItem("Matte", Matte, 0, "Select a Matte primary color.");
-            MenuListItem metalsColors = new MenuListItem("Metals", Metals, 0, "Select a Metals primary color.");
-            MenuListItem utilsColors = new MenuListItem("Util", Utils, 0, "Select a Util primary color.");
-            MenuListItem wornColors = new MenuListItem("Worn", Worn, 0, "Select a Worn primary color.");
-
-            // Secondary Colors.
-            MenuListItem classicColors2 = new MenuListItem("Classic", Metallic, 0, "Select a Classic secondary color.");
-            MenuListItem metallicColors2 = new MenuListItem("Metallic", Metallic, 0, "Select a Metallic secondary color.");
-            MenuListItem matteColors2 = new MenuListItem("Matte", Matte, 0, "Select a Matte secondary color.");
-            MenuListItem metalsColors2 = new MenuListItem("Metals", Metals, 0, "Select a Metals secondary color.");
-            MenuListItem utilsColors2 = new MenuListItem("Util", Utils, 0, "Select a Util secondary color.");
-            MenuListItem wornColors2 = new MenuListItem("Worn", Worn, 0, "Select a Worn secondary color.");
-
-            // Other Colors
-            // Pearlescent == Classic + Classic on top of secondary color.
-            MenuListItem pearlescentColors = new MenuListItem("Pearlescent", Metallic, 0, "Select a pearlescent color.");
-            MenuListItem wheelColors = new MenuListItem("Wheel Color", Wheels, 0, "Select a color for your wheels.");
-            // Chrome Button
-            MenuItem chromeBtn = new MenuItem("Chrome", "Make your vehicle chrome!");
-            MenuListItem dashboardColors = new MenuListItem("Dashboard Color", DashboardColor, 0, "Select a dashboard color (only availalbe on some cars).");
-            MenuListItem trimColors = new MenuListItem("Trim Color", TrimColor, 0, "Select an trim/accent color (only availalbe on some cars).");
-            #endregion
-
-            #region Add the items to the colors menu.
-            // Primary Colors
-            VehicleColorsMenu.AddMenuItem(primaryColorsHeader); // header
-            VehicleColorsMenu.AddMenuItem(classicColors);
-            VehicleColorsMenu.AddMenuItem(metallicColors);
-            VehicleColorsMenu.AddMenuItem(matteColors);
-            VehicleColorsMenu.AddMenuItem(metalsColors);
-            VehicleColorsMenu.AddMenuItem(utilsColors);
-            VehicleColorsMenu.AddMenuItem(wornColors);
-
-            // Secondary Colors
-            VehicleColorsMenu.AddMenuItem(secondaryColorsHeader); // header
-            VehicleColorsMenu.AddMenuItem(classicColors2);
-            VehicleColorsMenu.AddMenuItem(metallicColors2);
-            VehicleColorsMenu.AddMenuItem(matteColors2);
-            VehicleColorsMenu.AddMenuItem(metalsColors2);
-            VehicleColorsMenu.AddMenuItem(utilsColors2);
-            VehicleColorsMenu.AddMenuItem(wornColors2);
-
-            // Other Colors
-            VehicleColorsMenu.AddMenuItem(otherColorsHeader); // header
-            VehicleColorsMenu.AddMenuItem(pearlescentColors);
-            VehicleColorsMenu.AddMenuItem(wheelColors);
-            VehicleColorsMenu.AddMenuItem(chromeBtn);
-            VehicleColorsMenu.AddMenuItem(dashboardColors);
-            VehicleColorsMenu.AddMenuItem(trimColors);
-            #endregion
-
-            #region Handle Vehicle Color Changes
-            VehicleColorsMenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
-            {
-                // Get the current vehicle.
-                Vehicle veh = GetVehicle();
-
-                // Check if the vehicle exists and isn't dead and the player is the driver of the vehicle.
-                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                int i = 0;
+                foreach (var vc in VehicleData.ClassicColors)
                 {
-                    // Get the primary and secondary colors from the current vehicle..
-                    int primary = 0;
-                    int secondary = 0;
-                    int pearlescent = 0;
-                    int wheels = 0;
-
-                    int trimColor = 0;
-                    int dashboardColor = 0;
-                    GetVehicleInteriorColour(veh.Handle, ref trimColor);
-                    GetVehicleDashboardColour(veh.Handle, ref dashboardColor);
-
-                    GetVehicleColours(veh.Handle, ref primary, ref secondary);
-                    GetVehicleExtraColours(veh.Handle, ref pearlescent, ref wheels);
-
-                    // If any color of the primary colors is selected, which isn't the pearlescent or metallic option, then reset the pearlescent color to black;
-                    if (item == classicColors || item == matteColors || item == metalsColors || item == utilsColors || item == wornColors)
-                    {
-                        pearlescent = 0;
-                    }
-                    // Classic / Metallic (primary)
-                    if (item == classicColors || item == metallicColors)
-                    {
-                        primary = VehicleData.MetallicColors[Metallic[newIndex]];
-                        if (item == metallicColors) // If the primary metallic changes, 
-                        {
-                            pearlescent = VehicleData.MetallicColors[Metallic[newIndex]];
-                        }
-                    }
-                    // Classic / Metallic (secondary)
-                    else if (item == classicColors2 || item == metallicColors2)
-                    {
-                        secondary = VehicleData.MetallicColors[Metallic[newIndex]];
-                    }
-
-                    // Matte (primary)
-                    else if (item == matteColors)
-                    {
-                        primary = VehicleData.MatteColors[Matte[newIndex]];
-                    }
-                    // Matte (secondary)
-                    else if (item == matteColors2)
-                    {
-                        secondary = VehicleData.MatteColors[Matte[newIndex]];
-                    }
-
-                    // Metals (primary)
-                    else if (item == metalsColors)
-                    {
-                        primary = VehicleData.MetalColors[Metals[newIndex]];
-                    }
-                    // Metals (secondary)
-                    else if (item == metalsColors2)
-                    {
-                        secondary = VehicleData.MetalColors[Metals[newIndex]];
-                    }
-
-                    // Utils (primary)
-                    else if (item == utilsColors)
-                    {
-                        primary = VehicleData.UtilColors[Utils[newIndex]];
-                    }
-                    // Utils (secondary)
-                    else if (item == utilsColors2)
-                    {
-                        secondary = VehicleData.UtilColors[Utils[newIndex]];
-                    }
-
-                    // Worn (primary)
-                    else if (item == wornColors)
-                    {
-                        primary = VehicleData.WornColors[Worn[newIndex]];
-                    }
-                    // Worn (secondary)
-                    else if (item == wornColors2)
-                    {
-                        secondary = VehicleData.WornColors[Worn[newIndex]];
-                    }
-
-                    // Pearlescent
-                    else if (item == pearlescentColors)
-                    {
-                        pearlescent = VehicleData.MetallicColors[Metallic[newIndex]];
-                    }
-
-                    // Wheel colors
-                    else if (item == wheelColors)
-                    {
-                        if (newIndex == 0)
-                        {
-                            // "Default Alloy Color" is not in the metallic list, so we have to manually account for this one.
-                            wheels = 156;
-                        }
-                        else
-                        {
-                            wheels = VehicleData.MetallicColors[Metallic[newIndex - 1]];
-                        }
-                    }
-
-                    else if (item == dashboardColors)
-                    {
-                        trimColor = VehicleData.MetallicColors[DashboardColor[newIndex]];
-                        SetVehicleInteriorColour(veh.Handle, trimColor);
-                    }
-                    else if (item == trimColors)
-                    {
-                        dashboardColor = VehicleData.MetallicColors[TrimColor[newIndex]];
-                        SetVehicleDashboardColour(veh.Handle, dashboardColor);
-                    }
-
-                    // Set the mod kit so we can modify things.
-                    SetVehicleModKit(veh.Handle, 0);
-
-                    // Set all the colors.
-                    SetVehicleColours(veh.Handle, primary, secondary);
-                    SetVehicleExtraColours(veh.Handle, pearlescent, wheels);
+                    classic.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.ClassicColors.Count})");
+                    i++;
                 }
-            };
-            #endregion
 
-            #region Handle Chrome Button Pressed
-            // Handle chrome button press.
+                i = 0;
+                foreach (var vc in VehicleData.MatteColors)
+                {
+                    matte.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.MatteColors.Count})");
+                    i++;
+                }
+
+                i = 0;
+                foreach (var vc in VehicleData.MetalColors)
+                {
+                    metals.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.MetalColors.Count})");
+                    i++;
+                }
+
+                i = 0;
+                foreach (var vc in VehicleData.UtilColors)
+                {
+                    util.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.UtilColors.Count})");
+                    i++;
+                }
+
+                i = 0;
+                foreach (var vc in VehicleData.WornColors)
+                {
+                    worn.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.WornColors.Count})");
+                    i++;
+                }
+
+                wheelColors.AddRange(classic);
+            }
+
+            MenuListItem wheelColorsList = new MenuListItem("Wheel Color", wheelColors, 0);
+            MenuListItem dashColorList = new MenuListItem("Dashboard Color", classic, 0);
+            MenuListItem intColorList = new MenuListItem("Interior / Trim Color", classic, 0);
+
+            MenuItem chrome = new MenuItem("Chrome");
+            VehicleColorsMenu.AddMenuItem(chrome);
+
             VehicleColorsMenu.OnItemSelect += (sender, item, index) =>
             {
                 Vehicle veh = GetVehicle();
-                if (veh != null && veh.Exists())
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                 {
-                    // Set primary and secondary color to chrome.
-                    SetVehicleColours(veh.Handle, (int)VehicleColor.Chrome, (int)VehicleColor.Chrome);
+                    if (item == chrome)
+                    {
+                        SetVehicleColours(veh.Handle, 120, 120); // chrome is index 120
+                    }
                 }
                 else
                 {
-                    Notify.Error(CommonErrors.NoVehicle);
+                    Notify.Error("You need to be the driver of a vehicle in order to change the vehicle colors.");
                 }
-
             };
-            #endregion
 
+            VehicleColorsMenu.AddMenuItem(dashColorList);
+            VehicleColorsMenu.AddMenuItem(intColorList);
+            VehicleColorsMenu.AddMenuItem(wheelColorsList);
+
+            VehicleColorsMenu.OnListIndexChange += HandleListIndexChanges;
+
+            void HandleListIndexChanges(Menu sender, MenuListItem listItem, int oldIndex, int newIndex, int itemIndex)
+            {
+                Vehicle veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    int primaryColor = 0;
+                    int secondaryColor = 0;
+                    int pearlColor = 0;
+                    int wheelColor = 0;
+                    int dashColor = 0;
+                    int intColor = 0;
+
+                    GetVehicleColours(veh.Handle, ref primaryColor, ref secondaryColor);
+                    GetVehicleExtraColours(veh.Handle, ref pearlColor, ref wheelColor);
+                    GetVehicleDashboardColour(veh.Handle, ref dashColor);
+                    GetVehicleInteriorColour(veh.Handle, ref intColor);
+
+                    if (sender == primaryColorsMenu)
+                    {
+                        if (itemIndex == 1)
+                            pearlColor = VehicleData.ClassicColors[newIndex].id;
+                        else
+                            pearlColor = 0;
+
+                        switch (itemIndex)
+                        {
+                            case 0:
+                            case 1:
+                                primaryColor = VehicleData.ClassicColors[newIndex].id;
+                                break;
+                            case 2:
+                                primaryColor = VehicleData.MatteColors[newIndex].id;
+                                break;
+                            case 3:
+                                primaryColor = VehicleData.MetalColors[newIndex].id;
+                                break;
+                            case 4:
+                                primaryColor = VehicleData.UtilColors[newIndex].id;
+                                break;
+                            case 5:
+                                primaryColor = VehicleData.WornColors[newIndex].id;
+                                break;
+                        }
+                        SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
+                    }
+                    else if (sender == secondaryColorsMenu)
+                    {
+                        switch (itemIndex)
+                        {
+                            case 0:
+                                pearlColor = VehicleData.ClassicColors[newIndex].id;
+                                break;
+                            case 1:
+                            case 2:
+                                secondaryColor = VehicleData.ClassicColors[newIndex].id;
+                                break;
+                            case 3:
+                                secondaryColor = VehicleData.MatteColors[newIndex].id;
+                                break;
+                            case 4:
+                                secondaryColor = VehicleData.MetalColors[newIndex].id;
+                                break;
+                            case 5:
+                                secondaryColor = VehicleData.UtilColors[newIndex].id;
+                                break;
+                            case 6:
+                                secondaryColor = VehicleData.WornColors[newIndex].id;
+                                break;
+                        }
+                        SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
+                    }
+                    else if (sender == VehicleColorsMenu)
+                    {
+                        if (listItem == wheelColorsList)
+                        {
+                            if (newIndex == 0)
+                            {
+                                wheelColor = 156; // default alloy color.
+                            }
+                            else
+                            {
+                                wheelColor = VehicleData.ClassicColors[newIndex - 1].id;
+                            }
+                        }
+                        else if (listItem == dashColorList)
+                        {
+                            dashColor = VehicleData.ClassicColors[newIndex].id;
+                            // sadly these native names are mixed up :/ but ofc it's impossible to fix due to backwards compatibility.
+                            // this should actually be called SetVehicleDashboardColour
+                            SetVehicleInteriorColour(veh.Handle, dashColor);
+                        }
+                        else if (listItem == intColorList)
+                        {
+                            intColor = VehicleData.ClassicColors[newIndex].id;
+                            // sadly these native names are mixed up :/ but ofc it's impossible to fix due to backwards compatibility.
+                            // this should actually be called SetVehicleInteriorColour
+                            SetVehicleDashboardColour(veh.Handle, intColor);
+                        }
+                    }
+
+                    SetVehicleExtraColours(veh.Handle, pearlColor, wheelColor);
+                }
+                else
+                {
+                    Notify.Error("You need to be the driver of a vehicle in order to change the vehicle colors.");
+                }
+            }
+
+
+            for (int i = 0; i < 2; i++)
+            {
+                var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
+                var classicList = new MenuListItem("Classic", classic, 0);
+                var metallicList = new MenuListItem("Metallic", classic, 0);
+                var matteList = new MenuListItem("Matte", matte, 0);
+                var metalList = new MenuListItem("Metals", metals, 0);
+                var utilList = new MenuListItem("Util", util, 0);
+                var wornList = new MenuListItem("Worn", worn, 0);
+
+                if (i == 0)
+                {
+                    primaryColorsMenu.AddMenuItem(classicList);
+                    primaryColorsMenu.AddMenuItem(metallicList);
+                    primaryColorsMenu.AddMenuItem(matteList);
+                    primaryColorsMenu.AddMenuItem(metalList);
+                    primaryColorsMenu.AddMenuItem(utilList);
+                    primaryColorsMenu.AddMenuItem(wornList);
+
+                    primaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                }
+                else
+                {
+                    secondaryColorsMenu.AddMenuItem(pearlescentList);
+                    secondaryColorsMenu.AddMenuItem(classicList);
+                    secondaryColorsMenu.AddMenuItem(metallicList);
+                    secondaryColorsMenu.AddMenuItem(matteList);
+                    secondaryColorsMenu.AddMenuItem(metalList);
+                    secondaryColorsMenu.AddMenuItem(utilList);
+                    secondaryColorsMenu.AddMenuItem(wornList);
+
+                    secondaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                }
+            }
             #endregion
 
             #region Vehicle Doors Submenu Stuff

@@ -123,6 +123,12 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleDisablePlaneTurbulence"); }
             set { SetSavedSettingsBool("vehicleDisablePlaneTurbulence", value); }
         }
+
+        public static bool VehicleBikeSeatbelt
+        {
+            get { return GetSettingsBool("vehicleBikeSeatbelt"); }
+            set { SetSavedSettingsBool("vehicleBikeSeatbelt", value); }
+        }
         #endregion
 
         #region Vehicle Spawner Options
@@ -150,6 +156,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("weaponsUnlimitedAmmo"); }
             set { SetSavedSettingsBool("weaponsUnlimitedAmmo", value); }
+        }
+
+        public static bool WeaponsUnlimitedParachutes
+        {
+            get { return GetSettingsBool("weaponsUnlimitedParachutes"); }
+            set { SetSavedSettingsBool("weaponsUnlimitedParachutes", value); }
         }
 
         public static bool AutoEquipChute
@@ -490,6 +502,9 @@ namespace vMenuClient
 
                 VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
                 prefs.Add("vehicleDisablePlaneTurbulence", VehicleDisablePlaneTurbulence);
+
+                VehicleBikeSeatbelt = MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
+                prefs.Add("vehicleBikeSeatbelt", VehicleBikeSeatbelt);
             }
 
             if (MainMenu.VehicleSpawnerMenu != null)
@@ -523,6 +538,12 @@ namespace vMenuClient
 
                 WeaponsUnlimitedAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
                 prefs.Add("weaponsUnlimitedAmmo", WeaponsUnlimitedAmmo);
+
+                WeaponsUnlimitedParachutes = MainMenu.WeaponOptionsMenu.UnlimitedParachutes;
+                prefs.Add("weaponsUnlimitedParachutes", WeaponsUnlimitedParachutes);
+
+                AutoEquipChute = MainMenu.WeaponOptionsMenu.AutoEquipChute;
+                prefs.Add("autoEquipParachuteWhenInPlane", AutoEquipChute);
             }
 
             if (PlayerAppearance.ClothingAnimationType >= 0)

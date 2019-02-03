@@ -106,7 +106,7 @@ namespace vMenuClient
 
             #region vehicle classes submenus
             // Create the submenus for each category.
-            var vl = new Vehicles();
+            //var vl = new Vehicles();
 
             // Loop through all the vehicle classes.
             for (var vehClass = 0; vehClass < 22; vehClass++)
@@ -139,7 +139,7 @@ namespace vMenuClient
 
                 #region Add vehicles per class
                 // Loop through all the vehicles in the vehicle class.
-                foreach (var veh in vl.VehicleClasses[className])
+                foreach (var veh in VehicleData.Vehicles.VehicleClasses[className])
                 {
                     // Convert the model name to start with a Capital letter, converting the other characters to lowercase. 
                     var properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
@@ -212,7 +212,7 @@ namespace vMenuClient
                 // Handle button presses
                 vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
                 {
-                    SpawnVehicle(vl.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
+                    SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
                 };
             }
             #endregion

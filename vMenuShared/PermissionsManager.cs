@@ -66,6 +66,7 @@ namespace vMenuShared
             VORepair,
             VOWash,
             VOEngine,
+            VOBikeSeatbelt,
             VOSpeedLimiter,
             VOChangePlate,
             VOMod,
@@ -75,6 +76,7 @@ namespace vMenuShared
             VODoors,
             VOWindows,
             VOFreeze,
+            VOInvisible,
             VOTorqueMultiplier,
             VOPowerMultiplier,
             VOFlip,
@@ -299,14 +301,16 @@ namespace vMenuShared
         };
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
+        public static bool ArePermissionsSetup { get; set; } = false;
 
         /// <summary>
         /// Public function to check if a permission is allowed.
         /// </summary>
         /// <param name="permission"></param>
         /// <param name="source"></param>
+        /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, Player source = null) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission);
+        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission, checkAnyway);
 
         private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
@@ -314,25 +318,27 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static bool IsAllowedClient(Permission permission)
+        private static bool IsAllowedClient(Permission permission, bool checkAnyway)
         {
-            if (allowedPerms.ContainsKey(permission))
+            if (ArePermissionsSetup || checkAnyway)
             {
-                return allowedPerms[permission];
+                if (allowedPerms.ContainsKey(permission))
+                {
+                    return allowedPerms[permission];
+                }
+
+                allowedPerms[permission] = false;
+
+                // Get a list of all permissions that are (parents) of the current permission, including the current permission.
+                List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
+
+                // Check if any of those permissions is allowed, if so, return true.
+                if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
+                {
+                    allowedPerms[permission] = true;
+                    return true;
+                }
             }
-
-            allowedPerms[permission] = false;
-
-            // Get a list of all permissions that are (parents) of the current permission, including the current permission.
-            List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
-
-            // Check if any of those permissions is allowed, if so, return true.
-            if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
-            {
-                allowedPerms[permission] = true;
-                return true;
-            }
-
 
             // Return false if nothing is allowed.
             return false;
