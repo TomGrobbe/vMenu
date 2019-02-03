@@ -1108,7 +1108,7 @@ namespace vMenuClient
                             CloseBombBayDoors(veh.Handle);
                         }
                         // If the bomb doors are closed, and the action is bomb doors OR open all, then open the doors
-                        else if(!bombBayOpen && (item == BB || item == openAll))
+                        else if (!bombBayOpen && (item == BB || item == openAll))
                         {
                             OpenBombBayDoors(veh.Handle);
                         }
