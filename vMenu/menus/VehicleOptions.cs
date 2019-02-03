@@ -1097,7 +1097,7 @@ namespace vMenuClient
                     if (index >= 6)
                     {
 
-                        bool bombBayOpen = CitizenFX.Core.Native.Function.Call<bool>(CitizenFX.Core.Native.Hash._ARE_BOMB_BAY_DOORS_OPEN, veh.Handle);
+                        bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
                         // If the bomb doors are open, and the action is bomb doors OR close all, then close the doors
                         if (bombBayOpen && (item == BB || item == closeAll))
                         {
