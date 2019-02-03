@@ -1040,6 +1040,7 @@ namespace vMenuClient
             MenuItem RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
             MenuItem HD = new MenuItem("Hood", "Open/close the hood.");
             MenuItem TR = new MenuItem("Trunk", "Open/close the trunk.");
+            MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay.");
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -1047,6 +1048,7 @@ namespace vMenuClient
             VehicleDoorsMenu.AddMenuItem(RR);
             VehicleDoorsMenu.AddMenuItem(HD);
             VehicleDoorsMenu.AddMenuItem(TR);
+            VehicleDoorsMenu.AddMenuItem(BB);
             VehicleDoorsMenu.AddMenuItem(openAll);
             VehicleDoorsMenu.AddMenuItem(closeAll);
 
@@ -1089,6 +1091,23 @@ namespace vMenuClient
                     {
                         // Close all doors.
                         SetVehicleDoorsShut(veh.Handle, false);
+                    }
+
+                    // If the index >= 6, the bomb doors could be affected
+                    if (index >= 6)
+                    {
+
+                        bool bombBayOpen = CitizenFX.Core.Native.Function.Call<bool>(CitizenFX.Core.Native.Hash._ARE_BOMB_BAY_DOORS_OPEN, veh.Handle);
+                        // If the bomb doors are open, and the action is bomb doors OR close all, then close the doors
+                        if (bombBayOpen && (item == BB || item == closeAll))
+                        {
+                            CloseBombBayDoors(veh.Handle);
+                        }
+                        // If the bomb doors are closed, and the action is bomb doors OR open all, then open the doors
+                        else if(!bombBayOpen && (item == BB || item == openAll))
+                        {
+                            OpenBombBayDoors(veh.Handle);
+                        }
                     }
                 }
                 else
