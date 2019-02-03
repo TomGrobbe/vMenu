@@ -1040,7 +1040,9 @@ namespace vMenuClient
             MenuItem RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
             MenuItem HD = new MenuItem("Hood", "Open/close the hood.");
             MenuItem TR = new MenuItem("Trunk", "Open/close the trunk.");
-            MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay.");
+            MenuItem E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
+            MenuItem E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
+            MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -1048,6 +1050,8 @@ namespace vMenuClient
             VehicleDoorsMenu.AddMenuItem(RR);
             VehicleDoorsMenu.AddMenuItem(HD);
             VehicleDoorsMenu.AddMenuItem(TR);
+            VehicleDoorsMenu.AddMenuItem(E1);
+            VehicleDoorsMenu.AddMenuItem(E2);
             VehicleDoorsMenu.AddMenuItem(BB);
             VehicleDoorsMenu.AddMenuItem(openAll);
             VehicleDoorsMenu.AddMenuItem(closeAll);
@@ -1061,7 +1065,7 @@ namespace vMenuClient
                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                 {
                     // If button 0-5 are pressed, then open/close that specific index/door.
-                    if (index < 6)
+                    if (index < 8)
                     {
                         // If the door is open.
                         bool open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f ? true : false;
@@ -1077,7 +1081,7 @@ namespace vMenuClient
                             SetVehicleDoorOpen(veh.Handle, index, false, false);
                         }
                     }
-                    // If the index >= 6, and the button is "openAll": open all doors.
+                    // If the index >= 8, and the button is "openAll": open all doors.
                     else if (item == openAll)
                     {
                         // Loop through all doors and open them.
@@ -1086,7 +1090,7 @@ namespace vMenuClient
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
                     }
-                    // If the index >= 6, and the button is "closeAll": close all doors.
+                    // If the index >= 8, and the button is "closeAll": close all doors.
                     else if (item == closeAll)
                     {
                         // Close all doors.
@@ -1094,7 +1098,7 @@ namespace vMenuClient
                     }
 
                     // If the index >= 6, the bomb doors could be affected
-                    if (index >= 6)
+                    if (index >= 8)
                     {
 
                         bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
