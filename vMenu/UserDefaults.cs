@@ -82,11 +82,47 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleGodMode"); }
             set { SetSavedSettingsBool("vehicleGodMode", value); }
         }
-        public static bool VehicleSpecialGodMode
+        public static bool VehicleGodInvincible
         {
-            get { return GetSettingsBool("vehicleSpecialGodMode"); }
-            set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
+            get { return GetSettingsBool("vehicleGodInvincible"); }
+            set { SetSavedSettingsBool("vehicleGodInvincible", value); }
         }
+        public static bool VehicleGodEngine
+        {
+            get { return GetSettingsBool("vehicleGodEngine"); }
+            set { SetSavedSettingsBool("vehicleGodEngine", value); }
+        }
+        public static bool VehicleGodVisual
+        {
+            get { return GetSettingsBool("vehicleGodVisual"); }
+            set { SetSavedSettingsBool("vehicleGodVisual", value); }
+        }
+        public static bool VehicleGodDamage
+        {
+            get { return GetSettingsBool("vehicleGodDamage"); }
+            set { SetSavedSettingsBool("vehicleGodDamage", value); }
+        }
+        public static bool VehicleGodStrongWheels
+        {
+            get { return GetSettingsBool("vehicleGodStrongWheels"); }
+            set { SetSavedSettingsBool("vehicleGodStrongWheels", value); }
+        }
+        public static bool VehicleGodRamp
+        {
+            get { return GetSettingsBool("vehicleGodRamp"); }
+            set { SetSavedSettingsBool("vehicleGodRamp", value); }
+        }
+        public static bool VehicleGodAutoRepair
+        {
+            get { return GetSettingsBool("vehicleGodAutoRepair"); }
+            set { SetSavedSettingsBool("vehicleGodAutoRepair", value); }
+        }
+
+        //public static bool VehicleSpecialGodMode
+        //{
+        //    get { return GetSettingsBool("vehicleSpecialGodMode"); }
+        //    set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
+        //}
 
         public static bool VehicleNeverDirty
         {
@@ -326,7 +362,26 @@ namespace vMenuClient
             if (!exists)
             {
                 // Some options should be enabled by default:
-                if (kvpString == "unlimitedStamina" || kvpString == "miscDeathNotifications" || kvpString == "miscJoinQuitNotifications" || kvpString == "vehicleSpawnerSpawnInside" || kvpString == "vehicleSpawnerReplacePrevious" || kvpString == "neverWanted" || kvpString == "voiceChatShowSpeaker" || kvpString == "voiceChatEnabled" || kvpString == "autoEquipParachuteWhenInPlane" || kvpString == "miscRestorePlayerAppearance" || kvpString == "miscRestorePlayerWeapons" || kvpString == "miscRightAlignMenu" || kvpString == "miscRespawnDefaultCharacter")
+                if (
+                    kvpString == "unlimitedStamina" ||
+                    kvpString == "miscDeathNotifications" ||
+                    kvpString == "miscJoinQuitNotifications" ||
+                    kvpString == "vehicleSpawnerSpawnInside" ||
+                    kvpString == "vehicleSpawnerReplacePrevious" ||
+                    kvpString == "neverWanted" ||
+                    kvpString == "voiceChatShowSpeaker" ||
+                    kvpString == "voiceChatEnabled" ||
+                    kvpString == "autoEquipParachuteWhenInPlane" ||
+                    kvpString == "miscRestorePlayerAppearance" ||
+                    kvpString == "miscRestorePlayerWeapons" ||
+                    kvpString == "miscRightAlignMenu" ||
+                    kvpString == "miscRespawnDefaultCharacter" ||
+                    kvpString == "vehicleGodInvincible" ||
+                    kvpString == "vehicleGodEngine" ||
+                    kvpString == "vehicleGodVisual" ||
+                    kvpString == "vehicleGodStrongWheels" ||
+                    kvpString == "vehicleGodRamp"
+                    )
                 {
                     SetSavedSettingsBool(kvpString, true);
                     return true;
@@ -485,8 +540,21 @@ namespace vMenuClient
                 VehicleGodMode = MainMenu.VehicleOptionsMenu.VehicleGodMode;
                 prefs.Add("vehicleGodMode", VehicleGodMode);
 
-                VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
-                prefs.Add("vehicleSpecialGodMode", VehicleSpecialGodMode);
+                VehicleGodInvincible = MainMenu.VehicleOptionsMenu.VehicleGodInvincible;
+                prefs.Add("vehicleGodInvincible", VehicleGodInvincible);
+                VehicleGodEngine = MainMenu.VehicleOptionsMenu.VehicleGodEngine;
+                prefs.Add("vehicleGodEngine", VehicleGodEngine);
+                VehicleGodVisual = MainMenu.VehicleOptionsMenu.VehicleGodVisual;
+                prefs.Add("vehicleGodVisual", VehicleGodVisual);
+                VehicleGodStrongWheels = MainMenu.VehicleOptionsMenu.VehicleGodStrongWheels;
+                prefs.Add("vehicleGodStrongWheels", VehicleGodStrongWheels);
+                VehicleGodRamp = MainMenu.VehicleOptionsMenu.VehicleGodRamp;
+                prefs.Add("vehicleGodRamp", VehicleGodRamp);
+                VehicleGodAutoRepair = MainMenu.VehicleOptionsMenu.VehicleGodAutoRepair;
+                prefs.Add("vehicleGodAutoRepair", VehicleGodAutoRepair);
+
+                //VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
+                //prefs.Add("vehicleSpecialGodMode", VehicleSpecialGodMode);
 
                 VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
                 prefs.Add("vehicleNeverDirty", VehicleNeverDirty);

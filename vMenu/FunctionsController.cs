@@ -229,8 +229,8 @@ namespace vMenuClient
                 bool vehGod = IsAllowed(Permission.VOGod) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleGodMode;
                 await Delay(100);
 
-                bool specGod = IsAllowed(Permission.VOSpecialGod) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
-                await Delay(100);
+                //bool specGod = IsAllowed(Permission.VOSpecialGod) && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
+                //await Delay(100);
 
                 bool ignored = IsAllowed(Permission.POIgnored) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
                 await Delay(100);
@@ -244,9 +244,9 @@ namespace vMenuClient
                 bool noRagdoll = IsAllowed(Permission.PONoRagdoll) && MainMenu.PlayerOptionsMenu != null && MainMenu.PlayerOptionsMenu.PlayerNoRagdoll;
                 await Delay(100);
 
-                bool cantBeKnockedOff = god || vehGod || specGod || bikeSeatbelt || noRagdoll;
-                bool cantBeDraggedOut = god || vehGod || specGod || ignored || stayInVeh;
-                bool cantBeShotInVehicle = god || vehGod || specGod;
+                bool cantBeKnockedOff = god || vehGod || /*specGod ||*/ bikeSeatbelt || noRagdoll;
+                bool cantBeDraggedOut = god || vehGod || /*specGod ||*/ ignored || stayInVeh;
+                bool cantBeShotInVehicle = god || vehGod /*|| specGod*/;
 
                 Game.PlayerPed.CanBeDraggedOutOfVehicle = !cantBeDraggedOut;
                 Game.PlayerPed.CanBeShotInVehicle = !cantBeShotInVehicle;
@@ -273,26 +273,50 @@ namespace vMenuClient
                     {
                         // God mode
                         bool god = MainMenu.VehicleOptionsMenu.VehicleGodMode && IsAllowed(Permission.VOGod);
-                        veh.CanBeVisiblyDamaged = !god;
-                        veh.CanEngineDegrade = !god;
-                        veh.CanWheelsBreak = !god;
-                        veh.IsAxlesStrong = god;
-                        veh.IsBulletProof = god;
-                        veh.IsCollisionProof = god;
-                        veh.IsExplosionProof = god;
-                        veh.IsFireProof = god;
-                        veh.IsInvincible = god;
-                        veh.IsMeleeProof = god;
-                        foreach (VehicleDoor vehicleDoor in veh.Doors.GetAll())
+                        bool invincibleGod = MainMenu.VehicleOptionsMenu.VehicleGodInvincible && god;
+                        bool visualGod = MainMenu.VehicleOptionsMenu.VehicleGodVisual && god;
+                        bool engineGod = MainMenu.VehicleOptionsMenu.VehicleGodEngine && god;
+                        bool strongWheelsGod = MainMenu.VehicleOptionsMenu.VehicleGodStrongWheels && god;
+                        bool autoRepairGod = MainMenu.VehicleOptionsMenu.VehicleGodAutoRepair && god;
+                        bool rampGod = MainMenu.VehicleOptionsMenu.VehicleGodRamp && god;
+
+                        SetRampVehicleReceivesRampDamage(veh.Handle, !rampGod);
+
+                        if (visualGod && IsVehicleDamaged(veh.Handle))
+                            RemoveDecalsFromVehicle(veh.Handle);
+
+                        if (autoRepairGod && IsVehicleDamaged(veh.Handle))
+                            veh.Repair();
+
+                        veh.CanBeVisiblyDamaged = !visualGod;
+
+                        veh.CanEngineDegrade = !engineGod;
+                        if (engineGod && veh.EngineHealth < 1000f)
                         {
-                            vehicleDoor.CanBeBroken = !god;
+                            veh.EngineHealth = 1000f;
                         }
 
-                        bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
-                        if (specialgod && veh.EngineHealth < 1000)
+                        veh.CanWheelsBreak = !strongWheelsGod;
+                        veh.IsAxlesStrong = strongWheelsGod;
+
+                        veh.IsBulletProof = invincibleGod;
+                        veh.IsCollisionProof = invincibleGod;
+                        veh.IsExplosionProof = invincibleGod;
+                        veh.IsFireProof = invincibleGod;
+                        veh.IsInvincible = invincibleGod;
+                        veh.IsMeleeProof = invincibleGod;
+
+                        foreach (VehicleDoor vehicleDoor in veh.Doors.GetAll())
                         {
-                            veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
+                            vehicleDoor.CanBeBroken = !invincibleGod;
                         }
+
+
+                        //bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
+                        //if (specialgod && veh.EngineHealth < 1000)
+                        //{
+                        //veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
+                        //}
 
                         // Freeze Vehicle Position (if enabled).
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && IsAllowed(Permission.VOFreeze))

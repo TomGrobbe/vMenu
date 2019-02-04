@@ -31,9 +31,15 @@ namespace vMenuClient
 
         // Public variables (getters only), return the private variables.
         public bool VehicleGodMode { get; private set; } = UserDefaults.VehicleGodMode;
-        public bool VehicleSpecialGodMode { get; private set; } = UserDefaults.VehicleSpecialGodMode;
-        public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
+        public bool VehicleGodInvincible { get; private set; } = UserDefaults.VehicleGodInvincible;
+        public bool VehicleGodEngine { get; private set; } = UserDefaults.VehicleGodEngine;
+        public bool VehicleGodVisual { get; private set; } = UserDefaults.VehicleGodVisual;
+        public bool VehicleGodStrongWheels { get; private set; } = UserDefaults.VehicleGodStrongWheels;
+        public bool VehicleGodRamp { get; private set; } = UserDefaults.VehicleGodRamp;
+        public bool VehicleGodAutoRepair { get; private set; } = UserDefaults.VehicleGodAutoRepair;
+
         public bool VehicleNeverDirty { get; private set; } = UserDefaults.VehicleNeverDirty;
+        public bool VehicleEngineAlwaysOn { get; private set; } = UserDefaults.VehicleEngineAlwaysOn;
         public bool VehicleNoSiren { get; private set; } = UserDefaults.VehicleNoSiren;
         public bool VehicleNoBikeHelemet { get; private set; } = UserDefaults.VehicleNoBikeHelmet;
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
@@ -58,9 +64,13 @@ namespace vMenuClient
             menu = new Menu(Game.Player.Name, "Vehicle Options");
 
             #region menu items variables
+            // vehicle god mode menu
+            Menu vehGodMenu = new Menu("Vehicle Godmode", "Vehicle Godmode Options");
+            MenuItem vehGodMenuBtn = new MenuItem("God Mode Options", "Enable or disable specific damage types.") { Label = "→→→" };
+            MenuController.AddSubmenu(menu, vehGodMenu);
+
             // Create Checkboxes.
-            MenuCheckboxItem vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Your vehicle will not be able to take visual or physical damage.", VehicleGodMode);
-            MenuCheckboxItem vehicleSpecialGod = new MenuCheckboxItem("Special Vehicle God Mode", "This option repairs your vehicle immediately when it gets damaged. This special god mode is needed for vehicles like the Phantom Wedge to keep it from breaking down with regular god mode turned on.", VehicleSpecialGodMode);
+            MenuCheckboxItem vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Makes your vehicle not take any damage. Note, you need to go into the god menu options below to select what kind of damage you want to disable.", VehicleGodMode);
             MenuCheckboxItem vehicleNeverDirty = new MenuCheckboxItem("Keep Vehicle Clean", "This will constantly clean your car if the vehicle dirt level goes above 0. Note that this only cleans ~o~dust~s~ or ~o~dirt~s~. This does not clean mud, snow or other ~r~damage decals~s~. Repair your vehicle to remove them.", VehicleNeverDirty);
             MenuCheckboxItem vehicleBikeSeatbelt = new MenuCheckboxItem("Bike Seatbelt", "Prevents you from being knocked off your bike, bicyle, ATV or similar.", VehicleBikeSeatbelt);
             MenuCheckboxItem vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
@@ -161,10 +171,51 @@ namespace vMenuClient
             if (IsAllowed(Permission.VOGod)) // GOD MODE
             {
                 menu.AddMenuItem(vehicleGod);
-            }
-            if (IsAllowed(Permission.VOSpecialGod)) // special god mode
-            {
-                menu.AddMenuItem(vehicleSpecialGod);
+                menu.AddMenuItem(vehGodMenuBtn);
+                MenuController.BindMenuItem(menu, vehGodMenu, vehGodMenuBtn);
+
+                MenuCheckboxItem godInvincible = new MenuCheckboxItem("Invincible", "Makes the car invincible. Includes fire damage, explosion damage, collision damage and more.", VehicleGodInvincible);
+                MenuCheckboxItem godEngine = new MenuCheckboxItem("Engine Damage", "Disables your engine from taking any damage.", VehicleGodEngine);
+                MenuCheckboxItem godVisual = new MenuCheckboxItem("Visual Damage", "This prevents scratches and other damage decals from being applied to your vehicle. It does not prevent (body) deformation damage.", VehicleGodVisual);
+                MenuCheckboxItem godStrongWheels = new MenuCheckboxItem("Strong Wheels", "Disables your wheels from being deformed and causing reduced handling. This does not make tires bulletproof.", VehicleGodStrongWheels);
+                MenuCheckboxItem godRamp = new MenuCheckboxItem("Ramp Damage", "Disables vehicles such as the Ramp Buggy from taking damage when using the ramp.", VehicleGodRamp);
+                MenuCheckboxItem godAutoRepair = new MenuCheckboxItem("~r~Auto Repair", "Automatically repairs your vehicle when it has ANY type of damage. It's recommended to keep this turned off to prevent glitchyness.", VehicleGodAutoRepair);
+
+                vehGodMenu.AddMenuItem(godInvincible);
+                vehGodMenu.AddMenuItem(godEngine);
+                vehGodMenu.AddMenuItem(godVisual);
+                vehGodMenu.AddMenuItem(godStrongWheels);
+                vehGodMenu.AddMenuItem(godRamp);
+                vehGodMenu.AddMenuItem(godAutoRepair);
+
+                vehGodMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    if (item == godInvincible)
+                    {
+                        VehicleGodInvincible = _checked;
+                    }
+                    else if (item == godEngine)
+                    {
+                        VehicleGodEngine = _checked;
+                    }
+                    else if (item == godVisual)
+                    {
+                        VehicleGodVisual = _checked;
+                    }
+                    else if (item == godStrongWheels)
+                    {
+                        VehicleGodStrongWheels = _checked;
+                    }
+                    else if (item == godRamp)
+                    {
+                        VehicleGodRamp = _checked;
+                    }
+                    else if (item == godAutoRepair)
+                    {
+                        VehicleGodAutoRepair = _checked;
+                    }
+                };
+
             }
             if (IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
@@ -433,15 +484,14 @@ namespace vMenuClient
                 // Create a vehicle object.
                 Vehicle vehicle = GetVehicle();
 
-
                 if (item == vehicleGod) // God Mode Toggled
                 {
                     VehicleGodMode = _checked;
                 }
-                else if (item == vehicleSpecialGod) // special god mode
-                {
-                    VehicleSpecialGodMode = _checked;
-                }
+                //else if (item == vehicleSpecialGod) // special god mode
+                //{
+                //    VehicleSpecialGodMode = _checked;
+                //}
                 else if (item == vehicleFreeze) // Freeze Vehicle Toggled
                 {
                     VehicleFrozen = _checked;

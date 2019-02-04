@@ -61,7 +61,6 @@ namespace vMenuShared
             VOMenu,
             VOAll,
             VOGod,
-            VOSpecialGod,
             VOKeepClean,
             VORepair,
             VOWash,
