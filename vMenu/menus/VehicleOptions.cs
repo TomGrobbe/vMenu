@@ -1143,7 +1143,7 @@ namespace vMenuClient
                     else if (item == openAll)
                     {
                         // Loop through all doors and open them.
-                        for (var door = 0; door < 6; door++)
+                        for (var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
