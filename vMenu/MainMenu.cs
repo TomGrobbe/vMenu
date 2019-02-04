@@ -449,7 +449,7 @@ namespace vMenuClient
                             if (Game.PlayerPed.IsInVehicle())
                             {
                                 Vehicle veh = GetVehicle();
-                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                                if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
                                 {
                                     NoClipEnabled = !NoClipEnabled;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
@@ -458,7 +458,7 @@ namespace vMenuClient
                                 {
                                     NoClipEnabled = false;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
-                                    Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                    Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
                                 }
                             }
                             else
