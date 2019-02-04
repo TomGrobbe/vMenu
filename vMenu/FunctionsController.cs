@@ -502,6 +502,8 @@ namespace vMenuClient
 
         private async Task VehicleOptionsEveryFrame()
         {
+            Vehicle veh = GetVehicle();
+
             if (MainMenu.PermissionsSetupComplete &&
                 MainMenu.VehicleOptionsMenu != null &&
                 MainMenu.VehicleOptionsMenu.VehicleModMenu != null &&
@@ -509,7 +511,6 @@ namespace vMenuClient
             {
                 if (Game.IsControlJustPressed(0, Control.Jump))
                 {
-                    var veh = GetVehicle();
                     if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                     {
                         var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
@@ -528,11 +529,44 @@ namespace vMenuClient
                     }
                 }
             }
-            else
+            string GetHealthString(double health)
             {
-                await Delay(100);
+                var color = "";
+                if (health <= 0)
+                {
+                    color = "~r~";
+                }
+                else
+                {
+                    switch (Math.Floor(Map(health, 0, 1000, 0, 4)))
+                    {
+                        case 0:
+                            color = "~r~";
+                            break;
+                        case 1:
+                            color = "~o~";
+                            break;
+                        case 2:
+                            color = "~y~";
+                            break;
+                        case 3:
+                        default:
+                            color = "~g~";
+                            break;
+                    }
+                }
+                return $"{color}{health}";
             }
+            if (MainMenu.PermissionsSetupComplete && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleShowHealth && veh != null && veh.Exists())
+            {
+                DrawTextOnScreen($"~n~Engine health: {GetHealthString(Math.Round(veh.EngineHealth, 2))}", 0.5f, 0.0f);
+                DrawTextOnScreen($"~n~~n~Body health: {GetHealthString(Math.Round(veh.BodyHealth, 2))}", 0.5f, 0.0f);
+                DrawTextOnScreen($"~n~~n~~n~Tank health: {GetHealthString(Math.Round(veh.PetrolTankHealth, 2))}", 0.5f, 0.0f);
+            }
+
+            await Task.FromResult(0);
         }
+
         #endregion
         #region Weather Options
         private async Task WeatherOptions()
