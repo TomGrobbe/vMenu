@@ -2711,5 +2711,37 @@ namespace vMenuClient
             return name.Replace("^", @"\^").Replace("~", @"\~").Replace("<", "«").Replace(">", "»");
         }
         #endregion
+
+
+        #region Map (math util) function
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static float Map(float value, float min_in, float max_in, float min_out, float max_out)
+        {
+            return (value - min_in) * (max_out - min_out) / (max_in - min_in) + min_out;
+        }
+
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static double Map(double value, double min_in, double max_in, double min_out, double max_out)
+        {
+            return (value - min_in) * (max_out - min_out) / (max_in - min_in) + min_out;
+        }
+        #endregion
+
     }
 }
