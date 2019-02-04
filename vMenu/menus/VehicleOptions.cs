@@ -1097,20 +1097,20 @@ namespace vMenuClient
                         SetVehicleDoorsShut(veh.Handle, false);
                     }
 
-                    // If the index >= 6, the bomb doors could be affected
-                    if (index >= 8)
+                    // If the index >= 8, the bomb doors could be affected
+                    if (index >= 8 && veh.HasBombBay)
                     {
 
                         bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
                         // If the bomb doors are open, and the action is bomb doors OR close all, then close the doors
                         if (bombBayOpen && (item == BB || item == closeAll))
                         {
-                            CloseBombBayDoors(veh.Handle);
+                            veh.CloseBombBay();
                         }
                         // If the bomb doors are closed, and the action is bomb doors OR open all, then open the doors
                         else if (!bombBayOpen && (item == BB || item == openAll))
                         {
-                            OpenBombBayDoors(veh.Handle);
+                            veh.OpenBombBay();
                         }
                     }
                 }
