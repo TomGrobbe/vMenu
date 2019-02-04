@@ -1101,6 +1101,9 @@ namespace vMenuClient
             MenuItem E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
             MenuItem E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
             MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
+            var doors = new List<string>() { "Front Left", "Front Right", "Rear Left", "Rear Right", "Hood", "Trunk", "Extra 1", "Extra 2" };
+            MenuListItem removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
+            MenuCheckboxItem deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -1113,6 +1116,31 @@ namespace vMenuClient
             VehicleDoorsMenu.AddMenuItem(BB);
             VehicleDoorsMenu.AddMenuItem(openAll);
             VehicleDoorsMenu.AddMenuItem(closeAll);
+            VehicleDoorsMenu.AddMenuItem(removeDoorList);
+            VehicleDoorsMenu.AddMenuItem(deleteDoors);
+
+            VehicleDoorsMenu.OnListItemSelect += (sender, item, index, itemIndex) =>
+            {
+                Vehicle veh = GetVehicle();
+                if (veh != null && veh.Exists())
+                {
+                    if (veh.Driver == Game.PlayerPed)
+                    {
+                        if (item == removeDoorList)
+                        {
+                            SetVehicleDoorBroken(veh.Handle, index, deleteDoors.Checked);
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.NeedToBeTheDriver);
+                    }
+                }
+                else
+                {
+                    Notify.Error(CommonErrors.NoVehicle);
+                }
+            };
 
             // Handle button presses.
             VehicleDoorsMenu.OnItemSelect += (sender, item, index) =>
@@ -1147,29 +1175,25 @@ namespace vMenuClient
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
+                        if (veh.HasBombBay) veh.OpenBombBay();
                     }
                     // If the index >= 8, and the button is "closeAll": close all doors.
                     else if (item == closeAll)
                     {
                         // Close all doors.
                         SetVehicleDoorsShut(veh.Handle, false);
+                        if (veh.HasBombBay) veh.CloseBombBay();
                     }
-
-                    // If the index >= 8, the bomb doors could be affected
-                    if (index >= 8 && veh.HasBombBay)
+                    // If bomb bay doors button is pressed and the vehicle has bomb bay doors.
+                    else if (item == BB && veh.HasBombBay)
                     {
-
                         bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
-                        // If the bomb doors are open, and the action is bomb doors OR close all, then close the doors
-                        if (bombBayOpen && (item == BB || item == closeAll))
-                        {
+                        // If open, close them.
+                        if (bombBayOpen)
                             veh.CloseBombBay();
-                        }
-                        // If the bomb doors are closed, and the action is bomb doors OR open all, then open the doors
-                        else if (!bombBayOpen && (item == BB || item == openAll))
-                        {
+                        // Otherwise, open them.
+                        else
                             veh.OpenBombBay();
-                        }
                     }
                 }
                 else
