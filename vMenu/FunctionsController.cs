@@ -76,7 +76,7 @@ namespace vMenuClient
             Tick += PlayerOptions;
             Tick += DoPlayerAndVehicleChecks;
             Tick += VehicleOptions;
-            Tick += VehicleModMenuControls;
+            Tick += VehicleOptionsEveryFrame;
             Tick += MoreVehicleOptions;
             Tick += VoiceChat;
             Tick += TimeOptions;
@@ -476,7 +476,7 @@ namespace vMenuClient
             }
         }
 
-        private async Task VehicleModMenuControls()
+        private async Task VehicleOptionsEveryFrame()
         {
             if (MainMenu.PermissionsSetupComplete &&
                 MainMenu.VehicleOptionsMenu != null &&
