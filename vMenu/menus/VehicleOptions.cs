@@ -112,7 +112,7 @@ namespace vMenuClient
                 "Hazard Lights",
                 "Left Indicator",
                 "Right Indicator",
-                //"Interior Lights",
+                "Interior Lights",
                 //"Taxi Light", // this doesn't seem to work no matter what.
                 "Helicopter Spotlight",
             };
@@ -121,7 +121,6 @@ namespace vMenuClient
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
-            //MenuListItem destroyTireList = new MenuListItem("Destroy Tires", tiresList, 0, "Destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
 
             MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
             deleteBtn.LeftIcon = MenuItem.Icon.WARNING;
@@ -693,22 +692,24 @@ namespace vMenuClient
                                 SetVehicleIndicatorLights(veh.Handle, 0, false); // right off
                             }
                         }
-                        //else if (index == 3) // Interior lights
+                        else if (listIndex == 3) // Interior lights
+                        {
+                            SetVehicleInteriorlight(veh.Handle, !IsVehicleInteriorLightOn(veh.Handle));
+                            //CommonFunctions.Log("Something cool here.");
+                        }
+                        //else if (listIndex == 4) // taxi light
                         //{
-                        //    CommonFunctions.Log("Something cool here.");
+                        //    veh.IsTaxiLightOn = !veh.IsTaxiLightOn;
+                        //    //    SetTaxiLights(veh, true);
+                        //    //    SetTaxiLights(veh, false);
+                        //    //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
+                        //    //    //SetTaxiLights(veh, true);
+                        //    //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
+                        //    //    //SetTaxiLights(veh, false);
+                        //    //    //SetTaxiLights(veh, !IsTaxiLightOn(veh));
+                        //    //    CommonFunctions.Log
                         //}
-                        //else if (index == 4) // taxi light
-                        //{
-                        //    SetTaxiLights(veh, true);
-                        //    SetTaxiLights(veh, false);
-                        //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
-                        //    //SetTaxiLights(veh, true);
-                        //    //CommonFunctions.Log(IsTaxiLightOn(veh).ToString());
-                        //    //SetTaxiLights(veh, false);
-                        //    //SetTaxiLights(veh, !IsTaxiLightOn(veh));
-                        //    CommonFunctions.Log
-                        //}
-                        else if (listIndex == 3) // helicopter spotlight
+                        else if (listIndex == 4) // helicopter spotlight
                         {
                             SetVehicleSearchlight(veh.Handle, !IsVehicleSearchlightOn(veh.Handle), true);
                         }
