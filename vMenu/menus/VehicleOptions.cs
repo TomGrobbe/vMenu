@@ -651,7 +651,9 @@ namespace vMenuClient
                     if (Game.PlayerPed.IsInVehicle())
                     {
                         Vehicle veh = GetVehicle();
-                        var state = GetVehicleIndicatorLights(veh.Handle); // 0 = none, 1 = left, 2 = right, 3 = both
+                        // We need to do % 4 because this seems to be some sort of flags system. For a taxi, this function returns 65, 66, etc.
+                        // So % 4 takes care of that.
+                        var state = GetVehicleIndicatorLights(veh.Handle) % 4; // 0 = none, 1 = left, 2 = right, 3 = both
 
                         if (listIndex == 0) // Hazard lights
                         {
