@@ -344,14 +344,34 @@ namespace vMenuClient
                             SwitchedVehicle = false;
 
                             // Get the license plate type index.
-                            var plateIndex = GetVehicleNumberPlateTextIndex(veh.Handle);
-                            if (plateIndex < 0 || plateIndex > GetNumberOfVehicleNumberPlates() - 1)
-                                plateIndex = 0;
 
                             // Set the license plate index list item to the correct index.
                             if (IsAllowed(Permission.VOChangePlate) && MainMenu.VehicleOptionsMenu.GetMenu().GetMenuItems().Find(mi => mi is MenuListItem li && li.ListItems.Any(liText => liText == GetLabelText("CMOD_PLA_0"))) is MenuListItem listItem)
                             {
-                                listItem.ListIndex = plateIndex;
+                                // Set the license plate style.
+                                switch (veh.Mods.LicensePlateStyle)
+                                {
+                                    case LicensePlateStyle.BlueOnWhite1:
+                                        listItem.ListIndex = 0;
+                                        break;
+                                    case LicensePlateStyle.BlueOnWhite2:
+                                        listItem.ListIndex = 1;
+                                        break;
+                                    case LicensePlateStyle.BlueOnWhite3:
+                                        listItem.ListIndex = 2;
+                                        break;
+                                    case LicensePlateStyle.YellowOnBlue:
+                                        listItem.ListIndex = 3;
+                                        break;
+                                    case LicensePlateStyle.YellowOnBlack:
+                                        listItem.ListIndex = 4;
+                                        break;
+                                    case LicensePlateStyle.NorthYankton:
+                                        listItem.ListIndex = 5;
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
 
                             // Vehicle engine power multiplier. Enable it once the player switched vehicles.
