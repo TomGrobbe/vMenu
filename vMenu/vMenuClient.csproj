@@ -97,11 +97,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
-    </PostBuildEvent>
-    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\MenuAPI.net.dll" "D:\FXserver\vmenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuClient.net.dll" "D:\FXserver\vmenu\resources\vMenu\"
-)</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if exist "$(SolutionDir)\postbuild.cmd" "$(SolutionDir)postbuild.cmd"</PostBuildEvent>
   </PropertyGroup>
 </Project>

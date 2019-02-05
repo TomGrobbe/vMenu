@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMenuClient", "vMenu\vMenuClient.csproj", "{58FE5D89-E729-4246-B527-6EDA2A1AF04D}"
 	ProjectSection(ProjectDependencies) = postProject
+		{897C1141-8CD6-4609-A692-53DAFF9BCBBE} = {897C1141-8CD6-4609-A692-53DAFF9BCBBE}
 		{CFE8E7CD-EAB0-48A1-A22F-566B048F110D} = {CFE8E7CD-EAB0-48A1-A22F-566B048F110D}
 	EndProjectSection
 EndProject

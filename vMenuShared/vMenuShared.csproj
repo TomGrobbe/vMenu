@@ -69,11 +69,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">cp "$(TargetPath)" "$(SolutionDir)/dependencies/shared"
-    </PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">copy /Y "$(TargetPath)" "$(SolutionDir)\dependencies\shared"
-if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
-    copy /Y "$(TargetPath)" "D:\FXserver\vMenu\resources\vMenu\"
-)</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">cp "$(TargetPath)" "$(SolutionDir)/dependencies/shared"</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">copy /Y "$(TargetPath)" "$(SolutionDir)\dependencies\shared"</PostBuildEvent>
   </PropertyGroup>
 </Project>
