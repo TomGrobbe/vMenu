@@ -1551,6 +1551,44 @@ namespace vMenuClient
             };
             #endregion
 
+            #region Handle menu-opening refreshing license plate
+            menu.OnMenuOpen += (sender) =>
+            {
+                menu.GetMenuItems().ForEach((item) =>
+                {
+                    var veh = GetVehicle(true);
+
+                    if (item == setLicensePlateType && item is MenuListItem listItem && veh != null && veh.Exists())
+                    {
+                        // Set the license plate style.
+                        switch (veh.Mods.LicensePlateStyle)
+                        {
+                            case LicensePlateStyle.BlueOnWhite1:
+                                listItem.ListIndex = 0;
+                                break;
+                            case LicensePlateStyle.BlueOnWhite2:
+                                listItem.ListIndex = 1;
+                                break;
+                            case LicensePlateStyle.BlueOnWhite3:
+                                listItem.ListIndex = 2;
+                                break;
+                            case LicensePlateStyle.YellowOnBlue:
+                                listItem.ListIndex = 3;
+                                break;
+                            case LicensePlateStyle.YellowOnBlack:
+                                listItem.ListIndex = 4;
+                                break;
+                            case LicensePlateStyle.NorthYankton:
+                                listItem.ListIndex = 5;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
+            };
+            #endregion
+
         }
         #endregion
 
