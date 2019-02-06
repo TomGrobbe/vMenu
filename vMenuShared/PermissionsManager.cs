@@ -46,6 +46,7 @@ namespace vMenuShared
             PONeverWanted,
             POSetWanted,
             POIgnored,
+            POStayInVehicle,
             POMaxHealth,
             POMaxArmor,
             POCleanPlayer,
@@ -60,11 +61,11 @@ namespace vMenuShared
             VOMenu,
             VOAll,
             VOGod,
-            VOSpecialGod,
             VOKeepClean,
             VORepair,
             VOWash,
             VOEngine,
+            VOBikeSeatbelt,
             VOSpeedLimiter,
             VOChangePlate,
             VOMod,
@@ -74,6 +75,7 @@ namespace vMenuShared
             VODoors,
             VOWindows,
             VOFreeze,
+            VOInvisible,
             VOTorqueMultiplier,
             VOPowerMultiplier,
             VOFlip,
@@ -83,6 +85,7 @@ namespace vMenuShared
             VONoSiren,
             VONoHelmet,
             VOLights,
+            VOFixOrDestroyTires,
             VODelete,
             VOUnderglow,
             VOFlashHighbeamsOnHonk,
@@ -124,6 +127,17 @@ namespace vMenuShared
             SVMenu,
             SVAll,
             SVSpawn,
+
+            // Personal Vehicle
+            PVMenu,
+            PVAll,
+            PVToggleEngine,
+            PVToggleLights,
+            PVKickPassengers,
+            PVLockDoors,
+            PVAddBlip,
+            PVSoundHorn,
+            PVToggleAlarm,
 
             // Player Appearance
             PAMenu,
@@ -286,14 +300,16 @@ namespace vMenuShared
         };
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
+        public static bool ArePermissionsSetup { get; set; } = false;
 
         /// <summary>
         /// Public function to check if a permission is allowed.
         /// </summary>
         /// <param name="permission"></param>
         /// <param name="source"></param>
+        /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, Player source = null) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission);
+        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission, checkAnyway);
 
         private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
@@ -301,25 +317,27 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static bool IsAllowedClient(Permission permission)
+        private static bool IsAllowedClient(Permission permission, bool checkAnyway)
         {
-            if (allowedPerms.ContainsKey(permission))
+            if (ArePermissionsSetup || checkAnyway)
             {
-                return allowedPerms[permission];
+                if (allowedPerms.ContainsKey(permission))
+                {
+                    return allowedPerms[permission];
+                }
+
+                allowedPerms[permission] = false;
+
+                // Get a list of all permissions that are (parents) of the current permission, including the current permission.
+                List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
+
+                // Check if any of those permissions is allowed, if so, return true.
+                if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
+                {
+                    allowedPerms[permission] = true;
+                    return true;
+                }
             }
-
-            allowedPerms[permission] = false;
-
-            // Get a list of all permissions that are (parents) of the current permission, including the current permission.
-            List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
-
-            // Check if any of those permissions is allowed, if so, return true.
-            if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
-            {
-                allowedPerms[permission] = true;
-                return true;
-            }
-
 
             // Return false if nothing is allowed.
             return false;
@@ -354,9 +372,8 @@ namespace vMenuShared
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static List<Permission> GetPermissionAndParentPermissions(Permission permission)
+        public static List<Permission> GetPermissionAndParentPermissions(Permission permission)
         {
-
             if (parentPermissions.ContainsKey(permission))
             {
                 return parentPermissions[permission];
@@ -378,7 +395,7 @@ namespace vMenuShared
                 {
                     // do nothing
                 }
-                Console.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
+                //Debug.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
                 parentPermissions[permission] = list;
                 return list;
             }
@@ -399,10 +416,10 @@ namespace vMenuShared
 
             Dictionary<Permission, bool> perms = new Dictionary<Permission, bool>();
 
-            // Add all permissions if the vMenu.Dev permission is added for Vespura only. Can be disable in the permissions.cfg
-            // This is only used in case I need to debug an issue on your server related to vMenu. It only works for me, and does not give me any access outside of
-            // vMenu at all! Feel free to remove it (in the permissions.cfg) if you don't want this, however I will not be able to help you without this.
-            if (player.Identifiers.ToList().Any(id => id == "4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev"))
+            // If enabled in the permissions.cfg (disabled by default) then this will give me (only me) the option to trigger some debug commands and 
+            // try out menu options. This only works if I'm in-game on your server, and you have enabled server debugging mode, this way I will never
+            // be able to do something without you actually allowing it.
+            if (player.Identifiers.ToList().Any(id => id == "4510587c13e0b645eb8d24bc104601792277ab98") && IsPlayerAceAllowed(player.Handle, "vMenu.Dev") && ConfigManager.DebugMode)
             {
                 perms.Add(Permission.Everything, true);
             }
@@ -495,6 +512,9 @@ namespace vMenuShared
                     break;
                 case "SV":
                     prefix += "SavedVehicles";
+                    break;
+                case "PV":
+                    prefix += "PersonalVehicle";
                     break;
                 case "PA":
                     prefix += "PlayerAppearance";

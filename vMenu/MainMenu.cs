@@ -20,7 +20,7 @@ namespace vMenuClient
         //public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        public static bool PermissionsSetupComplete = false;
+        public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
         public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
@@ -31,6 +31,7 @@ namespace vMenuClient
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
         public static BannedPlayers BannedPlayersMenu { get; private set; }
         public static SavedVehicles SavedVehiclesMenu { get; private set; }
+        public static PersonalVehicle PersonalVehicleMenu { get; private set; }
         public static VehicleOptions VehicleOptionsMenu { get; private set; }
         public static VehicleSpawner VehicleSpawnerMenu { get; private set; }
         public static PlayerAppearance PlayerAppearanceMenu { get; private set; }
@@ -263,7 +264,16 @@ namespace vMenuClient
             {
                 Tick += OnTick;
             }
-            SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            try
+            {
+                SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            }
+            catch (InvalidTimeZoneException timeEx)
+            {
+                Debug.WriteLine($"[vMenu] [Error] Could not set the in-game day, month and year because of an invalid timezone(?).");
+                Debug.WriteLine($"[vMenu] [Error] InvalidTimeZoneException: {timeEx.Message}");
+                Debug.WriteLine($"[vMenu] [Error] vMenu will continue to work normally.");
+            }
         }
 
         #region Set Permissions function
@@ -277,31 +287,31 @@ namespace vMenuClient
 
             VehicleSpawner.allowedCategories = new List<bool>()
             {
-                IsAllowed(Permission.VSCompacts),
-                IsAllowed(Permission.VSSedans),
-                IsAllowed(Permission.VSSUVs),
-                IsAllowed(Permission.VSCoupes),
-                IsAllowed(Permission.VSMuscle),
-                IsAllowed(Permission.VSSportsClassic),
-                IsAllowed(Permission.VSSports),
-                IsAllowed(Permission.VSSuper),
-                IsAllowed(Permission.VSMotorcycles),
-                IsAllowed(Permission.VSOffRoad),
-                IsAllowed(Permission.VSIndustrial),
-                IsAllowed(Permission.VSUtility),
-                IsAllowed(Permission.VSVans),
-                IsAllowed(Permission.VSCycles),
-                IsAllowed(Permission.VSBoats),
-                IsAllowed(Permission.VSHelicopters),
-                IsAllowed(Permission.VSPlanes),
-                IsAllowed(Permission.VSService),
-                IsAllowed(Permission.VSEmergency),
-                IsAllowed(Permission.VSMilitary),
-                IsAllowed(Permission.VSCommercial),
-                IsAllowed(Permission.VSTrains),
+                IsAllowed(Permission.VSCompacts, checkAnyway: true),
+                IsAllowed(Permission.VSSedans, checkAnyway: true),
+                IsAllowed(Permission.VSSUVs, checkAnyway: true),
+                IsAllowed(Permission.VSCoupes, checkAnyway: true),
+                IsAllowed(Permission.VSMuscle, checkAnyway: true),
+                IsAllowed(Permission.VSSportsClassic, checkAnyway: true),
+                IsAllowed(Permission.VSSports, checkAnyway: true),
+                IsAllowed(Permission.VSSuper, checkAnyway: true),
+                IsAllowed(Permission.VSMotorcycles, checkAnyway: true),
+                IsAllowed(Permission.VSOffRoad, checkAnyway: true),
+                IsAllowed(Permission.VSIndustrial, checkAnyway: true),
+                IsAllowed(Permission.VSUtility, checkAnyway: true),
+                IsAllowed(Permission.VSVans, checkAnyway: true),
+                IsAllowed(Permission.VSCycles, checkAnyway: true),
+                IsAllowed(Permission.VSBoats, checkAnyway: true),
+                IsAllowed(Permission.VSHelicopters, checkAnyway: true),
+                IsAllowed(Permission.VSPlanes, checkAnyway: true),
+                IsAllowed(Permission.VSService, checkAnyway: true),
+                IsAllowed(Permission.VSEmergency, checkAnyway: true),
+                IsAllowed(Permission.VSMilitary, checkAnyway: true),
+                IsAllowed(Permission.VSCommercial, checkAnyway: true),
+                IsAllowed(Permission.VSTrains, checkAnyway: true),
             };
+            ArePermissionsSetup = true;
 
-            PermissionsSetupComplete = true;
         }
         #endregion
 
@@ -439,7 +449,7 @@ namespace vMenuClient
                             if (Game.PlayerPed.IsInVehicle())
                             {
                                 Vehicle veh = GetVehicle();
-                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                                if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
                                 {
                                     NoClipEnabled = !NoClipEnabled;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
@@ -448,7 +458,7 @@ namespace vMenuClient
                                 {
                                     NoClipEnabled = false;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
-                                    Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                    Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
                                 }
                             }
                             else
@@ -561,7 +571,6 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
-            var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
             if (IsAllowed(Permission.VSMenu))
             {
@@ -593,6 +602,18 @@ namespace vMenuClient
                 };
             }
 
+            // Add the Personal Vehicle menu.
+            if (IsAllowed(Permission.PVMenu))
+            {
+                PersonalVehicleMenu = new PersonalVehicle();
+                Menu menu = PersonalVehicleMenu.GetMenu();
+                MenuItem button = new MenuItem("Personal Vehicle", "Set a vehicle as your personal vehicle, and control some things about that vehicle when you're not inside.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(menu, button);
+            }
+
             // Add the player appearance menu.
             if (IsAllowed(Permission.PAMenu))
             {
@@ -611,8 +632,6 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(menu2, button2);
-
-
             }
 
             // Add the time options menu.

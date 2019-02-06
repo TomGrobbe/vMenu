@@ -88,19 +88,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
-    </PostBuildEvent>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT'">if /I "$(SolutionDir)"=="D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\vMenu\" (
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\System.Numerics.dll" "D:\FXserver\server-data\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\Newtonsoft.Json.dll" "D:\FXserver\vmenu\resources\vMenu\"
-    copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\vMenuServer.net.dll" "D:\FXserver\vmenu\resources\vMenu\"
-    if not defined DONT_COPY_CONFIG (
-        copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\addons.json" "D:\FXserver\vmenu\resources\vMenu\config\"
-        copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\locations.json" "D:\FXserver\vmenu\resources\vMenu\config\"
-        copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vmenu\resources\vMenu\config\"
-        <!-- copy /Y "D:\Tom Grobbe\Documents\GitHub-Repos\vMenu\build\config\permissions.cfg" "D:\FXserver\vMenu\" -->
-    )
-)
-</PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'"></PostBuildEvent>
   </PropertyGroup>
 </Project>
