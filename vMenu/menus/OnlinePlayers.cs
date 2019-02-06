@@ -111,10 +111,19 @@ namespace vMenuClient
                 // summon button
                 else if (item == summon)
                 {
-                    if (Game.Player.Handle != currentPlayer.Handle)
-                        SummonPlayer(currentPlayer);
-                    else
+                    if (Game.Player.Handle != currentPlayer.Handle) {
+                        if (summon.Label == "Are you sure?")
+                        {
+                          summon.Label = "";
+                          SummonPlayer(currentPlayer);
+                        }
+                        else
+                        {
+                            summon.Label = "Are you sure?";
+                        }
+                    } else {
                         Notify.Error("You can't summon yourself.");
+                    }
                 }
                 // spectating
                 else if (item == spectate)
@@ -124,7 +133,16 @@ namespace vMenuClient
                 // kill button
                 else if (item == kill)
                 {
-                    KillPlayer(currentPlayer);
+                    if (kill.Label == "Are you sure?")
+                    {
+                        ban.Label = "";
+                        KillPlayer(currentPlayer);
+                    }
+                    else
+                    {
+                        kill.Label = "Are you sure?";
+                    }
+                   
                 }
                 // manage the gps route being clicked.
                 else if (item == toggleGPS)
