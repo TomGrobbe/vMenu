@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,10 +74,10 @@ namespace vMenuClient
                 }
                 if (MainMenu.WeaponLoadoutsMenu != null && MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn && IsAllowed(Permission.WLEquipOnRespawn))
                 {
-                    var savename = GetResourceKvpString("vmenu_string_default_loadout");
-                    if (!string.IsNullOrEmpty(savename))
+                    var saveName = GetResourceKvpString("vmenu_string_default_loadout");
+                    if (!string.IsNullOrEmpty(saveName))
                     {
-                        await SpawnWeaponLoadoutAsync(savename, true, false);
+                        await SpawnWeaponLoadoutAsync(saveName, true, false, true);
                     }
 
                 }

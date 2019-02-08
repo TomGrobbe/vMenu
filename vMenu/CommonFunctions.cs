@@ -1944,7 +1944,7 @@ namespace vMenuClient
                 }
                 if (keepWeapons)
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, false);
                 }
                 if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
                 {
@@ -2349,7 +2349,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName"></param>
         /// <param name="appendWeapons"></param>
-        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms)
+        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms, bool dontNotify)
         {
 
             var loadout = GetSavedWeaponLoadout(saveName);
@@ -2445,7 +2445,7 @@ namespace vMenuClient
                 // Set the current weapon to 'unarmed'.
                 SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
 
-                if (saveName != "vmenu_temp_weapons_loadout_before_respawn")
+                if (!(saveName == "vmenu_temp_weapons_loadout_before_respawn" || dontNotify))
                     Notify.Success("Weapon loadout spawned.");
             }
         }
