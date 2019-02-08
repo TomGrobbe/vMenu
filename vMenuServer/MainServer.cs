@@ -191,7 +191,7 @@ namespace vMenuServer
                                 string wtype = args[1].ToString().ToUpper();
                                 if (weatherTypes.Contains(wtype))
                                 {
-                                    TriggerEvent("UpdateServerWeather", wtype, blackout, dynamicWeather);
+                                    TriggerEvent("vMenu:UpdateServerWeather", wtype, blackout, dynamicWeather);
                                     Debug.WriteLine($"[vMenu] Weather is now set to: {wtype}");
                                 }
                                 else if (wtype.ToLower() == "dynamic")
@@ -200,12 +200,12 @@ namespace vMenuServer
                                     {
                                         if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "true")
                                         {
-                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, true);
+                                            TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, true);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
                                         }
                                         else if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "false")
                                         {
-                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, false);
+                                            TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, false);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
                                         }
                                         else
