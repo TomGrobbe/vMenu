@@ -135,9 +135,10 @@ namespace vMenuShared
             PVToggleLights,
             PVKickPassengers,
             PVLockDoors,
-            PVAddBlip,
             PVSoundHorn,
             PVToggleAlarm,
+            PVAddBlip,
+            PVExclusiveDriver,
 
             // Player Appearance
             PAMenu,
