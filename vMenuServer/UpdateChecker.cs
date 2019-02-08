@@ -1,4 +1,4 @@
-﻿using GHMatti.Http;
+using GHMatti.Http;
 using vMenuServer;
 using System;
 using System.Collections.Generic;
@@ -47,12 +47,10 @@ namespace vMenuServer
                     UUID = uuid.ToString();
                     SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
                 }
-                // sets the UUID convar.
-                SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.LastIndexOf('-')));
-                SetConvarServerInfo("vMenuVersion", MainServer.Version);
-                //ExecuteCommand($"sets vMenuUUID {UUID.Substring(0, UUID.LastIndexOf('-'))}");
-                //ExecuteCommand($"sets vMenuVersion {MainServer.Version}");
 
+                // sets the UUID convar.
+                SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.IndexOf('-')));
+                SetConvarServerInfo("vMenuVersion", MainServer.Version);
 
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http($"https://vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}");
@@ -84,6 +82,8 @@ namespace vMenuServer
                             Debug.WriteLine("^3[vMenu] WARNING:^7 Download: https://github.com/tomgrobbe/vMenu/releases/");
                             Debug.WriteLine("\n");
                             MainServer.UpToDate = false;
+                            MainServer.UpdaterVersion = UpdateData["latest_version"].ToString();
+                            MainServer.UpdateMessage = UpdateData["update_message"].ToString();
                         }
                         break;
                     default:
@@ -98,7 +98,26 @@ namespace vMenuServer
                 Debug.WriteLine("^3[vMenu] [WARNING] ^7An error occurred while checking for the latest version. This is not a problem, vMenu will still work correctly. Please check your version manually.");
                 Debug.Write($"^3[vMenu] ^7Error info: {e.Message.ToString()}\r\n\r\n");
             }
+
             CheckedForUpdates = true;
+
+            DateTime currentDateTime = DateTime.Now;
+            if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_disable_daily_update_checks))
+            {
+                while (true)
+                {
+                    // once every 10 minutes.
+                    //            ms  sec  min
+                    await Delay(1000 * 60 * 10);
+
+                    if (DateTime.Now.Subtract(currentDateTime).TotalHours >= 24)
+                    {
+                        CheckUpdates();
+                        return;
+                    }
+                }
+
+            }
         }
     }
 }

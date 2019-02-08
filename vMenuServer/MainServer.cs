@@ -1,4 +1,4 @@
-﻿using GHMatti.Http;
+using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +63,8 @@ namespace vMenuServer
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
+        public static string UpdaterVersion { get; set; } = Version;
+        public static string UpdateMessage { get; set; } = null;
 
         private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
         private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
