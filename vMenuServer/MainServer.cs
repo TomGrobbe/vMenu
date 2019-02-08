@@ -1,4 +1,4 @@
-using GHMatti.Http;
+﻿using GHMatti.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -825,6 +825,14 @@ namespace vMenuServer
                 if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
                 {
                     source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
+                }
+                else
+                {
+                    // Staff will always receive this message, whether they like it or not.
+                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff))
+                    {
+                        source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
+                    }
                 }
 
             }
