@@ -401,6 +401,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
                 EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
+                EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
 
 
                 // check addons file for errors
@@ -813,6 +814,21 @@ namespace vMenuServer
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
                 Debug.WriteLine("^3[vMenu] [KICK]^7 " + kickLogMesage + "\n");
             }
+        }
+
+        public static void IsResourceUpToDate([FromSource]Player source)
+        {
+            if (!UpToDate)
+            {
+                string updaterMessage = string.IsNullOrEmpty(UpdateMessage) ? "" : ("Message: " + UpdateMessage);
+
+                if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
+                {
+                    source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
+                }
+
+            }
+
         }
     }
 }

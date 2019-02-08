@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +46,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetTime", new Action<int, int, bool>(SetTime));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
-            EventHandlers.Add("vMenu:OutdatedResource", new Action(NotifyOutdatedVersion));
+            EventHandlers.Add("vMenu:OutdatedResource", new Action<string>(NotifyOutdatedVersion));
             EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
@@ -157,15 +157,18 @@ namespace vMenuClient
         /// <summary>
         /// Notifies the player that the current version of vMenu is outdated.
         /// </summary>
-        private async void NotifyOutdatedVersion()
+        private async void NotifyOutdatedVersion(string message)
         {
-            Debug.Write("\n\n\n\n[vMenu] vMenu is outdated, please update asap.\n\n\n\n");
-            await Delay(5000);
-            Log("Sending alert now.");
-            if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
+            Debug.WriteLine("\n\n\n\n[vMenu] [WARNING] vMenu is outdated, please update as soon as possible. Update info:\n" + message + "\n\n\n\n");
+            while (IsHudHidden() || !IsHudPreferenceSwitchedOn() || !IsScreenFadedIn() || IsPlayerSwitchInProgress())
             {
-                Notify.Alert("vMenu is outdated, if you are the server administrator, please update vMenu as soon as possible.", true, true);
+                await Delay(0);
             }
+
+            Log("Sending alert now after the hud is confirmed to be enabled.");
+
+            Notify.Error("vMenu is outdated. Please update as soon as possible!", true, true);
+            Notify.Custom(message, true, true);
         }
 
         /// <summary>

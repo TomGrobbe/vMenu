@@ -312,6 +312,7 @@ namespace vMenuClient
             };
             ArePermissionsSetup = true;
 
+            TriggerServerEvent("vMenu:IsResourceUpToDate");
         }
         #endregion
 
