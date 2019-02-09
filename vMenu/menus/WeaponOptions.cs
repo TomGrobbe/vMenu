@@ -253,11 +253,11 @@ namespace vMenuClient
                         if (!switching)
                         {
                             switching = true;
-                            SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), false);
+                            SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, false);
                             await Delay(4000);
                             int[] color = colors[newIndex];
-                            SetPlayerParachuteSmokeTrailColor(PlayerId(), color[0], color[1], color[2]);
-                            SetPlayerCanLeaveParachuteSmokeTrail(PlayerId(), newIndex != 0);
+                            SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, color[0], color[1], color[2]);
+                            SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, newIndex != 0);
                             switching = false;
                         }
                     }

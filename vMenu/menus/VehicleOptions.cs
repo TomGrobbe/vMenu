@@ -89,20 +89,34 @@ namespace vMenuClient
             MenuItem cleanVehicle = new MenuItem("Wash Vehicle", "Clean your vehicle.");
             MenuItem toggleEngine = new MenuItem("Toggle Engine On/Off", "Turn your engine on/off.");
             MenuItem setLicensePlateText = new MenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
-            MenuItem modMenuBtn = new MenuItem("Mod Menu", "Tune and customize your vehicle here.");
-            modMenuBtn.Label = "→→→";
-            MenuItem doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.");
-            doorsMenuBtn.Label = "→→→";
-            MenuItem windowsMenuBtn = new MenuItem("Vehicle Windows", "Roll your windows up/down or remove/restore your vehicle windows here.");
-            windowsMenuBtn.Label = "→→→";
-            MenuItem componentsMenuBtn = new MenuItem("Vehicle Extras", "Add/remove vehicle components/extras.");
-            componentsMenuBtn.Label = "→→→";
-            MenuItem liveriesMenuBtn = new MenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!");
-            liveriesMenuBtn.Label = "→→→";
-            MenuItem colorsMenuBtn = new MenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!");
-            colorsMenuBtn.Label = "→→→";
-            MenuItem underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!");
-            underglowMenuBtn.Label = "→→→";
+            MenuItem modMenuBtn = new MenuItem("Mod Menu", "Tune and customize your vehicle here.")
+            {
+                Label = "→→→"
+            };
+            MenuItem doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
+            {
+                Label = "→→→"
+            };
+            MenuItem windowsMenuBtn = new MenuItem("Vehicle Windows", "Roll your windows up/down or remove/restore your vehicle windows here.")
+            {
+                Label = "→→→"
+            };
+            MenuItem componentsMenuBtn = new MenuItem("Vehicle Extras", "Add/remove vehicle components/extras.")
+            {
+                Label = "→→→"
+            };
+            MenuItem liveriesMenuBtn = new MenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!")
+            {
+                Label = "→→→"
+            };
+            MenuItem colorsMenuBtn = new MenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!")
+            {
+                Label = "→→→"
+            };
+            MenuItem underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!")
+            {
+                Label = "→→→"
+            };
             MenuItem vehicleInvisible = new MenuItem("Toggle Vehicle Visibility", "Makes your vehicle visible/invisible. ~r~Your vehicle will be made visible again as soon as you leave the vehicle. Otherwise you would not be able to get back in.");
             MenuItem flipVehicle = new MenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
             MenuItem vehicleAlarm = new MenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
@@ -122,12 +136,16 @@ namespace vMenuClient
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
 
-            MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!");
-            deleteBtn.LeftIcon = MenuItem.Icon.WARNING;
-            deleteBtn.Label = "→→→";
+            MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!")
+            {
+                LeftIcon = MenuItem.Icon.WARNING,
+                Label = "→→→"
+            };
             MenuItem deleteNoBtn = new MenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
-            MenuItem deleteYesBtn = new MenuItem("~r~YES, DELETE", "Yes I'm sure, delete my vehicle please, I understand that this cannot be undone.");
-            deleteYesBtn.LeftIcon = MenuItem.Icon.WARNING;
+            MenuItem deleteYesBtn = new MenuItem("~r~YES, DELETE", "Yes I'm sure, delete my vehicle please, I understand that this cannot be undone.")
+            {
+                LeftIcon = MenuItem.Icon.WARNING
+            };
 
             // Create lists.
             var dirtlevel = new List<string> { "No Dirt", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
@@ -1394,8 +1412,10 @@ namespace vMenuClient
                         }
                         else
                         {
-                            MenuItem backBtn = new MenuItem("No Extras Available :(", "Go back to the Vehicle Options menu.");
-                            backBtn.Label = "Go Back";
+                            MenuItem backBtn = new MenuItem("No Extras Available :(", "Go back to the Vehicle Options menu.")
+                            {
+                                Label = "Go Back"
+                            };
                             VehicleComponentsMenu.AddMenuItem(backBtn);
                             VehicleComponentsMenu.OnItemSelect += (sender3, item3, index3) =>
                             {

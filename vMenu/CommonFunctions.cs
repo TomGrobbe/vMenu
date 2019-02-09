@@ -2259,7 +2259,7 @@ namespace vMenuClient
                 {
                     foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        if (HasPedGotWeapon(PlayerPedId(), vw.Hash, false))
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                         {
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
@@ -2392,14 +2392,14 @@ namespace vMenuClient
                 }
 
                 // Check if any weapon is not allowed.
-                if (loadout.Any((wp) => !IsAllowed(wp.Perm)))
+                if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
                 {
                     Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
                 }
 
                 foreach (ValidWeapon w in loadout)
                 {
-                    if (IsAllowed(w.Perm))
+                    if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
                         GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo, false, true);

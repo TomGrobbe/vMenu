@@ -78,9 +78,10 @@ namespace vMenuClient
                 };
             }
 
-            MenuItem unavailableModels = new MenuItem("Unavailable Saved Vehicles", "These vehicles are currently unavailable because the models are not present in the game. These vehicles are most likely not being streamed from the server.");
-
-            unavailableModels.Label = "→→→";
+            MenuItem unavailableModels = new MenuItem("Unavailable Saved Vehicles", "These vehicles are currently unavailable because the models are not present in the game. These vehicles are most likely not being streamed from the server.")
+            {
+                Label = "→→→"
+            };
 
             menu.AddMenuItem(unavailableModels);
             MenuController.BindMenuItem(menu, unavailableVehiclesMenu, unavailableModels);
@@ -269,18 +270,22 @@ namespace vMenuClient
                     int vclass = GetVehicleClassFromName(sv.Value.model);
                     Menu menu = subMenus[vclass];
 
-                    MenuItem savedVehicleBtn = new MenuItem(sv.Key.Substring(4), $"Manage this saved vehicle.");
-                    savedVehicleBtn.Label = $"({sv.Value.name}) →→→";
+                    MenuItem savedVehicleBtn = new MenuItem(sv.Key.Substring(4), $"Manage this saved vehicle.")
+                    {
+                        Label = $"({sv.Value.name}) →→→"
+                    };
                     menu.AddMenuItem(savedVehicleBtn);
 
                     svMenuItems.Add(savedVehicleBtn, sv);
                 }
                 else
                 {
-                    MenuItem missingVehItem = new MenuItem(sv.Key.Substring(4), "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.");
-                    missingVehItem.Label = "(" + sv.Value.name + ")";
-                    missingVehItem.Enabled = false;
-                    missingVehItem.LeftIcon = MenuItem.Icon.LOCK;
+                    MenuItem missingVehItem = new MenuItem(sv.Key.Substring(4), "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.")
+                    {
+                        Label = "(" + sv.Value.name + ")",
+                        Enabled = false,
+                        LeftIcon = MenuItem.Icon.LOCK
+                    };
                     unavailableVehiclesMenu.AddMenuItem(missingVehItem);
                 }
             }

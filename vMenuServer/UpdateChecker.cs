@@ -53,7 +53,7 @@ namespace vMenuServer
                 SetConvarServerInfo("vMenuVersion", MainServer.Version);
 
                 // Get a response from the specified url.
-                RequestResponse result = await r.Http($"https://vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}");
+                RequestResponse result = await r.Http($"https://www.vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}");
 
 
                 Debug.WriteLine("\r\n^5[vMenu] Checking for updates.^7");

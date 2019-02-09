@@ -46,8 +46,7 @@ namespace vMenuClient
             #region addon cars menu
             // Vehicle Addons List
             Menu addonCarsMenu = new Menu("Addon Vehicles", "Spawn An Addon Vehicle");
-            MenuItem addonCarsBtn = new MenuItem("Addon Vehicles", "A list of addon vehicles available on this server.");
-            addonCarsBtn.Label = "→→→";
+            MenuItem addonCarsBtn = new MenuItem("Addon Vehicles", "A list of addon vehicles available on this server.") { Label = "→→→" };
 
             menu.AddMenuItem(addonCarsBtn);
 
@@ -105,9 +104,6 @@ namespace vMenuClient
             #endregion
 
             #region vehicle classes submenus
-            // Create the submenus for each category.
-            //var vl = new Vehicles();
-
             // Loop through all the vehicle classes.
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
@@ -115,8 +111,10 @@ namespace vMenuClient
                 string className = GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
-                MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.");
-                btn.Label = "→→→";
+                MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.")
+                {
+                    Label = "→→→"
+                };
 
                 Menu vehicleClassMenu = new Menu("Vehicle Spawner", className);
 

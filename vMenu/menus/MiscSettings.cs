@@ -95,8 +95,10 @@ namespace vMenuClient
             MenuCheckboxItem hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
             MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take about 1.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
             MenuCheckboxItem drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
-            MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.");
-            saveSettings.RightIcon = MenuItem.Icon.TICK;
+            MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.")
+            {
+                RightIcon = MenuItem.Icon.TICK
+            };
             MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
             MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);

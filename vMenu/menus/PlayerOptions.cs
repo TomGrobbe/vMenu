@@ -71,8 +71,10 @@ namespace vMenuClient
 
             MenuController.AddSubmenu(menu, vehicleAutoPilot);
 
-            MenuItem vehicleAutoPilotBtn = new MenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.");
-            vehicleAutoPilotBtn.Label = "→→→";
+            MenuItem vehicleAutoPilotBtn = new MenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.")
+            {
+                Label = "→→→"
+            };
 
             List<string> drivingStyles = new List<string>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse", "Custom" };
             MenuListItem drivingStyle = new MenuListItem("Driving Style", drivingStyles, 0, "Set the driving style that is used for the Drive to Waypoint and Drive Around Randomly functions.");

@@ -495,8 +495,10 @@ namespace vMenuClient
             }
             foreach (var savename in savesFound)
             {
-                MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
-                deleteSavedPed.LeftIcon = MenuItem.Icon.WARNING;
+                MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!")
+                {
+                    LeftIcon = MenuItem.Icon.WARNING
+                };
                 deleteSavedPedMenu.AddMenuItem(deleteSavedPed);
             }
 
