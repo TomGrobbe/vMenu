@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +42,32 @@ namespace vMenuClient
         private void CreateMenu()
         {
             menu = new Menu(Game.Player.Name, "Banned Players Management");
+
+            menu.InstructionalButtons.Add(Control.Jump, "Filter Options");
+            menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (a, b) =>
+            {
+                if (banlist.Count > 1)
+                {
+                    string filterText = await GetUserInput("Filter List By Username (leave this empty to reset the filter!)");
+                    if (string.IsNullOrEmpty(filterText))
+                    {
+                        Subtitle.Custom("Filters have been cleared.");
+                        menu.ResetFilter();
+                        UpdateBans();
+                    }
+                    else
+                    {
+                        menu.FilterMenuItems(item => item.ItemData is BanRecord br && br.playerName.ToLower().Contains(filterText.ToLower()));
+                        Subtitle.Custom("Username filter has been applied.");
+                    }
+                }
+                else
+                {
+                    Notify.Error("At least 2 players need to be banned in order to use the filter function.");
+                }
+
+                Log($"Button pressed: {a} {b}");
+            }), true));
 
             bannedPlayer.AddMenuItem(new MenuItem("Player Name"));
             bannedPlayer.AddMenuItem(new MenuItem("Banned By"));
