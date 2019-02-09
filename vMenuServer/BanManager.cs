@@ -102,6 +102,10 @@ namespace vMenuServer
                 if (key == "playerName")
                 {
                     newBr.playerName = value.ToString();
+                    if (string.IsNullOrEmpty(newBr.playerName))
+                    {
+                        newBr.playerName = "(invalid or no name)";
+                    }
                 }
                 else if (key == "identifiers")
                 {
@@ -498,7 +502,12 @@ namespace vMenuServer
             {
                 string safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
                 safeName = Regex.Replace(safeName, @"[^\u0000-\u007F]+", string.Empty);
-                return safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
+                safeName = safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
+                if (string.IsNullOrEmpty(safeName))
+                {
+                    safeName = "InvalidPlayerName";
+                }
+                return safeName;
             }
             return "InvalidPlayerName";
 
