@@ -1294,6 +1294,7 @@ namespace vMenuClient
                 "Neck Thickness"            // 19
             };
 
+            for (int i = 0; i < 20; i++)
             {
                 MenuSliderItem faceFeature = new MenuSliderItem(faceFeaturesNamesList[i], $"Set the {faceFeaturesNamesList[i]} face feature value.", 0, 20, 10, true);
                 faceShapeMenu.AddMenuItem(faceFeature);
