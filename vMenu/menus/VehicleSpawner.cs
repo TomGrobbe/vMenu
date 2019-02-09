@@ -58,28 +58,85 @@ namespace vMenuClient
                     {
                         MenuController.BindMenuItem(menu, addonCarsMenu, addonCarsBtn);
                         MenuController.AddSubmenu(menu, addonCarsMenu);
-                        foreach (KeyValuePair<string, uint> veh in AddonVehicles)
+                        Menu unavailableCars = new Menu("Addon Spawner", "Unavailable Vehicles");
+                        MenuItem unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These addon vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
+                        MenuController.AddSubmenu(addonCarsMenu, unavailableCars);
+
+                        for (var cat = 0; cat < 22; cat++)
                         {
-                            string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
-                            string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
-                            name = name != "CARNOTFOUND" ? name : veh.Key;
-                            MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.");
-                            carBtn.Label = $"({veh.Key.ToString()})";
-                            if (!IsModelInCdimage(veh.Value))
+                            Menu categoryMenu = new Menu("Addon Spawner", GetLocalizedName($"VEH_CLASS_{cat}"));
+                            MenuItem categoryBtn = new MenuItem(GetLocalizedName($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLocalizedName($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
+
+                            addonCarsMenu.AddMenuItem(categoryBtn);
+
+                            if (!allowedCategories[cat])
                             {
-                                carBtn.Enabled = false;
-                                carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
-                                carBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                categoryBtn.Description = "This vehicle class is disabled by the server.";
+                                categoryBtn.Enabled = false;
+                                categoryBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                categoryBtn.Label = "";
+                                continue;
                             }
-                            addonCarsMenu.AddMenuItem(carBtn);
+
+                            // Loop through all addon vehicles in this class.
+                            foreach (KeyValuePair<string, uint> veh in AddonVehicles.Where(v => GetVehicleClassFromName(v.Value) == cat))
+                            {
+                                string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
+
+                                string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
+                                name = name != "CARNOTFOUND" ? name : veh.Key;
+
+                                MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.")
+                                {
+                                    Label = $"({veh.Key.ToString()})",
+                                    ItemData = veh.Key // store the model name in the button data.
+                                };
+
+                                // This should be impossible to be false, but we check it anyway.
+                                if (IsModelInCdimage(veh.Value))
+                                {
+                                    categoryMenu.AddMenuItem(carBtn);
+                                }
+                                else
+                                {
+                                    carBtn.Enabled = false;
+                                    carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
+                                    carBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                    unavailableCars.AddMenuItem(carBtn);
+                                }
+                            }
+
+                            //if (AddonVehicles.Count(av => GetVehicleClassFromName(av.Value) == cat && IsModelInCdimage(av.Value)) > 0)
+                            if (categoryMenu.Size > 0)
+                            {
+                                MenuController.AddSubmenu(addonCarsMenu, categoryMenu);
+                                MenuController.BindMenuItem(addonCarsMenu, categoryMenu, categoryBtn);
+
+                                categoryMenu.OnItemSelect += (sender, item, index) =>
+                                {
+                                    SpawnVehicle(item.ItemData.ToString(), SpawnInVehicle, ReplaceVehicle);
+                                };
+                            }
+                            else
+                            {
+                                categoryBtn.Description = "There are no addon cars available in this category.";
+                                categoryBtn.Enabled = false;
+                                categoryBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                categoryBtn.Label = "";
+                            }
                         }
 
-                        addonCarsMenu.OnItemSelect += (sender, item, index) =>
+                        if (unavailableCars.Size > 0)
                         {
-                            SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
-                        };
-                        addonCarsMenu.RefreshIndex();
-                        //addonCarsMenu.UpdateScaleform();
+                            addonCarsMenu.AddMenuItem(unavailableCarsBtn);
+                            MenuController.BindMenuItem(addonCarsMenu, unavailableCars, unavailableCarsBtn);
+                        }
+
+                        //addonCarsMenu.OnItemSelect += (sender, item, index) =>
+                        //{
+
+                        //    //SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
+                        //};
                     }
                     else
                     {
