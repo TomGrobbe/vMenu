@@ -6549,6 +6549,24 @@
             Example: `local data = LoadResourceFile("devtools", "data.json")`
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash.NETWORK_GET_ENTITY_OWNER">
+            <summary>
+            Returns the owner ID of the specified entity.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.REGISTER_COMMAND">
+            <summary>
+            Registered commands can be executed by entering them in the client console (this works for client side and server side registered commands). Or by entering them in the server console/through an RCON client (only works for server side registered commands). Or if you use a supported chat resource, like the default one provided in the cfx-server-data repository, then you can enter the command in chat by prefixing it with a `/`.
+            
+            Commands registered using this function can also be executed by resources, using the [`ExecuteCommand` native](#_0x561C060B).
+            
+            The restricted bool is not used on the client side. Permissions can only be checked on the server side, so if you want to limit your command with an ace permission automatically, make it a server command (by registering it in a server script).
+            
+            **Example result**:
+            
+            ![](https://i.imgur.com/TaCnG09.png)
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash.REGISTER_RESOURCE_ASSET">
             <summary>
             **Experimental**: This native may be altered or removed in future versions of CitizenFX without warning.
@@ -6739,6 +6757,25 @@
             <param name="resourceName">The resource name.</param>
             <param name="fileName">The file in the resource.</param>
             <returns>The file contents</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.NetworkGetEntityOwner(System.Int32)">
+            <summary>
+            Returns the owner ID of the specified entity.
+            </summary>
+            <param name="entity">The entity to get the owner for.</param>
+            <returns>On the server, the server ID of the entity owner. On the client, returns the player/slot ID of the entity owner.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.RegisterCommand(System.String,CitizenFX.Core.Native.InputArgument,System.Boolean)">
+            <summary>
+            Registered commands can be executed by entering them in the client console (this works for client side and server side registered commands). Or by entering them in the server console/through an RCON client (only works for server side registered commands). Or if you use a supported chat resource, like the default one provided in the cfx-server-data repository, then you can enter the command in chat by prefixing it with a `/`.
+            Commands registered using this function can also be executed by resources, using the [`ExecuteCommand` native](#_0x561C060B).
+            The restricted bool is not used on the client side. Permissions can only be checked on the server side, so if you want to limit your command with an ace permission automatically, make it a server command (by registering it in a server script).
+            **Example result**:
+            ![](https://i.imgur.com/TaCnG09.png)
+            </summary>
+            <param name="commandName">The command you want to register.</param>
+            <param name="handler">A handler function that gets called whenever the command is executed.</param>
+            <param name="restricted">If this is a server command and you set this to true, then players will need the command.yourCommandName ace permission to execute this command.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.RegisterResourceAsset(System.String,System.String)">
             <summary>
