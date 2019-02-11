@@ -329,7 +329,7 @@ namespace vMenuClient
                             veh.Wash();
                         }
 
-                        await Delay(0);
+                        //await Delay(0);
                         // If the torque multiplier is enabled and the player is allowed to use it.
                         if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && IsAllowed(Permission.VOTorqueMultiplier))
                         {
@@ -424,6 +424,16 @@ namespace vMenuClient
                         if (ped.IsWearingHelmet && MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && IsAllowed(Permission.VONoHelmet))
                         {
                             ped.RemoveHelmet(true);
+                        }
+
+                        if (MainMenu.VehicleOptionsMenu.VehicleInfiniteFuel && DecorIsRegisteredAsType("_Fuel_Level", 1) && IsAllowed(Permission.VOInfiniteFuel))
+                        {
+                            float maxFuelLevel = GetVehicleHandlingFloat(veh.Handle, "CHandlingData", "fPetrolTankVolume");
+                            float currentFuelLevel = GetVehicleFuelLevel(veh.Handle);
+                            if (maxFuelLevel > 5f && currentFuelLevel < (maxFuelLevel * 0.95f))
+                            {
+                                DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                            }
                         }
 
                         await Delay(0);

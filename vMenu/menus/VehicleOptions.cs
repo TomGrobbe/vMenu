@@ -45,6 +45,7 @@ namespace vMenuClient
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
+        public bool VehicleInfiniteFuel { get; private set; } = false;
         public bool VehicleShowHealth { get; private set; } = false;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
@@ -83,6 +84,7 @@ namespace vMenuClient
             MenuCheckboxItem powerEnabled = new MenuCheckboxItem("Enable Power Multiplier", "Enables the power multiplier selected from the list below.", VehiclePowerMultiplier);
             MenuCheckboxItem highbeamsOnHonk = new MenuCheckboxItem("Flash Highbeams On Honk", "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
             MenuCheckboxItem showHealth = new MenuCheckboxItem("Show Vehicle Health", "Shows the vehicle health on the screen.", VehicleShowHealth);
+            MenuCheckboxItem infiniteFuel = new MenuCheckboxItem("Infinite Fuel", "Enables or disables infinite fuel for this vehicle, only works if FRFuel is installed.", VehicleInfiniteFuel);
 
             // Create buttons.
             MenuItem fixVehicle = new MenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -342,8 +344,13 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(vehicleEngineAO);
             }
+            if (IsAllowed(Permission.VOInfiniteFuel)) // INFINITE FUEL
+            {
+                menu.AddMenuItem(infiniteFuel);
+            }
             // always allowed
             menu.AddMenuItem(showHealth); // SHOW VEHICLE HEALTH
+
             if (IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
             {
                 menu.AddMenuItem(vehicleNoSiren);
@@ -586,6 +593,10 @@ namespace vMenuClient
                 else if (item == vehicleBikeSeatbelt)
                 {
                     VehicleBikeSeatbelt = _checked;
+                }
+                else if (item == infiniteFuel)
+                {
+                    VehicleInfiniteFuel = _checked;
                 }
             };
             #endregion

@@ -90,6 +90,7 @@ namespace vMenuShared
             VOUnderglow,
             VOFlashHighbeamsOnHonk,
             VODisableTurbulence,
+            VOInfiniteFuel,
             VOFlares,
             VOPlaneBombs,
 
