@@ -63,6 +63,8 @@ namespace vMenuServer
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "server_debug_mode", 0) == "true" ? true : false;
 
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
+        public static string UpdaterVersion { get; set; } = Version;
+        public static string UpdateMessage { get; set; } = null;
 
         private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
         private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
@@ -189,7 +191,7 @@ namespace vMenuServer
                                 string wtype = args[1].ToString().ToUpper();
                                 if (weatherTypes.Contains(wtype))
                                 {
-                                    TriggerEvent("UpdateServerWeather", wtype, blackout, dynamicWeather);
+                                    TriggerEvent("vMenu:UpdateServerWeather", wtype, blackout, dynamicWeather);
                                     Debug.WriteLine($"[vMenu] Weather is now set to: {wtype}");
                                 }
                                 else if (wtype.ToLower() == "dynamic")
@@ -198,12 +200,12 @@ namespace vMenuServer
                                     {
                                         if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "true")
                                         {
-                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, true);
+                                            TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, true);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
                                         }
                                         else if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "false")
                                         {
-                                            TriggerEvent("UpdateServerWeather", currentWeather, blackout, false);
+                                            TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, false);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
                                         }
                                         else
@@ -399,6 +401,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
                 EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
+                EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
 
 
                 // check addons file for errors
@@ -547,6 +550,12 @@ namespace vMenuServer
             {
                 if (dynamicWeather)
                 {
+                    if (currentWeather == "XMAS" || currentWeather == "HALLOWHEEN" || currentWeather == "NEUTRAL")
+                    {
+                        // Disable dynamic weather because these weather types shouldn't randomly change.
+                        dynamicWeather = false;
+                        return;
+                    }
                     if (resetBlackout && GetGameTimer() - weatherTimer > 60000) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
                     {
                         resetBlackout = false;
@@ -649,9 +658,15 @@ namespace vMenuServer
         /// <param name="dynamicWeatherNew"></param>
         private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew)
         {
+            // Update the new weather related variables.
             currentWeather = newWeather;
             blackout = blackoutNew;
             dynamicWeather = dynamicWeatherNew;
+
+            // Reset the dynamic weather loop timer to another (default) 10 mintues.
+            weatherTimer = GetGameTimer();
+
+            // Update all clients.
             TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
         }
 
@@ -799,6 +814,29 @@ namespace vMenuServer
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
                 Debug.WriteLine("^3[vMenu] [KICK]^7 " + kickLogMesage + "\n");
             }
+        }
+
+        public static void IsResourceUpToDate([FromSource]Player source)
+        {
+            if (!UpToDate)
+            {
+                string updaterMessage = string.IsNullOrEmpty(UpdateMessage) ? "" : ("Message: " + UpdateMessage);
+
+                if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
+                {
+                    source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
+                }
+                else
+                {
+                    // Staff will always receive this message, whether they like it or not.
+                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff))
+                    {
+                        source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
+                    }
+                }
+
+            }
+
         }
     }
 }

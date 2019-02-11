@@ -112,31 +112,32 @@ namespace vMenuClient
             {
                 if (AddonPeds.Count > 0)
                 {
-                    addonPedsBtn.Label = "→→→";
-                    foreach (KeyValuePair<string, uint> ped in AddonPeds)
+                    if (IsAllowed(Permission.PAAddonPeds))
                     {
-                        var button = new MenuItem(ped.Key, "Click to use this ped.");
-                        addonPeds.AddMenuItem(button);
-                        if (!IsModelAPed(ped.Value) || !IsModelInCdimage(ped.Value))
+                        addonPedsBtn.Label = "→→→";
+
+                        foreach (KeyValuePair<string, uint> ped in AddonPeds)
                         {
-                            button.Enabled = false;
-                            button.LeftIcon = MenuItem.Icon.LOCK;
-                            button.Description = "This ped is not available on this server. Are you sure the model is valid?";
-                        }
-                    }
-                    addonPeds.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item.Enabled)
-                        {
-                            await SetPlayerSkin(AddonPeds.ElementAt(index).Value, new PedInfo() { version = -1 });
-                        }
-                        else
-                        {
-                            Notify.Error("This ped is not available. Please ask the server owner to verify this addon ped.");
+                            var button = new MenuItem(ped.Key, "Click to use this ped.");
+                            addonPeds.AddMenuItem(button);
+                            if (!IsModelAPed(ped.Value) || !IsModelInCdimage(ped.Value))
+                            {
+                                button.Enabled = false;
+                                button.LeftIcon = MenuItem.Icon.LOCK;
+                                button.Description = "This ped is not available on this server. Ask the server owner to fix this streamed model and verify the model spawn name.";
+                            }
                         }
 
-                    };
-                    MenuController.BindMenuItem(menu, addonPeds, addonPedsBtn);
+                        addonPeds.OnItemSelect += async (sender, item, index) =>
+                        {
+                            await SetPlayerSkin(AddonPeds.ElementAt(index).Value, new PedInfo() { version = -1 });
+                        };
+                        MenuController.BindMenuItem(menu, addonPeds, addonPedsBtn);
+                    }
+                    else
+                    {
+                        menu.RemoveMenuItem(addonPedsBtn);
+                    }
                 }
                 else
                 {
@@ -153,7 +154,6 @@ namespace vMenuClient
             }
 
             addonPeds.RefreshIndex();
-            //addonPeds.UpdateScaleform();
 
             // Add the spawn by name button after the addon peds menu item.
             menu.AddMenuItem(spawnByName);
@@ -183,12 +183,12 @@ namespace vMenuClient
                     }
                     MenuListItem pedl = new MenuListItem("Peds #" + (i + 1).ToString(), pedList, 0);
 
-                    menu.AddMenuItem(pedl);
-                    if (!IsAllowed(Permission.PASpawnNew))
+                    if (IsAllowed(Permission.PASpawnNew))
                     {
-                        pedl.Enabled = false;
-                        pedl.LeftIcon = MenuItem.Icon.LOCK;
-                        pedl.Description = "This option has been disabled by the server owner.";
+                        menu.AddMenuItem(pedl);
+                        //pedl.Enabled = false;
+                        //pedl.LeftIcon = MenuItem.Icon.LOCK;
+                        //pedl.Description = "This option has been disabled by the server owner.";
                     }
                 }
             }
@@ -208,7 +208,8 @@ namespace vMenuClient
                 }
                 else if (IsAllowed(Permission.PASpawnNew))
                 {
-                    int i = ((itemIndex - 8) * 50) + listIndex;
+                    int listsCount = (modelNames.Count / 50) + 1;
+                    int i = ((itemIndex - (sender.Size - listsCount)) * 50) + listIndex;
                     string modelName = modelNames[i];
                     await SetPlayerSkin(modelName, new PedInfo() { version = -1 });
                 }
@@ -495,8 +496,10 @@ namespace vMenuClient
             }
             foreach (var savename in savesFound)
             {
-                MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!");
-                deleteSavedPed.LeftIcon = MenuItem.Icon.WARNING;
+                MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!")
+                {
+                    LeftIcon = MenuItem.Icon.WARNING
+                };
                 deleteSavedPedMenu.AddMenuItem(deleteSavedPed);
             }
 

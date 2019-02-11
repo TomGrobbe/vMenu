@@ -21,6 +21,7 @@ namespace vMenuClient
         public bool UnlimitedAmmo { get; private set; } = UserDefaults.WeaponsUnlimitedAmmo;
         public bool NoReload { get; private set; } = UserDefaults.WeaponsNoReload;
         public bool AutoEquipChute { get; private set; } = UserDefaults.AutoEquipChute;
+        public bool UnlimitedParachutes { get; private set; } = UserDefaults.WeaponsUnlimitedParachutes;
 
         public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
 
@@ -118,220 +119,163 @@ namespace vMenuClient
                 addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
             }
             #endregion
-
-            //addonWeaponsMenu.
             addonWeaponsMenu.RefreshIndex();
-            //addonWeaponsMenu.UpdateScaleform();
             #endregion
 
             #region parachute options menu
-            #region parachute buttons and submenus
-            MenuItem parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.");
-            Menu parachuteMenu = new Menu("Parachute Options", "Parachute Options");
 
-            Menu primaryChute = new Menu("Parachute Options", "Select A Primary Parachute");
-
-            Menu secondaryChute = new Menu("Parachute Options", "Select A Reserve Parachute");
-
-            MenuItem chute = new MenuItem("No Style", "Default parachute.");
-            MenuItem chute0 = new MenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
-            MenuItem chute1 = new MenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
-            MenuItem chute2 = new MenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
-            MenuItem chute3 = new MenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
-            MenuItem chute4 = new MenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
-            MenuItem chute5 = new MenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
-            MenuItem chute6 = new MenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
-            MenuItem chute7 = new MenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
-            MenuItem chute8 = new MenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
-            MenuItem chute9 = new MenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
-            MenuItem chute10 = new MenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
-            MenuItem chute11 = new MenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
-            MenuItem chute12 = new MenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
-            MenuItem chute13 = new MenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
-            MenuItem rchute = new MenuItem("No Style", "Default parachute.");
-            MenuItem rchute0 = new MenuItem(GetLabelText("PM_TINT0"), GetLabelText("PD_TINT0"));             // Rainbow Chute
-            MenuItem rchute1 = new MenuItem(GetLabelText("PM_TINT1"), GetLabelText("PD_TINT1"));             // Red Chute
-            MenuItem rchute2 = new MenuItem(GetLabelText("PM_TINT2"), GetLabelText("PD_TINT2"));             // Seaside Stripes Chute
-            MenuItem rchute3 = new MenuItem(GetLabelText("PM_TINT3"), GetLabelText("PD_TINT3"));             // Window Maker Chute
-            MenuItem rchute4 = new MenuItem(GetLabelText("PM_TINT4"), GetLabelText("PD_TINT4"));             // Patriot Chute
-            MenuItem rchute5 = new MenuItem(GetLabelText("PM_TINT5"), GetLabelText("PD_TINT5"));             // Blue Chute
-            MenuItem rchute6 = new MenuItem(GetLabelText("PM_TINT6"), GetLabelText("PD_TINT6"));             // Black Chute
-            MenuItem rchute7 = new MenuItem(GetLabelText("PM_TINT7"), GetLabelText("PD_TINT7"));             // Hornet Chute
-            MenuItem rchute8 = new MenuItem(GetLabelText("PS_CAN_0"), "Air Force parachute.");               // Air Force Chute
-            MenuItem rchute9 = new MenuItem(GetLabelText("PM_TINT0"), "Desert parachute.");                  // Desert Chute
-            MenuItem rchute10 = new MenuItem("Shadow Chute", "Shadow parachute.");                           // Shadow Chute
-            MenuItem rchute11 = new MenuItem(GetLabelText("UNLOCK_NAME_PSRWD"), "High altitude parachute."); // High Altitude Chute
-            MenuItem rchute12 = new MenuItem("Airborne Chute", "Airborne parachute.");                       // Airborne Chute
-            MenuItem rchute13 = new MenuItem("Sunrise Chute", "Sunrise parachute.");                         // Sunrise Chute
-
-            primaryChute.AddMenuItem(chute);
-            primaryChute.AddMenuItem(chute0);
-            primaryChute.AddMenuItem(chute1);
-            primaryChute.AddMenuItem(chute2);
-            primaryChute.AddMenuItem(chute3);
-            primaryChute.AddMenuItem(chute4);
-            primaryChute.AddMenuItem(chute5);
-            primaryChute.AddMenuItem(chute6);
-            primaryChute.AddMenuItem(chute7);
-            primaryChute.AddMenuItem(chute8);
-            primaryChute.AddMenuItem(chute9);
-            primaryChute.AddMenuItem(chute10);
-            primaryChute.AddMenuItem(chute11);
-            primaryChute.AddMenuItem(chute12);
-            primaryChute.AddMenuItem(chute13);
-
-            secondaryChute.AddMenuItem(rchute);
-            secondaryChute.AddMenuItem(rchute0);
-            secondaryChute.AddMenuItem(rchute1);
-            secondaryChute.AddMenuItem(rchute2);
-            secondaryChute.AddMenuItem(rchute3);
-            secondaryChute.AddMenuItem(rchute4);
-            secondaryChute.AddMenuItem(rchute5);
-            secondaryChute.AddMenuItem(rchute6);
-            secondaryChute.AddMenuItem(rchute7);
-            secondaryChute.AddMenuItem(rchute8);
-            secondaryChute.AddMenuItem(rchute9);
-            secondaryChute.AddMenuItem(rchute10);
-            secondaryChute.AddMenuItem(rchute11);
-            secondaryChute.AddMenuItem(rchute12);
-            secondaryChute.AddMenuItem(rchute13);
-            #endregion
-
-            #region handle events
-            primaryChute.OnItemSelect += (sender, item, index) =>
+            if (IsAllowed(Permission.WPParachute))
             {
-                SetPedParachuteTintIndex(Game.PlayerPed.Handle, index - 1);
-                Subtitle.Custom($"Primary parachute style selected: ~r~{item.Text}~s~.");
-            };
+                // main parachute options menu setup
+                Menu parachuteMenu = new Menu("Parachute Options", "Parachute Options");
+                MenuItem parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.") { Label = "→→→" };
 
-            secondaryChute.OnItemSelect += (sender, item, index) =>
-            {
-                SetPlayerReserveParachuteTintIndex(Game.Player.Handle, index - 1);
-                Subtitle.Custom($"Reserve parachute style selected: ~r~{item.Text}~s~.");
-            };
-            #endregion
+                MenuController.AddSubmenu(menu, parachuteMenu);
+                menu.AddMenuItem(parachuteBtn);
+                MenuController.BindMenuItem(menu, parachuteMenu, parachuteBtn);
 
-            #region create more buttons
-            MenuItem primaryChuteBtn = new MenuItem("Primary Parachute Style", "Select a primary parachute.");
-            MenuItem secondaryChuteBtn = new MenuItem("Reserve Parachute Style", "Select a reserve parachute.");
-
-            parachuteMenu.AddMenuItem(primaryChuteBtn);
-            primaryChuteBtn.Label = "→→→";
-            parachuteMenu.AddMenuItem(secondaryChuteBtn);
-            secondaryChuteBtn.Label = "→→→";
-
-            MenuController.BindMenuItem(parachuteMenu, primaryChute, primaryChuteBtn);
-            MenuController.BindMenuItem(parachuteMenu, secondaryChute, secondaryChuteBtn);
-
-            MenuCheckboxItem autoEquipParachute = new MenuCheckboxItem("Auto Equip Parachute", "Automatically equip a parachute whenever you enter a plane/helicopter.", AutoEquipChute);
-            parachuteMenu.AddMenuItem(autoEquipParachute);
-
-            MenuItem togglePrimary = new MenuItem("Get / Remove Primary Parachute", "Equip a primary parachute.");
-            MenuItem toggleSecondary = new MenuItem("Get Reserve Parachute", "Equip a reserve parachute, you need to get a primary parachute first before equipping a reserve parachute.");
-
-            parachuteMenu.AddMenuItem(togglePrimary);
-            parachuteMenu.AddMenuItem(toggleSecondary);
-            #endregion
-
-            #region handle parachute menu events
-            parachuteMenu.OnItemSelect += (sender, item, index) =>
-            {
-                if (item == togglePrimary)
+                List<string> chutes = new List<string>()
                 {
-                    if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, false))
+                    GetLabelText("PM_TINT0"),
+                    GetLabelText("PM_TINT1"),
+                    GetLabelText("PM_TINT2"),
+                    GetLabelText("PM_TINT3"),
+                    GetLabelText("PM_TINT4"),
+                    GetLabelText("PM_TINT5"),
+                    GetLabelText("PM_TINT6"),
+                    GetLabelText("PM_TINT7"),
+
+                    // broken in FiveM for some weird reason:
+                    GetLabelText("PS_CAN_0"),
+                    GetLabelText("PS_CAN_1"),
+                    GetLabelText("PS_CAN_2"),
+                    GetLabelText("PS_CAN_3"),
+                    GetLabelText("PS_CAN_4"),
+                    GetLabelText("PS_CAN_5")
+                };
+                List<string> chuteDescriptions = new List<string>()
+                {
+                    GetLabelText("PD_TINT0"),
+                    GetLabelText("PD_TINT1"),
+                    GetLabelText("PD_TINT2"),
+                    GetLabelText("PD_TINT3"),
+                    GetLabelText("PD_TINT4"),
+                    GetLabelText("PD_TINT5"),
+                    GetLabelText("PD_TINT6"),
+                    GetLabelText("PD_TINT7"),
+
+                    // broken in FiveM for some weird reason:
+                    GetLabelText("PSD_CAN_0") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_1") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_2") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_3") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_4") + " ~r~For some reason this one doesn't seem to work in FiveM.",
+                    GetLabelText("PSD_CAN_5") + " ~r~For some reason this one doesn't seem to work in FiveM."
+                };
+
+                MenuItem togglePrimary = new MenuItem("Toggle Primary Parachute", "Equip or remove the primary parachute");
+                MenuItem toggleReserve = new MenuItem("Enable Reserve Parachute", "Enables the reserve parachute. Only works if you enabled the primary parachute first. Reserve parachute can not be removed from the player once it's activated.");
+                MenuListItem primaryChutes = new MenuListItem("Primary Chute Style", chutes, 0, $"Primary chute: {chuteDescriptions[0]}");
+                MenuListItem secondaryChutes = new MenuListItem("Reserve Chute Style", chutes, 0, $"Reserve chute: {chuteDescriptions[0]}");
+                MenuCheckboxItem unlimitedParachutes = new MenuCheckboxItem("Unlimited Parachutes", "Enable unlimited parachutes and reserve parachutes.", UnlimitedParachutes);
+                MenuCheckboxItem autoEquipParachutes = new MenuCheckboxItem("Auto Equip Parachutes", "Automatically equip a parachute and reserve parachute when entering planes/helicopters.", AutoEquipChute);
+
+                // smoke color list
+                List<string> smokeColorsList = new List<string>()
+                {
+                    GetLabelText("PM_TINT8"), // no smoke
+                    GetLabelText("PM_TINT9"), // red
+                    GetLabelText("PM_TINT10"), // orange
+                    GetLabelText("PM_TINT11"), // yellow
+                    GetLabelText("PM_TINT12"), // blue
+                    GetLabelText("PM_TINT13"), // black
+                };
+                List<int[]> colors = new List<int[]>()
+                {
+                    new int[3] { 255, 255, 255 },
+                    new int[3] { 255, 0, 0 },
+                    new int[3] { 255, 165, 0 },
+                    new int[3] { 255, 255, 0 },
+                    new int[3] { 0, 0, 255 },
+                    new int[3] { 20, 20, 20 },
+                };
+
+                MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColorsList, 0, "Choose a smoke trail color, then press select to change it. Changing colors takes 4 seconds, you can not use your smoke while the color is being changed.");
+
+                parachuteMenu.AddMenuItem(togglePrimary);
+                parachuteMenu.AddMenuItem(toggleReserve);
+                parachuteMenu.AddMenuItem(autoEquipParachutes);
+                parachuteMenu.AddMenuItem(unlimitedParachutes);
+                parachuteMenu.AddMenuItem(smokeColors);
+                parachuteMenu.AddMenuItem(primaryChutes);
+                parachuteMenu.AddMenuItem(secondaryChutes);
+
+                parachuteMenu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == togglePrimary)
                     {
-                        RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute);
-                        Notify.Success("Primary parachute ~r~removed~s~.", true);
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), false))
+                        {
+                            Subtitle.Custom("Primary parachute removed.");
+                            RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"));
+                        }
+                        else
+                        {
+                            Subtitle.Custom("Primary parachute added.");
+                            GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), 0, false, false);
+                        }
                     }
-                    else
+                    else if (item == toggleReserve)
                     {
-                        GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, false);
-                        Notify.Success("Primary parachute ~g~equippped~s~.", true);
+                        SetPlayerHasReserveParachute(Game.Player.Handle);
+                        Subtitle.Custom("Reserve parachute has been added.");
+
+                    }
+                };
+
+                parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    if (item == unlimitedParachutes)
+                    {
+                        UnlimitedParachutes = _checked;
+                    }
+                    else if (item == autoEquipParachutes)
+                    {
+                        AutoEquipChute = _checked;
+                    }
+                };
+
+                bool switching = false;
+                async void IndexChangedEventHandler(Menu sender, MenuListItem item, int oldIndex, int newIndex, int itemIndex)
+                {
+                    if (item == smokeColors && oldIndex == -1)
+                    {
+                        if (!switching)
+                        {
+                            switching = true;
+                            SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, false);
+                            await Delay(4000);
+                            int[] color = colors[newIndex];
+                            SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, color[0], color[1], color[2]);
+                            SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, newIndex != 0);
+                            switching = false;
+                        }
+                    }
+                    else if (item == primaryChutes)
+                    {
+                        item.Description = $"Primary chute: {chuteDescriptions[newIndex]}";
+                        SetPlayerParachuteTintIndex(Game.Player.Handle, newIndex);
+                    }
+                    else if (item == secondaryChutes)
+                    {
+                        item.Description = $"Reserve chute: {chuteDescriptions[newIndex]}";
+                        SetPlayerReserveParachuteTintIndex(Game.Player.Handle, newIndex);
                     }
                 }
-                else if (item == toggleSecondary)
-                {
-                    SetPlayerHasReserveParachute(Game.Player.Handle);
-                    Notify.Success("Reserve parachute ~g~equippped~s~.", true);
-                }
-            };
 
-            parachuteMenu.OnCheckboxChange += (sender, item, index, _checked) =>
-            {
-                if (item == autoEquipParachute)
-                {
-                    AutoEquipChute = _checked;
-                }
-            };
-            #endregion
-
-            #region parachute smoke trail colors
-            List<string> smokeColor = new List<string>()
-            {
-                "White",
-                "Yellow",
-                "Red",
-                "Green",
-                "Blue",
-                "Dark Gray",
-            };
-
-            MenuListItem smokeColors = new MenuListItem("Smoke Trail Color", smokeColor, 0, "Select a parachute smoke trail color.");
-            parachuteMenu.AddMenuItem(smokeColors);
-            parachuteMenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
-            {
-                if (item == smokeColors)
-                {
-                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, false);
-                    if (newIndex == 0)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 255);
-                    }
-                    else if (newIndex == 1)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 255, 0);
-                    }
-                    else if (newIndex == 2)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 255, 0, 0);
-                    }
-                    else if (newIndex == 3)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 255, 0);
-                    }
-                    else if (newIndex == 4)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 0, 0, 255);
-                    }
-                    else if (newIndex == 5)
-                    {
-                        SetPlayerParachuteSmokeTrailColor(Game.Player.Handle, 1, 1, 1);
-                    }
-
-                    SetPlayerCanLeaveParachuteSmokeTrail(Game.Player.Handle, true);
-                }
-            };
-            #endregion
-
-            #region misc parachute menu setup
-            menu.AddMenuItem(parachuteBtn);
-            parachuteBtn.Label = "→→→";
-            MenuController.BindMenuItem(menu, parachuteMenu, parachuteBtn);
-
-            parachuteMenu.RefreshIndex();
-            //parachuteMenu.UpdateScaleform();
-
-            primaryChute.RefreshIndex();
-            //primaryChute.UpdateScaleform();
-
-            secondaryChute.RefreshIndex();
-            //secondaryChute.UpdateScaleform();
-
-            MenuController.AddSubmenu(menu, addonWeaponsMenu);
-            MenuController.AddSubmenu(menu, parachuteMenu);
-            MenuController.AddSubmenu(menu, primaryChute);
-            MenuController.AddSubmenu(menu, secondaryChute);
-            #endregion
+                parachuteMenu.OnListItemSelect += (sender, item, index, itemIndex) => IndexChangedEventHandler(sender, item, -1, index, itemIndex);
+                parachuteMenu.OnListIndexChange += IndexChangedEventHandler;
+            }
             #endregion
 
             #region Create Weapon Category Submenus
@@ -415,14 +359,18 @@ namespace vMenuClient
                     //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
                     Menu weaponMenu = new Menu("Weapon Options", weapon.Name);
-                    MenuItem weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.");
-                    weaponItem.Label = "→→→";
-                    weaponItem.LeftIcon = MenuItem.Icon.GUN;
+                    MenuItem weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name.ToString()}~s~.")
+                    {
+                        Label = "→→→",
+                        LeftIcon = MenuItem.Icon.GUN
+                    };
 
                     weaponInfo.Add(weaponMenu, weapon);
 
-                    MenuItem getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.");
-                    getOrRemoveWeapon.LeftIcon = MenuItem.Icon.GUN;
+                    MenuItem getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.")
+                    {
+                        LeftIcon = MenuItem.Icon.GUN
+                    };
                     weaponMenu.AddMenuItem(getOrRemoveWeapon);
                     if (!IsAllowed(Permission.WPSpawn))
                     {
@@ -431,8 +379,10 @@ namespace vMenuClient
                         getOrRemoveWeapon.LeftIcon = MenuItem.Icon.LOCK;
                     }
 
-                    MenuItem fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.");
-                    fillAmmo.LeftIcon = MenuItem.Icon.AMMO;
+                    MenuItem fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.")
+                    {
+                        LeftIcon = MenuItem.Icon.AMMO
+                    };
                     weaponMenu.AddMenuItem(fillAmmo);
 
                     List<string> tints = new List<string>();
@@ -739,6 +689,8 @@ namespace vMenuClient
             };
             #endregion
         }
+
+
         #endregion
 
         /// <summary>

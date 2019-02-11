@@ -43,7 +43,8 @@ namespace vMenuClient
             MenuItem unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
             MenuItem soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
             MenuItem toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
-            MenuCheckboxItem enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip);
+            MenuCheckboxItem enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            MenuCheckboxItem exclusiveDriver = new MenuCheckboxItem("Exclusive Driver", "If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
 
             // This is always allowed if this submenu is created/allowed.
             menu.AddMenuItem(setVehice);
@@ -93,6 +94,11 @@ namespace vMenuClient
                 menu.AddMenuItem(enableBlip);
             }
 
+            if (IsAllowed(Permission.PVExclusiveDriver))
+            {
+                menu.AddMenuItem(exclusiveDriver);
+            }
+
 
             // Handle list presses
             menu.OnListItemSelect += (sender, item, itemIndex, index) =>
@@ -104,7 +110,7 @@ namespace vMenuClient
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("Someone else is currently using your vehicle. These features are currently unavailable while they are using your car.");
+                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
                             return;
                         }
                     }
@@ -159,6 +165,30 @@ namespace vMenuClient
                         if (CurrentPersonalVehicle != null && CurrentPersonalVehicle.Exists() && CurrentPersonalVehicle.AttachedBlip != null && CurrentPersonalVehicle.AttachedBlip.Exists())
                         {
                             CurrentPersonalVehicle.AttachedBlip.Delete();
+                        }
+                    }
+                }
+                else if (item == exclusiveDriver)
+                {
+                    if (CurrentPersonalVehicle != null && CurrentPersonalVehicle.Exists())
+                    {
+                        if (NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
+                        {
+                            if (_checked)
+                            {
+                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
+                                SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle, 1);
+                            }
+                            else
+                            {
+                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, 0);
+                                SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, 0, 1);
+                            }
+                        }
+                        else
+                        {
+                            item.Checked = !_checked;
+                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
                         }
                     }
                 }
@@ -230,7 +260,7 @@ namespace vMenuClient
                         {
                             if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                             {
-                                Notify.Error("Someone else is currently using your vehicle. These features are currently unavailable while they are using your car.");
+                                Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
                                 return;
                             }
                         }

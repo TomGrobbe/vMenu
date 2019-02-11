@@ -365,74 +365,174 @@ namespace vMenuClient
         {
             if (!safeModeDisabled)
             {
-                RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
-                bool inCar = Game.PlayerPed.IsInVehicle() && GetVehicle().Driver == Game.PlayerPed;
-                if (inCar)
+                // Is player in a vehicle and the driver? Then we'll use that to teleport.
+                var veh = GetVehicle();
+                bool inVehicle() => veh != null && veh.Exists() && Game.PlayerPed == veh.Driver;
+
+                // Freeze vehicle or player location and fade out the entity to the network.
+                if (inVehicle())
                 {
-                    SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z);
-                    FreezeEntityPosition(GetVehiclePedIsIn(Game.PlayerPed.Handle, false), true);
+                    veh.IsPositionFrozen = true;
+                    NetworkFadeOutEntity(veh.Handle, true, false);
                 }
                 else
                 {
-                    SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
-                    FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                    ClearPedTasksImmediately(Game.PlayerPed.Handle);
+                    Game.PlayerPed.IsPositionFrozen = true;
+                    NetworkFadeOutEntity(Game.PlayerPed.Handle, true, false);
                 }
 
-                int timer = GetGameTimer();
-                bool failed = true;
-                float outputZ = pos.Z;
-                await Delay(100);
-                var z = 0f;
-                while (GetGameTimer() - timer < 5000)
+                // Fade out the screen and wait for it to be faded out completely.
+                DoScreenFadeOut(500);
+                while (!IsScreenFadedOut())
                 {
                     await Delay(0);
-                    if (GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref outputZ, true))
+                }
+
+                // This will be used to get the return value from the groundz native.
+                float groundZ = 850.0f;
+
+                // Bool used to determine if the groundz coord could be found.
+                bool found = false;
+
+                // Loop from 950 to 0 for the ground z coord, and take away 25 each time.
+                for (float zz = 950.0f; zz >= 0f; zz -= 25f)
+                {
+                    float z = zz;
+                    // The z coord is alternating between a very high number, and a very low one.
+                    // This way no matter the location, the actual ground z coord will always be found the fastest.
+                    // If going from top > bottom then it could take a long time to reach the bottom. And vice versa.
+                    // By alternating top/bottom each iteration, we minimize the time on average for ANY location on the map.
+                    if (zz % 2 != 0)
                     {
-                        failed = false;
+                        z = 950f - zz;
+                    }
+
+                    // Request collision at the coord. I've never actually seen this do anything useful, but everyone keeps telling me this is needed.
+                    // It doesn't matter to get the ground z coord, and neither does it actually prevent entities from falling through the map, nor does
+                    // it seem to load the world ANY faster than without, but whatever.
+                    RequestCollisionAtCoord(pos.X, pos.Y, z);
+
+                    // Request a new scene. This will trigger the world to be loaded around that area.
+                    NewLoadSceneStart(pos.X, pos.Y, z, pos.X, pos.Y, z, 50f, 0);
+
+                    // Timer to make sure things don't get out of hand (player having to wait forever to get teleported if something fails).
+                    int tempTimer = GetGameTimer();
+
+                    // Wait for the new scene to be loaded.
+                    while (IsNetworkLoadingScene())
+                    {
+                        // If this takes longer than 1 second, just abort. It's not worth waiting that long.
+                        if (GetGameTimer() - tempTimer > 1000)
+                        {
+                            Log("Waiting for the scene to load is taking too long (more than 1s). Breaking from wait loop.");
+                            break;
+                        }
+
+                        await Delay(0);
+                    }
+
+                    // If the player is in a vehicle, teleport the vehicle to this new position.
+                    if (inVehicle())
+                    {
+                        SetEntityCoords(veh.Handle, pos.X, pos.Y, z, false, false, false, true);
+                    }
+                    // otherwise, teleport the player to this new position.
+                    else
+                    {
+                        SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, z, false, false, false, true);
+                    }
+
+                    // Reset the timer.
+                    tempTimer = GetGameTimer();
+
+                    // Wait for the collision to be loaded around the entity in this new location.
+                    while (!HasCollisionLoadedAroundEntity(Game.PlayerPed.Handle))
+                    {
+                        // If this takes too long, then just abort, it's not worth waiting that long since we haven't found the real ground coord yet anyway.
+                        if (GetGameTimer() - tempTimer > 1000)
+                        {
+                            Log("Waiting for the collision is taking too long (more than 1s). Breaking from wait loop.");
+                            break;
+                        }
+                        await Delay(0);
+                    }
+
+                    // Check for a ground z coord.
+                    found = GetGroundZFor_3dCoord(pos.X, pos.Y, z, ref groundZ, false);
+
+                    // If we found a ground z coord, then teleport the player (or their vehicle) to that new location and break from the loop.
+                    if (found)
+                    {
+                        Log($"Ground coordinate found: {groundZ}");
+                        if (inVehicle())
+                        {
+                            SetEntityCoords(veh.Handle, pos.X, pos.Y, groundZ, false, false, false, true);
+
+                            // We need to unfreeze the vehicle because sometimes having it frozen doesn't place the vehicle on the ground properly.
+                            veh.IsPositionFrozen = false;
+                            veh.PlaceOnGround();
+                            // Re-freeze until screen is faded in again.
+                            veh.IsPositionFrozen = true;
+                        }
+                        else
+                        {
+                            SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, groundZ, false, false, false, true);
+                        }
                         break;
                     }
-                    //Debug.WriteLine(z.ToString());
-                    z = z + 10f;
-                    if (z > 900)
-                    {
-                        z = 5;
-                    }
+
+                    // Wait 10ms before trying the next location.
+                    await Delay(10);
                 }
-                if (!failed)
+
+                // If the loop ends but the ground z coord has not been found yet, then get the nearest vehicle node as a fail-safe coord.
+                if (!found)
                 {
-                    if (inCar)
-                        SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ);
-                    else
-                        SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, outputZ, false, false, false, true);
-                }
-                await Delay(200);
-                failed = IsEntityInWater(Game.PlayerPed.Handle) || GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 50f || failed;
-                if (failed)
-                {
-                    GiveWeaponToPed(Game.PlayerPed.Handle, (uint)WeaponHash.Parachute, 1, false, true);
-                    Vector3 safePos = pos;
-                    safePos.Z = 810f;
-                    var foundSafeSpot = GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
-                    if (foundSafeSpot)
+                    var safePos = pos;
+                    GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
+
+                    // Notify the user that the ground z coord couldn't be found, so we will place them on a nearby road instead.
+                    Notify.Alert("Could not find a safe ground coord. Placing you on the nearest road instead.");
+                    Log("Could not find a safe ground coord. Placing you on the nearest road instead.");
+
+                    // Teleport vehicle, or player.
+                    if (inVehicle())
                     {
-                        Notify.Alert("No suitable location found near target coordinates. Teleporting to the nearest suitable spawn location as a backup method.");
-                        if (inCar)
-                            SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z);
-                        else
-                            SetEntityCoords(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                        SetEntityCoords(veh.Handle, safePos.X, safePos.Y, safePos.Z, false, false, false, true);
+                        veh.IsPositionFrozen = false;
+                        veh.PlaceOnGround();
+                        veh.IsPositionFrozen = true;
                     }
                     else
                     {
-                        Notify.Alert("Failed to find a suitable location, backup method #1 failed, only backup method #2 remains: Open your parachute!");
-                        if (inCar)
-                            SetPedCoordsKeepVehicle(Game.PlayerPed.Handle, pos.X, pos.Y, 810f);
-                        else
-                            SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, 810f, false, false, false, true);
+                        SetEntityCoords(Game.PlayerPed.Handle, safePos.X, safePos.Y, safePos.Z, false, false, false, true);
                     }
                 }
+
+                // Once the teleporting is done, unfreeze vehicle or player and fade them back in.
+                if (inVehicle())
+                {
+                    NetworkFadeInEntity(veh.Handle, true);
+                    veh.IsPositionFrozen = false;
+                }
+                else
+                {
+                    NetworkFadeInEntity(Game.PlayerPed.Handle, true);
+                    Game.PlayerPed.IsPositionFrozen = false;
+                }
+
+                // Fade screen in and reset the camera angle.
+                DoScreenFadeIn(500);
+                SetGameplayCamRelativePitch(0.0f, 1.0f);
             }
+
+            // Disable safe teleporting and go straight to the specified coords.
             else
             {
+                RequestCollisionAtCoord(pos.X, pos.Y, pos.Z);
+
+                // Teleport directly to the coords without trying to get a safe z pos.
                 if (Game.PlayerPed.IsInVehicle() && GetVehicle().Driver == Game.PlayerPed)
                 {
                     SetEntityCoords(GetVehicle().Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
@@ -441,14 +541,6 @@ namespace vMenuClient
                 {
                     SetEntityCoords(Game.PlayerPed.Handle, pos.X, pos.Y, pos.Z, false, false, false, true);
                 }
-            }
-            if (Game.PlayerPed.IsInVehicle())
-            {
-                FreezeEntityPosition(GetVehiclePedIsIn(Game.PlayerPed.Handle, false), false);
-            }
-            else
-            {
-                Game.PlayerPed.IsPositionFrozen = false;
             }
         }
 
@@ -460,7 +552,6 @@ namespace vMenuClient
             if (Game.IsWaypointActive)
             {
                 var pos = World.WaypointPosition;
-                pos.Z = Game.PlayerPed.Position.Z;
                 await TeleportToCoords(pos);
             }
             else
@@ -973,7 +1064,9 @@ namespace vMenuClient
             {
                 NeedsToBeHotwired = false,
                 PreviouslyOwnedByPlayer = true,
-                IsPersistent = true
+                IsPersistent = true,
+                IsStolen = false,
+                IsWanted = false
             };
 
             Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} " +
@@ -1417,30 +1510,41 @@ namespace vMenuClient
         /// </summary>
         public static async void SetLicensePlateCustomText()
         {
-            // Get the input.
-            var text = await GetUserInput(windowTitle: "Enter License Plate", maxInputLength: 8);
-            // If the input is valid.
-            if (!string.IsNullOrEmpty(text))
+            // Get the vehicle.
+            var veh = GetVehicle();
+            // If it exists.
+            if (veh != null && veh.Exists())
             {
-                // Get the vehicle.
-                var veh = GetVehicle();
-                // If it exists.
-                if (veh != null && veh.Exists())
+                if (Game.PlayerPed == veh.Driver)
                 {
-                    // Set the license plate.
-                    SetVehicleNumberPlateText(veh.Handle, text);
+                    // Get the input.
+                    var text = await GetUserInput(windowTitle: "Enter License Plate", defaultText: veh.Mods.LicensePlate ?? "", maxInputLength: 8);
+                    // If the input is valid.
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        // Set the license plate.
+                        SetVehicleNumberPlateText(veh.Handle, text);
+                    }
+                    // No valid text was given.
+                    else
+                    {
+                        Notify.Error(CommonErrors.InvalidInput);
+                    }
                 }
-                // If it doesn't exist, notify the user.
                 else
                 {
-                    Notify.Error(CommonErrors.NoVehicle);
+                    Notify.Error(CommonErrors.NeedToBeTheDriver);
                 }
+
+
+
             }
-            // No valid text was given.
+            // If it doesn't exist, notify the user.
             else
             {
-                Notify.Error(CommonErrors.InvalidInput);
+                Notify.Error(CommonErrors.NoVehicle);
             }
+
 
         }
         #endregion
@@ -1840,7 +1944,7 @@ namespace vMenuClient
                 }
                 if (keepWeapons)
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, false);
                 }
                 if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
                 {
@@ -2155,7 +2259,7 @@ namespace vMenuClient
                 {
                     foreach (ValidWeapon vw in ValidWeapons.WeaponList)
                     {
-                        if (HasPedGotWeapon(PlayerPedId(), vw.Hash, false))
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                         {
                             SetPedAmmo(Game.PlayerPed.Handle, vw.Hash, ammo);
                         }
@@ -2209,11 +2313,10 @@ namespace vMenuClient
                 {
                     Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
                 }
-
             }
             else
             {
-                Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name.");
+                Notify.Error(CommonErrors.InvalidInput);
             }
         }
         #endregion
@@ -2246,7 +2349,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="saveName"></param>
         /// <param name="appendWeapons"></param>
-        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms)
+        public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms, bool dontNotify)
         {
 
             var loadout = GetSavedWeaponLoadout(saveName);
@@ -2289,14 +2392,14 @@ namespace vMenuClient
                 }
 
                 // Check if any weapon is not allowed.
-                if (loadout.Any((wp) => !IsAllowed(wp.Perm)))
+                if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
                 {
                     Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
                 }
 
                 foreach (ValidWeapon w in loadout)
                 {
-                    if (IsAllowed(w.Perm))
+                    if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
                         GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo, false, true);
@@ -2342,7 +2445,7 @@ namespace vMenuClient
                 // Set the current weapon to 'unarmed'.
                 SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
 
-                if (saveName != "vmenu_temp_weapons_loadout_before_respawn")
+                if (!(saveName == "vmenu_temp_weapons_loadout_before_respawn" || dontNotify))
                     Notify.Success("Weapon loadout spawned.");
             }
         }
@@ -2608,5 +2711,37 @@ namespace vMenuClient
             return name.Replace("^", @"\^").Replace("~", @"\~").Replace("<", "«").Replace(">", "»");
         }
         #endregion
+
+
+        #region Map (math util) function
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static float Map(float value, float min_in, float max_in, float min_out, float max_out)
+        {
+            return (value - min_in) * (max_out - min_out) / (max_in - min_in) + min_out;
+        }
+
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static double Map(double value, double min_in, double max_in, double min_out, double max_out)
+        {
+            return (value - min_in) * (max_out - min_out) / (max_in - min_in) + min_out;
+        }
+        #endregion
+
     }
 }

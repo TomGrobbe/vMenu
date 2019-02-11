@@ -20,7 +20,7 @@ namespace vMenuClient
         //public static MenuPool Mp { get; } = new MenuPool();
 
         private bool firstTick = true;
-        public static bool PermissionsSetupComplete = false;
+        public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
         public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
@@ -287,31 +287,32 @@ namespace vMenuClient
 
             VehicleSpawner.allowedCategories = new List<bool>()
             {
-                IsAllowed(Permission.VSCompacts),
-                IsAllowed(Permission.VSSedans),
-                IsAllowed(Permission.VSSUVs),
-                IsAllowed(Permission.VSCoupes),
-                IsAllowed(Permission.VSMuscle),
-                IsAllowed(Permission.VSSportsClassic),
-                IsAllowed(Permission.VSSports),
-                IsAllowed(Permission.VSSuper),
-                IsAllowed(Permission.VSMotorcycles),
-                IsAllowed(Permission.VSOffRoad),
-                IsAllowed(Permission.VSIndustrial),
-                IsAllowed(Permission.VSUtility),
-                IsAllowed(Permission.VSVans),
-                IsAllowed(Permission.VSCycles),
-                IsAllowed(Permission.VSBoats),
-                IsAllowed(Permission.VSHelicopters),
-                IsAllowed(Permission.VSPlanes),
-                IsAllowed(Permission.VSService),
-                IsAllowed(Permission.VSEmergency),
-                IsAllowed(Permission.VSMilitary),
-                IsAllowed(Permission.VSCommercial),
-                IsAllowed(Permission.VSTrains),
+                IsAllowed(Permission.VSCompacts, checkAnyway: true),
+                IsAllowed(Permission.VSSedans, checkAnyway: true),
+                IsAllowed(Permission.VSSUVs, checkAnyway: true),
+                IsAllowed(Permission.VSCoupes, checkAnyway: true),
+                IsAllowed(Permission.VSMuscle, checkAnyway: true),
+                IsAllowed(Permission.VSSportsClassic, checkAnyway: true),
+                IsAllowed(Permission.VSSports, checkAnyway: true),
+                IsAllowed(Permission.VSSuper, checkAnyway: true),
+                IsAllowed(Permission.VSMotorcycles, checkAnyway: true),
+                IsAllowed(Permission.VSOffRoad, checkAnyway: true),
+                IsAllowed(Permission.VSIndustrial, checkAnyway: true),
+                IsAllowed(Permission.VSUtility, checkAnyway: true),
+                IsAllowed(Permission.VSVans, checkAnyway: true),
+                IsAllowed(Permission.VSCycles, checkAnyway: true),
+                IsAllowed(Permission.VSBoats, checkAnyway: true),
+                IsAllowed(Permission.VSHelicopters, checkAnyway: true),
+                IsAllowed(Permission.VSPlanes, checkAnyway: true),
+                IsAllowed(Permission.VSService, checkAnyway: true),
+                IsAllowed(Permission.VSEmergency, checkAnyway: true),
+                IsAllowed(Permission.VSMilitary, checkAnyway: true),
+                IsAllowed(Permission.VSCommercial, checkAnyway: true),
+                IsAllowed(Permission.VSTrains, checkAnyway: true),
             };
+            ArePermissionsSetup = true;
 
-            PermissionsSetupComplete = true;
+            TriggerServerEvent("vMenu:IsResourceUpToDate");
         }
         #endregion
 
@@ -371,10 +372,12 @@ namespace vMenuClient
                 if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
                 {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 100, true);
                 }
                 else
                 {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
+                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 0, true);
                 }
                 // Manage other stats.
                 StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
@@ -383,6 +386,12 @@ namespace vMenuClient
                 StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
                 StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
                 StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP1_STRENGTH"), 100, true);
+                StatSetInt((uint)GetHashKey("MP1_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP1_WHEELIE_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP1_FLYING_ABILITY"), 100, true);
+                StatSetInt((uint)GetHashKey("MP1_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
+                StatSetInt((uint)GetHashKey("MP1_STEALTH_ABILITY"), 100, true);
             }
             #endregion
 
@@ -449,7 +458,7 @@ namespace vMenuClient
                             if (Game.PlayerPed.IsInVehicle())
                             {
                                 Vehicle veh = GetVehicle();
-                                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                                if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
                                 {
                                     NoClipEnabled = !NoClipEnabled;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
@@ -458,7 +467,7 @@ namespace vMenuClient
                                 {
                                     NoClipEnabled = false;
                                     MenuController.DontOpenAnyMenu = NoClipEnabled;
-                                    Notify.Error("You need to be the driver of this vehicle to enable noclip!");
+                                    Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
                                 }
                             }
                             else
@@ -571,7 +580,6 @@ namespace vMenuClient
                 AddMenu(menu, button);
             }
 
-            var vl = new Vehicles().VehicleClasses;
             // Add the vehicle spawner menu.
             if (IsAllowed(Permission.VSMenu))
             {

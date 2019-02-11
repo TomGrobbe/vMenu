@@ -30,6 +30,7 @@ namespace vMenuClient
         public bool PlayerIsIgnored { get; private set; } = UserDefaults.EveryoneIgnorePlayer;
         public bool PlayerStayInVehicle { get; private set; } = UserDefaults.PlayerStayInVehicle;
         public bool PlayerFrozen { get; private set; } = false;
+        private Menu CustomDrivingStyleMenu = new Menu("Driving Style", "Custom Driving Style");
 
         /// <summary>
         /// Creates the menu.
@@ -45,9 +46,9 @@ namespace vMenuClient
             MenuCheckboxItem invisibleCheckbox = new MenuCheckboxItem("Invisible", "Makes you invisible to yourself and others.", PlayerInvisible);
             MenuCheckboxItem unlimitedStaminaCheckbox = new MenuCheckboxItem("Unlimited Stamina", "Allows you to run forever without slowing down or taking damage.", PlayerStamina);
             MenuCheckboxItem fastRunCheckbox = new MenuCheckboxItem("Fast Run", "Get ~g~Snail~s~ powers and run very fast!", PlayerFastRun);
-            SetRunSprintMultiplierForPlayer(Game.Player.Handle, (PlayerFastRun ? 1.49f : 1f));
+            SetRunSprintMultiplierForPlayer(Game.Player.Handle, (PlayerFastRun && IsAllowed(Permission.POFastRun) ? 1.49f : 1f));
             MenuCheckboxItem fastSwimCheckbox = new MenuCheckboxItem("Fast Swim", "Get ~g~Snail 2.0~s~ powers and swim super fast!", PlayerFastSwim);
-            SetSwimMultiplierForPlayer(Game.Player.Handle, (PlayerFastSwim ? 1.49f : 1f));
+            SetSwimMultiplierForPlayer(Game.Player.Handle, (PlayerFastSwim && IsAllowed(Permission.POFastSwim) ? 1.49f : 1f));
             MenuCheckboxItem superJumpCheckbox = new MenuCheckboxItem("Super Jump", "Get ~g~Snail 3.0~s~ powers and jump like a champ!", PlayerSuperJump);
             MenuCheckboxItem noRagdollCheckbox = new MenuCheckboxItem("No Ragdoll", "Disables player ragdoll, makes you not fall off your bike anymore.", PlayerNoRagdoll);
             MenuCheckboxItem neverWantedCheckbox = new MenuCheckboxItem("Never Wanted", "Disables all wanted levels.", PlayerNeverWanted);
@@ -70,10 +71,12 @@ namespace vMenuClient
 
             MenuController.AddSubmenu(menu, vehicleAutoPilot);
 
-            MenuItem vehicleAutoPilotBtn = new MenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.");
-            vehicleAutoPilotBtn.Label = "→→→";
+            MenuItem vehicleAutoPilotBtn = new MenuItem("Vehicle Auto Pilot Menu", "Manage vehicle auto pilot options.")
+            {
+                Label = "→→→"
+            };
 
-            List<string> drivingStyles = new List<string>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse" };
+            List<string> drivingStyles = new List<string>() { "Normal", "Rushed", "Avoid highways", "Drive in reverse", "Custom" };
             MenuListItem drivingStyle = new MenuListItem("Driving Style", drivingStyles, 0, "Set the driving style that is used for the Drive to Waypoint and Drive Around Randomly functions.");
 
             // Scenarios (list can be found in the PedScenarios class)
@@ -161,6 +164,56 @@ namespace vMenuClient
                 MenuItem startDrivingRandomly = new MenuItem("Drive Around Randomly", "Make your player ped drive your vehicle randomly around the map.");
                 MenuItem stopDriving = new MenuItem("Stop Driving", "The player ped will find a suitable place to stop the vehicle. The task will be stopped once the vehicle has reached the suitable stop location.");
                 MenuItem forceStopDriving = new MenuItem("Force Stop Driving", "This will stop the driving task immediately without finding a suitable place to stop.");
+                MenuItem customDrivingStyle = new MenuItem("Custom Driving Style", "Select a custom driving style. Make sure to also enable it by selecting the 'Custom' driving style in the driving styles list.") { Label = "→→→" };
+                MenuController.AddSubmenu(vehicleAutoPilot, CustomDrivingStyleMenu);
+                vehicleAutoPilot.AddMenuItem(customDrivingStyle);
+                MenuController.BindMenuItem(vehicleAutoPilot, CustomDrivingStyleMenu, customDrivingStyle);
+                Dictionary<int, string> knownNames = new Dictionary<int, string>()
+                {
+                    { 0, "Stop before vehicles" },
+                    { 1, "Stop before peds" },
+                    { 2, "Avoid vehicles" },
+                    { 3, "Avoid empty vehicles" },
+                    { 4, "Avoid peds" },
+                    { 5, "Avoid objects" },
+
+                    { 7, "Stop at traffic lights" },
+                    { 8, "Use blinkers" },
+                    { 9, "Allow going wrong way" },
+                    { 10, "Go in reverse gear" },
+
+                    { 18, "Use shortest path" },
+
+                    { 22, "Ignore roads" },
+
+                    { 24, "Ignore all pathing" },
+
+                    { 29, "Avoid highways (if possible)" },
+                };
+                for (var i = 0; i < 31; i++)
+                {
+                    string name = "~r~Unknown Flag";
+                    if (knownNames.ContainsKey(i))
+                    {
+                        name = knownNames[i];
+                    }
+                    MenuCheckboxItem checkbox = new MenuCheckboxItem(name, "Toggle this driving style flag.", false);
+                    CustomDrivingStyleMenu.AddMenuItem(checkbox);
+                }
+                CustomDrivingStyleMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+                {
+                    int style = GetStyleFromIndex(drivingStyle.ListIndex);
+                    CustomDrivingStyleMenu.MenuSubtitle = $"custom style: {style}";
+                    if (drivingStyle.ListIndex == 4)
+                    {
+                        Notify.Custom("Driving style updated.");
+                        SetDriveTaskDrivingStyle(Game.PlayerPed.Handle, style);
+                    }
+                    else
+                    {
+                        Notify.Custom("Driving style NOT updated because you haven't enabled the Custom driving style in the previous menu.");
+                    }
+                };
 
                 vehicleAutoPilot.AddMenuItem(startDrivingWaypoint);
                 vehicleAutoPilot.AddMenuItem(startDrivingRandomly);
@@ -234,7 +287,6 @@ namespace vMenuClient
                                     Notify.Info("The player ped has stopped driving.");
                                 }
                             }
-
                         }
                         else
                         {
@@ -318,6 +370,14 @@ namespace vMenuClient
                 else if (item == neverWantedCheckbox)
                 {
                     PlayerNeverWanted = _checked;
+                    if (!_checked)
+                    {
+                        SetMaxWantedLevel(5);
+                    }
+                    else
+                    {
+                        SetMaxWantedLevel(0);
+                    }
                 }
                 // Everyone ignores player toggled.
                 else if (item == everyoneIgnoresPlayerCheckbox)
@@ -408,6 +468,28 @@ namespace vMenuClient
 
         }
 
+        private int GetCustomDrivingStyle()
+        {
+            var items = CustomDrivingStyleMenu.GetMenuItems();
+            var flags = new int[items.Count];
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (item is MenuCheckboxItem checkbox)
+                {
+                    flags[i] = checkbox.Checked ? 1 : 0;
+                }
+            }
+            string binaryString = "";
+            var reverseFlags = flags.Reverse();
+            foreach (int i in reverseFlags)
+            {
+                binaryString += i;
+            }
+            var binaryNumber = Convert.ToUInt32(binaryString, 2);
+            return (int)binaryNumber;
+        }
+
         private int GetStyleFromIndex(int index)
         {
             int style = 0;
@@ -424,6 +506,9 @@ namespace vMenuClient
                     break;
                 case 3:
                     style = 1467; // Go in reverse
+                    break;
+                case 4:
+                    style = GetCustomDrivingStyle(); // custom driving style;
                     break;
                 default:
                     style = 0; // no style (impossible, but oh well)

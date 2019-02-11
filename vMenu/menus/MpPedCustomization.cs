@@ -461,13 +461,17 @@ namespace vMenuClient
                     int currentVariationIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Key : GetPedDrawableVariation(Game.PlayerPed.Handle, i);
                     int currentVariationTextureIndex = editPed && currentCharacter.DrawableVariations.clothes.ContainsKey(i) ? currentCharacter.DrawableVariations.clothes[i].Value : GetPedTextureVariation(Game.PlayerPed.Handle, i);
 
+                    int maxDrawables = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i);
+
                     List<string> items = new List<string>();
-                    for (int x = 0; x < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i); x++)
+                    for (int x = 0; x < maxDrawables; x++)
                     {
-                        items.Add($"Drawable #{x} (of {GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, i)})");
+                        items.Add($"Drawable #{x} (of {maxDrawables})");
                     }
 
-                    MenuListItem listItem = new MenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex}.");
+                    int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, i, currentVariationIndex);
+
+                    MenuListItem listItem = new MenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex + 1} (of {maxTextures}).");
                     clothesMenu.AddMenuItem(listItem);
                 }
             }
@@ -493,9 +497,11 @@ namespace vMenuClient
                 }
                 propsList.Add("No Prop");
 
+
                 if (GetPedPropIndex(Game.PlayerPed.Handle, propId) != -1)
                 {
-                    MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture}.");
+                    int maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propId, currentProp);
+                    MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture + 1} (of {maxPropTextures}).");
                     propsMenu.AddMenuItem(propListItem);
                 }
                 else
@@ -519,22 +525,22 @@ namespace vMenuClient
                     }
                     else
                     {
-                        if (currentCharacter.FaceShapeFeatures.features.ContainsKey(faceShapeMenu.GetMenuItems().IndexOf(item)))
+                        if (currentCharacter.FaceShapeFeatures.features.ContainsKey(item.Index))
                         {
-                            item.Position = (int)(currentCharacter.FaceShapeFeatures.features[faceShapeMenu.GetMenuItems().IndexOf(item)] * 10f) + 10;
-                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.GetMenuItems().IndexOf(item), currentCharacter.FaceShapeFeatures.features[faceShapeMenu.GetMenuItems().IndexOf(item)]);
+                            item.Position = (int)(currentCharacter.FaceShapeFeatures.features[item.Index] * 10f) + 10;
+                            SetPedFaceFeature(Game.PlayerPed.Handle, item.Index, currentCharacter.FaceShapeFeatures.features[item.Index]);
                         }
                         else
                         {
                             item.Position = 10;
-                            SetPedFaceFeature(Game.PlayerPed.Handle, faceShapeMenu.GetMenuItems().IndexOf(item), 0f);
+                            SetPedFaceFeature(Game.PlayerPed.Handle, item.Index, 0f);
                         }
                     }
                 }
                 else
                 {
                     item.Position = 10;
-                    SetPedFaceFeature(PlayerPedId(), faceShapeMenu.GetMenuItems().IndexOf(item), 0f);
+                    SetPedFaceFeature(Game.PlayerPed.Handle, item.Index, 0f);
                 }
             }
             #endregion
@@ -707,14 +713,20 @@ namespace vMenuClient
             // Create the menu.
             menu = new Menu("vMenu", "About vMenu");
 
-            MenuItem createMale = new MenuItem("Create Male Character", "Create a new male character.");
-            createMale.Label = "→→→";
+            MenuItem createMale = new MenuItem("Create Male Character", "Create a new male character.")
+            {
+                Label = "→→→"
+            };
 
-            MenuItem createFemale = new MenuItem("Create Female Character", "Create a new female character.");
-            createFemale.Label = "→→→";
+            MenuItem createFemale = new MenuItem("Create Female Character", "Create a new female character.")
+            {
+                Label = "→→→"
+            };
 
-            MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.");
-            savedCharacters.Label = "→→→";
+            MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.")
+            {
+                Label = "→→→"
+            };
 
             MenuController.AddMenu(createCharacterMenu);
             //MainMenu.Mp.Add(createCharacterMenu);
@@ -801,7 +813,7 @@ namespace vMenuClient
 
             var inheritanceDads = new MenuListItem("Father", parents, 0, "Select a father.");
             var inheritanceMoms = new MenuListItem("Mother", parents, 0, "Select a mother.");
-            List<float> mixValues = new List<float>() { 0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1f };
+            List<float> mixValues = new List<float>() { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
             var inheritanceShapeMix = new MenuSliderItem("Head Shape Mix", "Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
             var inheritanceSkinMix = new MenuSliderItem("Body Skin Mix", "Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
 
@@ -857,7 +869,6 @@ namespace vMenuClient
             // manage the list changes for appearance items.
             appearanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
-                //int itemIndex = sender.MenuItems.IndexOf(item);
                 if (itemIndex == 0) // hair style
                 {
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
@@ -997,8 +1008,6 @@ namespace vMenuClient
             // manage the slider changes for opacity on the appearance items.
             appearanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
-                //int itemIndex = sender.MenuItems.IndexOf(item);
-
                 if (itemIndex > 2 && itemIndex < 31)
                 {
 
@@ -1077,8 +1086,6 @@ namespace vMenuClient
             #region clothes
             clothesMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, realIndex) =>
             {
-                //int realIndex = sender.MenuItems.IndexOf(item);
-
                 int componentIndex = realIndex + 1;
                 if (realIndex > 0)
                 {
@@ -1092,16 +1099,17 @@ namespace vMenuClient
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
                 }
+
+                int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, newSelectionIndex);
+
                 currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(newSelectionIndex, newTextureIndex);
-                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                //clothesMenu.UpdateScaleform();
+                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxTextures}).";
             };
 
             clothesMenu.OnListItemSelect += (sender, listItem, listIndex, realIndex) =>
             {
-                //int realIndex = sender.MenuItems.IndexOf(item);
-                int componentIndex = realIndex + 1;
-                if (realIndex > 0)
+                int componentIndex = realIndex + 1; // skip face options as that fucks up with inheritance faces
+                if (realIndex > 0) // skip hair features as that is done in the appeareance menu
                 {
                     componentIndex += 1;
                 }
@@ -1113,16 +1121,17 @@ namespace vMenuClient
                 {
                     currentCharacter.DrawableVariations.clothes = new Dictionary<int, KeyValuePair<int, int>>();
                 }
+
+                int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, listIndex);
+
                 currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(listIndex, newTextureIndex);
-                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex}.";
-                //clothesMenu.UpdateScaleform();
+                listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxTextures}).";
             };
             #endregion
 
             #region props
             propsMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, realIndex) =>
             {
-                //int realIndex = sender.MenuItems.IndexOf(item);
                 int propIndex = realIndex;
                 if (realIndex == 3)
                 {
@@ -1159,15 +1168,14 @@ namespace vMenuClient
                     }
                     else
                     {
-                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, newSelectionIndex) - 1}).";
+                        int maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, newSelectionIndex);
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{textureIndex + 1} (of {maxPropTextures}).";
                     }
                 }
-                //propsMenu.UpdateScaleform();
             };
 
             propsMenu.OnListItemSelect += (sender, listItem, listIndex, realIndex) =>
             {
-                //int realIndex = sender.MenuItems.IndexOf(item);
                 int propIndex = realIndex;
                 if (realIndex == 3)
                 {
@@ -1205,7 +1213,8 @@ namespace vMenuClient
                     }
                     else
                     {
-                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex} (of {GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, listIndex) - 1}).";
+                        int maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, listIndex);
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxPropTextures}).";
                     }
                 }
                 //propsMenu.UpdateScaleform();
@@ -1236,9 +1245,56 @@ namespace vMenuClient
             Neck_Thikness  
             */
 
-            List<float> faceFeaturesValuesList = new List<float>() { -1f, -.9f, -.8f, -.7f, -.6f, -.5f, -.4f, -.3f, -.2f, -.1f, 0f, .1f, .2f, .3f, .4f, .5f, .6f, .7f, .8f, .9f, 1f };
-            var faceFeaturesNamesList = new string[20] { "Nose Width", "Noes Peak Height", "Nose Peak Length", "Nose Bone Height", "Nose Peak Lowering", "Nose Bone Twist", "Eyebrows Height", "Eyebrows Depth", "Cheekbones Height", "Cheekbones Width", "Cheeks Width", "Eyes Opening", "Lips Thickness", "Jaw Bone Width", "Jaw Bone Depth/Length", "Chin Height", "Chin Depth/Length", "Chin Width", "Chin Hole Size", "Neck Thickness" };
-            for (int i = 0; i < 19; i++)
+            List<float> faceFeaturesValuesList = new List<float>()
+            {
+               -1.0f,    // 0
+               -0.9f,    // 1
+               -0.8f,    // 2
+               -0.7f,    // 3
+               -0.6f,    // 4
+               -0.5f,    // 5
+               -0.4f,    // 6
+               -0.3f,    // 7
+               -0.2f,    // 8
+               -0.1f,    // 9
+                0.0f,    // 10
+                0.1f,    // 11
+                0.2f,    // 12
+                0.3f,    // 13
+                0.4f,    // 14
+                0.5f,    // 15
+                0.6f,    // 16
+                0.7f,    // 17
+                0.8f,    // 18
+                0.9f,    // 19
+                1.0f     // 20
+            };
+
+            var faceFeaturesNamesList = new string[20]
+            {
+                "Nose Width",               // 0
+                "Noes Peak Height",         // 1
+                "Nose Peak Length",         // 2
+                "Nose Bone Height",         // 3
+                "Nose Peak Lowering",       // 4
+                "Nose Bone Twist",          // 5
+                "Eyebrows Height",          // 6
+                "Eyebrows Depth",           // 7
+                "Cheekbones Height",        // 8
+                "Cheekbones Width",         // 9
+                "Cheeks Width",             // 10
+                "Eyes Opening",             // 11
+                "Lips Thickness",           // 12
+                "Jaw Bone Width",           // 13
+                "Jaw Bone Depth/Length",    // 14
+                "Chin Height",              // 15
+                "Chin Depth/Length",        // 16
+                "Chin Width",               // 17
+                "Chin Hole Size",           // 18
+                "Neck Thickness"            // 19
+            };
+
+            for (int i = 0; i < 20; i++)
             {
                 MenuSliderItem faceFeature = new MenuSliderItem(faceFeaturesNamesList[i], $"Set the {faceFeaturesNamesList[i]} face feature value.", 0, 20, 10, true);
                 faceShapeMenu.AddMenuItem(faceFeature);
@@ -1669,7 +1725,7 @@ namespace vMenuClient
 
                 #region headblend
                 var data = currentCharacter.PedHeadBlendData;
-                SetPedHeadBlendData(Game.PlayerPed.Handle, data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, data.ParentThirdUnkPercent, data.IsParentInheritance);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, 0f, data.IsParentInheritance);
 
                 while (!HasPedHeadBlendFinished(Game.PlayerPed.Handle))
                 {
@@ -1834,8 +1890,10 @@ namespace vMenuClient
             MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
             MenuItem setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
             MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
-            MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!");
-            delPed.LeftIcon = MenuItem.Icon.WARNING;
+            MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!")
+            {
+                LeftIcon = MenuItem.Icon.WARNING
+            };
             manageSavedCharacterMenu.AddMenuItem(spawnPed);
             manageSavedCharacterMenu.AddMenuItem(editPed);
             manageSavedCharacterMenu.AddMenuItem(clonePed);
@@ -2000,8 +2058,10 @@ namespace vMenuClient
                 foreach (string item in names)
                 {
                     var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
-                    MenuItem btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.");
-                    btn.Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→";
+                    MenuItem btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.")
+                    {
+                        Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→"
+                    };
                     if (defaultChar == "mp_ped_" + item)
                     {
                         btn.LeftIcon = MenuItem.Icon.TICK;

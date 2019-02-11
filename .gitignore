@@ -262,3 +262,5 @@ __pycache__/
 dependencies/shared/vMenuShared\.net\.dll
 
 external/
+
+*.cmd

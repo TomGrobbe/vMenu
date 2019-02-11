@@ -28594,6 +28594,11 @@
             Returns the name of the currently executing resource.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_CURRENT_SERVER_ENDPOINT">
+            <summary>
+            Returns the peer address of the remote game server that the user is currently connected to.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_DEFAULT_SCRIPT_RENDERTARGET_RENDER_ID">
             <summary>
             This function is hard-coded to always return 1.
@@ -28824,6 +28829,30 @@
             <summary>
             Returns TRUE if it found an entity in your crosshair within range of your weapon. Assigns the handle of the target to the *entity that you pass it.  
             Returns false if no entity found.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_ENTITY_POPULATION_TYPE">
+            <summary>
+            Gets an entity's population type.
+            
+            **Valid population types:**
+            
+            ```cpp
+            enum ePopulationType
+            {
+            	POPTYPE_UNKNOWN = 0,
+            	POPTYPE_RANDOM_PERMANENT,
+            	POPTYPE_RANDOM_PARKED,
+            	POPTYPE_RANDOM_PATROL,
+            	POPTYPE_RANDOM_SCENARIO,
+            	POPTYPE_RANDOM_AMBIENT,
+            	POPTYPE_PERMANENT,
+            	POPTYPE_MISSION,
+            	POPTYPE_REPLAY,
+            	POPTYPE_CACHE,
+            	POPTYPE_TOOL
+            };
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_ENTITY_QUATERNION">
@@ -29094,11 +29123,15 @@
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_LANDING_GEAR_STATE">
             <summary>
-            landing gear states:  
+            ```
+            Landing gear states:  
             0: Deployed  
-            1: Closing  
-            2: Opening  
-            3: Retracted
+            1: Closing (Retracting)
+            3: Opening (Deploying)
+            4: Retracted  
+            ```
+            
+            Landing gear state 2 is never used.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_LAST_DRIVEN_VEHICLE">
@@ -30159,7 +30192,7 @@
             Corrected p1. it's basically the 'carriage/trailer number'. So if the train has 3 trailers you'd call the native once with a var or 3 times with 1, 2, 3.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ACCELERATION">
+        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ALARM_TIME_LEFT">
             <summary>
             static - max acceleration
             </summary>
@@ -32180,6 +32213,11 @@
             <summary>
             normal - transition like when your coming out of LSC  
             slow - transition like when you walk into a mission
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.NETWORK_GET_ENTITY_OWNER">
+            <summary>
+            Returns the owner ID of the specified entity.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.NETWORK_GET_HOST_OF_SCRIPT">
@@ -39047,16 +39085,6 @@
             NOTE: The name and description of this native are based on independent research. If you find this native to be more suitable under a different name and/or described differently, please feel free to do so.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash._GET_ENTITY_POPULATION_TYPE">
-            <summary>
-            Console Hash: 0xFC30DDFF  
-            Returns range from 0-10  
-            --------------------------------------------------------------  
-            The type name can be retrieved by using this:  
-            typedef LPSTR(__fastcall *GetEntityPopulationTypeName_t)(unsigned __int16 entityPopulationType, bool scriptName);  
-            	GetEntityPopulationTypeName_t GetEntityPopulationTypeName = (GetEntityPopulationTypeName_t)FindPattern("44 0F B7 C1 4C 8D 0D ?? ?? ?? ?? 41 83 F8 07");
-            </summary>
-        </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_EXTRA_TIMECYCLE_MODIFIER_INDEX">
             <summary>
             See [`GetTimecycleModifierIndex`](#_0xFDF3D97C674AFB66) for use, works the same just for the secondary timecycle modifier.
@@ -39603,6 +39631,34 @@
         <member name="F:CitizenFX.Core.Native.Hash._GET_VEHICLE_CLASS_MAX_SPEED">
             <summary>
             GET_VEHICLE_CLASS_MAX_*
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._GET_VEHICLE_HEADLIGHTS_COLOUR">
+            <summary>
+            Returns the headlight color index from the vehicle. Value between 0, 12.
+            Use [\_SET_VEHICLE_HEADLIGHTS_COLOUR](#_0xE41033B25D003A07) to set the headlights color for the vehicle.
+            Must enable xenon headlights before it'll take affect.
+            
+            List of colors and ids:
+            
+            ```
+            enum headlightColors {
+                Default = -1,
+                White = 0,
+                Blue = 1,
+                Electric_Blue = 2,
+                Mint_Green = 3,
+                Lime_Green = 4,
+                Yellow = 5,
+                Golden_Shower = 6,
+                Orange = 7,
+                Red = 8,
+                Pony_Pink = 9,
+                Hot_Pink = 10,
+                Purple = 11,
+                Blacklight = 12
+            }
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_VEHICLE_HORN_HASH">
@@ -41520,6 +41576,23 @@
             	ENTITY::SET_ENTITY_INVINCIBLE(iParam0, true);  
             	VEHICLE::_0xDF594D8D(iParam0, true);  
             }
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_VEHICLE_TRANSFORM_STATE">
+            <summary>
+            According to decompiled scripts this should work with the `deluxo` and `oppressor2` vehicles.
+            I've only seen this work for `deluxo` though, can't figure out what it's supposed to do on `oppressor2`.
+            
+            For the deluxo:
+            
+            -   Set `state` to `0.0`: Fully transform to a 'road' vehicle (non-hover mode).
+            -   Set `state` to `1.0`: Fully transform to a 'flying' vehicle (hover mode).
+            
+            If you set it to something like 0.5, then something [weird happens](https://streamable.com/p6wmr), you end up in some 50% hover mode, 50% not hover mode.
+            
+            This doesn't need to be called every tick, just once and the vehicle will transform to that state at the usual transform speed. It'll just stop transforming when it reaches the state you provided.
+            
+            Once this native is used then players will just be able to hit the vehicle transform key to toggle the transformation cycle; it won't block users from using the key.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_VERTICAL_FLIGHT_PHASE">
@@ -46924,6 +46997,12 @@
             </summary>
             <returns>The name of the resource.</returns>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.GetCurrentServerEndpoint">
+            <summary>
+            Returns the peer address of the remote game server that the user is currently connected to.
+            </summary>
+            <returns>The peer address of the game server (e.g. `127.0.0.1:30120`), or NULL if not available.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.GetDateAndTimeFromUnixEpoch(System.Int32,System.Int32@)">
             <summary>
             Takes the specified time and writes it to the structure specified in the second argument.
@@ -47238,13 +47317,27 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetEntityPopulationType(System.Int32)">
             <summary>
-            Console Hash: 0xFC30DDFF
-            Returns range from 0-10
-            --------------------------------------------------------------
-            The type name can be retrieved by using this:
-            typedef LPSTR(__fastcall *GetEntityPopulationTypeName_t)(unsigned __int16 entityPopulationType, bool scriptName);
-            GetEntityPopulationTypeName_t GetEntityPopulationTypeName = (GetEntityPopulationTypeName_t)FindPattern("44 0F B7 C1 4C 8D 0D ?? ?? ?? ?? 41 83 F8 07");
+            Gets an entity's population type.
+            **Valid population types:**
+            ```cpp
+            enum ePopulationType
+            {
+            POPTYPE_UNKNOWN = 0,
+            POPTYPE_RANDOM_PERMANENT,
+            POPTYPE_RANDOM_PARKED,
+            POPTYPE_RANDOM_PATROL,
+            POPTYPE_RANDOM_SCENARIO,
+            POPTYPE_RANDOM_AMBIENT,
+            POPTYPE_PERMANENT,
+            POPTYPE_MISSION,
+            POPTYPE_REPLAY,
+            POPTYPE_CACHE,
+            POPTYPE_TOOL
+            };
+            ```
             </summary>
+            <param name="entity">The entity to obtain the population type from.</param>
+            <returns>A population type, from the enumeration above.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetEntityQuaternion(System.Int32,System.Single@,System.Single@,System.Single@,System.Single@)">
             <summary>
@@ -47728,21 +47821,31 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetLandingGearState(System.Int32)">
             <summary>
-            landing gear states:
+            ```
+            Landing gear states:
             0: Deployed
-            1: Closing
-            2: Opening
-            3: Retracted
+            1: Closing (Retracting)
+            3: Opening (Deploying)
+            4: Retracted
+            ```
+            Landing gear state 2 is never used.
             </summary>
+            <param name="vehicle">The vehicle to check.</param>
+            <returns>The current state of the vehicles landing gear.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetVehicleLandingGear(System.Int32)">
             <summary>
-            landing gear states:
+            ```
+            Landing gear states:
             0: Deployed
-            1: Closing
-            2: Opening
-            3: Retracted
+            1: Closing (Retracting)
+            3: Opening (Deploying)
+            4: Retracted
+            ```
+            Landing gear state 2 is never used.
             </summary>
+            <param name="vehicle">The vehicle to check.</param>
+            <returns>The current state of the vehicles landing gear.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetLastDrivenVehicle">
             <summary>
@@ -49105,62 +49208,62 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec3(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
-            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
-            For .NET users...
-            VB:
-            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
-            Dim x2dp, y2dp As New Native.OutputArgument
-            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
-            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
-            End Function
-            C#:
-            Vector2 World3DToScreen2d(Vector3 pos)
-            {
-            var x2dp = new OutputArgument();
-            var y2dp = new OutputArgument();
-            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
-            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
-            }
-            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
-            Used to be called _WORLD3D_TO_SCREEN2D
-            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
+            World to relative screen coords
+            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenCoordFromWorldCoord2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0xf9904d11f1acbec32(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+        <member name="M:CitizenFX.Core.Native.API.World3dToScreen2d2(System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
-            World to relative screen coords
-            this world to screen will keep the text on screen. it will keep it in the screen pos. good for a deer hunting mod
+            Convert a world coordinate into its relative screen coordinate.  (WorldToScreen)
+            Returns a boolean; whether or not the operation was successful. It will return false if the coordinates given are not visible to the rendering camera.
+            For .NET users...
+            VB:
+            Public Shared Function World3DToScreen2d(pos as vector3) As Vector2
+            Dim x2dp, y2dp As New Native.OutputArgument
+            Native.Function.Call(Of Boolean)(Native.Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.x, pos.y, pos.z, x2dp, y2dp)
+            Return New Vector2(x2dp.GetResult(Of Single), y2dp.GetResult(Of Single))
+            End Function
+            C#:
+            Vector2 World3DToScreen2d(Vector3 pos)
+            {
+            var x2dp = new OutputArgument();
+            var y2dp = new OutputArgument();
+            Function.Call&lt;bool&gt;(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD , pos.X, pos.Y, pos.Z, x2dp, y2dp);
+            return new Vector2(x2dp.GetResult&lt;float&gt;(), y2dp.GetResult&lt;float&gt;());
+            }
+            //USE VERY SMALL VALUES FOR THE SCALE OF RECTS/TEXT because it is dramatically larger on screen than in 3D, e.g '0.05' small.
+            Used to be called _WORLD3D_TO_SCREEN2D
+            I thought we lost you from the scene forever. It does seem however that calling SET_DRAW_ORIGIN then your natives, then ending it. Seems to work better for certain things such as keeping boxes around people for a predator missile e.g.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetScreenEffectIsActive(System.String)">
@@ -49587,7 +49690,7 @@
             gets current UTC time
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration2(System.Int32)">
+        <member name="M:CitizenFX.Core.Native.API.GetVehicleAcceleration(System.Int32)">
             <summary>
             static - max acceleration
             </summary>
@@ -49788,6 +49891,62 @@
             <param name="class_">The handling class to get. Only "CHandlingData" is supported at this time.</param>
             <param name="fieldName">The field name to get. These match the keys in `handling.meta`.</param>
             <returns>An integer.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetVehicleHeadlightsColour(System.Int32)">
+            <summary>
+            Returns the headlight color index from the vehicle. Value between 0, 12.
+            Use [\_SET_VEHICLE_HEADLIGHTS_COLOUR](#_0xE41033B25D003A07) to set the headlights color for the vehicle.
+            Must enable xenon headlights before it'll take affect.
+            List of colors and ids:
+            ```
+            enum headlightColors {
+            Default = -1,
+            White = 0,
+            Blue = 1,
+            Electric_Blue = 2,
+            Mint_Green = 3,
+            Lime_Green = 4,
+            Yellow = 5,
+            Golden_Shower = 6,
+            Orange = 7,
+            Red = 8,
+            Pony_Pink = 9,
+            Hot_Pink = 10,
+            Purple = 11,
+            Blacklight = 12
+            }
+            ```
+            </summary>
+            <param name="vehicle">The vehicle to get the headlight color from.</param>
+            <returns>Returns an int, value between 0-12 or 255 if no color is set.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x3dff319a831e0cdb(System.Int32)">
+            <summary>
+            Returns the headlight color index from the vehicle. Value between 0, 12.
+            Use [\_SET_VEHICLE_HEADLIGHTS_COLOUR](#_0xE41033B25D003A07) to set the headlights color for the vehicle.
+            Must enable xenon headlights before it'll take affect.
+            List of colors and ids:
+            ```
+            enum headlightColors {
+            Default = -1,
+            White = 0,
+            Blue = 1,
+            Electric_Blue = 2,
+            Mint_Green = 3,
+            Lime_Green = 4,
+            Yellow = 5,
+            Golden_Shower = 6,
+            Orange = 7,
+            Red = 8,
+            Pony_Pink = 9,
+            Hot_Pink = 10,
+            Purple = 11,
+            Blacklight = 12
+            }
+            ```
+            </summary>
+            <param name="vehicle">The vehicle to get the headlight color from.</param>
+            <returns>Returns an int, value between 0-12 or 255 if no color is set.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetVehicleHornHash(System.Int32)">
             <summary>
@@ -55113,6 +55272,13 @@
             <summary>
             Console Hash: Probably 0xAA7EA3BD
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.NetworkGetEntityOwner(System.Int32)">
+            <summary>
+            Returns the owner ID of the specified entity.
+            </summary>
+            <param name="entity">The entity to get the owner for.</param>
+            <returns>On the server, the server ID of the entity owner. On the client, returns the player/slot ID of the entity owner.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.NetworkGetHostOfScript(System.String,System.Int32,System.Int32)">
             <summary>
@@ -62271,6 +62437,34 @@
             <summary>
             VEHICLE::SET_VEHICLE_TIMED_EXPLOSION(v_3, PLAYER::GET_PLAYER_PED(v_5), 1);
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.SetVehicleTransformState(System.Int32,System.Single)">
+            <summary>
+            According to decompiled scripts this should work with the `deluxo` and `oppressor2` vehicles.
+            I've only seen this work for `deluxo` though, can't figure out what it's supposed to do on `oppressor2`.
+            For the deluxo:
+            -   Set `state` to `0.0`: Fully transform to a 'road' vehicle (non-hover mode).
+            -   Set `state` to `1.0`: Fully transform to a 'flying' vehicle (hover mode).
+            If you set it to something like 0.5, then something [weird happens](https://streamable.com/p6wmr), you end up in some 50% hover mode, 50% not hover mode.
+            This doesn't need to be called every tick, just once and the vehicle will transform to that state at the usual transform speed. It'll just stop transforming when it reaches the state you provided.
+            Once this native is used then players will just be able to hit the vehicle transform key to toggle the transformation cycle; it won't block users from using the key.
+            </summary>
+            <param name="vehicle">The vehicle (a deluxo or oppressor2).</param>
+            <param name="state">The transform state (value between 0.0 and 1.0).</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x438b3d7ca026fe91(System.Int32,System.Single)">
+            <summary>
+            According to decompiled scripts this should work with the `deluxo` and `oppressor2` vehicles.
+            I've only seen this work for `deluxo` though, can't figure out what it's supposed to do on `oppressor2`.
+            For the deluxo:
+            -   Set `state` to `0.0`: Fully transform to a 'road' vehicle (non-hover mode).
+            -   Set `state` to `1.0`: Fully transform to a 'flying' vehicle (hover mode).
+            If you set it to something like 0.5, then something [weird happens](https://streamable.com/p6wmr), you end up in some 50% hover mode, 50% not hover mode.
+            This doesn't need to be called every tick, just once and the vehicle will transform to that state at the usual transform speed. It'll just stop transforming when it reaches the state you provided.
+            Once this native is used then players will just be able to hit the vehicle transform key to toggle the transformation cycle; it won't block users from using the key.
+            </summary>
+            <param name="vehicle">The vehicle (a deluxo or oppressor2).</param>
+            <param name="state">The transform state (value between 0.0 and 1.0).</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetVehicleTyreBurst(System.Int32,System.Int32,System.Boolean,System.Single)">
             <summary>

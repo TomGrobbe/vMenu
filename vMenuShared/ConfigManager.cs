@@ -47,6 +47,8 @@ namespace vMenuShared
             vmenu_teleport_to_wp_keybind_key,
 
             vmenu_disable_spawning_as_default_character,
+
+            vmenu_disable_daily_update_checks,
         }
 
         public static bool GetSettingsBool(Setting setting)
