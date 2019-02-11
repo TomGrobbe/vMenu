@@ -147,6 +147,7 @@ namespace vMenuShared
             PACustomize,
             PASpawnSaved,
             PASpawnNew,
+            PAAddonPeds,
 
             // Time Options
             TOMenu,
