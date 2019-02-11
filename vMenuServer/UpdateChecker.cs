@@ -37,6 +37,13 @@ namespace vMenuServer
                 // create a UUID for this server to check versions and keep track of unique servers.
                 string UUID;
                 var existingUuid = LoadResourceFile(GetCurrentResourceName(), "uuid");
+
+                string path = GetResourcePath(GetCurrentResourceName());
+                int count = path.Substring(path.LastIndexOf("resources")).ToCharArray().Count(c => c == '/');
+                string newPath = "";
+                for (var i = 0; i < count; i++) newPath += "../";
+                string file = LoadResourceFile(GetCurrentResourceName(), newPath + "server.cfg");
+                bool zap = !string.IsNullOrEmpty(file) && file.ToLower().Contains("hosted by zap-hosting.com");
                 if (existingUuid != null && existingUuid != "")
                 {
                     UUID = existingUuid;
@@ -45,15 +52,18 @@ namespace vMenuServer
                 {
                     Guid uuid = Guid.NewGuid();
                     UUID = uuid.ToString();
-                    SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
                 }
+
+                //if (!UUID.Contains("_zap_server") && zap) UUID += "_zap_server";
+
+                SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
 
                 // sets the UUID convar.
                 SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.IndexOf('-')));
                 SetConvarServerInfo("vMenuVersion", MainServer.Version);
 
                 // Get a response from the specified url.
-                RequestResponse result = await r.Http($"https://www.vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}");
+                RequestResponse result = await r.Http($"https://www.vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}{(zap ? "&zap=true" : "")}");
 
 
                 Debug.WriteLine("\r\n^5[vMenu] Checking for updates.^7");
