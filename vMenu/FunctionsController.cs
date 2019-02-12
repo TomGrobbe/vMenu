@@ -432,7 +432,16 @@ namespace vMenuClient
                             float currentFuelLevel = GetVehicleFuelLevel(veh.Handle);
                             if (maxFuelLevel > 5f && currentFuelLevel < (maxFuelLevel * 0.95f))
                             {
-                                DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                try
+                                {
+                                    DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                                    await Delay(1000);
+                                }
                             }
                         }
 
@@ -1816,11 +1825,33 @@ namespace vMenuClient
             {
                 if (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
                 {
-                    DecorRegister(clothingAnimationDecor, 3);
+                    try
+                    {
+                        DecorRegister(clothingAnimationDecor, 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
+                    while (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
+                    {
+                        await Delay(0);
+                    }
                 }
                 else
                 {
-                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     foreach (Player player in Players)
                     {
                         Ped p = player.Character;
@@ -1889,7 +1920,16 @@ namespace vMenuClient
                         await Delay(0);
                     }
                 }
-                DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                try
+                {
+                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                    await Delay(1000);
+                }
             }
         }
         #endregion
@@ -1900,7 +1940,6 @@ namespace vMenuClient
             {
                 if (DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                 {
-
                     int sprite = 1;
                     if (IsPedInAnyVehicle(Game.PlayerPed.Handle, false))
                     {
@@ -1910,8 +1949,16 @@ namespace vMenuClient
                             sprite = BlipInfo.GetBlipSpriteForVehicle(veh.Handle);
                         }
                     }
-
-                    DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
 
                     if (MainMenu.MiscSettingsMenu != null)
                     {
@@ -2020,7 +2067,16 @@ namespace vMenuClient
                 }
                 else // decorator does not exist.
                 {
-                    DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    try
+                    {
+                        DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     while (!DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                     {
                         await Delay(0);
