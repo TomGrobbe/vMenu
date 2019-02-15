@@ -49,6 +49,7 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
 
             vmenu_disable_daily_update_checks,
+            vmenu_smooth_time_transitions
         }
 
         public static bool GetSettingsBool(Setting setting)
