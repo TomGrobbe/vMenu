@@ -187,7 +187,9 @@ namespace vMenuClient
                 }
                 else if (item == disconnectFromServer)
                 {
-                    BaseScript.TriggerServerEvent("vMenu:DisconnectSelf");
+
+                    RegisterCommand("disconnect", new Action<dynamic, dynamic, dynamic>((a, b, c) => { }), false);
+                    ExecuteCommand("disconnect");
                 }
             };
 

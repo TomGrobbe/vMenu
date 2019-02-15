@@ -397,7 +397,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
-                EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
+                //EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
                 EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
@@ -482,14 +482,14 @@ namespace vMenuServer
         #endregion
 
         #region disconnect player
-        /// <summary>
-        /// Disconnect the source player because they used the disconnect menu button.
-        /// </summary>
-        /// <param name="src"></param>
-        private void DisconnectSource([FromSource] Player src)
-        {
-            src.Drop("You disconnected yourself.");
-        }
+        ///// <summary>
+        ///// Disconnect the source player because they used the disconnect menu button.
+        ///// </summary>
+        ///// <param name="src"></param>
+        //private void DisconnectSource([FromSource] Player src)
+        //{
+        //    src.Drop("You disconnected yourself.");
+        //}
         #endregion
 
         #region Manage weather and time changes.
