@@ -1024,9 +1024,10 @@ namespace vMenuClient
                         if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_keep_spawned_vehicles_persistent))
                         {
                             // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                            _previousVehicle.IsPersistent = false;
-                            _previousVehicle.PreviouslyOwnedByPlayer = false;
-                            _previousVehicle.MarkAsNoLongerNeeded();
+                            SetEntityAsMissionEntity(_previousVehicle.Handle, false, false);
+                            //_previousVehicle.IsPersistent = false;
+                            //_previousVehicle.PreviouslyOwnedByPlayer = false;
+                            //_previousVehicle.MarkAsNoLongerNeeded();
                         }
                     }
                     _previousVehicle = null;
