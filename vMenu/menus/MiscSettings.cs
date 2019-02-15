@@ -128,10 +128,6 @@ namespace vMenuClient
 
             MenuController.AddSubmenu(menu, connectionSubmenu);
             MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
-            //MainMenu.Mp.Add(connectionSubmenu);
-            //connectionSubmenu.RefreshIndex();
-            //connectionSubmenu.UpdateScaleform();
-            //menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
 
             keybindMenu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
@@ -162,8 +158,14 @@ namespace vMenuClient
                 {
                     if (NetworkIsSessionActive())
                     {
+                        if (NetworkIsHost())
+                        {
+                            Notify.Error("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server.");
+                        }
+                        else
+                        {
                             QuitSession();
-                }
+                        }
                     }
                     else
                     {
