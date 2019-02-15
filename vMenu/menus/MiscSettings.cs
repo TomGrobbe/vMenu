@@ -111,12 +111,13 @@ namespace vMenuClient
 
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
-            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
-                "Use this if you need to have addons streamed but want to use the rockstar editor.");
+
+            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host.");
+            MenuItem rejoinSession = new MenuItem("Re-join Session", "This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'.");
             MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
-            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
-                "~r~This feature is not recommended, quit the game instead for a better experience.");
+            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience.");
             connectionSubmenu.AddMenuItem(quitSession);
+            connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
 
@@ -170,6 +171,18 @@ namespace vMenuClient
                     else
                     {
                         Notify.Error("You are currently not in any session.");
+                    }
+                }
+                else if (item == rejoinSession)
+                {
+                    if (NetworkIsSessionActive())
+                    {
+                        Notify.Error("You are already connected to a session.");
+                    }
+                    else
+                    {
+                        Notify.Info("Attempting to re-join the session.");
+                        NetworkSessionHost(-1, 32, false);
                     }
                 }
                 else if (item == disconnectFromServer)
