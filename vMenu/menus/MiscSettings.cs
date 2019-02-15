@@ -160,7 +160,15 @@ namespace vMenuClient
                 }
                 else if (item == quitSession)
                 {
-                    QuitSession();
+                    if (NetworkIsSessionActive())
+                    {
+                            QuitSession();
+                }
+                    }
+                    else
+                    {
+                        Notify.Error("You are currently not in any session.");
+                    }
                 }
                 else if (item == disconnectFromServer)
                 {
