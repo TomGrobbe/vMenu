@@ -31,6 +31,9 @@ namespace vMenuClient
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
+        public bool ShowPedModelDimensions { get; private set; } = false;
+        public bool ShowPropModelDimensions { get; private set; } = false;
+        public bool ShowEntityHandles { get; private set; } = false;
         public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
@@ -103,7 +106,10 @@ namespace vMenuClient
             MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
             MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
-            MenuCheckboxItem modelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws lines for the model dimensions of your vehicle (debug function).", ShowVehicleModelDimensions);
+            MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you. [debug function]", ShowVehicleModelDimensions);
+            MenuCheckboxItem propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you. [debug function]", ShowPropModelDimensions);
+            MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you. [debug function]", ShowPedModelDimensions);
+            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work). [debug function]", ShowEntityHandles);
 
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
             MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
@@ -211,7 +217,10 @@ namespace vMenuClient
             menu.AddMenuItem(rightAlignMenu);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
-            menu.AddMenuItem(modelDimensions);
+            menu.AddMenuItem(vehModelDimensions);
+            menu.AddMenuItem(propModelDimensions);
+            menu.AddMenuItem(pedModelDimensions);
+            menu.AddMenuItem(showEntityHandles);
             menu.AddMenuItem(keybindMenuBtn);
             keybindMenuBtn.Label = "→→→";
             if (IsAllowed(Permission.MSConnectionMenu))
@@ -410,9 +419,21 @@ namespace vMenuClient
                 {
                     RestorePlayerWeapons = _checked;
                 }
-                else if (item == modelDimensions)
+                else if (item == vehModelDimensions)
                 {
                     ShowVehicleModelDimensions = _checked;
+                }
+                else if (item == propModelDimensions)
+                {
+                    ShowPropModelDimensions = _checked;
+                }
+                else if (item == pedModelDimensions)
+                {
+                    ShowPedModelDimensions = _checked;
+                }
+                else if (item == showEntityHandles)
+                {
+                    ShowEntityHandles = _checked;
                 }
             };
 
