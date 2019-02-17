@@ -711,7 +711,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu("vMenu", "About vMenu");
+            menu = new Menu(Game.Player.Name, "MP Ped Customization");
 
             MenuItem createMale = new MenuItem("Create Male Character", "Create a new male character.")
             {
