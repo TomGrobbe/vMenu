@@ -2746,8 +2746,8 @@ namespace vMenuClient
             Vector3 max = Vector3.Zero;
 
             GetModelDimensions((uint)GetEntityModel(entity), ref min, ref max);
-            const float pad = 0f;
-            //const float pad = 0.001f;
+            //const float pad = 0f;
+            const float pad = 0.001f;
             var retval = new Vector3[8]
             {
                 // Bottom
