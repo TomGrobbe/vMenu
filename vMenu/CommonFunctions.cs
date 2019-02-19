@@ -58,15 +58,6 @@ namespace vMenuClient
         public static bool RightAlignMenus() => UserDefaults.MiscRightAlignMenu;
         #endregion
 
-        #region Get Localized Label Text
-        /// <summary>
-        /// Get the localized name from a text label (for classes that don't have BaseScript)
-        /// </summary>
-        /// <param name="label"></param>
-        /// <returns></returns>
-        public static string GetLocalizedName(string label) => GetLabelText(label);
-        #endregion
-
         #region Toggle vehicle alarm
         public static void ToggleVehicleAlarm(Vehicle vehicle)
         {

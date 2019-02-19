@@ -64,8 +64,8 @@ namespace vMenuClient
 
                         for (var cat = 0; cat < 22; cat++)
                         {
-                            Menu categoryMenu = new Menu("Addon Spawner", GetLocalizedName($"VEH_CLASS_{cat}"));
-                            MenuItem categoryBtn = new MenuItem(GetLocalizedName($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLocalizedName($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
+                            Menu categoryMenu = new Menu("Addon Spawner", GetLabelText($"VEH_CLASS_{cat}"));
+                            MenuItem categoryBtn = new MenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLabelText($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
 
                             addonCarsMenu.AddMenuItem(categoryBtn);
 
@@ -165,7 +165,7 @@ namespace vMenuClient
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
                 // Get the class name.
-                string className = GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
+                string className = GetLabelText($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.")
