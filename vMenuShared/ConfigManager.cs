@@ -28,6 +28,7 @@ namespace vMenuShared
 
             vmenu_enable_time_sync,
             vmenu_freeze_time,
+            vmenu_smooth_time_transitions,
             vmenu_default_time_hour,
             vmenu_default_time_min,
             vmenu_ingame_minute_duration,
@@ -49,7 +50,6 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
 
             vmenu_disable_daily_update_checks,
-            vmenu_smooth_time_transitions
         }
 
         public static bool GetSettingsBool(Setting setting)
