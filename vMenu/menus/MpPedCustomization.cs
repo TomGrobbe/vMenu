@@ -719,7 +719,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu("vMenu", "About vMenu");
+            menu = new Menu(Game.Player.Name, "MP Ped Customization");
 
             MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.")
             {
