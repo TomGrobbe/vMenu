@@ -33,6 +33,7 @@ namespace vMenuShared
             OPTempBan,
             OPUnban,
             OPViewBannedPlayers,
+            OPSeePrivateMessages,
 
             // Player Options
             POMenu,

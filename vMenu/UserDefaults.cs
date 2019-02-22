@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,12 +117,6 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleGodAutoRepair"); }
             set { SetSavedSettingsBool("vehicleGodAutoRepair", value); }
         }
-
-        //public static bool VehicleSpecialGodMode
-        //{
-        //    get { return GetSettingsBool("vehicleSpecialGodMode"); }
-        //    set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
-        //}
 
         public static bool VehicleNeverDirty
         {
@@ -278,6 +272,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("miscRightAlignMenu"); }
             set { SetSavedSettingsBool("miscRightAlignMenu", value); }
+        }
+
+        public static bool MiscDisablePrivateMessages
+        {
+            get { return GetSettingsBool("miscDisablePrivateMessages"); }
+            set { SetSavedSettingsBool("miscDisablePrivateMessages", value); }
         }
 
         #region keybind menu
@@ -524,6 +524,9 @@ namespace vMenuClient
 
                 MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
                 prefs.Add("miscRightAlignMenu", MiscRightAlignMenu);
+
+                MiscDisablePrivateMessages = MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages;
+                prefs.Add("miscDisablePrivateMessages", MiscDisablePrivateMessages);
 
                 KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
                 prefs.Add("kbTpToWaypoint", KbTpToWaypoint);

@@ -411,6 +411,8 @@ namespace vMenuServer
                 }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
                 EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
+                EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
+                EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
 
 
                 // check addons file for errors
@@ -800,8 +802,38 @@ namespace vMenuServer
                 BanManager.BanCheater(source);
             }
         }
+
+        private void SendPrivateMessage([FromSource]Player source, int targetServerId, string message)
+        {
+            Player targetPlayer = Players[targetServerId];
+            if (targetPlayer != null)
+            {
+                targetPlayer.TriggerEvent("vMenu:PrivateMessage", source.Handle, message);
+
+                foreach (Player p in Players)
+                {
+                    if (p != source && p != targetPlayer)
+                    {
+                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages))
+                        {
+                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void NotifySenderThatDmsAreDisabled([FromSource]Player source, string senderServerId)
+        {
+            var p = Players[int.Parse(senderServerId)];
+            if (p != null)
+            {
+                p.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.");
+            }
+        }
         #endregion
 
+        #region logging and update checks notifications
         /// <summary>
         /// If enabled using convars, will log all kick actions to the server console as well as an external file.
         /// </summary>
@@ -825,6 +857,10 @@ namespace vMenuServer
             }
         }
 
+        /// <summary>
+        /// Tells the player if the resource is currently up to date.
+        /// </summary>
+        /// <param name="source"></param>
         public static void IsResourceUpToDate([FromSource]Player source)
         {
             if (!UpToDate)
@@ -847,5 +883,7 @@ namespace vMenuServer
             }
 
         }
+        #endregion
+
     }
 }

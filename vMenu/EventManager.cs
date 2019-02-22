@@ -55,6 +55,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
+            EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
             Tick += WeatherSync;
             Tick += TimeSync;
         }

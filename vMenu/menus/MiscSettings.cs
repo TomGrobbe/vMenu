@@ -39,6 +39,8 @@ namespace vMenuClient
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+        public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
+
 
         // keybind states
         public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
@@ -91,6 +93,7 @@ namespace vMenuClient
             // Create the menu items.
             MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
             MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
+            MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
             MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
             MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
             MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
@@ -215,6 +218,7 @@ namespace vMenuClient
 
             // Always allowed
             menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(disablePms);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
             menu.AddMenuItem(vehModelDimensions);
@@ -341,7 +345,11 @@ namespace vMenuClient
                         UserDefaults.MiscRightAlignMenu = false;
                     }
                 }
-                if (item == speedKmh)
+                else if (item == disablePms)
+                {
+                    MiscDisablePrivateMessages = _checked;
+                }
+                else if (item == speedKmh)
                 {
                     ShowSpeedoKmh = _checked;
                 }
