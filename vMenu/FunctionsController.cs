@@ -59,6 +59,12 @@ namespace vMenuClient
         public static bool flaresAllowed = false;
         public static bool bombsAllowed = false;
 
+        private bool stopPropsLoop = false;
+        private bool stopVehiclesLoop = false;
+        private bool stopPedsLoop = false;
+        private List<Prop> props = new List<Prop>();
+        private List<Vehicle> vehicles = new List<Vehicle>();
+        private List<Ped> peds = new List<Ped>();
 
         /// <summary>
         /// Constructor.
@@ -84,6 +90,7 @@ namespace vMenuClient
             Tick += WeaponOptions;
             Tick += OnlinePlayersTasks;
             Tick += MiscSettings;
+            Tick += MiscRecordingKeybinds;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
@@ -97,6 +104,8 @@ namespace vMenuClient
             Tick += ModelDrawDimensions;
             Tick += GcTick;
             Tick += PersonalVehicleOptions;
+
+            Tick += SlowMiscTick;
         }
 
         int gcTimer = GetGameTimer();
@@ -432,7 +441,16 @@ namespace vMenuClient
                             float currentFuelLevel = GetVehicleFuelLevel(veh.Handle);
                             if (maxFuelLevel > 5f && currentFuelLevel < (maxFuelLevel * 0.95f))
                             {
-                                DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                try
+                                {
+                                    DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                                    await Delay(1000);
+                                }
                             }
                         }
 
@@ -947,6 +965,121 @@ namespace vMenuClient
                 await Delay(0);
             }
         }
+
+        private async Task MiscRecordingKeybinds()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                if (MainMenu.MiscSettingsMenu.KbRecordKeys)
+                {
+                    if (!IsPauseMenuActive() && IsScreenFadedIn() && !IsPlayerSwitchInProgress() && !MenuController.IsAnyMenuOpen())
+                    {
+                        if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                        {
+                            Control recordKey = MainMenu.MenuToggleKey == Control.ReplayStartStopRecording ? Control.SaveReplayClip : Control.ReplayStartStopRecording;
+                            if (!IsRecording())
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StartRecording(1);
+                                    if (recordKey == Control.ReplayStartStopRecording)
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+                                    else
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_SAVE_REPLAY_CLIP~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StopRecording();
+                                }
+                                if (Game.IsControlJustPressed(0, Control.ReplayClipDelete)) // delete key on keyboard
+                                {
+                                    StopRecordingAndDiscardClip();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                            {
+                                int timer = GetGameTimer();
+                                bool longEnough = false;
+                                int notifOne = -1;
+                                int notifTwo = -1;
+                                while (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                                {
+                                    if (GetGameTimer() - timer > 400 && !longEnough)
+                                    {
+                                        longEnough = true;
+
+                                        if (IsRecording())
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Stop recording and save clip.");
+                                            SetNotificationTextEntry("STRING");
+                                            notifTwo = DrawNotificationWithButton(1, "~INPUT_SAVE_REPLAY_CLIP~", "Stop recording and delete clip.");
+                                        }
+                                        else
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Start recording.");
+                                        }
+                                    }
+
+                                    if (longEnough)
+                                    {
+                                        Game.DisableControlThisFrame(0, Control.VehicleCinCam);
+
+                                        if (IsRecording())
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.SaveReplayClip))
+                                            {
+                                                StopRecordingAndDiscardClip();
+                                                break;
+                                            }
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StopRecording();
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StartRecording(1);
+                                                HelpMessage.Custom("Hold down ~INPUT_MULTIPLAYER_INFO~ and press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_SAVE_REPLAY_CLIP~ to discard the recording.");
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    await Delay(0);
+                                }
+
+                                if (notifOne != -1)
+                                {
+                                    RemoveNotification(notifOne);
+                                    notifOne = -1;
+                                }
+                                if (notifTwo != -1)
+                                {
+                                    RemoveNotification(notifTwo);
+                                    notifTwo = -1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         #region Join / Quit notifications
         /// <summary>
         /// Runs join/quit notification checks.
@@ -1315,6 +1448,49 @@ namespace vMenuClient
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MpPedCustomizationMenu != null)
             {
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    if (MainMenu.MpPedCustomizationMenu.editPedBtn != null && MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                }
+                else
+                {
+                    if (MainMenu.MpPedCustomizationMenu.editPedBtn != null && !MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Description = MainMenu.MpPedCustomizationMenu.editPedBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && !MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Description = MainMenu.MpPedCustomizationMenu.createMaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && !MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description = MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                }
+
                 var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
 
                 bool IsOpen()
@@ -1816,11 +1992,33 @@ namespace vMenuClient
             {
                 if (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
                 {
-                    DecorRegister(clothingAnimationDecor, 3);
+                    try
+                    {
+                        DecorRegister(clothingAnimationDecor, 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
+                    while (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
+                    {
+                        await Delay(0);
+                    }
                 }
                 else
                 {
-                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     foreach (Player player in Players)
                     {
                         Ped p = player.Character;
@@ -1889,7 +2087,16 @@ namespace vMenuClient
                         await Delay(0);
                     }
                 }
-                DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                try
+                {
+                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                    await Delay(1000);
+                }
             }
         }
         #endregion
@@ -1900,7 +2107,6 @@ namespace vMenuClient
             {
                 if (DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                 {
-
                     int sprite = 1;
                     if (IsPedInAnyVehicle(Game.PlayerPed.Handle, false))
                     {
@@ -1910,8 +2116,16 @@ namespace vMenuClient
                             sprite = BlipInfo.GetBlipSpriteForVehicle(veh.Handle);
                         }
                     }
-
-                    DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
 
                     if (MainMenu.MiscSettingsMenu != null)
                     {
@@ -2020,7 +2234,16 @@ namespace vMenuClient
                 }
                 else // decorator does not exist.
                 {
-                    DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    try
+                    {
+                        DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     while (!DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                     {
                         await Delay(0);
@@ -2275,104 +2498,128 @@ namespace vMenuClient
         }
         #endregion
         #region draw model dimensions
-        Text Text1 = new Text("1", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text2 = new Text("2", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text3 = new Text("3", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text4 = new Text("4", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text5 = new Text("5", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text6 = new Text("6", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text7 = new Text("7", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text8 = new Text("8", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text9 = new Text("9", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text entityIdText = new Text("Handle: ", new System.Drawing.PointF(0f, 0f), 0.3f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        /// <summary>
+        /// Draws entity outlines if enabled (per entity type).
+        /// </summary>
+        /// <returns></returns>
         private async Task ModelDrawDimensions()
         {
-            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
+            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-                var veh = GetVehicle(true);
-                if (veh == null)
+                // Vehicles
+                if (MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
                 {
-                    veh = GetVehicle();
+                    foreach (Vehicle v in vehicles)
+                    {
+                        if (stopVehiclesLoop)
+                        {
+                            break;
+                        }
+
+                        DrawEntityBoundingBox(v, 250, 150, 0, 100);
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && v.IsOnScreen)
+                        {
+                            SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
+                            DrawTextOnScreen($"Veh {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
-                if (veh == null)
+
+                // Props
+                if (MainMenu.MiscSettingsMenu.ShowPropModelDimensions)
                 {
-                    veh = new Vehicle(GetVehiclePedIsUsing(Game.PlayerPed.Handle));
+                    foreach (Prop p in props)
+                    {
+                        if (stopPropsLoop)
+                        {
+                            break;
+                        }
+
+                        DrawEntityBoundingBox(p, 255, 0, 0, 100);
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
+                            DrawTextOnScreen($"Prop {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
-                if (veh != null && veh.Exists())
+
+                // Peds
+                if (MainMenu.MiscSettingsMenu.ShowPedModelDimensions)
                 {
-                    int ent = veh.Handle;
-                    int model = GetEntityModel(veh.Handle);
-                    Vector3 pos1 = new Vector3(), pos2 = new Vector3();
-                    GetModelDimensions((uint)model, ref pos1, ref pos2);
-                    Vector3 pos3 = new Vector3(pos1.X - (pos1.X - pos2.X), pos1.Y, pos1.Z);
-                    Vector3 pos4 = new Vector3(pos1.X, pos1.Y - (pos1.Y - pos2.Y), pos1.Z);
-                    Vector3 pos5 = new Vector3(pos1.X, pos1.Y, pos1.Z - (pos1.Z - pos2.Z));
-                    Vector3 pos6 = new Vector3(pos2.X - (pos2.X - pos1.X), pos2.Y, pos2.Z);
-                    Vector3 pos7 = new Vector3(pos2.X, pos2.Y - (pos2.Y - pos1.Y), pos2.Z);
-                    Vector3 pos8 = new Vector3(pos2.X, pos2.Y, pos2.Z - (pos2.Z - pos1.Z));
+                    foreach (Ped p in peds)
+                    {
+                        if (stopPedsLoop)
+                        {
+                            break;
+                        }
 
-                    var off1 = GetOffsetFromEntityInWorldCoords(ent, pos1.X, pos1.Y, pos1.Z);
-                    var off2 = GetOffsetFromEntityInWorldCoords(ent, pos5.X, pos5.Y, pos5.Z);
-                    var off3 = GetOffsetFromEntityInWorldCoords(ent, pos7.X, pos7.Y, pos7.Z);
-                    var off4 = GetOffsetFromEntityInWorldCoords(ent, pos3.X, pos3.Y, pos3.Z);
-                    var off5 = GetOffsetFromEntityInWorldCoords(ent, pos4.X, pos4.Y, pos4.Z);
-                    var off6 = GetOffsetFromEntityInWorldCoords(ent, pos6.X, pos6.Y, pos6.Z);
-                    var off7 = GetOffsetFromEntityInWorldCoords(ent, pos2.X, pos2.Y, pos2.Z);
-                    var off8 = GetOffsetFromEntityInWorldCoords(ent, pos8.X, pos8.Y, pos8.Z);
+                        DrawEntityBoundingBox(p, 50, 255, 50, 100);
 
-                    var x = pos4.X - ((pos4.X - pos8.X) / 2f);
-                    var y = pos4.Y - ((pos4.Y - pos8.Y) / 2f);
-                    var z = pos8.Z - ((pos8.Z - pos7.Z) / 2f);
-                    //var pos9 = new Vector3(x, y, z - 0.1f);
-                    //var pos10 = new Vector3(x, y, z + 0.1f);
-                    var pos9 = new Vector3(x, y, z);
-                    var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
-                    var off9bottom = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
-                    var off9up = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z + 0.1f);
-                    var off9left = GetOffsetFromEntityInWorldCoords(ent, pos9.X + 0.1f, pos9.Y, pos9.Z);
-                    var off9right = GetOffsetFromEntityInWorldCoords(ent, pos9.X - 0.1f, pos9.Y, pos9.Z);
-                    var possomething = new Vector3(pos7.X - ((pos7.X - pos6.X) / 2f), 0f, pos7.Z - ((pos7.Z - pos2.Z) / 2f));
-                    var centerMiddleTop = GetOffsetFromEntityInWorldCoords(ent, possomething.X, possomething.Y, possomething.Z);
-
-                    SetDrawOrigin(off1.X, off1.Y, off1.Z, 0); Text1.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off2.X, off2.Y, off2.Z + 0.15f, 0); Text2.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off3.X, off3.Y, off3.Z + 0.15f, 0); Text3.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off4.X, off4.Y, off4.Z, 0); Text4.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off5.X, off5.Y, off5.Z, 0); Text5.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off6.X, off6.Y, off6.Z + 0.15f, 0); Text6.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off7.X, off7.Y, off7.Z + 0.15f, 0); Text7.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off8.X, off8.Y, off8.Z, 0); Text8.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off9bottom.X, off9bottom.Y, off9bottom.Z, 0); Text9.Draw(); ClearDrawOrigin();
-                    entityIdText.Caption = $"Handle {ent}";
-                    SetDrawOrigin(centerMiddleTop.X, centerMiddleTop.Y, centerMiddleTop.Z, 0); entityIdText.Draw(); ClearDrawOrigin();
-
-                    DrawLine(off1.X, off1.Y, off1.Z, off7.X, off7.Y, off7.Z, 255, 255, 255, 255); // white min to max
-
-
-                    DrawLine(off1.X, off1.Y, off1.Z, off4.X, off4.Y, off4.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off1.X, off1.Y, off1.Z, off5.X, off5.Y, off5.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off8.X, off8.Y, off8.Z, off5.X, off5.Y, off5.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off8.X, off8.Y, off8.Z, off4.X, off4.Y, off4.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off8.X, off8.Y, off8.Z, off7.X, off7.Y, off7.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off2.X, off2.Y, off2.Z, off3.X, off3.Y, off3.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off2.X, off2.Y, off2.Z, off6.X, off6.Y, off6.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off3.X, off3.Y, off3.Z, off4.X, off4.Y, off4.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off6.X, off6.Y, off6.Z, off7.X, off7.Y, off7.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off3.X, off3.Y, off3.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off6.X, off6.Y, off6.Z, off5.X, off5.Y, off5.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off9bottom.X, off9bottom.Y, off9bottom.Z, off9up.X, off9up.Y, off9up.Z, 255, 0, 255, 255); // pink (center front up/down)
-                    DrawLine(off9left.X, off9left.Y, off9left.Z, off9right.X, off9right.Y, off9right.Z, 255, 255, 0, 255); // yellow (center front x)
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
+                            DrawTextOnScreen($"Ped {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
             }
             else
             {
-                await Delay(0);
+                await Task.FromResult(0);
             }
+        }
+        #endregion
+
+
+
+        #region Slow misc tick
+        /// <summary>
+        /// Slow functions for the model dimensions outline entities lists.
+        /// </summary>
+        /// <returns></returns>
+        private async Task SlowMiscTick()
+        {
+            const int delay = 50;
+            const float entityRange = 2000f;
+            //const int limit = 200;
+            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
+            {
+                var pp = Game.PlayerPed.Position;
+                if (MainMenu.MiscSettingsMenu.ShowPropModelDimensions)
+                {
+                    stopPropsLoop = true;
+                    props = World.GetAllProps().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopPropsLoop = false;
+
+                    await Delay(delay);
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowPedModelDimensions)
+                {
+                    stopPedsLoop = true;
+                    peds = World.GetAllPeds().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopPedsLoop = false;
+
+                    await Delay(delay);
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
+                {
+                    stopVehiclesLoop = true;
+                    vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopVehiclesLoop = false;
+
+                    await Delay(delay);
+                }
+
+            }
+
         }
         #endregion
         #region Personal Vehicle options

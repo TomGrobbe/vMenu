@@ -31,11 +31,16 @@ namespace vMenuClient
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
+        public bool ShowPedModelDimensions { get; private set; } = false;
+        public bool ShowPropModelDimensions { get; private set; } = false;
+        public bool ShowEntityHandles { get; private set; } = false;
         public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+        public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
+
 
         // keybind states
         public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
@@ -43,6 +48,7 @@ namespace vMenuClient
             ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
             : 168; // 168 (F7 by default)
         public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
+        public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -83,11 +89,13 @@ namespace vMenuClient
             // keybind settings menu items
             MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
             MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
+            MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
             MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
             MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
+            MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
             MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
             MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
             MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
@@ -103,7 +111,10 @@ namespace vMenuClient
             MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
             MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
-            MenuCheckboxItem modelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws lines for the model dimensions of your vehicle (debug function).", ShowVehicleModelDimensions);
+            MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you. [debug function]", ShowVehicleModelDimensions);
+            MenuCheckboxItem propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you. [debug function]", ShowPropModelDimensions);
+            MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you. [debug function]", ShowPedModelDimensions);
+            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work). [debug function]", ShowEntityHandles);
 
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
             MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
@@ -111,12 +122,13 @@ namespace vMenuClient
 
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
-            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
-                "Use this if you need to have addons streamed but want to use the rockstar editor.");
+
+            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host.");
+            MenuItem rejoinSession = new MenuItem("Re-join Session", "This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'.");
             MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
-            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
-                "~r~This feature is not recommended, quit the game instead for a better experience.");
+            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience.");
             connectionSubmenu.AddMenuItem(quitSession);
+            connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
 
@@ -128,10 +140,6 @@ namespace vMenuClient
 
             MenuController.AddSubmenu(menu, connectionSubmenu);
             MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
-            //MainMenu.Mp.Add(connectionSubmenu);
-            //connectionSubmenu.RefreshIndex();
-            //connectionSubmenu.UpdateScaleform();
-            //menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
 
             keybindMenu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
@@ -142,6 +150,10 @@ namespace vMenuClient
                 else if (item == kbDriftMode)
                 {
                     KbDriftMode = _checked;
+                }
+                else if (item == kbRecordKeys)
+                {
+                    KbRecordKeys = _checked;
                 }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
@@ -160,11 +172,39 @@ namespace vMenuClient
                 }
                 else if (item == quitSession)
                 {
-                    QuitSession();
+                    if (NetworkIsSessionActive())
+                    {
+                        if (NetworkIsHost())
+                        {
+                            Notify.Error("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server.");
+                        }
+                        else
+                        {
+                            QuitSession();
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error("You are currently not in any session.");
+                    }
+                }
+                else if (item == rejoinSession)
+                {
+                    if (NetworkIsSessionActive())
+                    {
+                        Notify.Error("You are already connected to a session.");
+                    }
+                    else
+                    {
+                        Notify.Info("Attempting to re-join the session.");
+                        NetworkSessionHost(-1, 32, false);
+                    }
                 }
                 else if (item == disconnectFromServer)
                 {
-                    BaseScript.TriggerServerEvent("vMenu:DisconnectSelf");
+
+                    RegisterCommand("disconnect", new Action<dynamic, dynamic, dynamic>((a, b, c) => { }), false);
+                    ExecuteCommand("disconnect");
                 }
             };
 
@@ -174,19 +214,23 @@ namespace vMenuClient
                 menu.AddMenuItem(tptowp);
                 keybindMenu.AddMenuItem(kbTpToWaypoint);
             }
-
             if (IsAllowed(Permission.MSDriftMode))
             {
                 keybindMenu.AddMenuItem(kbDriftMode);
             }
-
+            // always allowed keybind menu options
+            keybindMenu.AddMenuItem(kbRecordKeys);
             keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
             menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(disablePms);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
-            menu.AddMenuItem(modelDimensions);
+            menu.AddMenuItem(vehModelDimensions);
+            menu.AddMenuItem(propModelDimensions);
+            menu.AddMenuItem(pedModelDimensions);
+            menu.AddMenuItem(showEntityHandles);
             menu.AddMenuItem(keybindMenuBtn);
             keybindMenuBtn.Label = "→→→";
             if (IsAllowed(Permission.MSConnectionMenu))
@@ -307,7 +351,11 @@ namespace vMenuClient
                         UserDefaults.MiscRightAlignMenu = false;
                     }
                 }
-                if (item == speedKmh)
+                else if (item == disablePms)
+                {
+                    MiscDisablePrivateMessages = _checked;
+                }
+                else if (item == speedKmh)
                 {
                     ShowSpeedoKmh = _checked;
                 }
@@ -385,9 +433,21 @@ namespace vMenuClient
                 {
                     RestorePlayerWeapons = _checked;
                 }
-                else if (item == modelDimensions)
+                else if (item == vehModelDimensions)
                 {
                     ShowVehicleModelDimensions = _checked;
+                }
+                else if (item == propModelDimensions)
+                {
+                    ShowPropModelDimensions = _checked;
+                }
+                else if (item == pedModelDimensions)
+                {
+                    ShowPedModelDimensions = _checked;
+                }
+                else if (item == showEntityHandles)
+                {
+                    ShowEntityHandles = _checked;
                 }
             };
 

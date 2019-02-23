@@ -27,6 +27,12 @@ namespace vMenuClient
         public Menu clothesMenu = new Menu("vMenu", "Character Clothing Options");
         public Menu propsMenu = new Menu("vMenu", "Character Props Options");
         private Menu manageSavedCharacterMenu = new Menu("vMenu", "Manage MP Character");
+
+        // Need to be able to disable/enable these buttons from another class.
+        internal MenuItem createMaleBtn = new MenuItem("Create Male Character", "Create a new male character.") { Label = "→→→" };
+        internal MenuItem createFemaleBtn = new MenuItem("Create Female Character", "Create a new female character.") { Label = "→→→" };
+        internal MenuItem editPedBtn = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
+
         public static bool DontCloseMenus { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
         public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
         string selectedSavedCharacterManageName = "";
@@ -34,6 +40,8 @@ namespace vMenuClient
         private readonly List<string> facial_expressions = new List<string>() { "mood_Normal_1", "mood_Happy_1", "mood_Angry_1", "mood_Aiming_1", "mood_Injured_1", "mood_stressed_1", "mood_smug_1", "mood_sulk_1", };
 
         private MultiplayerPedData currentCharacter = new MultiplayerPedData();
+
+
 
         /// <summary>
         /// Makes or updates the character creator menu. Also has an option to load data from the <see cref="currentCharacter"/> data, to allow for editing an existing ped.
@@ -711,17 +719,7 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu("vMenu", "About vMenu");
-
-            MenuItem createMale = new MenuItem("Create Male Character", "Create a new male character.")
-            {
-                Label = "→→→"
-            };
-
-            MenuItem createFemale = new MenuItem("Create Female Character", "Create a new female character.")
-            {
-                Label = "→→→"
-            };
+            menu = new Menu(Game.Player.Name, "MP Ped Customization");
 
             MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.")
             {
@@ -740,11 +738,11 @@ namespace vMenuClient
 
             CreateSavedPedsMenu();
 
-            menu.AddMenuItem(createMale);
-            MenuController.BindMenuItem(menu, createCharacterMenu, createMale);
+            menu.AddMenuItem(createMaleBtn);
+            MenuController.BindMenuItem(menu, createCharacterMenu, createMaleBtn);
             //menu.BindMenuToItem(createCharacterMenu, createMale);
-            menu.AddMenuItem(createFemale);
-            MenuController.BindMenuItem(menu, createCharacterMenu, createFemale);
+            menu.AddMenuItem(createFemaleBtn);
+            MenuController.BindMenuItem(menu, createCharacterMenu, createFemaleBtn);
             //menu.BindMenuToItem(createCharacterMenu, createFemale);
             menu.AddMenuItem(savedCharacters);
             MenuController.BindMenuItem(menu, savedCharactersMenu, savedCharacters);
@@ -1643,7 +1641,7 @@ namespace vMenuClient
             // eventhandler for whenever a menu item is selected in the main mp characters menu.
             menu.OnItemSelect += async (sender, item, index) =>
             {
-                if (item == createMale)
+                if (item == createMaleBtn)
                 {
                     await SetPlayerSkin("mp_m_freemode_01", new PedInfo() { version = -1 });
 
@@ -1657,7 +1655,7 @@ namespace vMenuClient
 
                     MakeCreateCharacterMenu(male: true);
                 }
-                else if (item == createFemale)
+                else if (item == createFemaleBtn)
                 {
                     await SetPlayerSkin("mp_f_freemode_01", new PedInfo() { version = -1 });
 
@@ -1886,7 +1884,7 @@ namespace vMenuClient
             MenuController.AddMenu(manageSavedCharacterMenu);
 
             MenuItem spawnPed = new MenuItem("Spawn Saved Character", "Spawns the selected saved character.");
-            MenuItem editPed = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
+            editPedBtn = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
             MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
             MenuItem setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
             MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
@@ -1895,17 +1893,17 @@ namespace vMenuClient
                 LeftIcon = MenuItem.Icon.WARNING
             };
             manageSavedCharacterMenu.AddMenuItem(spawnPed);
-            manageSavedCharacterMenu.AddMenuItem(editPed);
+            manageSavedCharacterMenu.AddMenuItem(editPedBtn);
             manageSavedCharacterMenu.AddMenuItem(clonePed);
             manageSavedCharacterMenu.AddMenuItem(setAsDefaultPed);
             manageSavedCharacterMenu.AddMenuItem(renameCharacter);
             manageSavedCharacterMenu.AddMenuItem(delPed);
 
-            MenuController.BindMenuItem(manageSavedCharacterMenu, createCharacterMenu, editPed);
+            MenuController.BindMenuItem(manageSavedCharacterMenu, createCharacterMenu, editPedBtn);
 
             manageSavedCharacterMenu.OnItemSelect += async (sender, item, index) =>
             {
-                if (item == editPed)
+                if (item == editPedBtn)
                 {
                     currentCharacter = StorageManager.GetSavedMpCharacterData(selectedSavedCharacterManageName);
 

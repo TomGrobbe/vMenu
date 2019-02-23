@@ -397,11 +397,22 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
-                EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
+                //EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
-                EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
+                EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) =>
+                {
+                    List<string> data = new List<string>();
+                    Players[TargetPlayer].Identifiers.ToList().ForEach(e =>
+                    {
+                        if (!e.Contains("ip:"))
+                            data.Add(e);
+                    });
+                    CallbackFunction(JsonConvert.SerializeObject(data));
+                }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
                 EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
+                EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
+                EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
 
 
                 // check addons file for errors
@@ -482,14 +493,14 @@ namespace vMenuServer
         #endregion
 
         #region disconnect player
-        /// <summary>
-        /// Disconnect the source player because they used the disconnect menu button.
-        /// </summary>
-        /// <param name="src"></param>
-        private void DisconnectSource([FromSource] Player src)
-        {
-            src.Drop("You disconnected yourself.");
-        }
+        ///// <summary>
+        ///// Disconnect the source player because they used the disconnect menu button.
+        ///// </summary>
+        ///// <param name="src"></param>
+        //private void DisconnectSource([FromSource] Player src)
+        //{
+        //    src.Drop("You disconnected yourself.");
+        //}
         #endregion
 
         #region Manage weather and time changes.
@@ -791,8 +802,38 @@ namespace vMenuServer
                 BanManager.BanCheater(source);
             }
         }
+
+        private void SendPrivateMessage([FromSource]Player source, int targetServerId, string message)
+        {
+            Player targetPlayer = Players[targetServerId];
+            if (targetPlayer != null)
+            {
+                targetPlayer.TriggerEvent("vMenu:PrivateMessage", source.Handle, message);
+
+                foreach (Player p in Players)
+                {
+                    if (p != source && p != targetPlayer)
+                    {
+                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages))
+                        {
+                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void NotifySenderThatDmsAreDisabled([FromSource]Player source, string senderServerId)
+        {
+            var p = Players[int.Parse(senderServerId)];
+            if (p != null)
+            {
+                p.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.");
+            }
+        }
         #endregion
 
+        #region logging and update checks notifications
         /// <summary>
         /// If enabled using convars, will log all kick actions to the server console as well as an external file.
         /// </summary>
@@ -816,6 +857,10 @@ namespace vMenuServer
             }
         }
 
+        /// <summary>
+        /// Tells the player if the resource is currently up to date.
+        /// </summary>
+        /// <param name="source"></param>
         public static void IsResourceUpToDate([FromSource]Player source)
         {
             if (!UpToDate)
@@ -838,5 +883,7 @@ namespace vMenuServer
             }
 
         }
+        #endregion
+
     }
 }

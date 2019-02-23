@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CitizenFX.Core;
+using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
 {
@@ -1061,28 +1063,28 @@ namespace vMenuClient
 
             public static Dictionary<string, List<string>> VehicleClasses { get; } = new Dictionary<string, List<string>>()
             {
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_0")] = Compacts,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_1")] = Sedans,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_2")] = SUVs,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_3")] = Coupes,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_4")] = Muscle,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_5")] = SportsClassics,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_6")] = Sports,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_7")] = Super,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_8")] = Motorcycles,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_9")] = OffRoad,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_10")] = Industrial,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_11")] = Utility,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_12")] = Vans,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_13")] = Cycles,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_14")] = Boats,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_15")] = Helicopters,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_16")] = Planes,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_17")] = Service,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_18")] = Emergency,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_19")] = Military,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_20")] = Commercial,
-                [CommonFunctions.GetLocalizedName("VEH_CLASS_21")] = Trains,
+                [GetLabelText("VEH_CLASS_0")] = Compacts,
+                [GetLabelText("VEH_CLASS_1")] = Sedans,
+                [GetLabelText("VEH_CLASS_2")] = SUVs,
+                [GetLabelText("VEH_CLASS_3")] = Coupes,
+                [GetLabelText("VEH_CLASS_4")] = Muscle,
+                [GetLabelText("VEH_CLASS_5")] = SportsClassics,
+                [GetLabelText("VEH_CLASS_6")] = Sports,
+                [GetLabelText("VEH_CLASS_7")] = Super,
+                [GetLabelText("VEH_CLASS_8")] = Motorcycles,
+                [GetLabelText("VEH_CLASS_9")] = OffRoad,
+                [GetLabelText("VEH_CLASS_10")] = Industrial,
+                [GetLabelText("VEH_CLASS_11")] = Utility,
+                [GetLabelText("VEH_CLASS_12")] = Vans,
+                [GetLabelText("VEH_CLASS_13")] = Cycles,
+                [GetLabelText("VEH_CLASS_14")] = Boats,
+                [GetLabelText("VEH_CLASS_15")] = Helicopters,
+                [GetLabelText("VEH_CLASS_16")] = Planes,
+                [GetLabelText("VEH_CLASS_17")] = Service,
+                [GetLabelText("VEH_CLASS_18")] = Emergency,
+                [GetLabelText("VEH_CLASS_19")] = Military,
+                [GetLabelText("VEH_CLASS_20")] = Commercial,
+                [GetLabelText("VEH_CLASS_21")] = Trains,
             };
             #endregion
         }

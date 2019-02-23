@@ -27,6 +27,10 @@ namespace vMenuClient
         public static bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
         private int minuteTimer = GetGameTimer();
         private int minuteClockSpeed = 2000;
+        private static bool DontDoTimeSyncRightNow = false;
+        private static bool SmoothTimeTransitionsEnabled => GetSettingsBool(Setting.vmenu_smooth_time_transitions);
+        private int currentServerHours = currentHours;
+        private int currentServerMinutes = currentMinutes;
 
         /// <summary>
         /// Constructor.
@@ -51,6 +55,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
+            EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
@@ -266,6 +271,7 @@ namespace vMenuClient
             // Check if the time sync should be disabled.
             if (GetSettingsBool(Setting.vmenu_enable_time_sync))
             {
+
                 // If time is frozen...
                 if (freezeTime)
                 {
@@ -302,7 +308,6 @@ namespace vMenuClient
                     }
                     NetworkOverrideClockTime(currentHours, currentMinutes, 0);
                 }
-
             }
         }
 
@@ -341,17 +346,60 @@ namespace vMenuClient
             }
         }
 
+
         /// <summary>
         /// Update the current time.
         /// </summary>
         /// <param name="newHours"></param>
         /// <param name="newMinutes"></param>
         /// <param name="freezeTime"></param>
-        private void SetTime(int newHours, int newMinutes, bool freezeTime)
+        private async void SetTime(int newHours, int newMinutes, bool freezeTime)
         {
+            currentServerHours = newHours;
+            currentServerMinutes = newMinutes;
+
+            bool IsTimeDifferenceTooSmall()
+            {
+                var totalDifference = 0;
+                totalDifference += (newHours - currentHours) * 60;
+                totalDifference += (newMinutes - currentMinutes);
+
+                if (totalDifference < 15 && totalDifference > -120)
+                    return true;
+
+                return false;
+            }
+
             EventManager.freezeTime = freezeTime;
-            currentMinutes = newMinutes;
-            currentHours = newHours;
+
+            if (SmoothTimeTransitionsEnabled && !IsTimeDifferenceTooSmall())
+            {
+                if (!DontDoTimeSyncRightNow)
+                {
+                    bool frozen = freezeTime;
+                    DontDoTimeSyncRightNow = true;
+                    EventManager.freezeTime = false;
+
+                    var oldSpeed = minuteClockSpeed;
+
+                    while (currentHours != currentServerHours || currentMinutes != currentServerMinutes)
+                    {
+                        EventManager.freezeTime = false;
+                        await Delay(0);
+                        minuteClockSpeed = 1;
+                    }
+                    EventManager.freezeTime = freezeTime;
+
+                    minuteClockSpeed = oldSpeed;
+
+                    DontDoTimeSyncRightNow = false;
+                }
+            }
+            else
+            {
+                currentHours = currentServerHours;
+                currentMinutes = currentServerMinutes;
+            }
         }
 
         /// <summary>

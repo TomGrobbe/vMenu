@@ -58,15 +58,6 @@ namespace vMenuClient
         public static bool RightAlignMenus() => UserDefaults.MiscRightAlignMenu;
         #endregion
 
-        #region Get Localized Label Text
-        /// <summary>
-        /// Get the localized name from a text label (for classes that don't have BaseScript)
-        /// </summary>
-        /// <param name="label"></param>
-        /// <returns></returns>
-        public static string GetLocalizedName(string label) => GetLabelText(label);
-        #endregion
-
         #region Toggle vehicle alarm
         public static void ToggleVehicleAlarm(Vehicle vehicle)
         {
@@ -1024,9 +1015,10 @@ namespace vMenuClient
                         if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_keep_spawned_vehicles_persistent))
                         {
                             // Set the vehicle to be no longer needed. This will make the game engine decide when it should be removed (when all players get too far away).
-                            _previousVehicle.IsPersistent = false;
-                            _previousVehicle.PreviouslyOwnedByPlayer = false;
-                            _previousVehicle.MarkAsNoLongerNeeded();
+                            SetEntityAsMissionEntity(_previousVehicle.Handle, false, false);
+                            //_previousVehicle.IsPersistent = false;
+                            //_previousVehicle.PreviouslyOwnedByPlayer = false;
+                            //_previousVehicle.MarkAsNoLongerNeeded();
                         }
                     }
                     _previousVehicle = null;
@@ -2712,6 +2704,181 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Draw model dimensions math util functions
+
+        /*
+            These util functions are taken from Deltanic's mapeditor resource for FiveM.
+            https://gitlab.com/shockwave-fivem/mapeditor/tree/master
+            Thank you Deltanic for allowing me to use these functions here.
+        */
+
+        /// <summary>
+        /// Draws the bounding box for the entity with the provided rgba color.
+        /// </summary>
+        /// <param name="ent"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="a"></param>
+        public static void DrawEntityBoundingBox(Entity ent, int r, int g, int b, int a)
+        {
+            var box = GetEntityBoundingBox(ent.Handle);
+            DrawBoundingBox(box, r, g, b, a);
+        }
+
+        /// <summary>
+        /// Gets the bounding box of the entity model in world coordinates, used by <see cref="DrawEntityBoundingBox(Entity, int, int, int, int)"/>.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        internal static Vector3[] GetEntityBoundingBox(int entity)
+        {
+            Vector3 min = Vector3.Zero;
+            Vector3 max = Vector3.Zero;
+
+            GetModelDimensions((uint)GetEntityModel(entity), ref min, ref max);
+            //const float pad = 0f;
+            const float pad = 0.001f;
+            var retval = new Vector3[8]
+            {
+                // Bottom
+                GetOffsetFromEntityInWorldCoords(entity, min.X - pad, min.Y - pad, min.Z - pad),
+                GetOffsetFromEntityInWorldCoords(entity, max.X + pad, min.Y - pad, min.Z - pad),
+                GetOffsetFromEntityInWorldCoords(entity, max.X + pad, max.Y + pad, min.Z - pad),
+                GetOffsetFromEntityInWorldCoords(entity, min.X - pad, max.Y + pad, min.Z - pad),
+
+                // Top
+                GetOffsetFromEntityInWorldCoords(entity, min.X - pad, min.Y - pad, max.Z + pad),
+                GetOffsetFromEntityInWorldCoords(entity, max.X + pad, min.Y - pad, max.Z + pad),
+                GetOffsetFromEntityInWorldCoords(entity, max.X + pad, max.Y + pad, max.Z + pad),
+                GetOffsetFromEntityInWorldCoords(entity, min.X - pad, max.Y + pad, max.Z + pad)
+            };
+            return retval;
+        }
+
+        /// <summary>
+        /// Draws the edge poly faces and the edge lines for the specific box coordinates using the specified rgba color.
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="a"></param>
+        private static void DrawBoundingBox(Vector3[] box, int r, int g, int b, int a)
+        {
+            var polyMatrix = GetBoundingBoxPolyMatrix(box);
+            var edgeMatrix = GetBoundingBoxEdgeMatrix(box);
+
+            DrawPolyMatrix(polyMatrix, r, g, b, a);
+            DrawEdgeMatrix(edgeMatrix, 255, 255, 255, 255);
+        }
+
+        /// <summary>
+        /// Gets the coordinates for all poly box faces.
+        /// </summary>
+        /// <param name="box"></param>
+        /// <returns></returns>
+        private static Vector3[][] GetBoundingBoxPolyMatrix(Vector3[] box)
+        {
+            return new Vector3[12][]
+            {
+                new Vector3[3] { box[2], box[1], box[0] },
+                new Vector3[3] { box[3], box[2], box[0] },
+
+                new Vector3[3] { box[4], box[5], box[6] },
+                new Vector3[3] { box[4], box[6], box[7] },
+
+                new Vector3[3] { box[2], box[3], box[6] },
+                new Vector3[3] { box[7], box[6], box[3] },
+
+                new Vector3[3] { box[0], box[1], box[4] },
+                new Vector3[3] { box[5], box[4], box[1] },
+
+                new Vector3[3] { box[1], box[2], box[5] },
+                new Vector3[3] { box[2], box[6], box[5] },
+
+                new Vector3[3] { box[4], box[7], box[3] },
+                new Vector3[3] { box[4], box[3], box[0] }
+            };
+        }
+
+        /// <summary>
+        /// Gets the coordinates for all edge coordinates.
+        /// </summary>
+        /// <param name="box"></param>
+        /// <returns></returns>
+        private static Vector3[][] GetBoundingBoxEdgeMatrix(Vector3[] box)
+        {
+            return new Vector3[12][]
+            {
+                new Vector3[2] { box[0], box[1] },
+                new Vector3[2] { box[1], box[2] },
+                new Vector3[2] { box[2], box[3] },
+                new Vector3[2] { box[3], box[0] },
+
+                new Vector3[2] { box[4], box[5] },
+                new Vector3[2] { box[5], box[6] },
+                new Vector3[2] { box[6], box[7] },
+                new Vector3[2] { box[7], box[4] },
+
+                new Vector3[2] { box[0], box[4] },
+                new Vector3[2] { box[1], box[5] },
+                new Vector3[2] { box[2], box[6] },
+                new Vector3[2] { box[3], box[7] }
+            };
+        }
+
+        /// <summary>
+        /// Draws the poly matrix faces.
+        /// </summary>
+        /// <param name="polyCollection"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="a"></param>
+        private static void DrawPolyMatrix(Vector3[][] polyCollection, int r, int g, int b, int a)
+        {
+            foreach (var poly in polyCollection)
+            {
+                float x1 = poly[0].X;
+                float y1 = poly[0].Y;
+                float z1 = poly[0].Z;
+
+                float x2 = poly[1].X;
+                float y2 = poly[1].Y;
+                float z2 = poly[1].Z;
+
+                float x3 = poly[2].X;
+                float y3 = poly[2].Y;
+                float z3 = poly[2].Z;
+                DrawPoly(x1, y1, z1, x2, y2, z2, x3, y3, z3, r, g, b, a);
+            }
+        }
+
+        /// <summary>
+        /// Draws the edge lines for the model dimensions.
+        /// </summary>
+        /// <param name="linesCollection"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="a"></param>
+        private static void DrawEdgeMatrix(Vector3[][] linesCollection, int r, int g, int b, int a)
+        {
+            foreach (var line in linesCollection)
+            {
+                float x1 = line[0].X;
+                float y1 = line[0].Y;
+                float z1 = line[0].Z;
+
+                float x2 = line[1].X;
+                float y2 = line[1].Y;
+                float z2 = line[1].Z;
+
+                DrawLine(x1, y1, z1, x2, y2, z2, r, g, b, a);
+            }
+        }
+        #endregion
 
         #region Map (math util) function
         /// <summary>
@@ -2740,6 +2907,63 @@ namespace vMenuClient
         public static double Map(double value, double min_in, double max_in, double min_out, double max_out)
         {
             return (value - min_in) * (max_out - min_out) / (max_in - min_in) + min_out;
+        }
+        #endregion
+
+        #region Private message notification
+        public static void PrivateMessage(string source, string message) => PrivateMessage(source, message, false);
+        public static async void PrivateMessage(string source, string message, bool sent)
+        {
+            if (MainMenu.MiscSettingsMenu == null || MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages)
+            {
+                if (!(sent && source == Game.Player.ServerId.ToString()))
+                {
+                    TriggerServerEvent("vMenu:PmsDisabled", source);
+                }
+                return;
+            }
+
+            Player sourcePlayer = new Player(GetPlayerFromServerId(int.Parse(source)));
+            if (sourcePlayer != null)
+            {
+                int headshotHandle = RegisterPedheadshot(sourcePlayer.Character.Handle);
+                int timer = GetGameTimer();
+                bool tookTooLong = false;
+                while (!IsPedheadshotReady(headshotHandle) || !IsPedheadshotValid(headshotHandle))
+                {
+                    await Delay(0);
+                    if (GetGameTimer() - timer > 2000)
+                    {
+                        // took too long.
+                        tookTooLong = true;
+                        break;
+                    }
+                }
+                if (!tookTooLong)
+                {
+                    string headshotTxd = GetPedheadshotTxdString(headshotHandle);
+                    if (sent)
+                    {
+                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(sourcePlayer.Name)}</C>", "Message Sent", true, 1);
+                    }
+                    else
+                    {
+                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(sourcePlayer.Name)}</C>", "Message Received", true, 1);
+                    }
+                }
+                else
+                {
+                    if (sent)
+                    {
+                        Notify.Custom($"PM From: <C>{GetSafePlayerName(sourcePlayer.Name)}</C>. Message: {message}");
+                    }
+                    else
+                    {
+                        Notify.Custom($"PM To: <C>{GetSafePlayerName(sourcePlayer.Name)}</C>. Message: {message}");
+                    }
+                }
+                UnregisterPedheadshot(headshotHandle);
+            }
         }
         #endregion
 

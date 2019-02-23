@@ -28,6 +28,7 @@ namespace vMenuShared
 
             vmenu_enable_time_sync,
             vmenu_freeze_time,
+            vmenu_smooth_time_transitions,
             vmenu_default_time_hour,
             vmenu_default_time_min,
             vmenu_ingame_minute_duration,
