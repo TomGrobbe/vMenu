@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -291,6 +291,11 @@ namespace vMenuClient
             get { return GetSettingsBool("kbDriftMode"); }
             set { SetSavedSettingsBool("kbDriftMode", value); }
         }
+        public static bool KbRecordKeys
+        {
+            get { return GetSettingsBool("kbRecordKeys"); }
+            set { SetSavedSettingsBool("kbRecordKeys", value); }
+        }
         #endregion
         #endregion
 
@@ -533,6 +538,9 @@ namespace vMenuClient
 
                 KbDriftMode = MainMenu.MiscSettingsMenu.KbDriftMode;
                 prefs.Add("kbDriftMode", KbDriftMode);
+
+                KbRecordKeys = MainMenu.MiscSettingsMenu.KbRecordKeys;
+                prefs.Add("kbRecordKeys", KbRecordKeys);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

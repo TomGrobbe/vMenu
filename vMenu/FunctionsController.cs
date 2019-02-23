@@ -90,6 +90,7 @@ namespace vMenuClient
             Tick += WeaponOptions;
             Tick += OnlinePlayersTasks;
             Tick += MiscSettings;
+            Tick += MiscRecordingKeybinds;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
@@ -962,6 +963,121 @@ namespace vMenuClient
             else
             {
                 await Delay(0);
+            }
+        }
+
+        private async Task MiscRecordingKeybinds()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                if (MainMenu.MiscSettingsMenu.KbRecordKeys)
+                {
+                    if (!IsPauseMenuActive() && IsScreenFadedIn() && !IsPlayerSwitchInProgress() && !MenuController.IsAnyMenuOpen())
+                    {
+                        if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                        {
+                            Control recordKey = MainMenu.MenuToggleKey == Control.ReplayStartStopRecording ? Control.SaveReplayClip : Control.ReplayStartStopRecording;
+                            if (!IsRecording())
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StartRecording(1);
+                                    if (recordKey == Control.ReplayStartStopRecording)
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+                                    else
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_SAVE_REPLAY_CLIP~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StopRecording();
+                                }
+                                if (Game.IsControlJustPressed(0, Control.ReplayClipDelete)) // delete key on keyboard
+                                {
+                                    StopRecordingAndDiscardClip();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                            {
+                                int timer = GetGameTimer();
+                                bool longEnough = false;
+                                int notifOne = -1;
+                                int notifTwo = -1;
+                                while (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                                {
+                                    if (GetGameTimer() - timer > 400 && !longEnough)
+                                    {
+                                        longEnough = true;
+
+                                        if (IsRecording())
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Stop recording and save clip.");
+                                            SetNotificationTextEntry("STRING");
+                                            notifTwo = DrawNotificationWithButton(1, "~INPUT_SAVE_REPLAY_CLIP~", "Stop recording and delete clip.");
+                                        }
+                                        else
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Start recording.");
+                                        }
+                                    }
+
+                                    if (longEnough)
+                                    {
+                                        Game.DisableControlThisFrame(0, Control.VehicleCinCam);
+
+                                        if (IsRecording())
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.SaveReplayClip))
+                                            {
+                                                StopRecordingAndDiscardClip();
+                                                break;
+                                            }
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StopRecording();
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StartRecording(1);
+                                                HelpMessage.Custom("Hold down ~INPUT_MULTIPLAYER_INFO~ and press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_SAVE_REPLAY_CLIP~ to discard the recording.");
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    await Delay(0);
+                                }
+
+                                if (notifOne != -1)
+                                {
+                                    RemoveNotification(notifOne);
+                                    notifOne = -1;
+                                }
+                                if (notifTwo != -1)
+                                {
+                                    RemoveNotification(notifTwo);
+                                    notifTwo = -1;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         #region Join / Quit notifications

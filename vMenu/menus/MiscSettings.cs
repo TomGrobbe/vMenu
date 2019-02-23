@@ -48,6 +48,7 @@ namespace vMenuClient
             ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
             : 168; // 168 (F7 by default)
         public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
+        public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -88,6 +89,7 @@ namespace vMenuClient
             // keybind settings menu items
             MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
             MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
+            MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
@@ -149,6 +151,10 @@ namespace vMenuClient
                 {
                     KbDriftMode = _checked;
                 }
+                else if (item == kbRecordKeys)
+                {
+                    KbRecordKeys = _checked;
+                }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
             {
@@ -208,12 +214,12 @@ namespace vMenuClient
                 menu.AddMenuItem(tptowp);
                 keybindMenu.AddMenuItem(kbTpToWaypoint);
             }
-
             if (IsAllowed(Permission.MSDriftMode))
             {
                 keybindMenu.AddMenuItem(kbDriftMode);
             }
-
+            // always allowed keybind menu options
+            keybindMenu.AddMenuItem(kbRecordKeys);
             keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
