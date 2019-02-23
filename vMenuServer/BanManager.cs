@@ -363,7 +363,12 @@ namespace vMenuServer
 
             BannedPlayersList.Add(ban);
 
-            var output = JsonConvert.SerializeObject(BannedPlayersList, Formatting.Indented);
+            var formattingMode = Formatting.None;
+            if (BannedPlayersList.Count < 100)
+            {
+                formattingMode = Formatting.Indented;
+            }
+            var output = JsonConvert.SerializeObject(BannedPlayersList, formattingMode);
             while (readingOrWritingToBanFile)
             {
                 await Delay(0);
@@ -411,7 +416,13 @@ namespace vMenuServer
                     BannedPlayersList.RemoveAt(i - 1);
                 }
             }
-            var output = JsonConvert.SerializeObject(BannedPlayersList, Formatting.Indented);
+
+            var formattingMode = Formatting.None;
+            if (BannedPlayersList.Count < 100)
+            {
+                formattingMode = Formatting.Indented;
+            }
+            var output = JsonConvert.SerializeObject(BannedPlayersList, formattingMode);
             while (readingOrWritingToBanFile)
             {
                 await Delay(0);
