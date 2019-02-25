@@ -231,12 +231,12 @@ namespace vMenuClient
 
                             if (DoesModelExist(veh))
                             {
-                                var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName})" };
+                                var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                             }
                             else
                             {
-                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName})" };
+                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                                 vehBtn.RightIcon = MenuItem.Icon.LOCK;
                             }
@@ -252,12 +252,12 @@ namespace vMenuClient
                     {
                         if (DoesModelExist(veh))
                         {
-                            var vehBtn = new MenuItem(vehName) { Enabled = true };
+                            var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                         }
                         else
                         {
-                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
+                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                             vehBtn.RightIcon = MenuItem.Icon.LOCK;
                         }
