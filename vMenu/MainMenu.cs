@@ -614,7 +614,7 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(VehicleSubmenu, menu, button);
-                Menu.OnItemSelect += (sender, item, index) =>
+                VehicleSubmenu.OnItemSelect += (sender, item, index) =>
                 {
                     if (item == button)
                     {
