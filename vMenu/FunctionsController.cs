@@ -2882,10 +2882,10 @@ namespace vMenuClient
                     int timeoutTimer = GetGameTimer();
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) <= 0.0f)
                     {
-                        if (GetGameTimer() - timeoutTimer > 2000)
+                        if (GetGameTimer() - timeoutTimer > 1000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function. Dbg: fault in location 1.");
                             return;
                         }
                         await Delay(0);
@@ -2894,15 +2894,16 @@ namespace vMenuClient
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.0f)
                     {
                         await Delay(0);
+
                         if (GetGameTimer() - timeoutTimer > 3000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function. Dbg: fault in location 2.");
                             return;
                         }
                         if (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.39f)
                         {
-                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, texture, true);
+                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, newHelmetTexture, true);
                         }
                     }
                     ClearPedTasks(Game.PlayerPed.Handle);
