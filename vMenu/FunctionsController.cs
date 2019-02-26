@@ -2433,9 +2433,24 @@ namespace vMenuClient
                         while (!(MenuController.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
                         {
                             await Delay(0);
+                            Vehicle veh = GetVehicle();
+                            bool inVeh = veh != null && (veh.Model.IsBike || veh.Model.IsBicycle || veh.Model.IsQuadbike);
+                            if (GetGameTimer() - timer > 380 && inVeh)
+                            {
+                                Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                            }
                             if (GetGameTimer() - timer > 400)
                             {
-                                await SwitchHelmet();
+                                Task t = SwitchHelmet();
+                                while (!t.IsCompleted && !t.IsCanceled && !t.IsFaulted)
+                                {
+                                    if (inVeh)
+                                    {
+                                        Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                                    }
+                                    await Delay(0);
+                                }
+                                //await SwitchHelmet();
                                 break;
                             }
                         }
@@ -2575,8 +2590,6 @@ namespace vMenuClient
             }
         }
         #endregion
-
-
 
         #region Slow misc tick
         /// <summary>

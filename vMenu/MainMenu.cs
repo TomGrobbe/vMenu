@@ -696,7 +696,7 @@ namespace vMenuClient
                 };
                 AddMenu(PlayerSubmenu, menu, button);
             }
-            
+
             // Add Weapon Loadouts menu.
             if (IsAllowed(Permission.WLMenu))
             {
