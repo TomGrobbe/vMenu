@@ -2703,256 +2703,49 @@ namespace vMenuClient
             if (MainMenu.PermissionsSetupComplete)
             {
                 int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
-                await Delay(1);
                 int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
-                await Delay(1);
                 int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                await Delay(1);
                 if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
                 {
-                    int newHelmet = 0;
-                    string animName = "visor_up";
-                    string animDict = "anim@mp_helmets@on_foot";
-                    if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeFemale01)
+                    int newHelmet = component;
+                    int newHelmetTexture = texture;
+
+                    AltPropVariationData[] newHelmetData = Game.GetAltPropVariationData(Game.PlayerPed.Handle, 0);
+
+                    Log(JsonConvert.SerializeObject(newHelmetData, Formatting.Indented));
+
+                    if (newHelmetData != null && newHelmetData.Length > 0)
                     {
-                        switch (component)
-                        {
-                            case 49:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 66:
-                                newHelmet = 81;
-                                animName = "visor_down";
-                                break;
-                            case 67:
-                                newHelmet = 49;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 73;
-                                animName = "visor_up";
-                                break;
-                            case 73:
-                                newHelmet = 72;
-                                animName = "visor_down";
-                                break;
-                            case 77:
-                                newHelmet = 78;
-                                animName = "visor_up";
-                                break;
-                            case 78:
-                                newHelmet = 77;
-                                animName = "visor_down";
-                                break;
-                            case 79:
-                                newHelmet = 80;
-                                animName = "visor_up";
-                                break;
-                            case 80:
-                                newHelmet = 79;
-                                animName = "visor_down";
-                                break;
-                            case 81:
-                                newHelmet = 66;
-                                animName = "visor_up";
-                                break;
-                            case 90:
-                                newHelmet = 91;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 90;
-                                animName = "visor_down";
-                                break;
-                            case 115:
-                                newHelmet = 116;
-                                animName = "goggles_up";
-                                break;
-                            case 116:
-                                newHelmet = 115;
-                                animName = "goggles_down";
-                                break;
-                            case 117:
-                                newHelmet = 118;
-                                animName = "goggles_up";
-                                break;
-                            case 118:
-                                newHelmet = 117;
-                                animName = "goggles_down";
-                                break;
-                            case 122:
-                                newHelmet = 123;
-                                animName = "visor_up";
-                                break;
-                            case 123:
-                                newHelmet = 122;
-                                animName = "visor_down";
-                                break;
-                            case 124:
-                                newHelmet = 125;
-                                animName = "visor_up";
-                                break;
-                            case 125:
-                                newHelmet = 124;
-                                animName = "visor_down";
-                                break;
-                        }
+                        newHelmet = newHelmetData[0].altPropVariationIndex;
+                        newHelmetTexture = newHelmetData[0].altPropVariationTexture;
                     }
-                    else if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeMale01)
+
+                    string animName = component < newHelmet ? "visor_up" : "visor_down";
+                    if (Game.PlayerPed.Model == PedHash.FreemodeFemale01)
                     {
-                        switch (component)
+                        if (component == 66 || component == 81)
                         {
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 53:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 72;
-                                animName = "visor_up";
-                                break;
-                            case 67:
-                                newHelmet = 82;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 53;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 73:
-                                newHelmet = 74;
-                                animName = "visor_up";
-                                break;
-                            case 74:
-                                newHelmet = 73;
-                                animName = "visor_down";
-                                break;
-                            case 78:
-                                newHelmet = 79;
-                                animName = "visor_up";
-                                break;
-                            case 79:
-                                newHelmet = 78;
-                                animName = "visor_down";
-                                break;
-                            case 80:
-                                newHelmet = 81;
-                                animName = "visor_up";
-                                break;
-                            case 81:
-                                newHelmet = 80;
-                                animName = "visor_down";
-                                break;
-                            case 82:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 92;
-                                animName = "visor_up";
-                                break;
-                            case 92:
-                                newHelmet = 91;
-                                animName = "visor_down";
-                                break;
-                            case 116:
-                                newHelmet = 117;
-                                animName = "goggles_up";
-                                break;
-                            case 117:
-                                newHelmet = 116;
-                                animName = "goggles_down";
-                                break;
-                            case 118:
-                                newHelmet = 119;
-                                animName = "goggles_up";
-                                break;
-                            case 119:
-                                newHelmet = 118;
-                                animName = "goggles_down";
-                                break;
-                            case 123:
-                                newHelmet = 124;
-                                animName = "visor_up";
-                                break;
-                            case 124:
-                                newHelmet = 123;
-                                animName = "visor_down";
-                                break;
-                            case 125:
-                                newHelmet = 126;
-                                animName = "visor_up";
-                                break;
-                            case 126:
-                                newHelmet = 125;
-                                animName = "visor_down";
-                                break;
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 115 && component <= 118)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
                         }
                     }
                     else
                     {
-                        return;
+                        if (component == 67 || component == 82)
+                        {
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 116 && component <= 119)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
+                        }
                     }
+
+                    string animDict = "anim@mp_helmets@on_foot";
+
                     if (GetFollowPedCamViewMode() == 4)
                     {
                         if (animName.Contains("goggles"))
