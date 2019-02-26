@@ -2877,6 +2877,10 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
+                    if (animName.StartsWith("pov_") && animDict != "anim@mp_helmets@on_foot")
+                    {
+                        animName = animName.Substring(4);
+                    }
                     ClearPedTasks(Game.PlayerPed.Handle);
                     TaskPlayAnim(Game.PlayerPed.Handle, animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
                     int timeoutTimer = GetGameTimer();
