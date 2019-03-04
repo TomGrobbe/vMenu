@@ -1536,27 +1536,27 @@ namespace vMenuClient
 
                     /* 
                      * Camera positions and PointAt locations.
-                    
+
                     // head close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
-                    
+
                     // upper body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
-                    
+
                     // lower body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
-                    
+
                     // very low (feet level) very close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
-                    
+
                     // default normal height full character visible.
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-                    
+
                     */
 
                     bool rearCamActive = false;

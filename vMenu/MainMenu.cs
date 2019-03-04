@@ -381,28 +381,19 @@ namespace vMenuClient
 
                 // Manage Stamina
                 if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
-                {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
-                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 100, true);
-                }
                 else
-                {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
-                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 0, true);
-                }
-                // Manage other stats.
-                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP1_WHEELIE_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP1_STEALTH_ABILITY"), 100, true);
+
+                // Manage other stats, in order of appearance in the pause menu (stats) page.
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
+                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);                // Strength
+                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
+                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);          // Flying
+                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
+                StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
+
             }
             #endregion
 

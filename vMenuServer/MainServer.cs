@@ -66,19 +66,24 @@ namespace vMenuServer
         public static string UpdaterVersion { get; set; } = Version;
         public static string UpdateMessage { get; set; } = null;
 
+
+
+        // Time
         private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
         private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
-        private int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
+        private readonly int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
         private long minuteTimer = GetGameTimer();
         private long timeSyncCooldown = GetGameTimer();
+        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
+
+        // Weather
         private string currentWeather = GetSettingsString(Setting.vmenu_default_weather);
         private bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private bool blackout = false;
         private bool resetBlackout = false;
-        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
-        private int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
-        private long gameTimer = GetGameTimer();
+        private readonly int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
         private long weatherTimer = GetGameTimer();
+        private long weatherGameTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
         {
             "Cloudy 01",
@@ -120,6 +125,8 @@ namespace vMenuServer
             "XMAS",
             "HALLOWEEN"
         };
+
+
         #endregion
 
         #region Constructor
@@ -492,17 +499,6 @@ namespace vMenuServer
         }
         #endregion
 
-        #region disconnect player
-        ///// <summary>
-        ///// Disconnect the source player because they used the disconnect menu button.
-        ///// </summary>
-        ///// <param name="src"></param>
-        //private void DisconnectSource([FromSource] Player src)
-        //{
-        //    src.Drop("You disconnected yourself.");
-        //}
-        #endregion
-
         #region Manage weather and time changes.
         /// <summary>
         /// Loop used for syncing and keeping track of the time in-game.
@@ -559,28 +555,38 @@ namespace vMenuServer
 
             if (GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
+                // Manage dynamic weather changes.
                 if (dynamicWeather)
                 {
+                    // Disable dynamic weather because these weather types shouldn't randomly change.
                     if (currentWeather == "XMAS" || currentWeather == "HALLOWHEEN" || currentWeather == "NEUTRAL")
                     {
-                        // Disable dynamic weather because these weather types shouldn't randomly change.
                         dynamicWeather = false;
                         return;
                     }
-                    if (resetBlackout && GetGameTimer() - weatherTimer > 60000) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
+
+                    // If 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
+                    if (resetBlackout && GetGameTimer() - weatherTimer > 60000)
                     {
                         resetBlackout = false;
                         blackout = false;
                     }
+
+                    // Is it time to generate a new weather type?
                     if (GetGameTimer() - weatherTimer > (dynamicWeatherMinutes * 60000))
                     {
+                        // Choose a new semi-random weather type.
                         RefreshWeather();
+
+                        // Log if debug mode is on how long the change has taken and what the new weather type will be.
                         if (DebugMode)
                         {
                             long gameTimer2 = GetGameTimer();
                             Log($"Changing weather, last weather duration: {(int)((GetGameTimer() - weatherTimer) / 60000)} minutes. New Weather Type: {currentWeather}");
-                            gameTimer = gameTimer2;
+                            weatherGameTimer = gameTimer2;
                         }
+
+                        // Reset the dynamic weather timer.
                         weatherTimer = GetGameTimer();
                     }
                 }
@@ -588,15 +594,21 @@ namespace vMenuServer
                 {
                     weatherTimer = GetGameTimer();
                 }
+
+                // Random blackout
                 if (GetSettingsBool(Setting.vmenu_allow_random_blackout) && (currentWeather == "THUNDER" || currentWeather == "HALLOWHEEN") && new Random().Next(5) == 1 && !blackout && !resetBlackout)
                 {
                     blackout = true;
                     resetBlackout = true;
                 }
+
+                // Reset the 'resetBlackout' state
                 if (blackout == false && resetBlackout)
                 {
                     resetBlackout = false;
                 }
+
+                // Update all clients with the new weather data.
                 TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
             }
         }

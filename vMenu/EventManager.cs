@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -239,26 +239,38 @@ namespace vMenuClient
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
+                    var previousWeather = lastWeather;
                     lastWeather = currentWeatherType;
                     SetWeatherTypeOverTime(currentWeatherType, 30f);
                     int tmpTimer = GetGameTimer();
+
+                    // Wait until the transition is completed.
                     while (GetGameTimer() - tmpTimer < 30000) // wait 30 _real_ seconds
                     {
                         await Delay(0);
                     }
+                    // Reset the intensity to make the game handle the intensity correctly.
+                    SetRainFxIntensity(-1f);
+
+                    // Set the new weather type to be persistent.
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
+
+                    // Dbg logging
                     Log("done changing weather type (duration: 45.5 seconds)");
+
+                    // Stop currently switching weather type checks.
                     CurrentlySwitchingWeather = false;
+
+                    // Reset the menu subtitle counter pre-text.
+                    if (MainMenu.WeatherOptionsMenu != null)
+                        MainMenu.WeatherOptionsMenu.GetMenu().CounterPreText = null;
                 }
                 if (!justChanged)
                 {
                     SetWeatherTypeNowPersist(currentWeatherType);
                 }
                 SetBlackout(blackoutMode);
-                //SetWind(0f);
-                //SetWindDirection(0f);
-                //SetWindSpeed(0f);
             }
         }
 

@@ -88,7 +88,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
-    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    </PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
