@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -219,6 +219,7 @@ namespace vMenuClient
             }
         }
 
+
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -247,8 +248,16 @@ namespace vMenuClient
                     // Wait until the transition is completed.
                     while (GetGameTimer() - tmpTimer < 30000) // wait 30 _real_ seconds
                     {
-                        await Delay(0);
+                        // To update the current state in the menu subtitle counter pre-text.
+                        float weatherChangeState = ((float)GetGameTimer() - (float)tmpTimer) / 30000f;
+
+                        if (MainMenu.WeatherOptionsMenu != null)
+                        {
+                            MainMenu.WeatherOptionsMenu.GetMenu().CounterPreText = $"(Cooldown {Math.Ceiling(30f - (30f * weatherChangeState))}) ";
+                        }
+                        await Delay(100);
                     }
+
                     // Reset the intensity to make the game handle the intensity correctly.
                     SetRainFxIntensity(-1f);
 
