@@ -90,14 +90,29 @@
     <Compile Include="data\PedScenarios.cs" />
     <Compile Include="menus\PlayerOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="StorageManager.cs" />
     <Compile Include="UserDefaults.cs" />
     <Compile Include="data\ValidWeapon.cs" />
     <Compile Include="data\VehicleData.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="data\overlays.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if exist "$(SolutionDir)\postbuild.cmd" "$(SolutionDir)postbuild.cmd"</PostBuildEvent>
   </PropertyGroup>
 </Project>
