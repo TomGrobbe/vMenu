@@ -1,13 +1,10 @@
-﻿using GHMatti.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
-using System.Dynamic;
 using static vMenuServer.DebugLog;
 using static vMenuShared.ConfigManager;
 
@@ -65,8 +62,6 @@ namespace vMenuServer
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
         public static string UpdaterVersion { get; set; } = Version;
         public static string UpdateMessage { get; set; } = null;
-
-
 
         // Time
         private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);

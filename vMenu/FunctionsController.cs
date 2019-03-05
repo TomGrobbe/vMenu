@@ -1737,6 +1737,7 @@ namespace vMenuClient
                                 case 1:
                                 case 2:
                                 case 3:
+                                case 6:
                                     // upper body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
