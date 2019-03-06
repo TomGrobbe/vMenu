@@ -68,6 +68,7 @@
     <Compile Include="FunctionsController.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="menus\About.cs" />
+    <Compile Include="menus\AttachEntityMenu.cs" />
     <Compile Include="menus\BannedPlayers.cs" />
     <Compile Include="menus\MiscSettings.cs" />
     <Compile Include="menus\MpPedCustomization.cs" />
@@ -97,7 +98,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'"></PostBuildEvent>
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
+    </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if exist "$(SolutionDir)\postbuild.cmd" "$(SolutionDir)postbuild.cmd"</PostBuildEvent>
   </PropertyGroup>
 </Project>

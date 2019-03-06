@@ -79,6 +79,7 @@ namespace vMenuClient
 
             // Add all tick events.
             Tick += GeneralTasks;
+            Tick += AttachEntities;
             Tick += PlayerOptions;
             Tick += DoPlayerAndVehicleChecks;
             Tick += VehicleOptions;
@@ -2575,7 +2576,39 @@ namespace vMenuClient
             }
         }
         #endregion
+        private async Task AttachEntities()
+        {
+            if(MainMenu.AttachEntityMenu.baseEntity != 0 && MainMenu.AttachEntityMenu.currState >= 1 && MainMenu.AttachEntityMenu.currState < 3)
+            {
+                Vector3 pos = GetEntityCoords(MainMenu.AttachEntityMenu.baseEntity, true);
+                DrawMarker(0, pos.X, pos.Y, pos.Z + 2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.3f, 0.2f, 255, 255, 255, 255, true, false, 0, false, null, null, false);
+            }
 
+            if(MainMenu.AttachEntityMenu.entityOne != 0 && MainMenu.AttachEntityMenu.currState >= 2 && MainMenu.AttachEntityMenu.currState < 3)
+            {
+                Vector3 pos = GetEntityCoords(MainMenu.AttachEntityMenu.entityOne, true);
+                DrawMarker(0, pos.X, pos.Y, pos.Z + 2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.3f, 0.2f, 255, 255, 255, 255, true, false, 0, false, null, null, false);
+            }
+
+            if(MainMenu.AttachEntityMenu.setupMode && MainMenu.AttachEntityMenu.GetMenu().Visible && (MainMenu.AttachEntityMenu.baseEntity == 0 && MainMenu.AttachEntityMenu.entityOne == 0))
+            {
+                Vector3 pos = GetEntityCoords(PlayerPedId(), true);
+                Vector3 targetPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0f, 8.0f, -1.0f);
+                int rayCast = StartShapeTestCapsule(pos.X, pos.Y, pos.Z, targetPos.X, targetPos.Y, targetPos.Z, 2.0f, 10, PlayerPedId(), 7);
+                bool hit = false;
+                int ent = 0;
+                Vector3 _ = new Vector3();
+                Vector3 __ = new Vector3();
+                GetShapeTestResult(rayCast, ref hit, ref _, ref __, ref ent);
+                if(hit && DoesEntityExist(ent))
+                {
+                    Vector3 pos2 = GetEntityCoords(ent, true);
+                    DrawMarker(0, pos2.X, pos2.Y, pos2.Z + 2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f - 0.1f, 0, 0, 255, 255, true, false, 0, false, null, null, false);
+                    MainMenu.AttachEntityMenu.currentEntity = ent;
+
+                }
+            }
+        }
 
 
         #region Slow misc tick

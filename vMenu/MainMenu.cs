@@ -29,6 +29,7 @@ namespace vMenuClient
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
+        public static AttachEntityMenu AttachEntityMenu { get; private set; }
         public static BannedPlayers BannedPlayersMenu { get; private set; }
         public static SavedVehicles SavedVehiclesMenu { get; private set; }
         public static PersonalVehicle PersonalVehicleMenu { get; private set; }
@@ -516,6 +517,17 @@ namespace vMenuClient
         /// </summary>
         private void CreateSubmenus()
         {
+            if (true)
+            {
+                AttachEntityMenu = new AttachEntityMenu();
+                Menu menu = AttachEntityMenu.GetMenu();
+                MenuItem button = new MenuItem("Attach Entity Menu", "Attach two entities (ie vehicles) together.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(menu, button);
+    
+            }
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
             {
