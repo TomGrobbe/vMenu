@@ -2576,6 +2576,8 @@ namespace vMenuClient
             }
         }
         #endregion
+       
+        #region attach entities
         private async Task AttachEntities()
         {
             if (MainMenu.AttachEntityMenu == null) return;
@@ -2613,7 +2615,7 @@ namespace vMenuClient
             }
             await Delay(0);
         }
-
+        #endregion
 
         #region Slow misc tick
         /// <summary>

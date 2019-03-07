@@ -69,7 +69,6 @@ namespace vMenuClient
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
-                // Teleport to waypoint.
                 if (item == setupModeSelect)
                 {
                     menu.ClearMenuItems();

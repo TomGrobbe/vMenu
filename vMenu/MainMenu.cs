@@ -517,17 +517,7 @@ namespace vMenuClient
         /// </summary>
         private void CreateSubmenus()
         {
-            if (true)
-            {
-                AttachEntityMenu = new AttachEntityMenu();
-                Menu menu = AttachEntityMenu.GetMenu();
-                MenuItem button = new MenuItem("Attach Entity Menu", "Attach two entities (ie vehicles) together.")
-                {
-                    Label = "→→→"
-                };
-                AddMenu(menu, button);
-    
-            }
+            
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
             {
@@ -725,6 +715,19 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(menu, button);
+            }
+
+            //Add Attach Entity Menu
+            if (IsAllowed(Permission.AEMenu))
+            {
+                AttachEntityMenu = new AttachEntityMenu();
+                Menu menu = AttachEntityMenu.GetMenu();
+                MenuItem button = new MenuItem("Attach Entity Menu", "Attach two entities (ie vehicles) together.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(menu, button);
+
             }
 
             // Add misc settings menu.
