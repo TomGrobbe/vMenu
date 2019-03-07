@@ -100,9 +100,9 @@ namespace vMenuClient
                     FreezeEntityPosition(entityOne, false);
                     SetEntityCollision(entityOne, true, true);
                     SetEntityCollision(baseEntity, true, true);
-                    Vector3 rot = GetEntityRotation(entityOne,2);
-                    AttachEntityToEntity(entityOne, baseEntity, -1, attachPos.X, attachPos.Y, attachPos.Z, rot.X, rot.Y, rot.Z, false, false, true, false, 0, true);
-                    Vector3 newRot = GetEntityRotation(entityOne, 2);
+                    Vector3 rot = GetEntityRotation(entityOne,0);
+                    Vector3 baseRot = GetEntityRotation(baseEntity, 0);
+                    AttachEntityToEntity(entityOne, baseEntity, -1, attachPos.X, attachPos.Y, attachPos.Z, 0,0, rot.Z-baseRot.Z, false, true, true, false, 0, true);
                     setupMode = false;
                     currState = 3;
                     menu.ClearMenuItems();
