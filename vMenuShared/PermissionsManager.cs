@@ -301,6 +301,9 @@ namespace vMenuShared
             VCEnable,
             VCShowSpeaker,
             VCStaffChannel,
+
+            //Attach Entity
+            AEMenu,
         };
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
@@ -540,6 +543,9 @@ namespace vMenuShared
                     break;
                 case "VC":
                     prefix += "VoiceChat";
+                    break;
+                case "AE":
+                    prefix += "AttachEntity";
                     break;
                 default:
                     return prefix + name;
