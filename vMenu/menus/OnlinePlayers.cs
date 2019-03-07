@@ -93,11 +93,15 @@ namespace vMenuClient
             {
                 playerMenu.RefreshIndex();
                 ban.Label = "";
+                summon.Label = "";
+                kill.Label = "";
             };
 
             playerMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) =>
             {
                 ban.Label = "";
+                summon.Label = "";
+                kill.Label = "";
             };
 
             // handle button presses for the specific player's menu.
@@ -138,10 +142,19 @@ namespace vMenuClient
                 // summon button
                 else if (item == summon)
                 {
-                    if (Game.Player.Handle != currentPlayer.Handle)
-                        SummonPlayer(currentPlayer);
+                    if (summon.Label == "Are you sure?")
+                    {
+                        summon.Label = "";
+                        if (Game.Player.Handle != currentPlayer.Handle)
+                            SummonPlayer(currentPlayer);
+                        else
+                            Notify.Error("You can't summon yourself.");
+                    }
                     else
-                        Notify.Error("You can't summon yourself.");
+                    {
+                        summon.Label = "Are you sure?";
+                    }
+                   
                 }
                 // spectating
                 else if (item == spectate)
@@ -151,7 +164,16 @@ namespace vMenuClient
                 // kill button
                 else if (item == kill)
                 {
-                    KillPlayer(currentPlayer);
+                    if (kill.Label == "Are you sure?")
+                    {
+                        kill.Label = "";
+                        KillPlayer(currentPlayer);
+                    }
+                    else
+                    {
+                        kill.Label = "Are you sure?";
+                    }
+                   
                 }
                 // manage the gps route being clicked.
                 else if (item == toggleGPS)
