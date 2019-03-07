@@ -39,7 +39,6 @@ namespace vMenuClient
         {
             // Add event handlers.
             // Handle the SetPermissions event.
-            //EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
             EventHandlers.Add("vMenu:SetAddons", new Action(SetAddons));
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
@@ -56,9 +55,50 @@ namespace vMenuClient
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
+            //EventHandlers.Add("gameEventTriggered", new Action<string, dynamic>(GameEventTriggered));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
+
+
+        //private void GameEventTriggered(string eventName, dynamic eventData)
+        //{
+        //    if (eventName == "CEventNetworkEntityDamage")
+        //    {
+        //        var d = new
+        //        {
+        //            name = eventName,
+        //            victim = (int)eventData[0],
+        //            attacker = (int)eventData[1],
+        //            unknownValue = "0x" + eventData[2].ToString("X"),
+        //            isEntityDead = ((int)eventData[3] == 1),
+        //            weaponHash = (uint)eventData[4],
+        //            unknownInt2 = (int)eventData[5],
+        //            unknownInt3 = (int)eventData[6],
+        //            unknownInt4 = (int)eventData[7],
+        //            unknownInt5 = (int)eventData[8],
+        //            isMeleeDamage = ((int)eventData[9] != 0),
+        //            unknownInt6 = (int)eventData[10]
+
+        //        };
+        //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
+        //    }
+        //    else
+        //    {
+        //        var d = new Dictionary<string, dynamic>
+        //        {
+        //            ["name"] = eventName,
+        //        };
+        //        int i = 0;
+        //        foreach (var data in eventData)
+        //        {
+        //            d.Add($"unk_{i}", data);
+        //            i++;
+        //        }
+        //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
+        //    }
+
+        //}
 
         private bool firstSpawn = true;
         /// <summary>

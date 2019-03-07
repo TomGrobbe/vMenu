@@ -2967,5 +2967,58 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Encoded float to normal float
+        /// <summary>
+        /// Converts an IEEE 754 (int encoded) floating-point to a real float value.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        //public static float IntToFloat(int input)
+        //{
+        //    // This function is based on the 'hex2float' snippet found here for Lua:
+        //    // https://stackoverflow.com/a/19996852
+
+        //    //string d = input.ToString("X8");
+
+        //    var s1 = (char)int.Parse(d.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s2 = (char)int.Parse(d.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s3 = (char)int.Parse(d.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s4 = (char)int.Parse(d.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+
+        //    var b1 = BitConverter.GetBytes(s1)[0];
+        //    var b2 = BitConverter.GetBytes(s2)[0];
+        //    var b3 = BitConverter.GetBytes(s3)[0];
+        //    var b4 = BitConverter.GetBytes(s4)[0];
+
+        //    int sign = b1 > 0x7F ? -1 : 1;
+        //    int expo = ((b1 % 0x80) * 0x2) + (b2 / 0x80);
+        //    float mant = ((b2 % 0x80) * 0x100 + b3) * 0x100 + b4;
+
+        //    float n;
+        //    if (mant == 0 && expo == 0)
+        //    {
+        //        n = sign * 0.0f;
+        //    }
+        //    else if (expo == 0xFF)
+        //    {
+        //        if (mant == 0)
+        //        {
+        //            n = (float)((double)sign * Math.E);
+        //        }
+        //        else
+        //        {
+        //            n = 0.0f;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        double left = 1.0 + mant / 0x800000;
+        //        int right = expo - 0x7F;
+        //        float other = (float)left * ((float)right * (float)right);
+        //        n = (float)sign * (float)other;
+        //    }
+        //    return n;
+        //}
+        #endregion
     }
 }
