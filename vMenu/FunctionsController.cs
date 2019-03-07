@@ -34,7 +34,7 @@ namespace vMenuClient
         private bool node = false;
         private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-        private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
+        //private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
@@ -760,7 +760,7 @@ namespace vMenuClient
 
                     // Get the safezone size for x and y to be able to move with the minimap.
                     safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                    safeZoneSizeY = GetSafeZoneSize() - 0.27f;
+                    //safeZoneSizeY = GetSafeZoneSize() - 0.27f;
                     //safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
 
                     // Get the cross road.
