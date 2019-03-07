@@ -82,14 +82,14 @@ namespace vMenuClient
                 } else if(item == baseEntitySelect)
                 {
                     currState = 1;
-                    baseEntity = currentEntity;
+                    baseEntity = currentEntity;                  
+                    menu.RemoveMenuItem(baseEntitySelect);
                     menu.AddMenuItem(entityOneSelect);
-                    menu.RemoveMenuItem(index);
                 } else if(item == entityOneSelect)
                 {
                     currState = 2;
                     entityOne = currentEntity;
-                    menu.RemoveMenuItem(index);
+                    menu.RemoveMenuItem(entityOneSelect);
                     AddEntityOneMenu();
                     menu.AddMenuItem(attachEntitySelect);
                 } else if(item == attachEntitySelect)
@@ -101,7 +101,8 @@ namespace vMenuClient
                     AttachEntityToEntity(entityOne, baseEntity, -1, attachPos.X, attachPos.Y, attachPos.Z, 0.0f, 0.0f, 0.0f, false, false, false, false, 0, true);
                     setupMode = false;
                     currState = 3;
-                    menu.RemoveMenuItem(index);
+                    menu.RemoveMenuItem(attachEntitySelect);
+                    menu.AddMenuItem(detachEntitySelect);
                 } else if(item == detachEntitySelect)
                 {
                     DetachEntity(entityOne, true, true);
@@ -154,11 +155,12 @@ namespace vMenuClient
                     SetEntityHeading(entityOne, newPosition);
                 } else if(item == entityOneX)
                 {
+                    Debug.WriteLine(((int)((newPosition - 100.0f) * 0.005f)).ToString());
                     entityOneNewX = (int)((newPosition - 100.0f) * 0.005f);
                     Vector3 newPos = GetOffsetFromEntityInWorldCoords(entityOne, lastX > entityOneNewX ? entityOneNewX : -entityOneNewX, 0.0f, 0.0f);
                     SetEntityCoordsNoOffset(entityOne, newPos.X, newPos.Y, newPos.Z, false, false, false);
                     lastX = entityOneNewX;
-                    Debug.WriteLine(entityOneNewX.ToString());
+                    //Debug.WriteLine(entityOneNewX.ToString());
                 } else if(item == entityOneY)
                 {
                     entityOneNewY = (int)((newPosition - 100.0f) * 0.005f);
