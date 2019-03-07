@@ -2579,14 +2579,14 @@ namespace vMenuClient
         private async Task AttachEntities()
         {
             if (MainMenu.AttachEntityMenu == null) return;
-            if(MainMenu.AttachEntityMenu.baseEntity != 0 && MainMenu.AttachEntityMenu.currState >= 1 && MainMenu.AttachEntityMenu.currState < 3)
+            if(MainMenu.AttachEntityMenu.baseEntity != 0 && MainMenu.AttachEntityMenu.currState >= 1 && MainMenu.AttachEntityMenu.currState < 3 && MainMenu.AttachEntityMenu.GetMenu().Visible)
             {
  
                 Vector3 pos = GetEntityCoords(MainMenu.AttachEntityMenu.baseEntity, true);
                 DrawMarker(0, pos.X, pos.Y, pos.Z + 2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.3f, 0.2f, 255, 255, 0, 255, true, false, 0, false, null, null, false);
             }
 
-            if(MainMenu.AttachEntityMenu.entityOne != 0 && MainMenu.AttachEntityMenu.currState >= 2 && MainMenu.AttachEntityMenu.currState < 3)
+            if(MainMenu.AttachEntityMenu.entityOne != 0 && MainMenu.AttachEntityMenu.currState >= 2 && MainMenu.AttachEntityMenu.currState < 3 && MainMenu.AttachEntityMenu.GetMenu().Visible)
             {
                 Vector3 pos = GetEntityCoords(MainMenu.AttachEntityMenu.entityOne, true);
                 DrawMarker(0, pos.X, pos.Y, pos.Z + 2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f, 0.3f, 0.2f, 255, 255, 0, 255, true, false, 0, false, null, null, false);
