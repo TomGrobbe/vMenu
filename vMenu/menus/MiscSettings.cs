@@ -41,6 +41,8 @@ namespace vMenuClient
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
         public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
 
+        internal bool TimecycleEnabled { get; private set; } = false;
+
 
         // keybind states
         public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
@@ -131,6 +133,15 @@ namespace vMenuClient
             connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
+
+            MenuCheckboxItem enableTimeCycle = new MenuCheckboxItem("Enable Timecycle Modifier", "Enable or disable the timecycle modifier from the list below.", TimecycleEnabled);
+            List<string> timeCycleModifiersListData = TimeCycles.Timecycles.ToList();
+            for (var i = 0; i < timeCycleModifiersListData.Count; i++)
+            {
+                timeCycleModifiersListData[i] += $" ({i + 1}/{timeCycleModifiersListData.Count})";
+            }
+            MenuListItem timeCycles = new MenuListItem("TM", timeCycleModifiersListData, 0, "Select a timecycle modifier and enable the checkbox above.");
+            MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, 20, true);
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
@@ -309,6 +320,11 @@ namespace vMenuClient
                     }
                 }
             }
+
+            menu.AddMenuItem(enableTimeCycle);
+            menu.AddMenuItem(timeCycles);
+            menu.AddMenuItem(timeCycleIntensity);
+
             if (IsAllowed(Permission.MSClearArea))
             {
                 menu.AddMenuItem(clearArea);
@@ -449,6 +465,17 @@ namespace vMenuClient
                 {
                     ShowEntityHandles = _checked;
                 }
+                else if (item == enableTimeCycle)
+                {
+                    TimecycleEnabled = _checked;
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)timeCycleIntensity.Position / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+                }
             };
 
             // Handle button presses.
@@ -469,6 +496,35 @@ namespace vMenuClient
                 {
                     var pos = Game.PlayerPed.Position;
                     BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
+                }
+            };
+
+            menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+            {
+                if (item == timeCycles)
+                {
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)timeCycleIntensity.Position / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+                }
+            };
+
+            menu.OnSliderPositionChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+            {
+                if (item == timeCycleIntensity)
+                {
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)newIndex / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+
                 }
             };
         }
