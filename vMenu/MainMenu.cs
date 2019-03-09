@@ -448,7 +448,7 @@ namespace vMenuClient
                 {
                     if (!MenuController.IsAnyMenuOpen() || NoClipEnabled)
                     {
-                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip))
+                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
                         {
                             if (MenuController.IsAnyMenuOpen())
                             {
