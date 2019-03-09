@@ -1447,29 +1447,9 @@ namespace vMenuClient
         /// <returns></returns>
         public static async Task<string> GetUserInput(string windowTitle, string defaultText, int maxInputLength)
         {
-            var currentMenu = GetOpenMenu();
-            if (currentMenu != null)
-            {
-                MenuController.CloseAllMenus();
-            }
-            MainMenu.DisableControls = true;
-            MainMenu.DontOpenMenus = true;
-
             // Create the window title string.
             var spacer = "\t";
             AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
-
-            async void ReopenMenuDelayed(Menu menu)
-            {
-                MainMenu.DontOpenMenus = false;
-                await Delay(100);
-                if (menu != null)
-                {
-                    menu.OpenMenu();
-                }
-                await Delay(50);
-                MainMenu.DisableControls = false;
-            }
 
             // Display the input box.
             DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
@@ -1483,10 +1463,8 @@ namespace vMenuClient
                 {
                     case 3: // not displaying input field anymore somehow
                     case 2: // cancelled
-                        ReopenMenuDelayed(currentMenu);
                         return null;
                     case 1: // finished editing
-                        ReopenMenuDelayed(currentMenu);
                         return GetOnscreenKeyboardResult();
                     default:
                         await Delay(0);

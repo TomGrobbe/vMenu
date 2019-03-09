@@ -141,15 +141,8 @@ namespace vMenuClient
                     SwitchedVehicle = true;
                 }
             }
-
-            if (MenuController.IsAnyMenuOpen())
-            {
-                if (UpdateOnscreenKeyboard() == 0)
-                {
-                    await Delay(0);
-                    MenuController.CloseAllMenus();
-                }
-            }
+            // this can wait
+            await Delay(10);
         }
         #endregion
         #region Player Options Tasks
