@@ -25,7 +25,6 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
-        //private Menu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -34,11 +33,9 @@ namespace vMenuClient
         private bool node = false;
         private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-        //private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
-        //private bool wasMenuJustOpen = false;
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -124,14 +121,14 @@ namespace vMenuClient
         /// Task related
         #region General Tasks
         /// <summary>
-        /// All general tasks that run every game tick (and are not (sub)menu specific).
+        /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
         /// </summary>
         /// <returns></returns>
         private async Task GeneralTasks()
         {
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
             // Check if the player has switched to a new vehicle.
-            if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
+            if (Game.PlayerPed.IsInVehicle()) // added this for improved performance.
             {
                 var tmpVehicle = GetVehicle();
                 if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
@@ -313,13 +310,6 @@ namespace vMenuClient
                             vehicleDoor.CanBeBroken = !invincibleGod;
                         }
 
-
-                        //bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
-                        //if (specialgod && veh.EngineHealth < 1000)
-                        //{
-                        //veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
-                        //}
-
                         // Freeze Vehicle Position (if enabled).
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && IsAllowed(Permission.VOFreeze))
                         {
@@ -331,7 +321,6 @@ namespace vMenuClient
                             veh.Wash();
                         }
 
-                        //await Delay(0);
                         // If the torque multiplier is enabled and the player is allowed to use it.
                         if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && IsAllowed(Permission.VOTorqueMultiplier))
                         {
@@ -477,8 +466,6 @@ namespace vMenuClient
                     {
                         if (m.Visible)
                         {
-                            //MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
-                            //m.CloseMenu();
                             m.GoBack();
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
