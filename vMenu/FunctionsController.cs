@@ -544,35 +544,9 @@ namespace vMenuClient
         private async Task VehicleOptionsEveryFrame()
         {
             Vehicle veh = GetVehicle();
-
-            if (MainMenu.PermissionsSetupComplete &&
-                MainMenu.VehicleOptionsMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
-            {
-                if (Game.IsControlJustPressed(0, Control.Jump))
-                {
-                    if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
-                    {
-                        var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
-
-                        if (open)
-                        {
-                            for (var i = 0; i < 8; i++)
-                            {
-                                SetVehicleDoorOpen(veh.Handle, i, false, false);
-                            }
-                        }
-                        else
-                        {
-                            SetVehicleDoorsShut(veh.Handle, false);
-                        }
-                    }
-                }
-            }
             string GetHealthString(double health)
             {
-                var color = "";
+                string color;
                 if (health <= 0)
                 {
                     color = "~r~";
