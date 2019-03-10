@@ -17,7 +17,6 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        private int KeyDelay = 1000;
         public bool EnableVehicleBlip { get; private set; } = UserDefaults.PVEnableVehicleBlip;
 
         // Empty constructor
@@ -300,7 +299,7 @@ namespace vMenuClient
             };
         }
 
-        private void PressKeyFob(Player player)
+        private async void PressKeyFob(Player player)
         {
             if(player != null && !player.IsDead && !player.Character.IsInVehicle())
             {
@@ -317,11 +316,13 @@ namespace vMenuClient
 
                 RequestAnimDict("anim@mp_player_intmenu@key_fob@");
                 while (!HasAnimDictLoaded("anim@mp_player_intmenu@key_fob@")) {
-                    Delay(time: 0);
+                    await Delay(0);
                 }
                 player.Character.Task.PlayAnimation("anim@mp_player_intmenu@key_fob@", "fob_click", 3f, 1000, AnimationFlags.UpperBodyOnly);
                 PlaySoundFromEntity(-1, "Remote_Control_Fob", player.Character.Handle, "PI_Menu_Sounds", true, 0);
             }
+
+            await Delay(0);
         }
 
         private async void SoundHorn(Vehicle veh)
