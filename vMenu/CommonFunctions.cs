@@ -360,17 +360,26 @@ namespace vMenuClient
                 var veh = GetVehicle();
                 bool inVehicle() => veh != null && veh.Exists() && Game.PlayerPed == veh.Driver;
 
+                bool vehicleRestoreVisibility = inVehicle() && veh.IsVisible;
+                bool pedRestoreVisibility = Game.PlayerPed.IsVisible;
+
                 // Freeze vehicle or player location and fade out the entity to the network.
                 if (inVehicle())
                 {
                     veh.IsPositionFrozen = true;
-                    NetworkFadeOutEntity(veh.Handle, true, false);
+                    if (veh.IsVisible)
+                    {
+                        NetworkFadeOutEntity(veh.Handle, true, false);
+                    }
                 }
                 else
                 {
                     ClearPedTasksImmediately(Game.PlayerPed.Handle);
                     Game.PlayerPed.IsPositionFrozen = true;
-                    NetworkFadeOutEntity(Game.PlayerPed.Handle, true, false);
+                    if (Game.PlayerPed.IsVisible)
+                    {
+                        NetworkFadeOutEntity(Game.PlayerPed.Handle, true, false);
+                    }
                 }
 
                 // Fade out the screen and wait for it to be faded out completely.
@@ -504,12 +513,22 @@ namespace vMenuClient
                 // Once the teleporting is done, unfreeze vehicle or player and fade them back in.
                 if (inVehicle())
                 {
-                    NetworkFadeInEntity(veh.Handle, true);
+                    if (vehicleRestoreVisibility)
+                    {
+                        NetworkFadeInEntity(veh.Handle, true);
+                        if (!pedRestoreVisibility)
+                        {
+                            Game.PlayerPed.IsVisible = false;
+                        }
+                    }
                     veh.IsPositionFrozen = false;
                 }
                 else
                 {
-                    NetworkFadeInEntity(Game.PlayerPed.Handle, true);
+                    if (pedRestoreVisibility)
+                    {
+                        NetworkFadeInEntity(Game.PlayerPed.Handle, true);
+                    }
                     Game.PlayerPed.IsPositionFrozen = false;
                 }
 
