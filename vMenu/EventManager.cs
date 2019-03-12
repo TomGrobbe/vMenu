@@ -65,23 +65,44 @@ namespace vMenuClient
         //{
         //    if (eventName == "CEventNetworkEntityDamage")
         //    {
-        //        var d = new
+        //        var damageEventData = new
         //        {
         //            name = eventName,
-        //            victim = (int)eventData[0],
-        //            attacker = (int)eventData[1],
-        //            unknownValue = "0x" + eventData[2].ToString("X"),
-        //            isEntityDead = ((int)eventData[3] == 1),
-        //            weaponHash = (uint)eventData[4],
-        //            unknownInt2 = (int)eventData[5],
-        //            unknownInt3 = (int)eventData[6],
-        //            unknownInt4 = (int)eventData[7],
-        //            unknownInt5 = (int)eventData[8],
-        //            isMeleeDamage = ((int)eventData[9] != 0),
-        //            unknownInt6 = (int)eventData[10]
-
+        //            data = new
+        //            {
+        //                victim = (int)eventData[0],
+        //                attacker = (int)eventData[1],
+        //                unknownProbablyDamageFloat = (int)eventData[2],
+        //                boolIsEntityDead = ((int)eventData[3] == 1),
+        //                uintWeaponHash = (uint)eventData[4],
+        //                unknown1 = (int)eventData[5],
+        //                unknown2 = (int)eventData[6],
+        //                boolUnknown = (int)eventData[7],
+        //                unknown3 = (int)eventData[8],
+        //                boolIsMeleeDamage = ((int)eventData[9] != 0),
+        //                flagUnknown = (int)eventData[10]
+        //            }
         //        };
-        //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
+        //        Debug.WriteLine(JsonConvert.SerializeObject(damageEventData, Formatting.Indented));
+        //        if (DoesEntityExist(damageEventData.data.attacker) && IsEntityAPed(damageEventData.data.attacker))
+        //        {
+        //            Ped ped = (Ped)Ped.FromHandle(damageEventData.data.attacker);
+        //            if (ped.IsPlayer && damageEventData.data.boolIsEntityDead)
+        //            {
+        //                int player = NetworkGetPlayerIndexFromPed(ped.Handle);
+        //                if (NetworkIsPlayerActive(player))
+        //                {
+        //                    string name = GetPlayerName(player);
+        //                    string weapon = "(n/a)";
+        //                    var w = ValidWeapons.WeaponList.Find(f => f.Hash == (uint)damageEventData.data.uintWeaponHash);
+        //                    if (!string.IsNullOrEmpty(w.Name))
+        //                    {
+        //                        weapon = w.Name;
+        //                    }
+        //                    Notify.Info($"Player <C>{name}</C>~s~ killed entity {damageEventData.data.victim} using {weapon}!");
+        //                }
+        //            }
+        //        }
         //    }
         //    else
         //    {
@@ -97,7 +118,6 @@ namespace vMenuClient
         //        }
         //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
         //    }
-
         //}
 
         private bool firstSpawn = true;
