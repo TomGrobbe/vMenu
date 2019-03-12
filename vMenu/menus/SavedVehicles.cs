@@ -182,6 +182,60 @@ namespace vMenuClient
                     deleteVehicle.Label = "";
                 }
             };
+            unavailableVehiclesMenu.InstructionalButtons.Add(Control.FrontendDelete, "Delete Vehicle!");
+
+            unavailableVehiclesMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.FrontendDelete, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>((m, c) =>
+            {
+                if (m.Size > 0)
+                {
+                    int index = m.CurrentIndex;
+                    if (index < m.Size)
+                    {
+                        MenuItem item = m.GetMenuItems().Find(i => i.Index == index);
+                        if (item != null && (item.ItemData is KeyValuePair<string, VehicleInfo> sd))
+                        {
+                            if (item.Label == "~r~Are you sure?")
+                            {
+                                Log("Unavailable saved vehicle deleted, data: " + JsonConvert.SerializeObject(sd));
+                                DeleteResourceKvp(sd.Key);
+                                unavailableVehiclesMenu.GoBack();
+                                UpdateMenuAvailableCategories();
+                            }
+                            else
+                            {
+                                item.Label = "~r~Are you sure?";
+                            }
+                        }
+                        else
+                        {
+                            Notify.Error("Somehow this vehicle could not be found.");
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error("You somehow managed to trigger deletion of a menu item that doesn't exist, how...?");
+                    }
+                }
+                else
+                {
+                    Notify.Error("There are currrently no unavailable vehicles to delete!");
+                }
+            }), true));
+
+            void ResetAreYouSure()
+            {
+                foreach (var i in unavailableVehiclesMenu.GetMenuItems())
+                {
+                    if (i.ItemData is KeyValuePair<string, VehicleInfo> vd)
+                    {
+
+                        i.Label = $"({vd.Value.name})";
+
+                    }
+                }
+            }
+            unavailableVehiclesMenu.OnMenuClose += (sender) => ResetAreYouSure();
+            unavailableVehiclesMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) => ResetAreYouSure();
 
             #endregion
         }
@@ -284,8 +338,10 @@ namespace vMenuClient
                     {
                         Label = "(" + sv.Value.name + ")",
                         Enabled = false,
-                        LeftIcon = MenuItem.Icon.LOCK
+                        LeftIcon = MenuItem.Icon.LOCK,
+                        ItemData = sv
                     };
+                    //SetResourceKvp(sv.Key + "_tmp_dupe", JsonConvert.SerializeObject(sv.Value));
                     unavailableVehiclesMenu.AddMenuItem(missingVehItem);
                 }
             }
