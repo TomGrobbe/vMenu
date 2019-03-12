@@ -303,6 +303,16 @@ namespace vMenuClient
         {
             if(player != null && !player.IsDead && !player.Character.IsInVehicle())
             {
+                uint KeyFobHashKey = (uint)GetHashKey("p_car_keys_01");
+                RequestModel(KeyFobHashKey);
+                while(!HasModelLoaded(KeyFobHashKey))
+                {
+                    await Delay(0);
+                }
+
+                int KeyFobObject = CreateObject((int)KeyFobHashKey, 0, 0, 0, true, true, true);
+                AttachEntityToEntity(KeyFobObject, player.Character.Handle, GetPedBoneIndex(player.Character.Handle, 57005), 0.09f, 0.03f, -0.02f, -76f, 13f, 28f, false, true, true, true, 0, true);
+
                 ClearPedTasks(player.Character.Handle);
                 if(player.Character.Weapons.Current.Hash != WeaponHash.Unarmed)
                 {
@@ -320,6 +330,10 @@ namespace vMenuClient
                 }
                 player.Character.Task.PlayAnimation("anim@mp_player_intmenu@key_fob@", "fob_click", 3f, 1000, AnimationFlags.UpperBodyOnly);
                 PlaySoundFromEntity(-1, "Remote_Control_Fob", player.Character.Handle, "PI_Menu_Sounds", true, 0);
+
+                await Delay(1250);
+                DetachEntity(KeyFobObject, false, false);
+                DeleteObject(ref KeyFobObject);
             }
 
             await Delay(0);
