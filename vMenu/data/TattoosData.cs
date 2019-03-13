@@ -25,162 +25,166 @@ namespace vMenuClient
 
     public struct Tattoo
     {
-        public int gender;            /// 0 = male, 1 = female, 2 = both
-        public string name;           /// overlayName
-        public string collectionName; /// overlayCollectionName
-        public TattooZone zoneId;     /// zoneId <see cref="TattooZone"/>.
+        public int gender;
+        public string name;
+        public string collectionName;
+        public TattooZone zoneId;
+        public string type;
+
+        /// <summary>
+        /// Creates a new Tattoo object.
+        /// </summary>
+        /// <param name="gender">0 = male, 1 = female, 2 = both</param>
+        /// <param name="name">Tattoo name</param>
+        /// <param name="collectionName">Tattoo collection name</param>
+        /// <param name="zoneId">Tattoo zone <see cref="TattooZone"/></param>
+        /// <param name="type">Tattoo type</param>
+        public Tattoo(int gender, string name, string collectionName, TattooZone zoneId, string type)
+        {
+            this.gender = gender;
+            this.name = name;
+            this.collectionName = collectionName;
+            this.zoneId = zoneId;
+            this.type = type;
+        }
     }
 
-    internal struct MaleTattoosCollection
+    internal static class MaleTattoosCollection
     {
-        internal List<Tattoo> TORSO;
-        internal List<Tattoo> HEAD;
-        internal List<Tattoo> LEFT_ARM;
-        internal List<Tattoo> RIGHT_ARM;
-        internal List<Tattoo> LEFT_LEG;
-        internal List<Tattoo> RIGHT_LEG;
+        internal static List<Tattoo> TORSO = new List<Tattoo>();
+        internal static List<Tattoo> HEAD = new List<Tattoo>();
+        internal static List<Tattoo> LEFT_ARM = new List<Tattoo>();
+        internal static List<Tattoo> RIGHT_ARM = new List<Tattoo>();
+        internal static List<Tattoo> LEFT_LEG = new List<Tattoo>();
+        internal static List<Tattoo> RIGHT_LEG = new List<Tattoo>();
+        internal static List<Tattoo> BADGES = new List<Tattoo>();
     }
 
     internal struct FemaleTattoosCollection
     {
-        internal List<Tattoo> TORSO;
-        internal List<Tattoo> HEAD;
-        internal List<Tattoo> LEFT_ARM;
-        internal List<Tattoo> RIGHT_ARM;
-        internal List<Tattoo> LEFT_LEG;
-        internal List<Tattoo> RIGHT_LEG;
+        internal static List<Tattoo> TORSO = new List<Tattoo>();
+        internal static List<Tattoo> HEAD = new List<Tattoo>();
+        internal static List<Tattoo> LEFT_ARM = new List<Tattoo>();
+        internal static List<Tattoo> RIGHT_ARM = new List<Tattoo>();
+        internal static List<Tattoo> LEFT_LEG = new List<Tattoo>();
+        internal static List<Tattoo> RIGHT_LEG = new List<Tattoo>();
+        internal static List<Tattoo> BADGES = new List<Tattoo>();
     }
 
     internal static class TattoosData
     {
+        private static bool isDataSetup = false;
+        internal static void GenerateTattoosData()
+        {
+            if (isDataSetup)
+            {
+                return;
+            }
+
+            isDataSetup = true;
+
+            foreach (var tattoo in Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tattoo>>(Properties.Resources.overlays))
+            {
+                if (!string.IsNullOrEmpty(tattoo.name))
+                {
+                    if (tattoo.type == "TYPE_TATTOO" && !tattoo.name.ToLower().Contains("hair_"))
+                    {
+                        switch (tattoo.zoneId)
+                        {
+                            case TattooZone.ZONE_TORSO:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.TORSO.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.TORSO.Add(tattoo);
+                                }
+                                break;
+                            case TattooZone.ZONE_HEAD:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.HEAD.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.HEAD.Add(tattoo);
+                                }
+                                break;
+                            case TattooZone.ZONE_LEFT_ARM:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.LEFT_ARM.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.LEFT_ARM.Add(tattoo);
+                                }
+                                break;
+                            case TattooZone.ZONE_RIGHT_ARM:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.RIGHT_ARM.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.RIGHT_ARM.Add(tattoo);
+                                }
+                                break;
+                            case TattooZone.ZONE_LEFT_LEG:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.LEFT_LEG.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.LEFT_LEG.Add(tattoo);
+                                }
+                                break;
+                            case TattooZone.ZONE_RIGHT_LEG:
+                                if (tattoo.gender == 0 || tattoo.gender == 2)
+                                {
+                                    MaleTattoosCollection.RIGHT_LEG.Add(tattoo);
+                                }
+                                if (tattoo.gender == 1 || tattoo.gender == 2)
+                                {
+                                    FemaleTattoosCollection.RIGHT_LEG.Add(tattoo);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (tattoo.type == "TYPE_BADGE" && !tattoo.name.ToLower().Contains("hair_"))
+                    {
+                        if (tattoo.gender == 0 || tattoo.gender == 2)
+                        {
+                            MaleTattoosCollection.BADGES.Add(tattoo);
+                        }
+                        if (tattoo.gender == 1 || tattoo.gender == 2)
+                        {
+                            FemaleTattoosCollection.BADGES.Add(tattoo);
+                        }
+                    }
+                    else if (tattoo.name.ToLower().Contains("hair_"))
+                    {
+                        if (tattoo.gender == 0 || tattoo.gender == 2)
+                        {
+
+                        }
+                        if (tattoo.gender == 1 || tattoo.gender == 2)
+                        {
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /*
         internal static FemaleTattoosCollection FemaleTattoos = new FemaleTattoosCollection()
         {
-            HEAD = new List<Tattoo>()
-            {
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_001_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_002_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_003_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_004_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_005_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_006_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_009_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_038_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_051_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_007", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_024", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_025", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_029", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_F_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_F_001_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Tattoo_003_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Tat_005", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Tat_021", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_000", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_001", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_002", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_003", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_004", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_006", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_011_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_012_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_Tat_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_004_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_006_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_017_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_042_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpxmas_604490_overlays", name = "Hair_014_Fix", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_Award_F_000", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_a", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_b", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_c", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_d", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_e", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-            },
             TORSO = new List<Tattoo>()
             {
                 new Tattoo() { collectionName = "mpairraces_overlays", name = "MP_Airraces_Tattoo_000_F", gender = 1, zoneId = TattooZone.ZONE_TORSO},
@@ -385,6 +389,132 @@ namespace vMenuClient
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_F_044", gender = 1, zoneId = TattooZone.ZONE_TORSO},
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_F_045", gender = 1, zoneId = TattooZone.ZONE_TORSO},
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_F_046", gender = 1, zoneId = TattooZone.ZONE_TORSO},
+            },
+            HEAD = new List<Tattoo>()
+            {
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_001_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_002_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_003_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_004_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_005_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_006_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_009_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_038_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_051_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_007", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_024", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_025", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_F_Tat_029", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_F_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_F_001_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Tattoo_003_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Hair_000_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Tat_005", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_F_Tat_021", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_017_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_F_Hair_020_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_000", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_001", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_F_Hair_002", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_003", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_004", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_F_Hair_006", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_011_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_012_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_Tat_000_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_004_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_006_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_017_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_042_F", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpxmas_604490_overlays", name = "Hair_014_Fix", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_Award_F_000", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_a", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_b", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_c", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_d", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_e", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_005_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_006_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_013_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_014_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_a", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_b", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_c", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_d", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_long_e", gender = 1, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
             },
             LEFT_ARM = new List<Tattoo>()
             {
@@ -620,132 +750,6 @@ namespace vMenuClient
 
         internal static MaleTattoosCollection MaleTattoos = new MaleTattoosCollection()
         {
-            HEAD = new List<Tattoo>()
-            {
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_001_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_002_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_003_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_004_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_005_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_006_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_009_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_038_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_051_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_007", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_024", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_025", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_029", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_M_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_M_001_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Tattoo_003_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Tat_005", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Tat_021", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_000", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_001", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_002", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_003", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_004", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_005", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_006", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_011_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_012_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_Tat_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_004_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_006_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_017_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_042_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_Award_M_000", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_a", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_b", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_c", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_d", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_e", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
-            },
             TORSO = new List<Tattoo>()
             {
                 new Tattoo() { collectionName = "mpairraces_overlays", name = "MP_Airraces_Tattoo_000_M", gender = 0, zoneId = TattooZone.ZONE_TORSO},
@@ -950,6 +954,132 @@ namespace vMenuClient
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_M_044", gender = 0, zoneId = TattooZone.ZONE_TORSO},
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_M_045", gender = 0, zoneId = TattooZone.ZONE_TORSO},
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_M_046", gender = 0, zoneId = TattooZone.ZONE_TORSO},
+            },
+            HEAD = new List<Tattoo>()
+            {
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_001_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_002_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_003_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_004_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_005_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_Biker_Hair_006_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_009_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_038_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpbiker_overlays", name = "MP_MP_Biker_Tat_051_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_007", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_024", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_025", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpchristmas2_overlays", name = "MP_Xmas2_M_Tat_029", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_M_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Hair_M_001_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpgunrunning_overlays", name = "MP_Gunrunning_Tattoo_003_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_000_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Tat_005", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Hip_M_Tat_021", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mphipster_overlays", name = "FM_Disc_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_000", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_001", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_002", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider_overlays", name = "LR_M_Hair_003", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_004", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_005", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "mplowrider2_overlays", name = "LR_M_Hair_006", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_011_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpsmuggler_overlays", name = "MP_Smuggler_Tattoo_012_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_Tat_000_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_004_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_006_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_017_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "mpstunt_overlays", name = "MP_MP_Stunt_tat_042_M", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_Award_M_000", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_a", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_b", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_c", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_d", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_F_Hair_003_e", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_001_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_003_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_006_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_008_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_a", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_b", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_c", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_d", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_M_Hair_long_e", gender = 0, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_M_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_M_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_M_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_002", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_003", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_004", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_005", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_006", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_007", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_008", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_009", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_010", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_011", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_012", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_013", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_014", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NG_F_Hair_015", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBea_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGBus_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGHip_F_Hair_001", gender = 2, zoneId = TattooZone.ZONE_HEAD},
+                //new Tattoo() { collectionName = "multiplayer_overlays", name = "NGInd_F_Hair_000", gender = 2, zoneId = TattooZone.ZONE_HEAD},
             },
             LEFT_ARM = new List<Tattoo>()
             {
@@ -1182,6 +1312,7 @@ namespace vMenuClient
                 new Tattoo() { collectionName = "multiplayer_overlays", name = "FM_Tat_M_043", gender = 0, zoneId = TattooZone.ZONE_RIGHT_LEG},
             },
         };
+        */
 
     }
 }

@@ -39,7 +39,6 @@ namespace vMenuClient
         {
             // Add event handlers.
             // Handle the SetPermissions event.
-            //EventHandlers.Add("vMenu:ConfigureClient", new Action<dynamic, dynamic, dynamic, dynamic>(ConfigureClient));
             EventHandlers.Add("vMenu:SetAddons", new Action(SetAddons));
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
@@ -56,9 +55,70 @@ namespace vMenuClient
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
+            //EventHandlers.Add("gameEventTriggered", new Action<string, dynamic>(GameEventTriggered));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
+
+
+        //private void GameEventTriggered(string eventName, dynamic eventData)
+        //{
+        //    if (eventName == "CEventNetworkEntityDamage")
+        //    {
+        //        var damageEventData = new
+        //        {
+        //            name = eventName,
+        //            data = new
+        //            {
+        //                victim = (int)eventData[0],
+        //                attacker = (int)eventData[1],
+        //                unknownProbablyDamageFloat = (int)eventData[2],
+        //                boolIsEntityDead = ((int)eventData[3] == 1),
+        //                uintWeaponHash = (uint)eventData[4],
+        //                unknown1 = (int)eventData[5],
+        //                unknown2 = (int)eventData[6],
+        //                boolUnknown = (int)eventData[7],
+        //                unknown3 = (int)eventData[8],
+        //                boolIsMeleeDamage = ((int)eventData[9] != 0),
+        //                flagUnknown = (int)eventData[10]
+        //            }
+        //        };
+        //        Debug.WriteLine(JsonConvert.SerializeObject(damageEventData, Formatting.Indented));
+        //        if (DoesEntityExist(damageEventData.data.attacker) && IsEntityAPed(damageEventData.data.attacker))
+        //        {
+        //            Ped ped = (Ped)Ped.FromHandle(damageEventData.data.attacker);
+        //            if (ped.IsPlayer && damageEventData.data.boolIsEntityDead)
+        //            {
+        //                int player = NetworkGetPlayerIndexFromPed(ped.Handle);
+        //                if (NetworkIsPlayerActive(player))
+        //                {
+        //                    string name = GetPlayerName(player);
+        //                    string weapon = "(n/a)";
+        //                    var w = ValidWeapons.WeaponList.Find(f => f.Hash == (uint)damageEventData.data.uintWeaponHash);
+        //                    if (!string.IsNullOrEmpty(w.Name))
+        //                    {
+        //                        weapon = w.Name;
+        //                    }
+        //                    Notify.Info($"Player <C>{name}</C>~s~ killed entity {damageEventData.data.victim} using {weapon}!");
+        //                }
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var d = new Dictionary<string, dynamic>
+        //        {
+        //            ["name"] = eventName,
+        //        };
+        //        int i = 0;
+        //        foreach (var data in eventData)
+        //        {
+        //            d.Add($"unk_{i}", data);
+        //            i++;
+        //        }
+        //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
+        //    }
+        //}
 
         private bool firstSpawn = true;
         /// <summary>
@@ -219,6 +279,7 @@ namespace vMenuClient
             }
         }
 
+
         /// <summary>
         /// OnTick loop to keep the weather synced.
         /// </summary>
@@ -239,26 +300,46 @@ namespace vMenuClient
                     ClearWeatherTypePersist();
                     ClearOverrideWeather();
                     SetWeatherTypeNow(lastWeather);
+                    var previousWeather = lastWeather;
                     lastWeather = currentWeatherType;
                     SetWeatherTypeOverTime(currentWeatherType, 30f);
                     int tmpTimer = GetGameTimer();
+
+                    // Wait until the transition is completed.
                     while (GetGameTimer() - tmpTimer < 30000) // wait 30 _real_ seconds
                     {
-                        await Delay(0);
+                        // To update the current state in the menu subtitle counter pre-text.
+                        float weatherChangeState = ((float)GetGameTimer() - (float)tmpTimer) / 30000f;
+
+                        if (MainMenu.WeatherOptionsMenu != null)
+                        {
+                            MainMenu.WeatherOptionsMenu.GetMenu().CounterPreText = $"(Cooldown {Math.Ceiling(30f - (30f * weatherChangeState))}) ";
+                        }
+                        await Delay(100);
                     }
+
+                    // Reset the intensity to make the game handle the intensity correctly.
+                    SetRainFxIntensity(-1f);
+
+                    // Set the new weather type to be persistent.
                     SetWeatherTypeNow(currentWeatherType);
                     justChanged = true;
+
+                    // Dbg logging
                     Log("done changing weather type (duration: 45.5 seconds)");
+
+                    // Stop currently switching weather type checks.
                     CurrentlySwitchingWeather = false;
+
+                    // Reset the menu subtitle counter pre-text.
+                    if (MainMenu.WeatherOptionsMenu != null)
+                        MainMenu.WeatherOptionsMenu.GetMenu().CounterPreText = null;
                 }
                 if (!justChanged)
                 {
                     SetWeatherTypeNowPersist(currentWeatherType);
                 }
                 SetBlackout(blackoutMode);
-                //SetWind(0f);
-                //SetWindDirection(0f);
-                //SetWindSpeed(0f);
             }
         }
 

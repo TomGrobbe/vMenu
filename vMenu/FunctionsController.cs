@@ -25,7 +25,6 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
-        //private Menu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -34,11 +33,9 @@ namespace vMenuClient
         private bool node = false;
         private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-        private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
-        //private bool wasMenuJustOpen = false;
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -124,14 +121,14 @@ namespace vMenuClient
         /// Task related
         #region General Tasks
         /// <summary>
-        /// All general tasks that run every game tick (and are not (sub)menu specific).
+        /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
         /// </summary>
         /// <returns></returns>
         private async Task GeneralTasks()
         {
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
             // Check if the player has switched to a new vehicle.
-            if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
+            if (Game.PlayerPed.IsInVehicle()) // added this for improved performance.
             {
                 var tmpVehicle = GetVehicle();
                 if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
@@ -141,15 +138,8 @@ namespace vMenuClient
                     SwitchedVehicle = true;
                 }
             }
-
-            if (MenuController.IsAnyMenuOpen())
-            {
-                if (UpdateOnscreenKeyboard() == 0)
-                {
-                    await Delay(0);
-                    MenuController.CloseAllMenus();
-                }
-            }
+            // this can wait
+            await Delay(10);
         }
         #endregion
         #region Player Options Tasks
@@ -320,13 +310,6 @@ namespace vMenuClient
                             vehicleDoor.CanBeBroken = !invincibleGod;
                         }
 
-
-                        //bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
-                        //if (specialgod && veh.EngineHealth < 1000)
-                        //{
-                        //veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
-                        //}
-
                         // Freeze Vehicle Position (if enabled).
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && IsAllowed(Permission.VOFreeze))
                         {
@@ -338,7 +321,6 @@ namespace vMenuClient
                             veh.Wash();
                         }
 
-                        //await Delay(0);
                         // If the torque multiplier is enabled and the player is allowed to use it.
                         if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && IsAllowed(Permission.VOTorqueMultiplier))
                         {
@@ -484,8 +466,6 @@ namespace vMenuClient
                     {
                         if (m.Visible)
                         {
-                            //MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
-                            //m.CloseMenu();
                             m.GoBack();
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
@@ -551,35 +531,9 @@ namespace vMenuClient
         private async Task VehicleOptionsEveryFrame()
         {
             Vehicle veh = GetVehicle();
-
-            if (MainMenu.PermissionsSetupComplete &&
-                MainMenu.VehicleOptionsMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
-            {
-                if (Game.IsControlJustPressed(0, Control.Jump))
-                {
-                    if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
-                    {
-                        var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
-
-                        if (open)
-                        {
-                            for (var i = 0; i < 8; i++)
-                            {
-                                SetVehicleDoorOpen(veh.Handle, i, false, false);
-                            }
-                        }
-                        else
-                        {
-                            SetVehicleDoorsShut(veh.Handle, false);
-                        }
-                    }
-                }
-            }
             string GetHealthString(double health)
             {
-                var color = "";
+                string color;
                 if (health <= 0)
                 {
                     color = "~r~";
@@ -760,7 +714,7 @@ namespace vMenuClient
 
                     // Get the safezone size for x and y to be able to move with the minimap.
                     safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                    safeZoneSizeY = GetSafeZoneSize() - 0.27f;
+                    //safeZoneSizeY = GetSafeZoneSize() - 0.27f;
                     //safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
 
                     // Get the cross road.
@@ -1519,12 +1473,12 @@ namespace vMenuClient
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist 6
 
                         // tattoo turn left variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 8
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 9
 
                         // tattoo turn right variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 11
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 12
                     };
@@ -1536,27 +1490,27 @@ namespace vMenuClient
 
                     /* 
                      * Camera positions and PointAt locations.
-                    
+
                     // head close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
-                    
+
                     // upper body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
-                    
+
                     // lower body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
-                    
+
                     // very low (feet level) very close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
-                    
+
                     // default normal height full character visible.
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-                    
+
                     */
 
                     bool rearCamActive = false;
@@ -1737,6 +1691,7 @@ namespace vMenuClient
                                 case 1:
                                 case 2:
                                 case 3:
+                                case 6:
                                     // upper body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
@@ -2433,9 +2388,24 @@ namespace vMenuClient
                         while (!(MenuController.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
                         {
                             await Delay(0);
+                            Vehicle veh = GetVehicle();
+                            bool inVeh = veh != null && (veh.Model.IsBike || veh.Model.IsBicycle || veh.Model.IsQuadbike);
+                            if (GetGameTimer() - timer > 380 && inVeh)
+                            {
+                                Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                            }
                             if (GetGameTimer() - timer > 400)
                             {
-                                await SwitchHelmet();
+                                Task t = SwitchHelmet();
+                                while (!t.IsCompleted && !t.IsCanceled && !t.IsFaulted)
+                                {
+                                    if (inVeh)
+                                    {
+                                        Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                                    }
+                                    await Delay(0);
+                                }
+                                //await SwitchHelmet();
                                 break;
                             }
                         }
@@ -2576,8 +2546,6 @@ namespace vMenuClient
         }
         #endregion
 
-
-
         #region Slow misc tick
         /// <summary>
         /// Slow functions for the model dimensions outline entities lists.
@@ -2690,256 +2658,49 @@ namespace vMenuClient
             if (MainMenu.PermissionsSetupComplete)
             {
                 int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
-                await Delay(1);
                 int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
-                await Delay(1);
                 int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                await Delay(1);
                 if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
                 {
-                    int newHelmet = 0;
-                    string animName = "visor_up";
-                    string animDict = "anim@mp_helmets@on_foot";
-                    if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeFemale01)
+                    int newHelmet = component;
+                    int newHelmetTexture = texture;
+
+                    AltPropVariationData[] newHelmetData = Game.GetAltPropVariationData(Game.PlayerPed.Handle, 0);
+
+                    Log(JsonConvert.SerializeObject(newHelmetData, Formatting.Indented));
+
+                    if (newHelmetData != null && newHelmetData.Length > 0)
                     {
-                        switch (component)
-                        {
-                            case 49:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 66:
-                                newHelmet = 81;
-                                animName = "visor_down";
-                                break;
-                            case 67:
-                                newHelmet = 49;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 73;
-                                animName = "visor_up";
-                                break;
-                            case 73:
-                                newHelmet = 72;
-                                animName = "visor_down";
-                                break;
-                            case 77:
-                                newHelmet = 78;
-                                animName = "visor_up";
-                                break;
-                            case 78:
-                                newHelmet = 77;
-                                animName = "visor_down";
-                                break;
-                            case 79:
-                                newHelmet = 80;
-                                animName = "visor_up";
-                                break;
-                            case 80:
-                                newHelmet = 79;
-                                animName = "visor_down";
-                                break;
-                            case 81:
-                                newHelmet = 66;
-                                animName = "visor_up";
-                                break;
-                            case 90:
-                                newHelmet = 91;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 90;
-                                animName = "visor_down";
-                                break;
-                            case 115:
-                                newHelmet = 116;
-                                animName = "goggles_up";
-                                break;
-                            case 116:
-                                newHelmet = 115;
-                                animName = "goggles_down";
-                                break;
-                            case 117:
-                                newHelmet = 118;
-                                animName = "goggles_up";
-                                break;
-                            case 118:
-                                newHelmet = 117;
-                                animName = "goggles_down";
-                                break;
-                            case 122:
-                                newHelmet = 123;
-                                animName = "visor_up";
-                                break;
-                            case 123:
-                                newHelmet = 122;
-                                animName = "visor_down";
-                                break;
-                            case 124:
-                                newHelmet = 125;
-                                animName = "visor_up";
-                                break;
-                            case 125:
-                                newHelmet = 124;
-                                animName = "visor_down";
-                                break;
-                        }
+                        newHelmet = newHelmetData[0].altPropVariationIndex;
+                        newHelmetTexture = newHelmetData[0].altPropVariationTexture;
                     }
-                    else if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeMale01)
+
+                    string animName = component < newHelmet ? "visor_up" : "visor_down";
+                    if (Game.PlayerPed.Model == PedHash.FreemodeFemale01)
                     {
-                        switch (component)
+                        if (component == 66 || component == 81)
                         {
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 53:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 72;
-                                animName = "visor_up";
-                                break;
-                            case 67:
-                                newHelmet = 82;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 53;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 73:
-                                newHelmet = 74;
-                                animName = "visor_up";
-                                break;
-                            case 74:
-                                newHelmet = 73;
-                                animName = "visor_down";
-                                break;
-                            case 78:
-                                newHelmet = 79;
-                                animName = "visor_up";
-                                break;
-                            case 79:
-                                newHelmet = 78;
-                                animName = "visor_down";
-                                break;
-                            case 80:
-                                newHelmet = 81;
-                                animName = "visor_up";
-                                break;
-                            case 81:
-                                newHelmet = 80;
-                                animName = "visor_down";
-                                break;
-                            case 82:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 92;
-                                animName = "visor_up";
-                                break;
-                            case 92:
-                                newHelmet = 91;
-                                animName = "visor_down";
-                                break;
-                            case 116:
-                                newHelmet = 117;
-                                animName = "goggles_up";
-                                break;
-                            case 117:
-                                newHelmet = 116;
-                                animName = "goggles_down";
-                                break;
-                            case 118:
-                                newHelmet = 119;
-                                animName = "goggles_up";
-                                break;
-                            case 119:
-                                newHelmet = 118;
-                                animName = "goggles_down";
-                                break;
-                            case 123:
-                                newHelmet = 124;
-                                animName = "visor_up";
-                                break;
-                            case 124:
-                                newHelmet = 123;
-                                animName = "visor_down";
-                                break;
-                            case 125:
-                                newHelmet = 126;
-                                animName = "visor_up";
-                                break;
-                            case 126:
-                                newHelmet = 125;
-                                animName = "visor_down";
-                                break;
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 115 && component <= 118)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
                         }
                     }
                     else
                     {
-                        return;
+                        if (component == 67 || component == 82)
+                        {
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 116 && component <= 119)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
+                        }
                     }
+
+                    string animDict = "anim@mp_helmets@on_foot";
+
                     if (GetFollowPedCamViewMode() == 4)
                     {
                         if (animName.Contains("goggles"))
@@ -3071,15 +2832,19 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
+                    if (animName.StartsWith("pov_") && animDict != "anim@mp_helmets@on_foot")
+                    {
+                        animName = animName.Substring(4);
+                    }
                     ClearPedTasks(Game.PlayerPed.Handle);
                     TaskPlayAnim(Game.PlayerPed.Handle, animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
                     int timeoutTimer = GetGameTimer();
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) <= 0.0f)
                     {
-                        if (GetGameTimer() - timeoutTimer > 2000)
+                        if (GetGameTimer() - timeoutTimer > 1000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function. Dbg: fault in location 1.");
                             return;
                         }
                         await Delay(0);
@@ -3088,15 +2853,16 @@ namespace vMenuClient
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.0f)
                     {
                         await Delay(0);
+
                         if (GetGameTimer() - timeoutTimer > 3000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function. Dbg: fault in location 2.");
                             return;
                         }
                         if (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.39f)
                         {
-                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, texture, true);
+                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, newHelmetTexture, true);
                         }
                     }
                     ClearPedTasks(Game.PlayerPed.Handle);

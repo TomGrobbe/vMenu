@@ -1682,6 +1682,12 @@
             </value>
             <remarks><see cref="P:CitizenFX.Core.Entity.IsRecordingCollisions"/> must be <c>true</c> for this to work.</remarks>
         </member>
+        <member name="P:CitizenFX.Core.Entity.MaterialCollidingWith">
+            <summary>
+            Gets the material this entity is currently brushing up against. Only works
+            for the material the entity is facing towards.
+            </summary>
+        </member>
         <member name="P:CitizenFX.Core.Entity.IsCollisionEnabled">
             <summary>
             Gets or sets a value indicating whether this <see cref="T:CitizenFX.Core.Entity"/> has collision.
@@ -1898,6 +1904,11 @@
             Stops all particle effects attached to this <see cref="T:CitizenFX.Core.Entity"/>
             </summary>
         </member>
+        <member name="P:CitizenFX.Core.Entity.NetworkId">
+            <summary>
+            Gets the network ID of this <see cref="T:CitizenFX.Core.Entity"/>
+            </summary>
+        </member>
         <member name="M:CitizenFX.Core.Entity.Delete">
             <summary>
             Deletes this <see cref="T:CitizenFX.Core.Entity"/>
@@ -1917,6 +1928,16 @@
             Returns a <see cref="T:CitizenFX.Core.Vehicle"/> if this handle corresponds to a Vehicle.
             Returns a <see cref="T:CitizenFX.Core.Prop"/> if this handle corresponds to a Prop.
             Returns <c>null</c> if no <see cref="T:CitizenFX.Core.Entity"/> exists this the specified <paramref name="handle"/></returns>
+        </member>
+        <member name="M:CitizenFX.Core.Entity.FromNetworkId(System.Int32)">
+            <summary>
+            Creates a new instance of an <see cref="T:CitizenFX.Core.Entity"/> from the given network ID.
+            </summary>
+            <param name="networkId">The network ID of the entity.</param>
+            <returns>Returns a <see cref="T:CitizenFX.Core.Ped"/> if this network ID corresponds to a Ped.
+            Returns a <see cref="T:CitizenFX.Core.Vehicle"/> if this network ID corresponds to a Vehicle.
+            Returns a <see cref="T:CitizenFX.Core.Prop"/> if this network ID corresponds to a Prop.
+            Returns <c>null</c> if no <see cref="T:CitizenFX.Core.Entity"/> exists for the specified <paramref name="networkId"/></returns>
         </member>
         <member name="M:CitizenFX.Core.Entity.Exists">
             <summary>
@@ -17696,6 +17717,14 @@
             <param name="maxLength">The maximum length of input allowed.</param>
             <returns>The <see cref="T:System.String"/> of what the user entered, If the user cancelled <see cref="F:System.String.Empty"/> is returned</returns>
         </member>
+        <member name="M:CitizenFX.Core.Game._GetTattooCollectionData(System.Int32,System.Int32)">
+            <summary>
+            Private unsafe version of <see cref="M:CitizenFX.Core.Game.GetTattooCollectionData(System.Int32,System.Int32)"/>
+            </summary>
+            <param name="characterType"></param>
+            <param name="decorationIndex"></param>
+            <returns></returns>
+        </member>
         <member name="M:CitizenFX.Core.Game.GetTattooCollectionData(System.Int32,System.Int32)">
             <summary>
             Returns a <see cref="T:CitizenFX.Core.TattooCollectionData"/> struct containing information about a specific tattoo.
@@ -17705,6 +17734,23 @@
             </summary>
             <param name="characterType">Character types 0 = Michael, 1 = Franklin, 2 = Trevor, 3 = MPMale, 4 = MPFemale</param>
             <param name="decorationIndex">Tattoo index, value between 0 and <see cref="M:CitizenFX.Core.Native.API.GetNumDecorations(System.Int32)"/></param>
+            <returns></returns>
+        </member>
+        <member name="M:CitizenFX.Core.Game._GetAltPropVariationData(System.Int32,System.Int32)">
+            <summary>
+            Private (unsafe) version of <see cref="M:CitizenFX.Core.Game.GetAltPropVariationData(System.Int32,System.Int32)"/>
+            </summary>
+            <param name="ped"></param>
+            <param name="propIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CitizenFX.Core.Game.GetAltPropVariationData(System.Int32,System.Int32)">
+            <summary>
+            Gets the alternate prop index data for a specific prop on a specific ped.
+            This is used to check for the 'alternate' version of a helmet with a visor for example (open/closed visor variants).
+            </summary>
+            <param name="ped"></param>
+            <param name="propIndex"></param>
             <returns></returns>
         </member>
         <member name="P:CitizenFX.Core.Model.Hash">
@@ -18728,6 +18774,11 @@
         <member name="P:CitizenFX.Core.RaycastResult.DitHitEntity">
             <summary>
             Gets a value indicating whether this raycast collided with any <see cref="T:CitizenFX.Core.Entity"/>.
+            </summary>
+        </member>
+        <member name="P:CitizenFX.Core.RaycastResult.Material">
+            <summary>
+            Gets a value indicating the material type of the collision.
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Tasks.LookAt(CitizenFX.Core.Entity,System.Int32)">
@@ -28055,6 +28106,11 @@
             Pops and calls the Scaleform function on the stack
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash.END_SRL">
+            <summary>
+            Clear the current srl and stop rendering the area selected by PrefetchSrl and started with BeginSrl.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash.END_TEXT_COMMAND_DISPLAY_HELP">
             <summary>
             -----------  
@@ -28492,6 +28548,13 @@
             VEHICLE::SET_VEHICLE_ON_GROUND_PROPERLY(playerVeh);  
             ------------------------------------------------------------------  
             C# Example (ins1de) : pastebin.com/fxtMWAHD
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_CLOUD_TIME_AS_INT">
+            <summary>
+            Returns POSIX timestamp.
+            
+            Renamed from `_GET_POSIX_TIME` to `GET_CLOUD_TIME_AS_INT` because of conflicting native names ([`0xDA488F299A5B164E`](#_0xDA488F299A5B164E))
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_COMBAT_FLOAT">
@@ -29584,6 +29647,16 @@
             If worldSpace is true, the returned offset is relative to the world. That is, if the ped has moved 1 meter on the X axis and 5 meters on the Y axis, it'll return 1,5,0.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_PED_EYE_COLOR">
+            <summary>
+            A getter for [\_SET_PED_EYE_COLOR](#_0x50B56988B170AFDF). Returns -1 if fails to get.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_PED_FACE_FEATURE">
+            <summary>
+            A getter for [\_SET_PED_FACE_FEATURE](#_0x71A5C1DBA060049E). Returns 0.0 if fails to get.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_PED_FLOOD_INVINCIBILITY">
             <summary>
             hash collision???
@@ -29592,6 +29665,11 @@
         <member name="F:CitizenFX.Core.Native.Hash.GET_PED_GROUP_INDEX">
             <summary>
             Returns the group id of which the specified ped is a member of.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.GET_PED_HEAD_OVERLAY_DATA">
+            <summary>
+            A getter for [SET_PED_HEAD_OVERLAY](#_0x48F44967FA05CC1E) and [\_SET_PED_HEAD_OVERLAY_COLOR](#_0x497BF74A7B9CB952) natives.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.GET_PED_INDEX_FROM_ENTITY_INDEX">
@@ -30192,7 +30270,7 @@
             Corrected p1. it's basically the 'carriage/trailer number'. So if the train has 3 trailers you'd call the native once with a var or 3 times with 1, 2, 3.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ALARM_TIME_LEFT">
+        <member name="F:CitizenFX.Core.Native.Hash.GET_VEHICLE_ACCELERATION">
             <summary>
             static - max acceleration
             </summary>
@@ -31667,6 +31745,11 @@
             This function is hard-coded to always return 0.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash.IS_SRL_LOADED">
+            <summary>
+            Returns true when the srl from BeginSrl is loaded.
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash.IS_STREAMING_FILE_READY">
             <summary>
             **Experimental**: This native may be altered or removed in future versions of CitizenFX without warning.
@@ -32671,9 +32754,30 @@
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.OVERRIDE_VEH_HORN">
             <summary>
+            Overrides the vehicle's horn hash.
+            
+            When changing this hash on a vehicle, [`_GET_VEHICLE_HORN_HASH`](#_0xACB5DCCA1EC76840) will **not** return the 'overwritten' hash. It will still always return the default horn hash (same as [`GET_VEHICLE_DEFAULT_HORN`](#_0x02165D55000219AC)).
+            
+            List of possible hashes (found in decompiled scripts):
+            
+            |        signed |     unsigned |      hex     |
+            | ------------: | -----------: | :----------: |
+            |  `1604822495` | `1604822495` | `0x5FA7A5DF` |
+            | `-1262465009` | `3032502287` | `0xB4C0500F` |
+            |  `-889553789` | `3405413507` | `0xCAFA7C83` |
+            | `-1557943086` | `2737024210` | `0xA323ACD2` |
+            | `-1318696617` | `2976270679` | `0xB1664957` |
+            |    `-7740003` | `4287227293` | `0xFF89E59D` |
+            | `-1815146967` | `2479820329` | `0x93CF0E29` |
+            |  `-339919356` | `3955047940` | `0xEBBD3E04` |
+            
+            Old description:
+            
+            ```
             vehicle - the vehicle whose horn should be overwritten  
             mute - p1 seems to be an option for muting the horn  
-            p2 - maybe a horn id, since the function AUDIO::GET_VEHICLE_DEFAULT_HORN(veh) exists?
+            p2 - maybe a horn id, since the function AUDIO::GET_VEHICLE_DEFAULT_HORN(veh) exists?  
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.PARTICIPANT_ID">
@@ -32859,6 +32963,15 @@
         <member name="F:CitizenFX.Core.Native.Hash.POPULATE_NOW">
             <summary>
             spawns a few distant/out-of-sight peds, vehicles, animals etc each time it is called
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash.PREFETCH_SRL">
+            <summary>
+            This native is used to attribute the SRL that BeginSrl is going to load. This is usually used for 'in-game' cinematics (not cutscenes but camera stuff) instead of SetFocusArea because it loads a specific area of the map which is pretty useful when the camera moves from distant areas.
+            For instance, GTA:O opening cutscene.
+            
+            &lt;https://pastebin.com/2EeKVeLA&gt; : a list of SRL found in srllist.meta
+            &lt;https://pastebin.com/zd9XYUWY&gt; : here is the content of a SRL file opened with codewalker.
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.PREPARE_ALARM">
@@ -34351,8 +34464,23 @@
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.SET_MINIMAP_COMPONENT">
             <summary>
-            Please change to void.  
-            p2 appears to be always -1.
+            This native is used to toggle map components like the army base at the top of the map.  
+            p2 appears to be always -1.  
+            
+            An incomplete list of components ID:
+            
+            ```
+            0: Los Santos' air port yellow lift-off markers.
+            1: Sandy Shore's air port yellow lift-off markers.
+            2: Trevor's air port yellow lift-off markers.
+            3: Unknown.
+            4: Unknown.
+            5: Unknown.
+            6: Vespucci Beach lifeguard building.
+            7: Unknown.
+            8: Unknown.
+            15: Army base.
+            ```
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash.SET_MINIMAP_GOLF_COURSE">
@@ -38288,6 +38416,21 @@
             "new_editor" menu
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._ADD_BLIP_FOR_AREA">
+            <summary>
+            Adds a rectangular blip for the specified coordinates/area.
+            
+            It is recommended to use [SET_BLIP_ROTATION](#_0xF87683CDF73C3F6E) and [SET_BLIP_COLOUR](#_0x03D7FB09E75D6B7E) to make the blip not rotate along with the camera.
+            
+            By default, the blip will show as a _regular_ blip with the specified color/sprite if it is outside of the minimap view.
+            
+            Example image:
+            ![minimap](https://w.wew.wtf/pdcjig.png)
+            ![big map](https://w.wew.wtf/zgcjcm.png)
+            
+            (Native name is _likely_ to actually be ADD_BLIP_FOR_AREA, but due to the usual reasons this can't be confirmed)
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._ADD_CLAN_DECAL_TO_VEHICLE">
             <summary>
             Now has 15 parameters, previous declaration:  
@@ -39348,11 +39491,6 @@
             returns pickup hash.
             </summary>
         </member>
-        <member name="F:CitizenFX.Core.Native.Hash._GET_POSIX_TIME">
-            <summary>
-            Return POSIX timestamp.
-            </summary>
-        </member>
         <member name="F:CitizenFX.Core.Native.Hash._GET_PROJECTILE_NEAR_PED">
             <summary>
             only documented to be continued...  
@@ -40140,6 +40278,13 @@
                     if (NETWORK::NETWORK_IS_PARTICIPANT_ACTIVE(PLAYER::0x98F3B274(num3)) != 0)  
                     {  
                         var num5 = NETWORK::NETWORK_GET_PLAYER_INDEX(PLAYER::0x98F3B274(num3));
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._NETWORK_GET_PLAYER_COORDS">
+            <summary>
+            Returns the coordinates of another player.
+            
+            Does not work if you enter your own player id as p0 (will return `(0.0, 0.0, 0.0)` in that case).
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._NETWORK_GET_RANDOM_INT_IN_RANGE">
@@ -41391,6 +41536,64 @@
             Toggles the big minimap state like in GTA:Online.
             </summary>
         </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_RADIO_STATION_DISABLED">
+            <summary>
+            Disables the radio station from the radio wheel.  
+            Note: You cannot disable LSUR, WCTR and Blaine County Radio.  
+            
+            List of known station names;
+            
+            ```
+            RADIO_01_CLASS_ROCK  
+            RADIO_02_POP  
+            RADIO_03_HIPHOP_NEW  
+            RADIO_04_PUNK  
+            RADIO_05_TALK_01  
+            RADIO_06_COUNTRY  
+            RADIO_07_DANCE_01  
+            RADIO_08_MEXICAN  
+            RADIO_09_HIPHOP_OLD  
+            RADIO_12_REGGAE  
+            RADIO_13_JAZZ  
+            RADIO_14_DANCE_02  
+            RADIO_15_MOTOWN  
+            RADIO_20_THELAB  
+            RADIO_16_SILVERLAKE  
+            RADIO_17_FUNK  
+            RADIO_18_90S_ROCK  
+            RADIO_21_DLC_XM17  
+            RADIO_22_DLC_BATTLE_MIX1_RADIO  
+            RADIO_19_USER 
+            HIDDEN_RADIO_AMBIENT_TV  
+            HIDDEN_RADIO_AMBIENT_TV_BRIGHT  
+            HIDDEN_RADIO_01_CLASS_ROCK  
+            HIDDEN_RADIO_ADVERTS  
+            HIDDEN_RADIO_02_POP  
+            HIDDEN_RADIO_03_HIPHOP_NEW  
+            HIDDEN_RADIO_04_PUNK  
+            HIDDEN_RADIO_06_COUNTRY  
+            HIDDEN_RADIO_07_DANCE_01  
+            HIDDEN_RADIO_09_HIPHOP_OLD  
+            HIDDEN_RADIO_12_REGGAE  
+            HIDDEN_RADIO_15_MOTOWN  
+            HIDDEN_RADIO_16_SILVERLAKE  
+            RADIO_22_DLC_BATTLE_MIX1_CLUB  
+            HIDDEN_RADIO_STRIP_CLUB  
+            DLC_BATTLE_MIX1_CLUB_PRIV  
+            HIDDEN_RADIO_BIKER_CLASSIC_ROCK  
+            DLC_BATTLE_MIX2_CLUB_PRIV  
+            HIDDEN_RADIO_BIKER_MODERN_ROCK  
+            RADIO_23_DLC_BATTLE_MIX2_CLUB  
+            RADIO_25_DLC_BATTLE_MIX4_CLUB  
+            DLC_BATTLE_MIX3_CLUB_PRIV  
+            RADIO_26_DLC_BATTLE_CLUB_WARMUP  
+            HIDDEN_RADIO_BIKER_PUNK  
+            RADIO_24_DLC_BATTLE_MIX3_CLUB  
+            DLC_BATTLE_MIX4_CLUB_PRIV  
+            HIDDEN_RADIO_BIKER_HIP_HOP  
+            ```
+            </summary>
+        </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_SOMETHING_MULTIPLIER_THIS_FRAME">
             <summary>
             SET_*_MULTIPLIER_THIS_FRAME
@@ -41479,6 +41682,15 @@
             This native makes the vehicle stop immediately, as happens when we enter a MP garage.  
             . distance defines how far it will travel until stopping. Garage doors use 3.0.  
             . If killEngine is set to 1, you cannot resume driving the vehicle once it stops. This looks like is a bitmapped integer.
+            </summary>
+        </member>
+        <member name="F:CitizenFX.Core.Native.Hash._SET_VEHICLE_HEADLIGHTS_COLOUR">
+            <summary>
+            color is the paint index for the vehicle.
+            Paint index goes from 0 to 12.
+            Be aware that it only works on xenon lights.
+            
+            You can find the list of colors and ids here: [\_GET_VEHICLE_HEADLIGHTS_COLOUR](#_0x3DFF319A831E0CDB)
             </summary>
         </member>
         <member name="F:CitizenFX.Core.Native.Hash._SET_VEHICLE_HUD_SPECIAL_ABILITY_BAR_ACTIVE">
@@ -42625,6 +42837,40 @@
             <summary>
             Same as SET_PED_ARMOUR, but ADDS 'amount' to the armor the Ped already has.
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.AddBlipForArea(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Adds a rectangular blip for the specified coordinates/area.
+            It is recommended to use [SET_BLIP_ROTATION](#_0xF87683CDF73C3F6E) and [SET_BLIP_COLOUR](#_0x03D7FB09E75D6B7E) to make the blip not rotate along with the camera.
+            By default, the blip will show as a _regular_ blip with the specified color/sprite if it is outside of the minimap view.
+            Example image:
+            ![minimap](https://w.wew.wtf/pdcjig.png)
+            ![big map](https://w.wew.wtf/zgcjcm.png)
+            (Native name is _likely_ to actually be ADD_BLIP_FOR_AREA, but due to the usual reasons this can't be confirmed)
+            </summary>
+            <param name="x">The X coordinate of the center of the blip.</param>
+            <param name="y">The Y coordinate of the center of the blip.</param>
+            <param name="z">The Z coordinate of the center of the blip.</param>
+            <param name="width">The width of the blip.</param>
+            <param name="height">The height of the blip.</param>
+            <returns>A handle to the blip.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xce5d0e5e315db238(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Adds a rectangular blip for the specified coordinates/area.
+            It is recommended to use [SET_BLIP_ROTATION](#_0xF87683CDF73C3F6E) and [SET_BLIP_COLOUR](#_0x03D7FB09E75D6B7E) to make the blip not rotate along with the camera.
+            By default, the blip will show as a _regular_ blip with the specified color/sprite if it is outside of the minimap view.
+            Example image:
+            ![minimap](https://w.wew.wtf/pdcjig.png)
+            ![big map](https://w.wew.wtf/zgcjcm.png)
+            (Native name is _likely_ to actually be ADD_BLIP_FOR_AREA, but due to the usual reasons this can't be confirmed)
+            </summary>
+            <param name="x">The X coordinate of the center of the blip.</param>
+            <param name="y">The Y coordinate of the center of the blip.</param>
+            <param name="z">The Z coordinate of the center of the blip.</param>
+            <param name="width">The width of the blip.</param>
+            <param name="height">The height of the blip.</param>
+            <returns>A handle to the blip.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.AddBlipForCoord(System.Single,System.Single,System.Single)">
             <summary>
@@ -45997,6 +46243,11 @@
             Pops and calls the Scaleform movie on the stack. Returns data from the function (not sure if this is a string).
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.EndSrl">
+            <summary>
+            Clear the current srl and stop rendering the area selected by PrefetchSrl and started with BeginSrl.
+            </summary>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.EndTextCommandBusyString(System.Int32)">
             <summary>
             This does NOT get called per frame. Call it once to show, then use UI::_REMOVE_LOADING_PROMPT to remove it
@@ -46803,6 +47054,20 @@
             ------------------------------------------------------------------
             C# Example (ins1de) : pastebin.com/fxtMWAHD
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetCloudTimeAsInt">
+            <summary>
+            Returns POSIX timestamp.
+            Renamed from `_GET_POSIX_TIME` to `GET_CLOUD_TIME_AS_INT` because of conflicting native names ([`0xDA488F299A5B164E`](#_0xDA488F299A5B164E))
+            </summary>
+            <returns>An int representing the cloud time.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c76">
+            <summary>
+            Returns POSIX timestamp.
+            Renamed from `_GET_POSIX_TIME` to `GET_CLOUD_TIME_AS_INT` because of conflicting native names ([`0xDA488F299A5B164E`](#_0xDA488F299A5B164E))
+            </summary>
+            <returns>An int representing the cloud time.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetCombatFloat(System.Int32,System.Int32)">
             <summary>
@@ -48514,6 +48779,21 @@
             If worldSpace is true, the returned offset is relative to the world. That is, if the ped has moved 1 meter on the X axis and 5 meters on the Y axis, it'll return 1,5,0.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.GetPedEyeColor(System.Int32)">
+            <summary>
+            A getter for [\_SET_PED_EYE_COLOR](#_0x50B56988B170AFDF). Returns -1 if fails to get.
+            </summary>
+            <param name="ped">The target ped</param>
+            <returns>Returns ped's eye colour, or -1 if fails to get.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetPedFaceFeature(System.Int32,System.Int32)">
+            <summary>
+            A getter for [\_SET_PED_FACE_FEATURE](#_0x71A5C1DBA060049E). Returns 0.0 if fails to get.
+            </summary>
+            <param name="ped">The target ped</param>
+            <param name="index">Face feature index</param>
+            <returns>Returns ped's face feature value, or 0.0 if fails to get.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.GetPedFloodInvincibility(System.Int32,System.Boolean)">
             <summary>
             hash collision???
@@ -48536,6 +48816,19 @@
             float shapeMix, skinMix, thirdMix;
             } headBlendData;
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.GetPedHeadOverlayData(System.Int32,System.Int32,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Single@)">
+            <summary>
+            A getter for [SET_PED_HEAD_OVERLAY](#_0x48F44967FA05CC1E) and [\_SET_PED_HEAD_OVERLAY_COLOR](#_0x497BF74A7B9CB952) natives.
+            </summary>
+            <param name="ped">The target ped</param>
+            <param name="index">Overlay index</param>
+            <param name="overlayValue">Overlay value pointer</param>
+            <param name="colourType">Colour type pointer</param>
+            <param name="firstColour">First colour pointer</param>
+            <param name="secondColour">Second colour pointer</param>
+            <param name="overlayOpacity">Opacity pointer</param>
+            <returns>Returns ped's head overlay data.</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.GetPedHeadOverlayValue(System.Int32,System.Int32)">
             <summary>
@@ -48870,17 +49163,7 @@
             p1 is some kind of tolerance
             </summary>
         </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime">
-            <summary>
-            Return POSIX timestamp.
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.N_0x9a73240b49945c76">
-            <summary>
-            Return POSIX timestamp.
-            </summary>
-        </member>
-        <member name="M:CitizenFX.Core.Native.API.GetPosixTime2(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+        <member name="M:CitizenFX.Core.Native.API.GetPosixTime(System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
             <summary>
             Gets system time as year, month, day, hour, minute and second.
             Example usage:
@@ -51752,6 +52035,12 @@
             if(_IS_SOCIALCLUB_BANNED() == 0) means the player is social club banned
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.IsSrlLoaded">
+            <summary>
+            Returns true when the srl from BeginSrl is loaded.
+            </summary>
+            <returns>-   A boolean once BeginSrl srl is loaded.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.IsStreamingFileReady(System.String)">
             <summary>
             **Experimental**: This native may be altered or removed in future versions of CitizenFX without warning.
@@ -52760,6 +53049,16 @@
             NETWORK_IS_TRANSITION_???
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x37d5f739fd494675(System.Int32)">
+            <summary>
+            I've had this return the player's ped handle sometimes, but also other random entities.
+            Whatever p0 is, it's at least not synced to other players.
+            At least not all the time, some p0 values actually output the same entity, (different handle of course, but same entity).
+            But another p0 value may return an entity for player x, but not for player y (it'll just return -1 even if the entity exists on both clients).
+            </summary>
+            <param name="p0">unknown.</param>
+            <returns>Returns an entity handle or -1, value changes based on p0's value.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.N_0x38baaa5dd4c9d19f(System.Int32)">
             <summary>
             Sets profile setting 934
@@ -53334,6 +53633,14 @@
             It's 100% an IS_CUTSCENE_* native.
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x7242f8b741ce1086(System.Int32)">
+            <summary>
+            Probably a bool, returns true if the specified network id is controlled by someone else.
+            If you have control over the entity corresponding to the netId then this will return false (0);
+            </summary>
+            <param name="netId">The network id for an object or entity.</param>
+            <returns>Probably a bool, returns 1 if you don't have control over the netId entity.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.N_0x72c1056d678bb7d8(System.UInt32)">
             <summary>
             Appears to be a HIDE_* native.
@@ -53721,6 +54028,15 @@
             UI::0x7AD67C95("General");
             UI::0x7AD67C95("Playlists");
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x9eca15adfe141431">
+            <summary>
+            Disconnects you from the session, and starts loading single player, however you still remain connected to the server (only if you're the host, if you're not then you also (most likely) get disconnected from the server) and other players will not be able to join until you exit the game.
+            If you're already in SP then it'll re-load singleplayer.
+            You might need to DoScreenFadeIn and ShutdownLoadingScreen otherwise you probably won't end up loading into SP at all.
+            Somewhat related note: opening the pause menu after loading into this 'singleplayer' mode crashes the game.
+            </summary>
+            <returns>always seems to be 1</returns>
         </member>
         <member name="M:CitizenFX.Core.Native.API.N_0xa0fa4ec6a05da44e">
             <summary>
@@ -55315,6 +55631,22 @@
             var num5 = NETWORK::NETWORK_GET_PLAYER_INDEX(PLAYER::0x98F3B274(num3));
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.NetworkGetPlayerCoords(System.Int32)">
+            <summary>
+            Returns the coordinates of another player.
+            Does not work if you enter your own player id as p0 (will return `(0.0, 0.0, 0.0)` in that case).
+            </summary>
+            <param name="player">The player id, MUST be another player.</param>
+            <returns>A Vector3 containing the coordinates of another player.</returns>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x125e6d638b8605d4(System.Int32)">
+            <summary>
+            Returns the coordinates of another player.
+            Does not work if you enter your own player id as p0 (will return `(0.0, 0.0, 0.0)` in that case).
+            </summary>
+            <param name="player">The player id, MUST be another player.</param>
+            <returns>A Vector3 containing the coordinates of another player.</returns>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.NetworkGetPlayerIndexFromPed(System.Int32)">
             <summary>
             Returns the Player associated to a given Ped when in an online session.
@@ -56269,10 +56601,29 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.OverrideVehHorn(System.Int32,System.Boolean,System.Int32)">
             <summary>
+            Overrides the vehicle's horn hash.
+            When changing this hash on a vehicle, [`_GET_VEHICLE_HORN_HASH`](#_0xACB5DCCA1EC76840) will **not** return the 'overwritten' hash. It will still always return the default horn hash (same as [`GET_VEHICLE_DEFAULT_HORN`](#_0x02165D55000219AC)).
+            List of possible hashes (found in decompiled scripts):
+            |        signed |     unsigned |      hex     |
+            | ------------: | -----------: | :----------: |
+            |  `1604822495` | `1604822495` | `0x5FA7A5DF` |
+            | `-1262465009` | `3032502287` | `0xB4C0500F` |
+            |  `-889553789` | `3405413507` | `0xCAFA7C83` |
+            | `-1557943086` | `2737024210` | `0xA323ACD2` |
+            | `-1318696617` | `2976270679` | `0xB1664957` |
+            |    `-7740003` | `4287227293` | `0xFF89E59D` |
+            | `-1815146967` | `2479820329` | `0x93CF0E29` |
+            |  `-339919356` | `3955047940` | `0xEBBD3E04` |
+            Old description:
+            ```
             vehicle - the vehicle whose horn should be overwritten
             mute - p1 seems to be an option for muting the horn
             p2 - maybe a horn id, since the function AUDIO::GET_VEHICLE_DEFAULT_HORN(veh) exists?
+            ```
             </summary>
+            <param name="vehicle">The vehicle you want to change the horn on.</param>
+            <param name="override">Must be set to true. If set to false, the default horn hash will be restored.</param>
+            <param name="hornHash">A horn hash.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.ParticipantId">
             <summary>
@@ -56535,6 +56886,15 @@
             <summary>
             spawns a few distant/out-of-sight peds, vehicles, animals etc each time it is called
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.PrefetchSrl(System.String)">
+            <summary>
+            This native is used to attribute the SRL that BeginSrl is going to load. This is usually used for 'in-game' cinematics (not cutscenes but camera stuff) instead of SetFocusArea because it loads a specific area of the map which is pretty useful when the camera moves from distant areas.
+            For instance, GTA:O opening cutscene.
+            &lt;https://pastebin.com/2EeKVeLA&gt; : a list of SRL found in srllist.meta
+            &lt;https://pastebin.com/zd9XYUWY&gt; : here is the content of a SRL file opened with codewalker.
+            </summary>
+            <param name="srl">A SRL name.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.PrepareAlarm(System.String)">
             <summary>
@@ -59182,8 +59542,21 @@
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetMinimapComponent(System.Int32,System.Boolean,System.Int32)">
             <summary>
-            Please change to void.
+            This native is used to toggle map components like the army base at the top of the map.
             p2 appears to be always -1.
+            An incomplete list of components ID:
+            ```
+            0: Los Santos' air port yellow lift-off markers.
+            1: Sandy Shore's air port yellow lift-off markers.
+            2: Trevor's air port yellow lift-off markers.
+            3: Unknown.
+            4: Unknown.
+            5: Unknown.
+            6: Vespucci Beach lifeguard building.
+            7: Unknown.
+            8: Unknown.
+            15: Army base.
+            ```
             </summary>
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetMinimapGolfCourse(System.Int32)">
@@ -61043,6 +61416,122 @@
             zoomLevel ranges from 0 to 200
             </summary>
         </member>
+        <member name="M:CitizenFX.Core.Native.API.SetRadioStationDisabled(System.String,System.Boolean)">
+            <summary>
+            Disables the radio station from the radio wheel.
+            Note: You cannot disable LSUR, WCTR and Blaine County Radio.
+            List of known station names;
+            ```
+            RADIO_01_CLASS_ROCK
+            RADIO_02_POP
+            RADIO_03_HIPHOP_NEW
+            RADIO_04_PUNK
+            RADIO_05_TALK_01
+            RADIO_06_COUNTRY
+            RADIO_07_DANCE_01
+            RADIO_08_MEXICAN
+            RADIO_09_HIPHOP_OLD
+            RADIO_12_REGGAE
+            RADIO_13_JAZZ
+            RADIO_14_DANCE_02
+            RADIO_15_MOTOWN
+            RADIO_20_THELAB
+            RADIO_16_SILVERLAKE
+            RADIO_17_FUNK
+            RADIO_18_90S_ROCK
+            RADIO_21_DLC_XM17
+            RADIO_22_DLC_BATTLE_MIX1_RADIO
+            RADIO_19_USER
+            HIDDEN_RADIO_AMBIENT_TV
+            HIDDEN_RADIO_AMBIENT_TV_BRIGHT
+            HIDDEN_RADIO_01_CLASS_ROCK
+            HIDDEN_RADIO_ADVERTS
+            HIDDEN_RADIO_02_POP
+            HIDDEN_RADIO_03_HIPHOP_NEW
+            HIDDEN_RADIO_04_PUNK
+            HIDDEN_RADIO_06_COUNTRY
+            HIDDEN_RADIO_07_DANCE_01
+            HIDDEN_RADIO_09_HIPHOP_OLD
+            HIDDEN_RADIO_12_REGGAE
+            HIDDEN_RADIO_15_MOTOWN
+            HIDDEN_RADIO_16_SILVERLAKE
+            RADIO_22_DLC_BATTLE_MIX1_CLUB
+            HIDDEN_RADIO_STRIP_CLUB
+            DLC_BATTLE_MIX1_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_CLASSIC_ROCK
+            DLC_BATTLE_MIX2_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_MODERN_ROCK
+            RADIO_23_DLC_BATTLE_MIX2_CLUB
+            RADIO_25_DLC_BATTLE_MIX4_CLUB
+            DLC_BATTLE_MIX3_CLUB_PRIV
+            RADIO_26_DLC_BATTLE_CLUB_WARMUP
+            HIDDEN_RADIO_BIKER_PUNK
+            RADIO_24_DLC_BATTLE_MIX3_CLUB
+            DLC_BATTLE_MIX4_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_HIP_HOP
+            ```
+            </summary>
+            <param name="stationName">The name of the radio station</param>
+            <param name="Toggle">Toggle the station on/off</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0x94f2e83ead7e6b82(System.String,System.Boolean)">
+            <summary>
+            Disables the radio station from the radio wheel.
+            Note: You cannot disable LSUR, WCTR and Blaine County Radio.
+            List of known station names;
+            ```
+            RADIO_01_CLASS_ROCK
+            RADIO_02_POP
+            RADIO_03_HIPHOP_NEW
+            RADIO_04_PUNK
+            RADIO_05_TALK_01
+            RADIO_06_COUNTRY
+            RADIO_07_DANCE_01
+            RADIO_08_MEXICAN
+            RADIO_09_HIPHOP_OLD
+            RADIO_12_REGGAE
+            RADIO_13_JAZZ
+            RADIO_14_DANCE_02
+            RADIO_15_MOTOWN
+            RADIO_20_THELAB
+            RADIO_16_SILVERLAKE
+            RADIO_17_FUNK
+            RADIO_18_90S_ROCK
+            RADIO_21_DLC_XM17
+            RADIO_22_DLC_BATTLE_MIX1_RADIO
+            RADIO_19_USER
+            HIDDEN_RADIO_AMBIENT_TV
+            HIDDEN_RADIO_AMBIENT_TV_BRIGHT
+            HIDDEN_RADIO_01_CLASS_ROCK
+            HIDDEN_RADIO_ADVERTS
+            HIDDEN_RADIO_02_POP
+            HIDDEN_RADIO_03_HIPHOP_NEW
+            HIDDEN_RADIO_04_PUNK
+            HIDDEN_RADIO_06_COUNTRY
+            HIDDEN_RADIO_07_DANCE_01
+            HIDDEN_RADIO_09_HIPHOP_OLD
+            HIDDEN_RADIO_12_REGGAE
+            HIDDEN_RADIO_15_MOTOWN
+            HIDDEN_RADIO_16_SILVERLAKE
+            RADIO_22_DLC_BATTLE_MIX1_CLUB
+            HIDDEN_RADIO_STRIP_CLUB
+            DLC_BATTLE_MIX1_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_CLASSIC_ROCK
+            DLC_BATTLE_MIX2_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_MODERN_ROCK
+            RADIO_23_DLC_BATTLE_MIX2_CLUB
+            RADIO_25_DLC_BATTLE_MIX4_CLUB
+            DLC_BATTLE_MIX3_CLUB_PRIV
+            RADIO_26_DLC_BATTLE_CLUB_WARMUP
+            HIDDEN_RADIO_BIKER_PUNK
+            RADIO_24_DLC_BATTLE_MIX3_CLUB
+            DLC_BATTLE_MIX4_CLUB_PRIV
+            HIDDEN_RADIO_BIKER_HIP_HOP
+            ```
+            </summary>
+            <param name="stationName">The name of the radio station</param>
+            <param name="Toggle">Toggle the station on/off</param>
+        </member>
         <member name="M:CitizenFX.Core.Native.API.SetRadioToStationIndex(System.Int32)">
             <summary>
             Sets radio station by index.
@@ -62067,6 +62556,26 @@
             <summary>
             if true, axles won't bend.
             </summary>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.SetVehicleHeadlightsColour(System.Int32,System.Int32)">
+            <summary>
+            color is the paint index for the vehicle.
+            Paint index goes from 0 to 12.
+            Be aware that it only works on xenon lights.
+            You can find the list of colors and ids here: [\_GET_VEHICLE_HEADLIGHTS_COLOUR](#_0x3DFF319A831E0CDB)
+            </summary>
+            <param name="vehicle">The vehicle handle.</param>
+            <param name="color">The paint index.</param>
+        </member>
+        <member name="M:CitizenFX.Core.Native.API.N_0xe41033b25d003a07(System.Int32,System.Int32)">
+            <summary>
+            color is the paint index for the vehicle.
+            Paint index goes from 0 to 12.
+            Be aware that it only works on xenon lights.
+            You can find the list of colors and ids here: [\_GET_VEHICLE_HEADLIGHTS_COLOUR](#_0x3DFF319A831E0CDB)
+            </summary>
+            <param name="vehicle">The vehicle handle.</param>
+            <param name="color">The paint index.</param>
         </member>
         <member name="M:CitizenFX.Core.Native.API.SetVehicleHudSpecialAbilityBarActive(System.Int32,System.Boolean)">
             <summary>

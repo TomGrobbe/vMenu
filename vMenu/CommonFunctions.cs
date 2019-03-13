@@ -360,17 +360,26 @@ namespace vMenuClient
                 var veh = GetVehicle();
                 bool inVehicle() => veh != null && veh.Exists() && Game.PlayerPed == veh.Driver;
 
+                bool vehicleRestoreVisibility = inVehicle() && veh.IsVisible;
+                bool pedRestoreVisibility = Game.PlayerPed.IsVisible;
+
                 // Freeze vehicle or player location and fade out the entity to the network.
                 if (inVehicle())
                 {
                     veh.IsPositionFrozen = true;
-                    NetworkFadeOutEntity(veh.Handle, true, false);
+                    if (veh.IsVisible)
+                    {
+                        NetworkFadeOutEntity(veh.Handle, true, false);
+                    }
                 }
                 else
                 {
                     ClearPedTasksImmediately(Game.PlayerPed.Handle);
                     Game.PlayerPed.IsPositionFrozen = true;
-                    NetworkFadeOutEntity(Game.PlayerPed.Handle, true, false);
+                    if (Game.PlayerPed.IsVisible)
+                    {
+                        NetworkFadeOutEntity(Game.PlayerPed.Handle, true, false);
+                    }
                 }
 
                 // Fade out the screen and wait for it to be faded out completely.
@@ -504,12 +513,22 @@ namespace vMenuClient
                 // Once the teleporting is done, unfreeze vehicle or player and fade them back in.
                 if (inVehicle())
                 {
-                    NetworkFadeInEntity(veh.Handle, true);
+                    if (vehicleRestoreVisibility)
+                    {
+                        NetworkFadeInEntity(veh.Handle, true);
+                        if (!pedRestoreVisibility)
+                        {
+                            Game.PlayerPed.IsVisible = false;
+                        }
+                    }
                     veh.IsPositionFrozen = false;
                 }
                 else
                 {
-                    NetworkFadeInEntity(Game.PlayerPed.Handle, true);
+                    if (pedRestoreVisibility)
+                    {
+                        NetworkFadeInEntity(Game.PlayerPed.Handle, true);
+                    }
                     Game.PlayerPed.IsPositionFrozen = false;
                 }
 
@@ -1447,29 +1466,9 @@ namespace vMenuClient
         /// <returns></returns>
         public static async Task<string> GetUserInput(string windowTitle, string defaultText, int maxInputLength)
         {
-            var currentMenu = GetOpenMenu();
-            if (currentMenu != null)
-            {
-                MenuController.CloseAllMenus();
-            }
-            MainMenu.DisableControls = true;
-            MainMenu.DontOpenMenus = true;
-
             // Create the window title string.
             var spacer = "\t";
             AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
-
-            async void ReopenMenuDelayed(Menu menu)
-            {
-                MainMenu.DontOpenMenus = false;
-                await Delay(100);
-                if (menu != null)
-                {
-                    menu.OpenMenu();
-                }
-                await Delay(50);
-                MainMenu.DisableControls = false;
-            }
 
             // Display the input box.
             DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
@@ -1483,10 +1482,8 @@ namespace vMenuClient
                 {
                     case 3: // not displaying input field anymore somehow
                     case 2: // cancelled
-                        ReopenMenuDelayed(currentMenu);
                         return null;
                     case 1: // finished editing
-                        ReopenMenuDelayed(currentMenu);
                         return GetOnscreenKeyboardResult();
                     default:
                         await Delay(0);
@@ -2967,5 +2964,58 @@ namespace vMenuClient
         }
         #endregion
 
+        #region Encoded float to normal float
+        /// <summary>
+        /// Converts an IEEE 754 (int encoded) floating-point to a real float value.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        //public static float IntToFloat(int input)
+        //{
+        //    // This function is based on the 'hex2float' snippet found here for Lua:
+        //    // https://stackoverflow.com/a/19996852
+
+        //    //string d = input.ToString("X8");
+
+        //    var s1 = (char)int.Parse(d.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s2 = (char)int.Parse(d.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s3 = (char)int.Parse(d.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        //    var s4 = (char)int.Parse(d.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+
+        //    var b1 = BitConverter.GetBytes(s1)[0];
+        //    var b2 = BitConverter.GetBytes(s2)[0];
+        //    var b3 = BitConverter.GetBytes(s3)[0];
+        //    var b4 = BitConverter.GetBytes(s4)[0];
+
+        //    int sign = b1 > 0x7F ? -1 : 1;
+        //    int expo = ((b1 % 0x80) * 0x2) + (b2 / 0x80);
+        //    float mant = ((b2 % 0x80) * 0x100 + b3) * 0x100 + b4;
+
+        //    float n;
+        //    if (mant == 0 && expo == 0)
+        //    {
+        //        n = sign * 0.0f;
+        //    }
+        //    else if (expo == 0xFF)
+        //    {
+        //        if (mant == 0)
+        //        {
+        //            n = (float)((double)sign * Math.E);
+        //        }
+        //        else
+        //        {
+        //            n = 0.0f;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        double left = 1.0 + mant / 0x800000;
+        //        int right = expo - 0x7F;
+        //        float other = (float)left * ((float)right * (float)right);
+        //        n = (float)sign * (float)other;
+        //    }
+        //    return n;
+        //}
+        #endregion
     }
 }
