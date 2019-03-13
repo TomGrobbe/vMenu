@@ -25,6 +25,7 @@ namespace vMenuClient
         private Menu animalsPedsMenu = new Menu("Animals", "Spawn A Ped");
         private Menu malePedsMenu = new Menu("Male Peds", "Spawn A Ped");
         private Menu femalePedsMenu = new Menu("Female Peds", "Spawn A Ped");
+        private Menu otherPedsMenu = new Menu("Other Peds", "Spawn A Ped");
 
         public static Dictionary<string, uint> AddonPeds;
 
@@ -56,6 +57,7 @@ namespace vMenuClient
             MenuController.AddSubmenu(spawnPedsMenu, animalsPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, malePedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, femalePedsMenu);
+            MenuController.AddSubmenu(spawnPedsMenu, otherPedsMenu);
 
             // Create the menu items.
             MenuItem pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") { Label = "→→→" };
@@ -69,6 +71,7 @@ namespace vMenuClient
             MenuItem animalPedsBtn = new MenuItem("Animals", "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.") { Label = "→→→" };
             MenuItem malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") { Label = "→→→" };
             MenuItem femalePedsBtn = new MenuItem("Female Peds", "Select a female ped.") { Label = "→→→" };
+            MenuItem otherPedsBtn = new MenuItem("Other Peds", "Select a ped.") { Label = "→→→" };
 
             List<string> walkstyles = new List<string>() { "Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster" };
             MenuListItem walkingStyle = new MenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
@@ -140,11 +143,23 @@ namespace vMenuClient
                 spawnPedsMenu.AddMenuItem(animalPedsBtn);
                 spawnPedsMenu.AddMenuItem(malePedsBtn);
                 spawnPedsMenu.AddMenuItem(femalePedsBtn);
+                spawnPedsMenu.AddMenuItem(otherPedsBtn);
 
                 MenuController.BindMenuItem(spawnPedsMenu, mainPedsMenu, mainPedsBtn);
-                MenuController.BindMenuItem(spawnPedsMenu, animalsPedsMenu, animalPedsBtn);
+                if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_enable_animals_spawn_menu))
+                {
+                    MenuController.BindMenuItem(spawnPedsMenu, animalsPedsMenu, animalPedsBtn);
+                }
+                else
+                {
+                    animalPedsBtn.Enabled = false;
+                    animalPedsBtn.Description = "This is disabled by the server owner, probably for a good reason because animals quite often crash the game.";
+                    animalPedsBtn.LeftIcon = MenuItem.Icon.LOCK;
+                }
+
                 MenuController.BindMenuItem(spawnPedsMenu, malePedsMenu, malePedsBtn);
                 MenuController.BindMenuItem(spawnPedsMenu, femalePedsMenu, femalePedsBtn);
+                MenuController.BindMenuItem(spawnPedsMenu, otherPedsMenu, otherPedsBtn);
 
                 foreach (var animal in animalModels)
                 {
@@ -152,12 +167,109 @@ namespace vMenuClient
                     animalsPedsMenu.AddMenuItem(animalBtn);
                 }
 
-                animalsPedsMenu.OnItemSelect += async (sender, item, index) =>
+                foreach (var ped in mainModels)
                 {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    mainPedsMenu.AddMenuItem(pedBtn);
+                }
+
+                foreach (var ped in maleModels)
+                {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    malePedsMenu.AddMenuItem(pedBtn);
+                }
+
+                foreach (var ped in femaleModels)
+                {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    femalePedsMenu.AddMenuItem(pedBtn);
+                }
+
+                foreach (var ped in otherPeds)
+                {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    otherPedsMenu.AddMenuItem(pedBtn);
+                }
+
+                async void FilterMenu(Menu m, Control c)
+                {
+                    string input = await GetUserInput("Filter by ped model name, leave this empty to reset the filter");
+                    if (!string.IsNullOrEmpty(input))
+                    {
+                        m.FilterMenuItems((mb) => mb.Label.ToLower().Contains(input.ToLower()) || mb.Text.ToLower().Contains(input.ToLower()));
+                        Subtitle.Custom("Filter applied.");
+                    }
+                    else
+                    {
+                        m.ResetFilter();
+                        Subtitle.Custom("Filter cleared.");
+                    }
+                }
+
+                void ResetMenuFilter(Menu m)
+                {
+                    m.ResetFilter();
+                }
+
+                otherPedsMenu.OnMenuClose += ResetMenuFilter;
+                malePedsMenu.OnMenuClose += ResetMenuFilter;
+                femalePedsMenu.OnMenuClose += ResetMenuFilter;
+
+                otherPedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
+                otherPedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+
+                malePedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
+                malePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+
+                femalePedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
+                femalePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+
+
+                async void SpawnPed(Menu m, MenuItem item, int index)
+                {
+
                     uint model = (uint)GetHashKey(item.Text);
-                    RemoveAllPedWeapons(Game.PlayerPed.Handle, true);
-                    await SetPlayerSkin(model, new PedInfo() { version = -1 }, false); // weapons need to be removed because for animals some 'invalid' weapons need to be forced
-                };
+                    if (m == animalsPedsMenu && !Game.PlayerPed.IsInWater)
+                    {
+                        switch (item.Text)
+                        {
+                            case "a_c_dolphin":
+                            case "a_c_fish":
+                            case "a_c_humpback":
+                            case "a_c_killerwhale":
+                            case "a_c_sharkhammer":
+                            case "a_c_sharktiger":
+                                Notify.Error("This animal can only be spawned when you are in water, otherwise you will die immediately.");
+                                return;
+                            default: break;
+                        }
+                    }
+
+                    if (IsModelInCdimage(model))
+                    {
+                        // for animals we need to remove all weapons, this is because animals have their own weapons which you can't normally get and/or select in the weapon wheel.
+                        // so we clear the weapons to force that specific weapon to be equipped.
+                        if (m == animalsPedsMenu)
+                        {
+                            Game.PlayerPed.Weapons.RemoveAll();
+                            await SetPlayerSkin(model, new PedInfo() { version = -1 }, false);
+                        }
+                        else
+                        {
+                            await SetPlayerSkin(model, new PedInfo() { version = -1 }, true);
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error(CommonErrors.InvalidModel);
+                    }
+                }
+
+                mainPedsMenu.OnItemSelect += SpawnPed;
+                malePedsMenu.OnItemSelect += SpawnPed;
+                femalePedsMenu.OnItemSelect += SpawnPed;
+                animalsPedsMenu.OnItemSelect += SpawnPed;
+                otherPedsMenu.OnItemSelect += SpawnPed;
 
                 spawnPedsMenu.OnItemSelect += async (sender, item, index) =>
                 {
@@ -270,6 +382,7 @@ namespace vMenuClient
                 }
             };
             #endregion
+
         }
         #endregion
 
@@ -471,12 +584,387 @@ namespace vMenuClient
         //}
         #endregion
 
+        //private List<string> stuff = new List<string>()
+        //    {
+        //        "csb_abigail",
+        //    "csb_anita",
+        //    "csb_anton",
+        //    "csb_ballasog",
+        //    "csb_bride",
+        //    "csb_burgerdrug",
+        //    "csb_car3guy1",
+        //    "csb_car3guy2",
+        //    "csb_chef",
+        //    "csb_chin_goon",
+        //    "csb_cletus",
+        //    "csb_cop",
+        //    "csb_customer",
+        //    "csb_denise_friend",
+        //    "csb_fos_rep",
+        //    "csb_groom",
+        //    "csb_grove_str_dlr",
+        //    "csb_g",
+        //    "csb_hao",
+        //    "csb_hugh",
+        //    "csb_imran",
+        //    "csb_janitor",
+        //    "csb_maude",
+        //    "csb_mweather",
+        //    "csb_ortega",
+        //    "csb_oscar",
+        //    "csb_porndudes",
+        //    "csb_prologuedriver",
+        //    "csb_prolsec",
+        //    "csb_ramp_gang",
+        //    "csb_ramp_hic",
+        //    "csb_ramp_hipster",
+        //    "csb_ramp_marine",
+        //    "csb_ramp_mex",
+        //    "csb_reporter",
+        //    "csb_roccopelosi",
+        //    "csb_screen_writer",
+        //    "csb_stripper_01",
+        //    "csb_stripper_02",
+        //    "csb_tonya",
+        //    "csb_trafficwarden",
+        //    "g_f_y_ballas_01",
+        //    "g_f_y_families_01",
+        //    "g_f_y_lost_01",
+        //    "g_f_y_vagos_01",
+        //    "g_m_m_armboss_01",
+        //    "g_m_m_armgoon_01",
+        //    "g_m_m_armlieut_01",
+        //    "g_m_m_chemwork_01",
+        //    "g_m_m_chiboss_01",
+        //    "g_m_m_chicold_01",
+        //    "g_m_m_chigoon_01",
+        //    "g_m_m_chigoon_02",
+        //    "g_m_m_korboss_01",
+        //    "g_m_m_mexboss_01",
+        //    "g_m_m_mexboss_02",
+        //    "g_m_y_armgoon_02",
+        //    "g_m_y_azteca_01",
+        //    "g_m_y_ballaeast_01",
+        //    "g_m_y_ballaorig_01",
+        //    "g_m_y_ballasout_01",
+        //    "g_m_y_famca_01",
+        //    "g_m_y_famdnf_01",
+        //    "g_m_y_famfor_01",
+        //    "g_m_y_korean_01",
+        //    "g_m_y_korean_02",
+        //    "g_m_y_korlieut_01",
+        //    "g_m_y_lost_01",
+        //    "g_m_y_lost_02",
+        //    "g_m_y_lost_03",
+        //    "g_m_y_mexgang_01",
+        //    "g_m_y_mexgoon_01",
+        //    "g_m_y_mexgoon_02",
+        //    "g_m_y_mexgoon_03",
+        //    "g_m_y_pologoon_01",
+        //    "g_m_y_pologoon_02",
+        //    "g_m_y_salvaboss_01",
+        //    "g_m_y_salvagoon_01",
+        //    "g_m_y_salvagoon_02",
+        //    "g_m_y_salvagoon_03",
+        //    "g_m_y_strpunk_01",
+        //    "g_m_y_strpunk_02",
+        //    "hc_driver",
+        //    "hc_gunman",
+        //    "hc_hacker",
+        //    "ig_abigail",
+        //    "ig_amandatownley",
+        //    "ig_andreas",
+        //    "ig_ashley",
+        //    "ig_ballasog",
+        //    "ig_bankman",
+        //    "ig_barry",
+        //    "ig_bestmen",
+        //    "ig_beverly",
+        //    "ig_brad",
+        //    "ig_bride",
+        //    "ig_car3guy1",
+        //    "ig_car3guy2",
+        //    "ig_casey",
+        //    "ig_chef",
+        //    "ig_chengsr",
+        //    "ig_chrisformage",
+        //    "ig_claypain",
+        //    "ig_clay",
+        //    "ig_cletus",
+        //    "ig_dale",
+        //    "ig_davenorton",
+        //    "ig_denise",
+        //    "ig_devin",
+        //    "ig_dom",
+        //    "ig_dreyfuss",
+        //    "ig_drfriedlander",
+        //    "ig_fabien",
+        //    "ig_fbisuit_01",
+        //    "ig_floyd",
+        //    "ig_groom",
+        //    "ig_hao",
+        //    "ig_hunter",
+        //    "ig_janet",
+        //    "ig_jay_norris",
+        //    "ig_jewelass",
+        //    "ig_jimmyboston",
+        //    "ig_jimmydisanto",
+        //    "ig_joeminuteman",
+        //    "ig_johnnyklebitz",
+        //    "ig_josef",
+        //    "ig_josh",
+        //    "ig_kerrymcintosh",
+        //    "ig_lamardavis",
+        //    "ig_lazlow",
+        //    "ig_lestercrest",
+        //    "ig_lifeinvad_01",
+        //    "ig_lifeinvad_02",
+        //    "ig_magenta",
+        //    "ig_manuel",
+        //    "ig_marnie",
+        //    "ig_maryann",
+        //    "ig_maude",
+        //    "ig_michelle",
+        //    "ig_milton",
+        //    "ig_molly",
+        //    "ig_mrk",
+        //    "ig_mrsphillips",
+        //    "ig_mrs_thornhill",
+        //    "ig_natalia",
+        //    "ig_nervousron",
+        //    "ig_nigel",
+        //    "ig_old_man1a",
+        //    "ig_old_man2",
+        //    "ig_omega",
+        //    "ig_oneil",
+        //    "ig_orleans",
+        //    "ig_ortega",
+        //    "ig_paper",
+        //    "ig_patricia",
+        //    "ig_priest",
+        //    "ig_prolsec_02",
+        //    "ig_ramp_gang",
+        //    "ig_ramp_hic",
+        //    "ig_ramp_hipster",
+        //    "ig_ramp_mex",
+        //    "ig_roccopelosi",
+        //    "ig_russiandrunk",
+        //    "ig_screen_writer",
+        //    "ig_siemonyetarian",
+        //    "ig_solomon",
+        //    "ig_stevehains",
+        //    "ig_stretch",
+        //    "ig_talina",
+        //    "ig_tanisha",
+        //    "ig_taocheng",
+        //    "ig_taostranslator",
+        //    "ig_tenniscoach",
+        //    "ig_terry",
+        //    "ig_tomepsilon",
+        //    "ig_tonya",
+        //    "ig_tracydisanto",
+        //    "ig_trafficwarden",
+        //    "ig_tylerdix",
+        //    "ig_wade",
+        //    "ig_zimbor",
+        //    "mp_f_deadhooker",
+        //    "mp_f_misty_01",
+        //    "mp_f_stripperlite",
+        //    "mp_g_m_pros_01",
+        //    "mp_m_claude_01",
+        //    "mp_m_exarmy_01",
+        //    "mp_m_famdd_01",
+        //    "mp_m_fibsec_01",
+        //    "mp_m_marston_01",
+        //    "mp_m_niko_01",
+        //    "mp_m_shopkeep_01",
+        //    "mp_s_m_armoured_01",
+        //    "player_one",
+        //    "player_two",
+        //    "player_zero",
+        //    "s_f_m_fembarber",
+        //    "s_f_m_maid_01",
+        //    "s_f_m_shop_high",
+        //    "s_f_m_sweatshop_01",
+        //    "s_f_y_airhostess_01",
+        //    "s_f_y_bartender_01",
+        //    "s_f_y_baywatch_01",
+        //    "s_f_y_cop_01",
+        //    "s_f_y_factory_01",
+        //    "s_f_y_hooker_01",
+        //    "s_f_y_hooker_02",
+        //    "s_f_y_hooker_03",
+        //    "s_f_y_migrant_01",
+        //    "s_f_y_movprem_01",
+        //    "s_f_y_ranger_01",
+        //    "s_f_y_scrubs_01",
+        //    "s_f_y_sheriff_01",
+        //    "s_f_y_shop_low",
+        //    "s_f_y_shop_mid",
+        //    "s_f_y_stripperlite",
+        //    "s_f_y_stripper_01",
+        //    "s_f_y_stripper_02",
+        //    "s_f_y_sweatshop_01",
+        //    "s_m_m_ammucountry",
+        //    "s_m_m_armoured_01",
+        //    "s_m_m_armoured_02",
+        //    "s_m_m_autoshop_01",
+        //    "s_m_m_autoshop_02",
+        //    "s_m_m_bouncer_01",
+        //    "s_m_m_chemsec_01",
+        //    "s_m_m_ciasec_01",
+        //    "s_m_m_cntrybar_01",
+        //    "s_m_m_dockwork_01",
+        //    "s_m_m_doctor_01",
+        //    "s_m_m_fiboffice_01",
+        //    "s_m_m_fiboffice_02",
+        //    "s_m_m_gaffer_01",
+        //    "s_m_m_gardener_01",
+        //    "s_m_m_gentransport",
+        //    "s_m_m_hairdress_01",
+        //    "s_m_m_highsec_01",
+        //    "s_m_m_highsec_02",
+        //    "s_m_m_janitor",
+        //    "s_m_m_lathandy_01",
+        //    "s_m_m_lifeinvad_01",
+        //    "s_m_m_linecook",
+        //    "s_m_m_lsmetro_01",
+        //    "s_m_m_mariachi_01",
+        //    "s_m_m_marine_01",
+        //    "s_m_m_marine_02",
+        //    "s_m_m_migrant_01",
+        //    "s_m_m_movalien_01",
+        //    "s_m_m_movprem_01",
+        //    "s_m_m_movspace_01",
+        //    "s_m_m_paramedic_01",
+        //    "s_m_m_pilot_01",
+        //    "s_m_m_pilot_02",
+        //    "s_m_m_postal_01",
+        //    "s_m_m_postal_02",
+        //    "s_m_m_prisguard_01",
+        //    "s_m_m_scientist_01",
+        //    "s_m_m_security_01",
+        //    "s_m_m_snowcop_01",
+        //    "s_m_m_strperf_01",
+        //    "s_m_m_strpreach_01",
+        //    "s_m_m_strvend_01",
+        //    "s_m_m_trucker_01",
+        //    "s_m_m_ups_01",
+        //    "s_m_m_ups_02",
+        //    "s_m_o_busker_01",
+        //    "s_m_y_airworker",
+        //    "s_m_y_ammucity_01",
+        //    "s_m_y_armymech_01",
+        //    "s_m_y_autopsy_01",
+        //    "s_m_y_barman_01",
+        //    "s_m_y_baywatch_01",
+        //    "s_m_y_blackops_01",
+        //    "s_m_y_blackops_02",
+        //    "s_m_y_busboy_01",
+        //    "s_m_y_chef_01",
+        //    "s_m_y_clown_01",
+        //    "s_m_y_construct_01",
+        //    "s_m_y_construct_02",
+        //    "s_m_y_cop_01",
+        //    "s_m_y_dealer_01",
+        //    "s_m_y_devinsec_01",
+        //    "s_m_y_dockwork_01",
+        //    "s_m_y_doorman_01",
+        //    "s_m_y_dwservice_01",
+        //    "s_m_y_dwservice_02",
+        //    "s_m_y_factory_01",
+        //    "s_m_y_fireman_01",
+        //    "s_m_y_garbage",
+        //    "s_m_y_grip_01",
+        //    "s_m_y_hwaycop_01",
+        //    "s_m_y_marine_01",
+        //    "s_m_y_marine_02",
+        //    "s_m_y_marine_03",
+        //    "s_m_y_mime",
+        //    "s_m_y_pestcont_01",
+        //    "s_m_y_pilot_01",
+        //    "s_m_y_prismuscl_01",
+        //    "s_m_y_prisoner_01",
+        //    "s_m_y_ranger_01",
+        //    "s_m_y_robber_01",
+        //    "s_m_y_sheriff_01",
+        //    "s_m_y_shop_mask",
+        //    "s_m_y_strvend_01",
+        //    "s_m_y_swat_01",
+        //    "s_m_y_uscg_01",
+        //    "s_m_y_valet_01",
+        //    "s_m_y_waiter_01",
+        //    "s_m_y_winclean_01",
+        //    "s_m_y_xmech_01",
+        //    "s_m_y_xmech_02",
+        //    "u_f_m_corpse_01",
+        //    "u_f_m_miranda",
+        //    "u_f_m_promourn_01",
+        //    "u_f_o_moviestar",
+        //    "u_f_o_prolhost_01",
+        //    "u_f_y_bikerchic",
+        //    "u_f_y_comjane",
+        //    "u_f_y_corpse_01",
+        //    "u_f_y_corpse_02",
+        //    "u_f_y_hotposh_01",
+        //    "u_f_y_jewelass_01",
+        //    "u_f_y_mistress",
+        //    "u_f_y_poppymich",
+        //    "u_f_y_princess",
+        //    "u_f_y_spyactress",
+        //    "u_m_m_aldinapoli",
+        //    "u_m_m_bankman",
+        //    "u_m_m_bikehire_01",
+        //    "u_m_m_fibarchitect",
+        //    "u_m_m_filmdirector",
+        //    "u_m_m_glenstank_01",
+        //    "u_m_m_griff_01",
+        //    "u_m_m_jesus_01",
+        //    "u_m_m_jewelsec_01",
+        //    "u_m_m_jewelthief",
+        //    "u_m_m_markfost",
+        //    "u_m_m_partytarget",
+        //    "u_m_m_prolsec_01",
+        //    "u_m_m_promourn_01",
+        //    "u_m_m_rivalpap",
+        //    "u_m_m_spyactor",
+        //    "u_m_m_willyfist",
+        //    "u_m_o_finguru_01",
+        //    "u_m_o_taphillbilly",
+        //    "u_m_o_tramp_01",
+        //    "u_m_y_abner",
+        //    "u_m_y_antonb",
+        //    "u_m_y_babyd",
+        //    "u_m_y_baygor",
+        //    "u_m_y_burgerdrug_01",
+        //    "u_m_y_chip",
+        //    "u_m_y_cyclist_01",
+        //    "u_m_y_fibmugger_01",
+        //    "u_m_y_guido_01",
+        //    "u_m_y_gunvend_01",
+        //    "u_m_y_hippie_01",
+        //    "u_m_y_imporage",
+        //    "u_m_y_justin",
+        //    "u_m_y_mani",
+        //    "u_m_y_militarybum",
+        //    "u_m_y_paparazzi",
+        //    "u_m_y_party_01",
+        //    "u_m_y_pogo_01",
+        //    "u_m_y_prisoner_01",
+        //    "u_m_y_proldriver_01",
+        //    "u_m_y_rsranger_01",
+        //    "u_m_y_sbike",
+        //    "u_m_y_staggrm_01",
+        //    "u_m_y_tattoo_01",
+        //    "u_m_y_zombie_01"
+        //    };
+
         #region Model Names
         private Dictionary<string, string> mainModels = new Dictionary<string, string>()
         {
-            ["player_zero"] = "Michael",
             ["player_one"] = "Franklin",
             ["player_two"] = "Trevor",
+            ["player_zero"] = "Michael",
             ["mp_f_freemode_01"] = "FreemodeFemale01",
             ["mp_m_freemode_01"] = "FreemodeMale01"
         };
@@ -638,7 +1126,7 @@ namespace vMenuClient
             ["a_m_y_vinewood_02"] = "Vinewood02AMY",
             ["a_m_y_vinewood_03"] = "Vinewood03AMY",
             ["a_m_y_vinewood_04"] = "Vinewood04AMY",
-            ["a_m_y_yoga_01"] = "Yoga01AMY",
+            ["a_m_y_yoga_01"] = "Yoga01AMY"
         };
         private Dictionary<string, string> femaleModels = new Dictionary<string, string>()
         {
@@ -710,13 +1198,378 @@ namespace vMenuClient
             ["a_f_y_vinewood_02"] = "Vinewood02AFY",
             ["a_f_y_vinewood_03"] = "Vinewood03AFY",
             ["a_f_y_vinewood_04"] = "Vinewood04AFY",
-            ["a_f_y_yoga_01"] = "Yoga01AFY",
+            ["a_f_y_yoga_01"] = "Yoga01AFY"
+        };
+        private Dictionary<string, string> otherPeds = new Dictionary<string, string>()
+        {
             ["csb_abigail"] = "AbigailCutscene",
             ["csb_anita"] = "AnitaCutscene",
+            ["csb_anton"] = "AntonCutscene",
+            ["csb_ballasog"] = "BallasogCutscene",
             ["csb_bride"] = "BrideCutscene",
+            ["csb_burgerdrug"] = "BurgerDrugCutscene",
+            ["csb_car3guy1"] = "Car3Guy1Cutscene",
+            ["csb_car3guy2"] = "Car3Guy2Cutscene",
+            ["csb_chef"] = "ChefCutscene",
+            ["csb_chin_goon"] = "ChinGoonCutscene",
+            ["csb_cletus"] = "CletusCutscene",
+            ["csb_cop"] = "CopCutscene",
+            ["csb_customer"] = "CustomerCutscene",
             ["csb_denise_friend"] = "DeniseFriendCutscene",
+            ["csb_fos_rep"] = "FosRepCutscene",
+            ["csb_groom"] = "GroomCutscene",
+            ["csb_grove_str_dlr"] = "GroveStrDlrCutscene",
+            ["csb_g"] = "GCutscene",
+            ["csb_hao"] = "HaoCutscene",
+            ["csb_hugh"] = "HughCutscene",
+            ["csb_imran"] = "ImranCutscene",
+            ["csb_janitor"] = "JanitorCutscene",
+            ["csb_maude"] = "MaudeCutscene",
+            ["csb_mweather"] = "MerryWeatherCutscene",
+            ["csb_ortega"] = "OrtegaCutscene",
+            ["csb_oscar"] = "OscarCutscene",
+            ["csb_porndudes"] = "PornDudesCutscene",
+            ["csb_prologuedriver"] = "PrologueDriverCutscene",
+            ["csb_prolsec"] = "PrologueSec01Cutscene",
+            ["csb_ramp_gang"] = "RampGangCutscene",
+            ["csb_ramp_hic"] = "RampHicCutscene",
+            ["csb_ramp_hipster"] = "RampHipsterCutscene",
+            ["csb_ramp_marine"] = "RampMarineCutscene",
+            ["csb_ramp_mex"] = "RampMexCutscene",
+            ["csb_reporter"] = "ReporterCutscene",
+            ["csb_roccopelosi"] = "RoccoPelosiCutscene",
+            ["csb_screen_writer"] = "ScreenWriterCutscene",
+            ["csb_stripper_01"] = "Stripper01Cutscene",
+            ["csb_stripper_02"] = "Stripper02Cutscene",
+            ["csb_tonya"] = "TonyaCutscene",
+            ["csb_trafficwarden"] = "TrafficWardenCutscene",
+            ["g_f_y_ballas_01"] = "Ballas01GFY",
+            ["g_f_y_families_01"] = "Families01GFY",
+            ["g_f_y_lost_01"] = "Lost01GFY",
+            ["g_f_y_vagos_01"] = "Vagos01GFY",
+            ["g_m_m_armboss_01"] = "ArmBoss01GMM",
+            ["g_m_m_armgoon_01"] = "ArmGoon01GMM",
+            ["g_m_m_armlieut_01"] = "ArmLieut01GMM",
+            ["g_m_m_chemwork_01"] = "ChemWork01GMM",
+            ["g_m_m_chiboss_01"] = "ChiBoss01GMM",
+            ["g_m_m_chicold_01"] = "ChiCold01GMM",
+            ["g_m_m_chigoon_01"] = "ChiGoon01GMM",
+            ["g_m_m_chigoon_02"] = "ChiGoon02GMM",
+            ["g_m_m_korboss_01"] = "KorBoss01GMM",
+            ["g_m_m_mexboss_01"] = "MexBoss01GMM",
+            ["g_m_m_mexboss_02"] = "MexBoss02GMM",
+            ["g_m_y_armgoon_02"] = "ArmGoon02GMY",
+            ["g_m_y_azteca_01"] = "Azteca01GMY",
+            ["g_m_y_ballaeast_01"] = "BallaEast01GMY",
+            ["g_m_y_ballaorig_01"] = "BallaOrig01GMY",
+            ["g_m_y_ballasout_01"] = "BallaSout01GMY",
+            ["g_m_y_famca_01"] = "Famca01GMY",
+            ["g_m_y_famdnf_01"] = "Famdnf01GMY",
+            ["g_m_y_famfor_01"] = "Famfor01GMY",
+            ["g_m_y_korean_01"] = "Korean01GMY",
+            ["g_m_y_korean_02"] = "Korean02GMY",
+            ["g_m_y_korlieut_01"] = "KorLieut01GMY",
+            ["g_m_y_lost_01"] = "Lost01GMY",
+            ["g_m_y_lost_02"] = "Lost02GMY",
+            ["g_m_y_lost_03"] = "Lost03GMY",
+            ["g_m_y_mexgang_01"] = "MexGang01GMY",
+            ["g_m_y_mexgoon_01"] = "MexGoon01GMY",
+            ["g_m_y_mexgoon_02"] = "MexGoon02GMY",
+            ["g_m_y_mexgoon_03"] = "MexGoon03GMY",
+            ["g_m_y_pologoon_01"] = "PoloGoon01GMY",
+            ["g_m_y_pologoon_02"] = "PoloGoon02GMY",
+            ["g_m_y_salvaboss_01"] = "SalvaBoss01GMY",
+            ["g_m_y_salvagoon_01"] = "SalvaGoon01GMY",
+            ["g_m_y_salvagoon_02"] = "SalvaGoon02GMY",
+            ["g_m_y_salvagoon_03"] = "SalvaGoon03GMY",
+            ["g_m_y_strpunk_01"] = "StrPunk01GMY",
+            ["g_m_y_strpunk_02"] = "StrPunk02GMY",
+            ["hc_driver"] = "PestContDriver",
+            ["hc_gunman"] = "PestContGunman",
+            ["hc_hacker"] = "Hacker",
+            ["ig_abigail"] = "Abigail",
+            ["ig_amandatownley"] = "AmandaTownley",
+            ["ig_andreas"] = "Andreas",
+            ["ig_ashley"] = "Ashley",
+            ["ig_ballasog"] = "Ballasog",
+            ["ig_bankman"] = "Bankman",
+            ["ig_barry"] = "Barry",
+            ["ig_bestmen"] = "Bestmen",
+            ["ig_beverly"] = "Beverly",
+            ["ig_brad"] = "Brad",
+            ["ig_bride"] = "Bride",
+            ["ig_car3guy1"] = "Car3Guy1",
+            ["ig_car3guy2"] = "Car3Guy2",
+            ["ig_casey"] = "Casey",
+            ["ig_chef"] = "Chef",
+            ["ig_chengsr"] = "WeiCheng",
+            ["ig_chrisformage"] = "CrisFormage",
+            ["ig_claypain"] = "Claypain",
+            ["ig_clay"] = "Clay",
+            ["ig_cletus"] = "Cletus",
+            ["ig_dale"] = "Dale",
+            ["ig_davenorton"] = "DaveNorton",
+            ["ig_denise"] = "Denise",
+            ["ig_devin"] = "Devin",
+            ["ig_dom"] = "Dom",
+            ["ig_dreyfuss"] = "Dreyfuss",
+            ["ig_drfriedlander"] = "DrFriedlander",
+            ["ig_fabien"] = "Fabien",
+            ["ig_fbisuit_01"] = "FbiSuit01",
+            ["ig_floyd"] = "Floyd",
+            ["ig_groom"] = "Groom",
+            ["ig_hao"] = "Hao",
+            ["ig_hunter"] = "Hunter",
+            ["ig_janet"] = "Janet",
+            ["ig_jay_norris"] = "JayNorris",
+            ["ig_jewelass"] = "Jewelass",
+            ["ig_jimmyboston"] = "JimmyBoston",
+            ["ig_jimmydisanto"] = "JimmyDisanto",
+            ["ig_joeminuteman"] = "JoeMinuteman",
+            ["ig_johnnyklebitz"] = "JohnnyKlebitz",
+            ["ig_josef"] = "Josef",
+            ["ig_josh"] = "Josh",
+            ["ig_kerrymcintosh"] = "KerryMcintosh",
+            ["ig_lamardavis"] = "LamarDavis",
+            ["ig_lazlow"] = "Lazlow",
+            ["ig_lestercrest"] = "LesterCrest",
+            ["ig_lifeinvad_01"] = "Lifeinvad01",
+            ["ig_lifeinvad_02"] = "Lifeinvad02",
+            ["ig_magenta"] = "Magenta",
+            ["ig_manuel"] = "Manuel",
+            ["ig_marnie"] = "Marnie",
+            ["ig_maryann"] = "MaryAnn",
+            ["ig_maude"] = "Maude",
+            ["ig_michelle"] = "Michelle",
+            ["ig_milton"] = "Milton",
+            ["ig_molly"] = "Molly",
+            ["ig_mrk"] = "MrK",
+            ["ig_mrsphillips"] = "MrsPhillips",
+            ["ig_mrs_thornhill"] = "MrsThornhill",
+            ["ig_natalia"] = "Natalia",
+            ["ig_nervousron"] = "NervousRon",
+            ["ig_nigel"] = "Nigel",
+            ["ig_old_man1a"] = "OldMan1a",
+            ["ig_old_man2"] = "OldMan2",
+            ["ig_omega"] = "Omega",
+            ["ig_oneil"] = "ONeil",
+            ["ig_orleans"] = "Orleans",
+            ["ig_ortega"] = "Ortega",
+            ["ig_paper"] = "Paper",
+            ["ig_patricia"] = "Patricia",
+            ["ig_priest"] = "Priest",
+            ["ig_prolsec_02"] = "PrologueSec02",
+            ["ig_ramp_gang"] = "RampGang",
+            ["ig_ramp_hic"] = "RampHic",
+            ["ig_ramp_hipster"] = "RampHipster",
+            ["ig_ramp_mex"] = "RampMex",
+            ["ig_roccopelosi"] = "RoccoPelosi",
+            ["ig_russiandrunk"] = "RussianDrunk",
+            ["ig_screen_writer"] = "ScreenWriter",
+            ["ig_siemonyetarian"] = "SiemonYetarian",
+            ["ig_solomon"] = "Solomon",
+            ["ig_stevehains"] = "SteveHains",
+            ["ig_stretch"] = "Stretch",
+            ["ig_talina"] = "Talina",
+            ["ig_tanisha"] = "Tanisha",
+            ["ig_taocheng"] = "TaoCheng",
+            ["ig_taostranslator"] = "TaosTranslator",
+            ["ig_tenniscoach"] = "TennisCoach",
+            ["ig_terry"] = "Terry",
+            ["ig_tomepsilon"] = "TomEpsilon",
+            ["ig_tonya"] = "Tonya",
+            ["ig_tracydisanto"] = "TracyDisanto",
+            ["ig_trafficwarden"] = "TrafficWarden",
+            ["ig_tylerdix"] = "TylerDixon",
+            ["ig_wade"] = "Wade",
+            ["ig_zimbor"] = "Zimbor",
+            ["mp_f_deadhooker"] = "DeadHooker",
+            ["mp_f_misty_01"] = "Misty01",
+            ["mp_f_stripperlite"] = "StripperLite",
+            ["mp_g_m_pros_01"] = "MPros01",
+            ["mp_m_claude_01"] = "Claude01",
+            ["mp_m_exarmy_01"] = "ExArmy01",
+            ["mp_m_famdd_01"] = "Famdd01",
+            ["mp_m_fibsec_01"] = "FibSec01",
+            ["mp_m_marston_01"] = "Marston01",
+            ["mp_m_niko_01"] = "Niko01",
+            ["mp_m_shopkeep_01"] = "ShopKeep01",
+            ["mp_s_m_armoured_01"] = "Armoured01",
+            ["s_f_m_fembarber"] = "FemBarberSFM",
+            ["s_f_m_maid_01"] = "Maid01SFM",
+            ["s_f_m_shop_high"] = "ShopHighSFM",
+            ["s_f_m_sweatshop_01"] = "Sweatshop01SFM",
+            ["s_f_y_airhostess_01"] = "Airhostess01SFY",
+            ["s_f_y_bartender_01"] = "Bartender01SFY",
+            ["s_f_y_baywatch_01"] = "Baywatch01SFY",
+            ["s_f_y_cop_01"] = "Cop01SFY",
+            ["s_f_y_factory_01"] = "Factory01SFY",
+            ["s_f_y_hooker_01"] = "Hooker01SFY",
+            ["s_f_y_hooker_02"] = "Hooker02SFY",
+            ["s_f_y_hooker_03"] = "Hooker03SFY",
+            ["s_f_y_migrant_01"] = "Migrant01SFY",
+            ["s_f_y_movprem_01"] = "MovPrem01SFY",
+            ["s_f_y_ranger_01"] = "Ranger01SFY",
+            ["s_f_y_scrubs_01"] = "Scrubs01SFY",
+            ["s_f_y_sheriff_01"] = "Sheriff01SFY",
+            ["s_f_y_shop_low"] = "ShopLowSFY",
+            ["s_f_y_shop_mid"] = "ShopMidSFY",
+            ["s_f_y_stripperlite"] = "StripperLiteSFY",
+            ["s_f_y_stripper_01"] = "Stripper01SFY",
+            ["s_f_y_stripper_02"] = "Stripper02SFY",
+            ["s_f_y_sweatshop_01"] = "Sweatshop01SFY",
+            ["s_m_m_ammucountry"] = "AmmuCountrySMM",
+            ["s_m_m_armoured_01"] = "Armoured01SMM",
+            ["s_m_m_armoured_02"] = "Armoured02SMM",
+            ["s_m_m_autoshop_01"] = "Autoshop01SMM",
+            ["s_m_m_autoshop_02"] = "Autoshop02SMM",
+            ["s_m_m_bouncer_01"] = "Bouncer01SMM",
+            ["s_m_m_chemsec_01"] = "ChemSec01SMM",
+            ["s_m_m_ciasec_01"] = "CiaSec01SMM",
+            ["s_m_m_cntrybar_01"] = "Cntrybar01SMM",
+            ["s_m_m_dockwork_01"] = "Dockwork01SMM",
+            ["s_m_m_doctor_01"] = "Doctor01SMM",
+            ["s_m_m_fiboffice_01"] = "FibOffice01SMM",
+            ["s_m_m_fiboffice_02"] = "FibOffice02SMM",
+            ["s_m_m_gaffer_01"] = "Gaffer01SMM",
+            ["s_m_m_gardener_01"] = "Gardener01SMM",
+            ["s_m_m_gentransport"] = "GentransportSMM",
+            ["s_m_m_hairdress_01"] = "Hairdress01SMM",
+            ["s_m_m_highsec_01"] = "Highsec01SMM",
+            ["s_m_m_highsec_02"] = "Highsec02SMM",
+            ["s_m_m_janitor"] = "JanitorSMM",
+            ["s_m_m_lathandy_01"] = "Lathandy01SMM",
+            ["s_m_m_lifeinvad_01"] = "Lifeinvad01SMM",
+            ["s_m_m_linecook"] = "LinecookSMM",
+            ["s_m_m_lsmetro_01"] = "Lsmetro01SMM",
+            ["s_m_m_mariachi_01"] = "Mariachi01SMM",
+            ["s_m_m_marine_01"] = "Marine01SMM",
+            ["s_m_m_marine_02"] = "Marine02SMM",
+            ["s_m_m_migrant_01"] = "Migrant01SMM",
+            ["s_m_m_movalien_01"] = "MovAlien01",
+            ["s_m_m_movprem_01"] = "Movprem01SMM",
+            ["s_m_m_movspace_01"] = "Movspace01SMM",
+            ["s_m_m_paramedic_01"] = "Paramedic01SMM",
+            ["s_m_m_pilot_01"] = "Pilot01SMM",
+            ["s_m_m_pilot_02"] = "Pilot02SMM",
+            ["s_m_m_postal_01"] = "Postal01SMM",
+            ["s_m_m_postal_02"] = "Postal02SMM",
+            ["s_m_m_prisguard_01"] = "Prisguard01SMM",
+            ["s_m_m_scientist_01"] = "Scientist01SMM",
+            ["s_m_m_security_01"] = "Security01SMM",
+            ["s_m_m_snowcop_01"] = "Snowcop01SMM",
+            ["s_m_m_strperf_01"] = "Strperf01SMM",
+            ["s_m_m_strpreach_01"] = "Strpreach01SMM",
+            ["s_m_m_strvend_01"] = "Strvend01SMM",
+            ["s_m_m_trucker_01"] = "Trucker01SMM",
+            ["s_m_m_ups_01"] = "Ups01SMM",
+            ["s_m_m_ups_02"] = "Ups02SMM",
+            ["s_m_o_busker_01"] = "Busker01SMO",
+            ["s_m_y_airworker"] = "AirworkerSMY",
+            ["s_m_y_ammucity_01"] = "Ammucity01SMY",
+            ["s_m_y_armymech_01"] = "Armymech01SMY",
+            ["s_m_y_autopsy_01"] = "Autopsy01SMY",
+            ["s_m_y_barman_01"] = "Barman01SMY",
+            ["s_m_y_baywatch_01"] = "Baywatch01SMY",
+            ["s_m_y_blackops_01"] = "Blackops01SMY",
+            ["s_m_y_blackops_02"] = "Blackops02SMY",
+            ["s_m_y_busboy_01"] = "Busboy01SMY",
+            ["s_m_y_chef_01"] = "Chef01SMY",
+            ["s_m_y_clown_01"] = "Clown01SMY",
+            ["s_m_y_construct_01"] = "Construct01SMY",
+            ["s_m_y_construct_02"] = "Construct02SMY",
+            ["s_m_y_cop_01"] = "Cop01SMY",
+            ["s_m_y_dealer_01"] = "Dealer01SMY",
+            ["s_m_y_devinsec_01"] = "Devinsec01SMY",
+            ["s_m_y_dockwork_01"] = "Dockwork01SMY",
+            ["s_m_y_doorman_01"] = "Doorman01SMY",
+            ["s_m_y_dwservice_01"] = "DwService01SMY",
+            ["s_m_y_dwservice_02"] = "DwService02SMY",
+            ["s_m_y_factory_01"] = "Factory01SMY",
+            ["s_m_y_fireman_01"] = "Fireman01SMY",
+            ["s_m_y_garbage"] = "GarbageSMY",
+            ["s_m_y_grip_01"] = "Grip01SMY",
+            ["s_m_y_hwaycop_01"] = "Hwaycop01SMY",
+            ["s_m_y_marine_01"] = "Marine01SMY",
+            ["s_m_y_marine_02"] = "Marine02SMY",
+            ["s_m_y_marine_03"] = "Marine03SMY",
+            ["s_m_y_mime"] = "MimeSMY",
+            ["s_m_y_pestcont_01"] = "PestCont01SMY",
+            ["s_m_y_pilot_01"] = "Pilot01SMY",
+            ["s_m_y_prismuscl_01"] = "PrisMuscl01SMY",
+            ["s_m_y_prisoner_01"] = "Prisoner01SMY",
+            ["s_m_y_ranger_01"] = "Ranger01SMY",
+            ["s_m_y_robber_01"] = "Robber01SMY",
+            ["s_m_y_sheriff_01"] = "Sheriff01SMY",
+            ["s_m_y_shop_mask"] = "ShopMaskSMY",
+            ["s_m_y_strvend_01"] = "Strvend01SMY",
+            ["s_m_y_swat_01"] = "Swat01SMY",
+            ["s_m_y_uscg_01"] = "Uscg01SMY",
+            ["s_m_y_valet_01"] = "Valet01SMY",
+            ["s_m_y_waiter_01"] = "Waiter01SMY",
+            ["s_m_y_winclean_01"] = "WinClean01SMY",
+            ["s_m_y_xmech_01"] = "Xmech01SMY",
+            ["s_m_y_xmech_02"] = "Xmech02SMY",
+            ["u_f_m_corpse_01"] = "Corpse01",
+            ["u_f_m_miranda"] = "Miranda",
+            ["u_f_m_promourn_01"] = "PrologueMournFemale01",
+            ["u_f_o_moviestar"] = "MovieStar",
+            ["u_f_o_prolhost_01"] = "PrologueHostage01",
+            ["u_f_y_bikerchic"] = "BikerChic",
+            ["u_f_y_comjane"] = "ComJane",
+            ["u_f_y_corpse_02"] = "Corpse02",
+            ["u_f_y_hotposh_01"] = "Hotposh01",
+            ["u_f_y_jewelass_01"] = "Jewelass01",
+            ["u_f_y_mistress"] = "Mistress",
+            ["u_f_y_poppymich"] = "Poppymich",
+            ["u_f_y_princess"] = "Princess",
+            ["u_f_y_spyactress"] = "SpyActress",
+            ["u_m_m_aldinapoli"] = "AlDiNapoli",
+            ["u_m_m_bankman"] = "Bankman01",
+            ["u_m_m_bikehire_01"] = "BikeHire01",
+            ["u_m_m_fibarchitect"] = "FibArchitect",
+            ["u_m_m_filmdirector"] = "FilmDirector",
+            ["u_m_m_glenstank_01"] = "Glenstank01",
+            ["u_m_m_griff_01"] = "Griff01",
+            ["u_m_m_jesus_01"] = "Jesus01",
+            ["u_m_m_jewelsec_01"] = "JewelSec01",
+            ["u_m_m_jewelthief"] = "JewelThief",
+            ["u_m_m_markfost"] = "Markfost",
+            ["u_m_m_partytarget"] = "PartyTarget",
+            ["u_m_m_prolsec_01"] = "PrologueSec01",
+            ["u_m_m_promourn_01"] = "PrologueMournMale01",
+            ["u_m_m_rivalpap"] = "RivalPaparazzi",
+            ["u_m_m_spyactor"] = "SpyActor",
+            ["u_m_m_willyfist"] = "WillyFist",
+            ["u_m_o_finguru_01"] = "Finguru01",
+            ["u_m_o_taphillbilly"] = "Taphillbilly",
+            ["u_m_o_tramp_01"] = "Tramp01",
+            ["u_m_y_abner"] = "Abner",
+            ["u_m_y_antonb"] = "Antonb",
+            ["u_m_y_babyd"] = "Babyd",
+            ["u_m_y_baygor"] = "Baygor",
+            ["u_m_y_burgerdrug_01"] = "BurgerDrug",
+            ["u_m_y_chip"] = "Chip",
+            ["u_m_y_cyclist_01"] = "Cyclist01",
+            ["u_m_y_fibmugger_01"] = "FibMugger01",
+            ["u_m_y_guido_01"] = "Guido01",
+            ["u_m_y_gunvend_01"] = "GunVend01",
+            ["u_m_y_hippie_01"] = "Hippie01",
+            ["u_m_y_imporage"] = "Imporage",
+            ["u_m_y_justin"] = "Justin",
+            ["u_m_y_mani"] = "Mani",
+            ["u_m_y_militarybum"] = "MilitaryBum",
+            ["u_m_y_paparazzi"] = "Paparazzi",
+            ["u_m_y_party_01"] = "Party01",
+            ["u_m_y_pogo_01"] = "Pogo01",
+            ["u_m_y_prisoner_01"] = "Prisoner01",
+            ["u_m_y_proldriver_01"] = "PrologueDriver",
+            ["u_m_y_rsranger_01"] = "RsRanger01AMO",
+            ["u_m_y_sbike"] = "SbikeAMO",
+            ["u_m_y_staggrm_01"] = "Staggrm01AMO",
+            ["u_m_y_tattoo_01"] = "Tattoo01AMO",
+            ["u_m_y_zombie_01"] = "Zombie01",
         };
-
 
 
         #endregion
