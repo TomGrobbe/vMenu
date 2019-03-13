@@ -312,6 +312,7 @@ namespace vMenuClient
 
                 int KeyFobObject = CreateObject((int)KeyFobHashKey, 0, 0, 0, true, true, true);
                 AttachEntityToEntity(KeyFobObject, player.Character.Handle, GetPedBoneIndex(player.Character.Handle, 57005), 0.09f, 0.03f, -0.02f, -76f, 13f, 28f, false, true, true, true, 0, true);
+                SetModelAsNoLongerNeeded(KeyFobHashKey); // cleanup model from memory
 
                 ClearPedTasks(player.Character.Handle);
                 if(player.Character.Weapons.Current.Hash != WeaponHash.Unarmed)
@@ -324,16 +325,19 @@ namespace vMenuClient
                     TaskTurnPedToFaceEntity(player.Character.Handle, CurrentPersonalVehicle.Handle, 1000);
                 }
 
-                RequestAnimDict("anim@mp_player_intmenu@key_fob@");
-                while (!HasAnimDictLoaded("anim@mp_player_intmenu@key_fob@")) {
+                string animDict = "anim@mp_player_intmenu@key_fob@";
+                RequestAnimDict(animDict);
+                while (!HasAnimDictLoaded(animDict)) {
                     await Delay(0);
                 }
-                player.Character.Task.PlayAnimation("anim@mp_player_intmenu@key_fob@", "fob_click", 3f, 1000, AnimationFlags.UpperBodyOnly);
+                player.Character.Task.PlayAnimation(animDict, "fob_click", 3f, 1000, AnimationFlags.UpperBodyOnly);
                 PlaySoundFromEntity(-1, "Remote_Control_Fob", player.Character.Handle, "PI_Menu_Sounds", true, 0);
+                
 
                 await Delay(1250);
                 DetachEntity(KeyFobObject, false, false);
                 DeleteObject(ref KeyFobObject);
+                RemoveAnimDict(animDict); // cleanup anim dict from memory
             }
 
             await Delay(0);
