@@ -12,6 +12,7 @@ using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
+using static vMenuClient.data.PedModels;
 
 namespace vMenuClient
 {
@@ -101,6 +102,7 @@ namespace vMenuClient
             Tick += ModelDrawDimensions;
             Tick += GcTick;
             Tick += PersonalVehicleOptions;
+            Tick += AnimalPedCameraChangeBlocker;
 
             Tick += SlowMiscTick;
         }
@@ -2542,6 +2544,20 @@ namespace vMenuClient
             else
             {
                 await Task.FromResult(0);
+            }
+        }
+        #endregion
+        #region animal ped camera change blocker
+        private async Task AnimalPedCameraChangeBlocker()
+        {
+            uint model = (uint)GetEntityModel(Game.PlayerPed.Handle);
+            if (AnimalHashes.Contains(model))
+            {
+                while (model == (uint)GetEntityModel(Game.PlayerPed.Handle))
+                {
+                    DisableFirstPersonCamThisFrame();
+                    await Delay(0);
+                }
             }
         }
         #endregion
