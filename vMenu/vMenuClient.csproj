@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="data\BlipInfo.cs" />
     <Compile Include="CommonFunctions.cs" />
+    <Compile Include="data\PedModels.cs" />
     <Compile Include="data\TimeCycles.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="FunctionsController.cs" />

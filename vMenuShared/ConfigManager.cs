@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,6 +50,7 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
 
             vmenu_disable_daily_update_checks,
+            vmenu_pvp_mode
         }
 
         public static bool GetSettingsBool(Setting setting)
