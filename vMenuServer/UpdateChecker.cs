@@ -59,8 +59,11 @@ namespace vMenuServer
                 SaveResourceFile(GetCurrentResourceName(), "uuid", UUID, -1);
 
                 // sets the UUID convar.
-                SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.IndexOf('-')));
-                SetConvarServerInfo("vMenuVersion", MainServer.Version);
+                if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_disable_server_info_convars))
+                {
+                    SetConvarServerInfo("vMenuUUID", UUID.Substring(0, UUID.IndexOf('-')));
+                    SetConvarServerInfo("vMenuVersion", MainServer.Version);
+                }
 
                 // Get a response from the specified url.
                 RequestResponse result = await r.Http($"https://www.vespura.com/vmenu/version?id={UUID}&version={MainServer.Version}{(zap ? "&zap=true" : "")}");

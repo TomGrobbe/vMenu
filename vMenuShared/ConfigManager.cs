@@ -41,7 +41,8 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
             vmenu_disable_daily_update_checks,
             vmenu_enable_animals_spawn_menu,
-            vmenu_pvp_mode
+            vmenu_pvp_mode,
+            vmenu_disable_server_info_convars
         }
 
         public static bool GetSettingsBool(Setting setting)
