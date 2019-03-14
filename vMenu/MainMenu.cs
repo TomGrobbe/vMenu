@@ -331,6 +331,20 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
+                switch (GetSettingsInt(Setting.vmenu_pvp_mode))
+                {
+                    case 1:
+                        NetworkSetFriendlyFireOption(true);
+                        SetCanAttackFriendly(Game.PlayerPed.Handle, true, false);
+                        break;
+                    case 2:
+                        NetworkSetFriendlyFireOption(false);
+                        SetCanAttackFriendly(Game.PlayerPed.Handle, false, false);
+                        break;
+                    case 0:
+                    default:
+                        break;
+                }
                 // Clear all previous pause menu info/brief messages on resource start.
                 ClearBrief();
 

@@ -30,6 +30,7 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        public bool MiscShowOverheadNames { get; private set; } = UserDefaults.MiscShowOverheadNames;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool ShowPedModelDimensions { get; private set; } = false;
         public bool ShowPropModelDimensions { get; private set; } = false;
@@ -51,6 +52,7 @@ namespace vMenuClient
             : 168; // 168 (F7 by default)
         public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
         public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
+        public bool KbRadarKeys { get; private set; } = UserDefaults.KbRadarKeys;
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -92,6 +94,7 @@ namespace vMenuClient
             MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
             MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
             MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
+            MenuCheckboxItem kbRadarKeys = new MenuCheckboxItem("Minimap Controls", "Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar.", KbRadarKeys);
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
@@ -121,6 +124,7 @@ namespace vMenuClient
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
             MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
             MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
+            
 
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
@@ -145,6 +149,7 @@ namespace vMenuClient
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
             MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
             MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
             MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
@@ -165,6 +170,10 @@ namespace vMenuClient
                 else if (item == kbRecordKeys)
                 {
                     KbRecordKeys = _checked;
+                }
+                else if (item == kbRadarKeys)
+                {
+                    KbRadarKeys = _checked;
                 }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
@@ -231,6 +240,7 @@ namespace vMenuClient
             }
             // always allowed keybind menu options
             keybindMenu.AddMenuItem(kbRecordKeys);
+            keybindMenu.AddMenuItem(kbRadarKeys);
             keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
@@ -282,6 +292,10 @@ namespace vMenuClient
             if (IsAllowed(Permission.MSPlayerBlips))
             {
                 menu.AddMenuItem(playerBlips);
+            }
+            if (IsAllowed(Permission.MSOverheadNames))
+            {
+                menu.AddMenuItem(playerNames);
             }
             if (IsAllowed(Permission.MSTeleportLocations))
             {
@@ -437,6 +451,10 @@ namespace vMenuClient
                 {
                     ShowPlayerBlips = _checked;
                 }
+                else if (item == playerNames)
+                {
+                    MiscShowOverheadNames = _checked;
+                }
                 else if (item == respawnDefaultCharacter)
                 {
                     MiscRespawnDefaultCharacter = _checked;
@@ -528,6 +546,7 @@ namespace vMenuClient
                 }
             };
         }
+
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.

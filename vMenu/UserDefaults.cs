@@ -244,6 +244,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
         }
 
+        public static bool MiscShowOverheadNames
+        {
+            get { return GetSettingsBool("miscShowOverheadNames"); }
+            set { SetSavedSettingsBool("miscShowOverheadNames", value); }
+        }
+
         public static bool MiscRestorePlayerAppearance
         {
             get { return GetSettingsBool("miscRestorePlayerAppearance"); }
@@ -295,6 +301,11 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("kbRecordKeys"); }
             set { SetSavedSettingsBool("kbRecordKeys", value); }
+        }
+        public static bool KbRadarKeys
+        {
+            get { return GetSettingsBool("kbRadarKeys"); }
+            set { SetSavedSettingsBool("kbRadarKeys", value); }
         }
         #endregion
         #endregion
@@ -515,6 +526,9 @@ namespace vMenuClient
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MiscShowPlayerBlips);
 
+                MiscShowOverheadNames = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                prefs.Add("miscShowOverheadNames", MiscShowOverheadNames);
+
                 MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
                 prefs.Add("miscRespawnDefaultCharacter", MiscRespawnDefaultCharacter);
 
@@ -541,6 +555,9 @@ namespace vMenuClient
 
                 KbRecordKeys = MainMenu.MiscSettingsMenu.KbRecordKeys;
                 prefs.Add("kbRecordKeys", KbRecordKeys);
+
+                KbRadarKeys = MainMenu.MiscSettingsMenu.KbRadarKeys;
+                prefs.Add("kbRadarKeys", KbRadarKeys);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

@@ -12,6 +12,7 @@ using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
+using static vMenuClient.data.PedModels;
 
 namespace vMenuClient
 {
@@ -53,8 +54,8 @@ namespace vMenuClient
 
         /// I made these seperate bools that only get set once after initial load 
         /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick.
-        public static bool flaresAllowed = false;
-        public static bool bombsAllowed = false;
+        //public static bool flaresAllowed = false;
+        //public static bool bombsAllowed = false;
 
         private bool stopPropsLoop = false;
         private bool stopVehiclesLoop = false;
@@ -74,7 +75,8 @@ namespace vMenuClient
                 playerList.Add(p.Handle, p.Name);
             }
 
-            // Add all tick events.
+            // Add all tick functions.
+            Tick += GcTick;
             Tick += GeneralTasks;
             Tick += PlayerOptions;
             Tick += DoPlayerAndVehicleChecks;
@@ -93,19 +95,27 @@ namespace vMenuClient
             Tick += UpdateLocation;
             Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
+            Tick += PlayerOverheadNamesControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
-            //Tick += FlaresAndBombsTick;
             Tick += AnimationsAndInteractions;
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
-            Tick += GcTick;
             Tick += PersonalVehicleOptions;
-
+            Tick += AnimalPedCameraChangeBlocker;
             Tick += SlowMiscTick;
+
+
+            //Tick += FlaresAndBombsTick;
         }
 
+        /// Task related
+        #region gc thread
         int gcTimer = GetGameTimer();
+        /// <summary>
+        /// Task for clearing unused memory periodically.
+        /// </summary>
+        /// <returns></returns>
         private async Task GcTick()
         {
             if (GetGameTimer() - gcTimer > 60000)
@@ -117,8 +127,8 @@ namespace vMenuClient
             }
             await Delay(1000);
         }
+        #endregion
 
-        /// Task related
         #region General Tasks
         /// <summary>
         /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
@@ -142,6 +152,7 @@ namespace vMenuClient
             await Delay(10);
         }
         #endregion
+
         #region Player Options Tasks
         /// <summary>
         /// Run all tasks for the Player Options menu.
@@ -213,6 +224,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region shared player options and vehicle options
         /// <summary>
         /// Slow tick that does some basic checks for shared vehicle/player options.
@@ -254,6 +266,7 @@ namespace vMenuClient
             await Delay(1000);
         }
         #endregion
+
         #region Vehicle Options Tasks
         /// <summary>
         /// Manage all vehicle related tasks.
@@ -526,6 +539,7 @@ namespace vMenuClient
             {
                 await Delay(1);
             }
+
         }
 
         private async Task VehicleOptionsEveryFrame()
@@ -570,6 +584,7 @@ namespace vMenuClient
         }
 
         #endregion
+
         #region Weather Options
         private async Task WeatherOptions()
         {
@@ -639,12 +654,12 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Misc Settings Menu Tasks
         private async void DrawMiscSettingsText()
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-
                 // draw coordinates
                 if (MainMenu.MiscSettingsMenu.ShowCoordinates && IsAllowed(Permission.MSShowCoordinates))
                 {
@@ -825,6 +840,7 @@ namespace vMenuClient
             }
         }
         #endregion
+        int radarSwitchTimer = 0;
         /// <summary>
         /// Run all tasks that need to be handeled for the Misc Settings Menu.
         /// </summary>
@@ -910,6 +926,32 @@ namespace vMenuClient
                                     SetVehicleReduceGrip(veh.Handle, false);
                                 }
                             }
+                        }
+                    }
+                }
+
+                if (GetProfileSetting(221) == 1) // 221 = settings > display > expanded radar
+                {
+                    SetBigmapActive(true, false);
+                }
+                else
+                {
+                    if (IsBigmapActive() && GetGameTimer() - radarSwitchTimer > 8000)
+                    {
+                        SetBigmapActive(false, false);
+                    }
+                    if (Game.IsControlJustReleased(0, Control.MultiplayerInfo) && MainMenu.MiscSettingsMenu.KbRadarKeys && !MenuController.IsAnyMenuOpen() && !IsPauseMenuActive())
+                    {
+                        bool radarExpanded = IsBigmapActive();
+
+                        if (radarExpanded)
+                        {
+                            SetBigmapActive(false, false);
+                        }
+                        else
+                        {
+                            SetBigmapActive(true, false);
+                            radarSwitchTimer = GetGameTimer();
                         }
                     }
                 }
@@ -1030,6 +1072,7 @@ namespace vMenuClient
                                 }
                             }
                         }
+
                     }
                 }
             }
@@ -1100,10 +1143,7 @@ namespace vMenuClient
                     foreach (Player p in pl)
                     {
                         tmpiterator++;
-                        //if (tmpiterator % 5 == 0)
-                        //{
                         await Delay(0);
-                        //}
                         if (p.IsDead)
                         {
                             if (deadPlayers.Contains(p.Handle)) { return; }
@@ -1186,6 +1226,7 @@ namespace vMenuClient
         }
         #endregion
         #endregion
+
         #region Voice Chat Tasks
         /// <summary>
         /// Run all voice chat options tasks
@@ -1276,6 +1317,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Update Time Options Menu (current time display)
         /// <summary>
         /// Update the current time display in the time options menu.
@@ -1299,6 +1341,7 @@ namespace vMenuClient
             await Delay(2000);
         }
         #endregion
+
         #region Weapon Options Tasks
         /// <summary>
         /// Manage all weapon options that need to be handeled every tick.
@@ -1361,6 +1404,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Spectate Handling Tasks
         /// <summary>
         /// OnTick runs every game tick.
@@ -1393,6 +1437,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Player Appearance
         /// <summary>
         /// Manages the camera view for when the mp ped creator is open.
@@ -1870,7 +1915,12 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Restore player skin & weapons after respawning.
+        /// <summary>
+        /// Restores player appearance after dying.
+        /// </summary>
+        /// <returns></returns>
         private async Task RestorePlayerAfterBeingDead()
         {
             if (MainMenu.PermissionsSetupComplete && Game.PlayerPed.IsDead)
@@ -1933,13 +1983,11 @@ namespace vMenuClient
                         Log("weapons restored, deleting kvp");
                         DeleteResourceKvp("vmenu_temp_weapons_loadout_before_respawn");
                     }
-
-
                 }
-
             }
         }
         #endregion
+
         #region Player clothing animations controller.
         private async Task PlayerClothingAnimationsController()
         {
@@ -2055,6 +2103,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region player blips tasks
         private async Task PlayerBlipsControl()
         {
@@ -2208,7 +2257,77 @@ namespace vMenuClient
         }
 
         #endregion
+
+        #region player overhead names
+        private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
+
+        float distance = 500f; // todo make this a convar.
+
+        /// <summary>
+        /// Manages overhead player names.
+        /// </summary>
+        /// <returns></returns>
+        private async Task PlayerOverheadNamesControl()
+        {
+            await Delay(500);
+
+            if (MainMenu.PermissionsSetupComplete && MainMenu.ConfigOptionsSetupComplete && MainMenu.MiscSettingsMenu != null)
+            {
+                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                if (!enabled)
+                {
+                    for (var i = 0; i < 255; i++)
+                    {
+                        RemoveMpGamerTag(i);
+                    }
+                }
+                else
+                {
+                    foreach (Player p in Players)
+                    {
+                        if (p != Game.Player)
+                        {
+                            bool closeEnough = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position) < distance;
+                            if (gamerTags.ContainsKey(p))
+                            {
+                                if (!closeEnough)
+                                {
+                                    RemoveMpGamerTag(gamerTags[p]);
+                                }
+                                else if (!IsMpGamerTagActive(gamerTags[p]))
+                                {
+                                    gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                                }
+                            }
+                            else if (closeEnough)
+                            {
+                                gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                            }
+                            if (closeEnough)
+                            {
+                                SetMpGamerTagVisibility(gamerTags[p], 2, true); // healthArmor
+                                SetMpGamerTagName(gamerTags[p], p.Name + $" [{p.ServerId}]");
+                                if (p.WantedLevel > 0)
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, true); // wantedStars
+                                }
+                                else
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, false); // wantedStars
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Online Player Options Tasks
+        /// <summary>
+        /// Manages online players tasks.
+        /// </summary>
+        /// <returns></returns>
         private async Task OnlinePlayersTasks()
         {
             await Delay(500);
@@ -2250,8 +2369,9 @@ namespace vMenuClient
             }
         }
         #endregion
-        #region Flares and plane bombs controler
 
+        #region Flares and plane bombs controler (UNUSED)
+        /*
         private readonly List<uint> flareVehicles = new List<uint>()
         {
             (uint)GetHashKey("mogul"),
@@ -2355,7 +2475,9 @@ namespace vMenuClient
                 await Delay(1);
             }
         }
+        */
         #endregion
+
         #region Tick related to animations and interactions in-game
         /// <summary>
         /// Manages (triggers) all interactions and animations that happen in the world without direct use of the menu.
@@ -2377,7 +2499,7 @@ namespace vMenuClient
                                 Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
                                 Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
                             {
-                                await PickupSnowball();
+                                await PickupSnowballOnce();
                             }
                         }
                     }
@@ -2396,7 +2518,7 @@ namespace vMenuClient
                             }
                             if (GetGameTimer() - timer > 400)
                             {
-                                Task t = SwitchHelmet();
+                                Task t = SwitchHelmetOnce();
                                 while (!t.IsCompleted && !t.IsCanceled && !t.IsFaulted)
                                 {
                                     if (inVeh)
@@ -2418,7 +2540,12 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region help message controller
+        /// <summary>
+        /// Help message timer and stuff.
+        /// </summary>
+        /// <returns></returns>
         private async Task HelpMessageController()
         {
             if (MainMenu.PermissionsSetupComplete)
@@ -2467,6 +2594,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region draw model dimensions
         /// <summary>
         /// Draws entity outlines if enabled (per entity type).
@@ -2546,6 +2674,26 @@ namespace vMenuClient
         }
         #endregion
 
+        #region animal ped camera change blocker
+        /// <summary>
+        /// Prevents players from going into first person when they're currently using an animal as their player ped.
+        /// This is to prevent them crashing their game or falling out of the sky as ~~birds~~ bricks.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AnimalPedCameraChangeBlocker()
+        {
+            uint model = (uint)GetEntityModel(Game.PlayerPed.Handle);
+            if (AnimalHashes.Contains(model))
+            {
+                while (model == (uint)GetEntityModel(Game.PlayerPed.Handle))
+                {
+                    DisableFirstPersonCamThisFrame();
+                    await Delay(0);
+                }
+            }
+        }
+        #endregion
+
         #region Slow misc tick
         /// <summary>
         /// Slow functions for the model dimensions outline entities lists.
@@ -2587,9 +2735,9 @@ namespace vMenuClient
                 }
 
             }
-
         }
         #endregion
+
         #region Personal Vehicle options
         private bool messageCooldown = false;
         private async void StartMessageCooldown()
@@ -2599,6 +2747,11 @@ namespace vMenuClient
             messageCooldown = false;
         }
         int time = 0;
+
+        /// <summary>
+        /// Manages personal vehicle options like locking doors while close.
+        /// </summary>
+        /// <returns></returns>
         private async Task PersonalVehicleOptions()
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.PersonalVehicleMenu != null && IsAllowed(Permission.PVLockDoors) && MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle != null)
@@ -2613,6 +2766,8 @@ namespace vMenuClient
                             if (GetGameTimer() - time < 500)
                             {
                                 // lock or unlock the vehicle
+                                PressKeyFob(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle);
+                                await Delay(100);
                                 bool lockDoors = !GetVehicleDoorsLockedForPlayer(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
                                 LockOrUnlockDoors(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle, lockDoors);
 
@@ -2648,12 +2803,14 @@ namespace vMenuClient
             await Task.FromResult(0);
         }
         #endregion
+
         #region animation functions
         /// <summary>
         /// This triggers a helmet visor/goggles toggle if available.
+        /// THIS IS NOT A TICK FUNCTION
         /// </summary>
         /// <returns></returns>
-        async Task SwitchHelmet()
+        private async Task SwitchHelmetOnce()
         {
             if (MainMenu.PermissionsSetupComplete)
             {
@@ -2873,9 +3030,10 @@ namespace vMenuClient
 
         /// <summary>
         /// Pickup a snowball.
+        /// THIS IS NOT A TICK FUNCTION
         /// </summary>
         /// <returns></returns>
-        async Task PickupSnowball()
+        private async Task PickupSnowballOnce()
         {
             if (MainMenu.PermissionsSetupComplete)
             {

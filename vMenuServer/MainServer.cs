@@ -821,7 +821,7 @@ namespace vMenuServer
                 {
                     if (p != source && p != targetPlayer)
                     {
-                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages))
+                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages, p))
                         {
                             p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
                         }
@@ -881,14 +881,12 @@ namespace vMenuServer
                 else
                 {
                     // Staff will always receive this message, whether they like it or not.
-                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff))
+                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff, source))
                     {
                         source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
                     }
                 }
-
             }
-
         }
         #endregion
 
