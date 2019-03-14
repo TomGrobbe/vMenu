@@ -1,13 +1,13 @@
 pull_requests:
   do_not_increment_build_number: false
-# branches:
-  # only:
-  # - production
 image: Visual Studio 2017
 configuration: Release
+before_build:
+  - nuget restore
 build:
   parallel: true
   project: vMenu.sln
+  include_nuget_references: true
   verbosity: minimal
 after_build:
   - cmd: copy README.md ..\build\README.md
@@ -16,8 +16,6 @@ after_build:
   - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta)
   - cmd: 7z a vMenu-%VERSION_NAME%.zip -r ..\build\*
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
-  # - cmd: if %APPVEYOR_REPO_TAG%==false (7z a vMenu-beta.zip -r ..\build\*)
-  # - cmd: if %APPVEYOR_REPO_TAG%==false (appveyor PushArtifact vMenu-beta.zip)
 deploy:
   - provider: GitHub
     release: "[Release] vMenu $(VERSION_NAME)"
@@ -29,8 +27,6 @@ deploy:
     on:
       APPVEYOR_REPO_TAG: true
     description: "vMenu version $(VERSION_NAME)."
-before_build:
-  - ps: if($env:APPVEYOR_REPO_TAG -eq $True) {Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1; ./send.ps1 start $env:WEBHOOK_URL; rm send.ps1;}
 after_deploy:
   - ps: if($env:APPVEYOR_REPO_TAG -eq $True) {Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1; ./send.ps1 deploy $env:WEBHOOK_URL; rm send.ps1;}
 on_success:

@@ -307,6 +307,8 @@ namespace vMenuShared
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
         public static bool ArePermissionsSetup { get; set; } = false;
 
+
+#if SERVER
         /// <summary>
         /// Public function to check if a permission is allowed.
         /// </summary>
@@ -314,7 +316,18 @@ namespace vMenuShared
         /// <param name="source"></param>
         /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission, checkAnyway);
+        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsAllowedServer(permission, source);
+#endif
+#if CLIENT
+        /// <summary>
+        /// Public function to check if a permission is allowed.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <param name="source"></param>
+        /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
+        /// <returns></returns>
+        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsAllowedClient(permission, checkAnyway);
+#endif
 
         private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
@@ -348,6 +361,7 @@ namespace vMenuShared
             return false;
         }
 
+#if SERVER
         /// <summary>
         /// Checks if the player is allowed that specific permission.
         /// </summary>
@@ -369,6 +383,7 @@ namespace vMenuShared
 
             return false;
         }
+#endif
 
         private static Dictionary<Permission, List<Permission>> parentPermissions = new Dictionary<Permission, List<Permission>>();
 
@@ -408,6 +423,7 @@ namespace vMenuShared
 
         }
 
+#if SERVER
         /// <summary>
         /// Sets the permissions for a specific player (checks server side, sends event to client side).
         /// </summary>
@@ -471,7 +487,8 @@ namespace vMenuShared
             // Also tell the client to do the addons setup.
             player.TriggerEvent("vMenu:SetAddons");
         }
-
+#endif
+#if CLIENT
         /// <summary>
         /// Sets the permission (client side event handler).
         /// </summary>
@@ -489,7 +506,7 @@ namespace vMenuShared
 
             }
         }
-
+#endif
         /// <summary>
         /// Gets the full permission ace name for the specific <see cref="Permission"/> enum.
         /// </summary>

@@ -203,8 +203,8 @@ namespace vMenuClient
                 Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
             }
 
-            FunctionsController.flaresAllowed = false;
-            FunctionsController.bombsAllowed = false;
+            //FunctionsController.flaresAllowed = false;
+            //FunctionsController.bombsAllowed = false;
 
             currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
             currentHours = (currentHours >= 0 && currentHours < 24) ? currentHours : 9;
