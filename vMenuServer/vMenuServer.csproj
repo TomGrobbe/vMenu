@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CitizenFX.Core.Server, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\CitizenFX.Core.Server.1.0.1116\lib\net45\CitizenFX.Core.Server.dll</HintPath>
+      <HintPath>..\packages\CitizenFX.Core.Server.1.0.1117\lib\net45\CitizenFX.Core.Server.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
