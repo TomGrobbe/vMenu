@@ -289,6 +289,7 @@ namespace vMenuShared
             MSThermalVision,
             MSLocationBlips,
             MSPlayerBlips,
+            MSOverheadNames,
             MSTeleportLocations,
             MSConnectionMenu,
             MSRestoreAppearance,

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -242,6 +242,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("miscShowPlayerBlips"); }
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
+        }
+
+        public static bool MiscShowOverheadNames
+        {
+            get { return GetSettingsBool("miscShowOverheadNames"); }
+            set { SetSavedSettingsBool("miscShowOverheadNames", value); }
         }
 
         public static bool MiscRestorePlayerAppearance
@@ -514,6 +520,9 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MiscShowPlayerBlips);
+
+                MiscShowOverheadNames = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                prefs.Add("miscShowOverheadNames", MiscShowOverheadNames);
 
                 MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
                 prefs.Add("miscRespawnDefaultCharacter", MiscRespawnDefaultCharacter);

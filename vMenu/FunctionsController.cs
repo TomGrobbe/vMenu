@@ -94,6 +94,7 @@ namespace vMenuClient
             Tick += UpdateLocation;
             Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
+            Tick += PlayerOverheadNamesControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
             //Tick += FlaresAndBombsTick;
@@ -2211,6 +2212,63 @@ namespace vMenuClient
         }
 
         #endregion
+        private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
+        float distance = 500f;
+        private async Task PlayerOverheadNamesControl()
+        {
+            await Delay(500);
+
+            if (MainMenu.PermissionsSetupComplete && MainMenu.ConfigOptionsSetupComplete && MainMenu.MiscSettingsMenu != null)
+            {
+                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                if (!enabled)
+                {
+                    for (var i = 0; i < 255; i++)
+                    {
+                        RemoveMpGamerTag(i);
+                    }
+                }
+                else
+                {
+                    foreach (Player p in Players)
+                    {
+                        if (p != Game.Player)
+                        {
+                            bool closeEnough = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position) < distance;
+                            if (gamerTags.ContainsKey(p))
+                            {
+                                if (!closeEnough)
+                                {
+                                    RemoveMpGamerTag(gamerTags[p]);
+                                }
+                                else if (!IsMpGamerTagActive(gamerTags[p]))
+                                {
+                                    gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                                }
+                            }
+                            else if (closeEnough)
+                            {
+                                gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                            }
+                            if (closeEnough)
+                            {
+                                SetMpGamerTagVisibility(gamerTags[p], 2, true); // healthArmor
+                                SetMpGamerTagName(gamerTags[p], p.Name + $" [{p.ServerId}]");
+                                if (p.WantedLevel > 0)
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, true); // wantedStars
+                                }
+                                else
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, false); // wantedStars
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         #region Online Player Options Tasks
         private async Task OnlinePlayersTasks()
         {
