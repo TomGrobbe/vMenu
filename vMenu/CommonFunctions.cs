@@ -98,13 +98,11 @@ namespace vMenuClient
                 if (lockDoors)
                 {
                     Subtitle.Custom("Vehicle doors are now locked.");
-                    //SetVehicleDoorsLocked(veh.Handle, 2);
                     SetVehicleDoorsLockedForAllPlayers(veh.Handle, true);
                 }
                 else
                 {
                     Subtitle.Custom("Vehicle doors are now unlocked.");
-                    //SetVehicleDoorsLocked(veh.Handle, 1);
                     SetVehicleDoorsLockedForAllPlayers(veh.Handle, false);
                 }
             }
@@ -2961,6 +2959,67 @@ namespace vMenuClient
                 }
                 UnregisterPedheadshot(headshotHandle);
             }
+        }
+        #endregion
+
+        #region Keyfob personal vehicle func
+        public static async void PressKeyFob(Vehicle veh)
+        {
+            Player player = Game.Player;
+            if (player != null && !player.IsDead && !player.Character.IsInVehicle())
+            {
+                uint KeyFobHashKey = (uint)GetHashKey("p_car_keys_01");
+                RequestModel(KeyFobHashKey);
+                while (!HasModelLoaded(KeyFobHashKey))
+                {
+                    await Delay(0);
+                }
+
+                int KeyFobObject = CreateObject((int)KeyFobHashKey, 0, 0, 0, true, true, true);
+                AttachEntityToEntity(KeyFobObject, player.Character.Handle, GetPedBoneIndex(player.Character.Handle, 57005), 0.09f, 0.03f, -0.02f, -76f, 13f, 28f, false, true, true, true, 0, true);
+                SetModelAsNoLongerNeeded(KeyFobHashKey); // cleanup model from memory
+
+                ClearPedTasks(player.Character.Handle);
+                if (player.Character.Weapons.Current.Hash != WeaponHash.Unarmed)
+                {
+                    player.Character.Weapons.Give(WeaponHash.Unarmed, 1, true, true);
+                }
+
+                //if (!HasEntityClearLosToEntityInFront(player.Character.Handle, veh.Handle))
+                {
+                    /*
+                    TODO: Work out how to get proper heading between entities.
+                    */
+
+
+                    //SetPedDesiredHeading(player.Character.Handle, )
+                    //float heading = GetHeadingFromVector_2d(player.Character.Position.X - veh.Position.Y, player.Character.Position.Y - veh.Position.X);
+                    //double x = Math.Cos(player.Character.Position.X) * Math.Sin(player.Character.Position.Y - (double)veh.Position.Y);
+                    //double y = Math.Cos(player.Character.Position.X) * Math.Sin(veh.Position.X) - Math.Sin(player.Character.Position.X) * Math.Cos(veh.Position.X) * Math.Cos(player.Character.Position.Y - (double)veh.Position.Y);
+                    //float heading = (float)Math.Atan2(x, y);
+                    //Debug.WriteLine(heading.ToString());
+                    //SetPedDesiredHeading(player.Character.Handle, heading);
+
+                    //TaskTurnPedToFaceEntity(player.Character.Handle, veh.Handle, 1000);
+                }
+
+                string animDict = "anim@mp_player_intmenu@key_fob@";
+                RequestAnimDict(animDict);
+                while (!HasAnimDictLoaded(animDict))
+                {
+                    await Delay(0);
+                }
+                player.Character.Task.PlayAnimation(animDict, "fob_click", 3f, 1000, AnimationFlags.UpperBodyOnly);
+                PlaySoundFromEntity(-1, "Remote_Control_Fob", player.Character.Handle, "PI_Menu_Sounds", true, 0);
+
+
+                await Delay(1250);
+                DetachEntity(KeyFobObject, false, false);
+                DeleteObject(ref KeyFobObject);
+                RemoveAnimDict(animDict); // cleanup anim dict from memory
+            }
+
+            await Delay(0);
         }
         #endregion
 
