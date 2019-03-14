@@ -828,6 +828,7 @@ namespace vMenuClient
             }
         }
         #endregion
+        int radarSwitchTimer = 0;
         /// <summary>
         /// Run all tasks that need to be handeled for the Misc Settings Menu.
         /// </summary>
@@ -916,6 +917,36 @@ namespace vMenuClient
                         }
                     }
                 }
+                /*
+                
+            TODO: UNCOMMENT WHEN PR IS MERGED INTO FIVEM PRODUCTION
+
+            */
+                //if (GetProfileSetting(221) == 1) // 221 = settings > display > expanded radar
+                //{
+                //    SetBigmapActive(true, false);
+                //}
+                //else
+                //{
+                //    if (IsBigmapActive() && GetGameTimer() - radarSwitchTimer > 8000)
+                //    {
+                //        SetBigmapActive(false, false);
+                //    }
+                //    if (Game.IsControlJustReleased(0, Control.MultiplayerInfo) && MainMenu.MiscSettingsMenu.KbRadarKeys && !MenuController.IsAnyMenuOpen() && !IsPauseMenuActive())
+                //    {
+                //        bool radarExpanded = IsBigmapActive();
+
+                //        if (radarExpanded)
+                //        {
+                //            SetBigmapActive(false, false);
+                //        }
+                //        else
+                //        {
+                //            SetBigmapActive(true, false);
+                //            radarSwitchTimer = GetGameTimer();
+                //        }
+                //    }
+                //}
             }
             else
             {

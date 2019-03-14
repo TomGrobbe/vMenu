@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -302,6 +302,11 @@ namespace vMenuClient
             get { return GetSettingsBool("kbRecordKeys"); }
             set { SetSavedSettingsBool("kbRecordKeys", value); }
         }
+        public static bool KbRadarKeys
+        {
+            get { return GetSettingsBool("kbRadarKeys"); }
+            set { SetSavedSettingsBool("kbRadarKeys", value); }
+        }
         #endregion
         #endregion
 
@@ -550,6 +555,9 @@ namespace vMenuClient
 
                 KbRecordKeys = MainMenu.MiscSettingsMenu.KbRecordKeys;
                 prefs.Add("kbRecordKeys", KbRecordKeys);
+
+                KbRadarKeys = MainMenu.MiscSettingsMenu.KbRadarKeys;
+                prefs.Add("kbRadarKeys", KbRadarKeys);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
