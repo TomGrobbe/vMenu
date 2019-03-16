@@ -2979,12 +2979,13 @@ namespace vMenuClient
                 SetModelAsNoLongerNeeded(KeyFobHashKey); // cleanup model from memory
 
                 ClearPedTasks(player.Character.Handle);
-                if (player.Character.Weapons.Current.Hash != WeaponHash.Unarmed)
-                {
-                    player.Character.Weapons.Give(WeaponHash.Unarmed, 1, true, true);
-                }
+                SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("WEAPON_UNARMED"), true);
+                //if (player.Character.Weapons.Current.Hash != WeaponHash.Unarmed)
+                //{
+                //    player.Character.Weapons.Give(WeaponHash.Unarmed, 1, true, true);
+                //}
 
-                //if (!HasEntityClearLosToEntityInFront(player.Character.Handle, veh.Handle))
+                // if (!HasEntityClearLosToEntityInFront(player.Character.Handle, veh.Handle))
                 {
                     /*
                     TODO: Work out how to get proper heading between entities.
@@ -2999,7 +3000,8 @@ namespace vMenuClient
                     //Debug.WriteLine(heading.ToString());
                     //SetPedDesiredHeading(player.Character.Handle, heading);
 
-                    //TaskTurnPedToFaceEntity(player.Character.Handle, veh.Handle, 1000);
+                    ClearPedTasks(Game.PlayerPed.Handle);
+                    TaskTurnPedToFaceEntity(player.Character.Handle, veh.Handle, 500);
                 }
 
                 string animDict = "anim@mp_player_intmenu@key_fob@";
