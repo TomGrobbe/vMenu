@@ -49,13 +49,34 @@ namespace vMenuClient
         }
 
         /// <summary>
+        /// Gets a collection of saved peds.
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<string, PedInfo> GetSavedPeds()
+        {
+            Dictionary<string, PedInfo> savedPeds = new Dictionary<string, PedInfo>();
+
+            int handle = StartFindKvp("ped_");
+            while (true)
+            {
+                string kvp = FindKvp(handle);
+                if (string.IsNullOrEmpty(kvp))
+                {
+                    break;
+                }
+                savedPeds.Add(kvp, JsonConvert.DeserializeObject<PedInfo>(GetResourceKvpString(kvp)));
+            }
+            return savedPeds;
+        }
+
+        /// <summary>
         /// Returns a <see cref="PedInfo"/> struct containing the data of the saved ped.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         public static PedInfo GetSavedPedInfo(string name)
         {
-            return JsonToPedInfo(GetResourceKvpString(name), name);
+            return JsonToPedInfo(GetResourceKvpString(name));
         }
 
         /// <summary>
@@ -67,7 +88,7 @@ namespace vMenuClient
         /// <returns></returns>
         public static bool SavePedInfo(string saveName, PedInfo pedData, bool overrideExisting)
         {
-            if (overrideExisting || (GetResourceKvpString(saveName) ?? "NULL") == "NULL")
+            if (overrideExisting || string.IsNullOrEmpty(GetResourceKvpString(saveName)))
             {
                 SetResourceKvp(saveName, JsonConvert.SerializeObject(pedData));
                 return GetResourceKvpString(saveName) == JsonConvert.SerializeObject(pedData);

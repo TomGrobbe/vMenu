@@ -101,6 +101,199 @@ namespace vMenuClient
             MenuController.BindMenuItem(menu, savedPedsMenu, savedPedsBtn);
             MenuController.BindMenuItem(menu, spawnPedsMenu, spawnPedsBtn);
 
+            Menu selectedSavedPedMenu = new Menu("Saved Ped", "renameme");
+            MenuController.AddSubmenu(savedPedsMenu, selectedSavedPedMenu);
+            MenuItem spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
+            MenuItem cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
+            MenuItem renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
+            MenuItem replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            MenuItem deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+
+            if (!IsAllowed(Permission.PASpawnSaved))
+            {
+                spawnSavedPed.Enabled = false;
+                spawnSavedPed.RightIcon = MenuItem.Icon.LOCK;
+                spawnSavedPed.Description = "You are not allowed to spawn saved peds.";
+            }
+
+            selectedSavedPedMenu.AddMenuItem(spawnSavedPed);
+            selectedSavedPedMenu.AddMenuItem(cloneSavedPed);
+            selectedSavedPedMenu.AddMenuItem(renameSavedPed);
+            selectedSavedPedMenu.AddMenuItem(replaceSavedPed);
+            selectedSavedPedMenu.AddMenuItem(deleteSavedPed);
+
+            KeyValuePair<string, PedInfo> savedPed = new KeyValuePair<string, PedInfo>();
+
+            selectedSavedPedMenu.OnItemSelect += async (sender, item, index) =>
+            {
+                if (item == spawnSavedPed)
+                {
+                    await SetPlayerSkin(savedPed.Value.model, savedPed.Value, true);
+                }
+                else if (item == cloneSavedPed)
+                {
+                    string name = await GetUserInput($"Enter a clone name ({savedPed.Key.Substring(4)})", savedPed.Key.Substring(4), 30);
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        Notify.Error(CommonErrors.InvalidSaveName);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(GetResourceKvpString($"ped_{name}")))
+                        {
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists);
+                        }
+                        else
+                        {
+                            if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
+                            {
+                                Notify.Success($"Saved Ped has successfully been cloned. Clone name: ~g~<C>{name}</C>~s~.");
+                            }
+                            else
+                            {
+                                Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your cloned ped. Don't worry, your original ped is unharmed.");
+                            }
+                        }
+                    }
+                }
+                else if (item == renameSavedPed)
+                {
+                    string name = await GetUserInput($"Enter a new name for: {savedPed.Key.Substring(4)}", savedPed.Key.Substring(4), 30);
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        Notify.Error(CommonErrors.InvalidSaveName);
+                    }
+                    else
+                    {
+                        if ("ped_" + name == savedPed.Key)
+                        {
+                            Notify.Error("You need to choose a different name, you can't use the same name as your existing ped.");
+                            return;
+                        }
+                        if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
+                        {
+                            Notify.Success($"Saved Ped has successfully been renamed. New ped name: ~g~<C>{name}</C>~s~.");
+                            DeleteResourceKvp(savedPed.Key);
+                            selectedSavedPedMenu.MenuSubtitle = name;
+                            savedPed = new KeyValuePair<string, PedInfo>("ped_" + name, savedPed.Value);
+                        }
+                        else
+                        {
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists);
+                        }
+                    }
+                }
+                else if (item == replaceSavedPed)
+                {
+                    if (item.Label == "Are you sure?")
+                    {
+                        item.Label = "";
+                        bool success = await SavePed(savedPed.Key.Substring(4), overrideExistingPed: true);
+                        if (!success)
+                        {
+                            Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your replaced ped. Don't worry, your original ped is unharmed.");
+                        }
+                        else
+                        {
+                            Notify.Success("Your saved ped has successfully been replaced.");
+                            savedPed = new KeyValuePair<string, PedInfo>(savedPed.Key, StorageManager.GetSavedPedInfo(savedPed.Key));
+                        }
+                    }
+                    else
+                    {
+                        item.Label = "Are you sure?";
+                    }
+                }
+                else if (item == deleteSavedPed)
+                {
+                    if (item.Label == "Are you sure?")
+                    {
+                        DeleteResourceKvp(savedPed.Key);
+                        Notify.Success("Your saved ped has been deleted.");
+                        selectedSavedPedMenu.GoBack();
+                    }
+                    else
+                    {
+                        item.Label = "Are you sure?";
+                    }
+                }
+            };
+
+            void ResetSavedPedsMenu(bool refreshIndex)
+            {
+                foreach (var item in selectedSavedPedMenu.GetMenuItems())
+                {
+                    item.Label = "";
+                }
+                if (refreshIndex)
+                {
+                    selectedSavedPedMenu.RefreshIndex();
+                }
+            }
+
+            selectedSavedPedMenu.OnIndexChange += (menu, newItem, oldItem, oldIndex, newIndex) => ResetSavedPedsMenu(false);
+            selectedSavedPedMenu.OnMenuOpen += (menu) => ResetSavedPedsMenu(true);
+
+
+            void UpdateSavedPedsMenu()
+            {
+                int size = savedPedsMenu.Size;
+
+                Dictionary<string, PedInfo> savedPeds = StorageManager.GetSavedPeds();
+
+                foreach (var ped in savedPeds)
+                {
+                    if (size < 1 || !savedPedsMenu.GetMenuItems().Any(e => ped.Key == e.ItemData.Key))
+                    {
+                        MenuItem btn = new MenuItem(ped.Key.Substring(4), "Click to manage this saved ped.") { Label = "→→→", ItemData = ped };
+                        savedPedsMenu.AddMenuItem(btn);
+                        MenuController.BindMenuItem(savedPedsMenu, selectedSavedPedMenu, btn);
+                    }
+                }
+
+                if (savedPedsMenu.Size > 0)
+                {
+                    foreach (var d in savedPedsMenu.GetMenuItems())
+                    {
+                        if (!savedPeds.ContainsKey(d.ItemData.Key))
+                        {
+                            savedPedsMenu.RemoveMenuItem(d);
+                        }
+                        else
+                        {
+                            // Make sure the saved ped data is actually correct and up to date for this item.
+                            var p = savedPeds.First(e => e.Key == d.ItemData.Key);
+                            if (!string.IsNullOrEmpty(p.Key))
+                            {
+                                d.ItemData = p;
+                            }
+                        }
+                    }
+                }
+
+                if (savedPedsMenu.Size > 0)
+                {
+                    savedPedsMenu.SortMenuItems((a, b) => a.Text.ToLower().CompareTo(b.Text.ToLower()));
+                }
+
+                // refresh index only if the size of the menu has changed.
+                if (size != savedPedsMenu.Size)
+                {
+                    savedPedsMenu.RefreshIndex();
+                }
+            }
+
+            savedPedsMenu.OnMenuOpen += (_) =>
+            {
+                UpdateSavedPedsMenu();
+            };
+
+            savedPedsMenu.OnItemSelect += (_, item, __) =>
+            {
+                savedPed = item.ItemData;
+                selectedSavedPedMenu.MenuSubtitle = item.Text;
+            };
+
             if (AddonPeds != null && AddonPeds.Count > 0 && IsAllowed(Permission.PAAddonPeds))
             {
                 spawnPedsMenu.AddMenuItem(addonPedsBtn);
@@ -384,6 +577,8 @@ namespace vMenuClient
             #endregion
 
         }
+
+
         #endregion
 
         #region get the menu
