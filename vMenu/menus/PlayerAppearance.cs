@@ -446,6 +446,12 @@ namespace vMenuClient
                         {
                             Game.PlayerPed.Weapons.RemoveAll();
                             await SetPlayerSkin(model, new PedInfo() { version = -1 }, false);
+                            await Delay(1000);
+                            SetPedComponentVariation(Game.PlayerPed.Handle, 0, 0, 0, 0);
+                            await Delay(1000);
+                            SetPedComponentVariation(Game.PlayerPed.Handle, 0, 0, 1, 0);
+                            await Delay(1000);
+                            SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
                         }
                         else
                         {
