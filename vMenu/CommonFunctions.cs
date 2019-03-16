@@ -18,8 +18,8 @@ namespace vMenuClient
         private static string _currentScenario = "";
         private static Vehicle _previousVehicle;
 
-        public static bool DriveToWpTaskActive = false;
-        public static bool DriveWanderTaskActive = false;
+        internal static bool DriveToWpTaskActive = false;
+        internal static bool DriveWanderTaskActive = false;
         #endregion
 
         #region some misc functions copied from base script
@@ -982,11 +982,10 @@ namespace vMenuClient
                 Vehicle tmpOldVehicle = GetVehicle();
                 speed = GetEntitySpeedVector(tmpOldVehicle.Handle, true).Y; // get forward/backward speed only
                 rpm = tmpOldVehicle.CurrentRPM;
-                tmpOldVehicle = null;
             }
 
 
-            var vehClass = GetVehicleClassFromName(vehicleHash);
+            //var vehClass = GetVehicleClassFromName(vehicleHash);
             int modelClass = GetVehicleClassFromName(vehicleHash);
             if (!VehicleSpawner.allowedCategories[modelClass])
             {
@@ -1935,7 +1934,7 @@ namespace vMenuClient
                 }
                 if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
                 {
-                    var headBlendData = Game.PlayerPed.GetHeadBlendData();
+                    //var headBlendData = Game.PlayerPed.GetHeadBlendData();
                     if (pedCustomizationOptions.version == -1)
                     {
                         SetPedHeadBlendData(Game.PlayerPed.Handle, 0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0f, false);
@@ -1974,7 +1973,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the current player ped.
         /// </summary>
-        public static async void SavePed(string forceName = null)
+        public static async Task<bool> SavePed(string forceName = null, bool overrideExistingPed = false)
         {
             string name = forceName;
             if (string.IsNullOrEmpty(name))
@@ -2030,37 +2029,38 @@ namespace vMenuClient
                 }
 
                 // Try to save the data, and save the result in a variable.
-                bool saveSuccessful = false;
+                bool saveSuccessful;
                 if (name == "vMenu_tmp_saved_ped")
                 {
                     saveSuccessful = StorageManager.SavePedInfo(name, data, true);
                 }
                 else
                 {
-                    saveSuccessful = StorageManager.SavePedInfo("ped_" + name, data, false);
+                    saveSuccessful = StorageManager.SavePedInfo("ped_" + name, data, overrideExistingPed);
                 }
 
+                //if (name != "vMenu_tmp_saved_ped") // only send a notification if the save wasn't triggered because the player died.
+                //{
+                //    // If the save was successfull.
+                //    if (saveSuccessful)
+                //    {
+                //        //Notify.Success("Ped saved.");
+                //    }
+                //    // Save was not successfull.
+                //    else
+                //    {
+                //        Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
+                //    }
+                //}
 
-                if (name != "vMenu_tmp_saved_ped") // only send a notification if the save wasn't triggered because the player died.
-                {
-                    // If the save was successfull.
-                    if (saveSuccessful)
-                    {
-                        Notify.Success("Ped saved.");
-                    }
-                    // Save was not successfull.
-                    else
-                    {
-                        Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
-                    }
-                }
-
+                return saveSuccessful;
             }
             // User cancelled the saving or they did not enter a valid name.
             else
             {
                 Notify.Error(CommonErrors.InvalidSaveName);
             }
+            return false;
         }
         #endregion
 
@@ -2106,9 +2106,8 @@ namespace vMenuClient
         /// Load and convert json ped info into PedInfo struct.
         /// </summary>
         /// <param name="json"></param>
-        /// <param name="saveName"></param>
         /// <returns></returns>
-        public static PedInfo JsonToPedInfo(string json, string saveName)
+        public static PedInfo JsonToPedInfo(string json)
         {
             return JsonConvert.DeserializeObject<PedInfo>(json);
         }

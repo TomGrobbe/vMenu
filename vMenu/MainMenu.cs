@@ -504,8 +504,6 @@ namespace vMenuClient
 
                 // Menu toggle button.
                 Game.DisableControlThisFrame(0, MenuToggleKey);
-
-
             }
         }
 
@@ -524,6 +522,7 @@ namespace vMenuClient
             submenu.RefreshIndex();
         }
         #endregion
+
         #region Create Submenus
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.

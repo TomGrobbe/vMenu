@@ -1514,8 +1514,8 @@ namespace vMenuClient
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body 2
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body 3
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes 4
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // left wrist 5
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist 6
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // left wrist 5
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // right wrist 6
 
                         // tattoo turn left variants
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
@@ -1530,6 +1530,8 @@ namespace vMenuClient
 
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
                     Camera camera = new Camera(cam);
+                    camera.Position = camPositions[0].Key;
+                    camera.PointAt(camPositions[0].Value);
 
                     Game.PlayerPed.Task.ClearAllImmediately();
 
@@ -1560,10 +1562,13 @@ namespace vMenuClient
 
                     bool rearCamActive = false;
 
-                    void SetCameraPosition()
+                    async Task SetCameraPosition()
                     {
                         if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1597,32 +1602,40 @@ namespace vMenuClient
                                 case 27:
                                 case 31:
                                     // close up head.
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 28:
                                 case 29:
                                 case 30:
                                     // torso
-                                    camera.Position = camPositions[2].Key;
-                                    camera.PointAt(camPositions[2].Value);
+                                    newPos = camPositions[2].Key;
+                                    newPointAt = camPositions[2].Value;
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
                                     // head level
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 1:
                                 case 3:
@@ -1631,35 +1644,51 @@ namespace vMenuClient
                                 case 7:
                                 case 9:
                                     // upper body level
-                                    camera.Position = camPositions[2].Key;
-                                    camera.PointAt(camPositions[2].Value);
+                                    newPos = camPositions[2].Key;
+                                    newPointAt = camPositions[2].Value;
                                     break;
                                 case 2:
                                     // lower body level
-                                    camera.Position = camPositions[3].Key;
-                                    camera.PointAt(camPositions[3].Value);
+                                    newPos = camPositions[3].Key;
+                                    newPointAt = camPositions[3].Value;
                                     break;
                                 case 4:
                                     // feet (ground) level (close up)
-                                    camera.Position = camPositions[4].Key;
-                                    camera.PointAt(camPositions[4].Value);
+                                    newPos = camPositions[4].Key;
+                                    newPointAt = camPositions[4].Value;
                                     break;
                                 case 8:
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             // head level
-                            camera.Position = camPositions[1].Key;
-                            camera.PointAt(camPositions[1].Value);
+                            newPos = camPositions[1].Key;
+                            newPointAt = camPositions[1].Value;
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1667,51 +1696,64 @@ namespace vMenuClient
                                 case 1:
                                 case 2:
                                     // head level
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 3:
                                     // left wrist
                                     if (rearCamActive)
                                     {
-                                        camera.Position = camPositions[6].Key;
-                                        camera.PointAt(camPositions[6].Value);
+                                        newPos = camPositions[6].Key;
+                                        newPointAt = camPositions[6].Value;
                                     }
                                     else
                                     {
-                                        camera.Position = camPositions[5].Key;
-                                        camera.PointAt(camPositions[5].Value);
+                                        newPos = camPositions[5].Key;
+                                        newPointAt = camPositions[5].Value;
                                     }
                                     break;
                                 case 4:
                                     // right wrist
                                     if (rearCamActive)
                                     {
-                                        camera.Position = camPositions[5].Key;
-                                        camera.PointAt(camPositions[5].Value);
+                                        newPos = camPositions[5].Key;
+                                        newPointAt = camPositions[5].Value;
                                     }
                                     else
                                     {
-                                        camera.Position = camPositions[6].Key;
-                                        camera.PointAt(camPositions[6].Value);
+                                        newPos = camPositions[6].Key;
+                                        newPointAt = camPositions[6].Value;
                                     }
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         // face shape
                         else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible)
                         {
-                            camera.Position = camPositions[1].Key;
-                            camera.PointAt(camPositions[1].Value);
+                            Vector3 newPos = camPositions[1].Key;
+                            Vector3 newPointAt = camPositions[1].Value;
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                         // tattoos
                         else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1719,18 +1761,18 @@ namespace vMenuClient
                                     // head level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[7].Key;
-                                        camera.PointAt(camPositions[7].Value);
+                                        newPos = camPositions[7].Key;
+                                        newPointAt = camPositions[7].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[10].Key;
-                                        camera.PointAt(camPositions[10].Value);
+                                        newPos = camPositions[10].Key;
+                                        newPointAt = camPositions[10].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[1].Key;
-                                        camera.PointAt(camPositions[1].Value);
+                                        newPos = camPositions[1].Key;
+                                        newPointAt = camPositions[1].Value;
                                     }
                                     break;
                                 case 1:
@@ -1740,18 +1782,18 @@ namespace vMenuClient
                                     // upper body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[8].Key;
-                                        camera.PointAt(camPositions[8].Value);
+                                        newPos = camPositions[8].Key;
+                                        newPointAt = camPositions[8].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[11].Key;
-                                        camera.PointAt(camPositions[11].Value);
+                                        newPos = camPositions[11].Key;
+                                        newPointAt = camPositions[11].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[2].Key;
-                                        camera.PointAt(camPositions[2].Value);
+                                        newPos = camPositions[2].Key;
+                                        newPointAt = camPositions[2].Value;
                                     }
                                     break;
                                 case 4:
@@ -1759,45 +1801,65 @@ namespace vMenuClient
                                     // lower body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[9].Key;
-                                        camera.PointAt(camPositions[9].Value);
+                                        newPos = camPositions[9].Key;
+                                        newPointAt = camPositions[9].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[12].Key;
-                                        camera.PointAt(camPositions[12].Value);
+                                        newPos = camPositions[12].Key;
+                                        newPointAt = camPositions[12].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[3].Key;
-                                        camera.PointAt(camPositions[3].Value);
+                                        newPos = camPositions[3].Key;
+                                        newPointAt = camPositions[3].Value;
                                     }
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             if (MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible && MainMenu.MpPedCustomizationMenu.createCharacterMenu.CurrentIndex == 6)
                             {
                                 // head level
-                                camera.Position = camPositions[1].Key;
-                                camera.PointAt(camPositions[1].Value);
+                                newPos = camPositions[1].Key;
+                                newPointAt = camPositions[1].Value;
                             }
                             else
                             {
-                                camera.Position = camPositions[0].Key;
-                                camera.PointAt(camPositions[0].Value);
+                                newPos = camPositions[0].Key;
+                                newPointAt = camPositions[0].Value;
                             }
 
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                     }
 
                     float heading = Game.PlayerPed.Heading;
+                    if (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
+                    {
+                        RequestAnimDict("anim@random@shop_clothes@watches");
+                    }
+                    while (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
+                    {
+                        await Delay(0);
+                    }
 
                     while (IsOpen())
                     {
@@ -1861,9 +1923,20 @@ namespace vMenuClient
 
                         DisableMovementControlsThisFrame(true, true);
 
-                        SetCameraPosition();
+                        if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible && !rearCamActive && MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex == 3)
+                        {
+                            TaskPlayAnim(Game.PlayerPed.Handle, "anim@random@shop_clothes@watches", "BASE", 8f, -8f, -1, 1, 0, false, false, false);
+                        }
+                        else
+                        {
+                            Game.PlayerPed.Task.ClearAll();
+                        }
 
-                        Game.PlayerPed.Task.ClearAll();
+                        await SetCameraPosition();
+
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
+
+                        DisableMovementControlsThisFrame(true, true);
 
                         var offsetRight = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 2f, 0.05f, 0.7f);
@@ -1898,7 +1971,6 @@ namespace vMenuClient
                                 {
                                     Game.PlayerPed.Task.LookAt(camera.Position, 100);
                                 }
-
                             }
                         }
                     }
@@ -1910,9 +1982,36 @@ namespace vMenuClient
                     SetEntityCollision(Game.PlayerPed.Handle, true, true);
                     FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     SetEntityInvincible(Game.PlayerPed.Handle, false);
-
+                    RemoveAnimDict("anim@random@shop_clothes@watches");
                 }
             }
+        }
+
+        /// <summary>
+        /// Moves camera to a new spot
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <param name="newPos"></param>
+        /// <param name="newPointAt"></param>
+        /// <returns></returns>
+        private async Task<Camera> MoveCamToNewSpot(Camera camera, Vector3 newPos, Vector3 newPointAt)
+        {
+            var newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
+            Camera newCamera = new Camera(newCam)
+            {
+                Position = newPos
+            };
+            newCamera.PointAt(newPointAt);
+            camera.InterpTo(newCamera, 800, 4000, 4000);
+            int timer = GetGameTimer();
+            while (camera.IsInterpolating || GetGameTimer() - timer < 900)
+            {
+                FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                DisableMovementControlsThisFrame(true, true);
+                await Delay(0);
+            }
+            camera.Delete();
+            return newCamera;
         }
         #endregion
 
@@ -1943,7 +2042,7 @@ namespace vMenuClient
                     {
                         if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
                         {
-                            SavePed("vMenu_tmp_saved_ped");
+                            await SavePed("vMenu_tmp_saved_ped");
                         }
                     }
 
