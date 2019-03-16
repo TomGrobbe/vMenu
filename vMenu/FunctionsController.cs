@@ -2261,7 +2261,8 @@ namespace vMenuClient
         #region player overhead names
         private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
 
-        float distance = 500f; // todo make this a convar.
+        private float distance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f; // todo make this a convar.
+
 
         /// <summary>
         /// Manages overhead player names.
@@ -2283,33 +2284,38 @@ namespace vMenuClient
                 }
                 else
                 {
+                    //Debug.WriteLine($"Distance: {distance}");
+
                     foreach (Player p in Players)
                     {
                         if (p != Game.Player)
                         {
-                            bool closeEnough = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position) < distance;
+                            var dist = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position);
+                            //Debug.WriteLine($"Dist: {dist}");
+                            bool closeEnough = dist < distance;
                             if (gamerTags.ContainsKey(p))
                             {
                                 if (!closeEnough)
                                 {
                                     RemoveMpGamerTag(gamerTags[p]);
+                                    gamerTags.Remove(p);
                                 }
-                                else if (!IsMpGamerTagActive(gamerTags[p]))
+                                else
                                 {
                                     gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
                                 }
                             }
                             else if (closeEnough)
                             {
-                                gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                                gamerTags.Add(p, CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0));
                             }
-                            if (closeEnough)
+                            if (closeEnough && gamerTags.ContainsKey(p))
                             {
                                 SetMpGamerTagVisibility(gamerTags[p], 2, true); // healthArmor
-                                SetMpGamerTagName(gamerTags[p], p.Name + $" [{p.ServerId}]");
                                 if (p.WantedLevel > 0)
                                 {
                                     SetMpGamerTagVisibility(gamerTags[p], 7, true); // wantedStars
+                                    SetMpGamerTagWantedLevel(gamerTags[p], GetPlayerWantedLevel(p.Handle));
                                 }
                                 else
                                 {
