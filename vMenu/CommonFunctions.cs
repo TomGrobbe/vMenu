@@ -630,13 +630,19 @@ namespace vMenuClient
                     {
                         if (double.TryParse(banDurationHours, out double banHours))
                         {
-                            TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, banHours, banReason);
+                            if (banHours > 0.0)
+                                TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, banHours, banReason);
+                            else
+                                Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
                         }
                         else
                         {
                             if (int.TryParse(banDurationHours, out int banHoursInt))
                             {
-                                TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
+                                if ((double)banHoursInt > 0.0)
+                                    TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
+                                else
+                                    Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
                             }
                             else
                             {
