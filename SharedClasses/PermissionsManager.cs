@@ -13,13 +13,16 @@ namespace vMenuShared
         public enum Permission
         {
             // Global
+            #region global
             Everything,
             DontKickMe,
             DontBanMe,
             NoClip,
             Staff,
+            #endregion
 
             // Online Players
+            #region online players
             OPMenu,
             OPAll,
             OPTeleport,
@@ -33,8 +36,11 @@ namespace vMenuShared
             OPTempBan,
             OPUnban,
             OPViewBannedPlayers,
+            OPSeePrivateMessages,
+            #endregion
 
             // Player Options
+            #region player options
             POMenu,
             POAll,
             POGod,
@@ -56,8 +62,10 @@ namespace vMenuShared
             POFreeze,
             POScenarios,
             POUnlimitedStamina,
+            #endregion
 
             // Vehicle Options
+            #region vehicle options
             VOMenu,
             VOAll,
             VOGod,
@@ -93,9 +101,10 @@ namespace vMenuShared
             VOInfiniteFuel,
             VOFlares,
             VOPlaneBombs,
-
+            #endregion
 
             // Vehicle Spawner
+            #region vehicle spawner
             VSMenu,
             VSAll,
             VSDisableReplacePrevious,
@@ -123,13 +132,17 @@ namespace vMenuShared
             VSMilitary,
             VSCommercial,
             VSTrains,
+            #endregion
 
             // Saved Vehicles
+            #region saved vehicles
             SVMenu,
             SVAll,
             SVSpawn,
+            #endregion
 
             // Personal Vehicle
+            #region personal vehicle
             PVMenu,
             PVAll,
             PVToggleEngine,
@@ -140,22 +153,28 @@ namespace vMenuShared
             PVToggleAlarm,
             PVAddBlip,
             PVExclusiveDriver,
+            #endregion
 
             // Player Appearance
+            #region player appearance
             PAMenu,
             PAAll,
             PACustomize,
             PASpawnSaved,
             PASpawnNew,
             PAAddonPeds,
+            #endregion
 
             // Time Options
+            #region time options
             TOMenu,
             TOAll,
             TOFreezeTime,
             TOSetTime,
+            #endregion
 
             // Weather Options
+            #region weather options
             WOMenu,
             WOAll,
             WODynamic,
@@ -163,8 +182,10 @@ namespace vMenuShared
             WOSetWeather,
             WORemoveClouds,
             WORandomizeClouds,
+            #endregion
 
             // Weapon Options
+            #region weapon options
             WPMenu,
             WPAll,
             WPGetAll,
@@ -174,8 +195,10 @@ namespace vMenuShared
             WPSpawn,
             WPSpawnByName,
             WPSetAllAmmo,
+            #endregion
 
             //Weapons Permissions
+            #region weapon specific permissions
             WPAPPistol,
             WPAdvancedRifle,
             WPAssaultRifle,
@@ -269,14 +292,18 @@ namespace vMenuShared
             WPPlasmaCarbine, // xmas 2018 dlc (1604)
             WPPlasmaMinigun, // xmas 2018 dlc (1604)
             WPStoneHatchet, // xmas 2018 dlc (1604)
+            #endregion
 
             // Weapon Loadouts Menu
+            #region weapon loadouts
             WLMenu,
             WLAll,
             WLEquip,
             WLEquipOnRespawn,
+            #endregion
 
             // Misc Settings
+            #region misc settings
             MSAll,
             MSClearArea,
             MSTeleportToWp,
@@ -288,23 +315,29 @@ namespace vMenuShared
             MSThermalVision,
             MSLocationBlips,
             MSPlayerBlips,
+            MSOverheadNames,
             MSTeleportLocations,
             MSConnectionMenu,
             MSRestoreAppearance,
             MSRestoreWeapons,
             MSDriftMode,
+            #endregion
 
             // Voice Chat
+            #region voice chat
             VCMenu,
             VCAll,
             VCEnable,
             VCShowSpeaker,
             VCStaffChannel,
+            #endregion
         };
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
         public static bool ArePermissionsSetup { get; set; } = false;
 
+
+#if SERVER
         /// <summary>
         /// Public function to check if a permission is allowed.
         /// </summary>
@@ -312,7 +345,17 @@ namespace vMenuShared
         /// <param name="source"></param>
         /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, Player source = null, bool checkAnyway = false) => IsDuplicityVersion() ? IsAllowedServer(permission, source) : IsAllowedClient(permission, checkAnyway);
+        public static bool IsAllowed(Permission permission, Player source, bool checkAnyway = false) => IsAllowedServer(permission, source);
+#endif
+
+#if CLIENT
+        /// <summary>
+        /// Public function to check if a permission is allowed.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
+        /// <returns></returns>
+        public static bool IsAllowed(Permission permission, bool checkAnyway = false) => IsAllowedClient(permission, checkAnyway);
 
         private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
@@ -345,7 +388,8 @@ namespace vMenuShared
             // Return false if nothing is allowed.
             return false;
         }
-
+#endif
+#if SERVER
         /// <summary>
         /// Checks if the player is allowed that specific permission.
         /// </summary>
@@ -363,10 +407,9 @@ namespace vMenuShared
             {
                 return true;
             }
-
-
             return false;
         }
+#endif
 
         private static Dictionary<Permission, List<Permission>> parentPermissions = new Dictionary<Permission, List<Permission>>();
 
@@ -394,18 +437,16 @@ namespace vMenuShared
                         list.AddRange(Enum.GetValues(typeof(Permission)).Cast<Permission>().Where(a => a.ToString() == permStr.Substring(0, 2) + "All"));
                     }
                 }
-                else // it's one of the .Everything, .DontKickMe, DontBanMe, NoClip, Staff, etc perms that are not menu specific.
-                {
-                    // do nothing
-                }
-                //Debug.Write($"Returning all these: {Newtonsoft.Json.JsonConvert.SerializeObject(list)}\n");
+                //else // it's one of the .Everything, .DontKickMe, DontBanMe, NoClip, Staff, etc perms that are not menu specific.
+                //{
+                //    // do nothing
+                //}
                 parentPermissions[permission] = list;
                 return list;
             }
-
-
         }
 
+#if SERVER
         /// <summary>
         /// Sets the permissions for a specific player (checks server side, sends event to client side).
         /// </summary>
@@ -469,7 +510,8 @@ namespace vMenuShared
             // Also tell the client to do the addons setup.
             player.TriggerEvent("vMenu:SetAddons");
         }
-
+#endif
+#if CLIENT
         /// <summary>
         /// Sets the permission (client side event handler).
         /// </summary>
@@ -487,7 +529,8 @@ namespace vMenuShared
 
             }
         }
-
+#endif
+#if SERVER
         /// <summary>
         /// Gets the full permission ace name for the specific <see cref="Permission"/> enum.
         /// </summary>
@@ -546,5 +589,6 @@ namespace vMenuShared
 
             return prefix + "." + name.Substring(2);
         }
+#endif
     }
 }

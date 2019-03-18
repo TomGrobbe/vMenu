@@ -12,6 +12,7 @@ using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
+using static vMenuClient.data.PedModels;
 
 namespace vMenuClient
 {
@@ -25,7 +26,6 @@ namespace vMenuClient
         private bool SwitchedVehicle = false;
         private Dictionary<int, string> playerList = new Dictionary<int, string>();
         private List<int> deadPlayers = new List<int>();
-        //private Menu lastOpenMenu = null;
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -34,11 +34,9 @@ namespace vMenuClient
         private bool node = false;
         private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-        private float safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
         private uint crossing = 1;
         private string crossingName = "";
         private string suffix = "";
-        //private bool wasMenuJustOpen = false;
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -56,9 +54,15 @@ namespace vMenuClient
 
         /// I made these seperate bools that only get set once after initial load 
         /// to prevent the CommonFunctions.IsAllowed() function being called over and over again multiple times every tick.
-        public static bool flaresAllowed = false;
-        public static bool bombsAllowed = false;
+        //public static bool flaresAllowed = false;
+        //public static bool bombsAllowed = false;
 
+        private bool stopPropsLoop = false;
+        private bool stopVehiclesLoop = false;
+        private bool stopPedsLoop = false;
+        private List<Prop> props = new List<Prop>();
+        private List<Vehicle> vehicles = new List<Vehicle>();
+        private List<Ped> peds = new List<Ped>();
 
         /// <summary>
         /// Constructor.
@@ -71,7 +75,8 @@ namespace vMenuClient
                 playerList.Add(p.Handle, p.Name);
             }
 
-            // Add all tick events.
+            // Add all tick functions.
+            Tick += GcTick;
             Tick += GeneralTasks;
             Tick += PlayerOptions;
             Tick += DoPlayerAndVehicleChecks;
@@ -84,22 +89,33 @@ namespace vMenuClient
             Tick += WeaponOptions;
             Tick += OnlinePlayersTasks;
             Tick += MiscSettings;
+            Tick += MiscRecordingKeybinds;
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
             Tick += ManagePlayerAppearanceCamera;
             Tick += PlayerBlipsControl;
+            Tick += PlayerOverheadNamesControl;
             Tick += RestorePlayerAfterBeingDead;
             Tick += PlayerClothingAnimationsController;
-            //Tick += FlaresAndBombsTick;
             Tick += AnimationsAndInteractions;
             Tick += HelpMessageController;
             Tick += ModelDrawDimensions;
-            Tick += GcTick;
             Tick += PersonalVehicleOptions;
+            Tick += AnimalPedCameraChangeBlocker;
+            Tick += SlowMiscTick;
+
+
+            //Tick += FlaresAndBombsTick;
         }
 
+        /// Task related
+        #region gc thread
         int gcTimer = GetGameTimer();
+        /// <summary>
+        /// Task for clearing unused memory periodically.
+        /// </summary>
+        /// <returns></returns>
         private async Task GcTick()
         {
             if (GetGameTimer() - gcTimer > 60000)
@@ -111,18 +127,18 @@ namespace vMenuClient
             }
             await Delay(1000);
         }
+        #endregion
 
-        /// Task related
         #region General Tasks
         /// <summary>
-        /// All general tasks that run every game tick (and are not (sub)menu specific).
+        /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
         /// </summary>
         /// <returns></returns>
         private async Task GeneralTasks()
         {
             // CommonFunctions is required, if it doesn't exist then we won't execute the checks.
             // Check if the player has switched to a new vehicle.
-            if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true)) // added this for improved performance.
+            if (Game.PlayerPed.IsInVehicle()) // added this for improved performance.
             {
                 var tmpVehicle = GetVehicle();
                 if (tmpVehicle != null && tmpVehicle.Exists() && tmpVehicle.Handle != LastVehicle)
@@ -132,17 +148,11 @@ namespace vMenuClient
                     SwitchedVehicle = true;
                 }
             }
-
-            if (MenuController.IsAnyMenuOpen())
-            {
-                if (UpdateOnscreenKeyboard() == 0)
-                {
-                    await Delay(0);
-                    MenuController.CloseAllMenus();
-                }
-            }
+            // this can wait
+            await Delay(10);
         }
         #endregion
+
         #region Player Options Tasks
         /// <summary>
         /// Run all tasks for the Player Options menu.
@@ -214,6 +224,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region shared player options and vehicle options
         /// <summary>
         /// Slow tick that does some basic checks for shared vehicle/player options.
@@ -255,6 +266,7 @@ namespace vMenuClient
             await Delay(1000);
         }
         #endregion
+
         #region Vehicle Options Tasks
         /// <summary>
         /// Manage all vehicle related tasks.
@@ -311,13 +323,6 @@ namespace vMenuClient
                             vehicleDoor.CanBeBroken = !invincibleGod;
                         }
 
-
-                        //bool specialgod = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode && IsAllowed(Permission.VOSpecialGod);
-                        //if (specialgod && veh.EngineHealth < 1000)
-                        //{
-                        //veh.Repair(); // repair vehicle if special god mode is on and the vehicle is not full health.
-                        //}
-
                         // Freeze Vehicle Position (if enabled).
                         if (MainMenu.VehicleOptionsMenu.VehicleFrozen && IsAllowed(Permission.VOFreeze))
                         {
@@ -329,7 +334,6 @@ namespace vMenuClient
                             veh.Wash();
                         }
 
-                        //await Delay(0);
                         // If the torque multiplier is enabled and the player is allowed to use it.
                         if (MainMenu.VehicleOptionsMenu.VehicleTorqueMultiplier && IsAllowed(Permission.VOTorqueMultiplier))
                         {
@@ -432,7 +436,16 @@ namespace vMenuClient
                             float currentFuelLevel = GetVehicleFuelLevel(veh.Handle);
                             if (maxFuelLevel > 5f && currentFuelLevel < (maxFuelLevel * 0.95f))
                             {
-                                DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                try
+                                {
+                                    DecorSetFloat(veh.Handle, "_Fuel_Level", maxFuelLevel);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                                    await Delay(1000);
+                                }
                             }
                         }
 
@@ -466,8 +479,6 @@ namespace vMenuClient
                     {
                         if (m.Visible)
                         {
-                            //MainMenu.VehicleOptionsMenu.GetMenu().OpenMenu();
-                            //m.CloseMenu();
                             m.GoBack();
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
@@ -528,40 +539,15 @@ namespace vMenuClient
             {
                 await Delay(1);
             }
+
         }
 
         private async Task VehicleOptionsEveryFrame()
         {
             Vehicle veh = GetVehicle();
-
-            if (MainMenu.PermissionsSetupComplete &&
-                MainMenu.VehicleOptionsMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu != null &&
-                MainMenu.VehicleOptionsMenu.VehicleModMenu.Visible)
-            {
-                if (Game.IsControlJustPressed(0, Control.Jump))
-                {
-                    if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
-                    {
-                        var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
-
-                        if (open)
-                        {
-                            for (var i = 0; i < 8; i++)
-                            {
-                                SetVehicleDoorOpen(veh.Handle, i, false, false);
-                            }
-                        }
-                        else
-                        {
-                            SetVehicleDoorsShut(veh.Handle, false);
-                        }
-                    }
-                }
-            }
             string GetHealthString(double health)
             {
-                var color = "";
+                string color;
                 if (health <= 0)
                 {
                     color = "~r~";
@@ -598,6 +584,7 @@ namespace vMenuClient
         }
 
         #endregion
+
         #region Weather Options
         private async Task WeatherOptions()
         {
@@ -667,12 +654,12 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Misc Settings Menu Tasks
         private async void DrawMiscSettingsText()
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-
                 // draw coordinates
                 if (MainMenu.MiscSettingsMenu.ShowCoordinates && IsAllowed(Permission.MSShowCoordinates))
                 {
@@ -742,7 +729,7 @@ namespace vMenuClient
 
                     // Get the safezone size for x and y to be able to move with the minimap.
                     safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                    safeZoneSizeY = GetSafeZoneSize() - 0.27f;
+                    //safeZoneSizeY = GetSafeZoneSize() - 0.27f;
                     //safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
 
                     // Get the cross road.
@@ -853,6 +840,7 @@ namespace vMenuClient
             }
         }
         #endregion
+        int radarSwitchTimer = 0;
         /// <summary>
         /// Run all tasks that need to be handeled for the Misc Settings Menu.
         /// </summary>
@@ -941,10 +929,152 @@ namespace vMenuClient
                         }
                     }
                 }
+
+                if (GetProfileSetting(221) == 1) // 221 = settings > display > expanded radar
+                {
+                    SetBigmapActive(true, false);
+                }
+                else
+                {
+                    if (IsBigmapActive() && GetGameTimer() - radarSwitchTimer > 8000)
+                    {
+                        SetBigmapActive(false, false);
+                    }
+                    if (Game.IsControlJustReleased(0, Control.MultiplayerInfo) && MainMenu.MiscSettingsMenu.KbRadarKeys && !MenuController.IsAnyMenuOpen() && !IsPauseMenuActive())
+                    {
+                        bool radarExpanded = IsBigmapActive();
+
+                        if (radarExpanded)
+                        {
+                            SetBigmapActive(false, false);
+                        }
+                        else
+                        {
+                            SetBigmapActive(true, false);
+                            radarSwitchTimer = GetGameTimer();
+                        }
+                    }
+                }
             }
             else
             {
                 await Delay(0);
+            }
+        }
+
+        private async Task MiscRecordingKeybinds()
+        {
+            if (MainMenu.MiscSettingsMenu != null)
+            {
+                if (MainMenu.MiscSettingsMenu.KbRecordKeys)
+                {
+                    if (!IsPauseMenuActive() && IsScreenFadedIn() && !IsPlayerSwitchInProgress() && !MenuController.IsAnyMenuOpen())
+                    {
+                        if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                        {
+                            Control recordKey = MainMenu.MenuToggleKey == Control.ReplayStartStopRecording ? Control.SaveReplayClip : Control.ReplayStartStopRecording;
+                            if (!IsRecording())
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StartRecording(1);
+                                    if (recordKey == Control.ReplayStartStopRecording)
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+                                    else
+                                    {
+                                        HelpMessage.Custom("Press ~INPUT_SAVE_REPLAY_CLIP~ to save the recording, press ~INPUT_REPLAY_CLIP_DELETE~ to discard the recording.");
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (Game.IsControlJustReleased(0, recordKey))
+                                {
+                                    StopRecording();
+                                }
+                                if (Game.IsControlJustPressed(0, Control.ReplayClipDelete)) // delete key on keyboard
+                                {
+                                    StopRecordingAndDiscardClip();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                            {
+                                int timer = GetGameTimer();
+                                bool longEnough = false;
+                                int notifOne = -1;
+                                int notifTwo = -1;
+                                while (Game.IsControlPressed(0, Control.MultiplayerInfo))
+                                {
+                                    if (GetGameTimer() - timer > 400 && !longEnough)
+                                    {
+                                        longEnough = true;
+
+                                        if (IsRecording())
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Stop recording and save clip.");
+                                            SetNotificationTextEntry("STRING");
+                                            notifTwo = DrawNotificationWithButton(1, "~INPUT_SAVE_REPLAY_CLIP~", "Stop recording and delete clip.");
+                                        }
+                                        else
+                                        {
+                                            SetNotificationTextEntry("STRING");
+                                            notifOne = DrawNotificationWithButton(1, "~INPUT_REPLAY_START_STOP_RECORDING~", "Start recording.");
+                                        }
+                                    }
+
+                                    if (longEnough)
+                                    {
+                                        Game.DisableControlThisFrame(0, Control.VehicleCinCam);
+
+                                        if (IsRecording())
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.SaveReplayClip))
+                                            {
+                                                StopRecordingAndDiscardClip();
+                                                break;
+                                            }
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StopRecording();
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Game.IsControlJustReleased(0, Control.ReplayStartStopRecording))
+                                            {
+                                                StartRecording(1);
+                                                HelpMessage.Custom("Hold down ~INPUT_MULTIPLAYER_INFO~ and press ~INPUT_REPLAY_START_STOP_RECORDING~ to save the recording, press ~INPUT_SAVE_REPLAY_CLIP~ to discard the recording.");
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    await Delay(0);
+                                }
+
+                                if (notifOne != -1)
+                                {
+                                    RemoveNotification(notifOne);
+                                    notifOne = -1;
+                                }
+                                if (notifTwo != -1)
+                                {
+                                    RemoveNotification(notifTwo);
+                                    notifTwo = -1;
+                                }
+                            }
+                        }
+
+                    }
+                }
             }
         }
         #region Join / Quit notifications
@@ -1013,10 +1143,7 @@ namespace vMenuClient
                     foreach (Player p in pl)
                     {
                         tmpiterator++;
-                        //if (tmpiterator % 5 == 0)
-                        //{
                         await Delay(0);
-                        //}
                         if (p.IsDead)
                         {
                             if (deadPlayers.Contains(p.Handle)) { return; }
@@ -1099,6 +1226,7 @@ namespace vMenuClient
         }
         #endregion
         #endregion
+
         #region Voice Chat Tasks
         /// <summary>
         /// Run all voice chat options tasks
@@ -1189,6 +1317,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Update Time Options Menu (current time display)
         /// <summary>
         /// Update the current time display in the time options menu.
@@ -1212,6 +1341,7 @@ namespace vMenuClient
             await Delay(2000);
         }
         #endregion
+
         #region Weapon Options Tasks
         /// <summary>
         /// Manage all weapon options that need to be handeled every tick.
@@ -1274,6 +1404,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Spectate Handling Tasks
         /// <summary>
         /// OnTick runs every game tick.
@@ -1306,6 +1437,7 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region Player Appearance
         /// <summary>
         /// Manages the camera view for when the mp ped creator is open.
@@ -1315,6 +1447,49 @@ namespace vMenuClient
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MpPedCustomizationMenu != null)
             {
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    if (MainMenu.MpPedCustomizationMenu.editPedBtn != null && MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = false;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    }
+                }
+                else
+                {
+                    if (MainMenu.MpPedCustomizationMenu.editPedBtn != null && !MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.editPedBtn.Description = MainMenu.MpPedCustomizationMenu.editPedBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && !MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.createMaleBtn.Description = MainMenu.MpPedCustomizationMenu.createMaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                    if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && !MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
+                    {
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = true;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.NONE;
+                        MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description = MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    }
+                }
+
                 var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
 
                 bool IsOpen()
@@ -1339,56 +1514,61 @@ namespace vMenuClient
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body 2
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body 3
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes 4
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // left wrist 5
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.7f, -0.1f)), Game.PlayerPed.Position + new Vector3(0f, -0.1f, -0.25f)), // right wrist 6
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // left wrist 5
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // right wrist 6
 
                         // tattoo turn left variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 8
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 9
 
                         // tattoo turn right variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
+                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 11
                         new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 12
                     };
 
                     int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
                     Camera camera = new Camera(cam);
+                    camera.Position = camPositions[0].Key;
+                    camera.PointAt(camPositions[0].Value);
 
                     Game.PlayerPed.Task.ClearAllImmediately();
 
                     /* 
                      * Camera positions and PointAt locations.
-                    
+
                     // head close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
-                    
+
                     // upper body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
-                    
+
                     // lower body close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
-                    
+
                     // very low (feet level) very close up
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
-                    
+
                     // default normal height full character visible.
                     camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
                     camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-                    
+
                     */
 
                     bool rearCamActive = false;
 
-                    void SetCameraPosition()
+                    async Task SetCameraPosition()
                     {
                         if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1422,32 +1602,40 @@ namespace vMenuClient
                                 case 27:
                                 case 31:
                                     // close up head.
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 28:
                                 case 29:
                                 case 30:
                                     // torso
-                                    camera.Position = camPositions[2].Key;
-                                    camera.PointAt(camPositions[2].Value);
+                                    newPos = camPositions[2].Key;
+                                    newPointAt = camPositions[2].Value;
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentIndex;
                             switch (index)
                             {
                                 case 0:
                                     // head level
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 1:
                                 case 3:
@@ -1456,35 +1644,51 @@ namespace vMenuClient
                                 case 7:
                                 case 9:
                                     // upper body level
-                                    camera.Position = camPositions[2].Key;
-                                    camera.PointAt(camPositions[2].Value);
+                                    newPos = camPositions[2].Key;
+                                    newPointAt = camPositions[2].Value;
                                     break;
                                 case 2:
                                     // lower body level
-                                    camera.Position = camPositions[3].Key;
-                                    camera.PointAt(camPositions[3].Value);
+                                    newPos = camPositions[3].Key;
+                                    newPointAt = camPositions[3].Value;
                                     break;
                                 case 4:
                                     // feet (ground) level (close up)
-                                    camera.Position = camPositions[4].Key;
-                                    camera.PointAt(camPositions[4].Value);
+                                    newPos = camPositions[4].Key;
+                                    newPointAt = camPositions[4].Value;
                                     break;
                                 case 8:
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             // head level
-                            camera.Position = camPositions[1].Key;
-                            camera.PointAt(camPositions[1].Value);
+                            newPos = camPositions[1].Key;
+                            newPointAt = camPositions[1].Value;
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                         else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1492,51 +1696,64 @@ namespace vMenuClient
                                 case 1:
                                 case 2:
                                     // head level
-                                    camera.Position = camPositions[1].Key;
-                                    camera.PointAt(camPositions[1].Value);
+                                    newPos = camPositions[1].Key;
+                                    newPointAt = camPositions[1].Value;
                                     break;
                                 case 3:
                                     // left wrist
                                     if (rearCamActive)
                                     {
-                                        camera.Position = camPositions[6].Key;
-                                        camera.PointAt(camPositions[6].Value);
+                                        newPos = camPositions[6].Key;
+                                        newPointAt = camPositions[6].Value;
                                     }
                                     else
                                     {
-                                        camera.Position = camPositions[5].Key;
-                                        camera.PointAt(camPositions[5].Value);
+                                        newPos = camPositions[5].Key;
+                                        newPointAt = camPositions[5].Value;
                                     }
                                     break;
                                 case 4:
                                     // right wrist
                                     if (rearCamActive)
                                     {
-                                        camera.Position = camPositions[5].Key;
-                                        camera.PointAt(camPositions[5].Value);
+                                        newPos = camPositions[5].Key;
+                                        newPointAt = camPositions[5].Value;
                                     }
                                     else
                                     {
-                                        camera.Position = camPositions[6].Key;
-                                        camera.PointAt(camPositions[6].Value);
+                                        newPos = camPositions[6].Key;
+                                        newPointAt = camPositions[6].Value;
                                     }
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         // face shape
                         else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible)
                         {
-                            camera.Position = camPositions[1].Key;
-                            camera.PointAt(camPositions[1].Value);
+                            Vector3 newPos = camPositions[1].Key;
+                            Vector3 newPointAt = camPositions[1].Value;
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                         // tattoos
                         else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentIndex;
                             switch (index)
                             {
@@ -1544,38 +1761,39 @@ namespace vMenuClient
                                     // head level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[7].Key;
-                                        camera.PointAt(camPositions[7].Value);
+                                        newPos = camPositions[7].Key;
+                                        newPointAt = camPositions[7].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[10].Key;
-                                        camera.PointAt(camPositions[10].Value);
+                                        newPos = camPositions[10].Key;
+                                        newPointAt = camPositions[10].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[1].Key;
-                                        camera.PointAt(camPositions[1].Value);
+                                        newPos = camPositions[1].Key;
+                                        newPointAt = camPositions[1].Value;
                                     }
                                     break;
                                 case 1:
                                 case 2:
                                 case 3:
+                                case 6:
                                     // upper body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[8].Key;
-                                        camera.PointAt(camPositions[8].Value);
+                                        newPos = camPositions[8].Key;
+                                        newPointAt = camPositions[8].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[11].Key;
-                                        camera.PointAt(camPositions[11].Value);
+                                        newPos = camPositions[11].Key;
+                                        newPointAt = camPositions[11].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[2].Key;
-                                        camera.PointAt(camPositions[2].Value);
+                                        newPos = camPositions[2].Key;
+                                        newPointAt = camPositions[2].Value;
                                     }
                                     break;
                                 case 4:
@@ -1583,45 +1801,65 @@ namespace vMenuClient
                                     // lower body level
                                     if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
                                     {
-                                        camera.Position = camPositions[9].Key;
-                                        camera.PointAt(camPositions[9].Value);
+                                        newPos = camPositions[9].Key;
+                                        newPointAt = camPositions[9].Value;
                                     }
                                     else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
                                     {
-                                        camera.Position = camPositions[12].Key;
-                                        camera.PointAt(camPositions[12].Value);
+                                        newPos = camPositions[12].Key;
+                                        newPointAt = camPositions[12].Value;
                                     }
                                     else // normal
                                     {
-                                        camera.Position = camPositions[3].Key;
-                                        camera.PointAt(camPositions[3].Value);
+                                        newPos = camPositions[3].Key;
+                                        newPointAt = camPositions[3].Value;
                                     }
                                     break;
                                 default:
                                     // normal position (full character visible)
-                                    camera.Position = camPositions[0].Key;
-                                    camera.PointAt(camPositions[0].Value);
+                                    newPos = camPositions[0].Key;
+                                    newPointAt = camPositions[0].Value;
                                     break;
+                            }
+
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
                             }
                         }
                         else
                         {
+                            Vector3 newPos;
+                            Vector3 newPointAt;
+
                             if (MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible && MainMenu.MpPedCustomizationMenu.createCharacterMenu.CurrentIndex == 6)
                             {
                                 // head level
-                                camera.Position = camPositions[1].Key;
-                                camera.PointAt(camPositions[1].Value);
+                                newPos = camPositions[1].Key;
+                                newPointAt = camPositions[1].Value;
                             }
                             else
                             {
-                                camera.Position = camPositions[0].Key;
-                                camera.PointAt(camPositions[0].Value);
+                                newPos = camPositions[0].Key;
+                                newPointAt = camPositions[0].Value;
                             }
 
+                            if (camera.Position != newPos)
+                            {
+                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
+                            }
                         }
                     }
 
                     float heading = Game.PlayerPed.Heading;
+                    if (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
+                    {
+                        RequestAnimDict("anim@random@shop_clothes@watches");
+                    }
+                    while (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
+                    {
+                        await Delay(0);
+                    }
 
                     while (IsOpen())
                     {
@@ -1685,9 +1923,20 @@ namespace vMenuClient
 
                         DisableMovementControlsThisFrame(true, true);
 
-                        SetCameraPosition();
+                        if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible && !rearCamActive && MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex == 3)
+                        {
+                            TaskPlayAnim(Game.PlayerPed.Handle, "anim@random@shop_clothes@watches", "BASE", 8f, -8f, -1, 1, 0, false, false, false);
+                        }
+                        else
+                        {
+                            Game.PlayerPed.Task.ClearAll();
+                        }
 
-                        Game.PlayerPed.Task.ClearAll();
+                        await SetCameraPosition();
+
+                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
+
+                        DisableMovementControlsThisFrame(true, true);
 
                         var offsetRight = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, -2f, 0.05f, 0.7f);
                         var offsetLeft = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 2f, 0.05f, 0.7f);
@@ -1722,7 +1971,6 @@ namespace vMenuClient
                                 {
                                     Game.PlayerPed.Task.LookAt(camera.Position, 100);
                                 }
-
                             }
                         }
                     }
@@ -1734,12 +1982,44 @@ namespace vMenuClient
                     SetEntityCollision(Game.PlayerPed.Handle, true, true);
                     FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     SetEntityInvincible(Game.PlayerPed.Handle, false);
-
+                    RemoveAnimDict("anim@random@shop_clothes@watches");
                 }
             }
         }
+
+        /// <summary>
+        /// Moves camera to a new spot
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <param name="newPos"></param>
+        /// <param name="newPointAt"></param>
+        /// <returns></returns>
+        private async Task<Camera> MoveCamToNewSpot(Camera camera, Vector3 newPos, Vector3 newPointAt)
+        {
+            var newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
+            Camera newCamera = new Camera(newCam)
+            {
+                Position = newPos
+            };
+            newCamera.PointAt(newPointAt);
+            camera.InterpTo(newCamera, 800, 4000, 4000);
+            int timer = GetGameTimer();
+            while (camera.IsInterpolating || GetGameTimer() - timer < 900)
+            {
+                FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                DisableMovementControlsThisFrame(true, true);
+                await Delay(0);
+            }
+            camera.Delete();
+            return newCamera;
+        }
         #endregion
+
         #region Restore player skin & weapons after respawning.
+        /// <summary>
+        /// Restores player appearance after dying.
+        /// </summary>
+        /// <returns></returns>
         private async Task RestorePlayerAfterBeingDead()
         {
             if (MainMenu.PermissionsSetupComplete && Game.PlayerPed.IsDead)
@@ -1762,7 +2042,7 @@ namespace vMenuClient
                     {
                         if (MainMenu.MiscSettingsMenu.RestorePlayerAppearance && IsAllowed(Permission.MSRestoreAppearance))
                         {
-                            SavePed("vMenu_tmp_saved_ped");
+                            await SavePed("vMenu_tmp_saved_ped");
                         }
                     }
 
@@ -1802,13 +2082,11 @@ namespace vMenuClient
                         Log("weapons restored, deleting kvp");
                         DeleteResourceKvp("vmenu_temp_weapons_loadout_before_respawn");
                     }
-
-
                 }
-
             }
         }
         #endregion
+
         #region Player clothing animations controller.
         private async Task PlayerClothingAnimationsController()
         {
@@ -1816,11 +2094,33 @@ namespace vMenuClient
             {
                 if (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
                 {
-                    DecorRegister(clothingAnimationDecor, 3);
+                    try
+                    {
+                        DecorRegister(clothingAnimationDecor, 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
+                    while (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
+                    {
+                        await Delay(0);
+                    }
                 }
                 else
                 {
-                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     foreach (Player player in Players)
                     {
                         Ped p = player.Character;
@@ -1889,10 +2189,20 @@ namespace vMenuClient
                         await Delay(0);
                     }
                 }
-                DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                try
+                {
+                    DecorSetInt(Game.PlayerPed.Handle, clothingAnimationDecor, PlayerAppearance.ClothingAnimationType);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                    await Delay(1000);
+                }
             }
         }
         #endregion
+
         #region player blips tasks
         private async Task PlayerBlipsControl()
         {
@@ -1900,7 +2210,6 @@ namespace vMenuClient
             {
                 if (DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                 {
-
                     int sprite = 1;
                     if (IsPedInAnyVehicle(Game.PlayerPed.Handle, false))
                     {
@@ -1910,8 +2219,16 @@ namespace vMenuClient
                             sprite = BlipInfo.GetBlipSpriteForVehicle(veh.Handle);
                         }
                     }
-
-                    DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    try
+                    {
+                        DecorSetInt(Game.PlayerPed.Handle, "vmenu_player_blip_sprite_id", sprite);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
 
                     if (MainMenu.MiscSettingsMenu != null)
                     {
@@ -2020,7 +2337,16 @@ namespace vMenuClient
                 }
                 else // decorator does not exist.
                 {
-                    DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    try
+                    {
+                        DecorRegister("vmenu_player_blip_sprite_id", 3);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        await Delay(1000);
+                    }
                     while (!DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
                     {
                         await Delay(0);
@@ -2030,7 +2356,83 @@ namespace vMenuClient
         }
 
         #endregion
+
+        #region player overhead names
+        private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
+
+        private float distance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f; // todo make this a convar.
+
+
+        /// <summary>
+        /// Manages overhead player names.
+        /// </summary>
+        /// <returns></returns>
+        private async Task PlayerOverheadNamesControl()
+        {
+            await Delay(500);
+
+            if (MainMenu.PermissionsSetupComplete && MainMenu.ConfigOptionsSetupComplete && MainMenu.MiscSettingsMenu != null)
+            {
+                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                if (!enabled)
+                {
+                    for (var i = 0; i < 255; i++)
+                    {
+                        RemoveMpGamerTag(i);
+                    }
+                }
+                else
+                {
+                    //Debug.WriteLine($"Distance: {distance}");
+
+                    foreach (Player p in Players)
+                    {
+                        if (p != Game.Player)
+                        {
+                            var dist = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position);
+                            //Debug.WriteLine($"Dist: {dist}");
+                            bool closeEnough = dist < distance;
+                            if (gamerTags.ContainsKey(p))
+                            {
+                                if (!closeEnough)
+                                {
+                                    RemoveMpGamerTag(gamerTags[p]);
+                                    gamerTags.Remove(p);
+                                }
+                                else
+                                {
+                                    gamerTags[p] = CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0);
+                                }
+                            }
+                            else if (closeEnough)
+                            {
+                                gamerTags.Add(p, CreateMpGamerTag(p.Character.Handle, p.Name + $" [{p.ServerId}]", false, false, "", 0));
+                            }
+                            if (closeEnough && gamerTags.ContainsKey(p))
+                            {
+                                SetMpGamerTagVisibility(gamerTags[p], 2, true); // healthArmor
+                                if (p.WantedLevel > 0)
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, true); // wantedStars
+                                    SetMpGamerTagWantedLevel(gamerTags[p], GetPlayerWantedLevel(p.Handle));
+                                }
+                                else
+                                {
+                                    SetMpGamerTagVisibility(gamerTags[p], 7, false); // wantedStars
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Online Player Options Tasks
+        /// <summary>
+        /// Manages online players tasks.
+        /// </summary>
+        /// <returns></returns>
         private async Task OnlinePlayersTasks()
         {
             await Delay(500);
@@ -2072,8 +2474,9 @@ namespace vMenuClient
             }
         }
         #endregion
-        #region Flares and plane bombs controler
 
+        #region Flares and plane bombs controler (UNUSED)
+        /*
         private readonly List<uint> flareVehicles = new List<uint>()
         {
             (uint)GetHashKey("mogul"),
@@ -2177,7 +2580,9 @@ namespace vMenuClient
                 await Delay(1);
             }
         }
+        */
         #endregion
+
         #region Tick related to animations and interactions in-game
         /// <summary>
         /// Manages (triggers) all interactions and animations that happen in the world without direct use of the menu.
@@ -2199,7 +2604,7 @@ namespace vMenuClient
                                 Game.PlayerPed.IsFalling || Game.PlayerPed.IsBeingStunned || Game.PlayerPed.IsWalking || Game.PlayerPed.IsRunning ||
                                 Game.PlayerPed.IsSprinting || Game.PlayerPed.IsSwimming || Game.PlayerPed.IsSwimmingUnderWater || Game.PlayerPed.IsDiving && GetSelectedPedWeapon(Game.PlayerPed.Handle) == snowball_hash || GetSelectedPedWeapon(Game.PlayerPed.Handle) == GetHashKey("unarmed")))
                             {
-                                await PickupSnowball();
+                                await PickupSnowballOnce();
                             }
                         }
                     }
@@ -2210,9 +2615,24 @@ namespace vMenuClient
                         while (!(MenuController.IsAnyMenuOpen() || MainMenu.DontOpenMenus || !Fading.IsFadedIn || Game.IsPaused || IsPlayerSwitchInProgress() || Game.PlayerPed.IsDead) && Game.IsControlPressed(0, Control.SwitchVisor))
                         {
                             await Delay(0);
+                            Vehicle veh = GetVehicle();
+                            bool inVeh = veh != null && (veh.Model.IsBike || veh.Model.IsBicycle || veh.Model.IsQuadbike);
+                            if (GetGameTimer() - timer > 380 && inVeh)
+                            {
+                                Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                            }
                             if (GetGameTimer() - timer > 400)
                             {
-                                await SwitchHelmet();
+                                Task t = SwitchHelmetOnce();
+                                while (!t.IsCompleted && !t.IsCanceled && !t.IsFaulted)
+                                {
+                                    if (inVeh)
+                                    {
+                                        Game.DisableControlThisFrame(2, Control.VehicleHeadlight);
+                                    }
+                                    await Delay(0);
+                                }
+                                //await SwitchHelmet();
                                 break;
                             }
                         }
@@ -2225,7 +2645,12 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region help message controller
+        /// <summary>
+        /// Help message timer and stuff.
+        /// </summary>
+        /// <returns></returns>
         private async Task HelpMessageController()
         {
             if (MainMenu.PermissionsSetupComplete)
@@ -2274,107 +2699,183 @@ namespace vMenuClient
             }
         }
         #endregion
+
         #region draw model dimensions
-        Text Text1 = new Text("1", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text2 = new Text("2", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text3 = new Text("3", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text4 = new Text("4", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text5 = new Text("5", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text6 = new Text("6", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text7 = new Text("7", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text8 = new Text("8", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text Text9 = new Text("9", new System.Drawing.PointF(0f, 0f), 0.5f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
-        Text entityIdText = new Text("Handle: ", new System.Drawing.PointF(0f, 0f), 0.3f, System.Drawing.Color.FromArgb(255, 255, 255), Font.Monospace, Alignment.Center, true, true);
+        /// <summary>
+        /// Draws entity outlines if enabled (per entity type).
+        /// </summary>
+        /// <returns></returns>
         private async Task ModelDrawDimensions()
         {
-            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null && MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
+            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-                var veh = GetVehicle(true);
-                if (veh == null)
+                // Vehicles
+                if (MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
                 {
-                    veh = GetVehicle();
+                    foreach (Vehicle v in vehicles)
+                    {
+                        if (stopVehiclesLoop)
+                        {
+                            break;
+                        }
+
+                        DrawEntityBoundingBox(v, 250, 150, 0, 100);
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && v.IsOnScreen)
+                        {
+                            SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
+                            DrawTextOnScreen($"Veh {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && v.IsOnScreen)
+                        {
+                            SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(v.Handle);
+
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
-                if (veh == null)
+
+                // Props
+                if (MainMenu.MiscSettingsMenu.ShowPropModelDimensions)
                 {
-                    veh = new Vehicle(GetVehiclePedIsUsing(Game.PlayerPed.Handle));
+                    foreach (Prop p in props)
+                    {
+                        if (stopPropsLoop)
+                        {
+                            break;
+                        }
+
+                        DrawEntityBoundingBox(p, 255, 0, 0, 100);
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
+                            DrawTextOnScreen($"Prop {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(p.Handle);
+
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
-                if (veh != null && veh.Exists())
+
+                // Peds
+                if (MainMenu.MiscSettingsMenu.ShowPedModelDimensions)
                 {
-                    int ent = veh.Handle;
-                    int model = GetEntityModel(veh.Handle);
-                    Vector3 pos1 = new Vector3(), pos2 = new Vector3();
-                    GetModelDimensions((uint)model, ref pos1, ref pos2);
-                    Vector3 pos3 = new Vector3(pos1.X - (pos1.X - pos2.X), pos1.Y, pos1.Z);
-                    Vector3 pos4 = new Vector3(pos1.X, pos1.Y - (pos1.Y - pos2.Y), pos1.Z);
-                    Vector3 pos5 = new Vector3(pos1.X, pos1.Y, pos1.Z - (pos1.Z - pos2.Z));
-                    Vector3 pos6 = new Vector3(pos2.X - (pos2.X - pos1.X), pos2.Y, pos2.Z);
-                    Vector3 pos7 = new Vector3(pos2.X, pos2.Y - (pos2.Y - pos1.Y), pos2.Z);
-                    Vector3 pos8 = new Vector3(pos2.X, pos2.Y, pos2.Z - (pos2.Z - pos1.Z));
+                    foreach (Ped p in peds)
+                    {
+                        if (stopPedsLoop)
+                        {
+                            break;
+                        }
 
-                    var off1 = GetOffsetFromEntityInWorldCoords(ent, pos1.X, pos1.Y, pos1.Z);
-                    var off2 = GetOffsetFromEntityInWorldCoords(ent, pos5.X, pos5.Y, pos5.Z);
-                    var off3 = GetOffsetFromEntityInWorldCoords(ent, pos7.X, pos7.Y, pos7.Z);
-                    var off4 = GetOffsetFromEntityInWorldCoords(ent, pos3.X, pos3.Y, pos3.Z);
-                    var off5 = GetOffsetFromEntityInWorldCoords(ent, pos4.X, pos4.Y, pos4.Z);
-                    var off6 = GetOffsetFromEntityInWorldCoords(ent, pos6.X, pos6.Y, pos6.Z);
-                    var off7 = GetOffsetFromEntityInWorldCoords(ent, pos2.X, pos2.Y, pos2.Z);
-                    var off8 = GetOffsetFromEntityInWorldCoords(ent, pos8.X, pos8.Y, pos8.Z);
+                        DrawEntityBoundingBox(p, 50, 255, 50, 100);
 
-                    var x = pos4.X - ((pos4.X - pos8.X) / 2f);
-                    var y = pos4.Y - ((pos4.Y - pos8.Y) / 2f);
-                    var z = pos8.Z - ((pos8.Z - pos7.Z) / 2f);
-                    //var pos9 = new Vector3(x, y, z - 0.1f);
-                    //var pos10 = new Vector3(x, y, z + 0.1f);
-                    var pos9 = new Vector3(x, y, z);
-                    var off9 = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
-                    var off9bottom = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z - 0.1f);
-                    var off9up = GetOffsetFromEntityInWorldCoords(ent, pos9.X, pos9.Y, pos9.Z + 0.1f);
-                    var off9left = GetOffsetFromEntityInWorldCoords(ent, pos9.X + 0.1f, pos9.Y, pos9.Z);
-                    var off9right = GetOffsetFromEntityInWorldCoords(ent, pos9.X - 0.1f, pos9.Y, pos9.Z);
-                    var possomething = new Vector3(pos7.X - ((pos7.X - pos6.X) / 2f), 0f, pos7.Z - ((pos7.Z - pos2.Z) / 2f));
-                    var centerMiddleTop = GetOffsetFromEntityInWorldCoords(ent, possomething.X, possomething.Y, possomething.Z);
+                        if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
+                            DrawTextOnScreen($"Ped {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
 
-                    SetDrawOrigin(off1.X, off1.Y, off1.Z, 0); Text1.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off2.X, off2.Y, off2.Z + 0.15f, 0); Text2.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off3.X, off3.Y, off3.Z + 0.15f, 0); Text3.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off4.X, off4.Y, off4.Z, 0); Text4.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off5.X, off5.Y, off5.Z, 0); Text5.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off6.X, off6.Y, off6.Z + 0.15f, 0); Text6.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off7.X, off7.Y, off7.Z + 0.15f, 0); Text7.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off8.X, off8.Y, off8.Z, 0); Text8.Draw(); ClearDrawOrigin();
-                    SetDrawOrigin(off9bottom.X, off9bottom.Y, off9bottom.Z, 0); Text9.Draw(); ClearDrawOrigin();
-                    entityIdText.Caption = $"Handle {ent}";
-                    SetDrawOrigin(centerMiddleTop.X, centerMiddleTop.Y, centerMiddleTop.Z, 0); entityIdText.Draw(); ClearDrawOrigin();
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(p.Handle);
 
-                    DrawLine(off1.X, off1.Y, off1.Z, off7.X, off7.Y, off7.Z, 255, 255, 255, 255); // white min to max
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
 
-
-                    DrawLine(off1.X, off1.Y, off1.Z, off4.X, off4.Y, off4.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off1.X, off1.Y, off1.Z, off5.X, off5.Y, off5.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off1.X, off1.Y, off1.Z, off2.X, off2.Y, off2.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off8.X, off8.Y, off8.Z, off5.X, off5.Y, off5.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off8.X, off8.Y, off8.Z, off4.X, off4.Y, off4.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off8.X, off8.Y, off8.Z, off7.X, off7.Y, off7.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off2.X, off2.Y, off2.Z, off3.X, off3.Y, off3.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off2.X, off2.Y, off2.Z, off6.X, off6.Y, off6.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off3.X, off3.Y, off3.Z, off4.X, off4.Y, off4.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off6.X, off6.Y, off6.Z, off7.X, off7.Y, off7.Z, 255, 0, 0, 255); // red   (x)
-                    DrawLine(off3.X, off3.Y, off3.Z, off7.X, off7.Y, off7.Z, 0, 255, 0, 255); // green (y)
-                    DrawLine(off6.X, off6.Y, off6.Z, off5.X, off5.Y, off5.Z, 0, 0, 255, 255); // blue  (z)
-
-                    DrawLine(off9bottom.X, off9bottom.Y, off9bottom.Z, off9up.X, off9up.Y, off9up.Z, 255, 0, 255, 255); // pink (center front up/down)
-                    DrawLine(off9left.X, off9left.Y, off9left.Z, off9right.X, off9right.Y, off9right.Z, 255, 255, 0, 255); // yellow (center front x)
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+                    }
                 }
             }
             else
             {
-                await Delay(0);
+                await Task.FromResult(0);
             }
         }
         #endregion
+
+        #region animal ped camera change blocker
+        /// <summary>
+        /// Prevents players from going into first person when they're currently using an animal as their player ped.
+        /// This is to prevent them crashing their game or falling out of the sky as ~~birds~~ bricks.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AnimalPedCameraChangeBlocker()
+        {
+            uint model = (uint)GetEntityModel(Game.PlayerPed.Handle);
+            if (AnimalHashes.Contains(model))
+            {
+                while (model == (uint)GetEntityModel(Game.PlayerPed.Handle))
+                {
+                    DisableFirstPersonCamThisFrame();
+                    await Delay(0);
+                }
+            }
+        }
+        #endregion
+
+        #region Slow misc tick
+
+        internal static float entityRange = 2000f;
+        /// <summary>
+        /// Slow functions for the model dimensions outline entities lists.
+        /// </summary>
+        /// <returns></returns>
+        private async Task SlowMiscTick()
+        {
+            const int delay = 50;
+            //const int limit = 200;
+            if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
+            {
+                var pp = Game.PlayerPed.Position;
+                if (MainMenu.MiscSettingsMenu.ShowPropModelDimensions)
+                {
+                    stopPropsLoop = true;
+                    props = World.GetAllProps().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopPropsLoop = false;
+
+                    await Delay(delay);
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowPedModelDimensions)
+                {
+                    stopPedsLoop = true;
+                    peds = World.GetAllPeds().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopPedsLoop = false;
+
+                    await Delay(delay);
+                }
+
+                if (MainMenu.MiscSettingsMenu.ShowVehicleModelDimensions)
+                {
+                    stopVehiclesLoop = true;
+                    vehicles = World.GetAllVehicles().Where(e => e.IsOnScreen && e.Position.DistanceToSquared(pp) < entityRange).ToList();
+                    stopVehiclesLoop = false;
+
+                    await Delay(delay);
+                }
+
+            }
+        }
+        #endregion
+
         #region Personal Vehicle options
         private bool messageCooldown = false;
         private async void StartMessageCooldown()
@@ -2384,6 +2885,11 @@ namespace vMenuClient
             messageCooldown = false;
         }
         int time = 0;
+
+        /// <summary>
+        /// Manages personal vehicle options like locking doors while close.
+        /// </summary>
+        /// <returns></returns>
         private async Task PersonalVehicleOptions()
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.PersonalVehicleMenu != null && IsAllowed(Permission.PVLockDoors) && MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle != null)
@@ -2398,6 +2904,8 @@ namespace vMenuClient
                             if (GetGameTimer() - time < 500)
                             {
                                 // lock or unlock the vehicle
+                                PressKeyFob(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle);
+                                await Delay(100);
                                 bool lockDoors = !GetVehicleDoorsLockedForPlayer(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
                                 LockOrUnlockDoors(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle, lockDoors);
 
@@ -2433,266 +2941,61 @@ namespace vMenuClient
             await Task.FromResult(0);
         }
         #endregion
+
         #region animation functions
         /// <summary>
         /// This triggers a helmet visor/goggles toggle if available.
+        /// THIS IS NOT A TICK FUNCTION
         /// </summary>
         /// <returns></returns>
-        async Task SwitchHelmet()
+        private async Task SwitchHelmetOnce()
         {
             if (MainMenu.PermissionsSetupComplete)
             {
                 int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
-                await Delay(1);
                 int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
-                await Delay(1);
                 int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                await Delay(1);
                 if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
                 {
-                    int newHelmet = 0;
-                    string animName = "visor_up";
-                    string animDict = "anim@mp_helmets@on_foot";
-                    if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeFemale01)
+                    int newHelmet = component;
+                    int newHelmetTexture = texture;
+
+                    AltPropVariationData[] newHelmetData = Game.GetAltPropVariationData(Game.PlayerPed.Handle, 0);
+
+                    Log(JsonConvert.SerializeObject(newHelmetData, Formatting.Indented));
+
+                    if (newHelmetData != null && newHelmetData.Length > 0)
                     {
-                        switch (component)
-                        {
-                            case 49:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 66:
-                                newHelmet = 81;
-                                animName = "visor_down";
-                                break;
-                            case 67:
-                                newHelmet = 49;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 73;
-                                animName = "visor_up";
-                                break;
-                            case 73:
-                                newHelmet = 72;
-                                animName = "visor_down";
-                                break;
-                            case 77:
-                                newHelmet = 78;
-                                animName = "visor_up";
-                                break;
-                            case 78:
-                                newHelmet = 77;
-                                animName = "visor_down";
-                                break;
-                            case 79:
-                                newHelmet = 80;
-                                animName = "visor_up";
-                                break;
-                            case 80:
-                                newHelmet = 79;
-                                animName = "visor_down";
-                                break;
-                            case 81:
-                                newHelmet = 66;
-                                animName = "visor_up";
-                                break;
-                            case 90:
-                                newHelmet = 91;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 90;
-                                animName = "visor_down";
-                                break;
-                            case 115:
-                                newHelmet = 116;
-                                animName = "goggles_up";
-                                break;
-                            case 116:
-                                newHelmet = 115;
-                                animName = "goggles_down";
-                                break;
-                            case 117:
-                                newHelmet = 118;
-                                animName = "goggles_up";
-                                break;
-                            case 118:
-                                newHelmet = 117;
-                                animName = "goggles_down";
-                                break;
-                            case 122:
-                                newHelmet = 123;
-                                animName = "visor_up";
-                                break;
-                            case 123:
-                                newHelmet = 122;
-                                animName = "visor_down";
-                                break;
-                            case 124:
-                                newHelmet = 125;
-                                animName = "visor_up";
-                                break;
-                            case 125:
-                                newHelmet = 124;
-                                animName = "visor_down";
-                                break;
-                        }
+                        newHelmet = newHelmetData[0].altPropVariationIndex;
+                        newHelmetTexture = newHelmetData[0].altPropVariationTexture;
                     }
-                    else if ((uint)Game.PlayerPed.Model.Hash == (uint)PedHash.FreemodeMale01)
+
+                    string animName = component < newHelmet ? "visor_up" : "visor_down";
+                    if (Game.PlayerPed.Model == PedHash.FreemodeFemale01)
                     {
-                        switch (component)
+                        if (component == 66 || component == 81)
                         {
-                            case 50:
-                                newHelmet = 68;
-                                animName = "visor_up";
-                                break;
-                            case 51:
-                                newHelmet = 69;
-                                animName = "visor_up";
-                                break;
-                            case 52:
-                                newHelmet = 70;
-                                animName = "visor_up";
-                                break;
-                            case 53:
-                                newHelmet = 71;
-                                animName = "visor_up";
-                                break;
-                            case 62:
-                                newHelmet = 72;
-                                animName = "visor_up";
-                                break;
-                            case 67:
-                                newHelmet = 82;
-                                animName = "visor_down";
-                                break;
-                            case 68:
-                                newHelmet = 50;
-                                animName = "visor_down";
-                                break;
-                            case 69:
-                                newHelmet = 51;
-                                animName = "visor_down";
-                                break;
-                            case 70:
-                                newHelmet = 52;
-                                animName = "visor_down";
-                                break;
-                            case 71:
-                                newHelmet = 53;
-                                animName = "visor_down";
-                                break;
-                            case 72:
-                                newHelmet = 62;
-                                animName = "visor_down";
-                                break;
-                            case 73:
-                                newHelmet = 74;
-                                animName = "visor_up";
-                                break;
-                            case 74:
-                                newHelmet = 73;
-                                animName = "visor_down";
-                                break;
-                            case 78:
-                                newHelmet = 79;
-                                animName = "visor_up";
-                                break;
-                            case 79:
-                                newHelmet = 78;
-                                animName = "visor_down";
-                                break;
-                            case 80:
-                                newHelmet = 81;
-                                animName = "visor_up";
-                                break;
-                            case 81:
-                                newHelmet = 80;
-                                animName = "visor_down";
-                                break;
-                            case 82:
-                                newHelmet = 67;
-                                animName = "visor_up";
-                                break;
-                            case 91:
-                                newHelmet = 92;
-                                animName = "visor_up";
-                                break;
-                            case 92:
-                                newHelmet = 91;
-                                animName = "visor_down";
-                                break;
-                            case 116:
-                                newHelmet = 117;
-                                animName = "goggles_up";
-                                break;
-                            case 117:
-                                newHelmet = 116;
-                                animName = "goggles_down";
-                                break;
-                            case 118:
-                                newHelmet = 119;
-                                animName = "goggles_up";
-                                break;
-                            case 119:
-                                newHelmet = 118;
-                                animName = "goggles_down";
-                                break;
-                            case 123:
-                                newHelmet = 124;
-                                animName = "visor_up";
-                                break;
-                            case 124:
-                                newHelmet = 123;
-                                animName = "visor_down";
-                                break;
-                            case 125:
-                                newHelmet = 126;
-                                animName = "visor_up";
-                                break;
-                            case 126:
-                                newHelmet = 125;
-                                animName = "visor_down";
-                                break;
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 115 && component <= 118)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
                         }
                     }
                     else
                     {
-                        return;
+                        if (component == 67 || component == 82)
+                        {
+                            animName = component > newHelmet ? "visor_up" : "visor_down";
+                        }
+                        if (component >= 116 && component <= 119)
+                        {
+                            animName = component < newHelmet ? "goggles_up" : "goggles_down";
+                        }
                     }
+
+                    string animDict = "anim@mp_helmets@on_foot";
+
                     if (GetFollowPedCamViewMode() == 4)
                     {
                         if (animName.Contains("goggles"))
@@ -2824,15 +3127,19 @@ namespace vMenuClient
                             await Delay(0);
                         }
                     }
+                    if (animName.StartsWith("pov_") && animDict != "anim@mp_helmets@on_foot")
+                    {
+                        animName = animName.Substring(4);
+                    }
                     ClearPedTasks(Game.PlayerPed.Handle);
                     TaskPlayAnim(Game.PlayerPed.Handle, animDict, animName, 8.0f, 1.0f, -1, 48, 0.0f, false, false, false);
                     int timeoutTimer = GetGameTimer();
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) <= 0.0f)
                     {
-                        if (GetGameTimer() - timeoutTimer > 2000)
+                        if (GetGameTimer() - timeoutTimer > 1000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function. Dbg: fault in location 1.");
                             return;
                         }
                         await Delay(0);
@@ -2841,15 +3148,16 @@ namespace vMenuClient
                     while (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.0f)
                     {
                         await Delay(0);
+
                         if (GetGameTimer() - timeoutTimer > 3000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function. Dbg: fault in location 2.");
                             return;
                         }
                         if (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.39f)
                         {
-                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, texture, true);
+                            SetPedPropIndex(Game.PlayerPed.Handle, 0, newHelmet, newHelmetTexture, true);
                         }
                     }
                     ClearPedTasks(Game.PlayerPed.Handle);
@@ -2860,9 +3168,10 @@ namespace vMenuClient
 
         /// <summary>
         /// Pickup a snowball.
+        /// THIS IS NOT A TICK FUNCTION
         /// </summary>
         /// <returns></returns>
-        async Task PickupSnowball()
+        private async Task PickupSnowballOnce()
         {
             if (MainMenu.PermissionsSetupComplete)
             {

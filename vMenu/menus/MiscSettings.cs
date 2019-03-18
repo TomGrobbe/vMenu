@@ -17,6 +17,8 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
+        private Menu teleportOptionsMenu;
+        private Menu developerToolsMenu;
 
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
@@ -30,12 +32,21 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        public bool MiscShowOverheadNames { get; private set; } = UserDefaults.MiscShowOverheadNames;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
+        public bool ShowPedModelDimensions { get; private set; } = false;
+        public bool ShowPropModelDimensions { get; private set; } = false;
+        public bool ShowEntityHandles { get; private set; } = false;
+        public bool ShowEntityModels { get; private set; } = false;
         public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+        public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
+
+        internal bool TimecycleEnabled { get; private set; } = false;
+
 
         // keybind states
         public bool KbTpToWaypoint { get; private set; } = UserDefaults.KbTpToWaypoint;
@@ -43,6 +54,8 @@ namespace vMenuClient
             ? vMenuShared.ConfigManager.GetSettingsInt(vMenuShared.ConfigManager.Setting.vmenu_teleport_to_wp_keybind_key)
             : 168; // 168 (F7 by default)
         public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
+        public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
+        public bool KbRadarKeys { get; private set; } = UserDefaults.KbRadarKeys;
 
         private List<Vector3> tpLocations = new List<Vector3>();
         private List<float> tpLocationsHeading = new List<float>();
@@ -67,6 +80,8 @@ namespace vMenuClient
 
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Misc Settings");
+            teleportOptionsMenu = new Menu(Game.Player.Name, "Teleport Options");
+            developerToolsMenu = new Menu(Game.Player.Name, "Development Tools");
 
             // teleport menu
             Menu teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
@@ -83,11 +98,14 @@ namespace vMenuClient
             // keybind settings menu items
             MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
             MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
+            MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
+            MenuCheckboxItem kbRadarKeys = new MenuCheckboxItem("Minimap Controls", "Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar.", KbRadarKeys);
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
             MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
             MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
+            MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
             MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
             MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
             MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
@@ -103,35 +121,48 @@ namespace vMenuClient
             MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
             MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
-            MenuCheckboxItem modelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws lines for the model dimensions of your vehicle (debug function).", ShowVehicleModelDimensions);
+            MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you.", ShowVehicleModelDimensions);
+            MenuCheckboxItem propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you.", ShowPropModelDimensions);
+            MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you.", ShowPedModelDimensions);
+            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
+            MenuCheckboxItem showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
+            MenuSliderItem dimensionsDistanceSlider = new MenuSliderItem("Show Dimensions Radius", "Show entity model/handle/dimension draw range.", 0, 20, 20, false);
 
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
             MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
             MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
 
+
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
-            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. " +
-                "Use this if you need to have addons streamed but want to use the rockstar editor.");
+
+            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host.");
+            MenuItem rejoinSession = new MenuItem("Re-join Session", "This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'.");
             MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
-            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. " +
-                "~r~This feature is not recommended, quit the game instead for a better experience.");
+            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience.");
             connectionSubmenu.AddMenuItem(quitSession);
+            connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
 
+            MenuCheckboxItem enableTimeCycle = new MenuCheckboxItem("Enable Timecycle Modifier", "Enable or disable the timecycle modifier from the list below.", TimecycleEnabled);
+            List<string> timeCycleModifiersListData = TimeCycles.Timecycles.ToList();
+            for (var i = 0; i < timeCycleModifiersListData.Count; i++)
+            {
+                timeCycleModifiersListData[i] += $" ({i + 1}/{timeCycleModifiersListData.Count})";
+            }
+            MenuListItem timeCycles = new MenuListItem("TM", timeCycleModifiersListData, 0, "Select a timecycle modifier and enable the checkbox above.");
+            MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, 20, true);
+
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
             MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
             MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
             MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
 
             MenuController.AddSubmenu(menu, connectionSubmenu);
             MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
-            //MainMenu.Mp.Add(connectionSubmenu);
-            //connectionSubmenu.RefreshIndex();
-            //connectionSubmenu.UpdateScaleform();
-            //menu.BindMenuToItem(connectionSubmenu, connectionSubmenuBtn);
 
             keybindMenu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
@@ -142,6 +173,14 @@ namespace vMenuClient
                 else if (item == kbDriftMode)
                 {
                     KbDriftMode = _checked;
+                }
+                else if (item == kbRecordKeys)
+                {
+                    KbRecordKeys = _checked;
+                }
+                else if (item == kbRadarKeys)
+                {
+                    KbRadarKeys = _checked;
                 }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
@@ -160,33 +199,239 @@ namespace vMenuClient
                 }
                 else if (item == quitSession)
                 {
-                    QuitSession();
+                    if (NetworkIsSessionActive())
+                    {
+                        if (NetworkIsHost())
+                        {
+                            Notify.Error("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server.");
+                        }
+                        else
+                        {
+                            QuitSession();
+                        }
+                    }
+                    else
+                    {
+                        Notify.Error("You are currently not in any session.");
+                    }
+                }
+                else if (item == rejoinSession)
+                {
+                    if (NetworkIsSessionActive())
+                    {
+                        Notify.Error("You are already connected to a session.");
+                    }
+                    else
+                    {
+                        Notify.Info("Attempting to re-join the session.");
+                        NetworkSessionHost(-1, 32, false);
+                    }
                 }
                 else if (item == disconnectFromServer)
                 {
-                    BaseScript.TriggerServerEvent("vMenu:DisconnectSelf");
+
+                    RegisterCommand("disconnect", new Action<dynamic, dynamic, dynamic>((a, b, c) => { }), false);
+                    ExecuteCommand("disconnect");
                 }
             };
 
-            // Add menu items to the menu.
-            if (IsAllowed(Permission.MSTeleportToWp))
+            // Teleportation options
+            if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations))
             {
-                menu.AddMenuItem(tptowp);
-                keybindMenu.AddMenuItem(kbTpToWaypoint);
+                MenuItem teleportOptionsMenuBtn = new MenuItem("Teleport Options", "Various teleport options.") { Label = "→→→" };
+                menu.AddMenuItem(teleportOptionsMenuBtn);
+                MenuController.BindMenuItem(menu, teleportOptionsMenu, teleportOptionsMenuBtn);
+
+                if (IsAllowed(Permission.MSTeleportToWp))
+                {
+                    teleportOptionsMenu.AddMenuItem(tptowp);
+                    keybindMenu.AddMenuItem(kbTpToWaypoint);
+                    teleportOptionsMenu.OnItemSelect += (sender, item, index) =>
+                    {
+                        // Teleport to waypoint.
+                        if (item == tptowp)
+                        {
+                            TeleportToWp();
+                        }
+                    };
+                }
+                if (IsAllowed(Permission.MSTeleportLocations))
+                {
+                    teleportOptionsMenu.AddMenuItem(teleportMenuBtn);
+                    MenuController.AddSubmenu(teleportOptionsMenu, teleportMenu);
+                    MenuController.BindMenuItem(teleportOptionsMenu, teleportMenu, teleportMenuBtn);
+                    teleportMenuBtn.Label = "→→→";
+
+                    string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+                    if (string.IsNullOrEmpty(json))
+                    {
+                        Notify.Error("An error occurred while loading the locations file.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
+                            foreach (Newtonsoft.Json.Linq.JToken teleport in data["teleports"])
+                            {
+                                string name = teleport["name"].ToString();
+                                float heading = (float)teleport["heading"];
+                                Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
+                                MenuItem tpBtn = new MenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
+                                teleportMenu.AddMenuItem(tpBtn);
+                                tpLocations.Add(coordinates);
+                                tpLocationsHeading.Add(heading);
+                            }
+                            teleportMenu.OnItemSelect += async (sender, item, index) =>
+                            {
+                                await TeleportToCoords(tpLocations[index], true);
+                                SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
+                            };
+                        }
+                        catch (JsonReaderException ex)
+                        {
+                            Debug.Write($"\n[vMenu] An error occurred whie loading the teleport locations!\nReport the following error details to the server owner:\n{ex.Message}.\n");
+                        }
+                    }
+                }
             }
 
+            #region dev tools menu
+
+            MenuItem devToolsBtn = new MenuItem("Developer Tools", "Various development/debug tools.") { Label = "→→→" };
+            menu.AddMenuItem(devToolsBtn);
+            MenuController.AddSubmenu(menu, developerToolsMenu);
+            MenuController.BindMenuItem(menu, developerToolsMenu, devToolsBtn);
+
+            // clear area and coordinates
+            if (IsAllowed(Permission.MSClearArea))
+            {
+                developerToolsMenu.AddMenuItem(clearArea);
+            }
+            if (IsAllowed(Permission.MSShowCoordinates))
+            {
+                developerToolsMenu.AddMenuItem(coords);
+            }
+
+            // model outlines
+            if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_disable_entity_outlines_tool))
+            {
+                developerToolsMenu.AddMenuItem(vehModelDimensions);
+                developerToolsMenu.AddMenuItem(propModelDimensions);
+                developerToolsMenu.AddMenuItem(pedModelDimensions);
+                developerToolsMenu.AddMenuItem(showEntityHandles);
+                developerToolsMenu.AddMenuItem(showEntityModels);
+                developerToolsMenu.AddMenuItem(dimensionsDistanceSlider);
+            }
+
+
+            // timecycle modifiers
+            developerToolsMenu.AddMenuItem(timeCycles);
+            developerToolsMenu.AddMenuItem(enableTimeCycle);
+            developerToolsMenu.AddMenuItem(timeCycleIntensity);
+
+            developerToolsMenu.OnSliderPositionChange += (sender, item, oldPos, newPos, itemIndex) =>
+            {
+                if (item == timeCycleIntensity)
+                {
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)newPos / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+                }
+                else if (item == dimensionsDistanceSlider)
+                {
+                    FunctionsController.entityRange = ((float)newPos / 20f) * 2000f; // max radius = 2000f;
+                }
+            };
+
+            developerToolsMenu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
+            {
+                if (item == timeCycles)
+                {
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)timeCycleIntensity.Position / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+                }
+            };
+
+            developerToolsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == clearArea)
+                {
+                    var pos = Game.PlayerPed.Position;
+                    BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
+                }
+            };
+
+            developerToolsMenu.OnCheckboxChange += (sender, item, index, _checked) =>
+            {
+                if (item == vehModelDimensions)
+                {
+                    ShowVehicleModelDimensions = _checked;
+                }
+                else if (item == propModelDimensions)
+                {
+                    ShowPropModelDimensions = _checked;
+                }
+                else if (item == pedModelDimensions)
+                {
+                    ShowPedModelDimensions = _checked;
+                }
+                else if (item == showEntityHandles)
+                {
+                    ShowEntityHandles = _checked;
+                }
+                else if (item == showEntityModels)
+                {
+                    ShowEntityModels = _checked;
+                }
+                else if (item == enableTimeCycle)
+                {
+                    TimecycleEnabled = _checked;
+                    ClearTimecycleModifier();
+                    if (TimecycleEnabled)
+                    {
+                        SetTimecycleModifier(TimeCycles.Timecycles[timeCycles.ListIndex]);
+                        float intensity = ((float)timeCycleIntensity.Position / 20f);
+                        SetTimecycleModifierStrength(intensity);
+                    }
+                }
+                else if (item == coords)
+                {
+                    ShowCoordinates = _checked;
+                }
+            };
+
+            #endregion
+
+
+            // Keybind options
             if (IsAllowed(Permission.MSDriftMode))
             {
                 keybindMenu.AddMenuItem(kbDriftMode);
             }
-
+            // always allowed keybind menu options
+            keybindMenu.AddMenuItem(kbRecordKeys);
+            keybindMenu.AddMenuItem(kbRadarKeys);
             keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
             menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(disablePms);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
-            menu.AddMenuItem(modelDimensions);
+            //menu.AddMenuItem(vehModelDimensions);
+            //menu.AddMenuItem(propModelDimensions);
+            //menu.AddMenuItem(pedModelDimensions);
+            //menu.AddMenuItem(showEntityHandles);
             menu.AddMenuItem(keybindMenuBtn);
             keybindMenuBtn.Label = "→→→";
             if (IsAllowed(Permission.MSConnectionMenu))
@@ -194,10 +439,10 @@ namespace vMenuClient
                 menu.AddMenuItem(connectionSubmenuBtn);
                 connectionSubmenuBtn.Label = "→→→";
             }
-            if (IsAllowed(Permission.MSShowCoordinates))
-            {
-                menu.AddMenuItem(coords);
-            }
+            //if (IsAllowed(Permission.MSShowCoordinates))
+            //{
+            //    menu.AddMenuItem(coords);
+            //}
             if (IsAllowed(Permission.MSShowLocation))
             {
                 menu.AddMenuItem(showLocation);
@@ -228,47 +473,20 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(playerBlips);
             }
-            if (IsAllowed(Permission.MSTeleportLocations))
+            if (IsAllowed(Permission.MSOverheadNames))
             {
-                menu.AddMenuItem(teleportMenuBtn);
-                teleportMenuBtn.Label = "→→→";
+                menu.AddMenuItem(playerNames);
+            }
 
-                string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
-                if (string.IsNullOrEmpty(json))
-                {
-                    Notify.Error("An error occurred while loading the locations file.");
-                }
-                else
-                {
-                    try
-                    {
-                        Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
-                        foreach (Newtonsoft.Json.Linq.JToken teleport in data["teleports"])
-                        {
-                            string name = teleport["name"].ToString();
-                            float heading = (float)teleport["heading"];
-                            Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
-                            MenuItem tpBtn = new MenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
-                            teleportMenu.AddMenuItem(tpBtn);
-                            tpLocations.Add(coordinates);
-                            tpLocationsHeading.Add(heading);
-                        }
-                        teleportMenu.OnItemSelect += async (sender, item, index) =>
-                        {
-                            await TeleportToCoords(tpLocations[index], true);
-                            SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
-                        };
-                    }
-                    catch (JsonReaderException ex)
-                    {
-                        Debug.Write($"\n[vMenu] An error occurred whie loading the teleport locations!\nReport the following error details to the server owner:\n{ex.Message}.\n");
-                    }
-                }
-            }
-            if (IsAllowed(Permission.MSClearArea))
-            {
-                menu.AddMenuItem(clearArea);
-            }
+
+            //menu.AddMenuItem(enableTimeCycle);
+            //menu.AddMenuItem(timeCycles);
+            //menu.AddMenuItem(timeCycleIntensity);
+
+            //if (IsAllowed(Permission.MSClearArea))
+            //{
+            //    menu.AddMenuItem(clearArea);
+            //}
             // always allowed, it just won't do anything if the server owner disabled the feature, but players can still toggle it.
             menu.AddMenuItem(respawnDefaultCharacter);
             if (IsAllowed(Permission.MSRestoreAppearance))
@@ -307,17 +525,17 @@ namespace vMenuClient
                         UserDefaults.MiscRightAlignMenu = false;
                     }
                 }
-                if (item == speedKmh)
+                else if (item == disablePms)
+                {
+                    MiscDisablePrivateMessages = _checked;
+                }
+                else if (item == speedKmh)
                 {
                     ShowSpeedoKmh = _checked;
                 }
                 else if (item == speedMph)
                 {
                     ShowSpeedoMph = _checked;
-                }
-                else if (item == coords)
-                {
-                    ShowCoordinates = _checked;
                 }
                 else if (item == hideHud)
                 {
@@ -373,6 +591,10 @@ namespace vMenuClient
                 {
                     ShowPlayerBlips = _checked;
                 }
+                else if (item == playerNames)
+                {
+                    MiscShowOverheadNames = _checked;
+                }
                 else if (item == respawnDefaultCharacter)
                 {
                     MiscRespawnDefaultCharacter = _checked;
@@ -385,33 +607,23 @@ namespace vMenuClient
                 {
                     RestorePlayerWeapons = _checked;
                 }
-                else if (item == modelDimensions)
-                {
-                    ShowVehicleModelDimensions = _checked;
-                }
+
             };
 
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
-                // Teleport to waypoint.
-                if (item == tptowp)
-                {
-                    TeleportToWp();
-                }
                 // save settings
-                else if (item == saveSettings)
+                if (item == saveSettings)
                 {
                     UserDefaults.SaveSettings();
                 }
-                // clear area
-                else if (item == clearArea)
-                {
-                    var pos = Game.PlayerPed.Position;
-                    BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
-                }
             };
+
+
+
         }
+
 
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.

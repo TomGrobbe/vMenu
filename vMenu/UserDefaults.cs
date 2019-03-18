@@ -118,12 +118,6 @@ namespace vMenuClient
             set { SetSavedSettingsBool("vehicleGodAutoRepair", value); }
         }
 
-        //public static bool VehicleSpecialGodMode
-        //{
-        //    get { return GetSettingsBool("vehicleSpecialGodMode"); }
-        //    set { SetSavedSettingsBool("vehicleSpecialGodMode", value); }
-        //}
-
         public static bool VehicleNeverDirty
         {
             get { return GetSettingsBool("vehicleNeverDirty"); }
@@ -250,6 +244,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
         }
 
+        public static bool MiscShowOverheadNames
+        {
+            get { return GetSettingsBool("miscShowOverheadNames"); }
+            set { SetSavedSettingsBool("miscShowOverheadNames", value); }
+        }
+
         public static bool MiscRestorePlayerAppearance
         {
             get { return GetSettingsBool("miscRestorePlayerAppearance"); }
@@ -280,6 +280,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscRightAlignMenu", value); }
         }
 
+        public static bool MiscDisablePrivateMessages
+        {
+            get { return GetSettingsBool("miscDisablePrivateMessages"); }
+            set { SetSavedSettingsBool("miscDisablePrivateMessages", value); }
+        }
+
         #region keybind menu
         public static bool KbTpToWaypoint
         {
@@ -290,6 +296,16 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("kbDriftMode"); }
             set { SetSavedSettingsBool("kbDriftMode", value); }
+        }
+        public static bool KbRecordKeys
+        {
+            get { return GetSettingsBool("kbRecordKeys"); }
+            set { SetSavedSettingsBool("kbRecordKeys", value); }
+        }
+        public static bool KbRadarKeys
+        {
+            get { return GetSettingsBool("kbRadarKeys"); }
+            set { SetSavedSettingsBool("kbRadarKeys", value); }
         }
         #endregion
         #endregion
@@ -510,6 +526,9 @@ namespace vMenuClient
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MiscShowPlayerBlips);
 
+                MiscShowOverheadNames = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                prefs.Add("miscShowOverheadNames", MiscShowOverheadNames);
+
                 MiscRespawnDefaultCharacter = MainMenu.MiscSettingsMenu.MiscRespawnDefaultCharacter;
                 prefs.Add("miscRespawnDefaultCharacter", MiscRespawnDefaultCharacter);
 
@@ -525,11 +544,20 @@ namespace vMenuClient
                 MiscRightAlignMenu = MainMenu.MiscSettingsMenu.MiscRightAlignMenu;
                 prefs.Add("miscRightAlignMenu", MiscRightAlignMenu);
 
+                MiscDisablePrivateMessages = MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages;
+                prefs.Add("miscDisablePrivateMessages", MiscDisablePrivateMessages);
+
                 KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
                 prefs.Add("kbTpToWaypoint", KbTpToWaypoint);
 
                 KbDriftMode = MainMenu.MiscSettingsMenu.KbDriftMode;
                 prefs.Add("kbDriftMode", KbDriftMode);
+
+                KbRecordKeys = MainMenu.MiscSettingsMenu.KbRecordKeys;
+                prefs.Add("kbRecordKeys", KbRecordKeys);
+
+                KbRadarKeys = MainMenu.MiscSettingsMenu.KbRadarKeys;
+                prefs.Add("kbRadarKeys", KbRadarKeys);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

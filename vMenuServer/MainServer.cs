@@ -1,13 +1,10 @@
-﻿using GHMatti.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
-using System.Dynamic;
 using static vMenuServer.DebugLog;
 using static vMenuShared.ConfigManager;
 
@@ -66,19 +63,22 @@ namespace vMenuServer
         public static string UpdaterVersion { get; set; } = Version;
         public static string UpdateMessage { get; set; } = null;
 
+        // Time
         private int currentHours = GetSettingsInt(Setting.vmenu_default_time_hour);
         private int currentMinutes = GetSettingsInt(Setting.vmenu_default_time_min);
-        private int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
+        private readonly int minuteClockSpeed = GetSettingsInt(Setting.vmenu_ingame_minute_duration);
         private long minuteTimer = GetGameTimer();
         private long timeSyncCooldown = GetGameTimer();
+        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
+
+        // Weather
         private string currentWeather = GetSettingsString(Setting.vmenu_default_weather);
         private bool dynamicWeather = GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         private bool blackout = false;
         private bool resetBlackout = false;
-        private bool freezeTime = GetSettingsBool(Setting.vmenu_freeze_time);
-        private int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
-        private long gameTimer = GetGameTimer();
+        private readonly int dynamicWeatherMinutes = GetSettingsInt(Setting.vmenu_dynamic_weather_timer);
         private long weatherTimer = GetGameTimer();
+        private long weatherGameTimer = GetGameTimer();
         private List<string> CloudTypes = new List<string>()
         {
             "Cloudy 01",
@@ -120,6 +120,8 @@ namespace vMenuServer
             "XMAS",
             "HALLOWEEN"
         };
+
+
         #endregion
 
         #region Constructor
@@ -397,11 +399,22 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:UpdateServerWeather", new Action<string, bool, bool>(UpdateWeather));
                 EventHandlers.Add("vMenu:UpdateServerWeatherCloudsType", new Action<bool>(UpdateWeatherCloudsType));
                 EventHandlers.Add("vMenu:UpdateServerTime", new Action<int, int, bool>(UpdateTime));
-                EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
+                //EventHandlers.Add("vMenu:DisconnectSelf", new Action<Player>(DisconnectSource));
                 EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
-                EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) => { CallbackFunction(JsonConvert.SerializeObject(Players[TargetPlayer].Identifiers)); }));
+                EventHandlers.Add("vMenu:GetPlayerIdentifiers", new Action<int, NetworkCallbackDelegate>((TargetPlayer, CallbackFunction) =>
+                {
+                    List<string> data = new List<string>();
+                    Players[TargetPlayer].Identifiers.ToList().ForEach(e =>
+                    {
+                        if (!e.Contains("ip:"))
+                            data.Add(e);
+                    });
+                    CallbackFunction(JsonConvert.SerializeObject(data));
+                }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
                 EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
+                EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
+                EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
 
 
                 // check addons file for errors
@@ -481,17 +494,6 @@ namespace vMenuServer
         }
         #endregion
 
-        #region disconnect player
-        /// <summary>
-        /// Disconnect the source player because they used the disconnect menu button.
-        /// </summary>
-        /// <param name="src"></param>
-        private void DisconnectSource([FromSource] Player src)
-        {
-            src.Drop("You disconnected yourself.");
-        }
-        #endregion
-
         #region Manage weather and time changes.
         /// <summary>
         /// Loop used for syncing and keeping track of the time in-game.
@@ -548,28 +550,38 @@ namespace vMenuServer
 
             if (GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
+                // Manage dynamic weather changes.
                 if (dynamicWeather)
                 {
+                    // Disable dynamic weather because these weather types shouldn't randomly change.
                     if (currentWeather == "XMAS" || currentWeather == "HALLOWHEEN" || currentWeather == "NEUTRAL")
                     {
-                        // Disable dynamic weather because these weather types shouldn't randomly change.
                         dynamicWeather = false;
                         return;
                     }
-                    if (resetBlackout && GetGameTimer() - weatherTimer > 60000) // if 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
+
+                    // If 1 minute has passed since last change, and resetblackout is true, disable blackout and reset it.
+                    if (resetBlackout && GetGameTimer() - weatherTimer > 60000)
                     {
                         resetBlackout = false;
                         blackout = false;
                     }
+
+                    // Is it time to generate a new weather type?
                     if (GetGameTimer() - weatherTimer > (dynamicWeatherMinutes * 60000))
                     {
+                        // Choose a new semi-random weather type.
                         RefreshWeather();
+
+                        // Log if debug mode is on how long the change has taken and what the new weather type will be.
                         if (DebugMode)
                         {
                             long gameTimer2 = GetGameTimer();
                             Log($"Changing weather, last weather duration: {(int)((GetGameTimer() - weatherTimer) / 60000)} minutes. New Weather Type: {currentWeather}");
-                            gameTimer = gameTimer2;
+                            weatherGameTimer = gameTimer2;
                         }
+
+                        // Reset the dynamic weather timer.
                         weatherTimer = GetGameTimer();
                     }
                 }
@@ -577,15 +589,21 @@ namespace vMenuServer
                 {
                     weatherTimer = GetGameTimer();
                 }
+
+                // Random blackout
                 if (GetSettingsBool(Setting.vmenu_allow_random_blackout) && (currentWeather == "THUNDER" || currentWeather == "HALLOWHEEN") && new Random().Next(5) == 1 && !blackout && !resetBlackout)
                 {
                     blackout = true;
                     resetBlackout = true;
                 }
+
+                // Reset the 'resetBlackout' state
                 if (blackout == false && resetBlackout)
                 {
                     resetBlackout = false;
                 }
+
+                // Update all clients with the new weather data.
                 TriggerClientEvent("vMenu:SetWeather", currentWeather, blackout, dynamicWeather);
             }
         }
@@ -791,8 +809,38 @@ namespace vMenuServer
                 BanManager.BanCheater(source);
             }
         }
+
+        private void SendPrivateMessage([FromSource]Player source, int targetServerId, string message)
+        {
+            Player targetPlayer = Players[targetServerId];
+            if (targetPlayer != null)
+            {
+                targetPlayer.TriggerEvent("vMenu:PrivateMessage", source.Handle, message);
+
+                foreach (Player p in Players)
+                {
+                    if (p != source && p != targetPlayer)
+                    {
+                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages, p))
+                        {
+                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
+                        }
+                    }
+                }
+            }
+        }
+
+        private void NotifySenderThatDmsAreDisabled([FromSource]Player source, string senderServerId)
+        {
+            var p = Players[int.Parse(senderServerId)];
+            if (p != null)
+            {
+                p.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.");
+            }
+        }
         #endregion
 
+        #region logging and update checks notifications
         /// <summary>
         /// If enabled using convars, will log all kick actions to the server console as well as an external file.
         /// </summary>
@@ -816,6 +864,10 @@ namespace vMenuServer
             }
         }
 
+        /// <summary>
+        /// Tells the player if the resource is currently up to date.
+        /// </summary>
+        /// <param name="source"></param>
         public static void IsResourceUpToDate([FromSource]Player source)
         {
             if (!UpToDate)
@@ -829,14 +881,14 @@ namespace vMenuServer
                 else
                 {
                     // Staff will always receive this message, whether they like it or not.
-                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff))
+                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff, source))
                     {
                         source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
                     }
                 }
-
             }
-
         }
+        #endregion
+
     }
 }

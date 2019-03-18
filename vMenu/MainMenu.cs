@@ -26,6 +26,9 @@ namespace vMenuClient
         public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
         public static int NoClipKey { get; private set; } = 289; // F2 by default (ReplayStartStopRecordingSecondary)
         public static Menu Menu { get; private set; }
+        public static Menu PlayerSubmenu { get; private set; }
+        public static Menu VehicleSubmenu { get; private set; }
+        public static Menu WorldSubmenu { get; private set; }
 
         public static PlayerOptions PlayerOptionsMenu { get; private set; }
         public static OnlinePlayers OnlinePlayersMenu { get; private set; }
@@ -328,6 +331,20 @@ namespace vMenuClient
             if (firstTick)
             {
                 firstTick = false;
+                switch (GetSettingsInt(Setting.vmenu_pvp_mode))
+                {
+                    case 1:
+                        NetworkSetFriendlyFireOption(true);
+                        SetCanAttackFriendly(Game.PlayerPed.Handle, true, false);
+                        break;
+                    case 2:
+                        NetworkSetFriendlyFireOption(false);
+                        SetCanAttackFriendly(Game.PlayerPed.Handle, false, false);
+                        break;
+                    case 0:
+                    default:
+                        break;
+                }
                 // Clear all previous pause menu info/brief messages on resource start.
                 ClearBrief();
 
@@ -350,12 +367,20 @@ namespace vMenuClient
                     {
                         NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
                     }
+
                     // Create the main menu.
                     Menu = new Menu(Game.Player.Name, "Main Menu");
+                    PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
+                    VehicleSubmenu = new Menu(Game.Player.Name, "Vehicle Related Options");
+                    WorldSubmenu = new Menu(Game.Player.Name, "World Options");
 
                     // Add the main menu to the menu pool.
                     MenuController.AddMenu(Menu);
                     MenuController.MainMenu = Menu;
+
+                    MenuController.AddSubmenu(Menu, PlayerSubmenu);
+                    MenuController.AddSubmenu(Menu, VehicleSubmenu);
+                    MenuController.AddSubmenu(Menu, WorldSubmenu);
 
                     // Create all (sub)menus.
                     CreateSubmenus();
@@ -370,28 +395,19 @@ namespace vMenuClient
 
                 // Manage Stamina
                 if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
-                {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
-                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 100, true);
-                }
                 else
-                {
                     StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
-                    StatSetInt((uint)GetHashKey("MP1_STAMINA"), 0, true);
-                }
-                // Manage other stats.
-                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_STRENGTH"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_LUNG_CAPACITY"), 80, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP1_WHEELIE_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_FLYING_ABILITY"), 100, true);
-                StatSetInt((uint)GetHashKey("MP1_SHOOTING_ABILITY"), 50, true); // reduced because it was over powered
-                StatSetInt((uint)GetHashKey("MP1_STEALTH_ABILITY"), 100, true);
+
+                // Manage other stats, in order of appearance in the pause menu (stats) page.
+                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
+                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);                // Strength
+                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
+                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);          // Flying
+                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
+                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
+                StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
+
             }
             #endregion
 
@@ -446,7 +462,7 @@ namespace vMenuClient
                 {
                     if (!MenuController.IsAnyMenuOpen() || NoClipEnabled)
                     {
-                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip))
+                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
                         {
                             if (MenuController.IsAnyMenuOpen())
                             {
@@ -488,8 +504,6 @@ namespace vMenuClient
 
                 // Menu toggle button.
                 Game.DisableControlThisFrame(0, MenuToggleKey);
-
-
             }
         }
 
@@ -500,16 +514,15 @@ namespace vMenuClient
         /// </summary>
         /// <param name="submenu"></param>
         /// <param name="menuButton"></param>
-        private void AddMenu(Menu submenu, MenuItem menuButton)
+        private void AddMenu(Menu parentMenu, Menu submenu, MenuItem menuButton)
         {
-            Menu.AddMenuItem(menuButton);
-            MenuController.AddSubmenu(Menu, submenu);
-            MenuController.BindMenuItem(Menu, submenu, menuButton);
-            //Mp.Add(submenu);
+            parentMenu.AddMenuItem(menuButton);
+            MenuController.AddSubmenu(parentMenu, submenu);
+            MenuController.BindMenuItem(parentMenu, submenu, menuButton);
             submenu.RefreshIndex();
-            //submenu.UpdateScaleform();
         }
         #endregion
+
         #region Create Submenus
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.
@@ -525,14 +538,13 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(Menu, menu, button);
                 Menu.OnItemSelect += (sender, item, index) =>
                 {
                     if (item == button)
                     {
                         OnlinePlayersMenu.UpdatePlayerlist();
                         menu.RefreshIndex();
-                        //menu.UpdateScaleform();
                     }
                 };
             }
@@ -544,17 +556,19 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(Menu, menu, button);
                 Menu.OnItemSelect += (sender, item, index) =>
                 {
                     if (item == button)
                     {
                         TriggerServerEvent("vMenu:RequestBanList", Game.Player.Handle);
                         menu.RefreshIndex();
-                        //menu.UpdateScaleform();
                     }
                 };
             }
+
+            MenuItem playerSubmenuBtn = new MenuItem("Player Related Options", "Open this submenu for player related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(playerSubmenuBtn);
 
             // Add the player options menu.
             if (IsAllowed(Permission.POMenu))
@@ -565,9 +579,11 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(PlayerSubmenu, menu, button);
             }
 
+            MenuItem vehicleSubmenuBtn = new MenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(vehicleSubmenuBtn);
             // Add the vehicle options Menu.
             if (IsAllowed(Permission.VOMenu))
             {
@@ -577,7 +593,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(VehicleSubmenu, menu, button);
             }
 
             // Add the vehicle spawner menu.
@@ -589,7 +605,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(VehicleSubmenu, menu, button);
             }
 
             // Add Saved Vehicles menu.
@@ -601,8 +617,8 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
-                Menu.OnItemSelect += (sender, item, index) =>
+                AddMenu(VehicleSubmenu, menu, button);
+                VehicleSubmenu.OnItemSelect += (sender, item, index) =>
                 {
                     if (item == button)
                     {
@@ -620,7 +636,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(VehicleSubmenu, menu, button);
             }
 
             // Add the player appearance menu.
@@ -632,7 +648,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(PlayerSubmenu, menu, button);
 
                 MpPedCustomizationMenu = new MpPedCustomization();
                 Menu menu2 = MpPedCustomizationMenu.GetMenu();
@@ -640,8 +656,12 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu2, button2);
+                AddMenu(PlayerSubmenu, menu2, button2);
             }
+
+
+            MenuItem worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
+            Menu.AddMenuItem(worldSubmenuBtn);
 
             // Add the time options menu.
             // check for 'not true' to make sure that it _ONLY_ gets disabled if the owner _REALLY_ wants it disabled, not if they accidentally spelled "false" wrong or whatever.
@@ -653,7 +673,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(WorldSubmenu, menu, button);
             }
 
             // Add the weather options menu.
@@ -666,7 +686,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(WorldSubmenu, menu, button);
             }
 
             // Add the weapons menu.
@@ -678,7 +698,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(PlayerSubmenu, menu, button);
             }
 
             // Add Weapon Loadouts menu.
@@ -690,7 +710,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(PlayerSubmenu, menu, button);
             }
 
             // Add Voice Chat Menu.
@@ -702,7 +722,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(Menu, menu, button);
             }
 
             {
@@ -712,14 +732,10 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(Menu, menu, button);
             }
 
             // Add misc settings menu.
-            //if (CommonFunctions.IsAllowed(Permission.MSMenu))
-            // removed the permissions check, because the misc menu should've never been restricted in the first place.
-            // not sure why I even added this before... saving of preferences and similar functions should always be allowed.
-            // no matter what.
             {
                 MiscSettingsMenu = new MiscSettings();
                 Menu menu = MiscSettingsMenu.GetMenu();
@@ -727,7 +743,7 @@ namespace vMenuClient
                 {
                     Label = "→→→"
                 };
-                AddMenu(menu, button);
+                AddMenu(Menu, menu, button);
             }
 
             // Add About Menu.
@@ -737,7 +753,7 @@ namespace vMenuClient
             {
                 Label = "→→→"
             };
-            AddMenu(sub, btn);
+            AddMenu(Menu, sub, btn);
 
             // Refresh everything.
             MenuController.Menus.ForEach((m) => m.RefreshIndex());
@@ -745,6 +761,33 @@ namespace vMenuClient
             if (!GetSettingsBool(Setting.vmenu_use_permissions))
             {
                 Notify.Alert("vMenu is set up to ignore permissions, default permissions will be used.");
+            }
+
+            if (PlayerSubmenu.Size > 0)
+            {
+                MenuController.BindMenuItem(Menu, PlayerSubmenu, playerSubmenuBtn);
+            }
+            else
+            {
+                Menu.RemoveMenuItem(playerSubmenuBtn);
+            }
+
+            if (VehicleSubmenu.Size > 0)
+            {
+                MenuController.BindMenuItem(Menu, VehicleSubmenu, vehicleSubmenuBtn);
+            }
+            else
+            {
+                Menu.RemoveMenuItem(vehicleSubmenuBtn);
+            }
+
+            if (WorldSubmenu.Size > 0)
+            {
+                MenuController.BindMenuItem(Menu, WorldSubmenu, worldSubmenuBtn);
+            }
+            else
+            {
+                Menu.RemoveMenuItem(worldSubmenuBtn);
             }
         }
         #endregion

@@ -64,8 +64,8 @@ namespace vMenuClient
 
                         for (var cat = 0; cat < 22; cat++)
                         {
-                            Menu categoryMenu = new Menu("Addon Spawner", GetLocalizedName($"VEH_CLASS_{cat}"));
-                            MenuItem categoryBtn = new MenuItem(GetLocalizedName($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLocalizedName($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
+                            Menu categoryMenu = new Menu("Addon Spawner", GetLabelText($"VEH_CLASS_{cat}"));
+                            MenuItem categoryBtn = new MenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLabelText($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
 
                             addonCarsMenu.AddMenuItem(categoryBtn);
 
@@ -165,7 +165,7 @@ namespace vMenuClient
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
                 // Get the class name.
-                string className = GetLocalizedName($"VEH_CLASS_{vehClass.ToString()}");
+                string className = GetLabelText($"VEH_CLASS_{vehClass.ToString()}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.")
@@ -197,10 +197,11 @@ namespace vMenuClient
                 foreach (var veh in VehicleData.Vehicles.VehicleClasses[className])
                 {
                     // Convert the model name to start with a Capital letter, converting the other characters to lowercase. 
-                    var properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
+                    string properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
 
                     // Get the localized vehicle name, if it's "NULL" (no label found) then use the "properCasedModelName" created above.
-                    var vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
+                    string vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
+                    string vehModelName = veh;
 
                     // Loop through all the menu items and check each item's title/text and see if it matches the current vehicle (display) name.
                     var duplicate = false;
@@ -230,12 +231,12 @@ namespace vMenuClient
 
                             if (DoesModelExist(veh))
                             {
-                                var vehBtn = new MenuItem(vehName) { Enabled = true };
+                                var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                             }
                             else
                             {
-                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
+                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                                 vehBtn.RightIcon = MenuItem.Icon.LOCK;
                             }
@@ -251,12 +252,12 @@ namespace vMenuClient
                     {
                         if (DoesModelExist(veh))
                         {
-                            var vehBtn = new MenuItem(vehName) { Enabled = true };
+                            var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                         }
                         else
                         {
-                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false };
+                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                             vehBtn.RightIcon = MenuItem.Icon.LOCK;
                         }

@@ -117,6 +117,7 @@ namespace vMenuClient
 
                     if (item == toggleLights)
                     {
+                        PressKeyFob(CurrentPersonalVehicle);
                         if (itemIndex == 0)
                         {
                             SetVehicleLights(CurrentPersonalVehicle.Handle, 3);
@@ -267,22 +268,26 @@ namespace vMenuClient
 
                         if (item == toggleEngine)
                         {
+                            PressKeyFob(CurrentPersonalVehicle);
                             SetVehicleEngineOn(CurrentPersonalVehicle.Handle, !CurrentPersonalVehicle.IsEngineRunning, true, true);
                         }
 
                         else if (item == lockDoors || item == unlockDoors)
                         {
+                            PressKeyFob(CurrentPersonalVehicle);
                             bool _lock = item == lockDoors;
                             LockOrUnlockDoors(CurrentPersonalVehicle, _lock);
                         }
 
                         else if (item == soundHorn)
                         {
+                            PressKeyFob(CurrentPersonalVehicle);
                             SoundHorn(CurrentPersonalVehicle);
                         }
 
                         else if (item == toggleAlarm)
                         {
+                            PressKeyFob(CurrentPersonalVehicle);
                             ToggleVehicleAlarm(CurrentPersonalVehicle);
                         }
                     }
@@ -293,6 +298,8 @@ namespace vMenuClient
                 }
             };
         }
+
+        
 
         private async void SoundHorn(Vehicle veh)
         {

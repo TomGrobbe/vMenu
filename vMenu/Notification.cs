@@ -198,6 +198,26 @@ namespace vMenuClient
         {
             Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
         }
+
+        /// <summary>
+        /// Shows a custom notification with an image attached.
+        /// </summary>
+        /// <param name="textureDict"></param>
+        /// <param name="textureName"></param>
+        /// <param name="message"></param>
+        /// <param name="title"></param>
+        /// <param name="subtitle"></param>
+        /// <param name="safeToBrief"></param>
+        public static void CustomImage(string textureDict, string textureName, string message, string title, string subtitle, bool saveToBrief, int iconType = 0)
+        {
+            SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
+            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
+            {
+                AddTextComponentSubstringPlayerName(s);
+            }
+            SetNotificationMessage(textureName, textureDict, false, iconType, title, subtitle);
+            DrawNotification(false, saveToBrief);
+        }
     }
     #endregion
 
