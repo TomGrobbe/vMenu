@@ -356,7 +356,7 @@ namespace vMenuServer
                 if (target != null)
                 {
                     Log("Target player is not null so moving on.", LogLevel.info);
-                    //if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
+                    if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
                         Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban them.", LogLevel.info);
                         var banduration = (banDurationHours > 0 ?
@@ -410,11 +410,11 @@ namespace vMenuServer
                             }
                         }
                     }
-                    //else
-                    //{
-                    //    Log("Player could not be banned because he is exempt from being banned.", LogLevel.error);
-                    //    source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
-                    //}
+                    else
+                    {
+                        Log("Player could not be banned because he is exempt from being banned.", LogLevel.error);
+                        source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
+                    }
                 }
                 else
                 {
