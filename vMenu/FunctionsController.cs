@@ -2727,6 +2727,16 @@ namespace vMenuClient
                             DrawTextOnScreen($"Veh {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && v.IsOnScreen)
+                        {
+                            SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(v.Handle);
+
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
                     }
                 }
 
@@ -2748,6 +2758,17 @@ namespace vMenuClient
                             DrawTextOnScreen($"Prop {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(p.Handle);
+
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
                     }
                 }
 
@@ -2767,6 +2788,17 @@ namespace vMenuClient
                         {
                             SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
                             DrawTextOnScreen($"Ped {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            ClearDrawOrigin();
+                        }
+
+                        if (MainMenu.MiscSettingsMenu.ShowEntityModels && p.IsOnScreen)
+                        {
+                            SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
+                            int model = GetEntityModel(p.Handle);
+
+                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+
+                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
                     }
@@ -2800,6 +2832,8 @@ namespace vMenuClient
         #endregion
 
         #region Slow misc tick
+
+        internal static float entityRange = 2000f;
         /// <summary>
         /// Slow functions for the model dimensions outline entities lists.
         /// </summary>
@@ -2807,7 +2841,6 @@ namespace vMenuClient
         private async Task SlowMiscTick()
         {
             const int delay = 50;
-            const float entityRange = 2000f;
             //const int limit = 200;
             if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
