@@ -44,6 +44,7 @@ namespace vMenuShared
             vmenu_pvp_mode,
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
+            vmenu_disable_entity_outlines_tool
         }
 
         public static bool GetSettingsBool(Setting setting)
