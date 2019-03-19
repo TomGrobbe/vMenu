@@ -28,7 +28,7 @@ namespace vMenuServer
         /// <param name="data"></param>
         public static void Log(dynamic data, LogLevel level = LogLevel.none)
         {
-            if (MainServer.DebugMode)
+            if (MainServer.DebugMode || level == LogLevel.error || level == LogLevel.warning)
             {
                 string prefix = "[vMenu] ";
                 if (level == LogLevel.error)
@@ -358,6 +358,10 @@ namespace vMenuServer
                             Debug.WriteLine("vmenuserver weather <new weather type | dynamic <true | false>>");
                             Debug.WriteLine("vmenuserver time <freeze|<hour> <minute>>");
                         }
+                        else if (args[0].ToString().ToLower() == "migrate" && source < 1)
+                        {
+                            BanManager.MigrateBansToDatabase();
+                        }
                         else
                         {
                             Debug.WriteLine($"vMenu is currently running version: {Version}. Try ^5vmenuserver help^7 for info.");
@@ -463,6 +467,11 @@ namespace vMenuServer
                 // Start the loops
                 Tick += WeatherLoop;
                 Tick += TimeLoop;
+
+                if (GetSettingsBool(Setting.vmenu_bans_use_database) && !string.IsNullOrEmpty(LoadResourceFile(GetCurrentResourceName(), "bans.json")))
+                {
+                    Log("^3You have setup vMenu to use the SQLite database for storing banned players, however you also have a bans.json file!\nPlease check your configuration and only use ONE of these methods at a time.\nIf you no longer want to use the bans.json file, feel free to delete it after migrating to the database!^7", LogLevel.warning);
+                }
             }
         }
         #endregion
