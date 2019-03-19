@@ -16,7 +16,7 @@ namespace vMenuServer
     {
         private static bool readingOrWritingToBanFile = false;
         internal static bool useJson = !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_bans_use_database);
-        private static string bansDbFilePath = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_bans_database_filepath) ?? "";
+        private static readonly string bansDbFilePath = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_bans_database_filepath) ?? "";
         private const string bansDbFileName = "vmenu_bans.db";
 
         /// <summary>
@@ -132,7 +132,6 @@ namespace vMenuServer
                     }
                     db.Close();
                 }
-
                 return bans;
             }
         }
@@ -809,6 +808,9 @@ namespace vMenuServer
             }
             else
             {
+                useJson = false;
+                InitializeDbConnection();
+                useJson = true;
                 var bans = await GetBanList();
                 Debug.WriteLine($"[vMenu] Migrating {bans.Count} bans from the bans.json file to the vmenu_bans.db database!");
                 AddSqlBanRange(bans, true);
