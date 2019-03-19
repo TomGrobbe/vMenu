@@ -61,6 +61,7 @@ namespace vMenuClient
 
             // Create the menu items.
             MenuItem pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") { Label = "→→→" };
+            MenuItem saveCurrentPed = new MenuItem("Save Ped", "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
             MenuItem savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") { Label = "→→→" };
             MenuItem spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.") { Label = "→→→" };
 
@@ -82,6 +83,7 @@ namespace vMenuClient
 
             // Add items to the menu.
             menu.AddMenuItem(pedCustomization);
+            menu.AddMenuItem(saveCurrentPed);
             menu.AddMenuItem(savedPedsBtn);
             menu.AddMenuItem(spawnPedsBtn);
 
@@ -503,11 +505,22 @@ namespace vMenuClient
             };
 
             // Handle button presses.
-            menu.OnItemSelect += (sender, item, index) =>
+            menu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == pedCustomization)
                 {
                     RefreshCustomizationMenu();
+                }
+                else if (item == saveCurrentPed)
+                {
+                    if (await SavePed())
+                    {
+                        Notify.Success("Successfully saved your new ped.");
+                    }
+                    else
+                    {
+                        Notify.Error("Could not save your current ped, does that save name already exist?");
+                    }
                 }
             };
 
