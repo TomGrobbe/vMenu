@@ -765,25 +765,26 @@ namespace vMenuServer
                 {
                     SQLiteConnection.CreateFile(bansDbFilePath + bansDbFileName);
                     Debug.WriteLine("[vMenu] Created bans DB.");
+                }
 
-                    SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;");
-                    try
+                SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;");
+                try
+                {
+                    db.Open();
+                    string sql = "CREATE TABLE IF NOT EXISTS bans (identifiers STRING, playername STRING, banreason STRING, bannedby STRING, banneduntil DATETIME);";
+                    SQLiteCommand cmd = new SQLiteCommand(sql, db);
+                    cmd.ExecuteNonQuery();
+                    db.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"[vMenu] SQL ERROR: {e.Message}");
+                    if (db != null)
                     {
-                        db.Open();
-                        string sql = "CREATE TABLE bans (identifiers STRING, playername STRING, banreason STRING, bannedby STRING, banneduntil DATETIME);";
-                        SQLiteCommand cmd = new SQLiteCommand(sql, db);
-                        cmd.ExecuteNonQuery();
                         db.Dispose();
                     }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine($"[vMenu] SQL ERROR: {e.Message}");
-                        if (db != null)
-                        {
-                            db.Dispose();
-                        }
-                    }
                 }
+
             }
         }
 

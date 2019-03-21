@@ -67,6 +67,10 @@
     <Compile Include="UpdateChecker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\dependencies\server\libSQLite.Interop.so">
+      <Link>libSQLite.Interop.so</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="config\addons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
