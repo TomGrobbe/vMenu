@@ -16,6 +16,7 @@ after_build:
   - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta)
   - cmd: 7z a vMenu-%VERSION_NAME%.zip -r ..\build\*
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
+  - cmd: if %APPVEYOR_REPO_TAG%==true (curl -F "content=New version :tada:! <@&540562517806809109>" -F "file=@vMenu-"%VERSION_NAME%".zip" %DISCORD_FILE_WEBHOOK%)
 deploy:
   - provider: GitHub
     release: "[Release] vMenu $(VERSION_NAME)"
