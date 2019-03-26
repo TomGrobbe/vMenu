@@ -55,70 +55,10 @@ namespace vMenuClient
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
             EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
-            //EventHandlers.Add("gameEventTriggered", new Action<string, dynamic>(GameEventTriggered));
+            EventHandlers.Add("vMenu:UpdateTeleportLocations", new Action<string>(UpdateTeleportLocations));
             Tick += WeatherSync;
             Tick += TimeSync;
         }
-
-
-        //private void GameEventTriggered(string eventName, dynamic eventData)
-        //{
-        //    if (eventName == "CEventNetworkEntityDamage")
-        //    {
-        //        var damageEventData = new
-        //        {
-        //            name = eventName,
-        //            data = new
-        //            {
-        //                victim = (int)eventData[0],
-        //                attacker = (int)eventData[1],
-        //                unknownProbablyDamageFloat = (int)eventData[2],
-        //                boolIsEntityDead = ((int)eventData[3] == 1),
-        //                uintWeaponHash = (uint)eventData[4],
-        //                unknown1 = (int)eventData[5],
-        //                unknown2 = (int)eventData[6],
-        //                boolUnknown = (int)eventData[7],
-        //                unknown3 = (int)eventData[8],
-        //                boolIsMeleeDamage = ((int)eventData[9] != 0),
-        //                flagUnknown = (int)eventData[10]
-        //            }
-        //        };
-        //        Debug.WriteLine(JsonConvert.SerializeObject(damageEventData, Formatting.Indented));
-        //        if (DoesEntityExist(damageEventData.data.attacker) && IsEntityAPed(damageEventData.data.attacker))
-        //        {
-        //            Ped ped = (Ped)Ped.FromHandle(damageEventData.data.attacker);
-        //            if (ped.IsPlayer && damageEventData.data.boolIsEntityDead)
-        //            {
-        //                int player = NetworkGetPlayerIndexFromPed(ped.Handle);
-        //                if (NetworkIsPlayerActive(player))
-        //                {
-        //                    string name = GetPlayerName(player);
-        //                    string weapon = "(n/a)";
-        //                    var w = ValidWeapons.WeaponList.Find(f => f.Hash == (uint)damageEventData.data.uintWeaponHash);
-        //                    if (!string.IsNullOrEmpty(w.Name))
-        //                    {
-        //                        weapon = w.Name;
-        //                    }
-        //                    Notify.Info($"Player <C>{name}</C>~s~ killed entity {damageEventData.data.victim} using {weapon}!");
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        var d = new Dictionary<string, dynamic>
-        //        {
-        //            ["name"] = eventName,
-        //        };
-        //        int i = 0;
-        //        foreach (var data in eventData)
-        //        {
-        //            d.Add($"unk_{i}", data);
-        //            i++;
-        //        }
-        //        Debug.WriteLine(eventName + ": " + JsonConvert.SerializeObject(d, Formatting.Indented));
-        //    }
-        //}
 
         private bool firstSpawn = true;
         /// <summary>
@@ -584,6 +524,15 @@ namespace vMenuClient
             PlayerAppearance.ClothingAnimationType = -1;
             await Delay(100);
             PlayerAppearance.ClothingAnimationType = backup;
+        }
+
+        /// <summary>
+        /// Updates the teleports locations data from the server side locations.json, because that doesn't update client side on change.
+        /// </summary>
+        /// <param name="jsonData"></param>
+        private void UpdateTeleportLocations(string jsonData)
+        {
+            MiscSettings.TpLocations = JsonConvert.DeserializeObject<List<vMenuShared.ConfigManager.TeleportLocation>>(jsonData);
         }
     }
 }

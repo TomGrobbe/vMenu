@@ -57,8 +57,7 @@ namespace vMenuClient
         public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
         public bool KbRadarKeys { get; private set; } = UserDefaults.KbRadarKeys;
 
-        private List<Vector3> tpLocations = new List<Vector3>();
-        private List<float> tpLocationsHeading = new List<float>();
+        internal static List<vMenuShared.ConfigManager.TeleportLocation> TpLocations = new List<vMenuShared.ConfigManager.TeleportLocation>();
 
         /// <summary>
         /// Creates the menu.
@@ -103,7 +102,6 @@ namespace vMenuClient
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
-            MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
             MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
             MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
             MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
@@ -242,58 +240,68 @@ namespace vMenuClient
                 menu.AddMenuItem(teleportOptionsMenuBtn);
                 MenuController.BindMenuItem(menu, teleportOptionsMenu, teleportOptionsMenuBtn);
 
+                MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+                MenuItem saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
+                teleportOptionsMenu.OnItemSelect += (sender, item, index) =>
+                {
+                    // Teleport to waypoint.
+                    if (item == tptowp)
+                    {
+                        TeleportToWp();
+                    }
+                    else if (item == saveLocationBtn)
+                    {
+                        SavePlayerLocationToLocationsFile();
+                    }
+                };
+
                 if (IsAllowed(Permission.MSTeleportToWp))
                 {
                     teleportOptionsMenu.AddMenuItem(tptowp);
                     keybindMenu.AddMenuItem(kbTpToWaypoint);
-                    teleportOptionsMenu.OnItemSelect += (sender, item, index) =>
-                    {
-                        // Teleport to waypoint.
-                        if (item == tptowp)
-                        {
-                            TeleportToWp();
-                        }
-                    };
+
                 }
                 if (IsAllowed(Permission.MSTeleportLocations))
                 {
                     teleportOptionsMenu.AddMenuItem(teleportMenuBtn);
+
                     MenuController.AddSubmenu(teleportOptionsMenu, teleportMenu);
                     MenuController.BindMenuItem(teleportOptionsMenu, teleportMenu, teleportMenuBtn);
                     teleportMenuBtn.Label = "→→→";
 
-                    string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
-                    if (string.IsNullOrEmpty(json))
+                    teleportMenu.OnMenuOpen += (sender) =>
                     {
-                        Notify.Error("An error occurred while loading the locations file.");
-                    }
-                    else
-                    {
-                        try
+                        if (teleportMenu.Size != TpLocations.Count())
                         {
-                            Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
-                            foreach (Newtonsoft.Json.Linq.JToken teleport in data["teleports"])
+                            teleportMenu.ClearMenuItems();
+                            foreach (var location in TpLocations)
                             {
-                                string name = teleport["name"].ToString();
-                                float heading = (float)teleport["heading"];
-                                Vector3 coordinates = new Vector3((float)teleport["coordinates"]["x"], (float)teleport["coordinates"]["y"], (float)teleport["coordinates"]["z"]);
-                                MenuItem tpBtn = new MenuItem(name, $"Teleport to X: {(int)coordinates.X} Y: {(int)coordinates.Y} Z: {(int)coordinates.Z} HEADING: {(int)heading}.");
+                                var x = Math.Round(location.coordinates.X, 2);
+                                var y = Math.Round(location.coordinates.Y, 2);
+                                var z = Math.Round(location.coordinates.Z, 2);
+                                var heading = Math.Round(location.heading, 2);
+                                MenuItem tpBtn = new MenuItem(location.name, $"Teleport to ~y~{location.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = location };
                                 teleportMenu.AddMenuItem(tpBtn);
-                                tpLocations.Add(coordinates);
-                                tpLocationsHeading.Add(heading);
                             }
-                            teleportMenu.OnItemSelect += async (sender, item, index) =>
-                            {
-                                await TeleportToCoords(tpLocations[index], true);
-                                SetEntityHeading(Game.PlayerPed.Handle, tpLocationsHeading[index]);
-                            };
                         }
-                        catch (JsonReaderException ex)
+                    };
+
+                    teleportMenu.OnItemSelect += async (sender, item, index) =>
+                    {
+                        if (item.ItemData is vMenuShared.ConfigManager.TeleportLocation tl)
                         {
-                            Debug.Write($"\n[vMenu] An error occurred whie loading the teleport locations!\nReport the following error details to the server owner:\n{ex.Message}.\n");
+                            await TeleportToCoords(tl.coordinates, true);
+                            SetEntityHeading(Game.PlayerPed.Handle, tl.heading);
+                            SetGameplayCamRelativeHeading(0f);
                         }
+                    };
+
+                    if (IsAllowed(Permission.MSTeleportSaveLocation))
+                    {
+                        teleportOptionsMenu.AddMenuItem(saveLocationBtn);
                     }
                 }
+
             }
 
             #region dev tools menu
@@ -666,43 +674,25 @@ namespace vMenuClient
         {
             if (enable)
             {
-                string json = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
-                if (string.IsNullOrEmpty(json))
+                try
                 {
-                    Notify.Error("An error occurred while loading the locations file.");
+                    foreach (var bl in vMenuShared.ConfigManager.GetLocationBlipsData())
+                    {
+                        int blipID = AddBlipForCoord(bl.coordinates.X, bl.coordinates.Y, bl.coordinates.Z);
+                        SetBlipSprite(blipID, bl.spriteID);
+                        BeginTextCommandSetBlipName("STRING");
+                        AddTextComponentSubstringPlayerName(bl.name);
+                        EndTextCommandSetBlipName(blipID);
+                        SetBlipColour(blipID, bl.color);
+                        SetBlipAsShortRange(blipID, true);
+
+                        Blip b = new Blip(bl.coordinates, bl.spriteID, bl.name, bl.color, blipID);
+                        blips.Add(b);
+                    }
                 }
-                else
+                catch (JsonReaderException ex)
                 {
-                    try
-                    {
-                        Newtonsoft.Json.Linq.JObject data = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(json);
-                        if (data != null && data["blips"] != null && data["blips"].Count() > 0)
-                        {
-                            foreach (Newtonsoft.Json.Linq.JToken blip in data["blips"])
-                            {
-                                string name = blip["name"].ToString();
-                                int color = (int)blip["color"];
-                                int spriteID = (int)blip["spriteID"];
-                                Vector3 coords = new Vector3((float)blip["coordinates"]["x"], (float)blip["coordinates"]["y"], (float)blip["coordinates"]["z"]);
-                                int blipID = AddBlipForCoord(coords.X, coords.Y, coords.Z);
-                                SetBlipSprite(blipID, spriteID);
-                                BeginTextCommandSetBlipName("STRING");
-                                AddTextComponentSubstringPlayerName(name);
-                                EndTextCommandSetBlipName(blipID);
-                                SetBlipColour(blipID, color);
-                                SetBlipAsShortRange(blipID, true);
-
-
-                                Blip b = new Blip(coords, spriteID, name, color, blipID);
-                                blips.Add(b);
-                            }
-                        }
-
-                    }
-                    catch (JsonReaderException ex)
-                    {
-                        Debug.Write($"\n\n[vMenu] An error occurred while loading the locations.json file. Please contact the server owner to resolve this.\nWhen contacting the owner, provide the following error details:\n{ex.Message}.\n\n\n");
-                    }
+                    Debug.Write($"\n\n[vMenu] An error occurred while loading the locations.json file. Please contact the server owner to resolve this.\nWhen contacting the owner, provide the following error details:\n{ex.Message}.\n\n\n");
                 }
             }
             else

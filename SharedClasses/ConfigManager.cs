@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using Newtonsoft.Json;
 
 namespace vMenuShared
 {
@@ -92,5 +93,110 @@ namespace vMenuShared
         {
             return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
         }
+
+        #region Get saved locations from the locations.json
+        /// <summary>
+        /// Gets the locations.json data.
+        /// </summary>
+        /// <returns></returns>
+        public static Locations GetLocations()
+        {
+            Locations data = new Locations();
+
+            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+            try
+            {
+                if (string.IsNullOrEmpty(jsonFile))
+                {
+#if CLIENT
+                    vMenuClient.Notify.Error("The locations.json file is empty or does not exist, please tell the server owner to fix this.");
+#endif
+#if SERVER
+                    vMenuServer.DebugLog.Log("The locations.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+#endif
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<Locations>(jsonFile);
+                }
+            }
+            catch (Exception e)
+            {
+#if CLIENT
+                vMenuClient.Notify.Error("An error occurred while processing the locations.json file. Teleport Locations and Location Blips will be unavailable. Please correct any errors in the locations.json file.");
+#endif
+                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Gets just the teleport locations data from the locations.json.
+        /// </summary>
+        /// <returns></returns>
+        public static List<TeleportLocation> GetTeleportLocationsData()
+        {
+            return GetLocations().teleports;
+        }
+
+        /// <summary>
+        /// Gets just the blips data from the locations.json.
+        /// </summary>
+        /// <returns></returns>
+        public static List<LocationBlip> GetLocationBlipsData()
+        {
+            return GetLocations().blips;
+        }
+
+        /// <summary>
+        /// Struct used for deserializing json only.
+        /// </summary>
+        public struct Locations
+        {
+            public List<TeleportLocation> teleports;
+            public List<LocationBlip> blips;
+        }
+
+        /// <summary>
+        /// Teleport location struct.
+        /// </summary>
+        public struct TeleportLocation
+        {
+            public string name;
+            public Vector3 coordinates;
+            public float heading;
+
+            public TeleportLocation(string name, Vector3 coordinates, float heading)
+            {
+                this.name = name;
+                this.coordinates = coordinates;
+                this.heading = heading;
+            }
+        }
+
+        /// <summary>
+        /// Location blip struct.
+        /// </summary>
+        public struct LocationBlip
+        {
+            public string name;
+            public Vector3 coordinates;
+            public int spriteID;
+            public int color;
+
+            public LocationBlip(string name, Vector3 coordinates, int spriteID, int color)
+            {
+                this.name = name;
+                this.coordinates = coordinates;
+                this.spriteID = spriteID;
+                this.color = color;
+            }
+        }
+        #endregion
     }
+
+
+
+
 }
