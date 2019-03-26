@@ -391,7 +391,7 @@ namespace vMenuServer
                         }
                         else
                         {
-                            BanRecord br = new BanRecord(GetSafePlayerName(source.Name), target.Identifiers.ToList(), banduration, banReason, GetSafePlayerName(target.Name));
+                            BanRecord br = new BanRecord(GetSafePlayerName(target.Name), target.Identifiers.ToList(), banduration, banReason, GetSafePlayerName(source.Name));
                             if (AddSqlBan(br))
                             {
                                 BanLog($"A new ban record has been added. Player: '{br.playerName}' was banned by " +
