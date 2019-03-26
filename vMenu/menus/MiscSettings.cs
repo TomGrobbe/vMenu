@@ -109,7 +109,7 @@ namespace vMenuClient
             MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
             MenuCheckboxItem hideRadar = new MenuCheckboxItem("Hide Radar", "Hide the radar/minimap.", HideRadar);
             MenuCheckboxItem hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
-            MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take about 1.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
+            MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take(s) up to -4.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
             MenuCheckboxItem drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
             MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.")
             {
@@ -436,10 +436,6 @@ namespace vMenuClient
             menu.AddMenuItem(disablePms);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
-            //menu.AddMenuItem(vehModelDimensions);
-            //menu.AddMenuItem(propModelDimensions);
-            //menu.AddMenuItem(pedModelDimensions);
-            //menu.AddMenuItem(showEntityHandles);
             menu.AddMenuItem(keybindMenuBtn);
             keybindMenuBtn.Label = "→→→";
             if (IsAllowed(Permission.MSConnectionMenu))
@@ -447,10 +443,6 @@ namespace vMenuClient
                 menu.AddMenuItem(connectionSubmenuBtn);
                 connectionSubmenuBtn.Label = "→→→";
             }
-            //if (IsAllowed(Permission.MSShowCoordinates))
-            //{
-            //    menu.AddMenuItem(coords);
-            //}
             if (IsAllowed(Permission.MSShowLocation))
             {
                 menu.AddMenuItem(showLocation);
@@ -485,16 +477,6 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(playerNames);
             }
-
-
-            //menu.AddMenuItem(enableTimeCycle);
-            //menu.AddMenuItem(timeCycles);
-            //menu.AddMenuItem(timeCycleIntensity);
-
-            //if (IsAllowed(Permission.MSClearArea))
-            //{
-            //    menu.AddMenuItem(clearArea);
-            //}
             // always allowed, it just won't do anything if the server owner disabled the feature, but players can still toggle it.
             menu.AddMenuItem(respawnDefaultCharacter);
             if (IsAllowed(Permission.MSRestoreAppearance))
@@ -627,9 +609,6 @@ namespace vMenuClient
                     UserDefaults.SaveSettings();
                 }
             };
-
-
-
         }
 
 
