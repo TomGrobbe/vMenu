@@ -274,6 +274,8 @@ namespace vMenuClient
                     // Reset the menu subtitle counter pre-text.
                     if (MainMenu.WeatherOptionsMenu != null)
                         MainMenu.WeatherOptionsMenu.GetMenu().CounterPreText = null;
+
+                    TriggerEvent("vMenu:WeatherChangeComplete", previousWeather, currentWeatherType);
                 }
                 if (!justChanged)
                 {
