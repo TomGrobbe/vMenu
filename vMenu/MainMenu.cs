@@ -789,6 +789,11 @@ namespace vMenuClient
             {
                 Menu.RemoveMenuItem(worldSubmenuBtn);
             }
+
+            if (MiscSettingsMenu != null)
+            {
+                MenuController.EnableMenuToggleKeyOnController = !MiscSettingsMenu.MiscDisableControllerSupport;
+            }
         }
         #endregion
     }

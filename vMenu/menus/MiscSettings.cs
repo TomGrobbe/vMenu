@@ -44,6 +44,7 @@ namespace vMenuClient
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
         public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
+        public bool MiscDisableControllerSupport { get; private set; } = UserDefaults.MiscDisableControllerSupport;
 
         internal bool TimecycleEnabled { get; private set; } = false;
 
@@ -104,6 +105,7 @@ namespace vMenuClient
             // Create the menu items.
             MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
             MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
+            MenuCheckboxItem disableControllerKey = new MenuCheckboxItem("Disable Controller Support", "This disables the controller menu toggle key. This does NOT disable the navigation buttons.", MiscDisableControllerSupport);
             MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
             MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
             MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
@@ -434,6 +436,7 @@ namespace vMenuClient
             // Always allowed
             menu.AddMenuItem(rightAlignMenu);
             menu.AddMenuItem(disablePms);
+            menu.AddMenuItem(disableControllerKey);
             menu.AddMenuItem(speedKmh);
             menu.AddMenuItem(speedMph);
             menu.AddMenuItem(keybindMenuBtn);
@@ -518,6 +521,11 @@ namespace vMenuClient
                 else if (item == disablePms)
                 {
                     MiscDisablePrivateMessages = _checked;
+                }
+                else if (item == disableControllerKey)
+                {
+                    MiscDisableControllerSupport = _checked;
+                    MenuController.EnableMenuToggleKeyOnController = !_checked;
                 }
                 else if (item == speedKmh)
                 {
