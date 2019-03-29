@@ -307,6 +307,7 @@ namespace vMenuShared
             MSAll,
             MSClearArea,
             MSTeleportToWp,
+            MSTeleportToCoord,
             MSShowCoordinates,
             MSShowLocation,
             MSJoinQuitNotifs,

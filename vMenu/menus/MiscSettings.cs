@@ -238,20 +238,85 @@ namespace vMenuClient
             };
 
             // Teleportation options
-            if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations))
+            if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations) || IsAllowed(Permission.MSTeleportToCoord))
             {
                 MenuItem teleportOptionsMenuBtn = new MenuItem("Teleport Options", "Various teleport options.") { Label = "→→→" };
                 menu.AddMenuItem(teleportOptionsMenuBtn);
                 MenuController.BindMenuItem(menu, teleportOptionsMenu, teleportOptionsMenuBtn);
 
                 MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
+                MenuItem tpToCoord = new MenuItem("Teleport To Coords", "Enter x, y, z coordinates and you will be teleported to that location.");
                 MenuItem saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
-                teleportOptionsMenu.OnItemSelect += (sender, item, index) =>
+                teleportOptionsMenu.OnItemSelect += async (sender, item, index) =>
                 {
                     // Teleport to waypoint.
                     if (item == tptowp)
                     {
                         TeleportToWp();
+                    }
+                    else if (item == tpToCoord)
+                    {
+                        string x = await GetUserInput("Enter X coordinate.");
+                        if (string.IsNullOrEmpty(x))
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                            return;
+                        }
+                        string y = await GetUserInput("Enter Y coordinate.");
+                        if (string.IsNullOrEmpty(y))
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                            return;
+                        }
+                        string z = await GetUserInput("Enter Z coordinate.");
+                        if (string.IsNullOrEmpty(z))
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                            return;
+                        }
+
+                        float posX = 0f;
+                        float posY = 0f;
+                        float posZ = 0f;
+
+                        if (!float.TryParse(x, out posX))
+                        {
+                            if (int.TryParse(x, out int intX))
+                            {
+                                posX = (float)intX;
+                            }
+                            else
+                            {
+                                Notify.Error("You did not enter a valid X coordinate.");
+                                return;
+                            }
+                        }
+                        if (!float.TryParse(y, out posY))
+                        {
+                            if (int.TryParse(y, out int intY))
+                            {
+                                posY = (float)intY;
+                            }
+                            else
+                            {
+                                Notify.Error("You did not enter a valid Y coordinate.");
+                                return;
+                            }
+                        }
+                        if (!float.TryParse(z, out posZ))
+                        {
+                            if (int.TryParse(z, out int intZ))
+                            {
+                                posZ = (float)intZ;
+                            }
+                            else
+                            {
+                                Notify.Error("You did not enter a valid Z coordinate.");
+                                return;
+                            }
+                        }
+
+                        await TeleportToCoords(new Vector3(posX, posY, posZ), true);
                     }
                     else if (item == saveLocationBtn)
                     {
@@ -263,7 +328,10 @@ namespace vMenuClient
                 {
                     teleportOptionsMenu.AddMenuItem(tptowp);
                     keybindMenu.AddMenuItem(kbTpToWaypoint);
-
+                }
+                if (IsAllowed(Permission.MSTeleportToCoord))
+                {
+                    teleportOptionsMenu.AddMenuItem(tpToCoord);
                 }
                 if (IsAllowed(Permission.MSTeleportLocations))
                 {
