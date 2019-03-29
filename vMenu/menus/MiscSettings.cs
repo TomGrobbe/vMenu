@@ -47,6 +47,8 @@ namespace vMenuClient
         public bool MiscDisableControllerSupport { get; private set; } = UserDefaults.MiscDisableControllerSupport;
 
         internal bool TimecycleEnabled { get; private set; } = false;
+        internal int LastTimeCycleModifierIndex { get; private set; } = UserDefaults.MiscLastTimeCycleModifierIndex;
+        internal int LastTimeCycleModifierStrength { get; private set; } = UserDefaults.MiscLastTimeCycleModifierStrength;
 
 
         // keybind states
@@ -151,8 +153,8 @@ namespace vMenuClient
             {
                 timeCycleModifiersListData[i] += $" ({i + 1}/{timeCycleModifiersListData.Count})";
             }
-            MenuListItem timeCycles = new MenuListItem("TM", timeCycleModifiersListData, 0, "Select a timecycle modifier and enable the checkbox above.");
-            MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, 20, true);
+            MenuListItem timeCycles = new MenuListItem("TM", timeCycleModifiersListData, MathUtil.Clamp(LastTimeCycleModifierIndex, 0, Math.Max(0, timeCycleModifiersListData.Count - 1)), "Select a timecycle modifier and enable the checkbox above.");
+            MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, LastTimeCycleModifierStrength, true);
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
@@ -351,6 +353,8 @@ namespace vMenuClient
                         float intensity = ((float)newPos / 20f);
                         SetTimecycleModifierStrength(intensity);
                     }
+                    UserDefaults.MiscLastTimeCycleModifierIndex = timeCycles.ListIndex;
+                    UserDefaults.MiscLastTimeCycleModifierStrength = timeCycleIntensity.Position;
                 }
                 else if (item == dimensionsDistanceSlider)
                 {
@@ -369,6 +373,8 @@ namespace vMenuClient
                         float intensity = ((float)timeCycleIntensity.Position / 20f);
                         SetTimecycleModifierStrength(intensity);
                     }
+                    UserDefaults.MiscLastTimeCycleModifierIndex = timeCycles.ListIndex;
+                    UserDefaults.MiscLastTimeCycleModifierStrength = timeCycleIntensity.Position;
                 }
             };
 

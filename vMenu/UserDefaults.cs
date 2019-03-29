@@ -292,6 +292,18 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscDisableControllerSupport", value); }
         }
 
+        public static int MiscLastTimeCycleModifierIndex
+        {
+            get { return GetSettingsInt("miscLastTimeCycleModifierIndex"); }
+            set { SetSavedSettingsInt("miscLastTimeCycleModifierIndex", value); }
+        }
+
+        public static int MiscLastTimeCycleModifierStrength
+        {
+            get { return GetSettingsInt("miscLastTimeCycleModifierStrength"); }
+            set { SetSavedSettingsInt("miscLastTimeCycleModifierStrength", value); }
+        }
+
         #region keybind menu
         public static bool KbTpToWaypoint
         {

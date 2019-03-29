@@ -201,6 +201,14 @@ namespace vMenuClient
                                     {
                                         type = 2;
                                     }
+                                    else if (kvp == "settings_miscLastTimeCycleModifierIndex") // int
+                                    {
+                                        type = 2;
+                                    }
+                                    else if (kvp == "settings_miscLastTimeCycleModifierStrength") // int
+                                    {
+                                        type = 2;
+                                    }
                                 }
                                 else if (kvp == "vmenu_cleanup_version") // int
                                 {
