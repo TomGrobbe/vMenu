@@ -47,7 +47,8 @@ namespace vMenuShared
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
             vmenu_bans_database_filepath,
-            vmenu_bans_use_database
+            vmenu_bans_use_database,
+            vmenu_default_ban_message_information
         }
 
         public static bool GetSettingsBool(Setting setting)
