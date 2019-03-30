@@ -3031,11 +3031,11 @@ namespace vMenuClient
         #endregion
 
         #region Encoded float to normal float
-        /// <summary>
-        /// Converts an IEEE 754 (int encoded) floating-point to a real float value.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Converts an IEEE 754 (int encoded) floating-point to a real float value.
+        ///// </summary>
+        ///// <param name="input"></param>
+        ///// <returns></returns>
         //public static float IntToFloat(int input)
         //{
         //    // This function is based on the 'hex2float' snippet found here for Lua:
@@ -3082,6 +3082,30 @@ namespace vMenuClient
         //    }
         //    return n;
         //}
+        #endregion
+
+        #region save player location to the server locations.json file
+        /// <summary>
+        /// Saves the player's location as a new teleport location in the teleport options menu.
+        /// </summary>
+        public static async void SavePlayerLocationToLocationsFile()
+        {
+            var pos = Game.PlayerPed.Position;
+            var heading = Game.PlayerPed.Heading;
+            string locationName = await GetUserInput("Enter location save name", 30);
+            if (string.IsNullOrEmpty(locationName))
+            {
+                Notify.Error(CommonErrors.InvalidInput);
+                return;
+            }
+            if (vMenuShared.ConfigManager.GetTeleportLocationsData().Any(loc => loc.name == locationName))
+            {
+                Notify.Error("This location name is already used, please use a different name.");
+                return;
+            }
+            TriggerServerEvent("vMenu:SaveTeleportLocation", JsonConvert.SerializeObject(new vMenuShared.ConfigManager.TeleportLocation(locationName, pos, heading)));
+            Notify.Success("The location was successfully saved.");
+        }
         #endregion
     }
 }

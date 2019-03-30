@@ -286,6 +286,24 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscDisablePrivateMessages", value); }
         }
 
+        public static bool MiscDisableControllerSupport
+        {
+            get { return GetSettingsBool("miscDisableControllerSupport"); }
+            set { SetSavedSettingsBool("miscDisableControllerSupport", value); }
+        }
+
+        public static int MiscLastTimeCycleModifierIndex
+        {
+            get { return GetSettingsInt("miscLastTimeCycleModifierIndex"); }
+            set { SetSavedSettingsInt("miscLastTimeCycleModifierIndex", value); }
+        }
+
+        public static int MiscLastTimeCycleModifierStrength
+        {
+            get { return GetSettingsInt("miscLastTimeCycleModifierStrength"); }
+            set { SetSavedSettingsInt("miscLastTimeCycleModifierStrength", value); }
+        }
+
         #region keybind menu
         public static bool KbTpToWaypoint
         {
@@ -546,6 +564,9 @@ namespace vMenuClient
 
                 MiscDisablePrivateMessages = MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages;
                 prefs.Add("miscDisablePrivateMessages", MiscDisablePrivateMessages);
+
+                MiscDisableControllerSupport = MainMenu.MiscSettingsMenu.MiscDisableControllerSupport;
+                prefs.Add("miscDisableControllerSupport", MiscDisableControllerSupport);
 
                 KbTpToWaypoint = MainMenu.MiscSettingsMenu.KbTpToWaypoint;
                 prefs.Add("kbTpToWaypoint", KbTpToWaypoint);

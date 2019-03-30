@@ -55,7 +55,6 @@ namespace vMenuClient
                 }
             };
 
-
             for (int i = 0; i < 22; i++)
             {
                 Menu categoryMenu = new Menu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"));
@@ -97,6 +96,11 @@ namespace vMenuClient
             selectedVehicleMenu.AddMenuItem(renameVehicle);
             selectedVehicleMenu.AddMenuItem(replaceVehicle);
             selectedVehicleMenu.AddMenuItem(deleteVehicle);
+
+            selectedVehicleMenu.OnMenuOpen += (sender) =>
+            {
+                spawnVehicle.Label = "(" + GetDisplayNameFromVehicleModel(currentlySelectedVehicle.Value.model).ToLower() + ")";
+            };
 
             selectedVehicleMenu.OnMenuClose += (sender) =>
             {
@@ -228,9 +232,7 @@ namespace vMenuClient
                 {
                     if (i.ItemData is KeyValuePair<string, VehicleInfo> vd)
                     {
-
                         i.Label = $"({vd.Value.name})";
-
                     }
                 }
             }

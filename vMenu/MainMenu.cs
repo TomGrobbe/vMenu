@@ -61,7 +61,7 @@ namespace vMenuClient
         public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
         public static bool DisableControls { get { return MenuController.DisableMenuButtons; } set { MenuController.DisableMenuButtons = value; } }
 
-        private const int currentCleanupVersion = 1;
+        private const int currentCleanupVersion = 2;
         #endregion
 
         /// <summary>
@@ -89,6 +89,7 @@ namespace vMenuClient
                         cleanupVersionChecked = true;
                     }
                 }
+                tmp_kvp_names.Add(k);
             }
             EndFindKvp(tmp_kvp_handle);
 
@@ -97,12 +98,20 @@ namespace vMenuClient
                 SetResourceKvpInt("vmenu_cleanup_version", currentCleanupVersion);
                 foreach (string kvp in tmp_kvp_names)
                 {
-                    if (currentCleanupVersion == 1)
+                    if (currentCleanupVersion == 1 || currentCleanupVersion == 2)
                     {
                         if (!kvp.StartsWith("settings_") && !kvp.StartsWith("vmenu") && !kvp.StartsWith("veh_") && !kvp.StartsWith("ped_") && !kvp.StartsWith("mp_ped_"))
                         {
                             DeleteResourceKvp(kvp);
-                            Debug.WriteLine($"[vMenu] Old unused KVP cleaned up: {kvp}.");
+                            Debug.WriteLine($"[vMenu] [cleanup id: 1] Removed unused (old) KVP: {kvp}.");
+                        }
+                    }
+                    if (currentCleanupVersion == 2)
+                    {
+                        if (kvp.StartsWith("mp_char"))
+                        {
+                            DeleteResourceKvp(kvp);
+                            Debug.WriteLine($"[vMenu] [cleanup id: 2] Removed unused (old) KVP: {kvp}.");
                         }
                     }
                 }
@@ -189,6 +198,14 @@ namespace vMenuClient
                                         type = 1;
                                     }
                                     else if (kvp == "settings_clothingAnimationType") // int
+                                    {
+                                        type = 2;
+                                    }
+                                    else if (kvp == "settings_miscLastTimeCycleModifierIndex") // int
+                                    {
+                                        type = 2;
+                                    }
+                                    else if (kvp == "settings_miscLastTimeCycleModifierStrength") // int
                                     {
                                         type = 2;
                                     }
@@ -788,6 +805,11 @@ namespace vMenuClient
             else
             {
                 Menu.RemoveMenuItem(worldSubmenuBtn);
+            }
+
+            if (MiscSettingsMenu != null)
+            {
+                MenuController.EnableMenuToggleKeyOnController = !MiscSettingsMenu.MiscDisableControllerSupport;
             }
         }
         #endregion
