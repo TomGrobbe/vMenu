@@ -1697,8 +1697,8 @@ namespace vMenuClient
                 {
                     veh = GetVehicle();
 
-                    // Get the mod type (suspension, armor, etc) name (convert the PascalCase to the Proper Case string values).
-                    var typeName = ToProperString(mod.ModType.ToString());
+                    // Get the proper localized mod type (suspension, armor, etc) name.
+                    var typeName = mod.LocalizedModTypeName;
 
                     // Create a list to all available upgrades for this modtype.
                     var modlist = new List<string>();
