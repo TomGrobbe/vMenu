@@ -449,6 +449,41 @@ namespace vMenuClient
                             }
                         }
 
+                        if (MainMenu.VehicleOptionsMenu.VehicleCruiseControl)
+                        {
+                            float cruiseSpeed = MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed;
+                            float speed = GetEntitySpeedVector(veh.Handle, true).Y;
+
+
+                            if (veh.Model.IsHelicopter || cruiseSpeed < 0.01f || speed < 0.01f)
+                            {
+                                ((MenuCheckboxItem)MainMenu.VehicleOptionsMenu.GetMenu().GetMenuItems()
+                                    .Find(x => x.Text == "Cruise Control")).Checked = false;
+                                MainMenu.VehicleOptionsMenu.VehicleCruiseControl = false;
+                                MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed = 0.0f;
+                            }
+
+                            bool inSeat = veh.Model.IsPlane || veh.GetPedOnSeat(VehicleSeat.Driver) == ped;
+                            bool isInAirOrUpsideDownIfCar = !veh.Model.IsPlane && (!veh.IsOnAllWheels || veh.IsInWater);
+
+                            if (!(!inSeat || isInAirOrUpsideDownIfCar))
+                            {
+                                if (veh.Exists() && MainMenu.VehicleOptionsMenu.VehicleCruiseControl)
+                                {
+                                    if (Math.Abs(speed - cruiseSpeed) < 2 * veh.MaxBraking)
+                                    {
+                                        SetVehicleForwardSpeed(veh.Handle,
+                                            MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed);
+                                    }
+                                    else
+                                    {
+                                        SetVehicleForwardSpeed(veh.Handle,
+                                            speed + veh.Acceleration);
+                                    }
+                                }
+                            }
+                        }
+
                         await Delay(0);
                     }
                 }
@@ -483,6 +518,11 @@ namespace vMenuClient
                             Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
                         }
                     }
+                    //Turn off cruise control
+                    ((MenuCheckboxItem)MainMenu.VehicleOptionsMenu.GetMenu().GetMenuItems()
+                        .Find(x => x.Text == "Cruise Control")).Checked = false;
+                    MainMenu.VehicleOptionsMenu.VehicleCruiseControl = false;
+                    MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed = 0.0f;
                 }
 
                 await Delay(1);
@@ -573,11 +613,36 @@ namespace vMenuClient
                 }
                 return $"{color}{health}";
             }
-            if (MainMenu.PermissionsSetupComplete && MainMenu.VehicleOptionsMenu != null && MainMenu.VehicleOptionsMenu.VehicleShowHealth && veh != null && veh.Exists())
+            if (MainMenu.PermissionsSetupComplete && MainMenu.VehicleOptionsMenu != null)
             {
-                DrawTextOnScreen($"~n~Engine health: {GetHealthString(Math.Round(veh.EngineHealth, 2))}", 0.5f, 0.0f);
-                DrawTextOnScreen($"~n~~n~Body health: {GetHealthString(Math.Round(veh.BodyHealth, 2))}", 0.5f, 0.0f);
-                DrawTextOnScreen($"~n~~n~~n~Tank health: {GetHealthString(Math.Round(veh.PetrolTankHealth, 2))}", 0.5f, 0.0f);
+                if (MainMenu.VehicleOptionsMenu.VehicleShowHealth && veh != null && veh.Exists())
+                {
+                    DrawTextOnScreen($"~n~Engine health: {GetHealthString(Math.Round(veh.EngineHealth, 2))}", 0.5f,
+                        0.0f);
+                    DrawTextOnScreen($"~n~~n~Body health: {GetHealthString(Math.Round(veh.BodyHealth, 2))}", 0.5f,
+                        0.0f);
+                    DrawTextOnScreen($"~n~~n~~n~Tank health: {GetHealthString(Math.Round(veh.PetrolTankHealth, 2))}",
+                        0.5f, 0.0f);
+                }
+
+                if (IsPedInAnyVehicle(Game.PlayerPed.Handle, true) && IsAllowed(Permission.VOMenu) && veh != null &&
+                    veh.Exists())
+                {
+                    if (MainMenu.VehicleOptionsMenu.VehicleCruiseControl)
+                    {
+                        //INPUT_VEH_BRAKE = 72,
+                        if (Game.IsControlJustReleased(0, Control.VehicleBrake))
+                        {
+                            MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed -= 2.0f / 3.6f;
+                        }
+
+                        //INPUT_VEH_ACCELERATE = 71,
+                        if (Game.IsControlJustReleased(0, Control.VehicleAccelerate))
+                        {
+                            MainMenu.VehicleOptionsMenu.VehicleCruiseControlSpeed += 2.0f / 3.6f;
+                        }
+                    }
+                }
             }
 
             await Task.FromResult(0);

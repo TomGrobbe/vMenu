@@ -46,12 +46,14 @@ namespace vMenuClient
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
         public bool VehicleInfiniteFuel { get; private set; } = false;
+        public bool VehicleCruiseControl { get; set; } = false;
         public bool VehicleShowHealth { get; private set; } = false;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
+        public float VehicleCruiseControlSpeed { get; set; } = 0f;
 
         private Dictionary<MenuItem, int> vehicleExtras = new Dictionary<MenuItem, int>();
         #endregion
@@ -85,6 +87,7 @@ namespace vMenuClient
             MenuCheckboxItem highbeamsOnHonk = new MenuCheckboxItem("Flash Highbeams On Honk", "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
             MenuCheckboxItem showHealth = new MenuCheckboxItem("Show Vehicle Health", "Shows the vehicle health on the screen.", VehicleShowHealth);
             MenuCheckboxItem infiniteFuel = new MenuCheckboxItem("Infinite Fuel", "Enables or disables infinite fuel for this vehicle, only works if FRFuel is installed.", VehicleInfiniteFuel);
+            MenuCheckboxItem cruiseControl = new MenuCheckboxItem("Cruise Control", "Enables or disables cruise control.", VehicleCruiseControl);
 
             // Create buttons.
             MenuItem fixVehicle = new MenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -367,6 +370,10 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(infiniteFuel);
             }
+            if (IsAllowed(Permission.VOCruiseControl))
+            {
+                menu.AddMenuItem(cruiseControl);
+            }
             // always allowed
             menu.AddMenuItem(showHealth); // SHOW VEHICLE HEALTH
 
@@ -616,6 +623,14 @@ namespace vMenuClient
                 else if (item == infiniteFuel)
                 {
                     VehicleInfiniteFuel = _checked;
+                }
+                else if (item == cruiseControl)
+                {
+                    VehicleCruiseControl = _checked;
+                    if (_checked && vehicle != null && vehicle.Exists())
+                    {
+                        VehicleCruiseControlSpeed = GetEntitySpeedVector(vehicle.Handle, true).Y;
+                    }
                 }
             };
             #endregion
