@@ -98,12 +98,12 @@ namespace vMenuClient
                 if (lockDoors)
                 {
                     Subtitle.Custom("Vehicle doors are now locked.");
-                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, true);
+                    SetVehicleDoorsLocked(veh.Handle, 2);
                 }
                 else
                 {
                     Subtitle.Custom("Vehicle doors are now unlocked.");
-                    SetVehicleDoorsLockedForAllPlayers(veh.Handle, false);
+                    SetVehicleDoorsLocked(veh.Handle, 0);
                 }
             }
         }
