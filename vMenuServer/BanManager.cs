@@ -381,7 +381,7 @@ namespace vMenuServer
                                 BannedPlayersList = await GetBanList();
                                 string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
                                 target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
-                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully temp banned.");
+                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                             }
                             else
                             {
@@ -400,7 +400,7 @@ namespace vMenuServer
                                 BannedPlayersList = await GetBanList();
                                 string timeRemaining = GetRemainingTimeMessage(br.bannedUntil.Subtract(DateTime.Now));
                                 target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {br.bannedBy}. Ban reason: {br.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
-                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully temp banned.");
+                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                             }
                             else
                             {
@@ -418,7 +418,7 @@ namespace vMenuServer
                 else
                 {
                     Log("Player is invalid (no longer online) and therefor the banning has failed.", LogLevel.error);
-                    source.TriggerEvent("vMenu:Notify", "Could not temp-ban this player because they already left the server.");
+                    source.TriggerEvent("vMenu:Notify", "Could not ban this player because they already left the server.");
                 }
             }
             else
