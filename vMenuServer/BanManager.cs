@@ -259,14 +259,14 @@ namespace vMenuServer
                         if (record.bannedUntil.Year == 3000)
                         {
                             // banned forever
-                            kickCallback($"You have been permanently banned from this server. Banned by: {record.bannedBy}. Ban reason: {record.banReason}");
+                            kickCallback($"You have been permanently banned from this server. Banned by: {record.bannedBy}. Ban reason: {record.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                             CancelEvent();
                             return;
                         }
                         else
                         {
                             // tempbanned.
-                            kickCallback($"You are banned from this server. Ban time remaining: {GetRemainingTimeMessage(record.bannedUntil.Subtract(DateTime.Now))}");
+                            kickCallback($"You are banned from this server. Ban time remaining: {GetRemainingTimeMessage(record.bannedUntil.Subtract(DateTime.Now))}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                             CancelEvent();
                             return;
                         }
@@ -295,13 +295,13 @@ namespace vMenuServer
                             {
                                 if (ban.bannedUntil.Year == new DateTime(3000, 1, 1).Year)
                                 {
-                                    kickCallback($"You have been permanently banned from this server. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                                    kickCallback($"You have been permanently banned from this server. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                                 }
                                 else
                                 {
                                     string timeRemainingMessage = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
                                     kickCallback($"You are banned from this server. Ban time remaining: {timeRemainingMessage}"
-                                              + $". Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                                              + $". Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                                 }
                                 Log($"Player is still banned for {Math.Round(timeRemaining.TotalHours, 2)} hours.\n");
                                 CancelEvent();
@@ -380,8 +380,8 @@ namespace vMenuServer
                                 TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                                 BannedPlayersList = await GetBanList();
                                 string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                                target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
-                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully temp banned.");
+                                target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                             }
                             else
                             {
@@ -391,7 +391,7 @@ namespace vMenuServer
                         }
                         else
                         {
-                            BanRecord br = new BanRecord(GetSafePlayerName(source.Name), target.Identifiers.ToList(), banduration, banReason, GetSafePlayerName(target.Name));
+                            BanRecord br = new BanRecord(GetSafePlayerName(target.Name), target.Identifiers.ToList(), banduration, banReason, GetSafePlayerName(source.Name));
                             if (AddSqlBan(br))
                             {
                                 BanLog($"A new ban record has been added. Player: '{br.playerName}' was banned by " +
@@ -399,8 +399,8 @@ namespace vMenuServer
                                 TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(br).ToString());
                                 BannedPlayersList = await GetBanList();
                                 string timeRemaining = GetRemainingTimeMessage(br.bannedUntil.Subtract(DateTime.Now));
-                                target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {br.bannedBy}. Ban reason: {br.banReason}");
-                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully temp banned.");
+                                target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {br.bannedBy}. Ban reason: {br.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                                source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                             }
                             else
                             {
@@ -418,7 +418,7 @@ namespace vMenuServer
                 else
                 {
                     Log("Player is invalid (no longer online) and therefor the banning has failed.", LogLevel.error);
-                    source.TriggerEvent("vMenu:Notify", "Could not temp-ban this player because they already left the server.");
+                    source.TriggerEvent("vMenu:Notify", "Could not ban this player because they already left the server.");
                 }
             }
             else
@@ -687,7 +687,7 @@ namespace vMenuServer
 
                 if (string.IsNullOrEmpty(reason))
                 {
-                    reason = "You have been automatically banned. If you believe this was done by error, please contact the server owner for support.";
+                    reason = $"You have been automatically banned. If you believe this was done by error, please contact the server owner for support. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.";
                 }
                 var ban = new BanRecord()
                 {

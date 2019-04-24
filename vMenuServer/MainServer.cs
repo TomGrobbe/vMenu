@@ -332,7 +332,7 @@ namespace vMenuServer
                                         BanManager.BanLog($"[vMenu] Player {p.Name}^7 has been banned by Server Console for [{reason}].");
                                         TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
                                         string timeRemaining = BanManager.GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                                        p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}");
+                                        p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                                     }
                                     else
                                     {
@@ -419,6 +419,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
                 EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
                 EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
+                EventHandlers.Add("vMenu:SaveTeleportLocation", new Action<Player, string>(AddTeleportLocation));
 
 
                 // check addons file for errors
@@ -896,6 +897,25 @@ namespace vMenuServer
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Add teleport location
+        private void AddTeleportLocation([FromSource]Player source, string locationJson)
+        {
+            TeleportLocation location = JsonConvert.DeserializeObject<TeleportLocation>(locationJson);
+            if (GetTeleportLocationsData().Any(loc => loc.name == location.name))
+            {
+                Log("A teleport location with this name already exists, location was not saved.", LogLevel.error);
+                return;
+            }
+            var locs = GetLocations();
+            locs.teleports.Add(location);
+            if (!SaveResourceFile(GetCurrentResourceName(), "config/locations.json", JsonConvert.SerializeObject(locs, Formatting.Indented), -1))
+            {
+                Log("Could not save locations.json file, reason unknown.", LogLevel.error);
+            }
+            TriggerClientEvent("vMenu:UpdateTeleportLocations", JsonConvert.SerializeObject(locs.teleports));
         }
         #endregion
 

@@ -1087,6 +1087,19 @@ namespace vMenuClient
                 [GetLabelText("VEH_CLASS_21")] = Trains,
             };
             #endregion
+
+            public static string[] GetAllVehicles()
+            {
+                List<string> vehs = new List<string>();
+                foreach (var vc in VehicleClasses)
+                {
+                    foreach (var c in vc.Value)
+                    {
+                        vehs.Add(c);
+                    }
+                }
+                return vehs.ToArray();
+            }
         }
     }
 }
