@@ -102,35 +102,41 @@ namespace vMenuServer
             else
             {
                 List<BanRecord> bans = new List<BanRecord>();
-
-                using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
+                try
                 {
-                    db.Open();
-
-                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT * FROM bans;", db))
+                    using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
                     {
-                        using (SQLiteDataReader rdr = cmd.ExecuteReader())
+                        db.Open();
+
+                        using (SQLiteCommand cmd = new SQLiteCommand($"SELECT * FROM bans;", db))
                         {
-                            while (rdr.Read())
+                            using (SQLiteDataReader rdr = cmd.ExecuteReader())
                             {
-                                string[] identifiers = JsonConvert.DeserializeObject<string[]>(rdr.GetString(0));
-                                string playername = rdr.GetString(1);
-                                string banreason = rdr.GetString(2);
-                                string bannedby = rdr.GetString(3);
-                                DateTime banneduntil = rdr.GetDateTime(4);
-                                var br = new BanRecord()
+                                while (rdr.Read())
                                 {
-                                    bannedBy = bannedby,
-                                    bannedUntil = banneduntil,
-                                    banReason = banreason,
-                                    identifiers = identifiers.ToList(),
-                                    playerName = playername
-                                };
-                                bans.Add(br);
+                                    string[] identifiers = JsonConvert.DeserializeObject<string[]>(rdr.GetString(0));
+                                    string playername = rdr.GetString(1);
+                                    string banreason = rdr.GetString(2);
+                                    string bannedby = rdr.GetString(3);
+                                    DateTime banneduntil = rdr.GetDateTime(4);
+                                    var br = new BanRecord()
+                                    {
+                                        bannedBy = bannedby,
+                                        bannedUntil = banneduntil,
+                                        banReason = banreason,
+                                        identifiers = identifiers.ToList(),
+                                        playerName = playername
+                                    };
+                                    bans.Add(br);
+                                }
                             }
                         }
+                        db.Close();
                     }
-                    db.Close();
+                }
+                catch (Exception e)
+                {
+                    Log("SQLite Exception caught: " + e.Message, LogLevel.error);
                 }
                 return bans;
             }
@@ -199,27 +205,34 @@ namespace vMenuServer
 
             List<BanRecord> banRecordsForPlayer = new List<BanRecord>();
 
-            using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
+            try
             {
-                db.Open();
-
-                using (SQLiteCommand cmd = new SQLiteCommand($"SELECT * FROM bans WHERE {ids};", db))
+                using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
                 {
-                    using (SQLiteDataReader rdr = cmd.ExecuteReader())
+                    db.Open();
+
+                    using (SQLiteCommand cmd = new SQLiteCommand($"SELECT * FROM bans WHERE {ids};", db))
                     {
-                        while (rdr.Read())
+                        using (SQLiteDataReader rdr = cmd.ExecuteReader())
                         {
-                            string[] identifiers = JsonConvert.DeserializeObject<string[]>(rdr.GetString(0));
-                            string playername = rdr.GetString(1);
-                            string banreason = rdr.GetString(2);
-                            string bannedby = rdr.GetString(3);
-                            DateTime banneduntil = rdr.GetDateTime(4);
-                            var br = new BanRecord(playername, identifiers.ToList(), banneduntil, banreason, bannedby);
-                            banRecordsForPlayer.Add(br);
+                            while (rdr.Read())
+                            {
+                                string[] identifiers = JsonConvert.DeserializeObject<string[]>(rdr.GetString(0));
+                                string playername = rdr.GetString(1);
+                                string banreason = rdr.GetString(2);
+                                string bannedby = rdr.GetString(3);
+                                DateTime banneduntil = rdr.GetDateTime(4);
+                                var br = new BanRecord(playername, identifiers.ToList(), banneduntil, banreason, bannedby);
+                                banRecordsForPlayer.Add(br);
+                            }
                         }
                     }
+                    db.Close();
                 }
-                db.Close();
+            }
+            catch (Exception e)
+            {
+                Log("SQLite error: " + e.Message, LogLevel.error);
             }
 
             if (banRecordsForPlayer.Count > 0)
@@ -550,7 +563,7 @@ namespace vMenuServer
             }
             catch (Exception e)
             {
-                Log($"SQL Error: {e.Message}", LogLevel.error);
+                Log($"SQLite Error: {e.Message}", LogLevel.error);
                 return false;
             }
         }
@@ -662,15 +675,22 @@ namespace vMenuServer
             }
             ids = ids.Trim(' ', 'R', 'O', ' ');
             ids += "";
-            using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
+            try
             {
-                db.Open();
-
-                using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM bans WHERE {ids};", db))
+                using (SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;"))
                 {
-                    cmd.ExecuteNonQuery();
+                    db.Open();
+
+                    using (SQLiteCommand cmd = new SQLiteCommand($"DELETE FROM bans WHERE {ids};", db))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    db.Close();
                 }
-                db.Close();
+            }
+            catch (Exception e)
+            {
+                Log("SQLite error: " + e.Message, LogLevel.error);
             }
         }
 
@@ -761,15 +781,15 @@ namespace vMenuServer
         {
             if (!useJson)
             {
-                if (!System.IO.File.Exists(bansDbFilePath + bansDbFileName))
-                {
-                    SQLiteConnection.CreateFile(bansDbFilePath + bansDbFileName);
-                    Debug.WriteLine("[vMenu] Created bans DB.");
-                }
-
-                SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;");
                 try
                 {
+                    if (!System.IO.File.Exists(bansDbFilePath + bansDbFileName))
+                    {
+                        SQLiteConnection.CreateFile(bansDbFilePath + bansDbFileName);
+                        Debug.WriteLine("[vMenu] Created bans DB.");
+                    }
+
+                    SQLiteConnection db = new SQLiteConnection($"Data Source='{bansDbFilePath}{bansDbFileName}';Version=3;");
                     db.Open();
                     string sql = "CREATE TABLE IF NOT EXISTS bans (identifiers STRING, playername STRING, banreason STRING, bannedby STRING, banneduntil DATETIME);";
                     SQLiteCommand cmd = new SQLiteCommand(sql, db);
@@ -778,13 +798,8 @@ namespace vMenuServer
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"[vMenu] SQL ERROR: {e.Message}");
-                    if (db != null)
-                    {
-                        db.Dispose();
-                    }
+                    Log("SQLite error: " + e.Message, LogLevel.error);
                 }
-
             }
         }
 
@@ -803,20 +818,28 @@ namespace vMenuServer
         /// </summary>
         public static async void MigrateBansToDatabase()
         {
-            if (!useJson)
+            try
             {
-                Log("You need to be using the bans.json if you want to migrate the bans.json to the database! Check the convar in the permissions.cfg, restart the server and try again.", LogLevel.error);
+                if (!useJson)
+                {
+                    Log("You need to be using the bans.json if you want to migrate the bans.json to the database! Check the convar in the permissions.cfg, restart the server and try again.", LogLevel.error);
+                }
+                else
+                {
+                    useJson = false;
+                    InitializeDbConnection();
+                    useJson = true;
+                    var bans = await GetBanList();
+                    Debug.WriteLine($"[vMenu] Migrating {bans.Count} bans from the bans.json file to the vmenu_bans.db database!");
+                    AddSqlBanRange(bans, true);
+                    Debug.WriteLine("[vMenu] Done migrating all ban records from the bans.json file to the vmenu_bans.db database!");
+                    Log("Now that all bans are migrated, please make sure to switch the config option to use the sqlite db instead of the bans.json in the permissions.cfg. Otherwise the database will NOT be used! I recommend that you make a backup of your bans.json (just in case), and then delete the original bans.json to test that your setup is working!", LogLevel.warning);
+                }
             }
-            else
+            catch (Exception e)
             {
-                useJson = false;
-                InitializeDbConnection();
-                useJson = true;
-                var bans = await GetBanList();
-                Debug.WriteLine($"[vMenu] Migrating {bans.Count} bans from the bans.json file to the vmenu_bans.db database!");
-                AddSqlBanRange(bans, true);
-                Debug.WriteLine("[vMenu] Done migrating all ban records from the bans.json file to the vmenu_bans.db database!");
-                Log("Now that all bans are migrated, please make sure to switch the config option to use the sqlite db instead of the bans.json in the permissions.cfg. Otherwise the database will NOT be used! I recommend that you make a backup of your bans.json (just in case), and then delete the original bans.json to test that your setup is working!", LogLevel.warning);
+                Log("Exception while migrating json bans to database.", LogLevel.error);
+                Log("Error details: " + e.Message, LogLevel.error);
             }
         }
     }
