@@ -1673,7 +1673,7 @@ namespace vMenuClient
                                 case 25:
                                 case 26:
                                 case 27:
-                                case 31:
+                                case 33:
                                     // close up head.
                                     newPos = camPositions[1].Key;
                                     newPointAt = camPositions[1].Value;
@@ -1681,6 +1681,8 @@ namespace vMenuClient
                                 case 28:
                                 case 29:
                                 case 30:
+                                case 31:
+                                case 32:
                                     // torso
                                     newPos = camPositions[2].Key;
                                     newPointAt = camPositions[2].Value;
