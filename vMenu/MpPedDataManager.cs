@@ -100,6 +100,11 @@ namespace vMenuClient
             public int chestHairColor;
             public float chestHairOpacity;
 
+            // 11 body blemishes
+            public int bodyBlemishesStyle;
+            public float bodyBlemishesOpacity;
+
+            // eye color
             public int eyeColor;
         }
 

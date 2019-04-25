@@ -97,8 +97,6 @@ namespace vMenuClient
             propsMenu.ClearMenuItems();
 
             #region appearance menu.
-
-
             List<string> opacity = new List<string>() { "0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%" };
 
             List<string> overlayColorsList = new List<string>();
@@ -180,6 +178,11 @@ namespace vMenuClient
                 chestHairStyleList.Add($"Style #{i + 1}");
             }
 
+            List<string> bodyBlemishesList = new List<string>();
+            for (int i = 0; i < GetNumHeadOverlayValues(11); i++)
+            {
+                bodyBlemishesList.Add($"Style #{i + 1}");
+            }
 
             List<string> eyeColorList = new List<string>();
             for (int i = 0; i < 32; i++)
@@ -278,6 +281,11 @@ namespace vMenuClient
             SetPedHeadOverlay(Game.PlayerPed.Handle, 10, currentChesthairStyle, currentChesthairOpacity);
             SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, currentChesthairColor, currentChesthairColor);
 
+            // 11 body blemishes
+            int currentBodyBlemishesStyle = editPed ? currentCharacter.PedAppearance.bodyBlemishesStyle : GetPedHeadOverlayValue(Game.PlayerPed.Handle, 11) != 255 ? GetPedHeadOverlayValue(Game.PlayerPed.Handle, 11) : 0;
+            float currentBodyBlemishesOpacity = editPed ? currentCharacter.PedAppearance.bodyBlemishesOpacity : 0f;
+            SetPedHeadOverlay(Game.PlayerPed.Handle, 11, currentBodyBlemishesStyle, currentBodyBlemishesOpacity);
+
             int currentEyeColor = editPed ? currentCharacter.PedAppearance.eyeColor : 0;
             SetPedEyeColor(Game.PlayerPed.Handle, currentEyeColor);
 
@@ -338,6 +346,10 @@ namespace vMenuClient
             MenuListItem chestHairOpacity = new MenuListItem("Chest Hair Opacity", opacity, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.") { ShowOpacityPanel = true };
             MenuListItem chestHairColor = new MenuListItem("Chest Hair Color", overlayColorsList, currentChesthairColor, "Select a chest hair color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
+            // Body blemishes
+            MenuListItem bodyBlemishesStyle = new MenuListItem("Body Blemishes Style", bodyBlemishesList, currentBodyBlemishesStyle, "Select body blemishes style.");
+            MenuListItem bodyBlemishesOpacity = new MenuListItem("Body Blemishes Opacity", opacity, (int)(currentBodyBlemishesOpacity * 10f), "Select body blemishes opacity.") { ShowOpacityPanel = true };
+
             MenuListItem eyeColor = new MenuListItem("Eye Colors", eyeColorList, currentEyeColor, "Select an eye/contact lens color.");
 
             appearanceMenu.AddMenuItem(hairStyles);
@@ -382,6 +394,9 @@ namespace vMenuClient
             appearanceMenu.AddMenuItem(chestHairStyle);
             appearanceMenu.AddMenuItem(chestHairOpacity);
             appearanceMenu.AddMenuItem(chestHairColor);
+
+            appearanceMenu.AddMenuItem(bodyBlemishesStyle);
+            appearanceMenu.AddMenuItem(bodyBlemishesOpacity);
 
             appearanceMenu.AddMenuItem(eyeColor);
 
@@ -743,7 +758,6 @@ namespace vMenuClient
             };
 
             MenuController.AddMenu(createCharacterMenu);
-            //MainMenu.Mp.Add(createCharacterMenu);
             MenuController.AddMenu(savedCharactersMenu);
             MenuController.AddMenu(inheritanceMenu);
             MenuController.AddMenu(appearanceMenu);
@@ -916,7 +930,7 @@ namespace vMenuClient
                     currentCharacter.PedAppearance.hairColor = hairColor;
                     currentCharacter.PedAppearance.hairHighlightColor = hairHighlightColor;
                 }
-                else if (itemIndex == 31) // eye color
+                else if (itemIndex == 33) // eye color
                 {
                     int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex]).ListIndex;
                     SetPedEyeColor(Game.PlayerPed.Handle, selection);
@@ -1015,6 +1029,11 @@ namespace vMenuClient
                             SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, selection, selection);
                             currentCharacter.PedAppearance.chestHairColor = selection;
                             break;
+                        case 31: // body blemishes
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 11, selection, opacity);
+                            currentCharacter.PedAppearance.bodyBlemishesStyle = selection;
+                            currentCharacter.PedAppearance.bodyBlemishesOpacity = opacity;
+                            break;
                     }
                 }
             };
@@ -1022,7 +1041,7 @@ namespace vMenuClient
             // manage the slider changes for opacity on the appearance items.
             appearanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
             {
-                if (itemIndex > 2 && itemIndex < 31)
+                if (itemIndex > 2 && itemIndex < 33)
                 {
 
                     int selection = ((MenuListItem)_menu.GetMenuItems()[itemIndex - 1]).ListIndex;
@@ -1091,6 +1110,11 @@ namespace vMenuClient
                             SetPedHeadOverlay(Game.PlayerPed.Handle, 10, selection, opacity);
                             currentCharacter.PedAppearance.chestHairStyle = selection;
                             currentCharacter.PedAppearance.chestHairOpacity = opacity;
+                            break;
+                        case 32: // body blemishes
+                            SetPedHeadOverlay(Game.PlayerPed.Handle, 11, selection, opacity);
+                            currentCharacter.PedAppearance.bodyBlemishesStyle = selection;
+                            currentCharacter.PedAppearance.bodyBlemishesOpacity = opacity;
                             break;
                     }
                 }
@@ -1327,6 +1351,7 @@ namespace vMenuClient
 
             #endregion
 
+            #region tattoos
             void CreateListsIfNull()
             {
                 if (currentCharacter.PedTatttoos.HeadTattoos == null)
@@ -1607,6 +1632,7 @@ namespace vMenuClient
             // eventhandler for when the tattoos menu is openend.
             tattoosMenu.OnMenuOpen += (sender) => { Notify.Info("TIP, take a look at the instructional buttons! If you can't see a specific tattoo, try turning the camera using those buttons (Q & E)."); };
             #endregion
+            #endregion
 
 
             // handle list changes in the character creator menu.
@@ -1817,6 +1843,8 @@ namespace vMenuClient
                 // chest hair 
                 SetPedHeadOverlay(Game.PlayerPed.Handle, 10, appData.chestHairStyle, appData.chestHairOpacity);
                 SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, appData.chestHairColor, appData.chestHairColor);
+                // body blemishes 
+                SetPedHeadOverlay(Game.PlayerPed.Handle, 11, appData.bodyBlemishesStyle, appData.bodyBlemishesOpacity);
                 // eyecolor
                 SetPedEyeColor(Game.PlayerPed.Handle, appData.eyeColor);
                 #endregion
@@ -1826,7 +1854,6 @@ namespace vMenuClient
                 {
                     SetPedFaceFeature(Game.PlayerPed.Handle, i, 0f);
                 }
-
 
                 if (currentCharacter.FaceShapeFeatures.features != null)
                 {
