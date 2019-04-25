@@ -841,6 +841,7 @@ namespace vMenuClient
         }
         #endregion
         int radarSwitchTimer = 0;
+        int lastPressedPoint = 0;
         /// <summary>
         /// Run all tasks that need to be handeled for the Misc Settings Menu.
         /// </summary>
@@ -929,6 +930,77 @@ namespace vMenuClient
                         }
                     }
                 }
+                if (MainMenu.MiscSettingsMenu.KbPointKeys)
+                {
+                    async Task TogglePointing()
+                    {
+                        if (IsPedPointing(Game.PlayerPed.Handle))
+                        {
+                            ClearPedSecondaryTask(Game.PlayerPed.Handle);
+                        }
+                        else
+                        {
+                            if (!HasAnimDictLoaded("anim@mp_point"))
+                            {
+                                RequestAnimDict("anim@mp_point");
+                            }
+                            while (!HasAnimDictLoaded("anim@mp_point"))
+                            {
+                                await Delay(0);
+                            }
+                            TaskMoveNetwork(Game.PlayerPed.Handle, "task_mp_pointing", 0.5f, false, "anim@mp_point", 24);
+                            RemoveAnimDict("anim@mp_point");
+                        }
+                    }
+                    // Double press the right analog stick for controllers.
+                    if (Game.CurrentInputMode == InputMode.GamePad)
+                    {
+                        if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && !Game.PlayerPed.IsInVehicle())
+                        {
+                            if (GetGameTimer() - lastPressedPoint < 300)
+                            {
+                                lastPressedPoint = GetGameTimer();
+                                await TogglePointing();
+                            }
+                            else
+                            {
+                                lastPressedPoint = GetGameTimer();
+                            }
+                        }
+                    }
+                    // Press the B button on keyboard once to toggle.
+                    else
+                    {
+                        if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && !Game.PlayerPed.IsInVehicle())
+                        {
+                            await TogglePointing();
+                        }
+                    }
+
+                    // Set pitch, heading, blocking, first person and speed properties on animation.
+                    if (IsPedPointing(Game.PlayerPed.Handle))
+                    {
+                        if (Game.PlayerPed.IsInVehicle())
+                        {
+                            ClearPedSecondaryTask(Game.PlayerPed.Handle);
+                        }
+                        else
+                        {
+                            N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Pitch", GetPointingPitch());
+                            N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Heading", GetPointingHeading());
+                            N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isBlocked", GetPointingIsBlocked());
+                            if (GetFollowPedCamViewMode() == 4)
+                            {
+                                N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", true);
+                            }
+                            else
+                            {
+                                N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", false);
+                            }
+                            N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Speed", 0.25f);
+                        }
+                    }
+                }
 
                 if (GetProfileSetting(221) == 1) // 221 = settings > display > expanded radar
                 {
@@ -961,6 +1033,7 @@ namespace vMenuClient
                 await Delay(0);
             }
         }
+
 
         private async Task MiscRecordingKeybinds()
         {

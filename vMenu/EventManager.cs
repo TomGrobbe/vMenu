@@ -89,6 +89,9 @@ namespace vMenuClient
             }
         }
 
+        /// <summary>
+        /// Sets the addon models from the addons.json file.
+        /// </summary>
         private void SetAddons()
         {
             // reset addons
@@ -195,6 +198,9 @@ namespace vMenuClient
             ForceSocialClubUpdate();
         }
 
+        /// <summary>
+        /// Loads/unloads the snow fx particles if needed.
+        /// </summary>
         private async void UpdateWeatherParticlesOnce()
         {
             if (currentWeatherType.ToUpper() == "XMAS")
@@ -369,7 +375,6 @@ namespace vMenuClient
             }
         }
 
-
         /// <summary>
         /// Update the current time.
         /// </summary>
@@ -519,6 +524,9 @@ namespace vMenuClient
             }
         }
 
+        /// <summary>
+        /// Updates ped decorators for the clothing animation when players have joined.
+        /// </summary>
         private async void UpdatePedDecors()
         {
             await Delay(1000);

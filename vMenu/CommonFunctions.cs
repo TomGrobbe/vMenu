@@ -210,6 +210,120 @@ namespace vMenuClient
         public static uint GetVehicleModel(int vehicle) => (uint)GetHashKey(GetEntityModel(vehicle).ToString());
         #endregion
 
+        #region Is ped pointing
+        /// <summary>
+        /// Is ped pointing function returns true if the ped is currently pointing their finger.
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        public static bool IsPedPointing(int handle)
+        {
+            return N_0x921ce12c489c4c41(handle);
+        }
+
+        /// <summary>
+        /// Gets the finger pointing camera pitch.
+        /// </summary>
+        /// <returns></returns>
+        public static float GetPointingPitch()
+        {
+            float pitch = GetGameplayCamRelativePitch();
+            if (pitch < -70f)
+            {
+                pitch = -70f;
+            }
+            if (pitch > 42f)
+            {
+                pitch = 42f;
+            }
+            pitch += 70f;
+            pitch /= 112f;
+
+            return pitch;
+        }
+        /// <summary>
+        /// Gets the finger pointing camera heading.
+        /// </summary>
+        /// <returns></returns>
+        public static float GetPointingHeading()
+        {
+            float heading = GetGameplayCamRelativeHeading();
+            if (heading < -180f)
+            {
+                heading = -180f;
+            }
+            if (heading > 180f)
+            {
+                heading = 180f;
+            }
+            heading += 180f;
+            heading /= 360f;
+            heading *= -1f;
+            heading += 1f;
+
+            return heading;
+        }
+        /// <summary>
+        /// Returns true if finger pointing is blocked by any obstacle.
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetPointingIsBlocked()
+        {
+            bool hit = false;
+            float rawHeading = GetGameplayCamRelativeHeading() / 90f;
+            float heading = (float)MathUtil.Clamp(rawHeading, -180.0f, 180.0f);
+            heading += 180.0f;
+            heading /= 360.0f;
+            float v1 = ((0.7f - 0.3f) * heading) + 0.3f;
+            Vector3 pos0 = new Vector3(-0.2f, v1, 0.6f);
+            Vector3 rot = new Vector3(0f, 0f, rawHeading);
+            Vector3 vec1 = Vector3.Zero;
+
+            // pos0, rot
+            // ----
+            float f0 = (float)Math.Cos(rot.X);
+            float f1 = (float)Math.Sin(rot.X);
+            vec1.X = pos0.X;
+            vec1.Y = (f0 * pos0.Y) - (f1 * pos0.Z);
+            vec1.Z = (f1 * pos0.Y) + (f0 * pos0.Z);
+            pos0 = vec1;
+
+            // ----
+            f0 = (float)Math.Cos(rot.Y);
+            f1 = (float)Math.Sin(rot.Y);
+            vec1.X = (f0 * pos0.X) + (f1 * pos0.Z);
+            vec1.Y = pos0.Y;
+            vec1.Z = (f0 * pos0.Z) - (f1 * pos0.X);
+            pos0 = vec1;
+
+            // ----
+            f0 = (float)Math.Cos(rot.Z);
+            f1 = (float)Math.Sin(rot.Z);
+            vec1.X = (f0 * pos0.X) - (f1 * pos0.Y);
+            vec1.Y = (f1 * pos0.X) + (f0 * pos0.Y);
+            vec1.Z = pos0.Z;
+            pos0 = vec1;
+
+            Vector3 pos1 = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, pos0.X, pos0.Y, pos0.Z);
+            int handle = StartShapeTestCapsule(pos1.X, pos1.Y, (pos1.Z - 0.2f), pos1.X, pos1.Y, (pos1.Z + 0.2f), 0.4f, 95, Game.PlayerPed.Handle, 7);
+            Vector3 outPos = Vector3.Zero;
+            Vector3 surfaceNormal = Vector3.Zero;
+            int entityHit = 0;
+            GetShapeTestResult(handle, ref hit, ref outPos, ref surfaceNormal, ref entityHit);
+
+            if (MainMenu.DebugMode)
+            {
+                if (hit)
+                    DrawMarker(28, pos1.X, pos1.Y, pos1.Z, 0f, 0f, 0f, 0f, 0f, 0f, 0.4f, 0.4f, 0.4f, 123, 0, 0, 128, false, false, 0, false, null, null, false);
+                else
+                    DrawMarker(28, pos1.X, pos1.Y, pos1.Z, 0f, 0f, 0f, 0f, 0f, 0f, 0.4f, 0.4f, 0.4f, 123, 53, 200, 128, false, false, 0, false, null, null, false);
+                DrawLine(pos1.X, pos1.Y, (pos1.Z - 0.2f), pos1.X, pos1.Y, (pos1.Z + 0.2f), 255, 0, 0, 255);
+                DrawTextOnScreen("Blocking: " + hit.ToString(), 0f, 0f);
+            }
+            return hit;
+        }
+        #endregion
+
         #region Drive Tasks (WIP)
         /// <summary>
         /// Drives to waypoint

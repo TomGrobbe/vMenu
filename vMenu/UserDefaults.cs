@@ -325,6 +325,11 @@ namespace vMenuClient
             get { return GetSettingsBool("kbRadarKeys"); }
             set { SetSavedSettingsBool("kbRadarKeys", value); }
         }
+        public static bool KbPointKeys
+        {
+            get { return GetSettingsBool("kbPointKeys"); }
+            set { SetSavedSettingsBool("kbPointKeys", value); }
+        }
         #endregion
         #endregion
 
@@ -579,6 +584,9 @@ namespace vMenuClient
 
                 KbRadarKeys = MainMenu.MiscSettingsMenu.KbRadarKeys;
                 prefs.Add("kbRadarKeys", KbRadarKeys);
+
+                KbPointKeys = MainMenu.MiscSettingsMenu.KbPointKeys;
+                prefs.Add("kbPointKeys", KbPointKeys);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)

@@ -59,6 +59,7 @@ namespace vMenuClient
         public bool KbDriftMode { get; private set; } = UserDefaults.KbDriftMode;
         public bool KbRecordKeys { get; private set; } = UserDefaults.KbRecordKeys;
         public bool KbRadarKeys { get; private set; } = UserDefaults.KbRadarKeys;
+        public bool KbPointKeys { get; private set; } = UserDefaults.KbPointKeys;
 
         internal static List<vMenuShared.ConfigManager.TeleportLocation> TpLocations = new List<vMenuShared.ConfigManager.TeleportLocation>();
 
@@ -102,6 +103,7 @@ namespace vMenuClient
             MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
             MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
             MenuCheckboxItem kbRadarKeys = new MenuCheckboxItem("Minimap Controls", "Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar.", KbRadarKeys);
+            MenuCheckboxItem kbPointKeysCheckbox = new MenuCheckboxItem("Finger Point Controls", "Enables the finger point toggle key. The default QWERTY keyboard mapping for this is 'B', or for controller quickly double tap the right analog stick.", KbPointKeys);
             MenuItem backBtn = new MenuItem("Back");
 
             // Create the menu items.
@@ -183,6 +185,10 @@ namespace vMenuClient
                 else if (item == kbRadarKeys)
                 {
                     KbRadarKeys = _checked;
+                }
+                else if (item == kbPointKeysCheckbox)
+                {
+                    KbPointKeys = _checked;
                 }
             };
             keybindMenu.OnItemSelect += (sender, item, index) =>
@@ -505,6 +511,7 @@ namespace vMenuClient
             // always allowed keybind menu options
             keybindMenu.AddMenuItem(kbRecordKeys);
             keybindMenu.AddMenuItem(kbRadarKeys);
+            keybindMenu.AddMenuItem(kbPointKeysCheckbox);
             keybindMenu.AddMenuItem(backBtn);
 
             // Always allowed
