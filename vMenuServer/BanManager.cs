@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -195,6 +195,11 @@ namespace vMenuServer
         /// <returns></returns>
         private static bool IsPlayerSqlBanned(Player source, out List<BanRecord> r)
         {
+            if (useJson)
+            {
+                r = new List<BanRecord>();
+                return false;
+            }
             string ids = "";
             foreach (string id in source.Identifiers)
             {
