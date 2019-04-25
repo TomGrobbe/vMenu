@@ -1012,7 +1012,7 @@ namespace vMenuClient
                     {
                         SetBigmapActive(false, false);
                     }
-                    if (Game.IsControlJustReleased(0, Control.MultiplayerInfo) && MainMenu.MiscSettingsMenu.KbRadarKeys && !MenuController.IsAnyMenuOpen() && !IsPauseMenuActive())
+                    if (Game.IsControlJustReleased(0, Control.MultiplayerInfo) && Game.IsControlEnabled(0, Control.MultiplayerInfo) && MainMenu.MiscSettingsMenu.KbRadarKeys && !MenuController.IsAnyMenuOpen() && !IsPauseMenuActive())
                     {
                         bool radarExpanded = IsBigmapActive();
 
