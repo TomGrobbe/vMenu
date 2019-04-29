@@ -398,7 +398,7 @@ namespace vMenuClient
                 {
                     PlayerFrozen = _checked;
 
-                    if (MainMenu.NoClipMenu != null && !MainMenu.NoClipEnabled)
+                    if (!MainMenu.NoClipEnabled)
                     {
                         FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
                     }
