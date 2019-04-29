@@ -492,7 +492,7 @@ namespace vMenuClient
 
         private int GetStyleFromIndex(int index)
         {
-            int style = 0;
+            int style;
             switch (index)
             {
                 case 0:
