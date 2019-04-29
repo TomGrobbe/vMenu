@@ -520,6 +520,7 @@ namespace vMenuClient
                 "LYNX",
                 "MASSACRO",
                 "MASSACRO2",
+                "NEON", // Doomsday Heist Update
                 "NINEF",
                 "NINEF2",
                 "OMNIS",
