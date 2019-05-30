@@ -68,13 +68,11 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-            try
-            {
-                MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
-            }
-            catch (AspectRatioException)
+            MenuController.MenuAlignment = MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+            if (MenuController.MenuAlignment != (MiscRightAlignMenu ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left))
             {
                 Notify.Error(CommonErrors.RightAlignedNotSupported);
+
                 // (re)set the default to left just in case so they don't get this error again in the future.
                 MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
                 MiscRightAlignMenu = false;
@@ -584,13 +582,12 @@ namespace vMenuClient
             {
                 if (item == rightAlignMenu)
                 {
-                    try
-                    {
-                        MenuController.MenuAlignment = _checked ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
-                        MiscRightAlignMenu = _checked;
-                        UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
-                    }
-                    catch (AspectRatioException)
+
+                    MenuController.MenuAlignment = _checked ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left;
+                    MiscRightAlignMenu = _checked;
+                    UserDefaults.MiscRightAlignMenu = MiscRightAlignMenu;
+
+                    if (MenuController.MenuAlignment != (_checked ? MenuController.MenuAlignmentOption.Right : MenuController.MenuAlignmentOption.Left))
                     {
                         Notify.Error(CommonErrors.RightAlignedNotSupported);
                         // (re)set the default to left just in case so they don't get this error again in the future.
@@ -598,6 +595,7 @@ namespace vMenuClient
                         MiscRightAlignMenu = false;
                         UserDefaults.MiscRightAlignMenu = false;
                     }
+
                 }
                 else if (item == disablePms)
                 {
