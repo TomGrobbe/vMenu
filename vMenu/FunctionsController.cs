@@ -130,8 +130,10 @@ namespace vMenuClient
         #endregion
 
         #region General Tasks
+        int lastProp = -1;
+        int lastPropTexture = 0;
         /// <summary>
-        /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
+        /// All general tasks that run every 1 game ticks (and are not (sub)menu specific).
         /// </summary>
         /// <returns></returns>
         private async Task GeneralTasks()
@@ -147,9 +149,33 @@ namespace vMenuClient
                     LastVehicle = tmpVehicle.Handle;
                     SwitchedVehicle = true;
                 }
+                if (lastProp > -1 && GetPedPropIndex(Game.PlayerPed.Handle, 0) != lastProp)
+                {
+                    SetPedPropIndex(Game.PlayerPed.Handle, 0, lastProp, lastPropTexture, true);
+                    lastProp = -1;
+                    lastPropTexture = 0;
+                }
             }
-            // this can wait
-            await Delay(10);
+            else
+            {
+                if (Game.PlayerPed.IsGettingIntoAVehicle && !Game.PlayerPed.IsInVehicle()) // if they are (attempting to) get into a vehicle but they're not in yet.
+                {
+                    int prop = GetPedPropIndex(Game.PlayerPed.Handle, 0);
+                    int propTexture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0);
+                    if (prop > -1)
+                    {
+                        lastProp = prop;
+                        lastPropTexture = propTexture;
+                    }
+                    else
+                    {
+                        lastProp = -1;
+                        lastPropTexture = 0;
+                    }
+                }
+            }
+            // this can wait 1 ms
+            await Delay(1);
         }
         #endregion
 
