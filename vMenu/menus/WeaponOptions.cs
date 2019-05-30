@@ -25,8 +25,8 @@ namespace vMenuClient
 
         public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
 
-        private Dictionary<Menu, ValidWeapon> weaponInfo = new Dictionary<Menu, ValidWeapon>();
-        private Dictionary<MenuItem, string> weaponComponents = new Dictionary<MenuItem, string>();
+        private Dictionary<Menu, ValidWeapon> weaponInfo;
+        private Dictionary<MenuItem, string> weaponComponents;
 
         #region Create Menu
         /// <summary>
@@ -34,6 +34,10 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
+            // Setup weapon dictionaries.
+            weaponInfo = new Dictionary<Menu, ValidWeapon>();
+            weaponComponents = new Dictionary<MenuItem, string>();
+
             #region create main weapon options menu and add items
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Weapon Options");
@@ -358,8 +362,10 @@ namespace vMenuClient
                 {
                     //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
-                    Menu weaponMenu = new Menu("Weapon Options", weapon.Name);
-                    weaponMenu.ShowWeaponStatsPanel = true;
+                    Menu weaponMenu = new Menu("Weapon Options", weapon.Name)
+                    {
+                        ShowWeaponStatsPanel = true
+                    };
                     var stats = new Game.WeaponHudStats();
                     Game.GetWeaponHudStats(weapon.Hash, ref stats);
                     weaponMenu.SetWeaponStats((float)stats.hudDamage / 100f, (float)stats.hudSpeed / 100f, (float)stats.hudAccuracy / 100f, (float)stats.hudRange / 100f);
