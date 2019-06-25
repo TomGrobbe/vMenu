@@ -788,6 +788,7 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+
             createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
@@ -795,8 +796,23 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+
 
             MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
             MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
@@ -1629,8 +1645,6 @@ namespace vMenuClient
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
-            // eventhandler for when the tattoos menu is openend.
-            tattoosMenu.OnMenuOpen += (sender) => { Notify.Info("TIP, take a look at the instructional buttons! If you can't see a specific tattoo, try turning the camera using those buttons (Q & E)."); };
             #endregion
             #endregion
 
