@@ -21,6 +21,7 @@ namespace vMenuClient
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
+        public bool TurnOffRadio { get; private set; } = UserDefaults.VehicleSpawnerTurnOffRadio;
         public static List<bool> allowedCategories;
 
         private void CreateMenu()
@@ -33,6 +34,7 @@ namespace vMenuClient
             MenuItem spawnByName = new MenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.");
             MenuCheckboxItem spawnInVeh = new MenuCheckboxItem("Spawn Inside Vehicle", "This will teleport you into the vehicle when you spawn it.", SpawnInVehicle);
             MenuCheckboxItem replacePrev = new MenuCheckboxItem("Replace Previous Vehicle", "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.", ReplaceVehicle);
+            MenuCheckboxItem turnOffRad = new MenuCheckboxItem("Turn Off Radio", "This will automatically turn off vehicle radio when you spawn a new vehicle.", TurnOffRadio);
 
             // Add the items to the menu.
             if (IsAllowed(Permission.VSSpawnByName))
@@ -41,6 +43,7 @@ namespace vMenuClient
             }
             menu.AddMenuItem(spawnInVeh);
             menu.AddMenuItem(replacePrev);
+            menu.AddMenuItem(turnOffRad);
             #endregion
 
             #region addon cars menu
@@ -114,7 +117,7 @@ namespace vMenuClient
 
                                 categoryMenu.OnItemSelect += (sender, item, index) =>
                                 {
-                                    SpawnVehicle(item.ItemData.ToString(), SpawnInVehicle, ReplaceVehicle);
+                                    SpawnVehicle(item.ItemData.ToString(), SpawnInVehicle, ReplaceVehicle, TurnOffRadio);
                                 };
                             }
                             else
@@ -268,7 +271,7 @@ namespace vMenuClient
                 // Handle button presses
                 vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
                 {
-                    SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
+                    SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle, TurnOffRadio);
                 };
             }
             #endregion
@@ -280,7 +283,7 @@ namespace vMenuClient
                 if (item == spawnByName)
                 {
                     // Passing "custom" as the vehicle name, will ask the user for input.
-                    SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
+                    SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle, TurnOffRadio);
                 }
             };
 
@@ -294,6 +297,10 @@ namespace vMenuClient
                 else if (item == replacePrev)
                 {
                     ReplaceVehicle = _checked;
+                }
+                else if (item == turnOffRad)
+                {
+                    TurnOffRadio = _checked;
                 }
             };
             #endregion
