@@ -1054,7 +1054,7 @@ namespace vMenuClient
         /// <param name="vehicleName">Vehicle model name. If "custom" the user will be asked to enter a model name.</param>
         /// <param name="spawnInside">Warp the player inside the vehicle after spawning.</param>
         /// <param name="replacePrevious">Replace the previous vehicle of the player.</param>
-        public static async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
+        public static async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false, bool turnOffRadio = false)
         {
             if (vehicleName == "custom")
             {
@@ -1065,7 +1065,7 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false, vehicleInfo: new VehicleInfo(),
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, turnOffRadio:turnOffRadio, skipLoad: false, vehicleInfo: new VehicleInfo(),
                         saveName: null);
                 }
                 // Result was invalid.
@@ -1077,7 +1077,7 @@ namespace vMenuClient
             // Spawn the specified vehicle.
             else
             {
-                SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false,
+                SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, turnOffRadio: turnOffRadio, skipLoad: false,
                     vehicleInfo: new VehicleInfo(), saveName: null);
             }
         }
@@ -1093,7 +1093,7 @@ namespace vMenuClient
         /// <param name="skipLoad">Does not attempt to load the vehicle, but will spawn it right a way.</param>
         /// <param name="vehicleInfo">All information needed for a saved vehicle to re-apply all mods.</param>
         /// <param name="saveName">Used to get/set info about the saved vehicle data.</param>
-        public static async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null)
+        public static async void SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious, bool skipLoad, VehicleInfo vehicleInfo, string saveName = null, bool turnOffRadio = false)
         {
             float speed = 0f;
             float rpm = 0f;
@@ -1194,7 +1194,7 @@ namespace vMenuClient
                 PreviouslyOwnedByPlayer = true,
                 IsPersistent = true,
                 IsStolen = false,
-                IsWanted = false
+                IsWanted = false,
             };
 
             Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} " +
@@ -1219,6 +1219,13 @@ namespace vMenuClient
                 {
                     vehicle.PlaceOnGround();
                 }
+            }
+
+            // If turnOffRadio is true
+            if (turnOffRadio)
+            {
+                // Set vehicle's radio station to off.
+                vehicle.RadioStation = RadioStation.RadioOff;
             }
 
             // If mod info about the vehicle was specified, check if it's not null.
