@@ -1194,7 +1194,7 @@ namespace vMenuClient
                 PreviouslyOwnedByPlayer = true,
                 IsPersistent = true,
                 IsStolen = false,
-                IsWanted = false,
+                IsWanted = false
             };
 
             Log($"New vehicle, hash:{vehicleHash}, handle:{vehicle.Handle}, force-re-save-name:{(saveName ?? "NONE")}, created at x:{pos.X} y:{pos.Y} z:{(pos.Z + 1f)} " +
