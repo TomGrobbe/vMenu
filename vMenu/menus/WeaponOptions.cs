@@ -358,7 +358,7 @@ namespace vMenuClient
             foreach (ValidWeapon weapon in ValidWeapons.WeaponList)
             {
                 uint cat = (uint)GetWeapontypeGroup(weapon.Hash);
-                if (!string.IsNullOrEmpty(weapon.Name) && (IsAllowed(weapon.Perm) || IsAllowed(Permission.WPGetAll)))
+                if (!string.IsNullOrEmpty(weapon.Name) && IsAllowed(weapon.Perm))
                 {
                     //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
