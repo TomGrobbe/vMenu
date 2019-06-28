@@ -1065,7 +1065,7 @@ namespace vMenuClient
                 {
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
-                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, turnOffRadio:turnOffRadio, skipLoad: false, vehicleInfo: new VehicleInfo(),
+                    SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, turnOffRadio: turnOffRadio, skipLoad: false, vehicleInfo: new VehicleInfo(),
                         saveName: null);
                 }
                 // Result was invalid.
