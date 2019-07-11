@@ -2513,7 +2513,7 @@ namespace vMenuClient
                     if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
-                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, 0, false, true);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo: w.GetMaxAmmo, false, false);
 
                         // Add components
                         if (w.Components.Count > 0)
@@ -2542,11 +2542,28 @@ namespace vMenuClient
 
                         if (w.CurrentAmmo > 0)
                         {
-                            while (GetAmmoInPedWeapon(Game.PlayerPed.Handle, w.Hash) < 1)
+                            int ammo = w.CurrentAmmo; 
+                            if (w.CurrentAmmo > w.GetMaxAmmo)
                             {
-                                await Delay(0);
-                                SetPedAmmo(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo);
+                                ammo = w.GetMaxAmmo;
+                            }
+                            var doIt = false;
+                            while (GetAmmoInPedWeapon(Game.PlayerPed.Handle, w.Hash) != ammo && w.CurrentAmmo != -1)
+                            {
+                                if (doIt)
+                                {
+                                    SetCurrentPedWeapon(Game.PlayerPed.Handle, w.Hash, true);
+                                }
+                                doIt = true;
+                                int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, w.Hash, false);
+                                if (ammoInClip > ammo)
+                                {
+                                    ammoInClip = ammo;
+                                }
+                                SetAmmoInClip(Game.PlayerPed.Handle, w.Hash, ammoInClip);
+                                SetPedAmmo(Game.PlayerPed.Handle, w.Hash, ammo > -1 ? ammo : w.GetMaxAmmo);
                                 Log($"waiting for ammo in {w.Name}");
+                                await Delay(0);
                             }
                         }
                     }
