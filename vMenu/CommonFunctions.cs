@@ -2508,7 +2508,7 @@ namespace vMenuClient
                     if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
-                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo, false, true);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, 0, false, true);
 
                         // Add components
                         if (w.Components.Count > 0)
@@ -2540,8 +2540,7 @@ namespace vMenuClient
                             while (GetAmmoInPedWeapon(Game.PlayerPed.Handle, w.Hash) < 1)
                             {
                                 await Delay(0);
-                                AddAmmoToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo);
-                                SetAmmoInClip(Game.PlayerPed.Handle, w.Hash, w.AmmoInClip);
+                                SetPedAmmo(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo);
                                 Log($"waiting for ammo in {w.Name}");
                             }
                         }
@@ -2588,9 +2587,6 @@ namespace vMenuClient
                     };
 
                     weapon.CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash);
-                    var ammoInClip = 0;
-                    GetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ref ammoInClip);
-                    weapon.AmmoInClip = ammoInClip;
 
 
                     // Check for and add components if applicable.
