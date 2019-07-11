@@ -105,12 +105,17 @@ namespace vMenuClient
                 overlayColorsList.Add($"Color #{i + 1}");
             }
 
+            int maxHairStyles = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2);
+            if (currentCharacter.ModelHash == (uint)PedHash.FreemodeFemale01)
+            {
+                maxHairStyles /= 2;
+            }
             List<string> hairStylesList = new List<string>();
-            for (int i = 0; i < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2); i++)
+            for (int i = 0; i < maxHairStyles; i++)
             {
                 hairStylesList.Add($"Style #{i + 1}");
             }
-            hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2)}");
+            hairStylesList.Add($"Style #{maxHairStyles + 1}");
 
             List<string> blemishesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(0); i++)
