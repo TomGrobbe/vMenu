@@ -1982,10 +1982,18 @@ namespace vMenuClient
                     Vehicle veh = Game.PlayerPed.CurrentVehicle;
                     VehicleSeat seat = Game.PlayerPed.SeatIndex;
 
-                    int lastArmorValue = Game.PlayerPed.Armor;
+                    int maxHealth = Game.PlayerPed.MaxHealth;
+                    int maxArmour = Game.Player.MaxArmor;
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
 
                     // set the model
                     SetPlayerModel(Game.Player.Handle, modelHash);
+
+                    Game.Player.MaxArmor = maxArmour;
+                    Game.PlayerPed.MaxHealth = maxHealth;
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
 
                     // warp ped into vehicle if the player was in a vehicle.
                     if (wasInVehicle && veh != null && seat != VehicleSeat.None)
@@ -2005,9 +2013,6 @@ namespace vMenuClient
                         }
                         FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     }
-
-                    // restore armor.
-                    Game.PlayerPed.Armor = lastArmorValue;
                 }
 
                 // Reset some stuff.
