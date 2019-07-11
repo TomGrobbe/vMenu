@@ -770,16 +770,12 @@ namespace vMenuClient
 
             menu.AddMenuItem(createMaleBtn);
             MenuController.BindMenuItem(menu, createCharacterMenu, createMaleBtn);
-            //menu.BindMenuToItem(createCharacterMenu, createMale);
             menu.AddMenuItem(createFemaleBtn);
             MenuController.BindMenuItem(menu, createCharacterMenu, createFemaleBtn);
-            //menu.BindMenuToItem(createCharacterMenu, createFemale);
             menu.AddMenuItem(savedCharacters);
             MenuController.BindMenuItem(menu, savedCharactersMenu, savedCharacters);
-            //menu.BindMenuToItem(savedCharactersMenu, savedCharacters);
 
             menu.RefreshIndex();
-            //menu.UpdateScaleform();
 
             createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
@@ -1732,9 +1728,27 @@ namespace vMenuClient
             {
                 if (item == createMaleBtn)
                 {
-                    await SetPlayerSkin("mp_m_freemode_01", new PedInfo() { version = -1 });
+                    uint model = (uint)GetHashKey("mp_m_freemode_01");
 
-                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                    }
+
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
+
+                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SetPlayerModel(Game.Player.Handle, model);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
+
                     ClearPedDecorations(Game.PlayerPed.Handle);
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
@@ -1746,9 +1760,27 @@ namespace vMenuClient
                 }
                 else if (item == createFemaleBtn)
                 {
-                    await SetPlayerSkin("mp_f_freemode_01", new PedInfo() { version = -1 });
+                    uint model = (uint)GetHashKey("mp_f_freemode_01");
 
-                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                    }
+
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
+
+                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SetPlayerModel(Game.Player.Handle, model);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
+
                     ClearPedDecorations(Game.PlayerPed.Handle);
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
@@ -1796,12 +1828,15 @@ namespace vMenuClient
                         await BaseScript.Delay(0);
                     }
                 }
+                int health = Game.PlayerPed.Health;
+                int armour = Game.PlayerPed.Armor;
 
-                // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
-                // and female ped at the same time.. really fucking weird. Only the CommonFunctions.SetPlayerSkin function seems to work some how. I really have no clue.
-                await SetPlayerSkin(currentCharacter.ModelHash, new PedInfo() { version = -1 }, restoreWeapons);
-                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
-                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                SetPlayerModel(Game.Player.Handle, currentCharacter.ModelHash);
+                await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                Game.PlayerPed.Health = health;
+                Game.PlayerPed.Armor = armour;
 
                 ClearPedDecorations(Game.PlayerPed.Handle);
                 ClearPedFacialDecorations(Game.PlayerPed.Handle);
