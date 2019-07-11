@@ -113,6 +113,12 @@ namespace vMenuClient
                     PushScaleformMovieMethodParameterString($"Cam Mode");
                     EndScaleformMovieMethod();
 
+                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                    ScaleformMovieMethodAddParamInt(6);
+                    PushScaleformMovieMethodParameterString(GetControlInstructionalButton(0, (int)MainMenu.NoClipKey, 1));
+                    PushScaleformMovieMethodParameterString($"Toggle NoClip");
+                    EndScaleformMovieMethod();
+
                     BeginScaleformMovieMethod(Scale, "DRAW_INSTRUCTIONAL_BUTTONS");
                     ScaleformMovieMethodAddParamInt(0);
                     EndScaleformMovieMethod();
