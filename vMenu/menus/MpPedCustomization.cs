@@ -106,10 +106,10 @@ namespace vMenuClient
             }
 
             int maxHairStyles = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2);
-            if (currentCharacter.ModelHash == (uint)PedHash.FreemodeFemale01)
-            {
-                maxHairStyles /= 2;
-            }
+            //if (currentCharacter.ModelHash == (uint)PedHash.FreemodeFemale01)
+            //{
+            //    maxHairStyles /= 2;
+            //}
             List<string> hairStylesList = new List<string>();
             for (int i = 0; i < maxHairStyles; i++)
             {
