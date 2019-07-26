@@ -564,7 +564,7 @@ namespace vMenuServer
                 if (dynamicWeather)
                 {
                     // Disable dynamic weather because these weather types shouldn't randomly change.
-                    if (currentWeather == "XMAS" || currentWeather == "HALLOWHEEN" || currentWeather == "NEUTRAL")
+                    if (currentWeather == "XMAS" || currentWeather == "HALLOWEEN" || currentWeather == "NEUTRAL")
                     {
                         dynamicWeather = false;
                         return;
