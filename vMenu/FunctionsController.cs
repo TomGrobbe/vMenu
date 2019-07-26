@@ -2377,7 +2377,7 @@ namespace vMenuClient
 
             if (MainMenu.PermissionsSetupComplete && MainMenu.ConfigOptionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames && IsAllowed(Permission.MSOverheadNames);
                 if (!enabled)
                 {
                     for (var i = 0; i < 255; i++)
