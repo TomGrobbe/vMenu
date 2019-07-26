@@ -149,6 +149,7 @@ namespace vMenuShared
             PVToggleLights,
             PVKickPassengers,
             PVLockDoors,
+            PVDoors,
             PVSoundHorn,
             PVToggleAlarm,
             PVAddBlip,
