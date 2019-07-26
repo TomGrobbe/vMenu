@@ -359,6 +359,7 @@ namespace vMenuClient
 
                     if(item == removeDoorList)
                     {
+                        PressKeyFob(veh);
                         SetVehicleDoorBroken(veh.Handle, index, deleteDoors.Checked);
                     }
                 }
@@ -381,6 +382,7 @@ namespace vMenuClient
                     if (index < 8)
                     {
                         bool open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f;
+                        PressKeyFob(veh);
                         if(open)
                         {
                             SetVehicleDoorShut(veh.Handle, index, false);
@@ -390,18 +392,21 @@ namespace vMenuClient
                         }
                     } else if(item == openAll)
                     {
+                        PressKeyFob(veh);
                         for(var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
                     } else if(item == closeAll)
                     {
+                        PressKeyFob(veh);
                         for(var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorShut(veh.Handle, door, false);
                         }
                     } else if(item == BB && veh.HasBombBay)
                     {
+                        PressKeyFob(veh);
                         bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
                         if(bombBayOpen)
                         {
