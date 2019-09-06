@@ -93,7 +93,7 @@ namespace vMenuClient
             Tick += DeathNotifications;
             Tick += JoinQuitNotifications;
             Tick += UpdateLocation;
-            Tick += ManagePlayerAppearanceCamera;
+            Tick += ManageCamera;
             Tick += PlayerBlipsControl;
             Tick += PlayerOverheadNamesControl;
             Tick += RestorePlayerAfterBeingDead;
@@ -130,8 +130,10 @@ namespace vMenuClient
         #endregion
 
         #region General Tasks
+        int lastProp = -1;
+        int lastPropTexture = 0;
         /// <summary>
-        /// All general tasks that run every 10 game ticks (and are not (sub)menu specific).
+        /// All general tasks that run every 1 game ticks (and are not (sub)menu specific).
         /// </summary>
         /// <returns></returns>
         private async Task GeneralTasks()
@@ -147,9 +149,33 @@ namespace vMenuClient
                     LastVehicle = tmpVehicle.Handle;
                     SwitchedVehicle = true;
                 }
+                if (lastProp > -1 && GetPedPropIndex(Game.PlayerPed.Handle, 0) != lastProp)
+                {
+                    SetPedPropIndex(Game.PlayerPed.Handle, 0, lastProp, lastPropTexture, true);
+                    lastProp = -1;
+                    lastPropTexture = 0;
+                }
             }
-            // this can wait
-            await Delay(10);
+            else
+            {
+                if (Game.PlayerPed.IsGettingIntoAVehicle && !Game.PlayerPed.IsInVehicle()) // if they are (attempting to) get into a vehicle but they're not in yet.
+                {
+                    int prop = GetPedPropIndex(Game.PlayerPed.Handle, 0);
+                    int propTexture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0);
+                    if (prop > -1)
+                    {
+                        lastProp = prop;
+                        lastPropTexture = propTexture;
+                    }
+                    else
+                    {
+                        lastProp = -1;
+                        lastPropTexture = 0;
+                    }
+                }
+            }
+            // this can wait 1 ms
+            await Delay(1);
         }
         #endregion
 
@@ -1512,11 +1538,75 @@ namespace vMenuClient
         #endregion
 
         #region Player Appearance
-        /// <summary>
-        /// Manages the camera view for when the mp ped creator is open.
-        /// </summary>
-        /// <returns></returns>
-        private async Task ManagePlayerAppearanceCamera()
+
+        internal static bool reverseCamera = false;
+        private static Camera camera;
+        internal static float CameraFov { get; set; } = 45;
+        internal static int CurrentCam { get; set; }
+        internal static List<KeyValuePair<Vector3, Vector3>> CameraOffsets { get; } = new List<KeyValuePair<Vector3, Vector3>>()
+        {
+            // Full body
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 2.8f, 0.3f), new Vector3(0f, 0f, 0f)),
+
+            // Head level
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 0.9f, 0.65f), new Vector3(0f, 0f, 0.6f)),
+
+            // Upper Body
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 1.4f, 0.5f), new Vector3(0f, 0f, 0.3f)),
+
+            // Lower Body
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 1.6f, -0.3f), new Vector3(0f, 0f, -0.45f)),
+
+            // Shoes
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 0.98f, -0.7f), new Vector3(0f, 0f, -0.90f)),
+
+            // Lower Arms
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 0.98f, 0.1f), new Vector3(0f, 0f, 0f)),
+
+            // Full arms
+            new KeyValuePair<Vector3, Vector3>(new Vector3(0f, 1.3f, 0.35f), new Vector3(0f, 0f, 0.15f)),
+        };
+
+        private async Task UpdateCamera(Camera oldCamera, Vector3 pos, Vector3 pointAt)
+        {
+            var newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
+            var newCamera = new Camera(newCam)
+            {
+                Position = pos,
+                FieldOfView = CameraFov
+            };
+            newCamera.PointAt(pointAt);
+            oldCamera.InterpTo(newCamera, 1000, true, true);
+            while (oldCamera.IsInterpolating || !newCamera.IsActive)
+            {
+                SetEntityCollision(Game.PlayerPed.Handle, false, false);
+                //Game.PlayerPed.IsInvincible = true;
+                Game.PlayerPed.IsPositionFrozen = true;
+                await Delay(0);
+            }
+            await Delay(50);
+            oldCamera.Delete();
+            CurrentCam = newCam;
+            camera = newCamera;
+        }
+
+        private bool IsMpCharEditorOpen()
+        {
+            if (MainMenu.MpPedCustomizationMenu != null)
+            {
+                return
+                    MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
+                    MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
+            }
+            return false;
+        }
+
+        private async Task ManageCamera()
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MpPedCustomizationMenu != null)
             {
@@ -1565,368 +1655,10 @@ namespace vMenuClient
 
                 var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
 
-                bool IsOpen()
+
+
+                if (IsMpCharEditorOpen())
                 {
-                    return
-                        MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.propsMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.clothesMenu.Visible ||
-                        MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible;
-                }
-
-                if (IsOpen())
-                {
-                    List<KeyValuePair<Vector3, Vector3>> camPositions = new List<KeyValuePair<Vector3, Vector3>>()
-                    {
-                        // normal variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f)),     // default 0
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)),   // head 1
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // upper body 2
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // lower body 3
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f)), // shoes 4
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // left wrist 5
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.8f, 0.5f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // right wrist 6
-
-                        // tattoo turn left variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 7
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 8
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(-0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 9
-
-                        // tattoo turn right variants
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.4f, 0.2f, 0.65f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f)), // head 10
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.2f, 0.40f)), Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f)), // head 11
-                        new KeyValuePair<Vector3, Vector3>(Game.PlayerPed.GetOffsetPosition(new Vector3(0.7f, 1.3f, -0.2f)), Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f)), // head 12
-                    };
-
-                    int cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
-                    Camera camera = new Camera(cam);
-                    camera.Position = camPositions[0].Key;
-                    camera.PointAt(camPositions[0].Value);
-
-                    Game.PlayerPed.Task.ClearAllImmediately();
-
-                    /* 
-                     * Camera positions and PointAt locations.
-
-                    // head close up
-                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.5f, 0.65f));
-                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.65f));
-
-                    // upper body close up
-                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.2f, 0.40f));
-                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.35f));
-
-                    // lower body close up
-                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.3f, -0.2f));
-                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.25f));
-
-                    // very low (feet level) very close up
-                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 0.7f, -0.5f));
-                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, -0.8f));
-
-                    // default normal height full character visible.
-                    camera.Position = Game.PlayerPed.GetOffsetPosition(new Vector3(0f, 1.8f, 0.2f));
-                    camera.PointAt(Game.PlayerPed.Position + new Vector3(0f, 0f, 0.0f));
-
-                    */
-
-                    bool rearCamActive = false;
-
-                    async Task SetCameraPosition()
-                    {
-                        if (MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible)
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            int index = MainMenu.MpPedCustomizationMenu.appearanceMenu.CurrentIndex;
-                            switch (index)
-                            {
-                                case 0:
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 4:
-                                case 5:
-                                case 6:
-                                case 7:
-                                case 8:
-                                case 9:
-                                case 10:
-                                case 11:
-                                case 12:
-                                case 13:
-                                case 14:
-                                case 15:
-                                case 16:
-                                case 17:
-                                case 18:
-                                case 19:
-                                case 20:
-                                case 21:
-                                case 22:
-                                case 23:
-                                case 24:
-                                case 25:
-                                case 26:
-                                case 27:
-                                case 33:
-                                    // close up head.
-                                    newPos = camPositions[1].Key;
-                                    newPointAt = camPositions[1].Value;
-                                    break;
-                                case 28:
-                                case 29:
-                                case 30:
-                                case 31:
-                                case 32:
-                                    // torso
-                                    newPos = camPositions[2].Key;
-                                    newPointAt = camPositions[2].Value;
-                                    break;
-                                default:
-                                    // normal position (full character visible)
-                                    newPos = camPositions[0].Key;
-                                    newPointAt = camPositions[0].Value;
-                                    break;
-                            }
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        else if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            int index = MainMenu.MpPedCustomizationMenu.clothesMenu.CurrentIndex;
-                            switch (index)
-                            {
-                                case 0:
-                                    // head level
-                                    newPos = camPositions[1].Key;
-                                    newPointAt = camPositions[1].Value;
-                                    break;
-                                case 1:
-                                case 3:
-                                case 5:
-                                case 6:
-                                case 7:
-                                case 9:
-                                    // upper body level
-                                    newPos = camPositions[2].Key;
-                                    newPointAt = camPositions[2].Value;
-                                    break;
-                                case 2:
-                                    // lower body level
-                                    newPos = camPositions[3].Key;
-                                    newPointAt = camPositions[3].Value;
-                                    break;
-                                case 4:
-                                    // feet (ground) level (close up)
-                                    newPos = camPositions[4].Key;
-                                    newPointAt = camPositions[4].Value;
-                                    break;
-                                case 8:
-                                default:
-                                    // normal position (full character visible)
-                                    newPos = camPositions[0].Key;
-                                    newPointAt = camPositions[0].Value;
-                                    break;
-                            }
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        else if (MainMenu.MpPedCustomizationMenu.inheritanceMenu.Visible)
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            // head level
-                            newPos = camPositions[1].Key;
-                            newPointAt = camPositions[1].Value;
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            int index = MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex;
-                            switch (index)
-                            {
-                                case 0:
-                                case 1:
-                                case 2:
-                                    // head level
-                                    newPos = camPositions[1].Key;
-                                    newPointAt = camPositions[1].Value;
-                                    break;
-                                case 3:
-                                    // left wrist
-                                    if (rearCamActive)
-                                    {
-                                        newPos = camPositions[6].Key;
-                                        newPointAt = camPositions[6].Value;
-                                    }
-                                    else
-                                    {
-                                        newPos = camPositions[5].Key;
-                                        newPointAt = camPositions[5].Value;
-                                    }
-                                    break;
-                                case 4:
-                                    // right wrist
-                                    if (rearCamActive)
-                                    {
-                                        newPos = camPositions[5].Key;
-                                        newPointAt = camPositions[5].Value;
-                                    }
-                                    else
-                                    {
-                                        newPos = camPositions[6].Key;
-                                        newPointAt = camPositions[6].Value;
-                                    }
-                                    break;
-                                default:
-                                    // normal position (full character visible)
-                                    newPos = camPositions[0].Key;
-                                    newPointAt = camPositions[0].Value;
-                                    break;
-                            }
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        // face shape
-                        else if (MainMenu.MpPedCustomizationMenu.faceShapeMenu.Visible)
-                        {
-                            Vector3 newPos = camPositions[1].Key;
-                            Vector3 newPointAt = camPositions[1].Value;
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        // tattoos
-                        else if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            int index = MainMenu.MpPedCustomizationMenu.tattoosMenu.CurrentIndex;
-                            switch (index)
-                            {
-                                case 0:
-                                    // head level
-                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
-                                    {
-                                        newPos = camPositions[7].Key;
-                                        newPointAt = camPositions[7].Value;
-                                    }
-                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
-                                    {
-                                        newPos = camPositions[10].Key;
-                                        newPointAt = camPositions[10].Value;
-                                    }
-                                    else // normal
-                                    {
-                                        newPos = camPositions[1].Key;
-                                        newPointAt = camPositions[1].Value;
-                                    }
-                                    break;
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 6:
-                                    // upper body level
-                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
-                                    {
-                                        newPos = camPositions[8].Key;
-                                        newPointAt = camPositions[8].Value;
-                                    }
-                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
-                                    {
-                                        newPos = camPositions[11].Key;
-                                        newPointAt = camPositions[11].Value;
-                                    }
-                                    else // normal
-                                    {
-                                        newPos = camPositions[2].Key;
-                                        newPointAt = camPositions[2].Value;
-                                    }
-                                    break;
-                                case 4:
-                                case 5:
-                                    // lower body level
-                                    if (Game.IsControlPressed(0, Control.ParachuteBrakeRight)) // turn camera to the right
-                                    {
-                                        newPos = camPositions[9].Key;
-                                        newPointAt = camPositions[9].Value;
-                                    }
-                                    else if (Game.IsControlPressed(0, Control.ParachuteBrakeLeft)) // turn camera to the left
-                                    {
-                                        newPos = camPositions[12].Key;
-                                        newPointAt = camPositions[12].Value;
-                                    }
-                                    else // normal
-                                    {
-                                        newPos = camPositions[3].Key;
-                                        newPointAt = camPositions[3].Value;
-                                    }
-                                    break;
-                                default:
-                                    // normal position (full character visible)
-                                    newPos = camPositions[0].Key;
-                                    newPointAt = camPositions[0].Value;
-                                    break;
-                            }
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                        else
-                        {
-                            Vector3 newPos;
-                            Vector3 newPointAt;
-
-                            if (MainMenu.MpPedCustomizationMenu.createCharacterMenu.Visible && MainMenu.MpPedCustomizationMenu.createCharacterMenu.CurrentIndex == 6)
-                            {
-                                // head level
-                                newPos = camPositions[1].Key;
-                                newPointAt = camPositions[1].Value;
-                            }
-                            else
-                            {
-                                newPos = camPositions[0].Key;
-                                newPointAt = camPositions[0].Value;
-                            }
-
-                            if (camera.Position != newPos)
-                            {
-                                camera = await MoveCamToNewSpot(camera, newPos, newPointAt);
-                            }
-                        }
-                    }
-
-                    float heading = Game.PlayerPed.Heading;
                     if (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
                     {
                         RequestAnimDict("anim@random@shop_clothes@watches");
@@ -1936,69 +1668,12 @@ namespace vMenuClient
                         await Delay(0);
                     }
 
-                    while (IsOpen())
+                    while (IsMpCharEditorOpen())
                     {
                         await Delay(0);
-                        DisplayRadar(false);
 
-                        SetEntityInvincible(Game.PlayerPed.Handle, true);
-                        SetEntityCollision(Game.PlayerPed.Handle, false, false);
-
-                        RenderScriptCams(true, false, 0, true, false);
-                        if (Game.IsControlJustReleased(0, Control.PhoneExtraOption))
-                        {
-                            var Pos = Game.PlayerPed.Position;
-                            if (rearCamActive)
-                            {
-                                SetEntityCollision(Game.PlayerPed.Handle, true, true);
-                                FreezeEntityPosition(Game.PlayerPed.Handle, false);
-                                TaskGoStraightToCoord(Game.PlayerPed.Handle, Pos.X, Pos.Y, Pos.Z, 8f, 1600, heading, 0.1f);
-                                int timer = GetGameTimer();
-                                while (true)
-                                {
-                                    await Delay(0);
-                                    DisplayRadar(false);
-                                    //CommonFunctions.DisableMovementControlsThisFrame(true, true);
-                                    Game.DisableAllControlsThisFrame(0);
-                                    if (GetGameTimer() - timer > 1600)
-                                    {
-                                        break;
-                                    }
-                                }
-                                ClearPedTasks(Game.PlayerPed.Handle);
-                                Game.PlayerPed.PositionNoOffset = Pos;
-                                FreezeEntityPosition(Game.PlayerPed.Handle, true);
-                                SetEntityCollision(Game.PlayerPed.Handle, false, false);
-                            }
-                            else
-                            {
-                                SetEntityCollision(Game.PlayerPed.Handle, true, true);
-                                FreezeEntityPosition(Game.PlayerPed.Handle, false);
-                                TaskGoStraightToCoord(Game.PlayerPed.Handle, Pos.X, Pos.Y, Pos.Z, 8f, 1600, heading - 180f, 0.1f);
-                                int timer = GetGameTimer();
-                                while (true)
-                                {
-                                    await Delay(0);
-                                    DisplayRadar(false);
-                                    Game.DisableAllControlsThisFrame(0);
-                                    if (GetGameTimer() - timer > 1600)
-                                    {
-                                        break;
-                                    }
-                                }
-                                ClearPedTasks(Game.PlayerPed.Handle);
-                                Game.PlayerPed.PositionNoOffset = Pos;
-                                FreezeEntityPosition(Game.PlayerPed.Handle, true);
-                                SetEntityCollision(Game.PlayerPed.Handle, false, false);
-                            }
-                            rearCamActive = !rearCamActive;
-                        }
-
-                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
-
-                        DisableMovementControlsThisFrame(true, true);
-
-                        if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible && !rearCamActive && MainMenu.MpPedCustomizationMenu.propsMenu.CurrentIndex == 3)
+                        int index = GetCameraIndex(MenuController.GetCurrentMenu());
+                        if (MenuController.GetCurrentMenu() == MainMenu.MpPedCustomizationMenu.propsMenu && MenuController.GetCurrentMenu().CurrentIndex == 3 && !reverseCamera)
                         {
                             TaskPlayAnim(Game.PlayerPed.Handle, "anim@random@shop_clothes@watches", "BASE", 8f, -8f, -1, 1, 0, false, false, false);
                         }
@@ -2007,86 +1682,340 @@ namespace vMenuClient
                             Game.PlayerPed.Task.ClearAll();
                         }
 
-                        await SetCameraPosition();
+                        var xOffset = 0f;
+                        var yOffset = 0f;
 
-                        FreezeEntityPosition(Game.PlayerPed.Handle, true);
-
-                        DisableMovementControlsThisFrame(true, true);
-
-                        var offsetRight = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, -2f, 0.05f, 0.7f);
-                        var offsetLeft = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 2f, 0.05f, 0.7f);
-
-                        if (Game.IsDisabledControlPressed(0, Control.MoveRight))
+                        if ((Game.IsControlPressed(0, Control.ParachuteBrakeLeft) || Game.IsControlPressed(0, Control.ParachuteBrakeRight)) && !(Game.IsControlPressed(0, Control.ParachuteBrakeLeft) && Game.IsControlPressed(0, Control.ParachuteBrakeRight)))
                         {
-                            Game.PlayerPed.Task.LookAt(offsetRight, 100);
+                            switch (index)
+                            {
+                                case 0:
+                                    xOffset = 2.2f;
+                                    yOffset = -1f;
+                                    break;
+                                case 1:
+                                    xOffset = 0.7f;
+                                    yOffset = -0.45f;
+                                    break;
+                                case 2:
+                                    xOffset = 1.35f;
+                                    yOffset = -0.4f;
+                                    break;
+                                case 3:
+                                    xOffset = 1.0f;
+                                    yOffset = -0.4f;
+                                    break;
+                                case 4:
+                                    xOffset = 0.9f;
+                                    yOffset = -0.4f;
+                                    break;
+                                case 5:
+                                    xOffset = 0.8f;
+                                    yOffset = -0.7f;
+                                    break;
+                                case 6:
+                                    xOffset = 1.5f;
+                                    yOffset = -1.0f;
+                                    break;
+                                default:
+                                    xOffset = 0f;
+                                    yOffset = 0.2f;
+                                    break;
+                            }
+                            if (Game.IsControlPressed(0, Control.ParachuteBrakeRight))
+                            {
+                                xOffset *= -1f;
+                            }
+
                         }
-                        else if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
+
+                        Vector3 pos;
+                        if (reverseCamera)
+                            pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, (CameraOffsets[index].Key.X + xOffset) * -1f, (CameraOffsets[index].Key.Y + yOffset) * -1f, CameraOffsets[index].Key.Z);
+                        else
+                            pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, (CameraOffsets[index].Key.X + xOffset), (CameraOffsets[index].Key.Y + yOffset), CameraOffsets[index].Key.Z);
+                        Vector3 pointAt = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, CameraOffsets[index].Value.X, CameraOffsets[index].Value.Y, CameraOffsets[index].Value.Z);
+
+                        if (Game.IsControlPressed(0, Control.MoveLeftOnly))
                         {
-                            Game.PlayerPed.Task.LookAt(offsetLeft, 100);
+                            Game.PlayerPed.Task.LookAt(GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 1.2f, .5f, .7f), 1100);
+                        }
+                        else if (Game.IsControlPressed(0, Control.MoveRightOnly))
+                        {
+                            Game.PlayerPed.Task.LookAt(GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, -1.2f, .5f, .7f), 1100);
                         }
                         else
                         {
-                            float input = GetDisabledControlNormal(0, 1);
+                            Game.PlayerPed.Task.LookAt(GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, 0f, .5f, .7f), 1100);
+                        }
 
-                            if (input > 0.5f)
+                        if (Game.IsControlJustReleased(0, Control.Jump))
+                        {
+                            var Pos = Game.PlayerPed.Position;
+                            SetEntityCollision(Game.PlayerPed.Handle, true, true);
+                            FreezeEntityPosition(Game.PlayerPed.Handle, false);
+                            TaskGoStraightToCoord(Game.PlayerPed.Handle, Pos.X, Pos.Y, Pos.Z, 8f, 1600, Game.PlayerPed.Heading + 180f, 0.1f);
+                            int timer = GetGameTimer();
+                            while (true)
                             {
-                                Game.PlayerPed.Task.LookAt(offsetRight, 100);
-                            }
-                            else if (input < -0.5f)
-                            {
-                                Game.PlayerPed.Task.LookAt(offsetLeft, 100);
-                            }
-                            else
-                            {
-                                if (MainMenu.MpPedCustomizationMenu.tattoosMenu.Visible)
+                                await Delay(0);
+                                //DisplayRadar(false);
+                                Game.DisableAllControlsThisFrame(0);
+                                if (GetGameTimer() - timer > 1600)
                                 {
-                                    Game.PlayerPed.Task.LookAt(Game.PlayerPed.GetOffsetPosition(new Vector3(0f, -3f, 0f)), 100);
+                                    break;
                                 }
-                                else
-                                {
-                                    Game.PlayerPed.Task.LookAt(camera.Position, 100);
-                                }
+                            }
+                            ClearPedTasks(Game.PlayerPed.Handle);
+                            Game.PlayerPed.PositionNoOffset = Pos;
+                            FreezeEntityPosition(Game.PlayerPed.Handle, true);
+                            SetEntityCollision(Game.PlayerPed.Handle, false, false);
+                            reverseCamera = !reverseCamera;
+                        }
+
+                        SetEntityCollision(Game.PlayerPed.Handle, false, false);
+                        //Game.PlayerPed.IsInvincible = true;
+                        Game.PlayerPed.IsPositionFrozen = true;
+
+                        if (!DoesCamExist(CurrentCam))
+                        {
+                            CurrentCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
+                            camera = new Camera(CurrentCam)
+                            {
+                                Position = pos,
+                                FieldOfView = CameraFov
+                            };
+                            camera.PointAt(pointAt);
+                            RenderScriptCams(true, false, 0, false, false);
+                            camera.IsActive = true;
+                        }
+                        else
+                        {
+                            if (camera.Position != pos)
+                            {
+                                await UpdateCamera(camera, pos, pointAt);
                             }
                         }
                     }
-                    DisplayRadar(IsRadarPreferenceSwitchedOn());
-                    RenderScriptCams(false, false, 0, false, false);
-                    camera.Delete();
-                    DestroyAllCams(true);
-                    ClearPedTasksImmediately(Game.PlayerPed.Handle);
+
                     SetEntityCollision(Game.PlayerPed.Handle, true, true);
-                    FreezeEntityPosition(Game.PlayerPed.Handle, false);
-                    SetEntityInvincible(Game.PlayerPed.Handle, false);
-                    RemoveAnimDict("anim@random@shop_clothes@watches");
+
+                    Game.PlayerPed.IsPositionFrozen = false;
+
+                    DisplayHud(true);
+                    DisplayRadar(true);
+
+                    if (HasAnimDictLoaded("anim@random@shop_clothes@watches"))
+                    {
+                        RemoveAnimDict("anim@random@shop_clothes@watches");
+                    }
+
+                    reverseCamera = false;
+                }
+                else
+                {
+                    if (camera != null)
+                    {
+                        ClearCamera();
+                        camera = null;
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Moves camera to a new spot
-        /// </summary>
-        /// <param name="camera"></param>
-        /// <param name="newPos"></param>
-        /// <param name="newPointAt"></param>
-        /// <returns></returns>
-        private async Task<Camera> MoveCamToNewSpot(Camera camera, Vector3 newPos, Vector3 newPointAt)
+        private int GetCameraIndex(Menu menu)
         {
-            var newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true);
-            Camera newCamera = new Camera(newCam)
+            if (menu != null)
             {
-                Position = newPos
-            };
-            newCamera.PointAt(newPointAt);
-            camera.InterpTo(newCamera, 800, 4000, 4000);
-            int timer = GetGameTimer();
-            while (camera.IsInterpolating || GetGameTimer() - timer < 900)
+                if (menu == MainMenu.MpPedCustomizationMenu.inheritanceMenu)
+                {
+                    return 1;
+                }
+                else if (menu == MainMenu.MpPedCustomizationMenu.clothesMenu)
+                {
+                    switch (menu.CurrentIndex)
+                    {
+                        case 0: // masks
+                            return 1;
+                        case 1: // upper body
+                            return 2;
+                        case 2: // lower body
+                            return 3;
+                        case 3: // bags & parachutes
+                            return 2;
+                        case 4: // shoes
+                            return 4;
+                        case 5: // scarfs & chains
+                            return 2;
+                        case 6: // shirt & accessory
+                            return 2;
+                        case 7: // body armor & accessory
+                            return 2;
+                        case 8: // badges & logos
+                            return 0;
+                        case 9: // shirt overlay & jackets
+                            return 2;
+                        default:
+                            return 0;
+                    }
+                }
+                else if (menu == MainMenu.MpPedCustomizationMenu.propsMenu)
+                {
+                    switch (menu.CurrentIndex)
+                    {
+                        case 0: // hats & helmets
+                        case 1: // glasses
+                        case 2: // misc props
+                            return 1;
+                        case 3: // watches
+                            return reverseCamera ? 5 : 6;
+                        case 4: // bracelets
+                            return 5;
+                        default:
+                            return 0;
+                    }
+                }
+                else if (menu == MainMenu.MpPedCustomizationMenu.appearanceMenu)
+                {
+                    switch (menu.CurrentIndex)
+                    {
+                        case 0: // hair style
+                        case 1: // hair color
+                        case 2: // hair highlight color
+                        case 3: // blemishes
+                        case 4: // blemishes opacity
+                        case 5: // beard style
+                        case 6: // beard opacity
+                        case 7: // beard color
+                        case 8: // eyebrows style
+                        case 9: // eyebrows opacity
+                        case 10: // eyebrows color
+                        case 11: // ageing style
+                        case 12: // ageing opacity
+                        case 13: // makeup style
+                        case 14: // makeup opacity
+                        case 15: // makeup color
+                        case 16: // blush style
+                        case 17: // blush opacity
+                        case 18: // blush color
+                        case 19: // complexion style
+                        case 20: // complexion opacity
+                        case 21: // sun damage style
+                        case 22: // sun damage opacity
+                        case 23: // lipstick style
+                        case 24: // lipstick opacity
+                        case 25: // lipstick color
+                        case 26: // moles and freckles style
+                        case 27: // moles and freckles opacity
+                            return 1;
+                        case 28: // chest hair style
+                        case 29: // chest hair opacity
+                        case 30: // chest hair color
+                        case 31: // body blemishes style
+                        case 32: // body blemishes opacity
+                            return 2;
+                        case 33: // eye colors
+                            return 1;
+                        default:
+                            return 0;
+                    }
+                }
+                else if (menu == MainMenu.MpPedCustomizationMenu.tattoosMenu)
+                {
+                    switch (menu.CurrentIndex)
+                    {
+                        case 0: // head
+                            return 1;
+                        case 1: // torso
+                            return 2;
+                        case 2: // left arm
+                        case 3: // right arm
+                            return 6;
+                        case 4: // left leg 
+                        case 5: // right leg
+                            return 3;
+                        case 6: // badges
+                            return 2;
+                        default:
+                            return 0;
+                    }
+                }
+                else if (menu == MainMenu.MpPedCustomizationMenu.faceShapeMenu)
+                {
+                    MenuItem item = menu.GetCurrentMenuItem();
+                    if (item != null)
+                    {
+                        if (item.GetType() == typeof(MenuSliderItem))
+                        {
+                            return 1;
+                        }
+                    }
+                    return 0;
+                }
+            }
+            return 0;
+        }
+
+        internal static void ClearCamera()
+        {
+            camera.IsActive = false;
+            RenderScriptCams(false, false, 0, false, false);
+            DestroyCam(CurrentCam, false);
+            CurrentCam = -1;
+            camera.Delete();
+        }
+
+        /// <summary>
+        /// Disables movement while the mp character creator is open.
+        /// </summary>
+        /// <returns></returns>
+        [Tick]
+        private async Task DisableMovement()
+        {
+            if (IsMpCharEditorOpen())
             {
-                FreezeEntityPosition(Game.PlayerPed.Handle, true);
-                DisableMovementControlsThisFrame(true, true);
+                Game.DisableControlThisFrame(0, Control.MoveDown);
+                Game.DisableControlThisFrame(0, Control.MoveDownOnly);
+                Game.DisableControlThisFrame(0, Control.MoveLeft);
+                Game.DisableControlThisFrame(0, Control.MoveLeftOnly);
+                Game.DisableControlThisFrame(0, Control.MoveLeftRight);
+                Game.DisableControlThisFrame(0, Control.MoveRight);
+                Game.DisableControlThisFrame(0, Control.MoveRightOnly);
+                Game.DisableControlThisFrame(0, Control.MoveUp);
+                Game.DisableControlThisFrame(0, Control.MoveUpDown);
+                Game.DisableControlThisFrame(0, Control.MoveUpOnly);
+                Game.DisableControlThisFrame(0, Control.NextCamera);
+                Game.DisableControlThisFrame(0, Control.LookBehind);
+                Game.DisableControlThisFrame(0, Control.LookDown);
+                Game.DisableControlThisFrame(0, Control.LookDownOnly);
+                Game.DisableControlThisFrame(0, Control.LookLeft);
+                Game.DisableControlThisFrame(0, Control.LookLeftOnly);
+                Game.DisableControlThisFrame(0, Control.LookLeftRight);
+                Game.DisableControlThisFrame(0, Control.LookRight);
+                Game.DisableControlThisFrame(0, Control.LookRightOnly);
+                Game.DisableControlThisFrame(0, Control.LookUp);
+                Game.DisableControlThisFrame(0, Control.LookUpDown);
+                Game.DisableControlThisFrame(0, Control.LookUpOnly);
+                Game.DisableControlThisFrame(0, Control.Aim);
+                Game.DisableControlThisFrame(0, Control.AccurateAim);
+                Game.DisableControlThisFrame(0, Control.Cover);
+                Game.DisableControlThisFrame(0, Control.Duck);
+                Game.DisableControlThisFrame(0, Control.Jump);
+                Game.DisableControlThisFrame(0, Control.SelectNextWeapon);
+                Game.DisableControlThisFrame(0, Control.PrevWeapon);
+                Game.DisableControlThisFrame(0, Control.WeaponSpecial);
+                Game.DisableControlThisFrame(0, Control.WeaponSpecial2);
+                Game.DisableControlThisFrame(0, Control.WeaponWheelLeftRight);
+                Game.DisableControlThisFrame(0, Control.WeaponWheelNext);
+                Game.DisableControlThisFrame(0, Control.WeaponWheelPrev);
+                Game.DisableControlThisFrame(0, Control.WeaponWheelUpDown);
+                Game.DisableControlThisFrame(0, Control.VehicleExit);
+                Game.DisableControlThisFrame(0, Control.Enter);
+            }
+            else
+            {
                 await Delay(0);
             }
-            camera.Delete();
-            return newCamera;
         }
         #endregion
 
@@ -2448,7 +2377,7 @@ namespace vMenuClient
 
             if (MainMenu.PermissionsSetupComplete && MainMenu.ConfigOptionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
-                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
+                bool enabled = MainMenu.MiscSettingsMenu.MiscShowOverheadNames && IsAllowed(Permission.MSOverheadNames);
                 if (!enabled)
                 {
                     for (var i = 0; i < 255; i++)

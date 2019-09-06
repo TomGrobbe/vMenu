@@ -398,7 +398,7 @@ namespace vMenuClient
                 {
                     PlayerFrozen = _checked;
 
-                    if (MainMenu.NoClipMenu != null && !MainMenu.NoClipEnabled)
+                    if (!MainMenu.NoClipEnabled)
                     {
                         FreezeEntityPosition(Game.PlayerPed.Handle, PlayerFrozen);
                     }
@@ -492,7 +492,7 @@ namespace vMenuClient
 
         private int GetStyleFromIndex(int index)
         {
-            int style = 0;
+            int style;
             switch (index)
             {
                 case 0:
