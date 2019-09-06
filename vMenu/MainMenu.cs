@@ -47,8 +47,7 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
-        public static Menu NoClipMenu { get; } = new NoclipMenu().GetMenu();
-        public static bool NoClipEnabled { get; set; } = false;
+        public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
         public static PlayerList PlayersList;
 
         // Only used when debugging is enabled:
@@ -477,44 +476,26 @@ namespace vMenuClient
 
                 if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                 {
-                    if (!MenuController.IsAnyMenuOpen() || NoClipEnabled)
+                    if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
                     {
-                        if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
+                        if (Game.PlayerPed.IsInVehicle())
                         {
-                            if (MenuController.IsAnyMenuOpen())
+                            Vehicle veh = GetVehicle();
+                            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
                             {
-                                if (MenuController.GetCurrentMenu() != null && MenuController.GetCurrentMenu() != NoClipMenu)
-                                {
-                                    MenuController.CloseAllMenus();
-                                }
-                            }
-                            if (Game.PlayerPed.IsInVehicle())
-                            {
-                                Vehicle veh = GetVehicle();
-                                if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
-                                {
-                                    NoClipEnabled = !NoClipEnabled;
-                                    MenuController.DontOpenAnyMenu = NoClipEnabled;
-                                }
-                                else
-                                {
-                                    NoClipEnabled = false;
-                                    MenuController.DontOpenAnyMenu = NoClipEnabled;
-                                    Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
-                                }
+                                NoClipEnabled = !NoClipEnabled;
                             }
                             else
                             {
-                                NoClipEnabled = !NoClipEnabled;
-                                MenuController.DontOpenAnyMenu = NoClipEnabled;
+                                NoClipEnabled = false;
+                                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
                             }
                         }
+                        else
+                        {
+                            NoClipEnabled = !NoClipEnabled;
+                        }
                     }
-                }
-
-                if (NoClipEnabled)
-                {
-                    MenuController.DontOpenAnyMenu = true;
                 }
 
                 #endregion
@@ -676,7 +657,6 @@ namespace vMenuClient
                 AddMenu(PlayerSubmenu, menu2, button2);
             }
 
-
             MenuItem worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
             Menu.AddMenuItem(worldSubmenuBtn);
 
@@ -728,6 +708,19 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(PlayerSubmenu, menu, button);
+            }
+
+            if (IsAllowed(Permission.NoClip))
+            {
+                MenuItem toggleNoclip = new MenuItem("Toggle NoClip", "Toggle NoClip on or off.");
+                PlayerSubmenu.AddMenuItem(toggleNoclip);
+                PlayerSubmenu.OnItemSelect += (sender, item, index) =>
+                {
+                    if (item == toggleNoclip)
+                    {
+                        NoClipEnabled = !NoClipEnabled;
+                    }
+                };
             }
 
             // Add Voice Chat Menu.

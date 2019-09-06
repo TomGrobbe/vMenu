@@ -105,12 +105,17 @@ namespace vMenuClient
                 overlayColorsList.Add($"Color #{i + 1}");
             }
 
+            int maxHairStyles = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2);
+            //if (currentCharacter.ModelHash == (uint)PedHash.FreemodeFemale01)
+            //{
+            //    maxHairStyles /= 2;
+            //}
             List<string> hairStylesList = new List<string>();
-            for (int i = 0; i < GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2); i++)
+            for (int i = 0; i < maxHairStyles; i++)
             {
                 hairStylesList.Add($"Style #{i + 1}");
             }
-            hairStylesList.Add($"Style #{GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, 2)}");
+            hairStylesList.Add($"Style #{maxHairStyles + 1}");
 
             List<string> blemishesStyleList = new List<string>();
             for (int i = 0; i < GetNumHeadOverlayValues(0); i++)
@@ -770,16 +775,12 @@ namespace vMenuClient
 
             menu.AddMenuItem(createMaleBtn);
             MenuController.BindMenuItem(menu, createCharacterMenu, createMaleBtn);
-            //menu.BindMenuToItem(createCharacterMenu, createMale);
             menu.AddMenuItem(createFemaleBtn);
             MenuController.BindMenuItem(menu, createCharacterMenu, createFemaleBtn);
-            //menu.BindMenuToItem(createCharacterMenu, createFemale);
             menu.AddMenuItem(savedCharacters);
             MenuController.BindMenuItem(menu, savedCharactersMenu, savedCharacters);
-            //menu.BindMenuToItem(savedCharactersMenu, savedCharacters);
 
             menu.RefreshIndex();
-            //menu.UpdateScaleform();
 
             createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
@@ -788,6 +789,7 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
             propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+
             createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
@@ -795,8 +797,23 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
             propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+
 
             MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
             MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
@@ -1629,8 +1646,6 @@ namespace vMenuClient
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
-            // eventhandler for when the tattoos menu is openend.
-            tattoosMenu.OnMenuOpen += (sender) => { Notify.Info("TIP, take a look at the instructional buttons! If you can't see a specific tattoo, try turning the camera using those buttons (Q & E)."); };
             #endregion
             #endregion
 
@@ -1718,9 +1733,31 @@ namespace vMenuClient
             {
                 if (item == createMaleBtn)
                 {
-                    await SetPlayerSkin("mp_m_freemode_01", new PedInfo() { version = -1 });
+                    uint model = (uint)GetHashKey("mp_m_freemode_01");
 
-                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                    }
+
+                    int maxHealth = Game.PlayerPed.MaxHealth;
+                    int maxArmour = Game.Player.MaxArmor;
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
+
+                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SetPlayerModel(Game.Player.Handle, model);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                    Game.Player.MaxArmor = maxArmour;
+                    Game.PlayerPed.MaxHealth = maxHealth;
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
+
                     ClearPedDecorations(Game.PlayerPed.Handle);
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
@@ -1732,9 +1769,31 @@ namespace vMenuClient
                 }
                 else if (item == createFemaleBtn)
                 {
-                    await SetPlayerSkin("mp_f_freemode_01", new PedInfo() { version = -1 });
+                    uint model = (uint)GetHashKey("mp_f_freemode_01");
 
-                    //SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                    if (!HasModelLoaded(model))
+                    {
+                        RequestModel(model);
+                        while (!HasModelLoaded(model))
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                    }
+
+                    int maxHealth = Game.PlayerPed.MaxHealth;
+                    int maxArmour = Game.Player.MaxArmor;
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
+
+                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SetPlayerModel(Game.Player.Handle, model);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                    Game.Player.MaxArmor = maxArmour;
+                    Game.PlayerPed.MaxHealth = maxHealth;
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
+
                     ClearPedDecorations(Game.PlayerPed.Handle);
                     ClearPedFacialDecorations(Game.PlayerPed.Handle);
                     SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
@@ -1782,12 +1841,19 @@ namespace vMenuClient
                         await BaseScript.Delay(0);
                     }
                 }
+                int maxHealth = Game.PlayerPed.MaxHealth;
+                int maxArmour = Game.Player.MaxArmor;
+                int health = Game.PlayerPed.Health;
+                int armour = Game.PlayerPed.Armor;
 
-                // for some weird reason, using SetPlayerModel here does not work, it glitches out and makes the player have what seems to be both male
-                // and female ped at the same time.. really fucking weird. Only the CommonFunctions.SetPlayerSkin function seems to work some how. I really have no clue.
-                await SetPlayerSkin(currentCharacter.ModelHash, new PedInfo() { version = -1 }, restoreWeapons);
-                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.IsMale ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01"));
-                // SetPlayerModel(Game.PlayerPed.Handle, currentCharacter.ModelHash);
+                SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                SetPlayerModel(Game.Player.Handle, currentCharacter.ModelHash);
+                await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                Game.Player.MaxArmor = maxArmour;
+                Game.PlayerPed.MaxHealth = maxHealth;
+                Game.PlayerPed.Health = health;
+                Game.PlayerPed.Armor = armour;
 
                 ClearPedDecorations(Game.PlayerPed.Handle);
                 ClearPedFacialDecorations(Game.PlayerPed.Handle);

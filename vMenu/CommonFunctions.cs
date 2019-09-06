@@ -1982,10 +1982,18 @@ namespace vMenuClient
                     Vehicle veh = Game.PlayerPed.CurrentVehicle;
                     VehicleSeat seat = Game.PlayerPed.SeatIndex;
 
-                    int lastArmorValue = Game.PlayerPed.Armor;
+                    int maxHealth = Game.PlayerPed.MaxHealth;
+                    int maxArmour = Game.Player.MaxArmor;
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
 
                     // set the model
                     SetPlayerModel(Game.Player.Handle, modelHash);
+
+                    Game.Player.MaxArmor = maxArmour;
+                    Game.PlayerPed.MaxHealth = maxHealth;
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
 
                     // warp ped into vehicle if the player was in a vehicle.
                     if (wasInVehicle && veh != null && seat != VehicleSeat.None)
@@ -2005,9 +2013,6 @@ namespace vMenuClient
                         }
                         FreezeEntityPosition(Game.PlayerPed.Handle, false);
                     }
-
-                    // restore armor.
-                    Game.PlayerPed.Armor = lastArmorValue;
                 }
 
                 // Reset some stuff.
@@ -2508,7 +2513,7 @@ namespace vMenuClient
                     if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
-                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > 0 ? w.CurrentAmmo : w.GetMaxAmmo, false, true);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo: w.GetMaxAmmo, false, false);
 
                         // Add components
                         if (w.Components.Count > 0)
@@ -2537,12 +2542,28 @@ namespace vMenuClient
 
                         if (w.CurrentAmmo > 0)
                         {
-                            while (GetAmmoInPedWeapon(Game.PlayerPed.Handle, w.Hash) < 1)
+                            int ammo = w.CurrentAmmo; 
+                            if (w.CurrentAmmo > w.GetMaxAmmo)
                             {
-                                await Delay(0);
-                                AddAmmoToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo);
-                                SetAmmoInClip(Game.PlayerPed.Handle, w.Hash, w.AmmoInClip);
+                                ammo = w.GetMaxAmmo;
+                            }
+                            var doIt = false;
+                            while (GetAmmoInPedWeapon(Game.PlayerPed.Handle, w.Hash) != ammo && w.CurrentAmmo != -1)
+                            {
+                                if (doIt)
+                                {
+                                    SetCurrentPedWeapon(Game.PlayerPed.Handle, w.Hash, true);
+                                }
+                                doIt = true;
+                                int ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, w.Hash, false);
+                                if (ammoInClip > ammo)
+                                {
+                                    ammoInClip = ammo;
+                                }
+                                SetAmmoInClip(Game.PlayerPed.Handle, w.Hash, ammoInClip);
+                                SetPedAmmo(Game.PlayerPed.Handle, w.Hash, ammo > -1 ? ammo : w.GetMaxAmmo);
                                 Log($"waiting for ammo in {w.Name}");
+                                await Delay(0);
                             }
                         }
                     }
@@ -2588,9 +2609,6 @@ namespace vMenuClient
                     };
 
                     weapon.CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash);
-                    var ammoInClip = 0;
-                    GetAmmoInClip(Game.PlayerPed.Handle, vw.Hash, ref ammoInClip);
-                    weapon.AmmoInClip = ammoInClip;
 
 
                     // Check for and add components if applicable.

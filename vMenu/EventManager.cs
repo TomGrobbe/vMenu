@@ -404,7 +404,6 @@ namespace vMenuClient
             {
                 if (!DontDoTimeSyncRightNow)
                 {
-                    bool frozen = freezeTime;
                     DontDoTimeSyncRightNow = true;
                     EventManager.freezeTime = false;
 
