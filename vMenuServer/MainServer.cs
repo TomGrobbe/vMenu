@@ -416,7 +416,6 @@ namespace vMenuServer
                     CallbackFunction(JsonConvert.SerializeObject(data));
                 }));
                 EventHandlers.Add("vMenu:GetOutOfCar", new Action<Player, int, int>(GetOutOfCar));
-                EventHandlers.Add("vMenu:IsResourceUpToDate", new Action<Player>(IsResourceUpToDate));
                 EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
                 EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
                 EventHandlers.Add("vMenu:SaveTeleportLocation", new Action<Player, string>(AddTeleportLocation));
@@ -874,30 +873,6 @@ namespace vMenuServer
             }
         }
 
-        /// <summary>
-        /// Tells the player if the resource is currently up to date.
-        /// </summary>
-        /// <param name="source"></param>
-        public static void IsResourceUpToDate([FromSource]Player source)
-        {
-            if (!UpToDate)
-            {
-                string updaterMessage = string.IsNullOrEmpty(UpdateMessage) ? "" : ("Message: " + UpdateMessage);
-
-                if (GetSettingsBool(Setting.vmenu_outdated_version_notify_players))
-                {
-                    source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
-                }
-                else
-                {
-                    // Staff will always receive this message, whether they like it or not.
-                    if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.Staff, source))
-                    {
-                        source.TriggerEvent("vMenu:OutdatedResource", $"Current: {Version}. Latest: {UpdaterVersion}. {updaterMessage}");
-                    }
-                }
-            }
-        }
         #endregion
 
         #region Add teleport location
