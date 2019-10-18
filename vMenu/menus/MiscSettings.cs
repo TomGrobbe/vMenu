@@ -32,6 +32,7 @@ namespace vMenuClient
         public bool LockCameraY { get; private set; } = false;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
+        public bool ShowPlayerBlipsMinimap { get; private set; } = UserDefaults.MiscShowPlayerBlipsMinimap;
         public bool MiscShowOverheadNames { get; private set; } = UserDefaults.MiscShowOverheadNames;
         public bool ShowVehicleModelDimensions { get; private set; } = false;
         public bool ShowPedModelDimensions { get; private set; } = false;
@@ -158,6 +159,7 @@ namespace vMenuClient
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
             MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem playerBlipsMinimap = new MenuCheckboxItem("Show Player Blips on Minimap", "Shows blips on the the minimap for all players. ~r~Requires Show Player Blips to be enabled!", ShowPlayerBlipsMinimap);
             MenuCheckboxItem playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
             MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
             MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
@@ -555,6 +557,10 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(playerBlips);
             }
+            if (IsAllowed(Permission.MSPlayerBlipsMinimap))
+            {
+                menu.AddMenuItem(playerBlipsMinimap);
+            }
             if (IsAllowed(Permission.MSOverheadNames))
             {
                 menu.AddMenuItem(playerNames);
@@ -667,6 +673,10 @@ namespace vMenuClient
                 else if (item == playerBlips)
                 {
                     ShowPlayerBlips = _checked;
+                }
+                else if (item == playerBlipsMinimap)
+                {
+                    ShowPlayerBlipsMinimap = _checked;
                 }
                 else if (item == playerNames)
                 {

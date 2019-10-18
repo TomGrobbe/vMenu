@@ -244,6 +244,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscShowPlayerBlips", value); }
         }
 
+        public static bool MiscShowPlayerBlipsMinimap
+        {
+            get { return GetSettingsBool("miscShowPlayerBlipsMinimap"); }
+            set { SetSavedSettingsBool("miscShowPlayerBlipsMinimap", value); }
+        }
+
         public static bool MiscShowOverheadNames
         {
             get { return GetSettingsBool("miscShowOverheadNames"); }
@@ -548,6 +554,9 @@ namespace vMenuClient
 
                 MiscShowPlayerBlips = MainMenu.MiscSettingsMenu.ShowPlayerBlips;
                 prefs.Add("miscShowPlayerBlips", MiscShowPlayerBlips);
+
+                MiscShowPlayerBlipsMinimap = MainMenu.MiscSettingsMenu.ShowPlayerBlipsMinimap;
+                prefs.Add("miscShowPlayerBlipsMinimap", MiscShowPlayerBlipsMinimap);
 
                 MiscShowOverheadNames = MainMenu.MiscSettingsMenu.MiscShowOverheadNames;
                 prefs.Add("miscShowOverheadNames", MiscShowOverheadNames);

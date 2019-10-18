@@ -2237,6 +2237,7 @@ namespace vMenuClient
                     if (MainMenu.MiscSettingsMenu != null)
                     {
                         bool enabled = MainMenu.MiscSettingsMenu.ShowPlayerBlips && IsAllowed(Permission.MSPlayerBlips);
+                        bool minimapEnabled = MainMenu.MiscSettingsMenu.ShowPlayerBlipsMinimap && IsAllowed(Permission.MSPlayerBlipsMinimap);
 
                         foreach (Player p in MainMenu.PlayersList)
                         {
@@ -2262,7 +2263,7 @@ namespace vMenuClient
                                             blip = AddBlipForEntity(ped);
                                         }
                                         // only manage the blip for this player if the player is nearby
-                                        if (p.Character.Position.DistanceToSquared2D(Game.PlayerPed.Position) < 500000 || Game.IsPaused)
+                                        if (minimapEnabled && (p.Character.Position.DistanceToSquared2D(Game.PlayerPed.Position) < 500000 || Game.IsPaused))
                                         {
                                             // (re)set the blip color in case something changed it.
                                             SetBlipColour(blip, 0);
