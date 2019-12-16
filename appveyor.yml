@@ -1,6 +1,6 @@
 pull_requests:
   do_not_increment_build_number: false
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration: Release
 before_build:
   - nuget restore
@@ -10,13 +10,12 @@ build:
   include_nuget_references: true
   verbosity: minimal
 after_build:
-  - cmd: copy README.md ..\build\README.md
-  - cmd: copy LICENSE.md ..\build\LICENSE.md
-  - ps: Invoke-WebRequest -OutFile '..\build\__resource.lua' https://vespura.com/vmenu/__resource.lua
-  - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta)
-  - cmd: 7z a vMenu-%VERSION_NAME%.zip -r ..\build\*
+  - cmd: copy README.md ..\build\net452\README.md
+  - cmd: copy LICENSE.md ..\build\net452\LICENSE.md
+  - ps: Invoke-WebRequest -OutFile '..\build\net452\__resource.lua' https://vespura.com/vmenu/__resource.lua
+  - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta-%APPVEYOR_BUILD_VERSION%)
+  - cmd: cd ..\build\net452\ && 7z a "..\..\vMenu\vMenu-%VERSION_NAME%.zip" -r * && cd ..\..\vMenu\
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
-  - cmd: if %APPVEYOR_REPO_TAG%==true (curl -F "content=New version :tada:! <@&540562517806809109>" -F "file=@vMenu-"%VERSION_NAME%".zip" %DISCORD_FILE_WEBHOOK%)
 deploy:
   - provider: GitHub
     release: "[Release] vMenu $(VERSION_NAME)"
@@ -29,12 +28,9 @@ deploy:
       APPVEYOR_REPO_TAG: true
     description: "vMenu version $(VERSION_NAME)."
 after_deploy:
-  - ps: if($env:APPVEYOR_REPO_TAG -eq $True) {Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1; ./send.ps1 deploy $env:WEBHOOK_URL; rm send.ps1;}
+  - cmd: curl -F "file=@vMenu-%VERSION_NAME%.zip" %DISCORD_FILE_WEBHOOK%
+  - cmd: curl -H "Content-Type:application/json" -X POST -d "{\"content\":\"^<^@^&540562517806809109^>\",\"embeds\":[{\"title\":\"%APPVEYOR_PROJECT_NAME% (%VERSION_NAME%)\",\"description\":\"New version of **%APPVEYOR_PROJECT_NAME%** (%VERSION_NAME%) is available! Download it by using the files in this chanel or by going to the GitHub Tag link!\",\"color\":3048181,\"author\":{\"name\":\"Release build triggered by %APPVEYOR_ACCOUNT_NAME%\",\"url\":\"https://github.com/%APPVEYOR_ACCOUNT_NAME%/\"},\"fields\":[{\"name\":\"AppVeyor Build\",\"value\":\"[Here](%APPVEYOR_URL%/project/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_SLUG%/builds/%APPVEYOR_BUILD_ID%)\"},{\"name\":\"GitHub Commit (%APPVEYOR_REPO_COMMIT%)\",\"value\":\"[%APPVEYOR_REPO_COMMIT%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/commit/%APPVEYOR_REPO_COMMIT%) - %APPVEYOR_REPO_COMMIT_MESSAGE%%APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED%\"},{\"name\":\"GitHub Branch\",\"value\":\"[%APPVEYOR_REPO_BRANCH%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/tree/%APPVEYOR_REPO_BRANCH%)\"},{\"name\":\"GitHub Tag\",\"value\":\"[%APPVEYOR_REPO_TAG_NAME%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/releases/tag/%APPVEYOR_REPO_TAG_NAME%)\"}]}]}" %WEBHOOK_URL%
 on_success:
-  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
-  - ps: ./send.ps1 success $env:WEBHOOK_URL
-  - ps: rm send.ps1
+  - cmd: if %APPVEYOR_REPO_TAG%==false curl -H "Content-Type:application/json" -X POST -d "{\"embeds\":[{\"title\":\"%APPVEYOR_PROJECT_NAME% (%VERSION_NAME%)\",\"description\":\"Build passed!\",\"color\":4502298,\"author\":{\"name\":\"Build triggered by %APPVEYOR_ACCOUNT_NAME%\",\"url\":\"https://github.com/%APPVEYOR_ACCOUNT_NAME%/\"},\"fields\":[{\"name\":\"AppVeyor Build\",\"value\":\"[Here](%APPVEYOR_URL%/project/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_SLUG%/builds/%APPVEYOR_BUILD_ID%)\"},{\"name\":\"GitHub Commit (%APPVEYOR_REPO_COMMIT%)\",\"value\":\"[%APPVEYOR_REPO_COMMIT%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/commit/%APPVEYOR_REPO_COMMIT%) - %APPVEYOR_REPO_COMMIT_MESSAGE%%APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED%\"},{\"name\":\"GitHub Branch\",\"value\":\"[%APPVEYOR_REPO_BRANCH%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/tree/%APPVEYOR_REPO_BRANCH%)\"}]}]}" %WEBHOOK_URL%
 on_failure:
-  - ps: Invoke-RestMethod https://raw.githubusercontent.com/TomGrobbe/appveyor-discord-webhook/master/send.ps1 -o send.ps1
-  - ps: ./send.ps1 failure $env:WEBHOOK_URL
-  - ps: rm send.ps1
+  - cmd: curl -H "Content-Type:application/json" -X POST -d "{\"embeds\":[{\"title\":\"%APPVEYOR_PROJECT_NAME% (%VERSION_NAME%)\",\"description\":\"Build FAILED! Ouch.\",\"color\":13632027,\"author\":{\"name\":\"Build triggered by %APPVEYOR_ACCOUNT_NAME%\",\"url\":\"https://github.com/%APPVEYOR_ACCOUNT_NAME%/\"},\"fields\":[{\"name\":\"AppVeyor Build\",\"value\":\"[Here](%APPVEYOR_URL%/project/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_SLUG%/builds/%APPVEYOR_BUILD_ID%)\"},{\"name\":\"GitHub Commit (%APPVEYOR_REPO_COMMIT%)\",\"value\":\"[%APPVEYOR_REPO_COMMIT%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/commit/%APPVEYOR_REPO_COMMIT%) - %APPVEYOR_REPO_COMMIT_MESSAGE%%APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED%\"},{\"name\":\"GitHub Branch\",\"value\":\"[%APPVEYOR_REPO_BRANCH%](https://github.com/%APPVEYOR_ACCOUNT_NAME%/%APPVEYOR_PROJECT_NAME%/tree/%APPVEYOR_REPO_BRANCH%)\"}]}]}" %WEBHOOK_URL%

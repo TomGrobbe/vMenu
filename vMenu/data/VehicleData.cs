@@ -342,6 +342,7 @@ namespace vMenuClient
                 "LANDSTALKER",
                 "MESA",
                 "MESA2",
+                "NOVAK", // Casino DLC
                 "PATRIOT",
                 "PATRIOT2", // dlc (mpbattle)
                 "RADI",
@@ -397,6 +398,8 @@ namespace vMenuClient
                 "FACTION3",
                 "GAUNTLET",
                 "GAUNTLET2",
+                "GAUNTLET3", // Casino DLC
+                "GAUNTLET4", // Casino DLC
                 "HERMES",
                 "HOTKNIFE",
                 "HUSTLER",
@@ -411,6 +414,7 @@ namespace vMenuClient
                 "MOONBEAM",
                 "MOONBEAM2",
                 "NIGHTSHADE",
+                "PEYOTE2", // Casino DLC
                 "PHOENIX",
                 "PICADOR",
                 "RATLOADER",
@@ -453,6 +457,7 @@ namespace vMenuClient
                 "CHEETAH2",
                 "COQUETTE2",
                 "DELUXO",
+                "DYNASTY", // Casino DLC
                 "FAGALOA",
                 "FELTZER3", // Stirling GT
                 "GT500",
@@ -463,6 +468,7 @@ namespace vMenuClient
                 "MANANA",
                 "MICHELLI",
                 "MONROE",
+                "NEBULA", // Casino DLC
                 "PEYOTE",
                 "PIGALLE",
                 "RAPIDGT3",
@@ -482,6 +488,7 @@ namespace vMenuClient
                 "TURISMO2",
                 "VISERIS",
                 "Z190",
+                "ZION3", // Casino DLC
                 "ZTYPE",
             };
             #endregion
@@ -502,6 +509,7 @@ namespace vMenuClient
                 "COMET4",
                 "COMET5",
                 "COQUETTE",
+                "DRAFTER", // Casino DLC
                 "ELEGY",
                 "ELEGY2",
                 "FELTZER2",
@@ -511,19 +519,25 @@ namespace vMenuClient
                 "FUTO",
                 "GB200",
                 "HOTRING",
+                "ISSI7", // Casino DLC
                 "ITALIGTO", // MPCHRISTMAS2018 DLC
                 "JESTER",
                 "JESTER2",
+                "JUGULAR", // Casino DLC
                 "KHAMELION",
                 "KURUMA",
                 "KURUMA2",
+                "LOCUST", // Casino DLC
                 "LYNX",
                 "MASSACRO",
                 "MASSACRO2",
+                "NEO", // Casino DLC
                 "NEON", // Doomsday Heist Update
                 "NINEF",
                 "NINEF2",
                 "OMNIS",
+                "PARAGON", // Casino DLC
+                "PARAGON2", // Casino DLC
                 "PARIAH",
                 "PENUMBRA",
                 "RAIDEN",
@@ -562,6 +576,7 @@ namespace vMenuClient
                 "CHEETAH",
                 "CYCLONE",
                 "DEVESTE", // MPCHRISTMAS2018 DLC
+                "EMERUS", // Casino DLC
                 "ENTITYXF",
                 "ENTITY2",
                 "FMJ",
@@ -569,6 +584,7 @@ namespace vMenuClient
                 "INFERNUS",
                 "ITALIGTB",
                 "ITALIGTB2",
+                "KRIEGER", // Casino DLC
                 "LE7B",
                 "NERO",
                 "NERO2",
@@ -577,6 +593,7 @@ namespace vMenuClient
                 "PFISTER811",
                 "PROTOTIPO",
                 "REAPER",
+                "S80", // Casino DLC
                 "SC1",
                 "SCRAMJET", // dlc (mpbattle)
                 "SHEAVA", // ETR1
@@ -585,6 +602,7 @@ namespace vMenuClient
                 "TAIPAN",
                 "TEMPESTA",
                 "TEZERACT",
+                "THRAX", // Casino DLC
                 "TURISMOR",
                 "TYRANT",
                 "TYRUS",
@@ -596,6 +614,7 @@ namespace vMenuClient
                 "VOLTIC2",
                 "XA21",
                 "ZENTORNO",
+                "ZORRUSSO", // Casino DLC
             };
             #endregion
             #region Motorcycles
@@ -639,6 +658,7 @@ namespace vMenuClient
                 "OPPRESSOR2", // dlc (mpbattle)
                 "PCJ",
                 "RATBIKE",
+                "RROCKET", // Casino DLC
                 "RUFFIAN",
                 "SANCHEZ",
                 "SANCHEZ2",
@@ -673,6 +693,7 @@ namespace vMenuClient
                 "BRUTUS2", // MPCHRISTMAS2018 DLC
                 "BRUTUS3", // MPCHRISTMAS2018 DLC
                 "CARACARA",
+                "CARACARA2", // Casino DLC
                 "DLOADER",
                 "DUBSTA3",
                 "DUNE",
@@ -681,6 +702,7 @@ namespace vMenuClient
                 "DUNE4",
                 "DUNE5",
                 "FREECRAWLER", // dlc (mpbattle)
+                "HELLION", // Casino DLC
                 "INSURGENT",
                 "INSURGENT2",
                 "INSURGENT3",
