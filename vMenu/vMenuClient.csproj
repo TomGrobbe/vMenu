@@ -1,119 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{58FE5D89-E729-4246-B527-6EDA2A1AF04D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>vMenuClient</RootNamespace>
+    <TargetFramework>net452</TargetFramework>
+    <DebugType>embedded</DebugType>
+    <Configurations>Release;Debug</Configurations>
     <AssemblyName>vMenuClient.net</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
-    <Optimize>false</Optimize>
+    <TargetName>$(AssemblyName)</TargetName>
     <OutputPath>..\..\build\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CLIENT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>embedded</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\build\</OutputPath>
-    <DefineConstants>TRACE;CLIENT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>CLIENT</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MenuAPI">
-      <HintPath>..\dependencies\client\MenuAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
+    <Compile Include="..\SharedClasses\PermissionsManager.cs" Link="PermissionsManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MenuAPI.FiveM" Version="3.0.3" />
+
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.1883">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="data\BlipInfo.cs" />
-    <Compile Include="CommonFunctions.cs" />
-    <Compile Include="data\PedModels.cs" />
-    <Compile Include="data\TimeCycles.cs" />
-    <Compile Include="EventManager.cs" />
-    <Compile Include="FunctionsController.cs" />
-    <Compile Include="MainMenu.cs" />
-    <Compile Include="menus\About.cs" />
-    <Compile Include="menus\BannedPlayers.cs" />
-    <Compile Include="menus\MiscSettings.cs" />
-    <Compile Include="menus\MpPedCustomization.cs" />
-    <Compile Include="menus\OnlinePlayers.cs" />
-    <Compile Include="menus\PersonalVehicle.cs" />
-    <Compile Include="menus\PlayerAppearance.cs" />
-    <Compile Include="menus\Recording.cs" />
-    <Compile Include="menus\SavedVehicles.cs" />
-    <Compile Include="menus\WeaponLoadouts.cs" />
-    <Compile Include="data\TattoosData.cs" />
-    <Compile Include="menus\TimeOptions.cs" />
-    <Compile Include="menus\VehicleOptions.cs" />
-    <Compile Include="menus\VehicleSpawner.cs" />
-    <Compile Include="menus\VoiceChat.cs" />
-    <Compile Include="menus\WeaponOptions.cs" />
-    <Compile Include="menus\WeatherOptions.cs" />
-    <Compile Include="MpPedDataManager.cs" />
-    <Compile Include="NoClip.cs" />
-    <Compile Include="Notification.cs" />
-    <Compile Include="data\PedScenarios.cs" />
-    <Compile Include="menus\PlayerOptions.cs" />
-    <Compile Include="..\SharedClasses\ConfigManager.cs" />
-    <Compile Include="..\SharedClasses\PermissionsManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="StorageManager.cs" />
-    <Compile Include="UserDefaults.cs" />
-    <Compile Include="data\ValidWeapon.cs" />
-    <Compile Include="data\VehicleData.cs" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Resource Include="data\overlays.json" />
   </ItemGroup>
+  
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CitizenFX.Core.Client">
-      <Version>1.0.1360</Version>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent Condition=" '$(OS)' == 'Unix'">
-    </PostBuildEvent>
-    <PostBuildEvent Condition=" '$(OS)' == 'Windows_NT'">if exist "$(SolutionDir)\postbuild.cmd" "$(SolutionDir)postbuild.cmd"</PostBuildEvent>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
+  </Target>
 </Project>
