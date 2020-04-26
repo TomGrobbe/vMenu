@@ -12,11 +12,6 @@
 # vMenu
 vMenu is server sided menu for FiveM servers, including full\* permission support.
 
-### Demo Screenshots
-
-|Main Menu|Player Options|
-|:-:|:-:|
-|![Main Menu](https://www.vespura.com/hi/i/fef17e5.png)|![Player Options](https://www.vespura.com/hi/i/458b6e4.png)|
 
 \*(Some features do not have permissions support as they are either harmless or it'd just be silly to deny them. However, they will be disabled if you deny access to the submenu that they are a part of (eg: unlimited stamina in Player Options will be disabled if you deny `vMenu.PlayerOptions.Menu`.))
 
@@ -81,7 +76,7 @@ vMenu v2.0.0 and earlier was [using a modified version of NativeUI](https://gith
 
 Tom Grobbe - https://www.vespura.com/
 
-Copyright © 2017-2019
+Copyright © 2017-2020
 
 ----
 
