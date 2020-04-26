@@ -1585,7 +1585,7 @@ namespace vMenuClient
         {
             // Create the window title string.
             var spacer = "\t";
-            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength.ToString()} Characters)");
+            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength} Characters)");
 
             // Display the input box.
             DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
@@ -1671,11 +1671,11 @@ namespace vMenuClient
                 {
                     if (prevUpper)
                     {
-                        outputString += $"{c.ToString()}";
+                        outputString += $"{c}";
                     }
                     else
                     {
-                        outputString += $" {c.ToString()}";
+                        outputString += $" {c}";
                     }
                     prevUpper = true;
                 }
@@ -2422,7 +2422,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error($"This ({inputName.ToString()}) is not a valid weapon model name, or the model hash ({model.ToString()}) could not be found in the game files.");
+                    Notify.Error($"This ({inputName}) is not a valid weapon model name, or the model hash ({model}) could not be found in the game files.");
                 }
             }
             else

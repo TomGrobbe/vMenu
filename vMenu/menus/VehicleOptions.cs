@@ -1420,7 +1420,7 @@ namespace vMenuClient
                                 //extraIds.Add(extra);
 
                                 // Create a checkbox for it.
-                                MenuCheckboxItem extraCheckbox = new MenuCheckboxItem($"Extra #{extra.ToString()}", extra.ToString(), veh.IsExtraOn(extra));
+                                MenuCheckboxItem extraCheckbox = new MenuCheckboxItem($"Extra #{extra}", extra.ToString(), veh.IsExtraOn(extra));
                                 // Add the checkbox to the menu.
                                 VehicleComponentsMenu.AddMenuItem(extraCheckbox);
 
@@ -1717,7 +1717,7 @@ namespace vMenuClient
                         currentItem = $"[{2 + x}/{ mod.ModCount + 1}]";
 
                         // Create the name (again, converting to proper case), then add the name.
-                        name = mod.GetLocalizedModName(x) != "" ? $"{ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x.ToString()} {currentItem}";
+                        name = mod.GetLocalizedModName(x) != "" ? $"{ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x} {currentItem}";
                         modlist.Add(name);
                     }
 

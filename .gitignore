@@ -264,3 +264,4 @@ dependencies/shared/vMenuShared\.net\.dll
 external/
 
 *.cmd
+*.cmd.bak
