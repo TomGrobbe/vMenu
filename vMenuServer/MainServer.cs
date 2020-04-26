@@ -200,12 +200,12 @@ namespace vMenuServer
                                 {
                                     if (args.Count == 3 && !string.IsNullOrEmpty(args[2].ToString()))
                                     {
-                                        if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "true")
+                                        if ((args[2].ToString().ToLower() ?? $"{dynamicWeather}") == "true")
                                         {
                                             TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, true);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
                                         }
-                                        else if ((args[2].ToString().ToLower() ?? $"{dynamicWeather.ToString()}") == "false")
+                                        else if ((args[2].ToString().ToLower() ?? $"{dynamicWeather}") == "false")
                                         {
                                             TriggerEvent("vMenu:UpdateServerWeather", currentWeather, blackout, false);
                                             Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
