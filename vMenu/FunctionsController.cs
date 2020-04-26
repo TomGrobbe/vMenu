@@ -31,7 +31,6 @@ namespace vMenuClient
         // show location variables
         private Vector3 currentPos = Game.PlayerPed.Position;
         private Vector3 nodePos = Game.PlayerPed.Position;
-        private bool node = false;
         private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
         private uint crossing = 1;
@@ -104,8 +103,7 @@ namespace vMenuClient
             Tick += PersonalVehicleOptions;
             Tick += AnimalPedCameraChangeBlocker;
             Tick += SlowMiscTick;
-
-
+            Tick += SpectateHandling;
             //Tick += FlaresAndBombsTick;
         }
 
@@ -190,11 +188,8 @@ namespace vMenuClient
             if (MainMenu.PermissionsSetupComplete && MainMenu.PlayerOptionsMenu != null && IsAllowed(Permission.POMenu))
             {
                 // perms
-                bool ignorePlayerAllowed = IsAllowed(Permission.POIgnored);
                 bool godmodeAllowed = IsAllowed(Permission.POGod);
                 bool noRagdollAllowed = IsAllowed(Permission.PONoRagdoll);
-                bool vehicleGodModeAllowed = IsAllowed(Permission.VOGod);
-                bool playerFrozenAllowed = IsAllowed(Permission.POFreeze);
 
                 if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu != null)
                 {
@@ -469,7 +464,7 @@ namespace vMenuClient
                                 catch (Exception e)
                                 {
                                     Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                                     await Delay(1000);
                                 }
                             }
@@ -750,7 +745,7 @@ namespace vMenuClient
 
                     // Get the nearest vehicle node.
                     nodePos = currentPos;
-                    node = GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
+                    GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
                     heading = Game.PlayerPed.Heading;
 
                     // Get the safezone size for x and y to be able to move with the minimap.
@@ -792,7 +787,7 @@ namespace vMenuClient
                 prefix = "~m~Near ~s~";
             }
 
-            string headingCharacter = "";
+            string headingCharacter;
 
             // Heading Facing North
             if (heading > 320 || heading < 45)
@@ -1162,12 +1157,10 @@ namespace vMenuClient
                                 if (notifOne != -1)
                                 {
                                     RemoveNotification(notifOne);
-                                    notifOne = -1;
                                 }
                                 if (notifTwo != -1)
                                 {
                                     RemoveNotification(notifTwo);
-                                    notifTwo = -1;
                                 }
                             }
                         }
@@ -1653,10 +1646,6 @@ namespace vMenuClient
                     }
                 }
 
-                var menu = MainMenu.MpPedCustomizationMenu.GetMenu();
-
-
-
                 if (IsMpCharEditorOpen())
                 {
                     if (!HasAnimDictLoaded("anim@random@shop_clothes@watches"))
@@ -2105,7 +2094,7 @@ namespace vMenuClient
                     catch (Exception e)
                     {
                         Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                         await Delay(1000);
                     }
                     while (!DecorIsRegisteredAsType(clothingAnimationDecor, 3))
@@ -2122,7 +2111,7 @@ namespace vMenuClient
                     catch (Exception e)
                     {
                         Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                         await Delay(1000);
                     }
                     foreach (Player player in Players)
@@ -2200,7 +2189,7 @@ namespace vMenuClient
                 catch (Exception e)
                 {
                     Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                    Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                     await Delay(1000);
                 }
             }
@@ -2230,7 +2219,7 @@ namespace vMenuClient
                     catch (Exception e)
                     {
                         Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                         await Delay(1000);
                     }
 
@@ -2348,7 +2337,7 @@ namespace vMenuClient
                     catch (Exception e)
                     {
                         Debug.WriteLine(@"[CRITICAL] A critical bug in one of your scripts was detected. vMenu is unable to set or register a decorator's value because another resource has already registered 1.5k or more decorators. vMenu will NOT work as long as this bug in your other scripts is unsolved. Please fix your other scripts. This is *NOT* caused by or fixable by vMenu!!!");
-                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message.ToString()}");
+                        Debug.WriteLine($"Error Location: {e.StackTrace}\nError info: {e.Message}");
                         await Delay(1000);
                     }
                     while (!DecorIsRegisteredAsType("vmenu_player_blip_sprite_id", 3))
@@ -2364,7 +2353,7 @@ namespace vMenuClient
         #region player overhead names
         private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
 
-        private float distance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f; // todo make this a convar.
+        private float playerNamesDistance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f;
 
 
         /// <summary>
@@ -2395,7 +2384,7 @@ namespace vMenuClient
                         {
                             var dist = p.Character.Position.DistanceToSquared(Game.PlayerPed.Position);
                             //Debug.WriteLine($"Dist: {dist}");
-                            bool closeEnough = dist < distance;
+                            bool closeEnough = dist < playerNamesDistance;
                             if (gamerTags.ContainsKey(p))
                             {
                                 if (!closeEnough)
@@ -2736,7 +2725,7 @@ namespace vMenuClient
                             SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z - 0.3f, 0);
                             int model = GetEntityModel(v.Handle);
 
-                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+                            string hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
@@ -2768,7 +2757,7 @@ namespace vMenuClient
                             SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
                             int model = GetEntityModel(p.Handle);
 
-                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+                            string hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
@@ -2800,7 +2789,7 @@ namespace vMenuClient
                             SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z - 0.3f, 0);
                             int model = GetEntityModel(p.Handle);
 
-                            string hashes = $"{model} / {(uint)model} / 0x{model.ToString("X8")}";
+                            string hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
