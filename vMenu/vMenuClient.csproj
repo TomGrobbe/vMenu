@@ -18,7 +18,7 @@
 
     <Reference Include="Microsoft.CSharp" />
     
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.2405">
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.2457">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     
