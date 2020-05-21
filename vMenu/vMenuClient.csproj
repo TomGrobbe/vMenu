@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MenuAPI.FiveM" Version="3.1.1" />
+    <PackageReference Include="MenuAPI.FiveM" Version="3.1.4" />
 
     <Reference Include="Microsoft.CSharp" />
     
