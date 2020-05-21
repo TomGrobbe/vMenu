@@ -97,6 +97,27 @@ namespace vMenuClient
 
         }
 
+        public static List<MpPedDataManager.MultiplayerPedData> GetSavedMpPeds()
+        {
+            List<MpPedDataManager.MultiplayerPedData> peds = new List<MpPedDataManager.MultiplayerPedData>();
+            var handle = StartFindKvp("mp_ped_");
+            while (true)
+            {
+                string foundName = FindKvp(handle);
+                if (string.IsNullOrEmpty(foundName))
+                {
+                    break;
+                }
+                else
+                {
+                    peds.Add(GetSavedMpCharacterData(foundName));
+                }
+            }
+            EndFindKvp(handle);
+            peds.Sort((a, b) => a.SaveName.ToLower().CompareTo(b.SaveName.ToLower()));
+            return peds;
+        }
+
         /// <summary>
         /// Delete the specified saved item from local storage.
         /// </summary>
