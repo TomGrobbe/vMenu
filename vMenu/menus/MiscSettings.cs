@@ -119,6 +119,7 @@ namespace vMenuClient
             {
                 RightIcon = MenuItem.Icon.TICK
             };
+            MenuItem exportData = new MenuItem("Export/Import Data", "Coming soon (TM): the ability to import and export your saved data.");
             MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
             MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
@@ -575,6 +576,7 @@ namespace vMenuClient
             menu.AddMenuItem(hideHud);
             menu.AddMenuItem(lockCamX);
             menu.AddMenuItem(lockCamY);
+            menu.AddMenuItem(exportData);
             menu.AddMenuItem(saveSettings);
 
             // Handle checkbox changes.
@@ -690,8 +692,27 @@ namespace vMenuClient
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
+                // export data
+                if (item == exportData)
+                {
+                    var vehicles = GetSavedVehicles();
+                    var normalPeds = StorageManager.GetSavedPeds();
+                    var mpPeds = StorageManager.GetSavedMpPeds();
+                    var weaponLoadouts = WeaponLoadouts.GetSavedWeapons();
+                    //SetNuiFocus(true, true);
+                    //SendNuiMessage(JsonConvert.SerializeObject(new
+                    //var data = JsonConvert.SerializeObject(new
+                    //{
+                    //    saved_vehicles = vehicles,
+                    //    normal_peds = normalPeds,
+                    //    mp_characters = mpPeds,
+                    //    weapon_loadouts = weaponLoadouts
+                    //});
+                    //Debug.WriteLine(data.Length + "\n" + data);
+                    //TriggerServerEvent("test", data);
+                }
                 // save settings
-                if (item == saveSettings)
+                else if (item == saveSettings)
                 {
                     UserDefaults.SaveSettings();
                 }

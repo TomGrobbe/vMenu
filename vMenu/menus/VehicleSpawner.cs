@@ -88,7 +88,7 @@ namespace vMenuClient
 
                                 MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.")
                                 {
-                                    Label = $"({veh.Key.ToString()})",
+                                    Label = $"({veh.Key})",
                                     ItemData = veh.Key // store the model name in the button data.
                                 };
 
@@ -165,7 +165,7 @@ namespace vMenuClient
             for (var vehClass = 0; vehClass < 22; vehClass++)
             {
                 // Get the class name.
-                string className = GetLabelText($"VEH_CLASS_{vehClass.ToString()}");
+                string className = GetLabelText($"VEH_CLASS_{vehClass}");
 
                 // Create a button & a menu for it, add the menu to the menu pool and add & bind the button to the menu.
                 MenuItem btn = new MenuItem(className, $"Spawn a vehicle from the ~o~{className} ~s~class.")
@@ -225,7 +225,7 @@ namespace vMenuClient
                             }
 
                             // The model name is a duplicate, so get the modelname and add the duplicate amount for this model name to the end of the vehicle name.
-                            vehName += $" ({duplicateVehNames[vehName].ToString()})";
+                            vehName += $" ({duplicateVehNames[vehName]})";
 
                             // Then create and add a new button for this vehicle.
 

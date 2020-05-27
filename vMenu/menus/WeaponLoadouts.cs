@@ -23,6 +23,23 @@ namespace vMenuClient
 
         private Dictionary<string, List<ValidWeapon>> SavedWeapons = new Dictionary<string, List<ValidWeapon>>();
 
+        public static Dictionary<string, List<ValidWeapon>> GetSavedWeapons()
+        {
+            int handle = StartFindKvp("vmenu_string_saved_weapon_loadout_");
+            Dictionary<string, List<ValidWeapon>> saves = new Dictionary<string, List<ValidWeapon>>();
+            while (true)
+            {
+                string kvp = FindKvp(handle);
+                if (string.IsNullOrEmpty(kvp))
+                {
+                    break;
+                }
+                saves.Add(kvp, JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString(kvp)));
+            }
+            EndFindKvp(handle);
+            return saves;
+        }
+
         private string SelectedSavedLoadoutName { get; set; } = "";
         // vmenu_temp_weapons_loadout_before_respawn
         // vmenu_string_saved_weapon_loadout_

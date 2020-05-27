@@ -336,7 +336,7 @@ namespace vMenuServer
                                 {
                                     BanLog($"The player trying to join right now is on the banlist, their ban duration has expired bu for unknown reasons their" +
                                         $" ban could not be removed from the ban list. Please delete the ban record manually. " +
-                                        $"\nBan Record details:\n{JsonConvert.SerializeObject(ban).ToString()}\n");
+                                        $"\nBan Record details:\n{JsonConvert.SerializeObject(ban)}\n");
                                 }
                             }
                             break;
@@ -726,7 +726,7 @@ namespace vMenuServer
                 if (await AddBan(ban))
                 {
                     TriggerEvent("vMenu:BanCheaterSuccessful", JsonConvert.SerializeObject(ban).ToString());
-                    BanLog($"A cheater has been banned. {JsonConvert.SerializeObject(ban).ToString()}");
+                    BanLog($"A cheater has been banned. {JsonConvert.SerializeObject(ban)}");
                 }
 
                 source.TriggerEvent("vMenu:GoodBye"); // this is much more fun than just kicking them.
