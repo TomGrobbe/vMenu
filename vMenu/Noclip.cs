@@ -20,6 +20,7 @@ namespace vMenuClient
         private static int Scale { get; set; } = -1;
         private static bool FollowCamMode { get; set; } = false;
 
+        private static LanguageManager LM = new LanguageManager();
 
         private List<string> speeds = new List<string>()
         {

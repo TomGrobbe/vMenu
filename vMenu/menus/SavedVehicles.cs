@@ -17,8 +17,9 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        private Menu selectedVehicleMenu = new Menu("Manage Vehicle", "Manage this saved vehicle.");
-        private Menu unavailableVehiclesMenu = new Menu("Missing Vehicles", "Unavailable Saved Vehicles");
+        private static LanguageManager LM = new LanguageManager();
+        private Menu selectedVehicleMenu = new Menu(LM.Get("Manage Vehicle"), LM.Get("Manage this saved vehicle."));
+        private Menu unavailableVehiclesMenu = new Menu(LM.Get("Missing Vehicles"), LM.Get("Unavailable Saved Vehicles"));
         private Dictionary<string, VehicleInfo> savedVehicles = new Dictionary<string, VehicleInfo>();
         private List<Menu> subMenus = new List<Menu>();
         private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
@@ -31,12 +32,12 @@ namespace vMenuClient
         /// </summary>
         private void CreateMenu()
         {
-            string menuTitle = "Saved Vehicles";
+            string menuTitle = LM.Get("Saved Vehicles");
             #region Create menus and submenus
             // Create the menu.
-            menu = new Menu(menuTitle, "Manage Saved Vehicles");
+            menu = new Menu(menuTitle, LM.Get("Manage Saved Vehicles"));
 
-            MenuItem saveVehicle = new MenuItem("Save Current Vehicle", "Save the vehicle you are currently sitting in.");
+            MenuItem saveVehicle = new MenuItem(LM.Get("Save Current Vehicle"), LM.Get("Save the vehicle you are currently sitting in."));
             menu.AddMenuItem(saveVehicle);
             saveVehicle.LeftIcon = MenuItem.Icon.CAR;
 
@@ -50,14 +51,14 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("You are currently not in any vehicle. Please enter a vehicle before trying to save it.");
+                        Notify.Error(LM.Get("You are currently not in any vehicle. Please enter a vehicle before trying to save it."));
                     }
                 }
             };
 
             for (int i = 0; i < 22; i++)
             {
-                Menu categoryMenu = new Menu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"));
+                Menu categoryMenu = new Menu(LM.Get("Saved Vehicles"), GetLabelText($"VEH_CLASS_{i}"));
 
                 MenuItem categoryButton = new MenuItem(GetLabelText($"VEH_CLASS_{i}"), $"All saved vehicles from the {(GetLabelText($"VEH_CLASS_{i}"))} category.");
                 subMenus.Add(categoryMenu);
@@ -77,7 +78,7 @@ namespace vMenuClient
                 };
             }
 
-            MenuItem unavailableModels = new MenuItem("Unavailable Saved Vehicles", "These vehicles are currently unavailable because the models are not present in the game. These vehicles are most likely not being streamed from the server.")
+            MenuItem unavailableModels = new MenuItem(LM.Get("Unavailable Saved Vehicles"), LM.Get("These vehicles are currently unavailable because the models are not present in the game. These vehicles are most likely not being streamed from the server."))
             {
                 Label = "→→→"
             };
@@ -88,10 +89,10 @@ namespace vMenuClient
 
 
             MenuController.AddMenu(selectedVehicleMenu);
-            MenuItem spawnVehicle = new MenuItem("Spawn Vehicle", "Spawn this saved vehicle.");
-            MenuItem renameVehicle = new MenuItem("Rename Vehicle", "Rename your saved vehicle.");
-            MenuItem replaceVehicle = new MenuItem("~r~Replace Vehicle", "Your saved vehicle will be replaced with the vehicle you are currently sitting in. ~r~Warning: this can NOT be undone!");
-            MenuItem deleteVehicle = new MenuItem("~r~Delete Vehicle", "~r~This will delete your saved vehicle. Warning: this can NOT be undone!");
+            MenuItem spawnVehicle = new MenuItem(LM.Get("Spawn Vehicle"), LM.Get("Spawn this saved vehicle."));
+            MenuItem renameVehicle = new MenuItem(LM.Get("Rename Vehicle"), LM.Get("Rename your saved vehicle."));
+            MenuItem replaceVehicle = new MenuItem(LM.Get("~r~Replace Vehicle"), LM.Get("Your saved vehicle will be replaced with the vehicle you are currently sitting in. ~r~Warning: this can NOT be undone!"));
+            MenuItem deleteVehicle = new MenuItem(LM.Get("~r~Delete Vehicle"), LM.Get("~r~This will delete your saved vehicle. Warning: this can NOT be undone!"));
             selectedVehicleMenu.AddMenuItem(spawnVehicle);
             selectedVehicleMenu.AddMenuItem(renameVehicle);
             selectedVehicleMenu.AddMenuItem(replaceVehicle);
@@ -124,7 +125,7 @@ namespace vMenuClient
                 }
                 else if (item == renameVehicle)
                 {
-                    string newName = await GetUserInput(windowTitle: "Enter a new name for this vehicle.", maxInputLength: 30);
+                    string newName = await GetUserInput(windowTitle: LM.Get("Enter a new name for this vehicle."), maxInputLength: 30);
                     if (string.IsNullOrEmpty(newName))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
@@ -138,14 +139,14 @@ namespace vMenuClient
                             {
                                 await BaseScript.Delay(0);
                             }
-                            Notify.Success("Your vehicle has successfully been renamed.");
+                            Notify.Success(LM.Get("Your vehicle has successfully been renamed."));
                             UpdateMenuAvailableCategories();
                             selectedVehicleMenu.GoBack();
                             currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>(); // clear the old info
                         }
                         else
                         {
-                            Notify.Error("This name is already in use or something unknown failed. Contact the server owner if you believe something is wrong.");
+                            Notify.Error(LM.Get("This name is already in use or something unknown failed. Contact the server owner if you believe something is wrong."));
                         }
                     }
                 }
@@ -155,11 +156,11 @@ namespace vMenuClient
                     {
                         SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
                         selectedVehicleMenu.GoBack();
-                        Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
+                        Notify.Success(LM.Get("Your saved vehicle has been replaced with your current vehicle."));
                     }
                     else
                     {
-                        Notify.Error("You need to be in a vehicle before you can relplace your old vehicle.");
+                        Notify.Error(LM.Get("You need to be in a vehicle before you can relplace your old vehicle."));
                     }
                 }
                 else if (item == deleteVehicle)
@@ -167,8 +168,8 @@ namespace vMenuClient
                     if (deleteButtonPressedCount == 0)
                     {
                         deleteButtonPressedCount = 1;
-                        item.Label = "Press again to confirm.";
-                        Notify.Alert("Are you sure you want to delete this vehicle? Press the button again to confirm.");
+                        item.Label = LM.Get("Press again to confirm.");
+                        Notify.Alert(LM.Get("Are you sure you want to delete this vehicle? Press the button again to confirm."));
                     }
                     else
                     {
@@ -177,7 +178,7 @@ namespace vMenuClient
                         DeleteResourceKvp(currentlySelectedVehicle.Key);
                         UpdateMenuAvailableCategories();
                         selectedVehicleMenu.GoBack();
-                        Notify.Success("Your saved vehicle has been deleted.");
+                        Notify.Success(LM.Get("Your saved vehicle has been deleted."));
                     }
                 }
                 if (item != deleteVehicle) // if any other button is pressed, restore the delete vehicle button pressed count.
@@ -186,7 +187,7 @@ namespace vMenuClient
                     deleteVehicle.Label = "";
                 }
             };
-            unavailableVehiclesMenu.InstructionalButtons.Add(Control.FrontendDelete, "Delete Vehicle!");
+            unavailableVehiclesMenu.InstructionalButtons.Add(Control.FrontendDelete, LM.Get("Delete Vehicle!"));
 
             unavailableVehiclesMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.FrontendDelete, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>((m, c) =>
             {
@@ -198,7 +199,7 @@ namespace vMenuClient
                         MenuItem item = m.GetMenuItems().Find(i => i.Index == index);
                         if (item != null && (item.ItemData is KeyValuePair<string, VehicleInfo> sd))
                         {
-                            if (item.Label == "~r~Are you sure?")
+                            if (item.Label == LM.Get("~r~Are you sure?"))
                             {
                                 Log("Unavailable saved vehicle deleted, data: " + JsonConvert.SerializeObject(sd));
                                 DeleteResourceKvp(sd.Key);
@@ -207,22 +208,22 @@ namespace vMenuClient
                             }
                             else
                             {
-                                item.Label = "~r~Are you sure?";
+                                item.Label = LM.Get("~r~Are you sure?");
                             }
                         }
                         else
                         {
-                            Notify.Error("Somehow this vehicle could not be found.");
+                            Notify.Error(LM.Get("Somehow this vehicle could not be found."));
                         }
                     }
                     else
                     {
-                        Notify.Error("You somehow managed to trigger deletion of a menu item that doesn't exist, how...?");
+                        Notify.Error(LM.Get("You somehow managed to trigger deletion of a menu item that doesn't exist, how...?"));
                     }
                 }
                 else
                 {
-                    Notify.Error("There are currrently no unavailable vehicles to delete!");
+                    Notify.Error(LM.Get("There are currrently no unavailable vehicles to delete!"));
                 }
             }), true));
 
@@ -252,7 +253,7 @@ namespace vMenuClient
         {
             if (!svMenuItems.ContainsKey(selectedItem))
             {
-                Notify.Error("In some very strange way, you've managed to select a button, that does not exist according to this list. So your vehicle could not be loaded. :( Maybe your save files are broken?");
+                Notify.Error(LM.Get("In some very strange way, you've managed to select a button, that does not exist according to this list. So your vehicle could not be loaded. :( Maybe your save files are broken?"));
                 return false;
             }
             var vehInfo = svMenuItems[selectedItem];
@@ -336,7 +337,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    MenuItem missingVehItem = new MenuItem(sv.Key.Substring(4), "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.")
+                    MenuItem missingVehItem = new MenuItem(sv.Key.Substring(4), LM.Get("This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server."))
                     {
                         Label = "(" + sv.Value.name + ")",
                         Enabled = false,

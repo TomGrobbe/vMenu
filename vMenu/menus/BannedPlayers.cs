@@ -18,6 +18,8 @@ namespace vMenuClient
         // Variables
         private Menu menu;
 
+        private static LanguageManager LM = new LanguageManager();
+
         /// <summary>
         /// Struct used to store bans.
         /// </summary>
@@ -34,47 +36,47 @@ namespace vMenuClient
 
         public List<BanRecord> banlist = new List<BanRecord>();
 
-        Menu bannedPlayer = new Menu("Banned Player", "Ban Record: ");
+        Menu bannedPlayer = new Menu(LM.Get("Banned Player"), LM.Get("Ban Record: "));
 
         /// <summary>
         /// Creates the menu.
         /// </summary>
         private void CreateMenu()
         {
-            menu = new Menu(Game.Player.Name, "Banned Players Management");
+            menu = new Menu(Game.Player.Name, LM.Get("Banned Players Management"));
 
-            menu.InstructionalButtons.Add(Control.Jump, "Filter Options");
+            menu.InstructionalButtons.Add(Control.Jump, LM.Get("Filter Options"));
             menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (a, b) =>
             {
                 if (banlist.Count > 1)
                 {
-                    string filterText = await GetUserInput("Filter List By Username (leave this empty to reset the filter!)");
+                    string filterText = await GetUserInput(LM.Get("Filter List By Username (leave this empty to reset the filter!)"));
                     if (string.IsNullOrEmpty(filterText))
                     {
-                        Subtitle.Custom("Filters have been cleared.");
+                        Subtitle.Custom(LM.Get("Filters have been cleared."));
                         menu.ResetFilter();
                         UpdateBans();
                     }
                     else
                     {
                         menu.FilterMenuItems(item => item.ItemData is BanRecord br && br.playerName.ToLower().Contains(filterText.ToLower()));
-                        Subtitle.Custom("Username filter has been applied.");
+                        Subtitle.Custom(LM.Get("Username filter has been applied."));
                     }
                 }
                 else
                 {
-                    Notify.Error("At least 2 players need to be banned in order to use the filter function.");
+                    Notify.Error(LM.Get("At least 2 players need to be banned in order to use the filter function."));
                 }
 
                 Log($"Button pressed: {a} {b}");
             }), true));
 
-            bannedPlayer.AddMenuItem(new MenuItem("Player Name"));
-            bannedPlayer.AddMenuItem(new MenuItem("Banned By"));
-            bannedPlayer.AddMenuItem(new MenuItem("Banned Until"));
-            bannedPlayer.AddMenuItem(new MenuItem("Player Identifiers"));
-            bannedPlayer.AddMenuItem(new MenuItem("Banned For"));
-            bannedPlayer.AddMenuItem(new MenuItem("~r~Unban", "~r~Warning, unbanning the player can NOT be undone. You will NOT be able to ban them again until they re-join the server. Are you absolutely sure you want to unban this player? ~s~Tip: Tempbanned players will automatically get unbanned if they log on to the server after their ban date has expired."));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("Player Name")));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("Banned By")));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("Banned Until")));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("Player Identifiers")));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("Banned For")));
+            bannedPlayer.AddMenuItem(new MenuItem(LM.Get("~r~Unban"), LM.Get("~r~Warning, unbanning the player can NOT be undone. You will NOT be able to ban them again until they re-join the server. Are you absolutely sure you want to unban this player? ~s~Tip: Tempbanned players will automatically get unbanned if they log on to the server after their ban date has expired.")));
 
             // should be enough for now to cover all possible identifiers.
             List<string> colors = new List<string>() { "~r~", "~g~", "~b~", "~o~", "~y~", "~p~", "~s~", "~t~", };
@@ -95,7 +97,7 @@ namespace vMenuClient
             {
                 if (index == 5 && IsAllowed(Permission.OPUnban))
                 {
-                    if (item.Label == "Are you sure?")
+                    if (item.Label == LM.Get("Are you sure?"))
                     {
                         if (banlist.Contains(currentRecord))
                         {
@@ -105,12 +107,12 @@ namespace vMenuClient
                         }
                         else
                         {
-                            Notify.Error("Somehow you managed to click the unban button but this ban record you're apparently viewing does not even exist. Weird...");
+                            Notify.Error(LM.Get("Somehow you managed to click the unban button but this ban record you're apparently viewing does not even exist. Weird..."));
                         }
                     }
                     else
                     {
-                        item.Label = "Are you sure?";
+                        item.Label = LM.Get("Are you sure?");
                     }
                 }
                 else
@@ -126,21 +128,21 @@ namespace vMenuClient
                 //{
                 currentRecord = item.ItemData;
 
-                bannedPlayer.MenuSubtitle = "Ban Record: ~y~" + currentRecord.playerName;
+                bannedPlayer.MenuSubtitle = LM.Get("Ban Record: ~y~") + currentRecord.playerName;
                 var nameItem = bannedPlayer.GetMenuItems()[0];
                 var bannedByItem = bannedPlayer.GetMenuItems()[1];
                 var bannedUntilItem = bannedPlayer.GetMenuItems()[2];
                 var playerIdentifiersItem = bannedPlayer.GetMenuItems()[3];
                 var banReasonItem = bannedPlayer.GetMenuItems()[4];
                 nameItem.Label = currentRecord.playerName;
-                nameItem.Description = "Player name: ~y~" + currentRecord.playerName;
+                nameItem.Description = LM.Get("Player name: ~y~") + currentRecord.playerName;
                 bannedByItem.Label = currentRecord.bannedBy;
-                bannedByItem.Description = "Player banned by: ~y~" + currentRecord.bannedBy;
+                bannedByItem.Description = LM.Get("Player banned by: ~y~") + currentRecord.bannedBy;
                 if (currentRecord.bannedUntil.Date.Year == 3000)
-                    bannedUntilItem.Label = "Forever";
+                    bannedUntilItem.Label = LM.Get("Forever");
                 else
                     bannedUntilItem.Label = currentRecord.bannedUntil.Date.ToString();
-                bannedUntilItem.Description = "This player is banned until: " + currentRecord.bannedUntil.Date.ToString();
+                bannedUntilItem.Description = LM.Get("This player is banned until: ") + currentRecord.bannedUntil.Date.ToString();
                 playerIdentifiersItem.Description = "";
 
                 int i = 0;
@@ -159,14 +161,14 @@ namespace vMenuClient
                     }
                     i++;
                 }
-                banReasonItem.Description = "Banned for: " + currentRecord.banReason;
+                banReasonItem.Description = LM.Get("Banned for: ") + currentRecord.banReason;
 
                 var unbanPlayerBtn = bannedPlayer.GetMenuItems()[5];
                 unbanPlayerBtn.Label = "";
                 if (!IsAllowed(Permission.OPUnban))
                 {
                     unbanPlayerBtn.Enabled = false;
-                    unbanPlayerBtn.Description = "You are not allowed to unban players. You are only allowed to view their ban record.";
+                    unbanPlayerBtn.Description = LM.Get("You are not allowed to unban players. You are only allowed to view their ban record.");
                     unbanPlayerBtn.LeftIcon = MenuItem.Icon.LOCK;
                 }
 

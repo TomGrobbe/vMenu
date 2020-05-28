@@ -19,7 +19,7 @@ namespace vMenuClient
         private Menu menu;
         private Menu teleportOptionsMenu;
         private Menu developerToolsMenu;
-
+        private static LanguageManager LM = new LanguageManager();
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
         public bool ShowCoordinates { get; private set; } = false;
@@ -80,89 +80,89 @@ namespace vMenuClient
             }
 
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Misc Settings");
-            teleportOptionsMenu = new Menu(Game.Player.Name, "Teleport Options");
-            developerToolsMenu = new Menu(Game.Player.Name, "Development Tools");
+            menu = new Menu(Game.Player.Name, LM.Get("Misc Settings"));
+            teleportOptionsMenu = new Menu(Game.Player.Name, LM.Get("Teleport Options"));
+            developerToolsMenu = new Menu(Game.Player.Name, LM.Get("Development Tools"));
 
             // teleport menu
-            Menu teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
-            MenuItem teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            Menu teleportMenu = new Menu(Game.Player.Name, LM.Get("Teleport Locations"));
+            MenuItem teleportMenuBtn = new MenuItem(LM.Get("Teleport Locations"), LM.Get("Teleport to pre-configured locations, added by the server owner."));
             MenuController.AddSubmenu(menu, teleportMenu);
             MenuController.BindMenuItem(menu, teleportMenu, teleportMenuBtn);
 
             // keybind settings menu
-            Menu keybindMenu = new Menu(Game.Player.Name, "Keybind Settings");
-            MenuItem keybindMenuBtn = new MenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
+            Menu keybindMenu = new Menu(Game.Player.Name, LM.Get("Keybind Settings"));
+            MenuItem keybindMenuBtn = new MenuItem(LM.Get("Keybind Settings"), LM.Get("Enable or disable keybinds for some options."));
             MenuController.AddSubmenu(menu, keybindMenu);
             MenuController.BindMenuItem(menu, keybindMenu, keybindMenuBtn);
 
             // keybind settings menu items
-            MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
-            MenuCheckboxItem kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
-            MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
-            MenuCheckboxItem kbRadarKeys = new MenuCheckboxItem("Minimap Controls", "Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar.", KbRadarKeys);
-            MenuCheckboxItem kbPointKeysCheckbox = new MenuCheckboxItem("Finger Point Controls", "Enables the finger point toggle key. The default QWERTY keyboard mapping for this is 'B', or for controller quickly double tap the right analog stick.", KbPointKeys);
-            MenuItem backBtn = new MenuItem("Back");
+            MenuCheckboxItem kbTpToWaypoint = new MenuCheckboxItem(LM.Get("Teleport To Waypoint"), LM.Get("Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is."), KbTpToWaypoint);
+            MenuCheckboxItem kbDriftMode = new MenuCheckboxItem(LM.Get("Drift Mode"), LM.Get("Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller."), KbDriftMode);
+            MenuCheckboxItem kbRecordKeys = new MenuCheckboxItem(LM.Get("Recording Controls"), LM.Get("Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller."), KbRecordKeys);
+            MenuCheckboxItem kbRadarKeys = new MenuCheckboxItem(LM.Get("Minimap Controls"), LM.Get("Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar."), KbRadarKeys);
+            MenuCheckboxItem kbPointKeysCheckbox = new MenuCheckboxItem(LM.Get("Finger Point Controls"), LM.Get("Enables the finger point toggle key. The default QWERTY keyboard mapping for this is 'B', or for controller quickly double tap the right analog stick."), KbPointKeys);
+            MenuItem backBtn = new MenuItem(LM.Get("Back"));
 
             // Create the menu items.
-            MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
-            MenuCheckboxItem disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
-            MenuCheckboxItem disableControllerKey = new MenuCheckboxItem("Disable Controller Support", "This disables the controller menu toggle key. This does NOT disable the navigation buttons.", MiscDisableControllerSupport);
-            MenuCheckboxItem speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
-            MenuCheckboxItem speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
-            MenuCheckboxItem coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
-            MenuCheckboxItem hideRadar = new MenuCheckboxItem("Hide Radar", "Hide the radar/minimap.", HideRadar);
-            MenuCheckboxItem hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
-            MenuCheckboxItem showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take(s) up to -4.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
-            MenuCheckboxItem drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
-            MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.")
+            MenuCheckboxItem rightAlignMenu = new MenuCheckboxItem(LM.Get("Right Align Menu"), LM.Get("If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences."), MiscRightAlignMenu);
+            MenuCheckboxItem disablePms = new MenuCheckboxItem(LM.Get("Disable Private Messages"), LM.Get("Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players."), MiscDisablePrivateMessages);
+            MenuCheckboxItem disableControllerKey = new MenuCheckboxItem(LM.Get("Disable Controller Support"), LM.Get("This disables the controller menu toggle key. This does NOT disable the navigation buttons."), MiscDisableControllerSupport);
+            MenuCheckboxItem speedKmh = new MenuCheckboxItem(LM.Get("Show Speed KM/H"), LM.Get("Show a speedometer on your screen indicating your speed in KM/h."), ShowSpeedoKmh);
+            MenuCheckboxItem speedMph = new MenuCheckboxItem(LM.Get("Show Speed MPH"), LM.Get("Show a speedometer on your screen indicating your speed in MPH."), ShowSpeedoMph);
+            MenuCheckboxItem coords = new MenuCheckboxItem(LM.Get("Show Coordinates"), LM.Get("Show your current coordinates at the top of your screen."), ShowCoordinates);
+            MenuCheckboxItem hideRadar = new MenuCheckboxItem(LM.Get("Hide Radar"), LM.Get("Hide the radar/minimap."), HideRadar);
+            MenuCheckboxItem hideHud = new MenuCheckboxItem(LM.Get("Hide Hud"), LM.Get("Hide all hud elements."), HideHud);
+            MenuCheckboxItem showLocation = new MenuCheckboxItem(LM.Get("Location Display"), LM.Get("Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take(s) up to -4.6 FPS when running at 60 Hz."), ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
+            MenuCheckboxItem drawTime = new MenuCheckboxItem(LM.Get("Show Time On Screen"), LM.Get("Shows you the current time on screen."), DrawTimeOnScreen);
+            MenuItem saveSettings = new MenuItem(LM.Get("Save Personal Settings"), LM.Get("Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu."))
             {
                 RightIcon = MenuItem.Icon.TICK
             };
-            MenuItem exportData = new MenuItem("Export/Import Data", "Coming soon (TM): the ability to import and export your saved data.");
-            MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
-            MenuCheckboxItem deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
-            MenuCheckboxItem nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
-            MenuCheckboxItem thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
-            MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you.", ShowVehicleModelDimensions);
-            MenuCheckboxItem propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you.", ShowPropModelDimensions);
-            MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you.", ShowPedModelDimensions);
-            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
-            MenuCheckboxItem showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
-            MenuSliderItem dimensionsDistanceSlider = new MenuSliderItem("Show Dimensions Radius", "Show entity model/handle/dimension draw range.", 0, 20, 20, false);
+            MenuItem exportData = new MenuItem(LM.Get("Export/Import Data"), LM.Get("Coming soon (TM): the ability to import and export your saved data."));
+            MenuCheckboxItem joinQuitNotifs = new MenuCheckboxItem(LM.Get("Join / Quit Notifications"), LM.Get("Receive notifications when someone joins or leaves the server."), JoinQuitNotifications);
+            MenuCheckboxItem deathNotifs = new MenuCheckboxItem(LM.Get("Death Notifications"), LM.Get("Receive notifications when someone dies or gets killed."), DeathNotifications);
+            MenuCheckboxItem nightVision = new MenuCheckboxItem(LM.Get("Toggle Night Vision"), LM.Get("Enable or disable night vision."), false);
+            MenuCheckboxItem thermalVision = new MenuCheckboxItem(LM.Get("Toggle Thermal Vision"), LM.Get("Enable or disable thermal vision."), false);
+            MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem(LM.Get("Show Vehicle Dimensions"), LM.Get("Draws the model outlines for every vehicle that's currently close to you."), ShowVehicleModelDimensions);
+            MenuCheckboxItem propModelDimensions = new MenuCheckboxItem(LM.Get("Show Prop Dimensions"), LM.Get("Draws the model outlines for every prop that's currently close to you."), ShowPropModelDimensions);
+            MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem(LM.Get("Show Ped Dimensions"), LM.Get("Draws the model outlines for every ped that's currently close to you."), ShowPedModelDimensions);
+            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem(LM.Get("Show Entity Handles"), LM.Get("Draws the the entity handles for all close entities (you must enable the outline functions above for this to work)."), ShowEntityHandles);
+            MenuCheckboxItem showEntityModels = new MenuCheckboxItem(LM.Get("Show Entity Models"), LM.Get("Draws the the entity models for all close entities (you must enable the outline functions above for this to work)."), ShowEntityModels);
+            MenuSliderItem dimensionsDistanceSlider = new MenuSliderItem(LM.Get("Show Dimensions Radius"), LM.Get("Show entity model/handle/dimension draw range."), 0, 20, 20, false);
 
-            MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
-            MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
-            MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
+            MenuItem clearArea = new MenuItem(LM.Get("Clear Area"), LM.Get("Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state."));
+            MenuCheckboxItem lockCamX = new MenuCheckboxItem(LM.Get("Lock Camera Horizontal Rotation"), LM.Get("Locks your camera horizontal rotation. Could be useful in helicopters I guess."), false);
+            MenuCheckboxItem lockCamY = new MenuCheckboxItem(LM.Get("Lock Camera Vertical Rotation"), LM.Get("Locks your camera vertical rotation. Could be useful in helicopters I guess."), false);
 
 
-            Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
-            MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
+            Menu connectionSubmenu = new Menu(Game.Player.Name, LM.Get("Connection Options"));
+            MenuItem connectionSubmenuBtn = new MenuItem(LM.Get("Connection Options"), LM.Get("Server connection/game quit options."));
 
-            MenuItem quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host.");
-            MenuItem rejoinSession = new MenuItem("Re-join Session", "This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'.");
-            MenuItem quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
-            MenuItem disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience.");
+            MenuItem quitSession = new MenuItem(LM.Get("Quit Session"), LM.Get("Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host."));
+            MenuItem rejoinSession = new MenuItem(LM.Get("Re-join Session"), LM.Get("This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'."));
+            MenuItem quitGame = new MenuItem(LM.Get("Quit Game"), LM.Get("Exits the game after 5 seconds."));
+            MenuItem disconnectFromServer = new MenuItem(LM.Get("Disconnect From Server"), LM.Get("Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience."));
             connectionSubmenu.AddMenuItem(quitSession);
             connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
 
-            MenuCheckboxItem enableTimeCycle = new MenuCheckboxItem("Enable Timecycle Modifier", "Enable or disable the timecycle modifier from the list below.", TimecycleEnabled);
+            MenuCheckboxItem enableTimeCycle = new MenuCheckboxItem(LM.Get("Enable Timecycle Modifier"), LM.Get("Enable or disable the timecycle modifier from the list below."), TimecycleEnabled);
             List<string> timeCycleModifiersListData = TimeCycles.Timecycles.ToList();
             for (var i = 0; i < timeCycleModifiersListData.Count; i++)
             {
                 timeCycleModifiersListData[i] += $" ({i + 1}/{timeCycleModifiersListData.Count})";
             }
             MenuListItem timeCycles = new MenuListItem("TM", timeCycleModifiersListData, MathUtil.Clamp(LastTimeCycleModifierIndex, 0, Math.Max(0, timeCycleModifiersListData.Count - 1)), "Select a timecycle modifier and enable the checkbox above.");
-            MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, LastTimeCycleModifierStrength, true);
+            MenuSliderItem timeCycleIntensity = new MenuSliderItem(LM.Get("Timecycle Modifier Intensity"), LM.Get("Set the timecycle modifier intensity."), 0, 20, LastTimeCycleModifierStrength, true);
 
-            MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
-            MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
-            MenuCheckboxItem playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
-            MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
-            MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
-            MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
+            MenuCheckboxItem locationBlips = new MenuCheckboxItem(LM.Get("Location Blips"), LM.Get("Shows blips on the map for some common locations."), ShowLocationBlips);
+            MenuCheckboxItem playerBlips = new MenuCheckboxItem(LM.Get("Show Player Blips"), LM.Get("Shows blips on the map for all players."), ShowPlayerBlips);
+            MenuCheckboxItem playerNames = new MenuCheckboxItem(LM.Get("Show Player Names"), LM.Get("Enables or disables player overhead names."), MiscShowOverheadNames);
+            MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem(LM.Get("Respawn As Default MP Character"), LM.Get("If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button."), MiscRespawnDefaultCharacter);
+            MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem(LM.Get("Restore Player Appearance"), LM.Get("Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin."), RestorePlayerAppearance);
+            MenuCheckboxItem restorePlayerWeapons = new MenuCheckboxItem(LM.Get("Restore Player Weapons"), LM.Get("Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons."), RestorePlayerWeapons);
 
             MenuController.AddSubmenu(menu, connectionSubmenu);
             MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
@@ -210,7 +210,7 @@ namespace vMenuClient
                     {
                         if (NetworkIsHost())
                         {
-                            Notify.Error("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server.");
+                            Notify.Error(LM.Get("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server."));
                         }
                         else
                         {
@@ -219,18 +219,18 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("You are currently not in any session.");
+                        Notify.Error(LM.Get("You are currently not in any session."));
                     }
                 }
                 else if (item == rejoinSession)
                 {
                     if (NetworkIsSessionActive())
                     {
-                        Notify.Error("You are already connected to a session.");
+                        Notify.Error(LM.Get("You are already connected to a session."));
                     }
                     else
                     {
-                        Notify.Info("Attempting to re-join the session.");
+                        Notify.Info(LM.Get("Attempting to re-join the session."));
                         NetworkSessionHost(-1, 32, false);
                     }
                 }
@@ -245,13 +245,13 @@ namespace vMenuClient
             // Teleportation options
             if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations) || IsAllowed(Permission.MSTeleportToCoord))
             {
-                MenuItem teleportOptionsMenuBtn = new MenuItem("Teleport Options", "Various teleport options.") { Label = "→→→" };
+                MenuItem teleportOptionsMenuBtn = new MenuItem(LM.Get("Teleport Options"), LM.Get("Various teleport options.")) { Label = "→→→" };
                 menu.AddMenuItem(teleportOptionsMenuBtn);
                 MenuController.BindMenuItem(menu, teleportOptionsMenu, teleportOptionsMenuBtn);
 
-                MenuItem tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
-                MenuItem tpToCoord = new MenuItem("Teleport To Coords", "Enter x, y, z coordinates and you will be teleported to that location.");
-                MenuItem saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
+                MenuItem tptowp = new MenuItem(LM.Get("Teleport To Waypoint"), LM.Get("Teleport to the waypoint on your map."));
+                MenuItem tpToCoord = new MenuItem(LM.Get("Teleport To Coords"), LM.Get("Enter x, y, z coordinates and you will be teleported to that location."));
+                MenuItem saveLocationBtn = new MenuItem(LM.Get("Save Teleport Location"), LM.Get("Adds your current location to the teleport locations menu and saves it on the server."));
                 teleportOptionsMenu.OnItemSelect += async (sender, item, index) =>
                 {
                     // Teleport to waypoint.
@@ -261,19 +261,19 @@ namespace vMenuClient
                     }
                     else if (item == tpToCoord)
                     {
-                        string x = await GetUserInput("Enter X coordinate.");
+                        string x = await GetUserInput(LM.Get("Enter X coordinate."));
                         if (string.IsNullOrEmpty(x))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        string y = await GetUserInput("Enter Y coordinate.");
+                        string y = await GetUserInput(LM.Get("Enter Y coordinate."));
                         if (string.IsNullOrEmpty(y))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        string z = await GetUserInput("Enter Z coordinate.");
+                        string z = await GetUserInput(LM.Get("Enter Z coordinate."));
                         if (string.IsNullOrEmpty(z))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
@@ -292,7 +292,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid X coordinate.");
+                                Notify.Error(LM.Get("You did not enter a valid X coordinate."));
                                 return;
                             }
                         }
@@ -304,7 +304,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid Y coordinate.");
+                                Notify.Error(LM.Get("You did not enter a valid Y coordinate."));
                                 return;
                             }
                         }
@@ -316,7 +316,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid Z coordinate.");
+                                Notify.Error(LM.Get("You did not enter a valid Z coordinate."));
                                 return;
                             }
                         }
@@ -383,7 +383,7 @@ namespace vMenuClient
 
             #region dev tools menu
 
-            MenuItem devToolsBtn = new MenuItem("Developer Tools", "Various development/debug tools.") { Label = "→→→" };
+            MenuItem devToolsBtn = new MenuItem(LM.Get("Developer Tools"), LM.Get("Various development/debug tools.")) { Label = "→→→" };
             menu.AddMenuItem(devToolsBtn);
             MenuController.AddSubmenu(menu, developerToolsMenu);
             MenuController.BindMenuItem(menu, developerToolsMenu, devToolsBtn);

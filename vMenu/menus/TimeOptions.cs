@@ -17,6 +17,7 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
+        private static LanguageManager LM = new LanguageManager();
         public MenuItem freezeTimeToggle;
 
         /// <summary>
@@ -25,39 +26,39 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Time Options");
+            menu = new Menu(Game.Player.Name, LM.Get("Time Options"));
 
             // Create all menu items.
-            freezeTimeToggle = new MenuItem("Freeze/Unfreeze Time", "Enable or disable time freezing.");
-            MenuItem earlymorning = new MenuItem("Early Morning", "Set the time to 06:00.")
+            freezeTimeToggle = new MenuItem(LM.Get("Freeze/Unfreeze Time"), LM.Get("Enable or disable time freezing."));
+            MenuItem earlymorning = new MenuItem(LM.Get("Early Morning"), LM.Get("Set the time to 06:00."))
             {
                 Label = "06:00"
             };
-            MenuItem morning = new MenuItem("Morning", "Set the time to 09:00.")
+            MenuItem morning = new MenuItem(LM.Get("Morning"), LM.Get("Set the time to 09:00."))
             {
                 Label = "09:00"
             };
-            MenuItem noon = new MenuItem("Noon", "Set the time to 12:00.")
+            MenuItem noon = new MenuItem(LM.Get("Noon"), LM.Get("Set the time to 12:00."))
             {
                 Label = "12:00"
             };
-            MenuItem earlyafternoon = new MenuItem("Early Afternoon", "Set the time to 15:00.")
+            MenuItem earlyafternoon = new MenuItem(LM.Get("Early Afternoon"), LM.Get("Set the time to 15:00."))
             {
                 Label = "15:00"
             };
-            MenuItem afternoon = new MenuItem("Afternoon", "Set the time to 18:00.")
+            MenuItem afternoon = new MenuItem(LM.Get("Afternoon"), LM.Get("Set the time to 18:00."))
             {
                 Label = "18:00"
             };
-            MenuItem evening = new MenuItem("Evening", "Set the time to 21:00.")
+            MenuItem evening = new MenuItem(LM.Get("Evening"), LM.Get("Set the time to 21:00."))
             {
                 Label = "21:00"
             };
-            MenuItem midnight = new MenuItem("Midnight", "Set the time to 00:00.")
+            MenuItem midnight = new MenuItem(LM.Get("Midnight"), LM.Get("Set the time to 00:00."))
             {
                 Label = "00:00"
             };
-            MenuItem night = new MenuItem("Night", "Set the time to 03:00.")
+            MenuItem night = new MenuItem(LM.Get("Night"), LM.Get("Set the time to 03:00."))
             {
                 Label = "03:00"
             };
@@ -72,8 +73,8 @@ namespace vMenuClient
                 }
                 minutes.Add(i.ToString());
             }
-            MenuListItem manualHour = new MenuListItem("Set Custom Hour", hours, 0);
-            MenuListItem manualMinute = new MenuListItem("Set Custom Minute", minutes, 0);
+            MenuListItem manualHour = new MenuListItem(LM.Get("Set Custom Hour"), hours, 0);
+            MenuListItem manualMinute = new MenuListItem(LM.Get("Set Custom Minute"), minutes, 0);
 
             // Add all menu items to the menu.
             if (IsAllowed(Permission.TOFreezeTime))

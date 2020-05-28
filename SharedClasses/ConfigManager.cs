@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace vMenuShared
 {
@@ -93,12 +94,50 @@ namespace vMenuShared
             return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
         }
 
-        #region Get saved locations from the locations.json
+        #region Get localization from the languages.json
         /// <summary>
-        /// Gets the locations.json data.
+        /// Gets the languages.json data.
         /// </summary>
         /// <returns></returns>
-        public static Locations GetLocations()
+        public static Dictionary<string, Hashtable> GetLanguages()
+        {
+            Dictionary<string, Hashtable> data = new Dictionary<string, Hashtable>();
+
+            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/languages.json");
+            try
+            {
+                if (string.IsNullOrEmpty(jsonFile))
+                {
+#if CLIENT
+                    vMenuClient.Notify.Error("The languages.json file is empty or does not exist, please tell the server owner to fix this.");
+#endif
+#if SERVER
+                    vMenuServer.DebugLog.Log("The languages.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+#endif
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<Dictionary<string, Hashtable>>(jsonFile);
+                }
+            }
+            catch (Exception e)
+            {
+#if CLIENT
+                vMenuClient.Notify.Error("An error occurred while processing the languages.json file. Language will set to English. Please correct any errors in the languages.json file.");
+#endif
+                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+            }
+
+            return data;
+        }
+		#endregion
+
+		#region Get saved locations from the locations.json
+		/// <summary>
+		/// Gets the locations.json data.
+		/// </summary>
+		/// <returns></returns>
+		public static Locations GetLocations()
         {
             Locations data = new Locations();
 

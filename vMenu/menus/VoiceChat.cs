@@ -17,16 +17,17 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
+        private static LanguageManager LM = new LanguageManager();
         public bool EnableVoicechat = UserDefaults.VoiceChatEnabled;
         public bool ShowCurrentSpeaker = UserDefaults.ShowCurrentSpeaker;
         public bool ShowVoiceStatus = UserDefaults.ShowVoiceStatus;
         public float currentProximity = UserDefaults.VoiceChatProximity;
         public List<string> channels = new List<string>()
         {
-            "Channel 1 (Default)",
-            "Channel 2",
-            "Channel 3",
-            "Channel 4",
+            LM.Get("Channel 1 (Default)"),
+            LM.Get("Channel 2"),
+            LM.Get("Channel 3"),
+            LM.Get("Channel 4"),
         };
         public string currentChannel;
         private List<float> proximityRange = new List<float>()
@@ -48,30 +49,30 @@ namespace vMenuClient
             currentChannel = channels[0];
             if (IsAllowed(Permission.VCStaffChannel))
             {
-                channels.Add("Staff Channel");
+                channels.Add(LM.Get("Staff Channel"));
             }
 
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Voice Chat Settings");
+            menu = new Menu(Game.Player.Name, LM.Get("Voice Chat Settings"));
 
-            MenuCheckboxItem voiceChatEnabled = new MenuCheckboxItem("Enable Voice Chat", "Enable or disable voice chat.", EnableVoicechat);
-            MenuCheckboxItem showCurrentSpeaker = new MenuCheckboxItem("Show Current Speaker", "Shows who is currently talking.", ShowCurrentSpeaker);
-            MenuCheckboxItem showVoiceStatus = new MenuCheckboxItem("Show Microphone Status", "Shows whether your microphone is open or muted.", ShowVoiceStatus);
+            MenuCheckboxItem voiceChatEnabled = new MenuCheckboxItem(LM.Get("Enable Voice Chat"), LM.Get("Enable or disable voice chat."), EnableVoicechat);
+            MenuCheckboxItem showCurrentSpeaker = new MenuCheckboxItem(LM.Get("Show Current Speaker"), LM.Get("Shows who is currently talking."), ShowCurrentSpeaker);
+            MenuCheckboxItem showVoiceStatus = new MenuCheckboxItem(LM.Get("Show Microphone Status"), LM.Get("Shows whether your microphone is open or muted."), ShowVoiceStatus);
 
             List<string> proximity = new List<string>()
             {
-                "5 m",
-                "10 m",
-                "15 m",
-                "20 m",
-                "100 m",
-                "300 m",
-                "1 km",
-                "2 km",
-                "Global",
+                LM.Get("5 m"),
+                LM.Get("10 m"),
+                LM.Get("15 m"),
+                LM.Get("20 m"),
+                LM.Get("100 m"),
+                LM.Get("300 m"),
+                LM.Get("1 km"),
+                LM.Get("2 km"),
+                LM.Get("Global"),
             };
-            MenuListItem voiceChatProximity = new MenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
-            MenuListItem voiceChatChannel = new MenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
+            MenuListItem voiceChatProximity = new MenuListItem(LM.Get("Voice Chat Proximity"), proximity, proximityRange.IndexOf(currentProximity), LM.Get("Set the voice chat receiving proximity in meters."));
+            MenuListItem voiceChatChannel = new MenuListItem(LM.Get("Voice Chat Channel"), channels, channels.IndexOf(currentChannel), LM.Get("Set the voice chat channel."));
 
             if (IsAllowed(Permission.VCEnable))
             {

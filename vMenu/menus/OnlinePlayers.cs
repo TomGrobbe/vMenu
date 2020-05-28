@@ -20,7 +20,9 @@ namespace vMenuClient
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
 
-        Menu playerMenu = new Menu("Online Players", "Player:");
+        private static LanguageManager LM = new LanguageManager();
+
+        Menu playerMenu = new Menu(LM.Get("Online Players"), LM.Get("Player:"));
         Player currentPlayer = new Player(Game.Player.Handle);
 
 
@@ -30,22 +32,22 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Online Players") { };
-            menu.CounterPreText = "Players: ";
+            menu = new Menu(Game.Player.Name, LM.Get("Online Players")) { };
+            menu.CounterPreText = LM.Get("Players: ");
 
             MenuController.AddSubmenu(menu, playerMenu);
 
-            MenuItem sendMessage = new MenuItem("Send Private Message", "Sends a private message to this player. ~r~Note: staff may be able to see all PM's.");
-            MenuItem teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
-            MenuItem teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
-            MenuItem summon = new MenuItem("Summon Player", "Teleport the player to you.");
-            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
-            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
-            MenuItem printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
-            MenuItem kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
-            MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
-            MenuItem ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
-            MenuItem tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+            MenuItem sendMessage = new MenuItem(LM.Get("Send Private Message"), LM.Get("Sends a private message to this player. ~r~Note: staff may be able to see all PM's."));
+            MenuItem teleport = new MenuItem(LM.Get("Teleport To Player"), LM.Get("Teleport to this player."));
+            MenuItem teleportVeh = new MenuItem(LM.Get("Teleport Into Player Vehicle"), LM.Get("Teleport into the vehicle of the player."));
+            MenuItem summon = new MenuItem(LM.Get("Summon Player"), LM.Get("Teleport the player to you."));
+            MenuItem toggleGPS = new MenuItem(LM.Get("Toggle GPS"), LM.Get("Enables or disables the GPS route on your radar to this player."));
+            MenuItem spectate = new MenuItem(LM.Get("Spectate Player"), LM.Get("Spectate this player. Click this button again to stop spectating."));
+            MenuItem printIdentifiers = new MenuItem(LM.Get("Print Identifiers"), LM.Get("This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file."));
+            MenuItem kill = new MenuItem(LM.Get("~r~Kill Player"), LM.Get("Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log."));
+            MenuItem kick = new MenuItem(LM.Get("~r~Kick Player"), LM.Get("Kick the player from the server."));
+            MenuItem ban = new MenuItem(LM.Get("~r~Ban Player Permanently"), LM.Get("Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button."));
+            MenuItem tempban = new MenuItem(LM.Get("~r~Ban Player Temporarily"), LM.Get("Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button."));
 
             // always allowed
             playerMenu.AddMenuItem(sendMessage);
@@ -121,7 +123,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("You can't send a private message if you have private messages disabled yourself. Enable them in the Misc Settings menu and try again.");
+                        Notify.Error(LM.Get("You can't send a private message if you have private messages disabled yourself. Enable them in the Misc Settings menu and try again."));
                     }
 
 
@@ -133,7 +135,7 @@ namespace vMenuClient
                     if (Game.Player.Handle != currentPlayer.Handle)
                         TeleportToPlayer(currentPlayer.Handle, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
                     else
-                        Notify.Error("You can not teleport to yourself!");
+                        Notify.Error(LM.Get("You can not teleport to yourself!"));
                 }
                 // summon button
                 else if (item == summon)
@@ -141,7 +143,7 @@ namespace vMenuClient
                     if (Game.Player.Handle != currentPlayer.Handle)
                         SummonPlayer(currentPlayer);
                     else
-                        Notify.Error("You can't summon yourself.");
+                        Notify.Error(LM.Get("You can't summon yourself."));
                 }
                 // spectating
                 else if (item == spectate)
@@ -201,7 +203,7 @@ namespace vMenuClient
                         }
                         else
                         {
-                            Notify.Error("You can not set a waypoint to yourself.");
+                            Notify.Error(LM.Get("You can not set a waypoint to yourself."));
                         }
                     }
                 }
@@ -226,7 +228,7 @@ namespace vMenuClient
                     if (currentPlayer.Handle != Game.Player.Handle)
                         KickPlayer(currentPlayer, true);
                     else
-                        Notify.Error("You cannot kick yourself!");
+                        Notify.Error(LM.Get("You cannot kick yourself!"));
                 }
                 // temp ban
                 else if (item == tempban)
@@ -236,7 +238,7 @@ namespace vMenuClient
                 // perm ban
                 else if (item == ban)
                 {
-                    if (ban.Label == "Are you sure?")
+                    if (ban.Label == LM.Get("Are you sure?"))
                     {
                         ban.Label = "";
                         UpdatePlayerlist();
@@ -245,7 +247,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        ban.Label = "Are you sure?";
+                        ban.Label = LM.Get("Are you sure?");
                     }
                 }
             };
