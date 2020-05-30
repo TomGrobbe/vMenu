@@ -8,7 +8,7 @@ build:
   parallel: true
   project: vMenu.sln
   include_nuget_references: true
-  verbosity: detailed
+  verbosity: normal
 after_build:
   - cmd: copy README.md ..\build\net452\README.md
   - cmd: copy LICENSE.md ..\build\net452\LICENSE.md
