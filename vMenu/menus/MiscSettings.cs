@@ -576,7 +576,10 @@ namespace vMenuClient
             menu.AddMenuItem(hideHud);
             menu.AddMenuItem(lockCamX);
             menu.AddMenuItem(lockCamY);
-            menu.AddMenuItem(exportData);
+            if (MainMenu.EnableExperimentalFeatures)
+            {
+                menu.AddMenuItem(exportData);
+            }
             menu.AddMenuItem(saveSettings);
 
             // Handle checkbox changes.
