@@ -58,7 +58,24 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:UpdateTeleportLocations", new Action<string>(UpdateTeleportLocations));
             Tick += WeatherSync;
             Tick += TimeSync;
+
+            /*RegisterNuiCallbackType("disableImportExportNUI");
+            RegisterNuiCallbackType("importData");*/
         }
+
+        /*[EventHandler("__cfx_nui:importData")]
+        internal void ImportData(IDictionary<string, object> data, CallbackDelegate cb)
+        {
+            SetNuiFocus(false, false);
+            cb(JsonConvert.SerializeObject(new { ok = true }));
+        }
+
+        [EventHandler("__cfx_nui:disableImportExportNUI")]
+        internal void DisableImportExportNUI(IDictionary<string, object> data, CallbackDelegate cb)
+        {
+            SetNuiFocus(false, false);
+            cb(JsonConvert.SerializeObject(new { ok = true }));
+        }*/
 
         private bool firstSpawn = true;
         /// <summary>
