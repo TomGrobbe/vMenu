@@ -1209,7 +1209,6 @@ namespace vMenuClient
                     foreach (Player p in pl)
                     {
                         tmpiterator++;
-                        await Delay(0);
                         if (p.IsDead)
                         {
                             if (deadPlayers.Contains(p.Handle)) { return; }
@@ -1286,9 +1285,9 @@ namespace vMenuClient
                             }
                         }
                     }
-                    await Delay(50);
                 }
             }
+            await Task.FromResult(0);
         }
         #endregion
         #endregion
@@ -2026,7 +2025,7 @@ namespace vMenuClient
                         }
                     }
 
-                    while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut() || IsScreenFadingIn())
+                    while (Game.PlayerPed.IsDead || IsScreenFadedOut() || IsScreenFadingOut())
                     {
                         await Delay(0);
                     }
