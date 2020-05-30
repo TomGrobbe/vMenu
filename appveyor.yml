@@ -16,7 +16,7 @@ after_build:
   - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta-%APPVEYOR_BUILD_VERSION%)
   - cmd: cd ..\build\net452\ && 7z a "..\..\vMenu\vMenu-%VERSION_NAME%.zip" -r * && cd ..\..\vMenu\
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
-  - cmd: if defined DISCORD_FILE_WEBHOOK (curl -F "file=@vMenu-%VERSION_NAME%.zip" %DISCORD_FILE_WEBHOOK%)
+  - cmd: if defined DISCORD_FILE_WEBHOOK (curl -s -o nul -F "file=@vMenu-%VERSION_NAME%.zip" %DISCORD_FILE_WEBHOOK%)
 deploy:
   - provider: GitHub
     release: "[Release] vMenu $(VERSION_NAME)"
