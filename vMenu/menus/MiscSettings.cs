@@ -698,21 +698,20 @@ namespace vMenuClient
                 // export data
                 if (item == exportData)
                 {
+                    MenuController.CloseAllMenus();
                     var vehicles = GetSavedVehicles();
                     var normalPeds = StorageManager.GetSavedPeds();
                     var mpPeds = StorageManager.GetSavedMpPeds();
                     var weaponLoadouts = WeaponLoadouts.GetSavedWeapons();
-                    //SetNuiFocus(true, true);
-                    //SendNuiMessage(JsonConvert.SerializeObject(new
-                    //var data = JsonConvert.SerializeObject(new
-                    //{
-                    //    saved_vehicles = vehicles,
-                    //    normal_peds = normalPeds,
-                    //    mp_characters = mpPeds,
-                    //    weapon_loadouts = weaponLoadouts
-                    //});
-                    //Debug.WriteLine(data.Length + "\n" + data);
-                    //TriggerServerEvent("test", data);
+                    var data = JsonConvert.SerializeObject(new
+                    {
+                        saved_vehicles = vehicles,
+                        normal_peds = normalPeds,
+                        mp_characters = mpPeds,
+                        weapon_loadouts = weaponLoadouts
+                    });
+                    SendNuiMessage(data);
+                    SetNuiFocus(true, true);
                 }
                 // save settings
                 else if (item == saveSettings)
