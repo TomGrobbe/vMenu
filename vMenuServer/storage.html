@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>vMenu</title>
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        box-sizing: border-box;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    #body {
+        margin-top: 50px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .error {
+        background-color: lightcoral;
+        color: rgb(121, 34, 34);
+        padding: 30px;
+    }
+
+    input[type="checkbox"]:not(:checked)+div {
+        display: none;
+    }
+
+    hr {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border: none;
+        border-top: 1px solid lightgray;
+    }
+
+    button:not(#close-button) {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        background-color: #0075ff;
+        font-size: 14px;
+        color: white;
+    }
+
+    #close-button {
+        position: relative;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        float: right;
+        font-size: 20px;
+        font-weight: 100;
+        color: gray;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .column {
+        padding: 20px;
+    }
+
+    .column:first-of-type {
+        border-right: 1px solid lightgray;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100%;
+        text-align: left;
+        padding: 5px;
+    }
+
+    strong {
+        color: rgb(189, 45, 45);
+    }
+
+    .mt {
+        display: block;
+        margin-top: 8px;
+    }
+
+    .mb {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .left {
+        text-align: left;
+    }
+
+    ol,
+    li {
+        text-align: left;
+    }
+
+    ol {
+        margin-left: 20px;
+    }
+
+    input[type=file] {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+</style>
+
+<body>
+    <div id="body" hidden>
+        <button id="close-button">×</button>
+        <h2>IMPORTANT</h2>
+        <p class="mb"><strong>Use this feature at your own risk, YOU are
+                responsible for any potential data loss or corruption.</strong>
+        </p>
+        <input type="checkbox"> I accept the risk and take full responsibility
+        for my actions, now let me in!
+        <div class="mt mb">
+            <div class="error"
+                 id="error-div"
+                 hidden>
+            </div>
+            <div class="grid">
+                <div class="column">
+                    <form onsubmit="importData()">
+                        <div class="group">
+                            <h3>Import vMenu data</h3>
+                            <p>
+                                <strong>Warning</strong>: This <em>will</em>
+                                replace any existing data.
+                                Make a backup before you do this!
+                            </p>
+                            <textarea id="import-data"
+                                      class="mt mb"
+                                      placeholder="Paste the JSON data in here."
+                                      rows="5"></textarea>
+                            <p class="mt mb">Alternatively, select a JSON file
+                                containing exported data directly.</p>
+                            <strong>Note:</strong>
+                            <p>
+                                This probably won't work when you're in
+                                fullscreen mode.
+                            </p>
+                            <input type="file"
+                                   id="import-file"
+                                   placeholder="Import a file">
+                            <hr>
+                            <button type="submit">Click to import data</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="column">
+                    <form>
+                        <div class="group">
+                            <h3>Export vMenu data</h3>
+                            <strong>Note:</strong>
+                            <p class="mt">Do not edit the contents of this
+                                export if you don't know what you're doing.
+                                Importing edited content may result in data
+                                corruption. Which means that all your saved data
+                                will be deleted when you restart your game.</p>
+                            <strong class="mt">Instructions:</strong>
+                            <ol>
+                                <li>
+                                    Select all text using <kbd>CTRL + A</kbd> in
+                                    the textarea below, and use <kbd>CTRL +
+                                        C</kbd> to copy it.
+                                </li>
+                                <li>
+                                    Use <kbd>CTRL + V</kbd> to paste the data in
+                                    something like notepad.
+                                </li>
+                                <li>
+                                    Save the file somewhere as a
+                                    <kbd>.json</kbd> file.
+                                </li>
+                            </ol>
+                            <textarea rows="5"
+                                      disabled
+                                      class="mt left"
+                                      placeholder="Exported data will appear here automatically, if you see this text, something went wrong :("
+                                      id="output"></textarea>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("close-button").onclick = () => {
+            event.preventDefault();
+            document.getElementById("body").setAttribute("hidden", "");
+            fetch(`https://${GetParentResourceName()}/disableImportExportNUI`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({ close: true })
+            });//.then(resp => resp.json()).then(resp => console.info(resp));
+        }
+
+        var jsonData = "{}";
+        var error_div = document.getElementById("error-div");
+        var importTextField = document.getElementById("import-data");
+
+        function importData() {
+            event.preventDefault();
+            error_div.setAttribute("hidden", "");
+
+            let el = document.getElementById("import-file");
+            if (el != null && el.files.length == 1) {
+                let file = el.files[0];
+                if (file != null && file.type === "application/json") {
+                    let reader = new FileReader();
+                    reader.onload = (a) => {
+                        jsonData = a.target.result;
+                        postImportData();
+                    };
+                    reader.readAsText(file);
+                } else {
+                    if ((importTextField.value || "").trim() != "") {
+                        jsonData = importTextField.value;
+                        postImportData();
+                        return;
+                    } else {
+                        error_div.removeAttribute("hidden");
+                        error_div.innerText = "No valid JSON file is selected and the textarea is empty!";
+                    }
+                }
+            } else {
+                if ((importTextField.value || "").trim() != "") {
+                    jsonData = importTextField.value;
+                    postImportData();
+                    return;
+                } else {
+                    error_div.removeAttribute("hidden");
+                    error_div.innerText = "You did not select a file and the textarea is empty!";
+                }
+
+            }
+        }
+
+        function postImportData() {
+            console.log("posting");
+            fetch(`https://vMenu/importData`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: jsonData
+            }).then(resp => resp.json()).then(resp => console.info(resp));
+        }
+
+        window.addEventListener("message", (data) => {
+            document.getElementById("body").removeAttribute("hidden");
+            document.getElementById("output").innerText = JSON.stringify(data.data);
+        })
+    </script>
+</body>
+
+
+</html>
