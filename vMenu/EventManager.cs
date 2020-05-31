@@ -20,6 +20,7 @@ namespace vMenuClient
         public static int GetServerHours => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_current_hour), 0, 23);
         public static int GetServerMinuteDuration => GetSettingsInt(Setting.vmenu_ingame_minute_duration);
         public static bool IsServerTimeFrozen => GetSettingsBool(Setting.vmenu_freeze_time);
+        public static bool IsServerTimeSyncedWithMachineTime => GetSettingsBool(Setting.vmenu_sync_to_machine_time);
         public static string GetServerWeather => GetSettingsString(Setting.vmenu_current_weather, "CLEAR");
         public static bool DynamicWeatherEnabled => GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         public static bool IsBlackoutEnabled => GetSettingsBool(Setting.vmenu_blackout_enabled);
@@ -236,7 +237,14 @@ namespace vMenuClient
         private async Task TimeSync()
         {
             NetworkOverrideClockTime(GetServerHours, GetServerMinutes, 0);
-            await Delay(MathUtil.Clamp(GetServerMinuteDuration, 100, 2000));
+            if (IsServerTimeFrozen || IsServerTimeSyncedWithMachineTime)
+            {
+                await Delay(5);
+            }
+            else
+            {
+                await Delay(MathUtil.Clamp(GetServerMinuteDuration, 100, 2000));
+            }
         }
 
         /// <summary>
