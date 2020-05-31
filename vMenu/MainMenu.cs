@@ -333,6 +333,7 @@ namespace vMenuClient
                 IsAllowed(Permission.VSMilitary, checkAnyway: true),
                 IsAllowed(Permission.VSCommercial, checkAnyway: true),
                 IsAllowed(Permission.VSTrains, checkAnyway: true),
+                IsAllowed(Permission.VSOpenWheel, checkAnyway: true)
             };
             ArePermissionsSetup = true;
 

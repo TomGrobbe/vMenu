@@ -62,7 +62,7 @@ namespace vMenuClient
                         MenuItem unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These addon vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
                         MenuController.AddSubmenu(addonCarsMenu, unavailableCars);
 
-                        for (var cat = 0; cat < 22; cat++)
+                        for (var cat = 0; cat < 23; cat++)
                         {
                             Menu categoryMenu = new Menu("Addon Spawner", GetLabelText($"VEH_CLASS_{cat}"));
                             MenuItem categoryBtn = new MenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLabelText($"VEH_CLASS_{cat}")} class.") { Label = "→→→" };
@@ -131,12 +131,6 @@ namespace vMenuClient
                             addonCarsMenu.AddMenuItem(unavailableCarsBtn);
                             MenuController.BindMenuItem(addonCarsMenu, unavailableCars, unavailableCarsBtn);
                         }
-
-                        //addonCarsMenu.OnItemSelect += (sender, item, index) =>
-                        //{
-
-                        //    //SpawnVehicle(AddonVehicles.ElementAt(index).Key, SpawnInVehicle, ReplaceVehicle);
-                        //};
                     }
                     else
                     {
@@ -162,7 +156,7 @@ namespace vMenuClient
 
             #region vehicle classes submenus
             // Loop through all the vehicle classes.
-            for (var vehClass = 0; vehClass < 22; vehClass++)
+            for (var vehClass = 0; vehClass < 23; vehClass++)
             {
                 // Get the class name.
                 string className = GetLabelText($"VEH_CLASS_{vehClass}");

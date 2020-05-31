@@ -55,7 +55,7 @@ namespace vMenuClient
                 }
             };
 
-            for (int i = 0; i < 22; i++)
+            for (int i = 0; i < 23; i++)
             {
                 Menu categoryMenu = new Menu("Saved Vehicles", GetLabelText($"VEH_CLASS_{i}"));
 
