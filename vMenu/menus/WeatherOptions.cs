@@ -10,6 +10,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
+using vMenuShared;
 
 namespace vMenuClient
 {
@@ -20,14 +21,32 @@ namespace vMenuClient
         public static Dictionary<uint, MenuItem> weatherHashMenuIndex = new Dictionary<uint, MenuItem>();
         public MenuCheckboxItem dynamicWeatherEnabled;
         public MenuCheckboxItem blackout;
+        public static readonly List<string> weatherTypes = new List<string>()
+        {
+            "EXTRASUNNY",
+            "CLEAR",
+            "NEUTRAL",
+            "SMOG",
+            "FOGGY",
+            "CLOUDS",
+            "OVERCAST",
+            "CLEARING",
+            "RAIN",
+            "THUNDER",
+            "BLIZZARD",
+            "SNOW",
+            "SNOWLIGHT",
+            "XMAS",
+            "HALLOWEEN"
+        };
 
         private void CreateMenu()
         {
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Weather Options");
 
-            dynamicWeatherEnabled = new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.dynamicWeather);
-            blackout = new MenuCheckboxItem("Toggle Blackout", "This disables or enables all lights across the map.", EventManager.blackoutMode);
+            dynamicWeatherEnabled = new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.DynamicWeatherEnabled);
+            blackout = new MenuCheckboxItem("Toggle Blackout", "This disables or enables all lights across the map.", EventManager.IsBlackoutEnabled);
             MenuItem extrasunny = new MenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!");
             MenuItem clear = new MenuItem("Clear", "Set the weather to ~y~clear~s~!");
             MenuItem neutral = new MenuItem("Neutral", "Set the weather to ~y~neutral~s~!");
@@ -101,33 +120,14 @@ namespace vMenuClient
                 menu.AddMenuItem(randomizeclouds);
             }
 
-            List<string> weatherTypes = new List<string>()
-            {
-                "EXTRASUNNY",
-                "CLEAR",
-                "NEUTRAL",
-                "SMOG",
-                "FOGGY",
-                "CLOUDS",
-                "OVERCAST",
-                "CLEARING",
-                "RAIN",
-                "THUNDER",
-                "BLIZZARD",
-                "SNOW",
-                "SNOWLIGHT",
-                "XMAS",
-                "HALLOWEEN"
-            };
-
             menu.OnItemSelect += (sender, item, index2) =>
             {
                 var index = index2 + indexOffset;
                 // A weather type is selected.
                 if (index >= 2 && index <= 16)
                 {
-                    Notify.Custom($"The weather will be changed to ~y~{weatherTypes[index - 2]}~s~ in the next 30 seconds.");
-                    UpdateServerWeather(weatherTypes[index - 2], EventManager.blackoutMode, EventManager.dynamicWeather);
+                    Notify.Custom($"The weather will be changed to ~y~{item.Text}~s~. This will take {EventManager.WeatherChangeTime} seconds.");
+                    UpdateServerWeather(weatherTypes[index - 2], EventManager.IsBlackoutEnabled, EventManager.DynamicWeatherEnabled);
                 }
                 if (item == removeclouds)
                 {
@@ -143,15 +143,13 @@ namespace vMenuClient
             {
                 if (item == dynamicWeatherEnabled)
                 {
-                    EventManager.dynamicWeather = _checked;
                     Notify.Custom($"Dynamic weather changes are now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
-                    UpdateServerWeather(EventManager.currentWeatherType, EventManager.blackoutMode, _checked);
+                    UpdateServerWeather(EventManager.GetServerWeather, EventManager.IsBlackoutEnabled, _checked);
                 }
                 else if (item == blackout)
                 {
-                    EventManager.blackoutMode = _checked;
                     Notify.Custom($"Blackout mode is now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
-                    UpdateServerWeather(EventManager.currentWeatherType, _checked, EventManager.dynamicWeather);
+                    UpdateServerWeather(EventManager.GetServerWeather, _checked, EventManager.DynamicWeatherEnabled);
                 }
             };
         }
