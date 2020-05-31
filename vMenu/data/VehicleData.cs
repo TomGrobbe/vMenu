@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -268,6 +268,7 @@ namespace vMenuClient
             #region Compacts
             public static List<string> Compacts { get; } = new List<string>()
             {
+                "ASBO", // CASINO (MPHEIST3) DLC
                 "BLISTA",
                 "BRIOSO",
                 "DILETTANTE",
@@ -277,6 +278,7 @@ namespace vMenuClient
                 "ISSI4", // MPCHRISTMAS2018 DLC
                 "ISSI5", // MPCHRISTMAS2018 DLC
                 "ISSI6", // MPCHRISTMAS2018 DLC
+                "KANJO", // CASINO (MPHEIST3) DLC
                 "PANTO",
                 "PRAIRIE",
                 "RHAPSODY",
@@ -342,10 +344,11 @@ namespace vMenuClient
                 "LANDSTALKER",
                 "MESA",
                 "MESA2",
-                "NOVAK", // Casino DLC
+                "NOVAK", // MPVINEWOOD DLC
                 "PATRIOT",
                 "PATRIOT2", // dlc (mpbattle)
                 "RADI",
+                "REBLA", // CASINO (MPHEIST3) DLC
                 "ROCOTO",
                 "SEMINOLE",
                 "SERRANO",
@@ -398,8 +401,8 @@ namespace vMenuClient
                 "FACTION3",
                 "GAUNTLET",
                 "GAUNTLET2",
-                "GAUNTLET3", // Casino DLC
-                "GAUNTLET4", // Casino DLC
+                "GAUNTLET3", // MPVINEWOOD DLC
+                "GAUNTLET4", // MPVINEWOOD DLC
                 "HERMES",
                 "HOTKNIFE",
                 "HUSTLER",
@@ -414,7 +417,7 @@ namespace vMenuClient
                 "MOONBEAM",
                 "MOONBEAM2",
                 "NIGHTSHADE",
-                "PEYOTE2", // Casino DLC
+                "PEYOTE2", // MPVINEWOOD DLC
                 "PHOENIX",
                 "PICADOR",
                 "RATLOADER",
@@ -443,6 +446,7 @@ namespace vMenuClient
                 "VOODOO",
                 "VOODOO2",
                 "YOSEMITE",
+                "YOSEMITE2", // CASINO (MPHEIST3) DLC
             };
             #endregion
             #region SportsClassics
@@ -457,22 +461,24 @@ namespace vMenuClient
                 "CHEETAH2",
                 "COQUETTE2",
                 "DELUXO",
-                "DYNASTY", // Casino DLC
+                "DYNASTY", // MPVINEWOOD DLC
                 "FAGALOA",
                 "FELTZER3", // Stirling GT
                 "GT500",
                 "INFERNUS2",
                 "JB700",
+                "JB7002", // CASINO (MPHEIST3) DLC
                 "JESTER3",
                 "MAMBA",
                 "MANANA",
                 "MICHELLI",
                 "MONROE",
-                "NEBULA", // Casino DLC
+                "NEBULA", // MPVINEWOOD DLC
                 "PEYOTE",
                 "PIGALLE",
                 "RAPIDGT3",
                 "RETINUE",
+                "RETINUE2", // CASINO (MPHEIST3) DLC
                 "SAVESTRA",
                 "STINGER",
                 "STINGERGT",
@@ -488,7 +494,7 @@ namespace vMenuClient
                 "TURISMO2",
                 "VISERIS",
                 "Z190",
-                "ZION3", // Casino DLC
+                "ZION3", // MPVINEWOOD DLC
                 "ZTYPE",
             };
             #endregion
@@ -509,7 +515,7 @@ namespace vMenuClient
                 "COMET4",
                 "COMET5",
                 "COQUETTE",
-                "DRAFTER", // Casino DLC
+                "DRAFTER", // MPVINEWOOD DLC
                 "ELEGY",
                 "ELEGY2",
                 "FELTZER2",
@@ -519,25 +525,27 @@ namespace vMenuClient
                 "FUTO",
                 "GB200",
                 "HOTRING",
-                "ISSI7", // Casino DLC
+                "IMORGON", // CASINO (MPHEIST3) DLC
+                "ISSI7", // MPVINEWOOD DLC
                 "ITALIGTO", // MPCHRISTMAS2018 DLC
                 "JESTER",
                 "JESTER2",
-                "JUGULAR", // Casino DLC
+                "JUGULAR", // MPVINEWOOD DLC
                 "KHAMELION",
+                "KOMODA", // CASINO (MPHEIST3) DLC
                 "KURUMA",
                 "KURUMA2",
-                "LOCUST", // Casino DLC
+                "LOCUST", // MPVINEWOOD DLC
                 "LYNX",
                 "MASSACRO",
                 "MASSACRO2",
-                "NEO", // Casino DLC
+                "NEO", // MPVINEWOOD DLC
                 "NEON", // Doomsday Heist Update
                 "NINEF",
                 "NINEF2",
                 "OMNIS",
-                "PARAGON", // Casino DLC
-                "PARAGON2", // Casino DLC
+                "PARAGON", // MPVINEWOOD DLC
+                "PARAGON2", // MPVINEWOOD DLC
                 "PARIAH",
                 "PENUMBRA",
                 "RAIDEN",
@@ -556,11 +564,14 @@ namespace vMenuClient
                 "SEVEN70",
                 "SPECTER",
                 "SPECTER2",
+                "SUGOI", // CASINO (MPHEIST3) DLC
                 "SULTAN",
+                "SULTAN2", // CASINO (MPHEIST3) DLC
                 "SURANO",
                 "TAMPA2",
                 "TROPOS",
                 "VERLIERER2",
+                "VSTR", // CASINO (MPHEIST3) DLC
                 "ZR380", // MPCHRISTMAS2018 DLC
                 "ZR3802", // MPCHRISTMAS2018 DLC
                 "ZR3803", // MPCHRISTMAS2018 DLC
@@ -576,15 +587,16 @@ namespace vMenuClient
                 "CHEETAH",
                 "CYCLONE",
                 "DEVESTE", // MPCHRISTMAS2018 DLC
-                "EMERUS", // Casino DLC
+                "EMERUS", // MPVINEWOOD DLC
                 "ENTITYXF",
                 "ENTITY2",
                 "FMJ",
+                "FURIA", // CASINO (MPHEIST3) DLC
                 "GP1",
                 "INFERNUS",
                 "ITALIGTB",
                 "ITALIGTB2",
-                "KRIEGER", // Casino DLC
+                "KRIEGER", // MPVINEWOOD DLC
                 "LE7B",
                 "NERO",
                 "NERO2",
@@ -593,7 +605,7 @@ namespace vMenuClient
                 "PFISTER811",
                 "PROTOTIPO",
                 "REAPER",
-                "S80", // Casino DLC
+                "S80", // MPVINEWOOD DLC
                 "SC1",
                 "SCRAMJET", // dlc (mpbattle)
                 "SHEAVA", // ETR1
@@ -602,7 +614,7 @@ namespace vMenuClient
                 "TAIPAN",
                 "TEMPESTA",
                 "TEZERACT",
-                "THRAX", // Casino DLC
+                "THRAX", // MPVINEWOOD DLC
                 "TURISMOR",
                 "TYRANT",
                 "TYRUS",
@@ -614,7 +626,7 @@ namespace vMenuClient
                 "VOLTIC2",
                 "XA21",
                 "ZENTORNO",
-                "ZORRUSSO", // Casino DLC
+                "ZORRUSSO", // MPVINEWOOD DLC
             };
             #endregion
             #region Motorcycles
@@ -658,13 +670,14 @@ namespace vMenuClient
                 "OPPRESSOR2", // dlc (mpbattle)
                 "PCJ",
                 "RATBIKE",
-                "RROCKET", // Casino DLC
+                "RROCKET", // MPVINEWOOD DLC
                 "RUFFIAN",
                 "SANCHEZ",
                 "SANCHEZ2",
                 "SANCTUS",
                 "SHOTARO",
                 "SOVEREIGN",
+                "STRYDER", // CASINO (MPHEIST3) DLC
                 "THRUST",
                 "VADER",
                 "VINDICATOR",
@@ -693,7 +706,7 @@ namespace vMenuClient
                 "BRUTUS2", // MPCHRISTMAS2018 DLC
                 "BRUTUS3", // MPCHRISTMAS2018 DLC
                 "CARACARA",
-                "CARACARA2", // Casino DLC
+                "CARACARA2", // MPVINEWOOD DLC
                 "DLOADER",
                 "DUBSTA3",
                 "DUNE",
@@ -701,8 +714,9 @@ namespace vMenuClient
                 "DUNE3",
                 "DUNE4",
                 "DUNE5",
+                "EVERON", // CASINO (MPHEIST3) DLC
                 "FREECRAWLER", // dlc (mpbattle)
-                "HELLION", // Casino DLC
+                "HELLION", // MPVINEWOOD DLC
                 "INSURGENT",
                 "INSURGENT2",
                 "INSURGENT3",
@@ -716,6 +730,7 @@ namespace vMenuClient
                 "MONSTER4", // MPCHRISTMAS2018 DLC
                 "MONSTER5", // MPCHRISTMAS2018 DLC
                 "NIGHTSHARK",
+                "OUTLAW", // CASINO (MPHEIST3) DLC
                 "RANCHERXL",
                 "RANCHERXL2",
                 "RCBANDITO", // MPCHRISTMAS2018 DLC
@@ -729,6 +744,8 @@ namespace vMenuClient
                 "TECHNICAL3",
                 "TROPHYTRUCK",
                 "TROPHYTRUCK2",
+                "VAGRANT", // CASINO (MPHEIST3) DLC
+                "ZHABA", // CASINO (MPHEIST3) DLC
             };
             #endregion
             #region Industrial
@@ -1011,6 +1028,7 @@ namespace vMenuClient
                 "CRUSADER",
                 "HALFTRACK",
                 "KHANJALI",
+                "MINITANK", // CASINO (MPHEIST3) DLC
                 "RHINO",
                 "SCARAB", // MPCHRISTMAS2018 DLC
                 "SCARAB2", // MPCHRISTMAS2018 DLC
