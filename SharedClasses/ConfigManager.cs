@@ -13,26 +13,12 @@ namespace vMenuShared
     {
         public enum Setting
         {
+            // General settings
             vmenu_use_permissions,
             vmenu_menu_staff_only,
             vmenu_menu_toggle_key,
             vmenu_noclip_toggle_key,
             vmenu_keep_spawned_vehicles_persistent,
-            vmenu_enable_weather_sync,
-            vmenu_enable_dynamic_weather,
-            vmenu_dynamic_weather_timer,
-            vmenu_default_weather,
-            vmenu_allow_random_blackout,
-            vmenu_enable_time_sync,
-            vmenu_freeze_time,
-            vmenu_smooth_time_transitions,
-            vmenu_default_time_hour,
-            vmenu_default_time_min,
-            vmenu_ingame_minute_duration,
-            vmenu_auto_ban_cheaters,
-            vmenu_auto_ban_cheaters_ban_message,
-            vmenu_log_ban_actions,
-            vmenu_log_kick_actions,
             vmenu_use_els_compatibility_mode,
             vmenu_quit_session_in_rockstar_editor,
             vmenu_server_info_message,
@@ -44,16 +30,48 @@ namespace vMenuShared
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
+
+            // Kick & ban settings
             vmenu_bans_database_filepath,
             vmenu_bans_use_database,
-            vmenu_default_ban_message_information
+            vmenu_default_ban_message_information,
+            vmenu_auto_ban_cheaters,
+            vmenu_auto_ban_cheaters_ban_message,
+            vmenu_log_ban_actions,
+            vmenu_log_kick_actions,
+            
+            // Weather settings
+            vmenu_enable_weather_sync,
+            vmenu_enable_dynamic_weather,
+            vmenu_dynamic_weather_timer,
+            vmenu_current_weather,
+            vmenu_blackout_enabled,
+            vmenu_weather_change_duration,
+
+            // Time settings
+            vmenu_enable_time_sync,
+            vmenu_freeze_time,
+            vmenu_ingame_minute_duration,
+            vmenu_current_hour,
+            vmenu_current_minute,
+            vmenu_sync_to_machine_time
         }
 
+        /// <summary>
+        /// Get a boolean setting.
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
         public static bool GetSettingsBool(Setting setting)
         {
             return GetConvar(setting.ToString(), "false") == "true";
         }
 
+        /// <summary>
+        /// Get an integer setting.
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
         public static int GetSettingsInt(Setting setting)
         {
             int convarInt = GetConvarInt(setting.ToString(), -1);
@@ -67,6 +85,11 @@ namespace vMenuShared
             return convarInt;
         }
 
+        /// <summary>
+        /// Get a float setting.
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
         public static float GetSettingsFloat(Setting setting)
         {
             if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out float result))
@@ -76,18 +99,39 @@ namespace vMenuShared
             return -1f;
         }
 
-        public static string GetSettingsString(Setting setting)
+        /// <summary>
+        /// Get a string setting.
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static string GetSettingsString(Setting setting, string defaultValue = null)
         {
-            return GetConvar(setting.ToString(), "");
+            var value = GetConvar(setting.ToString(), defaultValue ?? "");
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+            return value;
         }
 
+        /// <summary>
+        /// Debugging mode
+        /// </summary>
         public static bool DebugMode => IsDuplicityVersion() ? IsServerDebugModeEnabled() : IsClientDebugModeEnabled();
 
+        /// <summary>
+        /// Default value for server debugging mode.
+        /// </summary>
+        /// <returns></returns>
         public static bool IsServerDebugModeEnabled()
         {
             return GetResourceMetadata("vMenu", "server_debug_mode", 0).ToLower() == "true";
         }
 
+        /// <summary>
+        /// Default value for client debugging mode.
+        /// </summary>
+        /// <returns></returns>
         public static bool IsClientDebugModeEnabled()
         {
             return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
