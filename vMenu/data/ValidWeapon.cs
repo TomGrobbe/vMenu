@@ -27,7 +27,6 @@ namespace vMenuClient
         public float Damage { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage; } }
         public float Range { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange; } }
         public float Speed { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed; } }
-        
     }
 
     public static class ValidWeapons
@@ -47,8 +46,42 @@ namespace vMenuClient
             }
         }
 
+
+        private static Dictionary<string, string> _components = new Dictionary<string, string>();
+        public static Dictionary<string, string> GetWeaponComponents()
+        {
+            if (_components.Count == 0)
+            {
+                string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+                _components = weaponComponentNames;
+                try
+                {
+                    var addonsFile = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+                    if (addonsFile.ContainsKey("weapon_components"))
+                    {
+                        foreach (var item in addonsFile["weapon_components"])
+                        {
+                            string name = item;
+                            string displayName = GetLabelText(name) ?? name;
+                            int unused = 0;
+                            if (GetWeaponComponentHudStats((uint)GetHashKey(name), ref unused))
+                            {
+                                _components.Add(name, displayName);
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    Log("[WARNING] The addons.json contains invalid JSON.");
+                }
+            }
+            return _components;
+        }
+
         private static void CreateWeaponsList()
         {
+            _weaponsList.Clear();
             foreach (var weapon in weaponNames)
             {
                 string realName = weapon.Key;
@@ -57,13 +90,13 @@ namespace vMenuClient
                 {
                     uint hash = (uint)GetHashKey(weapon.Key);
                     Dictionary<string, uint> componentHashes = new Dictionary<string, uint>();
-                    foreach (var comp in weaponComponentNames.Keys)
+                    foreach (var comp in GetWeaponComponents().Keys)
                     {
                         if (DoesWeaponTakeWeaponComponent(hash, (uint)GetHashKey(comp)))
                         {
-                            if (!componentHashes.ContainsKey(weaponComponentNames[comp]))
+                            if (!componentHashes.ContainsKey(GetWeaponComponents()[comp]))
                             {
-                                componentHashes.Add(weaponComponentNames[comp], (uint)GetHashKey(comp));
+                                componentHashes.Add(GetWeaponComponents()[comp], (uint)GetHashKey(comp));
                             }
                         }
                     }
@@ -374,7 +407,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon component names
-        public static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
         {
             ["COMPONENT_ADVANCEDRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ADVANCEDRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),

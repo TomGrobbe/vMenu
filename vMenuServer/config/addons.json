@@ -10,5 +10,9 @@
   "weapons": [
     "addonweaponname1",
     "addonweaponname2"
+  ],
+  "weapon_components": [
+    "weapon_component_name_1",
+    "weapon_component_name_2"
   ]
 }
