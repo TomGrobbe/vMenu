@@ -1224,9 +1224,33 @@ namespace vMenuClient
             // If mod info about the vehicle was specified, check if it's not null.
             if (saveName != null)
             {
-                // Set the modkit so we can modify the car.
-                SetVehicleModKit(vehicle.Handle, 0);
+                ApplyVehicleModsDelayed(vehicle, vehicleInfo, 500);
+            }
 
+            // Set the previous vehicle to the new vehicle.
+            _previousVehicle = vehicle;
+            //vehicle.Speed = speed; // retarded feature that randomly breaks for no fucking reason
+            if (!vehicle.Model.IsTrain) // to be extra fucking safe
+            {
+                // workaround of retarded feature above:
+                SetVehicleForwardSpeed(vehicle.Handle, speed);
+            }
+            vehicle.CurrentRPM = rpm;
+
+            // Discard the model.
+            SetModelAsNoLongerNeeded(vehicleHash);
+        }
+
+        /// <summary>
+        /// Waits for the given delay before applying the vehicle mods
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="vehicleInfo"></param>
+        private static async void ApplyVehicleModsDelayed(Vehicle vehicle, VehicleInfo vehicleInfo, int delay)
+        {
+            if (vehicle != null && vehicle.Exists())
+            {
+                vehicle.Mods.InstallModKit();
                 // set the extras
                 foreach (var extra in vehicleInfo.extras)
                 {
@@ -1257,35 +1281,35 @@ namespace vMenuClient
 
                 SetVehicleWindowTint(vehicle.Handle, vehicleInfo.windowTint);
 
-                foreach (var mod in vehicleInfo.mods)
-                {
-                    SetVehicleMod(vehicle.Handle, mod.Key, mod.Value, vehicleInfo.customWheels);
-                }
+                vehicle.CanTiresBurst = !vehicleInfo.bulletProofTires;
+
+                SetVehicleEnveffScale(vehicle.Handle, vehicleInfo.enveffScale);
+
+                VehicleOptions._SetHeadlightsColorOnVehicle(vehicle, vehicleInfo.headlightColor);
+
                 vehicle.Mods.NeonLightsColor = System.Drawing.Color.FromArgb(red: vehicleInfo.colors["neonR"], green: vehicleInfo.colors["neonG"], blue: vehicleInfo.colors["neonB"]);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Left, vehicleInfo.neonLeft);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Right, vehicleInfo.neonRight);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Front, vehicleInfo.neonFront);
                 vehicle.Mods.SetNeonLightsOn(VehicleNeonLight.Back, vehicleInfo.neonBack);
 
-                vehicle.CanTiresBurst = !vehicleInfo.bulletProofTires;
+                void DoMods()
+                {
+                    vehicleInfo.mods.ToList().ForEach(mod =>
+                    {
+                        if (vehicle != null && vehicle.Exists())
+                            SetVehicleMod(vehicle.Handle, mod.Key, mod.Value, vehicleInfo.customWheels);
+                    });
+                }
 
-                SetVehicleEnveffScale(vehicle.Handle, vehicleInfo.enveffScale);
-
-                VehicleOptions._SetHeadlightsColorOnVehicle(vehicle, vehicleInfo.headlightColor);
+                DoMods();
+                // Performance mods require a delay after setting the modkit,
+                // so we just do it once first so all the visual mods load instantly,
+                // and after a small delay we do it again to make sure all performance
+                // mods have also loaded.
+                await Delay(delay);
+                DoMods();
             }
-
-            // Set the previous vehicle to the new vehicle.
-            _previousVehicle = vehicle;
-            //vehicle.Speed = speed; // retarded feature that randomly breaks for no fucking reason
-            if (!vehicle.Model.IsTrain) // to be extra fucking safe
-            {
-                // workaround of retarded feature above:
-                SetVehicleForwardSpeed(vehicle.Handle, speed);
-            }
-            vehicle.CurrentRPM = rpm;
-
-            // Discard the model.
-            SetModelAsNoLongerNeeded(vehicleHash);
         }
         #endregion
         #endregion
@@ -2517,7 +2541,7 @@ namespace vMenuClient
                     if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
-                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo: w.GetMaxAmmo, false, false);
+                        GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo : w.GetMaxAmmo, false, false);
 
                         // Add components
                         if (w.Components.Count > 0)
@@ -2546,7 +2570,7 @@ namespace vMenuClient
 
                         if (w.CurrentAmmo > 0)
                         {
-                            int ammo = w.CurrentAmmo; 
+                            int ammo = w.CurrentAmmo;
                             if (w.CurrentAmmo > w.GetMaxAmmo)
                             {
                                 ammo = w.GetMaxAmmo;
