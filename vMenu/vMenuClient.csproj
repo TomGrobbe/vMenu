@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MenuAPI.FiveM" Version="3.1.4" />
+    <PackageReference Include="MenuAPI.FiveM" Version="3.1.5" />
 
     <Reference Include="Microsoft.CSharp" />
     
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.2561">
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.2836">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     

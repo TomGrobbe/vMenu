@@ -19,7 +19,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     
-    <PackageReference Include="CitizenFX.Core.Server" Version="1.0.2561">
+    <PackageReference Include="CitizenFX.Core.Server" Version="1.0.2837">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     
@@ -27,15 +27,10 @@
       <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
       <Private>false</Private>
     </Reference>
-
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="config\addons.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="libSQLite.Interop.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="config\locations.json">
