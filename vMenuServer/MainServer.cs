@@ -228,11 +228,6 @@ namespace vMenuServer
                     Tick += WeatherLoop;
                 if (GetSettingsBool(Setting.vmenu_enable_time_sync))
                     Tick += TimeLoop;
-
-                if (GetSettingsBool(Setting.vmenu_bans_use_database) && !string.IsNullOrEmpty(LoadResourceFile(GetCurrentResourceName(), "bans.json")))
-                {
-                    Log("^3You have setup vMenu to use the SQLite database for storing banned players, however you also have a bans.json file!\nPlease check your configuration and only use ONE of these methods at a time.\nIf you no longer want to use the bans.json file, feel free to delete it after migrating to the database!^7", LogLevel.warning);
-                }
             }
         }
         #endregion

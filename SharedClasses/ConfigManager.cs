@@ -32,8 +32,6 @@ namespace vMenuShared
             vmenu_disable_entity_outlines_tool,
 
             // Kick & ban settings
-            vmenu_bans_database_filepath,
-            vmenu_bans_use_database,
             vmenu_default_ban_message_information,
             vmenu_auto_ban_cheaters,
             vmenu_auto_ban_cheaters_ban_message,
