@@ -234,7 +234,7 @@ namespace vMenuServer
 
         #region command handler
         [Command("vmenuserver", Restricted = true)]
-        private async void ServerCommandHandler(int source, List<object> args, string rawCommand)
+        private void ServerCommandHandler(int source, List<object> args, string rawCommand)
         {
             if (args != null)
             {
@@ -257,27 +257,18 @@ namespace vMenuServer
                     {
                         if (args.Count() > 1 && !string.IsNullOrEmpty(args[1].ToString()))
                         {
-                            string name = args[1].ToString().Trim();
-                            name = name.Replace("\"", "");
-                            name = BanManager.GetSafePlayerName(name);
-                            var bans = await BanManager.GetBanList();
-                            var banRecord = bans.Find(b => { return b.playerName == name; });
-                            if (banRecord.playerName != null)
+                            var uuid = args[1].ToString().Trim();
+                            var bans = BanManager.GetBanList();
+                            var banRecord = bans.Find(b => { return b.uuid.ToString() == uuid; });
+                            if (banRecord != null)
                             {
-                                if (await BanManager.RemoveBan(banRecord))
-                                {
-                                    Debug.WriteLine("Player has been successfully unbanned.");
-                                }
-                                else
-                                {
-                                    Debug.WriteLine("Could not unban the player, are you sure this player is actually banned?");
-                                }
+                                BanManager.RemoveBan(banRecord);
+                                Debug.WriteLine("Player has been successfully unbanned.");
                             }
                             else
                             {
-                                Debug.WriteLine($"Could not find a banned player by the name of '{name}'.");
+                                Debug.WriteLine($"Could not find a banned player with the provided uuid '{uuid}'.");
                             }
-                            bans = null;
                         }
                         else
                         {
@@ -421,27 +412,20 @@ namespace vMenuServer
 
                             if (p != null)
                             {
-                                var ban = new BanManager.BanRecord()
-                                {
-                                    bannedBy = "Server Console",
-                                    bannedUntil = new DateTime(3000, 1, 1),
-                                    banReason = reason,
-                                    identifiers = p.Identifiers.ToList(),
-                                    playerName = BanManager.GetSafePlayerName(p.Name)
-                                };
+                                BanManager.BanRecord ban = new BanManager.BanRecord(
+                                    BanManager.GetSafePlayerName(p.Name),
+                                    p.Identifiers.ToList(),
+                                    new DateTime(3000, 1, 1),
+                                    reason,
+                                    "Server Console",
+                                    new Guid()
+                                );
 
-                                if (await BanManager.AddBan(ban))
-                                {
-                                    BanManager.BanLog($"[vMenu] Player {p.Name}^7 has been banned by Server Console for [{reason}].");
-                                    TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
-                                    string timeRemaining = BanManager.GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                                    p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
-                                }
-                                else
-                                {
-                                    // ban failed
-                                    Debug.WriteLine("[vMenu] Banning player failed, reason unknown.");
-                                }
+                                BanManager.AddBan(ban);
+                                BanManager.BanLog($"[vMenu] Player {p.Name}^7 has been banned by Server Console for [{reason}].");
+                                TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                                string timeRemaining = BanManager.GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                                p.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                             }
                             else
                             {
@@ -456,14 +440,14 @@ namespace vMenuServer
                     else if (args[0].ToString().ToLower() == "help")
                     {
                         Debug.WriteLine("Available commands:");
-                        Debug.WriteLine("(server console only): vmenuserver ban <id|name> <server id|username> <reason>");
-                        Debug.WriteLine("(server console only): vmenuserver unban <\"player name\">");
+                        Debug.WriteLine("(server console only): vmenuserver ban <id|name> <server id|username> <reason> (player must be online!)");
+                        Debug.WriteLine("(server console only): vmenuserver unban <uuid>");
                         Debug.WriteLine("vmenuserver weather <new weather type | dynamic <true | false>>");
                         Debug.WriteLine("vmenuserver time <freeze|<hour> <minute>>");
                     }
                     else if (args[0].ToString().ToLower() == "migrate" && source < 1)
                     {
-                        BanManager.MigrateBansToDatabase();
+                        Debug.WriteLine("This will return soon!");
                     }
                     else
                     {

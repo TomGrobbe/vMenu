@@ -66,7 +66,7 @@ namespace vMenuServer
         }
 
         /// <summary>
-        /// Gets the ban list from the bans.json file.
+        /// Gets the ban list from the kvp storage.
         /// </summary>
         /// <returns></returns>
         public static List<BanRecord> GetBanList()
