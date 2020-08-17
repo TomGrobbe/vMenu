@@ -17,6 +17,7 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
+        private static LanguageManager LM = new LanguageManager();
         public static Dictionary<uint, MenuItem> weatherHashMenuIndex = new Dictionary<uint, MenuItem>();
         public MenuCheckboxItem dynamicWeatherEnabled;
         public MenuCheckboxItem blackout;
@@ -24,27 +25,27 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Weather Options");
+            menu = new Menu(Game.Player.Name, LM.Get("Weather Options"));
 
-            dynamicWeatherEnabled = new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.dynamicWeather);
-            blackout = new MenuCheckboxItem("Toggle Blackout", "This disables or enables all lights across the map.", EventManager.blackoutMode);
-            MenuItem extrasunny = new MenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!");
-            MenuItem clear = new MenuItem("Clear", "Set the weather to ~y~clear~s~!");
-            MenuItem neutral = new MenuItem("Neutral", "Set the weather to ~y~neutral~s~!");
-            MenuItem smog = new MenuItem("Smog", "Set the weather to ~y~smog~s~!");
-            MenuItem foggy = new MenuItem("Foggy", "Set the weather to ~y~foggy~s~!");
-            MenuItem clouds = new MenuItem("Cloudy", "Set the weather to ~y~clouds~s~!");
-            MenuItem overcast = new MenuItem("Overcast", "Set the weather to ~y~overcast~s~!");
-            MenuItem clearing = new MenuItem("Clearing", "Set the weather to ~y~clearing~s~!");
-            MenuItem rain = new MenuItem("Rainy", "Set the weather to ~y~rain~s~!");
-            MenuItem thunder = new MenuItem("Thunder", "Set the weather to ~y~thunder~s~!");
-            MenuItem blizzard = new MenuItem("Blizzard", "Set the weather to ~y~blizzard~s~!");
-            MenuItem snow = new MenuItem("Snow", "Set the weather to ~y~snow~s~!");
-            MenuItem snowlight = new MenuItem("Light Snow", "Set the weather to ~y~light snow~s~!");
-            MenuItem xmas = new MenuItem("X-MAS Snow", "Set the weather to ~y~x-mas~s~!");
-            MenuItem halloween = new MenuItem("Halloween", "Set the weather to ~y~halloween~s~!");
-            MenuItem removeclouds = new MenuItem("Remove All Clouds", "Remove all clouds from the sky!");
-            MenuItem randomizeclouds = new MenuItem("Randomize Clouds", "Add random clouds to the sky!");
+            dynamicWeatherEnabled = new MenuCheckboxItem(LM.Get("Toggle Dynamic Weather"), LM.Get("Enable or disable dynamic weather changes."), EventManager.dynamicWeather);
+            blackout = new MenuCheckboxItem(LM.Get("Toggle Blackout"), LM.Get("This disables or enables all lights across the map."), EventManager.blackoutMode);
+            MenuItem extrasunny = new MenuItem(LM.Get("Extra Sunny"), LM.Get("Set the weather to ~y~extra sunny~s~!"));
+            MenuItem clear = new MenuItem(LM.Get("Clear"), LM.Get("Set the weather to ~y~clear~s~!"));
+            MenuItem neutral = new MenuItem(LM.Get("Neutral"), LM.Get("Set the weather to ~y~neutral~s~!"));
+            MenuItem smog = new MenuItem(LM.Get("Smog"), LM.Get("Set the weather to ~y~smog~s~!"));
+            MenuItem foggy = new MenuItem(LM.Get("Foggy"), LM.Get("Set the weather to ~y~foggy~s~!"));
+            MenuItem clouds = new MenuItem(LM.Get("Cloudy"), LM.Get("Set the weather to ~y~clouds~s~!"));
+            MenuItem overcast = new MenuItem(LM.Get("Overcast"), LM.Get("Set the weather to ~y~overcast~s~!"));
+            MenuItem clearing = new MenuItem(LM.Get("Clearing"), LM.Get("Set the weather to ~y~clearing~s~!"));
+            MenuItem rain = new MenuItem(LM.Get("Rainy"), LM.Get("Set the weather to ~y~rain~s~!"));
+            MenuItem thunder = new MenuItem(LM.Get("Thunder"), LM.Get("Set the weather to ~y~thunder~s~!"));
+            MenuItem blizzard = new MenuItem(LM.Get("Blizzard"), LM.Get("Set the weather to ~y~blizzard~s~!"));
+            MenuItem snow = new MenuItem(LM.Get("Snow"), LM.Get("Set the weather to ~y~snow~s~!"));
+            MenuItem snowlight = new MenuItem(LM.Get("Light Snow"), LM.Get("Set the weather to ~y~light snow~s~!"));
+            MenuItem xmas = new MenuItem(LM.Get("X-MAS Snow"), LM.Get("Set the weather to ~y~x-mas~s~!"));
+            MenuItem halloween = new MenuItem(LM.Get("Halloween"), LM.Get("Set the weather to ~y~halloween~s~!"));
+            MenuItem removeclouds = new MenuItem(LM.Get("Remove All Clouds"), LM.Get("Remove all clouds from the sky!"));
+            MenuItem randomizeclouds = new MenuItem(LM.Get("Randomize Clouds"), LM.Get("Add random clouds to the sky!"));
 
             var indexOffset = 2;
             if (IsAllowed(Permission.WODynamic))

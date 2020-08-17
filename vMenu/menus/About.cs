@@ -18,22 +18,23 @@ namespace vMenuClient
         // Variables
         private Menu menu;
 
+        private static LanguageManager LM = new LanguageManager();
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu("vMenu", "About vMenu");
+            menu = new Menu(LM.Get("vMenu"), LM.Get("About vMenu"));
 
             // Create menu items.
-            MenuItem version = new MenuItem("vMenu Version", $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.")
+            MenuItem version = new MenuItem(LM.Get("vMenu Version"), $"This server is using vMenu ~b~~h~{MainMenu.Version}~h~~s~.")
             {
                 Label = $"~h~{MainMenu.Version}~h~"
             };
-            MenuItem credits = new MenuItem("About vMenu / Credits", "vMenu is made by ~b~Vespura~s~. For more info, checkout ~b~www.vespura.com/vmenu~s~. Thank you to: Deltanic, Brigliar, IllusiveTea, Shayan Doust and zr0iq for your contributions.");
+            MenuItem credits = new MenuItem(LM.Get("About vMenu / Credits"), LM.Get("vMenu is made by ~b~Vespura~s~. For more info, checkout ~b~www.vespura.com/vmenu~s~. Thank you to: Deltanic, Brigliar, IllusiveTea, Shayan Doust and zr0iq for your contributions."));
 
             string serverInfoMessage = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_message);
             if (!string.IsNullOrEmpty(serverInfoMessage))
             {
-                MenuItem serverInfo = new MenuItem("Server Info", serverInfoMessage);
+                MenuItem serverInfo = new MenuItem(LM.Get("Server Info"), serverInfoMessage);
                 string siteUrl = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_server_info_website_url);
                 if (!string.IsNullOrEmpty(siteUrl))
                 {

@@ -18,20 +18,22 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        public Menu createCharacterMenu = new Menu("Create Character", "Create A New Character");
-        public Menu savedCharactersMenu = new Menu("vMenu", "Manage Saved Characters");
-        public Menu inheritanceMenu = new Menu("vMenu", "Character Inheritance Options");
-        public Menu appearanceMenu = new Menu("vMenu", "Character Appearance Options");
-        public Menu faceShapeMenu = new Menu("vMenu", "Character Face Shape Options");
-        public Menu tattoosMenu = new Menu("vMenu", "Character Tattoo Options");
-        public Menu clothesMenu = new Menu("vMenu", "Character Clothing Options");
-        public Menu propsMenu = new Menu("vMenu", "Character Props Options");
-        private Menu manageSavedCharacterMenu = new Menu("vMenu", "Manage MP Character");
+        private static LanguageManager LM = new LanguageManager();
+
+        public Menu createCharacterMenu = new Menu(LM.Get("Create Character"), LM.Get("Create A New Character"));
+        public Menu savedCharactersMenu = new Menu(LM.Get("vMenu"), LM.Get("Manage Saved Characters"));
+        public Menu inheritanceMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Inheritance Options"));
+        public Menu appearanceMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Appearance Options"));
+        public Menu faceShapeMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Face Shape Options"));
+        public Menu tattoosMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Tattoo Options"));
+        public Menu clothesMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Clothing Options"));
+        public Menu propsMenu = new Menu(LM.Get("vMenu"), LM.Get("Character Props Options"));
+        private Menu manageSavedCharacterMenu = new Menu(LM.Get("vMenu"), LM.Get("Manage MP Character"));
 
         // Need to be able to disable/enable these buttons from another class.
-        internal MenuItem createMaleBtn = new MenuItem("Create Male Character", "Create a new male character.") { Label = "→→→" };
-        internal MenuItem createFemaleBtn = new MenuItem("Create Female Character", "Create a new female character.") { Label = "→→→" };
-        internal MenuItem editPedBtn = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
+        internal MenuItem createMaleBtn = new MenuItem(LM.Get("Create Male Character"), LM.Get("Create a new male character.")) { Label = "→→→" };
+        internal MenuItem createFemaleBtn = new MenuItem(LM.Get("Create Female Character"), LM.Get("Create a new female character.")) { Label = "→→→" };
+        internal MenuItem editPedBtn = new MenuItem(LM.Get("Edit Saved Character"), LM.Get("This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button."));
 
         public static bool DontCloseMenus { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
         public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
@@ -294,68 +296,68 @@ namespace vMenuClient
             int currentEyeColor = editPed ? currentCharacter.PedAppearance.eyeColor : 0;
             SetPedEyeColor(Game.PlayerPed.Handle, currentEyeColor);
 
-            MenuListItem hairStyles = new MenuListItem("Hair Style", hairStylesList, currentHairStyle, "Select a hair style.");
+            MenuListItem hairStyles = new MenuListItem(LM.Get("Hair Style"), hairStylesList, currentHairStyle, LM.Get("Select a hair style."));
             //MenuListItem hairColors = new MenuListItem("Hair Color", overlayColorsList, currentHairColor, "Select a hair color.");
-            MenuListItem hairColors = new MenuListItem("Hair Color", overlayColorsList, currentHairColor, "Select a hair color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            MenuListItem hairColors = new MenuListItem(LM.Get("Hair Color"), overlayColorsList, currentHairColor, LM.Get("Select a hair color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
             //MenuListItem hairHighlightColors = new MenuListItem("Hair Highlight Color", overlayColorsList, currentHairHighlightColor, "Select a hair highlight color.");
-            MenuListItem hairHighlightColors = new MenuListItem("Hair Highlight Color", overlayColorsList, currentHairHighlightColor, "Select a hair highlight color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            MenuListItem hairHighlightColors = new MenuListItem(LM.Get("Hair Highlight Color"), overlayColorsList, currentHairHighlightColor, LM.Get("Select a hair highlight color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
-            MenuListItem blemishesStyle = new MenuListItem("Blemishes Style", blemishesStyleList, currentBlemishesStyle, "Select a blemishes style.");
+            MenuListItem blemishesStyle = new MenuListItem(LM.Get("Blemishes Style"), blemishesStyleList, currentBlemishesStyle, LM.Get("Select a blemishes style."));
             //MenuSliderItem blemishesOpacity = new MenuSliderItem("Blemishes Opacity", "Select a blemishes opacity.", 0, 10, (int)(currentBlemishesOpacity * 10f), false);
-            MenuListItem blemishesOpacity = new MenuListItem("Blemishes Opacity", opacity, (int)(currentBlemishesOpacity * 10f), "Select a blemishes opacity.") { ShowOpacityPanel = true };
+            MenuListItem blemishesOpacity = new MenuListItem(LM.Get("Blemishes Opacity"), opacity, (int)(currentBlemishesOpacity * 10f), LM.Get("Select a blemishes opacity.")) { ShowOpacityPanel = true };
 
-            MenuListItem beardStyles = new MenuListItem("Beard Style", beardStylesList, currentBeardStyle, "Select a beard/facial hair style.");
-            MenuListItem beardOpacity = new MenuListItem("Beard Opacity", opacity, (int)(currentBeardOpacity * 10f), "Select the opacity for your beard/facial hair.") { ShowOpacityPanel = true };
-            MenuListItem beardColor = new MenuListItem("Beard Color", overlayColorsList, currentBeardColor, "Select a beard color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            MenuListItem beardStyles = new MenuListItem(LM.Get("Beard Style"), beardStylesList, currentBeardStyle, LM.Get("Select a beard/facial hair style."));
+            MenuListItem beardOpacity = new MenuListItem(LM.Get("Beard Opacity"), opacity, (int)(currentBeardOpacity * 10f), LM.Get("Select the opacity for your beard/facial hair.")) { ShowOpacityPanel = true };
+            MenuListItem beardColor = new MenuListItem(LM.Get("Beard Color"), overlayColorsList, currentBeardColor, LM.Get("Select a beard color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
             //MenuSliderItem beardOpacity = new MenuSliderItem("Beard Opacity", "Select the opacity for your beard/facial hair.", 0, 10, (int)(currentBeardOpacity * 10f), false);
             //MenuListItem beardColor = new MenuListItem("Beard Color", overlayColorsList, currentBeardColor, "Select a beard color");
 
-            MenuListItem eyebrowStyle = new MenuListItem("Eyebrows Style", eyebrowsStyleList, currentEyebrowStyle, "Select an eyebrows style.");
-            MenuListItem eyebrowOpacity = new MenuListItem("Eyebrows Opacity", opacity, (int)(currentEyebrowOpacity * 10f), "Select the opacity for your eyebrows.") { ShowOpacityPanel = true };
-            MenuListItem eyebrowColor = new MenuListItem("Eyebrows Color", overlayColorsList, currentEyebrowColor, "Select an eyebrows color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            MenuListItem eyebrowStyle = new MenuListItem(LM.Get("Eyebrows Style"), eyebrowsStyleList, currentEyebrowStyle, LM.Get("Select an eyebrows style."));
+            MenuListItem eyebrowOpacity = new MenuListItem(LM.Get("Eyebrows Opacity"), opacity, (int)(currentEyebrowOpacity * 10f), LM.Get("Select the opacity for your eyebrows.")) { ShowOpacityPanel = true };
+            MenuListItem eyebrowColor = new MenuListItem(LM.Get("Eyebrows Color"), overlayColorsList, currentEyebrowColor, LM.Get("Select an eyebrows color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
             //MenuSliderItem eyebrowOpacity = new MenuSliderItem("Eyebrows Opacity", "Select the opacity for your eyebrows.", 0, 10, (int)(currentEyebrowOpacity * 10f), false);
 
-            MenuListItem ageingStyle = new MenuListItem("Ageing Style", ageingStyleList, currentAgeingStyle, "Select an ageing style.");
-            MenuListItem ageingOpacity = new MenuListItem("Ageing Opacity", opacity, (int)(currentAgeingOpacity * 10f), "Select an ageing opacity.") { ShowOpacityPanel = true };
+            MenuListItem ageingStyle = new MenuListItem(LM.Get("Ageing Style"), ageingStyleList, currentAgeingStyle, LM.Get("Select an ageing style."));
+            MenuListItem ageingOpacity = new MenuListItem(LM.Get("Ageing Opacity"), opacity, (int)(currentAgeingOpacity * 10f), LM.Get("Select an ageing opacity.")) { ShowOpacityPanel = true };
             //MenuSliderItem ageingOpacity = new MenuSliderItem("Ageing Opacity", "Select an ageing opacity.", 0, 10, (int)(currentAgeingOpacity * 10f), false);
 
-            MenuListItem makeupStyle = new MenuListItem("Makeup Style", makeupStyleList, currentMakeupStyle, "Select a makeup style.");
-            MenuListItem makeupOpacity = new MenuListItem("Makeup Opacity", opacity, (int)(currentMakeupOpacity * 10f), "Select a makeup opacity") { ShowOpacityPanel = true };
+            MenuListItem makeupStyle = new MenuListItem(LM.Get("Makeup Style"), makeupStyleList, currentMakeupStyle, LM.Get("Select a makeup style."));
+            MenuListItem makeupOpacity = new MenuListItem(LM.Get("Makeup Opacity"), opacity, (int)(currentMakeupOpacity * 10f), LM.Get("Select a makeup opacity")) { ShowOpacityPanel = true };
             //MenuSliderItem makeupOpacity = new MenuSliderItem("Makeup Opacity", 0, 10, (int)(currentMakeupOpacity * 10f), "Select a makeup opacity.");
-            MenuListItem makeupColor = new MenuListItem("Makeup Color", overlayColorsList, currentMakeupColor, "Select a makeup color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
+            MenuListItem makeupColor = new MenuListItem(LM.Get("Makeup Color"), overlayColorsList, currentMakeupColor, LM.Get("Select a makeup color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            MenuListItem blushStyle = new MenuListItem("Blush Style", blushStyleList, currentBlushStyle, "Select a blush style.");
-            MenuListItem blushOpacity = new MenuListItem("Blush Opacity", opacity, (int)(currentBlushOpacity * 10f), "Select a blush opacity.") { ShowOpacityPanel = true };
+            MenuListItem blushStyle = new MenuListItem(LM.Get("Blush Style"), blushStyleList, currentBlushStyle, LM.Get("Select a blush style."));
+            MenuListItem blushOpacity = new MenuListItem(LM.Get("Blush Opacity"), opacity, (int)(currentBlushOpacity * 10f), LM.Get("Select a blush opacity.")) { ShowOpacityPanel = true };
             //MenuSliderItem blushOpacity = new MenuSliderItem("Blush Opacity", 0, 10, (int)(currentBlushOpacity * 10f), "Select a blush opacity.");
-            MenuListItem blushColor = new MenuListItem("Blush Color", overlayColorsList, currentBlushColor, "Select a blush color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
+            MenuListItem blushColor = new MenuListItem(LM.Get("Blush Color"), overlayColorsList, currentBlushColor, LM.Get("Select a blush color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            MenuListItem complexionStyle = new MenuListItem("Complexion Style", complexionStyleList, currentComplexionStyle, "Select a complexion style.");
+            MenuListItem complexionStyle = new MenuListItem(LM.Get("Complexion Style"), complexionStyleList, currentComplexionStyle, LM.Get("Select a complexion style."));
             //MenuSliderItem complexionOpacity = new MenuSliderItem("Complexion Opacity", 0, 10, (int)(currentComplexionOpacity * 10f), "Select a complexion opacity.");
-            MenuListItem complexionOpacity = new MenuListItem("Complexion Opacity", opacity, (int)(currentComplexionOpacity * 10f), "Select a complexion opacity.") { ShowOpacityPanel = true };
+            MenuListItem complexionOpacity = new MenuListItem(LM.Get("Complexion Opacity"), opacity, (int)(currentComplexionOpacity * 10f), LM.Get("Select a complexion opacity.")) { ShowOpacityPanel = true };
 
-            MenuListItem sunDamageStyle = new MenuListItem("Sun Damage Style", sunDamageStyleList, currentSunDamageStyle, "Select a sun damage style.");
+            MenuListItem sunDamageStyle = new MenuListItem(LM.Get("Sun Damage Style"), sunDamageStyleList, currentSunDamageStyle, LM.Get("Select a sun damage style."));
             //MenuSliderItem sunDamageOpacity = new MenuSliderItem("Sun Damage Opacity", 0, 10, (int)(currentSunDamageOpacity * 10f), "Select a sun damage opacity.");
-            MenuListItem sunDamageOpacity = new MenuListItem("Sun Damage Opacity", opacity, (int)(currentSunDamageOpacity * 10f), "Select a sun damage opacity.") { ShowOpacityPanel = true };
+            MenuListItem sunDamageOpacity = new MenuListItem(LM.Get("Sun Damage Opacity"), opacity, (int)(currentSunDamageOpacity * 10f), LM.Get("Select a sun damage opacity.")) { ShowOpacityPanel = true };
 
-            MenuListItem lipstickStyle = new MenuListItem("Lipstick Style", lipstickStyleList, currentLipstickStyle, "Select a lipstick style.");
+            MenuListItem lipstickStyle = new MenuListItem(LM.Get("Lipstick Style"), lipstickStyleList, currentLipstickStyle, LM.Get("Select a lipstick style."));
             //MenuSliderItem lipstickOpacity = new MenuSliderItem("Lipstick Opacity", 0, 10, (int)(currentLipstickOpacity * 10f), "Select a lipstick opacity.");
-            MenuListItem lipstickOpacity = new MenuListItem("Lipstick Opacity", opacity, (int)(currentLipstickOpacity * 10f), "Select a lipstick opacity.") { ShowOpacityPanel = true };
-            MenuListItem lipstickColor = new MenuListItem("Lipstick Color", overlayColorsList, currentLipstickColor, "Select a lipstick color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
+            MenuListItem lipstickOpacity = new MenuListItem(LM.Get("Lipstick Opacity"), opacity, (int)(currentLipstickOpacity * 10f), LM.Get("Select a lipstick opacity.")) { ShowOpacityPanel = true };
+            MenuListItem lipstickColor = new MenuListItem(LM.Get("Lipstick Color"), overlayColorsList, currentLipstickColor, LM.Get("Select a lipstick color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Makeup };
 
-            MenuListItem molesFrecklesStyle = new MenuListItem("Moles and Freckles Style", molesFrecklesStyleList, currentMolesFrecklesStyle, "Select a moles and freckles style.");
+            MenuListItem molesFrecklesStyle = new MenuListItem(LM.Get("Moles and Freckles Style"), molesFrecklesStyleList, currentMolesFrecklesStyle, LM.Get("Select a moles and freckles style."));
             //MenuSliderItem molesFrecklesOpacity = new MenuSliderItem("Moles and Freckles Opacity", 0, 10, (int)(currentMolesFrecklesOpacity * 10f), "Select a moles and freckles opacity.");
-            MenuListItem molesFrecklesOpacity = new MenuListItem("Moles and Freckles Opacity", opacity, (int)(currentMolesFrecklesOpacity * 10f), "Select a moles and freckles opacity.") { ShowOpacityPanel = true };
+            MenuListItem molesFrecklesOpacity = new MenuListItem(LM.Get("Moles and Freckles Opacity"), opacity, (int)(currentMolesFrecklesOpacity * 10f), LM.Get("Select a moles and freckles opacity.")) { ShowOpacityPanel = true };
 
-            MenuListItem chestHairStyle = new MenuListItem("Chest Hair Style", chestHairStyleList, currentChesthairStyle, "Select a chest hair style.");
+            MenuListItem chestHairStyle = new MenuListItem(LM.Get("Chest Hair Style"), chestHairStyleList, currentChesthairStyle, LM.Get("Select a chest hair style."));
             //MenuSliderItem chestHairOpacity = new MenuSliderItem("Chest Hair Opacity", 0, 10, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.");
-            MenuListItem chestHairOpacity = new MenuListItem("Chest Hair Opacity", opacity, (int)(currentChesthairOpacity * 10f), "Select a chest hair opacity.") { ShowOpacityPanel = true };
-            MenuListItem chestHairColor = new MenuListItem("Chest Hair Color", overlayColorsList, currentChesthairColor, "Select a chest hair color.") { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
+            MenuListItem chestHairOpacity = new MenuListItem(LM.Get("Chest Hair Opacity"), opacity, (int)(currentChesthairOpacity * 10f), LM.Get("Select a chest hair opacity.")) { ShowOpacityPanel = true };
+            MenuListItem chestHairColor = new MenuListItem(LM.Get("Chest Hair Color"), overlayColorsList, currentChesthairColor, LM.Get("Select a chest hair color.")) { ShowColorPanel = true, ColorPanelColorType = MenuListItem.ColorPanelType.Hair };
 
             // Body blemishes
-            MenuListItem bodyBlemishesStyle = new MenuListItem("Body Blemishes Style", bodyBlemishesList, currentBodyBlemishesStyle, "Select body blemishes style.");
-            MenuListItem bodyBlemishesOpacity = new MenuListItem("Body Blemishes Opacity", opacity, (int)(currentBodyBlemishesOpacity * 10f), "Select body blemishes opacity.") { ShowOpacityPanel = true };
+            MenuListItem bodyBlemishesStyle = new MenuListItem(LM.Get("Body Blemishes Style"), bodyBlemishesList, currentBodyBlemishesStyle, LM.Get("Select body blemishes style."));
+            MenuListItem bodyBlemishesOpacity = new MenuListItem(LM.Get("Body Blemishes Opacity"), opacity, (int)(currentBodyBlemishesOpacity * 10f), LM.Get("Select body blemishes opacity.")) { ShowOpacityPanel = true };
 
-            MenuListItem eyeColor = new MenuListItem("Eye Colors", eyeColorList, currentEyeColor, "Select an eye/contact lens color.");
+            MenuListItem eyeColor = new MenuListItem(LM.Get("Eye Colors"), eyeColorList, currentEyeColor, LM.Get("Select an eye/contact lens color."));
 
             appearanceMenu.AddMenuItem(hairStyles);
             appearanceMenu.AddMenuItem(hairColors);
@@ -454,34 +456,34 @@ namespace vMenuClient
             {
                 beardStyles.Enabled = false;
                 beardStyles.LeftIcon = MenuItem.Icon.LOCK;
-                beardStyles.Description = "This is not available for female characters.";
+                beardStyles.Description = LM.Get("This is not available for female characters.");
 
                 beardOpacity.Enabled = false;
                 beardOpacity.LeftIcon = MenuItem.Icon.LOCK;
-                beardOpacity.Description = "This is not available for female characters.";
+                beardOpacity.Description = LM.Get("This is not available for female characters.");
 
                 beardColor.Enabled = false;
                 beardColor.LeftIcon = MenuItem.Icon.LOCK;
-                beardColor.Description = "This is not available for female characters.";
+                beardColor.Description = LM.Get("This is not available for female characters.");
 
 
                 chestHairStyle.Enabled = false;
                 chestHairStyle.LeftIcon = MenuItem.Icon.LOCK;
-                chestHairStyle.Description = "This is not available for female characters.";
+                chestHairStyle.Description = LM.Get("This is not available for female characters.");
 
                 chestHairOpacity.Enabled = false;
                 chestHairOpacity.LeftIcon = MenuItem.Icon.LOCK;
-                chestHairOpacity.Description = "This is not available for female characters.";
+                chestHairOpacity.Description = LM.Get("This is not available for female characters.");
 
                 chestHairColor.Enabled = false;
                 chestHairColor.LeftIcon = MenuItem.Icon.LOCK;
-                chestHairColor.Description = "This is not available for female characters.";
+                chestHairColor.Description = LM.Get("This is not available for female characters.");
             }
 
             #endregion
 
             #region clothing options menu
-            string[] clothingCategoryNames = new string[12] { "Unused (head)", "Masks", "Unused (hair)", "Upper Body", "Lower Body", "Bags & Parachutes", "Shoes", "Scarfs & Chains", "Shirt & Accessory", "Body Armor & Accessory 2", "Badges & Logos", "Shirt Overlay & Jackets" };
+            string[] clothingCategoryNames = new string[12] { LM.Get("Unused (head)"), LM.Get("Masks"), LM.Get("Unused (hair)"), LM.Get("Upper Body"), LM.Get("Lower Body"), LM.Get("Bags & Parachutes"), LM.Get("Shoes"), LM.Get("Scarfs & Chains"), LM.Get("Shirt & Accessory"), LM.Get("Body Armor & Accessory 2"), LM.Get("Badges & Logos"), LM.Get("Shirt Overlay & Jackets") };
             for (int i = 0; i < 12; i++)
             {
                 if (i != 0 && i != 2)
@@ -506,7 +508,7 @@ namespace vMenuClient
             #endregion
 
             #region props options menu
-            string[] propNames = new string[5] { "Hats & Helmets", "Glasses", "Misc Props", "Watches", "Bracelets" };
+            string[] propNames = new string[5] { LM.Get("Hats & Helmets"), LM.Get("Glasses"), LM.Get("Misc Props"), LM.Get("Watches"), LM.Get("Bracelets") };
             for (int x = 0; x < 5; x++)
             {
                 int propId = x;
@@ -674,14 +676,14 @@ namespace vMenuClient
                 }
             }
 
-            const string tatDesc = "Cycle through the list to preview tattoos. If you like one, press enter to select it, selecting it will add the tattoo if you don't already have it. If you already have that tattoo then the tattoo will be removed.";
-            MenuListItem headTatts = new MenuListItem("Head Tattoos", headTattoosList, 0, tatDesc);
-            MenuListItem torsoTatts = new MenuListItem("Torso Tattoos", torsoTattoosList, 0, tatDesc);
-            MenuListItem leftArmTatts = new MenuListItem("Left Arm Tattoos", leftArmTattoosList, 0, tatDesc);
-            MenuListItem rightArmTatts = new MenuListItem("Right Arm Tattoos", rightArmTattoosList, 0, tatDesc);
-            MenuListItem leftLegTatts = new MenuListItem("Left Leg Tattoos", leftLegTattoosList, 0, tatDesc);
-            MenuListItem rightLegTatts = new MenuListItem("Right Leg Tattoos", rightLegTattoosList, 0, tatDesc);
-            MenuListItem badgeTatts = new MenuListItem("Badge Overlays", badgeTattoosList, 0, tatDesc);
+            string tatDesc = LM.Get("Cycle through the list to preview tattoos. If you like one, press enter to select it, selecting it will add the tattoo if you don't already have it. If you already have that tattoo then the tattoo will be removed.");
+            MenuListItem headTatts = new MenuListItem(LM.Get("Head Tattoos"), headTattoosList, 0, tatDesc);
+            MenuListItem torsoTatts = new MenuListItem(LM.Get("Torso Tattoos"), torsoTattoosList, 0, tatDesc);
+            MenuListItem leftArmTatts = new MenuListItem(LM.Get("Left Arm Tattoos"), leftArmTattoosList, 0, tatDesc);
+            MenuListItem rightArmTatts = new MenuListItem(LM.Get("Right Arm Tattoos"), rightArmTattoosList, 0, tatDesc);
+            MenuListItem leftLegTatts = new MenuListItem(LM.Get("Left Leg Tattoos"), leftLegTattoosList, 0, tatDesc);
+            MenuListItem rightLegTatts = new MenuListItem(LM.Get("Right Leg Tattoos"), rightLegTattoosList, 0, tatDesc);
+            MenuListItem badgeTatts = new MenuListItem(LM.Get("Badge Overlays"), badgeTattoosList, 0, tatDesc);
 
             tattoosMenu.AddMenuItem(headTatts);
             tattoosMenu.AddMenuItem(torsoTatts);
@@ -690,7 +692,7 @@ namespace vMenuClient
             tattoosMenu.AddMenuItem(leftLegTatts);
             tattoosMenu.AddMenuItem(rightLegTatts);
             tattoosMenu.AddMenuItem(badgeTatts);
-            tattoosMenu.AddMenuItem(new MenuItem("Remove All Tattoos", "Click this if you want to remove all tattoos and start over."));
+            tattoosMenu.AddMenuItem(new MenuItem(LM.Get("Remove All Tattoos"), LM.Get("Click this if you want to remove all tattoos and start over.")));
             #endregion
 
             createCharacterMenu.RefreshIndex();
@@ -711,18 +713,18 @@ namespace vMenuClient
                 string json = JsonConvert.SerializeObject(currentCharacter);
                 if (StorageManager.SaveJsonData(currentCharacter.SaveName, json, true))
                 {
-                    Notify.Success("Your character was saved successfully.");
+                    Notify.Success(LM.Get("Your character was saved successfully."));
                     return true;
                 }
                 else
                 {
-                    Notify.Error("Your character could not be saved. Reason unknown. :(");
+                    Notify.Error(LM.Get("Your character could not be saved. Reason unknown. :("));
                     return false;
                 }
             }
             else
             {
-                string name = await GetUserInput(windowTitle: "Enter a save name.", maxInputLength: 30);
+                string name = await GetUserInput(windowTitle: LM.Get("Enter a save name."), maxInputLength: 30);
                 if (string.IsNullOrEmpty(name))
                 {
                     Notify.Error(CommonErrors.InvalidInput);
@@ -755,9 +757,9 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "MP Ped Customization");
+            menu = new Menu(Game.Player.Name, LM.Get("MP Ped Customization"));
 
-            MenuItem savedCharacters = new MenuItem("Saved Characters", "Spawn, edit or delete your existing saved multiplayer characters.")
+            MenuItem savedCharacters = new MenuItem(LM.Get("Saved Characters"), LM.Get("Spawn, edit or delete your existing saved multiplayer characters."))
             {
                 Label = "→→→"
             };
@@ -782,48 +784,48 @@ namespace vMenuClient
 
             menu.RefreshIndex();
 
-            createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            appearanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            faceShapeMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            appearanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            faceShapeMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
+            propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, LM.Get("Turn Head"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            faceShapeMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            faceShapeMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
+            propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, LM.Get("Turn Character"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, LM.Get("Turn Camera Right"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
+            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, LM.Get("Turn Camera Left"));
 
 
-            MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
-            MenuItem appearanceButton = new MenuItem("Character Appearance", "Character appearance options.");
-            MenuItem faceButton = new MenuItem("Character Face Shape Options", "Character face shape options.");
-            MenuItem tattoosButton = new MenuItem("Character Tattoo Options", "Character tattoo options.");
-            MenuItem clothesButton = new MenuItem("Character Clothes", "Character clothes.");
-            MenuItem propsButton = new MenuItem("Character Props", "Character props.");
-            MenuItem saveButton = new MenuItem("Save Character", "Save your character.");
-            MenuItem exitNoSave = new MenuItem("Exit Without Saving", "Are you sure? All unsaved work will be lost.");
-            MenuListItem faceExpressionList = new MenuListItem("Facial Expression", new List<string> { "Normal", "Happy", "Angry", "Aiming", "Injured", "Stressed", "Smug", "Sulk" }, 0, "Set a facial expression that will be used whenever your ped is idling.");
+            MenuItem inheritanceButton = new MenuItem(LM.Get("Character Inheritance"), LM.Get("Character inheritance options."));
+            MenuItem appearanceButton = new MenuItem(LM.Get("Character Appearance"), LM.Get("Character appearance options."));
+            MenuItem faceButton = new MenuItem(LM.Get("Character Face Shape Options"), LM.Get("Character face shape options."));
+            MenuItem tattoosButton = new MenuItem(LM.Get("Character Tattoo Options"), LM.Get("Character tattoo options."));
+            MenuItem clothesButton = new MenuItem(LM.Get("Character Clothes"), LM.Get("Character clothes."));
+            MenuItem propsButton = new MenuItem(LM.Get("Character Props"), LM.Get("Character props."));
+            MenuItem saveButton = new MenuItem(LM.Get("Save Character"), LM.Get("Save your character."));
+            MenuItem exitNoSave = new MenuItem(LM.Get("Exit Without Saving"), LM.Get("Are you sure? All unsaved work will be lost."));
+            MenuListItem faceExpressionList = new MenuListItem(LM.Get("Facial Expression"), new List<string> { "Normal", "Happy", "Angry", "Aiming", "Injured", "Stressed", "Smug", "Sulk" }, 0, "Set a facial expression that will be used whenever your ped is idling.");
 
             inheritanceButton.Label = "→→→";
             appearanceButton.Label = "→→→";
@@ -856,11 +858,11 @@ namespace vMenuClient
                 parents.Add($"#{i}");
             }
 
-            var inheritanceDads = new MenuListItem("Father", parents, 0, "Select a father.");
-            var inheritanceMoms = new MenuListItem("Mother", parents, 0, "Select a mother.");
+            var inheritanceDads = new MenuListItem(LM.Get("Father"), parents, 0, LM.Get("Select a father."));
+            var inheritanceMoms = new MenuListItem(LM.Get("Mother"), parents, 0, LM.Get("Select a mother."));
             List<float> mixValues = new List<float>() { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
-            var inheritanceShapeMix = new MenuSliderItem("Head Shape Mix", "Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
-            var inheritanceSkinMix = new MenuSliderItem("Body Skin Mix", "Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
+            var inheritanceShapeMix = new MenuSliderItem(LM.Get("Head Shape Mix"), LM.Get("Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom."), 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
+            var inheritanceSkinMix = new MenuSliderItem(LM.Get("Body Skin Mix"), LM.Get("Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom."), 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
 
             inheritanceMenu.AddMenuItem(inheritanceDads);
             inheritanceMenu.AddMenuItem(inheritanceMoms);
@@ -2033,12 +2035,12 @@ namespace vMenuClient
 
             MenuController.AddMenu(manageSavedCharacterMenu);
 
-            MenuItem spawnPed = new MenuItem("Spawn Saved Character", "Spawns the selected saved character.");
-            editPedBtn = new MenuItem("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
-            MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
-            MenuItem setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
-            MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
-            MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!")
+            MenuItem spawnPed = new MenuItem(LM.Get("Spawn Saved Character"), LM.Get("Spawns the selected saved character."));
+            editPedBtn = new MenuItem(LM.Get("Edit Saved Character"), LM.Get("This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button."));
+            MenuItem clonePed = new MenuItem(LM.Get("Clone Saved Character"), LM.Get("This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled."));
+            MenuItem setAsDefaultPed = new MenuItem(LM.Get("Set As Default Character"), LM.Get("If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn."));
+            MenuItem renameCharacter = new MenuItem(LM.Get("Rename Saved Character"), LM.Get("You can rename this saved character. If the name is already taken then the action will be canceled."));
+            MenuItem delPed = new MenuItem(LM.Get("Delete Saved Character"), LM.Get("Deletes the selected saved character. This can not be undone!"))
             {
                 LeftIcon = MenuItem.Icon.WARNING
             };
@@ -2070,7 +2072,7 @@ namespace vMenuClient
                 else if (item == clonePed)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await GetUserInput(windowTitle: "Enter a name for the cloned character", defaultText: tmpCharacter.SaveName.Substring(7), maxInputLength: 30);
+                    string name = await GetUserInput(windowTitle: LM.Get("Enter a name for the cloned character"), defaultText: tmpCharacter.SaveName.Substring(7), maxInputLength: 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidSaveName);
@@ -2091,7 +2093,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("The clone could not be created, reason unknown. Does a character already exist with that name? :(");
+                                Notify.Error(LM.Get("The clone could not be created, reason unknown. Does a character already exist with that name? :("));
                             }
                         }
                     }
@@ -2099,7 +2101,7 @@ namespace vMenuClient
                 else if (item == renameCharacter)
                 {
                     var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
-                    string name = await GetUserInput(windowTitle: "Enter a new character name", defaultText: tmpCharacter.SaveName.Substring(7), maxInputLength: 30);
+                    string name = await GetUserInput(windowTitle: LM.Get("Enter a new character name"), defaultText: tmpCharacter.SaveName.Substring(7), maxInputLength: 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
@@ -2126,25 +2128,25 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("Something went wrong while renaming your character, your old character will NOT be deleted because of this.");
+                                Notify.Error(LM.Get("Something went wrong while renaming your character, your old character will NOT be deleted because of this."));
                             }
                         }
                     }
                 }
                 else if (item == delPed)
                 {
-                    if (delPed.Label == "Are you sure?")
+                    if (delPed.Label == LM.Get("Are you sure?"))
                     {
                         delPed.Label = "";
                         DeleteResourceKvp("mp_ped_" + selectedSavedCharacterManageName);
-                        Notify.Success("Your saved character has been deleted.");
+                        Notify.Success(LM.Get("Your saved character has been deleted."));
                         manageSavedCharacterMenu.GoBack();
                         UpdateSavedPedsMenu();
                         manageSavedCharacterMenu.RefreshIndex();
                     }
                     else
                     {
-                        delPed.Label = "Are you sure?";
+                        delPed.Label = LM.Get("Are you sure?");
                     }
                 }
                 else if (item == setAsDefaultPed)
@@ -2155,7 +2157,7 @@ namespace vMenuClient
 
                 if (item != delPed)
                 {
-                    if (delPed.Label == "Are you sure?")
+                    if (delPed.Label == LM.Get("Are you sure?"))
                     {
                         delPed.Label = "";
                     }
@@ -2206,14 +2208,14 @@ namespace vMenuClient
                 foreach (string item in names)
                 {
                     var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
-                    MenuItem btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.")
+                    MenuItem btn = new MenuItem(item, LM.Get("Click to spawn, edit, clone, rename or delete this saved character."))
                     {
                         Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→"
                     };
                     if (defaultChar == "mp_ped_" + item)
                     {
                         btn.LeftIcon = MenuItem.Icon.TICK;
-                        btn.Description += " ~g~This character is currently set as your default character and will be used whenever you (re)spawn.";
+                        btn.Description += LM.Get(" ~g~This character is currently set as your default character and will be used whenever you (re)spawn.");
                     }
                     savedCharactersMenu.AddMenuItem(btn);
                     MenuController.BindMenuItem(savedCharactersMenu, manageSavedCharacterMenu, btn);

@@ -17,6 +17,9 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
+
+        private static LanguageManager LM = new LanguageManager();
+
         public bool EnableVehicleBlip { get; private set; } = UserDefaults.PVEnableVehicleBlip;
 
         // Empty constructor
@@ -33,26 +36,26 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Menu
-            menu = new Menu(GetSafePlayerName(Game.Player.Name), "Personal Vehicle Options");
+            menu = new Menu(GetSafePlayerName(Game.Player.Name), LM.Get("Personal Vehicle Options"));
 
             // menu items
-            MenuItem setVehice = new MenuItem("Set Vehicle", "Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.") { Label = "Current Vehicle: None" };
-            MenuItem toggleEngine = new MenuItem("Toggle Engine", "Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle.");
-            MenuListItem toggleLights = new MenuListItem("Set Vehicle Lights", new List<string>() { "Force On", "Force Off", "Reset" }, 0, "This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work.");
-            MenuItem kickAllPassengers = new MenuItem("Kick Passengers", "This will remove all passengers from your personal vehicle.");
+            MenuItem setVehice = new MenuItem(LM.Get("Set Vehicle"), LM.Get("Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.")) { Label = LM.Get("Current Vehicle: None") };
+            MenuItem toggleEngine = new MenuItem(LM.Get("Toggle Engine"), LM.Get("Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle."));
+            MenuListItem toggleLights = new MenuListItem(LM.Get("Set Vehicle Lights"), new List<string>() { LM.Get("Force On"), LM.Get("Force Off"), LM.Get("Reset") }, 0, LM.Get("This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work."));
+            MenuItem kickAllPassengers = new MenuItem(LM.Get("Kick Passengers"), LM.Get("This will remove all passengers from your personal vehicle."));
             //MenuItem
-            MenuItem lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
-            MenuItem unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
-            MenuItem doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
+            MenuItem lockDoors = new MenuItem(LM.Get("Lock Vehicle Doors"), LM.Get("This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked."));
+            MenuItem unlockDoors = new MenuItem(LM.Get("Unlock Vehicle Doors"), LM.Get("This will unlock all your vehicle doors for all players."));
+            MenuItem doorsMenuBtn = new MenuItem(LM.Get("Vehicle Doors"), LM.Get("Open, close, remove and restore vehicle doors here."))
             {
                 Label = "→→→"
             };
-            MenuItem soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
-            MenuItem toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
-            MenuCheckboxItem enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
-            MenuCheckboxItem exclusiveDriver = new MenuCheckboxItem("Exclusive Driver", "If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            MenuItem soundHorn = new MenuItem(LM.Get("Sound Horn"), LM.Get("Sounds the horn of the vehicle."));
+            MenuItem toggleAlarm = new MenuItem(LM.Get("Toggle Alarm Sound"), LM.Get("Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm."));
+            MenuCheckboxItem enableBlip = new MenuCheckboxItem(LM.Get("Add Blip For Personal Vehicle"), LM.Get("Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle."), EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            MenuCheckboxItem exclusiveDriver = new MenuCheckboxItem(LM.Get("Exclusive Driver"), LM.Get("If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers."), false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
             //submenu
-            VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
+            VehicleDoorsMenu = new Menu(LM.Get("Vehicle Doors"), LM.Get("Vehicle Doors Management"));
             MenuController.AddSubmenu(menu, VehicleDoorsMenu);
             MenuController.BindMenuItem(menu, VehicleDoorsMenu, doorsMenuBtn);
 
@@ -125,7 +128,7 @@ namespace vMenuClient
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error(LM.Get("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle."));
                             return;
                         }
                     }
@@ -149,7 +152,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                    Notify.Error(LM.Get("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options."));
                 }
             };
 
@@ -168,11 +171,11 @@ namespace vMenuClient
                                 CurrentPersonalVehicle.AttachBlip();
                             }
                             CurrentPersonalVehicle.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
-                            CurrentPersonalVehicle.AttachedBlip.Name = "Personal Vehicle";
+                            CurrentPersonalVehicle.AttachedBlip.Name = LM.Get("Personal Vehicle");
                         }
                         else
                         {
-                            Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                            Notify.Error(LM.Get("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options."));
                         }
 
                     }
@@ -204,7 +207,7 @@ namespace vMenuClient
                         else
                         {
                             item.Checked = !_checked;
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error(LM.Get("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle."));
                         }
                     }
                 }
@@ -232,7 +235,7 @@ namespace vMenuClient
                                         veh.AttachBlip();
                                     }
                                     veh.AttachedBlip.Sprite = BlipSprite.PersonalVehicleCar;
-                                    veh.AttachedBlip.Name = "Personal Vehicle";
+                                    veh.AttachedBlip.Name = LM.Get("Personal Vehicle");
                                 }
                                 var name = GetLabelText(veh.DisplayName);
                                 if (string.IsNullOrEmpty(name) || name.ToLower() == "null")
@@ -267,7 +270,7 @@ namespace vMenuClient
                         }
                         else
                         {
-                            Notify.Info("There are no other players in your vehicle that need to be kicked out.");
+                            Notify.Info(LM.Get("There are no other players in your vehicle that need to be kicked out."));
                         }
                     }
                     else
@@ -276,7 +279,7 @@ namespace vMenuClient
                         {
                             if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                             {
-                                Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                                Notify.Error(LM.Get("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle."));
                                 return;
                             }
                         }
@@ -309,25 +312,25 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                    Notify.Error(LM.Get("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options."));
                 }
             };
 
             #region Doors submenu 
-            MenuItem openAll = new MenuItem("Open All Doors", "Open all vehicle doors.");
-            MenuItem closeAll = new MenuItem("Close All Doors", "Close all vehicle doors.");
-            MenuItem LF = new MenuItem("Left Front Door", "Open/close the left front door.");
-            MenuItem RF = new MenuItem("Right Front Door", "Open/close the right front door.");
-            MenuItem LR = new MenuItem("Left Rear Door", "Open/close the left rear door.");
-            MenuItem RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
-            MenuItem HD = new MenuItem("Hood", "Open/close the hood.");
-            MenuItem TR = new MenuItem("Trunk", "Open/close the trunk.");
-            MenuItem E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
-            MenuItem E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
-            MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
-            var doors = new List<string>() { "Front Left", "Front Right", "Rear Left", "Rear Right", "Hood", "Trunk", "Extra 1", "Extra 2", "Bomb Bay" };
-            MenuListItem removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
-            MenuCheckboxItem deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
+            MenuItem openAll = new MenuItem(LM.Get("Open All Doors"), LM.Get("Open all vehicle doors."));
+            MenuItem closeAll = new MenuItem(LM.Get("Close All Doors"), LM.Get("Close all vehicle doors."));
+            MenuItem LF = new MenuItem(LM.Get("Left Front Door"), LM.Get("Open/close the left front door."));
+            MenuItem RF = new MenuItem(LM.Get("Right Front Door"), LM.Get("Open/close the right front door."));
+            MenuItem LR = new MenuItem(LM.Get("Left Rear Door"), LM.Get("Open/close the left rear door."));
+            MenuItem RR = new MenuItem(LM.Get("Right Rear Door"), LM.Get("Open/close the right rear door."));
+            MenuItem HD = new MenuItem(LM.Get("Hood"), LM.Get("Open/close the hood."));
+            MenuItem TR = new MenuItem(LM.Get("Trunk"), LM.Get("Open/close the trunk."));
+            MenuItem E1 = new MenuItem(LM.Get("Extra 1"), LM.Get("Open/close the extra door (#1). Note this door is not present on most vehicles."));
+            MenuItem E2 = new MenuItem(LM.Get("Extra 2"), LM.Get("Open/close the extra door (#2). Note this door is not present on most vehicles."));
+            MenuItem BB = new MenuItem(LM.Get("Bomb Bay"), LM.Get("Open/close the bomb bay. Only available on some planes."));
+            var doors = new List<string>() { LM.Get("Front Left"), LM.Get("Front Right"), LM.Get("Rear Left"), LM.Get("Rear Right"), LM.Get("Hood"), LM.Get("Trunk"), LM.Get("Extra 1"), LM.Get("Extra 2"), LM.Get("Bomb Bay") };
+            MenuListItem removeDoorList = new MenuListItem(LM.Get("Remove Door"), doors, 0, LM.Get("Remove a specific vehicle door completely."));
+            MenuCheckboxItem deleteDoors = new MenuCheckboxItem(LM.Get("Delete Removed Doors"), LM.Get("When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground."), false);
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -352,7 +355,7 @@ namespace vMenuClient
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error(LM.Get("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle."));
                             return;
                         }
                     }
@@ -374,7 +377,7 @@ namespace vMenuClient
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error(LM.Get("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle."));
                             return;
                         }
                     }
@@ -417,7 +420,7 @@ namespace vMenuClient
                         }
                     } else
                     {
-                        Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                        Notify.Error(LM.Get("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options."));
                     }
                 }
             };

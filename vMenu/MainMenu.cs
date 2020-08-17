@@ -11,6 +11,9 @@ using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
+using System.Collections;
+using vMenuShared;
+using CitizenFX.Core.Native;
 
 namespace vMenuClient
 {
@@ -56,11 +59,18 @@ namespace vMenuClient
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool EnableExperimentalFeatures = /*true;*/ (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
+        
+        public static Dictionary<string, Hashtable> LanguageData = new Dictionary<string, Hashtable>();
+        public static Hashtable CurrentLanguage = new Hashtable();
+        public static bool LanguageDumpMode = false;
+        public static Hashtable DumpedData = new Hashtable();
 
         public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
         public static bool DisableControls { get { return MenuController.DisableMenuButtons; } set { MenuController.DisableMenuButtons = value; } }
 
         private const int currentCleanupVersion = 2;
+
+        private static LanguageManager LM;
         #endregion
 
         /// <summary>
@@ -118,6 +128,26 @@ namespace vMenuClient
             }
             #endregion
 
+            #region loading language
+            LanguageData = ConfigManager.GetLanguages();
+
+            string[] LanguageType = { "american", "french", "german", "italian", "spanish", "portuguese", "polish", "russian", "korean", "chinesetraditional", "japanese", "mexican", "chinesesimplified" };
+            string LanguageName = "";
+            
+            try {
+                LanguageName = LanguageType[API.GetCurrentLanguage()];
+                if (LanguageData.TryGetValue(LanguageName, out CurrentLanguage))
+                {
+                    Debug.WriteLine($"[vMenu] Successful load the language: {LanguageName}.");
+                }
+            } catch (Exception ex)
+            {
+                Debug.WriteLine("[vMenu] Wtf? Is Rockstar added new language support for GTAV? That's impossable.");
+            }
+
+            LM = new LanguageManager();
+            #endregion
+
             if (EnableExperimentalFeatures || DebugMode)
             {
                 RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
@@ -157,6 +187,13 @@ namespace vMenuClient
                             {
                                 SetRichPresence($"Enjoying FiveM!");
                             }
+                        }
+                        else if (args[0].ToString().ToLower() == "dumplang")
+                        {
+                            Notify.Info("Uploading dumped data to server...");
+                            Debug.Write(JsonConvert.SerializeObject(DumpedData, Formatting.Indented));
+                            TriggerServerEvent("vMenu:DumpLanguages", JsonConvert.SerializeObject(DumpedData, Formatting.Indented));
+                            Notify.Success("Upload finished!");
                         }
                         else if (args[0].ToString().ToLower() == "gc")
                         {
@@ -385,10 +422,10 @@ namespace vMenuClient
                     }
 
                     // Create the main menu.
-                    Menu = new Menu(Game.Player.Name, "Main Menu");
-                    PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
-                    VehicleSubmenu = new Menu(Game.Player.Name, "Vehicle Related Options");
-                    WorldSubmenu = new Menu(Game.Player.Name, "World Options");
+                    Menu = new Menu(Game.Player.Name, LM.Get("Main Menu"));
+                    PlayerSubmenu = new Menu(Game.Player.Name, LM.Get("Player Related Options"));
+                    VehicleSubmenu = new Menu(Game.Player.Name, LM.Get("Vehicle Related Options"));
+                    WorldSubmenu = new Menu(Game.Player.Name, LM.Get("World Options"));
 
                     // Add the main menu to the menu pool.
                     MenuController.AddMenu(Menu);
@@ -471,7 +508,7 @@ namespace vMenuClient
                 if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
                 {
                     await Delay(0);
-                    Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
+                    Notify.Alert(LM.Get("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button."));
                 }
 
                 if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
@@ -488,7 +525,7 @@ namespace vMenuClient
                             else
                             {
                                 NoClipEnabled = false;
-                                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                                Notify.Error(LM.Get("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!"));
                             }
                         }
                         else
@@ -532,7 +569,7 @@ namespace vMenuClient
             {
                 OnlinePlayersMenu = new OnlinePlayers();
                 Menu menu = OnlinePlayersMenu.GetMenu();
-                MenuItem button = new MenuItem("Online Players", "All currently connected players.")
+                MenuItem button = new MenuItem(LM.Get("Online Players"), LM.Get("All currently connected players."))
                 {
                     Label = "→→→"
                 };
@@ -550,7 +587,7 @@ namespace vMenuClient
             {
                 BannedPlayersMenu = new BannedPlayers();
                 Menu menu = BannedPlayersMenu.GetMenu();
-                MenuItem button = new MenuItem("Banned Players", "View and manage all banned players in this menu.")
+                MenuItem button = new MenuItem(LM.Get("Banned Players"), LM.Get("View and manage all banned players in this menu."))
                 {
                     Label = "→→→"
                 };
@@ -565,7 +602,7 @@ namespace vMenuClient
                 };
             }
 
-            MenuItem playerSubmenuBtn = new MenuItem("Player Related Options", "Open this submenu for player related subcategories.") { Label = "→→→" };
+            MenuItem playerSubmenuBtn = new MenuItem(LM.Get("Player Related Options"), LM.Get("Open this submenu for player related subcategories.")) { Label = "→→→" };
             Menu.AddMenuItem(playerSubmenuBtn);
 
             // Add the player options menu.
@@ -573,21 +610,21 @@ namespace vMenuClient
             {
                 PlayerOptionsMenu = new PlayerOptions();
                 Menu menu = PlayerOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Player Options", "Common player options can be accessed here.")
+                MenuItem button = new MenuItem(LM.Get("Player Options"), LM.Get("Common player options can be accessed here."))
                 {
                     Label = "→→→"
                 };
                 AddMenu(PlayerSubmenu, menu, button);
             }
 
-            MenuItem vehicleSubmenuBtn = new MenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.") { Label = "→→→" };
+            MenuItem vehicleSubmenuBtn = new MenuItem(LM.Get("Vehicle Related Options"), LM.Get("Open this submenu for vehicle related subcategories.")) { Label = "→→→" };
             Menu.AddMenuItem(vehicleSubmenuBtn);
             // Add the vehicle options Menu.
             if (IsAllowed(Permission.VOMenu))
             {
                 VehicleOptionsMenu = new VehicleOptions();
                 Menu menu = VehicleOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.")
+                MenuItem button = new MenuItem(LM.Get("Vehicle Options"), LM.Get("Here you can change common vehicle options, as well as tune & style your vehicle."))
                 {
                     Label = "→→→"
                 };
@@ -599,7 +636,7 @@ namespace vMenuClient
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
                 Menu menu = VehicleSpawnerMenu.GetMenu();
-                MenuItem button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.")
+                MenuItem button = new MenuItem(LM.Get("Vehicle Spawner"), LM.Get("Spawn a vehicle by name or choose one from a specific category."))
                 {
                     Label = "→→→"
                 };
@@ -611,7 +648,7 @@ namespace vMenuClient
             {
                 SavedVehiclesMenu = new SavedVehicles();
                 Menu menu = SavedVehiclesMenu.GetMenu();
-                MenuItem button = new MenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.")
+                MenuItem button = new MenuItem(LM.Get("Saved Vehicles"), LM.Get("Save new vehicles, or spawn or delete already saved vehicles."))
                 {
                     Label = "→→→"
                 };
@@ -630,7 +667,7 @@ namespace vMenuClient
             {
                 PersonalVehicleMenu = new PersonalVehicle();
                 Menu menu = PersonalVehicleMenu.GetMenu();
-                MenuItem button = new MenuItem("Personal Vehicle", "Set a vehicle as your personal vehicle, and control some things about that vehicle when you're not inside.")
+                MenuItem button = new MenuItem(LM.Get("Personal Vehicle"), LM.Get("Set a vehicle as your personal vehicle, and control some things about that vehicle when you're not inside."))
                 {
                     Label = "→→→"
                 };
@@ -642,7 +679,7 @@ namespace vMenuClient
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
                 Menu menu = PlayerAppearanceMenu.GetMenu();
-                MenuItem button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.")
+                MenuItem button = new MenuItem(LM.Get("Player Appearance"), LM.Get("Choose a ped model, customize it and save & load your customized characters."))
                 {
                     Label = "→→→"
                 };
@@ -650,14 +687,14 @@ namespace vMenuClient
 
                 MpPedCustomizationMenu = new MpPedCustomization();
                 Menu menu2 = MpPedCustomizationMenu.GetMenu();
-                MenuItem button2 = new MenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.")
+                MenuItem button2 = new MenuItem(LM.Get("MP Ped Customization"), LM.Get("Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations."))
                 {
                     Label = "→→→"
                 };
                 AddMenu(PlayerSubmenu, menu2, button2);
             }
 
-            MenuItem worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
+            MenuItem worldSubmenuBtn = new MenuItem(LM.Get("World Related Options"), LM.Get("Open this submenu for world related subcategories.")) { Label = "→→→" };
             Menu.AddMenuItem(worldSubmenuBtn);
 
             // Add the time options menu.
@@ -666,7 +703,7 @@ namespace vMenuClient
             {
                 TimeOptionsMenu = new TimeOptions();
                 Menu menu = TimeOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Time Options", "Change the time, and edit other time related options.")
+                MenuItem button = new MenuItem(LM.Get("Time Options"), LM.Get("Change the time, and edit other time related options."))
                 {
                     Label = "→→→"
                 };
@@ -679,7 +716,7 @@ namespace vMenuClient
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 Menu menu = WeatherOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Weather Options", "Change all weather related options here.")
+                MenuItem button = new MenuItem(LM.Get("Weather Options"), LM.Get("Change all weather related options here."))
                 {
                     Label = "→→→"
                 };
@@ -691,7 +728,7 @@ namespace vMenuClient
             {
                 WeaponOptionsMenu = new WeaponOptions();
                 Menu menu = WeaponOptionsMenu.GetMenu();
-                MenuItem button = new MenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.")
+                MenuItem button = new MenuItem(LM.Get("Weapon Options"), LM.Get("Add/remove weapons, modify weapons and set ammo options."))
                 {
                     Label = "→→→"
                 };
@@ -703,7 +740,7 @@ namespace vMenuClient
             {
                 WeaponLoadoutsMenu = new WeaponLoadouts();
                 Menu menu = WeaponLoadoutsMenu.GetMenu();
-                MenuItem button = new MenuItem("Weapon Loadouts", "Mange, and spawn saved weapon loadouts.")
+                MenuItem button = new MenuItem(LM.Get("Weapon Loadouts"), LM.Get("Mange, and spawn saved weapon loadouts."))
                 {
                     Label = "→→→"
                 };
@@ -712,7 +749,7 @@ namespace vMenuClient
 
             if (IsAllowed(Permission.NoClip))
             {
-                MenuItem toggleNoclip = new MenuItem("Toggle NoClip", "Toggle NoClip on or off.");
+                MenuItem toggleNoclip = new MenuItem(LM.Get("Toggle NoClip"), LM.Get("Toggle NoClip on or off."));
                 PlayerSubmenu.AddMenuItem(toggleNoclip);
                 PlayerSubmenu.OnItemSelect += (sender, item, index) =>
                 {
@@ -728,7 +765,7 @@ namespace vMenuClient
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 Menu menu = VoiceChatSettingsMenu.GetMenu();
-                MenuItem button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
+                MenuItem button = new MenuItem(LM.Get("Voice Chat Settings"), LM.Get("Change Voice Chat options here."))
                 {
                     Label = "→→→"
                 };
@@ -738,7 +775,7 @@ namespace vMenuClient
             {
                 RecordingMenu = new Recording();
                 Menu menu = RecordingMenu.GetMenu();
-                MenuItem button = new MenuItem("Recording Options", "In-game recording options.")
+                MenuItem button = new MenuItem(LM.Get("Recording Options"), LM.Get("In-game recording options."))
                 {
                     Label = "→→→"
                 };
@@ -749,7 +786,7 @@ namespace vMenuClient
             {
                 MiscSettingsMenu = new MiscSettings();
                 Menu menu = MiscSettingsMenu.GetMenu();
-                MenuItem button = new MenuItem("Misc Settings", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu.")
+                MenuItem button = new MenuItem(LM.Get("Misc Settings"), LM.Get("Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu."))
                 {
                     Label = "→→→"
                 };
@@ -759,7 +796,7 @@ namespace vMenuClient
             // Add About Menu.
             AboutMenu = new About();
             Menu sub = AboutMenu.GetMenu();
-            MenuItem btn = new MenuItem("About vMenu", "Information about vMenu.")
+            MenuItem btn = new MenuItem(LM.Get("About vMenu"), LM.Get("Information about vMenu."))
             {
                 Label = "→→→"
             };
@@ -770,7 +807,7 @@ namespace vMenuClient
 
             if (!GetSettingsBool(Setting.vmenu_use_permissions))
             {
-                Notify.Alert("vMenu is set up to ignore permissions, default permissions will be used.");
+                Notify.Alert(LM.Get("vMenu is set up to ignore permissions, default permissions will be used."));
             }
 
             if (PlayerSubmenu.Size > 0)

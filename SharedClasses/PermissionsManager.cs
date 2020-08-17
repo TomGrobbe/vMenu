@@ -15,6 +15,7 @@ namespace vMenuShared
             // Global
             #region global
             Everything,
+            DumpLanguages,
             DontKickMe,
             DontBanMe,
             NoClip,

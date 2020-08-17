@@ -17,8 +17,9 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu = null;
-        private Menu SavedLoadoutsMenu = new Menu("Saved Loadouts", "saved weapon loadouts list");
-        private Menu ManageLoadoutMenu = new Menu("Mange Loadout", "Manage saved weapon loadout");
+        private static LanguageManager LM = new LanguageManager();
+        private Menu SavedLoadoutsMenu = new Menu(LM.Get("Saved Loadouts"), LM.Get("saved weapon loadouts list"));
+        private Menu ManageLoadoutMenu = new Menu(LM.Get("Mange Loadout"), LM.Get("Manage saved weapon loadout"));
         public bool WeaponLoadoutsSetLoadoutOnRespawn { get; private set; } = UserDefaults.WeaponLoadoutsSetLoadoutOnRespawn;
 
         private Dictionary<string, List<ValidWeapon>> SavedWeapons = new Dictionary<string, List<ValidWeapon>>();
@@ -78,14 +79,14 @@ namespace vMenuClient
         /// </summary>
         public void CreateMenu()
         {
-            menu = new Menu(Game.Player.Name, "weapon loadouts management");
+            menu = new Menu(Game.Player.Name, LM.Get("weapon loadouts management"));
 
             MenuController.AddSubmenu(menu, SavedLoadoutsMenu);
             MenuController.AddSubmenu(SavedLoadoutsMenu, ManageLoadoutMenu);
 
-            MenuItem saveLoadout = new MenuItem("Save Loadout", "Save your current weapons into a new loadout slot.");
-            MenuItem savedLoadoutsMenuBtn = new MenuItem("Manage Loadouts", "Manage saved weapon loadouts.") { Label = "→→→" };
-            MenuCheckboxItem enableDefaultLoadouts = new MenuCheckboxItem("Restore Default Loadout On Respawn", "If you've set a loadout as default loadout, then your loadout will be equipped automatically whenever you (re)spawn.", WeaponLoadoutsSetLoadoutOnRespawn);
+            MenuItem saveLoadout = new MenuItem(LM.Get("Save Loadout"), LM.Get("Save your current weapons into a new loadout slot."));
+            MenuItem savedLoadoutsMenuBtn = new MenuItem(LM.Get("Manage Loadouts"), LM.Get("Manage saved weapon loadouts.")) { Label = "→→→" };
+            MenuCheckboxItem enableDefaultLoadouts = new MenuCheckboxItem(LM.Get("Restore Default Loadout On Respawn"), LM.Get("If you've set a loadout as default loadout, then your loadout will be equipped automatically whenever you (re)spawn."), WeaponLoadoutsSetLoadoutOnRespawn);
 
             menu.AddMenuItem(saveLoadout);
             menu.AddMenuItem(savedLoadoutsMenuBtn);
@@ -110,7 +111,7 @@ namespace vMenuClient
 
                 foreach (var sw in SavedWeapons)
                 {
-                    MenuItem btn = new MenuItem(sw.Key.Replace("vmenu_string_saved_weapon_loadout_", ""), "Click to manage this loadout.") { Label = "→→→" };
+                    MenuItem btn = new MenuItem(sw.Key.Replace("vmenu_string_saved_weapon_loadout_", ""), LM.Get("Click to manage this loadout.")) { Label = "→→→" };
                     SavedLoadoutsMenu.AddMenuItem(btn);
                     MenuController.BindMenuItem(SavedLoadoutsMenu, ManageLoadoutMenu, btn);
                 }
@@ -122,12 +123,12 @@ namespace vMenuClient
             }
 
 
-            MenuItem spawnLoadout = new MenuItem("Equip Loadout", "Spawn this saved weapons loadout. This will remove all your current weapons and replace them with this saved slot.");
-            MenuItem renameLoadout = new MenuItem("Rename Loadout", "Rename this saved loadout.");
-            MenuItem cloneLoadout = new MenuItem("Clone Loadout", "Clones this saved loadout to a new slot.");
-            MenuItem setDefaultLoadout = new MenuItem("Set As Default Loadout", "Set this loadout to be your default loadout for whenever you (re)spawn. This will override the 'Restore Weapons' option inside the Misc Settings menu. You can toggle this option in the main Weapon Loadouts menu.");
-            MenuItem replaceLoadout = new MenuItem("~r~Replace Loadout", "~r~This replaces this saved slot with the weapons that you currently have in your inventory. This action can not be undone!");
-            MenuItem deleteLoadout = new MenuItem("~r~Delete Loadout", "~r~This will delete this saved loadout. This action can not be undone!");
+            MenuItem spawnLoadout = new MenuItem(LM.Get("Equip Loadout"), LM.Get("Spawn this saved weapons loadout. This will remove all your current weapons and replace them with this saved slot."));
+            MenuItem renameLoadout = new MenuItem(LM.Get("Rename Loadout"), LM.Get("Rename this saved loadout."));
+            MenuItem cloneLoadout = new MenuItem(LM.Get("Clone Loadout"), LM.Get("Clones this saved loadout to a new slot."));
+            MenuItem setDefaultLoadout = new MenuItem(LM.Get("Set As Default Loadout"), LM.Get("Set this loadout to be your default loadout for whenever you (re)spawn. This will override the 'Restore Weapons' option inside the Misc Settings menu. You can toggle this option in the main Weapon Loadouts menu."));
+            MenuItem replaceLoadout = new MenuItem(LM.Get("~r~Replace Loadout"), LM.Get("~r~This replaces this saved slot with the weapons that you currently have in your inventory. This action can not be undone!"));
+            MenuItem deleteLoadout = new MenuItem(LM.Get("~r~Delete Loadout"), LM.Get("~r~This will delete this saved loadout. This action can not be undone!"));
 
             if (IsAllowed(Permission.WLEquip))
                 ManageLoadoutMenu.AddMenuItem(spawnLoadout);
@@ -142,7 +143,7 @@ namespace vMenuClient
             {
                 if (item == saveLoadout)
                 {
-                    string name = await GetUserInput("Enter a save name", 30);
+                    string name = await GetUserInput(LM.Get("Enter a save name"), 30);
                     if (string.IsNullOrEmpty(name))
                     {
                         Notify.Error(CommonErrors.InvalidInput);
@@ -182,7 +183,7 @@ namespace vMenuClient
                     }
                     else if (item == renameLoadout || item == cloneLoadout) // rename or clone
                     {
-                        string newName = await GetUserInput("Enter a save name", SelectedSavedLoadoutName.Replace("vmenu_string_saved_weapon_loadout_", ""), 30);
+                        string newName = await GetUserInput(LM.Get("Enter a save name"), SelectedSavedLoadoutName.Replace("vmenu_string_saved_weapon_loadout_", ""), 30);
                         if (string.IsNullOrEmpty(newName))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
@@ -208,35 +209,35 @@ namespace vMenuClient
                     else if (item == setDefaultLoadout) // set as default
                     {
                         SetResourceKvp("vmenu_string_default_loadout", SelectedSavedLoadoutName);
-                        Notify.Success("This is now your default loadout.");
+                        Notify.Success(LM.Get("This is now your default loadout."));
                         item.LeftIcon = MenuItem.Icon.TICK;
                     }
                     else if (item == replaceLoadout) // replace
                     {
-                        if (replaceLoadout.Label == "Are you sure?")
+                        if (replaceLoadout.Label == LM.Get("Are you sure?"))
                         {
                             replaceLoadout.Label = "";
                             SaveWeaponLoadout(SelectedSavedLoadoutName);
                             Log("save weapons called from replace loadout");
-                            Notify.Success("Your saved loadout has been replaced with your current weapons.");
+                            Notify.Success(LM.Get("Your saved loadout has been replaced with your current weapons."));
                         }
                         else
                         {
-                            replaceLoadout.Label = "Are you sure?";
+                            replaceLoadout.Label = LM.Get("Are you sure?");
                         }
                     }
                     else if (item == deleteLoadout) // delete
                     {
-                        if (deleteLoadout.Label == "Are you sure?")
+                        if (deleteLoadout.Label == LM.Get("Are you sure?"))
                         {
                             deleteLoadout.Label = "";
                             DeleteResourceKvp(SelectedSavedLoadoutName);
                             ManageLoadoutMenu.GoBack();
-                            Notify.Success("Your saved loadout has been deleted.");
+                            Notify.Success(LM.Get("Your saved loadout has been deleted."));
                         }
                         else
                         {
-                            deleteLoadout.Label = "Are you sure?";
+                            deleteLoadout.Label = LM.Get("Are you sure?");
                         }
                     }
                 }

@@ -7,6 +7,7 @@ using static CitizenFX.Core.Native.API;
 using Newtonsoft.Json;
 using static vMenuServer.DebugLog;
 using static vMenuShared.ConfigManager;
+using System.Collections;
 
 namespace vMenuServer
 {
@@ -419,7 +420,7 @@ namespace vMenuServer
                 EventHandlers.Add("vMenu:SendMessageToPlayer", new Action<Player, int, string>(SendPrivateMessage));
                 EventHandlers.Add("vMenu:PmsDisabled", new Action<Player, string>(NotifySenderThatDmsAreDisabled));
                 EventHandlers.Add("vMenu:SaveTeleportLocation", new Action<Player, string>(AddTeleportLocation));
-
+                EventHandlers.Add("vMenu:DumpLanguages", new Action<Player, string>(DumpLanguages));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -891,6 +892,32 @@ namespace vMenuServer
                 Log("Could not save locations.json file, reason unknown.", LogLevel.error);
             }
             TriggerClientEvent("vMenu:UpdateTeleportLocations", JsonConvert.SerializeObject(locs.teleports));
+        }
+        #endregion
+
+        #region Dump language text
+        /// <summary>
+        /// Dump the language text
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="text"></param>
+        private void DumpLanguages([FromSource] Player source, string text)
+        {
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.DumpLanguages.Dump") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.DumpLanguages.All"))
+            {
+                if (!SaveResourceFile(GetCurrentResourceName(), "dumped_text.json", text, -1))
+                {
+                    Log("Could not save dumped_text.json file, reason unknown.", LogLevel.error);
+                }
+                else
+                {
+                    Log("Dumped data to dumped_text.json");
+                }
+            }
+            else {
+                BanManager.BanCheater(source);
+            }
         }
         #endregion
 
