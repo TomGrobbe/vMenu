@@ -292,16 +292,14 @@ namespace vMenuServer
         /// </summary>
         /// <param name="source"></param>
         /// <param name="banRecordJsonString"></param>
-        private void RemoveBanRecord([FromSource] Player source, string banRecordJsonString)
+        private void RemoveBanRecord([FromSource] Player source, string uuid)
         {
             if (source != null && !string.IsNullOrEmpty(source.Name) && source.Name.ToLower() != "**invalid**" && source.Name.ToLower() != "** invalid **")
             {
                 if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything"))
                 {
-                    Debug.WriteLine(uuid);
                     var banRecord = GetBanList().Find((ban) =>
                     {
-                        Debug.WriteLine(ban.uuid.ToString());
                         return ban.uuid.ToString() == uuid;
                     });
                     if (banRecord != null)
