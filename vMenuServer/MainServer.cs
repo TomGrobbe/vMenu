@@ -444,10 +444,24 @@ namespace vMenuServer
                         Debug.WriteLine("(server console only): vmenuserver unban <uuid>");
                         Debug.WriteLine("vmenuserver weather <new weather type | dynamic <true | false>>");
                         Debug.WriteLine("vmenuserver time <freeze|<hour> <minute>>");
+                        Debug.WriteLine("vmenuserver migrate (This copies all banned players in the bans.json file to the new ban system in vMenu v3.3.0, you only need to do this once)");
                     }
                     else if (args[0].ToString().ToLower() == "migrate" && source < 1)
                     {
-                        Debug.WriteLine("This will return soon!");
+                        string file = LoadResourceFile(GetCurrentResourceName(), "bans.json");
+                        if (string.IsNullOrEmpty(file) || file == "[]")
+                        {
+                            Debug.WriteLine("&1[vMenu] [ERROR]^7 No bans.json file found or it's empty.");
+                            return;
+                        }
+                        Debug.WriteLine("^5[vMenu] [INFO]^7 Importing all ban records from the bans.json file into the new storage system. ^3This may take some time...^7");
+                        var bans = JsonConvert.DeserializeObject<List<BanManager.BanRecord>>(file);
+                        bans.ForEach((br) =>
+                        {
+                            var record = new BanManager.BanRecord(br.playerName, br.identifiers, br.bannedUntil, br.banReason, br.bannedBy, Guid.NewGuid());
+                            BanManager.AddBan(record);
+                        });
+                        Debug.WriteLine("^2[vMenu] [SUCCESS]^7 All ban records have been imported. You now no longer need the bans.json file.");
                     }
                     else
                     {

@@ -33,7 +33,7 @@ namespace vMenuServer
                 this.bannedUntil = bannedUntil;
                 this.banReason = banReason;
                 string uuidSuffix = $"\nYour ban id: {uuid}";
-                if (!this.banReason.Contains(uuidSuffix))
+                if (!this.banReason.Contains(uuidSuffix) && uuid != Guid.Empty)
                 {
                     this.banReason += uuidSuffix;
                 }
@@ -65,29 +65,41 @@ namespace vMenuServer
             source.TriggerEvent("vMenu:SetBanList", data);
         }
 
+        private static List<BanRecord> cachedBansList = new List<BanRecord>();
+        private static bool bansHaveChanged = true;
+
         /// <summary>
-        /// Gets the ban list from the kvp storage.
+        /// Gets the cached ban list or refreshes the bans list from the kvp storage when there has been a change.
         /// </summary>
         /// <returns></returns>
         public static List<BanRecord> GetBanList()
         {
-            int handle = StartFindKvp(BAN_KVP_PREFIX);
-            List<string> kvpIds = new List<string>();
-            while (true)
+            if (bansHaveChanged)
             {
-                string id = FindKvp(handle);
-                if (string.IsNullOrEmpty(id)) break;
-                kvpIds.Add(id);
+                bansHaveChanged = false;
+                int handle = StartFindKvp(BAN_KVP_PREFIX);
+                List<string> kvpIds = new List<string>();
+                while (true)
+                {
+                    string id = FindKvp(handle);
+                    if (string.IsNullOrEmpty(id)) break;
+                    kvpIds.Add(id);
+                }
+                EndFindKvp(handle);
+
+                List<BanRecord> banRecords = new List<BanRecord>();
+
+                foreach (string kvpId in kvpIds)
+                {
+                    banRecords.Add(JsonConvert.DeserializeObject<BanRecord>(GetResourceKvpString(kvpId)));
+                }
+                cachedBansList = banRecords;
+                return banRecords;
             }
-            EndFindKvp(handle);
-
-            List<BanRecord> banRecords = new List<BanRecord>();
-
-            foreach (string kvpId in kvpIds)
+            else
             {
-                banRecords.Add(JsonConvert.DeserializeObject<BanRecord>(GetResourceKvpString(kvpId)));
+                return cachedBansList;
             }
-            return banRecords;
         }
 
         /// <summary>
@@ -256,6 +268,7 @@ namespace vMenuServer
             if (string.IsNullOrEmpty(existingRecord))
             {
                 SetResourceKvp(BAN_KVP_PREFIX + ban.uuid.ToString(), JsonConvert.SerializeObject(ban));
+                bansHaveChanged = true;
             }
             else
             {
@@ -271,6 +284,7 @@ namespace vMenuServer
         public static void RemoveBan(BanRecord record)
         {
             DeleteResourceKvp(BAN_KVP_PREFIX + record.uuid.ToString());
+            bansHaveChanged = true;
         }
 
         /// <summary>
@@ -284,11 +298,20 @@ namespace vMenuServer
             {
                 if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Unban") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything"))
                 {
-                    BanRecord ban = JsonConvert.DeserializeObject<BanRecord>(banRecordJsonString);
-                    
-                    BanLog($"The following ban record has been removed (player unbanned). " +
-                        $"[Player: {ban.playerName} was banned by {ban.bannedBy} for {ban.banReason} until {ban.bannedUntil}.]");
-                    TriggerEvent("vMenu:UnbanSuccessful", JsonConvert.SerializeObject(ban).ToString());
+                    Debug.WriteLine(uuid);
+                    var banRecord = GetBanList().Find((ban) =>
+                    {
+                        Debug.WriteLine(ban.uuid.ToString());
+                        return ban.uuid.ToString() == uuid;
+                    });
+                    if (banRecord != null)
+                    {
+                        RemoveBan(banRecord);
+
+                        BanLog($"The following ban record has been removed (player unbanned). " +
+                            $"[Player: {banRecord.playerName} was banned by {banRecord.bannedBy} for {banRecord.banReason} until {banRecord.bannedUntil}.]");
+                        TriggerEvent("vMenu:UnbanSuccessful", JsonConvert.SerializeObject(banRecord).ToString());
+                    }
                 }
                 else
                 {
