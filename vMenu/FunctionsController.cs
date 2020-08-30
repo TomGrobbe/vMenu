@@ -2679,6 +2679,19 @@ namespace vMenuClient
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
+                        if (MainMenu.MiscSettingsMenu.ShowEntityNetOwners && v.IsOnScreen)
+                        {
+                            int netOwnerLocalId = NetworkGetEntityOwner(v.Handle);
+
+                            if (netOwnerLocalId != 0)
+                            {
+                                int playerServerId = GetPlayerServerId(netOwnerLocalId);
+                                string playerName = GetPlayerName(netOwnerLocalId);
+                                SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z + 0.3f, 0);
+                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                ClearDrawOrigin();
+                            }
+                        }
                     }
                 }
 
@@ -2711,6 +2724,20 @@ namespace vMenuClient
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
+                        
+                        if (MainMenu.MiscSettingsMenu.ShowEntityNetOwners && p.IsOnScreen)
+                        {
+                            int netOwnerLocalId = NetworkGetEntityOwner(p.Handle);
+
+                            if (netOwnerLocalId != 0)
+                            {
+                                int playerServerId = GetPlayerServerId(netOwnerLocalId);
+                                string playerName = GetPlayerName(netOwnerLocalId);
+                                SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z + 0.3f, 0);
+                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                ClearDrawOrigin();
+                            }
+                        }
                     }
                 }
 
@@ -2742,6 +2769,20 @@ namespace vMenuClient
 
                             DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
+                        }
+                        
+                        if (MainMenu.MiscSettingsMenu.ShowEntityNetOwners && p.IsOnScreen)
+                        {
+                            int netOwnerLocalId = NetworkGetEntityOwner(p.Handle);
+
+                            if (netOwnerLocalId != 0)
+                            {
+                                int playerServerId = GetPlayerServerId(netOwnerLocalId);
+                                string playerName = GetPlayerName(netOwnerLocalId);
+                                SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z + 0.3f, 0);
+                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                ClearDrawOrigin();
+                            }
                         }
                     }
                 }
