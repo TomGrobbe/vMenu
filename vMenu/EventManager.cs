@@ -52,14 +52,15 @@ namespace vMenuClient
             if (GetSettingsBool(Setting.vmenu_enable_time_sync))
                 Tick += TimeSync;
 
-            /*RegisterNuiCallbackType("disableImportExportNUI");
-            RegisterNuiCallbackType("importData");*/
+            RegisterNuiCallbackType("disableImportExportNUI");
+            RegisterNuiCallbackType("importData");
         }
 
-        /*[EventHandler("__cfx_nui:importData")]
+        [EventHandler("__cfx_nui:importData")]
         internal void ImportData(IDictionary<string, object> data, CallbackDelegate cb)
         {
             SetNuiFocus(false, false);
+            Notify.Info("Debug info: This feature is not yet available, check back later.");
             cb(JsonConvert.SerializeObject(new { ok = true }));
         }
 
@@ -67,8 +68,9 @@ namespace vMenuClient
         internal void DisableImportExportNUI(IDictionary<string, object> data, CallbackDelegate cb)
         {
             SetNuiFocus(false, false);
+            Notify.Info("Debug info: Closing import/export NUI window.");
             cb(JsonConvert.SerializeObject(new { ok = true }));
-        }*/
+        }
 
         private bool firstSpawn = true;
         /// <summary>

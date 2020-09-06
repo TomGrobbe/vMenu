@@ -50,11 +50,8 @@ namespace vMenuClient
         public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
         public static PlayerList PlayersList;
 
-        // Only used when debugging is enabled:
-        //private BarTimerBar bt = new BarTimerBar("Opening Menu");
-
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
-        public static bool EnableExperimentalFeatures = /*true;*/ (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
+        public static bool EnableExperimentalFeatures = (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
         public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
