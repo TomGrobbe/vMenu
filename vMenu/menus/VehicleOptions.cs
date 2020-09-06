@@ -270,23 +270,6 @@ namespace vMenuClient
                 menu.AddMenuItem(cleanVehicle); // CLEAN VEHICLE
                 menu.AddMenuItem(setDirtLevel); // SET DIRT LEVEL
             }
-            if (IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
-            {
-                menu.AddMenuItem(toggleEngine);
-            }
-            if (IsAllowed(Permission.VOBikeSeatbelt))
-            {
-                menu.AddMenuItem(vehicleBikeSeatbelt);
-            }
-            if (IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
-            {
-                menu.AddMenuItem(speedLimiter);
-            }
-            if (IsAllowed(Permission.VOChangePlate))
-            {
-                menu.AddMenuItem(setLicensePlateText); // SET LICENSE PLATE TEXT
-                menu.AddMenuItem(setLicensePlateType); // SET LICENSE PLATE TYPE
-            }
             if (IsAllowed(Permission.VOMod)) // MOD MENU
             {
                 menu.AddMenuItem(modMenuBtn);
@@ -308,6 +291,15 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(componentsMenuBtn);
             }
+            if (IsAllowed(Permission.VOEngine)) // TOGGLE ENGINE ON/OFF
+            {
+                menu.AddMenuItem(toggleEngine);
+            }
+            if (IsAllowed(Permission.VOChangePlate))
+            {
+                menu.AddMenuItem(setLicensePlateText); // SET LICENSE PLATE TEXT
+                menu.AddMenuItem(setLicensePlateType); // SET LICENSE PLATE TYPE
+            }
             if (IsAllowed(Permission.VODoors)) // DOORS MENU
             {
                 menu.AddMenuItem(doorsMenuBtn);
@@ -315,6 +307,14 @@ namespace vMenuClient
             if (IsAllowed(Permission.VOWindows)) // WINDOWS MENU
             {
                 menu.AddMenuItem(windowsMenuBtn);
+            }
+            if (IsAllowed(Permission.VOBikeSeatbelt))
+            {
+                menu.AddMenuItem(vehicleBikeSeatbelt);
+            }
+            if (IsAllowed(Permission.VOSpeedLimiter)) // SPEED LIMITER
+            {
+                menu.AddMenuItem(speedLimiter);
             }
             if (IsAllowed(Permission.VOTorqueMultiplier))
             {
