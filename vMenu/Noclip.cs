@@ -158,11 +158,11 @@ namespace vMenuClient
                     {
                         yoff = -0.5f;
                     }
-                    if (Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
+                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
                     {
                         SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) + 3f);
                     }
-                    if (Game.IsDisabledControlPressed(0, Control.MoveRightOnly))
+                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveRightOnly))
                     {
                         SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) - 3f);
                     }
