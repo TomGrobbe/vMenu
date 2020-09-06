@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <DebugType>embedded</DebugType>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MenuAPI.FiveM" Version="3.1.5" />
+    <PackageReference Include="MenuAPI.FiveM" Version="3.2.0" />
 
     <Reference Include="Microsoft.CSharp" />
     
