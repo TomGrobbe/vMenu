@@ -154,6 +154,112 @@ namespace vMenuClient
             }
             #endregion
 
+            // These are the max speed, acceleration, braking and traction values per vehicle class.
+            float[] speedValues = new float[23]
+            {
+                44.9374657f,
+                50.0000038f,
+                48.862133f,
+                48.1321335f,
+                50.7077942f,
+                51.3333359f,
+                52.3922348f,
+                53.86687f,
+                52.03867f,
+                49.2241631f,
+                39.6176529f,
+                37.5559425f,
+                42.72843f,
+                21.0f,
+                45.0f,
+                65.1952744f,
+                109.764259f,
+                42.72843f,
+                56.5962219f,
+                57.5398865f,
+                43.3140678f,
+                26.66667f,
+                53.0537224f
+            };
+            float[] accelerationValues = new float[23]
+            {
+                0.34f,
+                0.29f,
+                0.335f,
+                0.28f,
+                0.395f,
+                0.39f,
+                0.66f,
+                0.42f,
+                0.425f,
+                0.475f,
+                0.21f,
+                0.3f,
+                0.32f,
+                0.17f,
+                18.0f,
+                5.88f,
+                21.0700016f,
+                0.33f,
+                14.0f,
+                6.86f,
+                0.32f,
+                0.2f,
+                0.76f
+            };
+            float[] brakingValues = new float[23]
+            {
+                0.72f,
+                0.95f,
+                0.85f,
+                0.9f,
+                1.0f,
+                1.0f,
+                1.3f,
+                1.25f,
+                1.52f,
+                1.1f,
+                0.6f,
+                0.7f,
+                0.8f,
+                3.0f,
+                0.4f,
+                3.5920403f,
+                20.58f,
+                0.9f,
+                2.93960738f,
+                3.9472363f,
+                0.85f,
+                5.0f,
+                1.3f
+            };
+            float[] tractionValues = new float[23]
+            {
+                2.3f,
+                2.55f,
+                2.3f,
+                2.6f,
+                2.625f,
+                2.65f,
+                2.8f,
+                2.782f,
+                2.9f,
+                2.95f,
+                2.0f,
+                3.3f,
+                2.175f,
+                2.05f,
+                0.0f,
+                1.6f,
+                2.15f,
+                2.55f,
+                2.57f,
+                3.7f,
+                2.05f,
+                2.5f,
+                3.2925f
+            };
+
             #region vehicle classes submenus
             // Loop through all the vehicle classes.
             for (var vehClass = 0; vehClass < 23; vehClass++)
@@ -196,6 +302,12 @@ namespace vMenuClient
                     // Get the localized vehicle name, if it's "NULL" (no label found) then use the "properCasedModelName" created above.
                     string vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
                     string vehModelName = veh;
+                    uint model = (uint)GetHashKey(vehModelName);
+
+                    float topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(model), 0f, speedValues[vehClass], 0f, 1f);
+                    float acceleration = Map(GetVehicleModelAcceleration(model), 0f, accelerationValues[vehClass], 0f, 1f);
+                    float maxBraking = Map(GetVehicleModelMaxBraking(model), 0f, brakingValues[vehClass], 0f, 1f);
+                    float maxTraction = Map(GetVehicleModelMaxTraction(model), 0f, tractionValues[vehClass], 0f, 1f);
 
                     // Loop through all the menu items and check each item's title/text and see if it matches the current vehicle (display) name.
                     var duplicate = false;
@@ -225,12 +337,22 @@ namespace vMenuClient
 
                             if (DoesModelExist(veh))
                             {
-                                var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
+                                var vehBtn = new MenuItem(vehName)
+                                {
+                                    Enabled = true,
+                                    Label = $"({vehModelName.ToLower()})",
+                                    ItemData = new float[4] { topSpeed, acceleration, maxBraking, maxTraction }
+                                };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                             }
                             else
                             {
-                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
+                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.")
+                                {
+                                    Enabled = false,
+                                    Label = $"({vehModelName.ToLower()})",
+                                    ItemData = new float[4] { 0f, 0f, 0f, 0f }
+                                };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                                 vehBtn.RightIcon = MenuItem.Icon.LOCK;
                             }
@@ -246,12 +368,22 @@ namespace vMenuClient
                     {
                         if (DoesModelExist(veh))
                         {
-                            var vehBtn = new MenuItem(vehName) { Enabled = true, Label = $"({vehModelName.ToLower()})" };
+                            var vehBtn = new MenuItem(vehName)
+                            {
+                                Enabled = true,
+                                Label = $"({vehModelName.ToLower()})",
+                                ItemData = new float[4] { topSpeed, acceleration, maxBraking, maxTraction }
+                            };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                         }
                         else
                         {
-                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.") { Enabled = false, Label = $"({vehModelName.ToLower()})" };
+                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.")
+                            {
+                                Enabled = false,
+                                Label = $"({vehModelName.ToLower()})",
+                                ItemData = new float[4] { 0f, 0f, 0f, 0f }
+                            };
                             vehicleClassMenu.AddMenuItem(vehBtn);
                             vehBtn.RightIcon = MenuItem.Icon.LOCK;
                         }
@@ -259,10 +391,39 @@ namespace vMenuClient
                 }
                 #endregion
 
+                vehicleClassMenu.ShowVehicleStatsPanel = true;
+
                 // Handle button presses
                 vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
                 {
                     SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
+                };
+
+                void HandleStatsPanel(Menu openedMenu, MenuItem currentItem)
+                {
+                    if (currentItem != null)
+                    {
+                        if (currentItem.ItemData is float[] data)
+                        {
+                            openedMenu.ShowVehicleStatsPanel = true;
+                            openedMenu.SetVehicleStats(data[0], data[1], data[2], data[3]);
+                            openedMenu.SetVehicleUpgradeStats(0f, 0f, 0f, 0f);
+                        }
+                        else
+                        {
+                            openedMenu.ShowVehicleStatsPanel = false;
+                        }
+                    }
+                }
+
+                vehicleClassMenu.OnMenuOpen += (m) =>
+                {
+                    HandleStatsPanel(m, m.GetCurrentMenuItem());
+                };
+
+                vehicleClassMenu.OnIndexChange += (m, oldItem, newItem, oldIndex, newIndex) =>
+                {
+                    HandleStatsPanel(m, newItem);
                 };
             }
             #endregion
