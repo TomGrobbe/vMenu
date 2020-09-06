@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -184,13 +184,13 @@ namespace vMenuClient
                 {
                     moveSpeed *= 1.8f;
                 }
+                moveSpeed = moveSpeed / (1f / GetFrameTime()) * 60;
                 newPos = GetOffsetFromEntityInWorldCoords(noclipEntity, 0f, yoff * (moveSpeed + 0.3f), zoff * (moveSpeed + 0.3f));
 
                 var heading = GetEntityHeading(noclipEntity);
                 SetEntityVelocity(noclipEntity, 0f, 0f, 0f);
                 SetEntityRotation(noclipEntity, 0f, 0f, 0f, 0, false);
                 SetEntityHeading(noclipEntity, FollowCamMode ? GetGameplayCamRelativeHeading() : heading);
-
                 SetEntityCollision(noclipEntity, false, false);
                 SetEntityCoordsNoOffset(noclipEntity, newPos.X, newPos.Y, newPos.Z, true, true, true);
 
