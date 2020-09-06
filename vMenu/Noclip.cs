@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,7 @@ namespace vMenuClient
         private static bool NoclipActive { get; set; } = false;
         private static int MovingSpeed { get; set; } = 0;
         private static int Scale { get; set; } = -1;
-        private static bool FollowCamMode { get; set; } = false;
+        private static bool FollowCamMode { get; set; } = true;
 
 
         private List<string> speeds = new List<string>()
