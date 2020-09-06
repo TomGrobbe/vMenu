@@ -35,18 +35,6 @@ namespace vMenuClient
 
         public NoClip()
         {
-#if DEBUG
-            RegisterCommand("noclip", new Action(() =>
-            {
-                NoclipActive = !NoclipActive;
-            }), true);
-
-#endif
-            //EventHandlers.Add("SetNoclipActive", new Action<bool>(SetNoclipActive));
-            //EventHandlers.Add("ToggleNoclip", new Action(() => SetNoclipActive(!NoclipActive)));
-            //Exports.Add("SetNoclipActive", new Action<bool>(SetNoclipActive));
-            //Exports.Add("IsNoclipActive", new Func<bool>(IsNoclipActive));
-
             Tick += NoClipHandler;
         }
 
