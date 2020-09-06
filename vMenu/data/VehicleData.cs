@@ -271,6 +271,7 @@ namespace vMenuClient
                 "ASBO", // CASINO (MPHEIST3) DLC
                 "BLISTA",
                 "BRIOSO",
+                "CLUB", // MPSUM2020
                 "DILETTANTE",
                 "DILETTANTE2",
                 "ISSI2",
@@ -299,6 +300,7 @@ namespace vMenuClient
                 "EMPEROR3",
                 "FUGITIVE",
                 "GLENDALE",
+                "GLENDALE2", // MPSUM2020
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
@@ -342,6 +344,7 @@ namespace vMenuClient
                 "HABANERO",
                 "HUNTLEY",
                 "LANDSTALKER",
+                "LANDSTALKER2", // MPSUM2020
                 "MESA",
                 "MESA2",
                 "NOVAK", // MPVINEWOOD DLC
@@ -351,6 +354,7 @@ namespace vMenuClient
                 "REBLA", // CASINO (MPHEIST3) DLC
                 "ROCOTO",
                 "SEMINOLE",
+                "SEMINOLE2", // MPSUM2020
                 "SERRANO",
                 "TOROS", // MPCHRISTMAS2018 DLC
                 "XLS",
@@ -395,6 +399,7 @@ namespace vMenuClient
                 "DOMINATOR6", // MPCHRISTMAS2018 DLC
                 "DUKES",
                 "DUKES2",
+                "DUKES3", // MPSUM2020
                 "ELLIE",
                 "FACTION",
                 "FACTION2",
@@ -403,6 +408,7 @@ namespace vMenuClient
                 "GAUNTLET2",
                 "GAUNTLET3", // MPVINEWOOD DLC
                 "GAUNTLET4", // MPVINEWOOD DLC
+                "GAUNTLET5", // MPSUM2020
                 "HERMES",
                 "HOTKNIFE",
                 "HUSTLER",
@@ -414,6 +420,7 @@ namespace vMenuClient
                 "IMPERATOR2", // MPCHRISTMAS2018 DLC
                 "IMPERATOR3", // MPCHRISTMAS2018 DLC
                 "LURCHER",
+                "MANANA2", // MPSUM2020
                 "MOONBEAM",
                 "MOONBEAM2",
                 "NIGHTSHADE",
@@ -475,6 +482,7 @@ namespace vMenuClient
                 "MONROE",
                 "NEBULA", // MPVINEWOOD DLC
                 "PEYOTE",
+                "PEYOTE3", // MPSUM2020
                 "PIGALLE",
                 "RAPIDGT3",
                 "RETINUE",
@@ -515,6 +523,7 @@ namespace vMenuClient
                 "COMET4",
                 "COMET5",
                 "COQUETTE",
+                "COQUETTE4", // MPSUM2020
                 "DRAFTER", // MPVINEWOOD DLC
                 "ELEGY",
                 "ELEGY2",
@@ -548,6 +557,7 @@ namespace vMenuClient
                 "PARAGON2", // MPVINEWOOD DLC
                 "PARIAH",
                 "PENUMBRA",
+                "PENUMBRA2", // MPSUM2020
                 "RAIDEN",
                 "RAPIDGT",
                 "RAPIDGT2",
@@ -615,6 +625,7 @@ namespace vMenuClient
                 "TEMPESTA",
                 "TEZERACT",
                 "THRAX", // MPVINEWOOD DLC
+                "TIGON", // MPSUM2020
                 "TURISMOR",
                 "TYRANT",
                 "TYRUS",
@@ -745,6 +756,7 @@ namespace vMenuClient
                 "TROPHYTRUCK",
                 "TROPHYTRUCK2",
                 "VAGRANT", // CASINO (MPHEIST3) DLC
+                "YOSEMITE3", // MPSUM2020
                 "ZHABA", // CASINO (MPHEIST3) DLC
             };
             #endregion
@@ -861,6 +873,7 @@ namespace vMenuClient
                 "TACO",
                 "YOUGA",
                 "YOUGA2",
+                "YOUGA3", // MPSUM2020
             };
             #endregion
             #region Cycles
@@ -1080,6 +1093,8 @@ namespace vMenuClient
             {
                 "FORMULA",
                 "FORMULA2",
+                "OPENWHEEL1", // MPSUM2020
+                "OPENWHEEL2", // MPSUM2020
             };
             #endregion
 
