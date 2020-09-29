@@ -2848,7 +2848,6 @@ namespace vMenuClient
                                 // lock or unlock the vehicle
                                 PressKeyFob(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle);
                                 await Delay(100);
-                                //bool lockDoors = !GetVehicleDoorsLockedForPlayer(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
                                 bool lockDoors = GetVehicleDoorLockStatus(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Handle) != 2;
                                 LockOrUnlockDoors(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle, lockDoors);
 
