@@ -129,7 +129,7 @@ namespace vMenuClient
                 var noclipEntity = Game.PlayerPed.IsInVehicle() ? Game.PlayerPed.CurrentVehicle.Handle : Game.PlayerPed.Handle;
 
                 FreezeEntityPosition(noclipEntity, true);
-                SetEntityInvincible(noclipEntity, true);
+                //SetEntityInvincible(noclipEntity, true);
 
                 Vector3 newPos;
                 Game.DisableControlThisFrame(0, Control.MoveUpOnly);
@@ -206,9 +206,9 @@ namespace vMenuClient
                 SetEntityCollision(noclipEntity, false, false);
                 SetEntityCoordsNoOffset(noclipEntity, newPos.X, newPos.Y, newPos.Z, true, true, true);
 
-                SetEntityVisible(noclipEntity, false, false);
-                SetLocalPlayerVisibleLocally(true);
-                SetEntityAlpha(noclipEntity, (int)(255 * 0.2), 0);
+                //SetEntityVisible(noclipEntity, false, false);
+                //SetLocalPlayerVisibleLocally(true);
+                //SetEntityAlpha(noclipEntity, (int)(255 * 0.2), 0);
 
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, true);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, true);
@@ -216,12 +216,12 @@ namespace vMenuClient
                 // After the next game tick, reset the entity properties.
                 await Delay(0);
                 FreezeEntityPosition(noclipEntity, false);
-                SetEntityInvincible(noclipEntity, false);
+                //SetEntityInvincible(noclipEntity, false);
                 SetEntityCollision(noclipEntity, true, true);
 
-                SetEntityVisible(noclipEntity, true, false);
-                SetLocalPlayerVisibleLocally(true);
-                ResetEntityAlpha(noclipEntity);
+                //SetEntityVisible(noclipEntity, true, false);
+                //SetLocalPlayerVisibleLocally(true);
+                //ResetEntityAlpha(noclipEntity);
 
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, false);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, false);
