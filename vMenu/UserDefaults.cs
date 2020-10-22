@@ -159,6 +159,12 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleBikeSeatbelt"); }
             set { SetSavedSettingsBool("vehicleBikeSeatbelt", value); }
         }
+        
+        public static int VehicleDefaultRadio
+        {
+            get { return GetSettingsInt("vehicleDefaultRadio"); }
+            set { SetSavedSettingsInt("vehicleDefaultRadio", value); }
+        }
         #endregion
 
         #region Vehicle Spawner Options
