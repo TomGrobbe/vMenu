@@ -35,6 +35,7 @@ namespace vMenuClient
         public bool ShowPropModelDimensions { get; private set; } = false;
         public bool ShowEntityHandles { get; private set; } = false;
         public bool ShowEntityModels { get; private set; } = false;
+        public bool ShowEntityNetOwners { get; private set; } = false;
         public bool MiscRespawnDefaultCharacter { get; private set; } = UserDefaults.MiscRespawnDefaultCharacter;
         public bool RestorePlayerAppearance { get; private set; } = UserDefaults.MiscRestorePlayerAppearance;
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
@@ -126,6 +127,7 @@ namespace vMenuClient
             MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you.", ShowPedModelDimensions);
             MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
             MenuCheckboxItem showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
+            MenuCheckboxItem showEntityNetOwners = new MenuCheckboxItem("Show Network Owners", "Draws the the entity net owner for all close entities (you must enable the outline functions above for this to work).", ShowEntityNetOwners);
             MenuSliderItem dimensionsDistanceSlider = new MenuSliderItem("Show Dimensions Radius", "Show entity model/handle/dimension draw range.", 0, 20, 20, false);
 
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
@@ -403,6 +405,7 @@ namespace vMenuClient
                 developerToolsMenu.AddMenuItem(pedModelDimensions);
                 developerToolsMenu.AddMenuItem(showEntityHandles);
                 developerToolsMenu.AddMenuItem(showEntityModels);
+                developerToolsMenu.AddMenuItem(showEntityNetOwners);
                 developerToolsMenu.AddMenuItem(dimensionsDistanceSlider);
             }
 
@@ -478,6 +481,10 @@ namespace vMenuClient
                 else if (item == showEntityModels)
                 {
                     ShowEntityModels = _checked;
+                }
+                else if (item == showEntityNetOwners)
+                {
+                    ShowEntityNetOwners = _checked;
                 }
                 else if (item == enableTimeCycle)
                 {
