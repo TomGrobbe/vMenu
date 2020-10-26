@@ -143,9 +143,11 @@ namespace vMenuClient
 
             int radioIndex = UserDefaults.VehicleDefaultRadio;
 
-            if (radioIndex == 255) // 255 is radio off
+            if (radioIndex == (int)RadioStation.RadioOff)
             {
-                radioIndex = Enum.GetValues(typeof(RadioStation)).Length -1; // the last item is Radio off
+                RadioStation[] stations = (RadioStation[])Enum.GetValues(typeof(RadioStation));
+                int index = Array.IndexOf(stations, RadioStation.RadioOff);
+                radioIndex = index;
             }
             
             MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
