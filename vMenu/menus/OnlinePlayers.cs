@@ -21,7 +21,7 @@ namespace vMenuClient
         private Menu menu;
 
         Menu playerMenu = new Menu("Online Players", "Player:");
-        Player currentPlayer = new Player(Game.Player.Handle);
+        IPlayer currentPlayer = new NativePlayer(Game.Player);
 
 
         /// <summary>
@@ -130,8 +130,8 @@ namespace vMenuClient
                 // teleport (in vehicle) button
                 else if (item == teleport || item == teleportVeh)
                 {
-                    if (Game.Player.Handle != currentPlayer.Handle)
-                        TeleportToPlayer(currentPlayer.Handle, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
+                    if (!currentPlayer.IsLocal)
+                        _ = TeleportToPlayer(currentPlayer, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
                     else
                         Notify.Error("You can not teleport to yourself!");
                 }
@@ -239,7 +239,7 @@ namespace vMenuClient
                     if (ban.Label == "Are you sure?")
                     {
                         ban.Label = "";
-                        UpdatePlayerlist();
+                        _ = UpdatePlayerlist();
                         playerMenu.GoBack();
                         BanPlayer(currentPlayer, true);
                     }
@@ -253,9 +253,12 @@ namespace vMenuClient
             // handle button presses in the player list.
             menu.OnItemSelect += (sender, item, index) =>
                 {
-                    if (MainMenu.PlayersList.ToList().Any(p => p.ServerId.ToString() == item.Label.Replace(" →→→", "").Replace("Server #", "")))
+                    var baseId = int.Parse(item.Label.Replace(" →→→", "").Replace("Server #", ""));
+                    var player = MainMenu.PlayersList.FirstOrDefault(p => p.ServerId == baseId);
+
+                    if (player != null)
                     {
-                        currentPlayer = MainMenu.PlayersList.ToList().Find(p => p.ServerId.ToString() == item.Label.Replace(" →→→", "").Replace("Server #", ""));
+                        currentPlayer = player;
                         playerMenu.MenuSubtitle = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
                         playerMenu.CounterPreText = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
                     }
@@ -269,24 +272,34 @@ namespace vMenuClient
         /// <summary>
         /// Updates the player items.
         /// </summary>
-        public void UpdatePlayerlist()
+        public async Task UpdatePlayerlist()
         {
-            menu.ClearMenuItems();
-
-            foreach (Player p in MainMenu.PlayersList)
+            void UpdateStuff()
             {
-                MenuItem pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
+                menu.ClearMenuItems();
+
+                foreach (IPlayer p in MainMenu.PlayersList.OrderBy(a => a.Name))
                 {
-                    Label = $"Server #{p.ServerId} →→→"
-                };
-                menu.AddMenuItem(pItem);
-                MenuController.BindMenuItem(menu, playerMenu, pItem);
+                    MenuItem pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
+                    {
+                        Label = $"Server #{p.ServerId} →→→"
+                    };
+                    menu.AddMenuItem(pItem);
+                    MenuController.BindMenuItem(menu, playerMenu, pItem);
+                }
+
+                menu.RefreshIndex();
+                //menu.UpdateScaleform();
+                playerMenu.RefreshIndex();
+                //playerMenu.UpdateScaleform();
             }
 
-            menu.RefreshIndex();
-            //menu.UpdateScaleform();
-            playerMenu.RefreshIndex();
-            //playerMenu.UpdateScaleform();
+            // First, update *before* waiting - so we get all local players.
+            UpdateStuff();
+            await MainMenu.PlayersList.WaitRequested();
+
+            // Update after waiting too so we have all remote players.
+            UpdateStuff();
         }
 
         /// <summary>
@@ -303,7 +316,7 @@ namespace vMenuClient
             }
             else
             {
-                UpdatePlayerlist();
+                _ = UpdatePlayerlist();
                 return menu;
             }
         }

@@ -48,7 +48,7 @@ namespace vMenuClient
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
         public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
-        public static PlayerList PlayersList;
+        public static IPlayerList PlayersList;
 
         public static bool DebugMode = GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true" ? true : false;
         public static bool EnableExperimentalFeatures = (GetResourceMetadata(GetCurrentResourceName(), "experimental_features_enabled", 0) ?? "0") == "1";
@@ -65,7 +65,7 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
-            PlayersList = Players;
+            PlayersList = new NativePlayerList(Players);
 
             #region cleanup unused kvps
             int tmp_kvp_handle = StartFindKvp("");
@@ -297,6 +297,52 @@ namespace vMenuClient
             }
         }
 
+        #region Infinity bits
+        [EventHandler("vMenu:SetServerState")]
+        public void SetServerState(IDictionary<string, object> data)
+        {
+            if (data.TryGetValue("IsInfinity", out var isInfinity))
+            {
+                if (isInfinity is bool isInfinityBool)
+                {
+                    if (isInfinityBool)
+                    {
+                        PlayersList = new InfinityPlayerList(Players);
+                    }
+                }
+            }
+        }
+
+        [EventHandler("vMenu:ReceivePlayerList")]
+        public void ReceivedPlayerList(IList<object> players)
+        {
+            PlayersList?.ReceivedPlayerList(players);
+        }
+
+        public static async Task<Vector3> RequestPlayerCoordinates(int serverId)
+        {
+            Vector3 coords = Vector3.Zero;
+            bool completed = false;
+
+            // TODO: replace with client<->server RPC once implemented in CitizenFX!
+            Func<Vector3, bool> CallbackFunction = (data) =>
+            {
+                coords = data;
+                completed = true;
+                return true;
+            };
+
+            TriggerServerEvent("vMenu:GetPlayerCoords", serverId, CallbackFunction);
+
+            while (!completed)
+            {
+                await Delay(0);
+            }
+
+            return coords;
+        }
+        #endregion
+
         #region Set Permissions function
         /// <summary>
         /// Set the permissions for this client.
@@ -369,6 +415,9 @@ namespace vMenuClient
 
                 // Request the permissions data from the server.
                 TriggerServerEvent("vMenu:RequestPermissions");
+
+                // Request server state from the server.
+                TriggerServerEvent("vMenu:RequestServerState");
 
                 // Wait until the data is received and the player's name is loaded correctly.
                 while (!ConfigOptionsSetupComplete || !PermissionsSetupComplete || Game.Player.Name == "**Invalid**" || Game.Player.Name == "** Invalid **")
@@ -540,11 +589,13 @@ namespace vMenuClient
                     Label = "→→→"
                 };
                 AddMenu(Menu, menu, button);
-                Menu.OnItemSelect += (sender, item, index) =>
+                Menu.OnItemSelect += async (sender, item, index) =>
                 {
                     if (item == button)
                     {
-                        OnlinePlayersMenu.UpdatePlayerlist();
+                        PlayersList.RequestPlayerList();
+
+                        await OnlinePlayersMenu.UpdatePlayerlist();
                         menu.RefreshIndex();
                     }
                 };

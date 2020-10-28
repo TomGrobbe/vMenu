@@ -389,27 +389,63 @@ namespace vMenuClient
         /// </summary>
         /// <param name="playerId"></param>
         /// <param name="inVehicle"></param>
-        public static async void TeleportToPlayer(int playerId, bool inVehicle = false)
+        public static async Task TeleportToPlayer(IPlayer player, bool inVehicle = false)
         {
             // If the player exists.
-            if (NetworkIsPlayerActive(playerId))
+            if (player.IsActive || player is InfinityPlayer)
             {
-                int playerPed = GetPlayerPed(playerId);
-                if (Game.PlayerPed.Handle == playerPed)
-                {
-                    Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!");
-                    return;
-                }
+                Vector3 playerPos;
+                bool wasActive = true;
 
-                // Get the coords of the other player.
-                Vector3 playerPos = GetEntityCoords(playerPed, true);
+                if (player.IsActive)
+                {
+                    Ped playerPedObj = player.Character;
+                    if (Game.PlayerPed == playerPedObj)
+                    {
+                        Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!");
+                        return;
+                    }
+
+                    // Get the coords of the other player.
+                    playerPos = GetEntityCoords(playerPedObj.Handle, true);
+                }
+                else
+                {
+                    playerPos = await MainMenu.RequestPlayerCoordinates(player.ServerId);
+                    wasActive = false;
+                }
 
                 // Then await the proper loading/teleporting.
                 await TeleportToCoords(playerPos);
 
+                // Wait until the player has been created.
+                while (player.Character == null)
+                {
+                    await Delay(0);
+                }
+
+                var playerId = player.Handle;
+                var playerPed = player.Character.Handle;
+
                 // If the player should be teleported inside the other player's vehcile.
                 if (inVehicle)
                 {
+                    // Wait until the target player vehicle has loaded, if they weren't active beforehand.
+                    if (!wasActive)
+                    {
+                        var startWait = GetGameTimer();
+
+                        while (!IsPedInAnyVehicle(playerPed, false))
+                        {
+                            await Delay(0);
+
+                            if ((GetGameTimer() - startWait) > 1500)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
                     // Is the other player inside a vehicle?
                     if (IsPedInAnyVehicle(playerPed, false))
                     {
@@ -690,7 +726,7 @@ namespace vMenuClient
         /// <param name="player"></param>
         /// <param name="askUserForReason"></param>
         /// <param name="providedReason"></param>
-        public static async void KickPlayer(Player player, bool askUserForReason, string providedReason = "You have been kicked.")
+        public static async void KickPlayer(IPlayer player, bool askUserForReason, string providedReason = "You have been kicked.")
         {
             if (player != null)
             {
@@ -728,7 +764,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="player">Player to ban.</param>
         /// <param name="forever">Ban forever or ban temporarily.</param>
-        public static async void BanPlayer(Player player, bool forever)
+        public static async void BanPlayer(IPlayer player, bool forever)
         {
             string banReason = await GetUserInput(windowTitle: "Enter Ban Reason", defaultText: "Banned by staff.", maxInputLength: 200);
             if (!string.IsNullOrEmpty(banReason) && banReason.Length > 1)
@@ -786,7 +822,7 @@ namespace vMenuClient
         /// Kill player
         /// </summary>
         /// <param name="player"></param>
-        public static void KillPlayer(Player player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
+        public static void KillPlayer(IPlayer player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
 
         /// <summary>
         /// Kill yourself.
@@ -901,12 +937,12 @@ namespace vMenuClient
         /// Summon player.
         /// </summary>
         /// <param name="player"></param>
-        public static void SummonPlayer(Player player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
+        public static void SummonPlayer(IPlayer player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
         #endregion
 
         #region Spectate function
         private static int currentlySpectatingPlayer = -1;
-        public static async void SpectatePlayer(Player player, bool forceDisable = false)
+        public static async void SpectatePlayer(IPlayer player, bool forceDisable = false)
         {
             if (forceDisable)
             {
@@ -914,6 +950,11 @@ namespace vMenuClient
             }
             else
             {
+                if (!player.IsActive)
+                {
+                    await TeleportToPlayer(player);
+                }
+
                 if (player.Handle == Game.Player.Handle)
                 {
                     if (NetworkIsInSpectatorMode())
@@ -934,12 +975,17 @@ namespace vMenuClient
                 {
                     if (NetworkIsInSpectatorMode())
                     {
-                        if (currentlySpectatingPlayer != player.Handle)
+                        if (currentlySpectatingPlayer != player.Handle && player.Character != null)
                         {
                             DoScreenFadeOut(500);
                             while (IsScreenFadingOut()) await Delay(0);
-                            NetworkSetInSpectatorMode(false, 0);
-                            NetworkSetInSpectatorMode(true, player.Character.Handle);
+
+                            if (player.Character != null)
+                            {
+                                NetworkSetInSpectatorMode(false, 0);
+                                NetworkSetInSpectatorMode(true, player.Character.Handle);
+                            }
+
                             DoScreenFadeIn(500);
                             Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
                             currentlySpectatingPlayer = player.Handle;
@@ -956,13 +1002,21 @@ namespace vMenuClient
                     }
                     else
                     {
-                        DoScreenFadeOut(500);
-                        while (IsScreenFadingOut()) await Delay(0);
-                        NetworkSetInSpectatorMode(false, 0);
-                        NetworkSetInSpectatorMode(true, player.Character.Handle);
-                        DoScreenFadeIn(500);
-                        Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
-                        currentlySpectatingPlayer = player.Handle;
+                        if (player.Character != null)
+                        {
+                            DoScreenFadeOut(500);
+                            while (IsScreenFadingOut()) await Delay(0);
+
+                            if (player.Character != null)
+                            {
+                                NetworkSetInSpectatorMode(false, 0);
+                                NetworkSetInSpectatorMode(true, player.Character.Handle);
+                            }
+
+                            DoScreenFadeIn(500);
+                            Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            currentlySpectatingPlayer = player.Handle;
+                        }
                     }
                 }
             }
