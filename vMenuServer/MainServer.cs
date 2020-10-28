@@ -203,7 +203,7 @@ namespace vMenuServer
                     CallbackFunction(JsonConvert.SerializeObject(data));
                 }));
                 EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
-
+                EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -222,6 +222,8 @@ namespace vMenuServer
                 {
                     Debug.WriteLine("^3[vMenu] [WARNING] vMenu is set up to ignore permissions!\nIf you did this on purpose then you can ignore this warning.\nIf you did not set this on purpose, then you must have made a mistake while setting up vMenu.\nPlease read the vMenu documentation (^5https://docs.vespura.com/vmenu^3).\nMost likely you are not executing the permissions.cfg (correctly).^7");
                 }
+
+                Tick += PlayersFirstTick;
 
                 // Start the loops
                 if (GetSettingsBool(Setting.vmenu_enable_weather_sync))
@@ -881,5 +883,91 @@ namespace vMenuServer
         }
         #endregion
 
+        #region Infinity bits
+        private void RequestServerStateFromPlayer([FromSource] Player player)
+        {
+            player.TriggerEvent("vMenu:SetServerState", new
+            {
+                IsInfinity = GetConvar("onesync_enableInfinity", "false") == "true"
+            });
+        }
+
+        [EventHandler("vMenu:RequestPlayerList")]
+        private void RequestPlayerListFromPlayer([FromSource] Player player)
+        {
+            player.TriggerEvent("vMenu:ReceivePlayerList", Players.Select(p => new
+            {
+                n = p.Name,
+                s = int.Parse(p.Handle),
+            }));
+        }
+
+        [EventHandler("vMenu:GetPlayerCoords")]
+        private void GetPlayerCoords([FromSource] Player source, int playerId, NetworkCallbackDelegate callback)
+        {
+            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Teleport") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
+                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
+            {
+                var coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
+
+                _ = callback(coords);
+
+                return;
+            }
+
+            _ = callback(Vector3.Zero);
+        }
+        #endregion
+
+        #region Player join/quit
+        private HashSet<string> joinedPlayers = new HashSet<string>();
+
+        private Task PlayersFirstTick()
+        {
+            Tick -= PlayersFirstTick;
+
+            foreach (var player in Players)
+            {
+                joinedPlayers.Add(player.Handle);
+            }
+
+            return Task.FromResult(0);
+        }
+
+        [EventHandler("playerJoining")]
+        private void OnPlayerJoining([FromSource] Player sourcePlayer)
+        {
+            joinedPlayers.Add(sourcePlayer.Handle);
+
+            foreach (var player in Players)
+            {
+                if (IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.JoinQuitNotifs") ||
+                    IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.All"))
+                {
+                    player.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayer.Name, null);
+                }
+            }
+        }
+
+        [EventHandler("playerDropped")]
+        private void OnPlayerDropped([FromSource] Player sourcePlayer, string reason)
+        {
+            if (!joinedPlayers.Contains(sourcePlayer.Handle))
+            {
+                return;
+            }
+
+            joinedPlayers.Remove(sourcePlayer.Handle);
+
+            foreach (var player in Players)
+            {
+                if (IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.JoinQuitNotifs") ||
+                    IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.All"))
+                {
+                    player.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayer.Name, reason);
+                }
+            }
+        }
+        #endregion
     }
 }

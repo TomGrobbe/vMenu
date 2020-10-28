@@ -289,9 +289,18 @@ namespace vMenuClient
         /// Teleport to the specified player.
         /// </summary>
         /// <param name="targetPlayer"></param>
-        private void SummonPlayer(string targetPlayer)
+        private async void SummonPlayer(string targetPlayer)
         {
-            TeleportToPlayer(GetPlayerFromServerId(int.Parse(targetPlayer)));
+            // ensure the player list is requested in case of Infinity
+            MainMenu.PlayersList.RequestPlayerList();
+            await MainMenu.PlayersList.WaitRequested();
+
+            var player = MainMenu.PlayersList.FirstOrDefault(a => a.ServerId == int.Parse(targetPlayer));
+
+            if (player != null)
+            {
+                _ = TeleportToPlayer(player);
+            }
         }
 
         /// <summary>
