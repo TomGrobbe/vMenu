@@ -134,6 +134,23 @@ namespace vMenuClient
             };
             MenuListItem vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
 
+            List<string> stationNames = new List<string>();
+            
+            foreach (var radioStationName in Enum.GetNames(typeof(RadioStation)))
+            {
+                stationNames.Add(radioStationName);
+            }
+
+            int radioIndex = UserDefaults.VehicleDefaultRadio;
+
+            if (radioIndex == (int)RadioStation.RadioOff)
+            {
+                RadioStation[] stations = (RadioStation[])Enum.GetValues(typeof(RadioStation));
+                int index = Array.IndexOf(stations, RadioStation.RadioOff);
+                radioIndex = index;
+            }
+            
+            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -369,6 +386,9 @@ namespace vMenuClient
             }
             // always allowed
             menu.AddMenuItem(showHealth); // SHOW VEHICLE HEALTH
+            
+            // I don't really see why would you want to disable this so I will not add useless permissions
+            menu.AddMenuItem(radioStations);
 
             if (IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
             {
@@ -897,6 +917,17 @@ namespace vMenuClient
                     {
                         Notify.Error(CommonErrors.NoVehicle);
                     }
+                } else if (item == radioStations)
+                {
+                    RadioStation newStation = (RadioStation)Enum.GetValues(typeof(RadioStation)).GetValue(listIndex);
+                    
+                    var veh = GetVehicle();
+                    if (veh != null && veh.Exists())
+                    {
+                        veh.RadioStation = newStation;
+                    }
+
+                    UserDefaults.VehicleDefaultRadio = (int) newStation;
                 }
             };
             #endregion
