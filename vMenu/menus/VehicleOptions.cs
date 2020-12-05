@@ -135,7 +135,7 @@ namespace vMenuClient
             MenuListItem vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
 
             List<string> stationNames = new List<string>();
-            
+
             foreach (var radioStationName in Enum.GetNames(typeof(RadioStation)))
             {
                 stationNames.Add(radioStationName);
@@ -149,7 +149,7 @@ namespace vMenuClient
                 int index = Array.IndexOf(stations, RadioStation.RadioOff);
                 radioIndex = index;
             }
-            
+
             MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
@@ -386,7 +386,7 @@ namespace vMenuClient
             }
             // always allowed
             menu.AddMenuItem(showHealth); // SHOW VEHICLE HEALTH
-            
+
             // I don't really see why would you want to disable this so I will not add useless permissions
             menu.AddMenuItem(radioStations);
 
@@ -913,17 +913,18 @@ namespace vMenuClient
                     {
                         Notify.Error(CommonErrors.NoVehicle);
                     }
-                } else if (item == radioStations)
+                }
+                else if (item == radioStations)
                 {
                     RadioStation newStation = (RadioStation)Enum.GetValues(typeof(RadioStation)).GetValue(listIndex);
-                    
+
                     var veh = GetVehicle();
                     if (veh != null && veh.Exists())
                     {
                         veh.RadioStation = newStation;
                     }
 
-                    UserDefaults.VehicleDefaultRadio = (int) newStation;
+                    UserDefaults.VehicleDefaultRadio = (int)newStation;
                 }
             };
             #endregion
