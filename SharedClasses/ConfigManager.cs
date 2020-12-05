@@ -30,6 +30,7 @@ namespace vMenuShared
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
+            vmenu_disable_player_stats_setup,
 
             // Kick & ban settings
             vmenu_default_ban_message_information,
@@ -45,6 +46,7 @@ namespace vMenuShared
             vmenu_current_weather,
             vmenu_blackout_enabled,
             vmenu_weather_change_duration,
+            vmenu_enable_snow,
 
             // Time settings
             vmenu_enable_time_sync,
@@ -52,7 +54,7 @@ namespace vMenuShared
             vmenu_ingame_minute_duration,
             vmenu_current_hour,
             vmenu_current_minute,
-            vmenu_sync_to_machine_time
+            vmenu_sync_to_machine_time,
         }
 
         /// <summary>

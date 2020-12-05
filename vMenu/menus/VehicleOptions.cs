@@ -555,10 +555,6 @@ namespace vMenuClient
                 {
                     VehicleGodMode = _checked;
                 }
-                //else if (item == vehicleSpecialGod) // special god mode
-                //{
-                //    VehicleSpecialGodMode = _checked;
-                //}
                 else if (item == vehicleFreeze) // Freeze Vehicle Toggled
                 {
                     VehicleFrozen = _checked;

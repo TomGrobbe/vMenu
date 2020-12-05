@@ -17,9 +17,7 @@ namespace vMenuClient
     public class MainMenu : BaseScript
     {
         #region Variables
-        //public static MenuPool Mp { get; } = new MenuPool();
 
-        private bool firstTick = true;
         public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
@@ -259,27 +257,12 @@ namespace vMenuClient
                 }
             }), false);
 
-            // Set discord rich precense once, allowing it to be overruled by other resources once those load.
-            if (DebugMode)
-            {
-                SetRichPresence($"Debugging vMenu {Version}!");
-            }
-
             if (GetCurrentResourceName() != "vMenu")
             {
-                Exception InvalidNameException = new Exception("\r\n\r\n[vMenu] INSTALLATION ERROR!\r\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive) instead!\r\n\r\n\r\n");
-                try
-                {
-                    throw InvalidNameException;
-                }
-                catch (Exception e)
-                {
-                    Log(e.Message);
-                }
-                TriggerEvent("chatMessage", "^3IMPORTANT: vMenu IS NOT SETUP CORRECTLY. PLEASE CHECK THE SERVER LOG FOR MORE INFO.");
                 MenuController.MainMenu = null;
                 MenuController.DontOpenAnyMenu = true;
                 MenuController.DisableMenuButtons = true;
+                throw new Exception("\n[vMenu] INSTALLATION ERROR!\nThe name of the resource is not valid. Please change the folder name from '" + GetCurrentResourceName() + "' to 'vMenu' (case sensitive)!\n");
             }
             else
             {
@@ -295,6 +278,15 @@ namespace vMenuClient
                 Debug.WriteLine($"[vMenu] [Error] InvalidTimeZoneException: {timeEx.Message}");
                 Debug.WriteLine($"[vMenu] [Error] vMenu will continue to work normally.");
             }
+
+            // Clear all previous pause menu info/brief messages on resource start.
+            ClearBrief();
+
+            // Request the permissions data from the server.
+            TriggerServerEvent("vMenu:RequestPermissions");
+
+            // Request server state from the server.
+            TriggerServerEvent("vMenu:RequestServerState");
         }
 
         #region Infinity bits
@@ -348,7 +340,7 @@ namespace vMenuClient
         /// Set the permissions for this client.
         /// </summary>
         /// <param name="dict"></param>
-        public static void SetPermissions(string permissionsList)
+        public static async void SetPermissions(string permissionsList)
         {
             vMenuShared.PermissionsManager.SetPermissions(permissionsList);
 
@@ -379,11 +371,92 @@ namespace vMenuClient
                 IsAllowed(Permission.VSOpenWheel, checkAnyway: true)
             };
             ArePermissionsSetup = true;
-
-            TriggerServerEvent("vMenu:IsResourceUpToDate");
+            while (!ConfigOptionsSetupComplete)
+            {
+                await Delay(100);
+            }
+            PostPermissionsSetup();
+            TriggerEvent("vMenu:SetupTickFunctions");
         }
         #endregion
 
+        /// <summary>
+        /// This setups things as soon as the permissions are loaded.
+        /// It triggers the menu creations, setting of initial flags like PVP, player stats,
+        /// and triggers the creation of Tick functions from the FunctionsController class.
+        /// </summary>
+        private static void PostPermissionsSetup()
+        {
+            switch (GetSettingsInt(Setting.vmenu_pvp_mode))
+            {
+                case 1:
+                    NetworkSetFriendlyFireOption(true);
+                    SetCanAttackFriendly(Game.PlayerPed.Handle, true, false);
+                    break;
+                case 2:
+                    NetworkSetFriendlyFireOption(false);
+                    SetCanAttackFriendly(Game.PlayerPed.Handle, false, false);
+                    break;
+                case 0:
+                default:
+                    break;
+            }
+
+            if ((IsAllowed(Permission.Staff) && GetSettingsBool(Setting.vmenu_menu_staff_only)) || GetSettingsBool(Setting.vmenu_menu_staff_only) == false)
+            {
+                if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
+                {
+                    MenuToggleKey = (Control)GetSettingsInt(Setting.vmenu_menu_toggle_key);
+                    //MenuToggleKey = GetSettingsInt(Setting.vmenu_menu_toggle_key);
+                }
+                if (GetSettingsInt(Setting.vmenu_noclip_toggle_key) != -1)
+                {
+                    NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
+                }
+
+                // Create the main menu.
+                Menu = new Menu(Game.Player.Name, "Main Menu");
+                PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
+                VehicleSubmenu = new Menu(Game.Player.Name, "Vehicle Related Options");
+                WorldSubmenu = new Menu(Game.Player.Name, "World Options");
+
+                // Add the main menu to the menu pool.
+                MenuController.AddMenu(Menu);
+                MenuController.MainMenu = Menu;
+
+                MenuController.AddSubmenu(Menu, PlayerSubmenu);
+                MenuController.AddSubmenu(Menu, VehicleSubmenu);
+                MenuController.AddSubmenu(Menu, WorldSubmenu);
+
+                // Create all (sub)menus.
+                CreateSubmenus();
+
+                if (!GetSettingsBool(Setting.vmenu_disable_player_stats_setup))
+                {
+                    // Manage Stamina
+                    if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
+                        StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                    else
+                        StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
+
+                    // Manage other stats, in order of appearance in the pause menu (stats) page.
+                    StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
+                    StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);                // Strength
+                    StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
+                    StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);          // Flying
+                    StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
+                    StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
+                    StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
+                }
+            }
+            else
+            {
+                MenuController.MainMenu = null;
+                MenuController.DisableMenuButtons = true;
+                MenuController.DontOpenAnyMenu = true;
+                MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
+            }
+        }
 
         /// <summary>
         /// Main OnTick task runs every game tick and handles all the menu stuff.
@@ -391,101 +464,10 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task OnTick()
         {
-            #region FirstTick
-            // Only run this the first tick.
-            if (firstTick)
-            {
-                firstTick = false;
-                switch (GetSettingsInt(Setting.vmenu_pvp_mode))
-                {
-                    case 1:
-                        NetworkSetFriendlyFireOption(true);
-                        SetCanAttackFriendly(Game.PlayerPed.Handle, true, false);
-                        break;
-                    case 2:
-                        NetworkSetFriendlyFireOption(false);
-                        SetCanAttackFriendly(Game.PlayerPed.Handle, false, false);
-                        break;
-                    case 0:
-                    default:
-                        break;
-                }
-                // Clear all previous pause menu info/brief messages on resource start.
-                ClearBrief();
-
-                // Request the permissions data from the server.
-                TriggerServerEvent("vMenu:RequestPermissions");
-
-                // Request server state from the server.
-                TriggerServerEvent("vMenu:RequestServerState");
-
-                // Wait until the data is received and the player's name is loaded correctly.
-                while (!ConfigOptionsSetupComplete || !PermissionsSetupComplete || Game.Player.Name == "**Invalid**" || Game.Player.Name == "** Invalid **")
-                {
-                    await Delay(0);
-                }
-                if ((IsAllowed(Permission.Staff) && GetSettingsBool(Setting.vmenu_menu_staff_only)) || GetSettingsBool(Setting.vmenu_menu_staff_only) == false)
-                {
-                    if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
-                    {
-                        MenuToggleKey = (Control)GetSettingsInt(Setting.vmenu_menu_toggle_key);
-                        //MenuToggleKey = GetSettingsInt(Setting.vmenu_menu_toggle_key);
-                    }
-                    if (GetSettingsInt(Setting.vmenu_noclip_toggle_key) != -1)
-                    {
-                        NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
-                    }
-
-                    // Create the main menu.
-                    Menu = new Menu(Game.Player.Name, "Main Menu");
-                    PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
-                    VehicleSubmenu = new Menu(Game.Player.Name, "Vehicle Related Options");
-                    WorldSubmenu = new Menu(Game.Player.Name, "World Options");
-
-                    // Add the main menu to the menu pool.
-                    MenuController.AddMenu(Menu);
-                    MenuController.MainMenu = Menu;
-
-                    MenuController.AddSubmenu(Menu, PlayerSubmenu);
-                    MenuController.AddSubmenu(Menu, VehicleSubmenu);
-                    MenuController.AddSubmenu(Menu, WorldSubmenu);
-
-                    // Create all (sub)menus.
-                    CreateSubmenus();
-                }
-                else
-                {
-                    MenuController.MainMenu = null;
-                    MenuController.DisableMenuButtons = true;
-                    MenuController.DontOpenAnyMenu = true;
-                    MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
-                }
-
-                // Manage Stamina
-                if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
-                else
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
-
-                // Manage other stats, in order of appearance in the pause menu (stats) page.
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
-                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);                // Strength
-                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
-                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);          // Flying
-                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
-                StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
-
-            }
-            #endregion
-
-
             // If the setup (permissions) is done, and it's not the first tick, then do this:
-            if (ConfigOptionsSetupComplete && !firstTick)
+            if (ConfigOptionsSetupComplete)
             {
                 #region Handle Opening/Closing of the menu.
-
-
                 var tmpMenu = GetOpenMenu();
                 if (MpPedCustomizationMenu != null)
                 {
@@ -564,7 +546,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="submenu"></param>
         /// <param name="menuButton"></param>
-        private void AddMenu(Menu parentMenu, Menu submenu, MenuItem menuButton)
+        private static void AddMenu(Menu parentMenu, Menu submenu, MenuItem menuButton)
         {
             parentMenu.AddMenuItem(menuButton);
             MenuController.AddSubmenu(parentMenu, submenu);
@@ -577,7 +559,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.
         /// </summary>
-        private void CreateSubmenus()
+        private static void CreateSubmenus()
         {
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
