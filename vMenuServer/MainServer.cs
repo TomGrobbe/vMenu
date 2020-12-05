@@ -97,7 +97,7 @@ namespace vMenuServer
                 var value = GetSettingsString(Setting.vmenu_current_weather, "CLEAR");
                 if (!WeatherTypes.Contains(value.ToUpper()))
                 {
-                    return "clear";
+                    return "CLEAR";
                 }
                 return value;
             }
