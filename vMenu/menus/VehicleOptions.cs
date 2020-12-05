@@ -1767,7 +1767,15 @@ namespace vMenuClient
 
                     // Create the MenuListItem for this mod type.
                     var currIndex = GetVehicleMod(veh.Handle, (int)mod.ModType) + 1;
-                    MenuListItem modTypeListItem = new MenuListItem(typeName, modlist, currIndex, $"Choose a ~y~{typeName}~s~ upgrade, it will be automatically applied to your vehicle.");
+                    MenuListItem modTypeListItem = new MenuListItem(
+                        typeName,
+                        modlist,
+                        currIndex,
+                        $"Choose a ~y~{typeName}~s~ upgrade, it will be automatically applied to your vehicle."
+                    )
+                    {
+                        ItemData = (int)mod.ModType
+                    };
 
                     // Add the list item to the menu.
                     VehicleModMenu.AddMenuItem(modTypeListItem);
@@ -1960,21 +1968,8 @@ namespace vMenuClient
 
                     #region handle the dynamic (vehicle-specific) mods
                     // If the affected list is actually a "dynamically" generated list, continue. If it was one of the manual options, go to else.
-                    if (itemIndex < sender2.Size - 9)
+                    if (item2.ItemData is int modType)
                     {
-                        // Get all mods available on this vehicle.
-                        mods = veh.Mods.GetAllMods();
-
-                        var dict = new Dictionary<int, int>();
-                        var x = 0;
-
-                        foreach (var mod in mods)
-                        {
-                            dict.Add(x, (int)mod.ModType);
-                            x++;
-                        }
-
-                        int modType = dict[itemIndex];
                         int selectedUpgrade = item2.ListIndex - 1;
                         bool customWheels = GetVehicleModVariation(veh.Handle, 23);
 
