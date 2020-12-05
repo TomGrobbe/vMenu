@@ -16,6 +16,7 @@ namespace vMenuClient
 {
     public class EventManager : BaseScript
     {
+        public static bool IsSnowEnabled => GetSettingsBool(Setting.vmenu_enable_snow);
         public static int GetServerMinutes => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_current_minute), 0, 59);
         public static int GetServerHours => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_current_hour), 0, 23);
         public static int GetServerMinuteDuration => GetSettingsInt(Setting.vmenu_ingame_minute_duration);
@@ -172,20 +173,22 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Used for cheating idiots.
+        /// Used for cheaters.
         /// </summary>
         private void GoodBye()
         {
-            Log("fuck you.");
             ForceSocialClubUpdate();
         }
 
         /// <summary>
         /// Loads/unloads the snow fx particles if needed.
         /// </summary>
-        private async void UpdateWeatherParticles()
+        private async Task UpdateWeatherParticles()
         {
-            if (GetServerWeather.ToUpper() == "XMAS")
+            ForceSnowPass(IsSnowEnabled);
+            SetForceVehicleTrails(IsSnowEnabled);
+            SetForcePedFootstepsTracks(IsSnowEnabled);
+            if (IsSnowEnabled)
             {
                 if (!HasNamedPtfxAssetLoaded("core_snow"))
                 {
@@ -196,13 +199,9 @@ namespace vMenuClient
                     }
                 }
                 UseParticleFxAssetNextCall("core_snow");
-                SetForceVehicleTrails(true);
-                SetForcePedFootstepsTracks(true);
             }
             else
             {
-                SetForceVehicleTrails(false);
-                SetForcePedFootstepsTracks(false);
                 RemoveNamedPtfxAsset("core_snow");
             }
         }
@@ -213,19 +212,12 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-            UpdateWeatherParticles();
+            await UpdateWeatherParticles();
             SetArtificialLightsState(IsBlackoutEnabled);
             if (GetNextWeatherType() != GetHashKey(GetServerWeather))
             {
-                // Dbg logging
-                Log($"Start changing weather type. New weather: {GetServerWeather} Blackout? {IsBlackoutEnabled}");
-
-                /*SetWeatherTypeOverTime(GetServerWeather, (float)WeatherChangeTime);*/
                 SetWeatherTypeOvertimePersist(GetServerWeather, (float)WeatherChangeTime);
                 await Delay(WeatherChangeTime * 1000 + 2000);
-
-                // Dbg logging
-                Log("done changing weather type");
 
                 TriggerEvent("vMenu:WeatherChangeComplete", GetServerWeather);
             }
