@@ -39,8 +39,8 @@ namespace vMenuClient
             MenuItem teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
             MenuItem teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
             MenuItem summon = new MenuItem("Summon Player", "Teleport the player to you.");
-            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
-            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
+            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player. ~y~Note for when the server is using OneSync Infinity: this may not work if the player is too far away.");
+            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating. ~y~Note for when the server is using OneSync Infinity: You will be teleported to the player if you're too far away, you might want to go into noclip to become invisible, before using this option!");
             MenuItem printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
             MenuItem kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
             MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
@@ -123,8 +123,6 @@ namespace vMenuClient
                     {
                         Notify.Error("You can't send a private message if you have private messages disabled yourself. Enable them in the Misc Settings menu and try again.");
                     }
-
-
 
                 }
                 // teleport (in vehicle) button
