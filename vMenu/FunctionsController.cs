@@ -2847,7 +2847,7 @@ namespace vMenuClient
             {
                 if (!Game.PlayerPed.IsInVehicle(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle) && !Game.PlayerPed.IsGettingIntoAVehicle)
                 {
-                    if (Game.PlayerPed.Position.DistanceToSquared(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Position) < 30.0f)
+                    if (Game.PlayerPed.Position.DistanceToSquared(MainMenu.PersonalVehicleMenu.CurrentPersonalVehicle.Position) < 650.0f)
                     {
                         if (Game.IsControlJustReleased(0, Control.VehicleHorn))
                         {
