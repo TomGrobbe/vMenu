@@ -99,6 +99,7 @@ namespace vMenuShared
             VOFlashHighbeamsOnHonk,
             VODisableTurbulence,
             VOInfiniteFuel,
+            VOCruiseControl,
             VOFlares,
             VOPlaneBombs,
             #endregion
