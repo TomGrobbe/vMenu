@@ -204,6 +204,7 @@ namespace vMenuServer
                 }));
                 EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
                 EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
+                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, String[][]>(LogToDiscord));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -233,6 +234,11 @@ namespace vMenuServer
             }
         }
         #endregion
+
+        private void LogToDiscord(Player player, string title, string[][] data)
+        {
+            // TODO Implement the log to Discord code
+        }
 
         #region command handler
         [Command("vmenuserver", Restricted = true)]

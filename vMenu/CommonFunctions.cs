@@ -750,6 +750,9 @@ namespace vMenuClient
                 // Kick the player using the specified reason.
                 TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
                 Log($"Attempting to kick player {player.Name} (server id: {player.ServerId}, client id: {player.Handle}).");
+                TriggerServerEvent("vMenu:LogToDiscord","Player has been kicked...", new string[][] {
+                    new string[] {"Player kicked: ", player.Name }, 
+                    new string[] {"Reasoning: ", defaultReason } });
             }
             else
             {
@@ -1134,6 +1137,10 @@ namespace vMenuClient
                 SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false,
                     vehicleInfo: new VehicleInfo(), saveName: null);
             }
+            // A new vehicle was spawned, log to Discord
+            TriggerServerEvent("vMenu:LogToDiscord", "Vehicle has been spawned...", new string[][] {
+                new string[] {"Vehicle named: ", vehicleName }, 
+                new string[] {"Spawn inside: ", spawnInside.ToString() }, new string[] {"Replace previous: ", replacePrevious.ToString()} });
         }
         #endregion
 
@@ -1935,6 +1942,10 @@ namespace vMenuClient
                 realMinutes = 0;
             }
             TriggerServerEvent("vMenu:UpdateServerTime", realHours, realMinutes, freezeTime);
+            TriggerServerEvent("vMenu:LogToDiscord", "Server time has been set...", new string[][] {
+                new string[] {"Hour: ", realHours.ToString() }, 
+                new string[] {"Minute: ", realMinutes.ToString() }, new string[] {"Freeze Time?: ", freezeTime.ToString()},
+            });
         }
         #endregion
 
