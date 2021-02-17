@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
@@ -235,9 +236,18 @@ namespace vMenuServer
         }
         #endregion
 
-        private void LogToDiscord(Player player, string title, string[][] data)
+        private async void LogToDiscord(Player player, string title, string[][] data)
         {
-            // TODO Implement the log to Discord code
+            // Implement the log to Discord code
+            string desc = "";
+            foreach (string[] row in data)
+            {
+                string tag = "`" + row[0] + "`: ";
+                string val = "" + row[1] + "";
+                desc = desc + tag + " " + val + "\n";
+            }
+            string footer = "[" + player.Handle + "] " + player.Name;
+            await FiveMHttpRequests.SendWebhook("url", "vMenu Logs", "16711680", title, desc, footer);
         }
 
         #region command handler
