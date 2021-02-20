@@ -28,7 +28,7 @@ namespace vMenuClient
         /// Creates the menu.
         /// </summary>
         private void CreateMenu()
-        {
+        { 
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Online Players") { };
             menu.CounterPreText = "Players: ";

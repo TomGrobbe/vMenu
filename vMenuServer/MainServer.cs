@@ -205,7 +205,7 @@ namespace vMenuServer
                 }));
                 EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
                 EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
-                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, Dictionary<string, string>>(LogToDiscord));
+                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, String>(LogToDiscord));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -236,24 +236,17 @@ namespace vMenuServer
         }
         #endregion
 
-        private async void LogToDiscord([FromSource] Player player, string title, Dictionary<string, string> data)
+        private void LogToDiscord([FromSource] Player player, string title, string data)
         {
             // Implement the log to Discord code
-            string desc = "";
-            foreach (KeyValuePair<string, string> entry in data)
-            {
-                string key = entry.Key;
-                string value = entry.Value;
-                string tag = "`" + key + "`: ";
-                string val = "" + value + "";
-                desc = desc + tag + " " + val + "\n";
-            }
+            string desc = data;
             string footer = "[" + player.Handle + "] " + player.Name;
-            string webhook = LoadResourceFile(GetCurrentResourceName(), "config/webhook.json") ?? "{}";
-            webhook = JsonConvert.DeserializeObject<Dictionary<string, string>>(webhook)["Webhook"];
-            Debug.WriteLine("The webhook is: " + webhook);
-            await FiveMHttpRequests.SendWebhook(webhook, "vMenu Logs", "16711680", title, desc, footer);
-            Debug.WriteLine("Got to end of FiveMHTTPRequests.SendWebhook");
+            string webhook = GetConvar("vMenu_Webhook", null);
+            if (webhook != null && webhook.Length >= 5)
+            {
+                dynamic embed = HttpRequests.DiscordEmbed(title, "16711680", desc, footer);
+                HttpRequests.SendWebhook(webhook, "", embed);
+            }
         }
 
         #region command handler

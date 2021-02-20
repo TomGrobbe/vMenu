@@ -9,6 +9,12 @@
     <DefineConstants>CLIENT</DefineConstants>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>C:\Users\Axeex\Downloads\Rider-Project-Builds\vMenu</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>C:\Users\Axeex\Downloads\Rider-Project-Builds\vMenu</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
     <Compile Include="..\SharedClasses\PermissionsManager.cs" Link="PermissionsManager.cs" />

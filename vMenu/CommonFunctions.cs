@@ -30,7 +30,7 @@ namespace vMenuClient
         /// <param name="args"></param>
         public static void TriggerServerEvent(string eventName, params object[] args)
         {
-            BaseScript.TriggerServerEvent(eventName, args);
+            BaseScript.TriggerServerEvent(eventName, args); ;
         }
 
         /// <summary>
@@ -753,7 +753,16 @@ namespace vMenuClient
                 var dict = new Dictionary<string, string>();
                 dict.Add("Player Kicked", player.Name);
                 dict.Add("Reasoning", defaultReason);
-                TriggerServerEvent("vMenu:LogToDiscord","Player has been kicked...", dict);
+                string desc = "";
+                foreach (KeyValuePair<string, string> entry in dict)
+                {
+                    string key = entry.Key;
+                    string value = entry.Value;
+                    string tag = "`" + key + "`: ";
+                    string val = "" + value + "";
+                    desc = desc + tag + " " + val + "\n\n";
+                }
+                TriggerServerEvent("vMenu:LogToDiscord","Player has been kicked...", desc);
             }
             else
             {
@@ -776,6 +785,22 @@ namespace vMenuClient
                 if (forever)
                 {
                     TriggerServerEvent("vMenu:PermBanPlayer", player.ServerId, banReason);
+                    var dict = new Dictionary<string, string>();
+                    dict.Add("Player triggered", Game.Player.Name);
+                    dict.Add("Banned player", player.Name);
+                    dict.Add("Hours", "Forever");
+                    dict.Add("Reason", banReason);
+                    string desc = "";
+                    foreach (KeyValuePair<string, string> entry in dict)
+                    {
+                        string key = entry.Key;
+                        string value = entry.Value;
+                        string tag = "`" + key + "`: ";
+                        string val = "" + value + "";
+                        desc = desc + tag + " " + val + "\n\n";
+                    }
+
+                    TriggerServerEvent("vMenu:LogToDiscord", "New Permanent ban", desc);
                 }
                 else
                 {
@@ -785,7 +810,25 @@ namespace vMenuClient
                         if (double.TryParse(banDurationHours, out double banHours))
                         {
                             if (banHours > 0.0)
+                            {
                                 TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, banHours, banReason);
+                                var dict = new Dictionary<string, string>();
+                                dict.Add("Player triggered", Game.Player.Name);
+                                dict.Add("Banned player", player.Name);
+                                dict.Add("Hours", banHours.ToString());
+                                dict.Add("Reason", banReason);
+                                string desc = "";
+                                foreach (KeyValuePair<string, string> entry in dict)
+                                {
+                                    string key = entry.Key;
+                                    string value = entry.Value;
+                                    string tag = "`" + key + "`: ";
+                                    string val = "" + value + "";
+                                    desc = desc + tag + " " + val + "\n\n";
+                                }
+
+                                TriggerServerEvent("vMenu:LogToDiscord", "New TempBan", desc);
+                            }
                             else
                                 Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
                         }
@@ -793,8 +836,27 @@ namespace vMenuClient
                         {
                             if (int.TryParse(banDurationHours, out int banHoursInt))
                             {
-                                if ((double)banHoursInt > 0.0)
-                                    TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, (double)banHoursInt, banReason);
+                                if ((double) banHoursInt > 0.0)
+                                {
+                                    TriggerServerEvent("vMenu:TempBanPlayer", player.ServerId, (double) banHoursInt,
+                                        banReason);
+                                    var dict = new Dictionary<string, string>();
+                                    dict.Add("Player triggered", Game.Player.Name);
+                                    dict.Add("Banned player", player.Name);
+                                    dict.Add("Hours", banHoursInt.ToString());
+                                    dict.Add("Reason", banReason);
+                                    string desc = "";
+                                    foreach (KeyValuePair<string, string> entry in dict)
+                                    {
+                                        string key = entry.Key;
+                                        string value = entry.Value;
+                                        string tag = "`" + key + "`: ";
+                                        string val = "" + value + "";
+                                        desc = desc + tag + " " + val + "\n\n";
+                                    }
+
+                                    TriggerServerEvent("vMenu:LogToDiscord", "New TempBan", desc);
+                                }
                                 else
                                     Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
                             }
@@ -822,11 +884,29 @@ namespace vMenuClient
         #endregion
 
         #region Kill Player/commit suicide options
+
         /// <summary>
         /// Kill player
         /// </summary>
         /// <param name="player"></param>
-        public static void KillPlayer(IPlayer player) => TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
+        public static void KillPlayer(IPlayer player)
+        {
+            
+            TriggerServerEvent("vMenu:KillPlayer", player.ServerId);
+            var dict = new Dictionary<string, string>();
+            dict.Add("Triggered by", Game.Player.Name);
+            dict.Add("Killed", player.Name);
+            string desc = "";
+            foreach (KeyValuePair<string, string> entry in dict)
+            {
+                string key = entry.Key;
+                string value = entry.Value;
+                string tag = "`" + key + "`: ";
+                string val = "" + value + "";
+                desc = desc + tag + " " + val + "\n\n";
+            }
+            TriggerServerEvent("vMenu:LogToDiscord", "Player killed by vMenu", desc);
+        }
 
         /// <summary>
         /// Kill yourself.
@@ -937,11 +1017,30 @@ namespace vMenuClient
         #endregion
 
         #region Summon Player
+
         /// <summary>
         /// Summon player.
         /// </summary>
         /// <param name="player"></param>
-        public static void SummonPlayer(IPlayer player) => TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
+        public static void SummonPlayer(IPlayer player)
+        {
+            TriggerServerEvent("vMenu:SummonPlayer", player.ServerId);
+            var dict = new Dictionary<string, string>();
+            dict.Add("Player triggered", Game.Player.Name);
+            dict.Add("Summoned", player.Name);
+            string desc = "";
+            foreach (KeyValuePair<string, string> entry in dict)
+            {
+                string key = entry.Key;
+                string value = entry.Value;
+                string tag = "`" + key + "`: ";
+                string val = "" + value + "";
+                desc = desc + tag + " " + val + "\n\n";
+            }
+
+            TriggerServerEvent("vMenu:LogToDiscord", "New Summon", desc);
+        }
+
         #endregion
 
         #region Spectate function
@@ -992,6 +1091,19 @@ namespace vMenuClient
 
                             DoScreenFadeIn(500);
                             Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            var dict = new Dictionary<string, string>();
+                            dict.Add("Spectator", Game.Player.Name);
+                            dict.Add("Spectating", player.Name);
+                            string desc = "";
+                            foreach (KeyValuePair<string, string> entry in dict)
+                            {
+                                string key = entry.Key;
+                                string value = entry.Value;
+                                string tag = "`" + key + "`: ";
+                                string val = "" + value + "";
+                                desc = desc + tag + " " + val + "\n\n";
+                            }
+                            TriggerServerEvent("vMenu:LogToDiscord", "New Spectate", desc);
                             currentlySpectatingPlayer = player.Handle;
                         }
                         else
@@ -1019,6 +1131,19 @@ namespace vMenuClient
 
                             DoScreenFadeIn(500);
                             Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            var dict = new Dictionary<string, string>();
+                            dict.Add("Spectator", Game.Player.Name);
+                            dict.Add("Spectating", player.Name);
+                            string desc = "";
+                            foreach (KeyValuePair<string, string> entry in dict)
+                            {
+                                string key = entry.Key;
+                                string value = entry.Value;
+                                string tag = "`" + key + "`: ";
+                                string val = "" + value + "";
+                                desc = desc + tag + " " + val + "\n\n";
+                            }
+                            TriggerServerEvent("vMenu:LogToDiscord", "New Spectate", desc);
                             currentlySpectatingPlayer = player.Handle;
                         }
                     }
@@ -1114,6 +1239,8 @@ namespace vMenuClient
         /// <param name="replacePrevious">Replace the previous vehicle of the player.</param>
         public static async void SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
         {
+            string webhookVehicleName = vehicleName;
+            bool spawned = false;
             if (vehicleName == "custom")
             {
                 // Get the result.
@@ -1121,10 +1248,12 @@ namespace vMenuClient
                 // If the result was not invalid.
                 if (!string.IsNullOrEmpty(result))
                 {
+                    webhookVehicleName = result;
                     // Convert it into a model hash.
                     uint model = (uint)GetHashKey(result);
                     SpawnVehicle(vehicleHash: model, spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false, vehicleInfo: new VehicleInfo(),
                         saveName: null);
+                    spawned = true;
                 }
                 // Result was invalid.
                 else
@@ -1137,13 +1266,27 @@ namespace vMenuClient
             {
                 SpawnVehicle(vehicleHash: (uint)GetHashKey(vehicleName), spawnInside: spawnInside, replacePrevious: replacePrevious, skipLoad: false,
                     vehicleInfo: new VehicleInfo(), saveName: null);
+                spawned = true;
             }
             // A new vehicle was spawned, log to Discord
-            var dict = new Dictionary<string, string>();
-            dict.Add("Vehicle Name", vehicleName);
-            dict.Add("Spawned Inside?", spawnInside.ToString());
-            dict.Add("Replaced previous?", replacePrevious.ToString());
-            TriggerServerEvent("vMenu:LogToDiscord", "Vehicle has been spawned...", dict);
+            if (spawned)
+            {
+                var dict = new Dictionary<string, string>();
+                dict.Add("Vehicle Name", webhookVehicleName);
+                dict.Add("Spawned Inside?", spawnInside.ToString());
+                dict.Add("Replaced previous?", replacePrevious.ToString());
+                string desc = "";
+                foreach (KeyValuePair<string, string> entry in dict)
+                {
+                    string key = entry.Key;
+                    string value = entry.Value;
+                    string tag = "`" + key + "`: ";
+                    string val = "" + value + "";
+                    desc = desc + tag + " " + val + "\n\n";
+                }
+
+                TriggerServerEvent("vMenu:LogToDiscord", "Vehicle has been spawned...", desc);
+            }
         }
         #endregion
 
@@ -1910,13 +2053,33 @@ namespace vMenuClient
         #endregion
 
         #region Weather Sync
+
         /// <summary>
         /// Update the server with the new weather type, blackout status and dynamic weather changes enabled status.
         /// </summary>
         /// <param name="newWeather">The new weather type.</param>
         /// <param name="blackout">Manual blackout mode enabled/disabled.</param>
         /// <param name="dynamicChanges">Dynamic weather changes enabled/disabled.</param>
-        public static void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges) => TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
+        public static void UpdateServerWeather(string newWeather, bool blackout, bool dynamicChanges)
+        {
+            TriggerServerEvent("vMenu:UpdateServerWeather", newWeather, blackout, dynamicChanges);
+            var dict = new Dictionary<string, string>();
+            dict.Add("Player triggered", Game.Player.Name);
+            dict.Add("New Weather", newWeather);
+            dict.Add("Blackout?", blackout.ToString());
+            dict.Add("Dynamic Change?", dynamicChanges.ToString());
+            string desc = "";
+            foreach (KeyValuePair<string, string> entry in dict)
+            {
+                string key = entry.Key;
+                string value = entry.Value;
+                string tag = "`" + key + "`: ";
+                string val = "" + value + "";
+                desc = desc + tag + " " + val + "\n\n";
+            }
+
+            TriggerServerEvent("vMenu:LogToDiscord", "New Weather", desc);
+        }
 
         /// <summary>
         /// Modify the clouds for everyone. If removeClouds is true, then remove all clouds. If it's false, then randomize the clouds.
@@ -1948,7 +2111,17 @@ namespace vMenuClient
             var dict = new Dictionary<string, string>();
             dict.Add("Hour", realHours.ToString());
             dict.Add("Minute", realMinutes.ToString());
-            TriggerServerEvent("vMenu:LogToDiscord", "Server time has been set...", dict);
+            dict.Add("Time Frozen?", freezeTime.ToString());
+            string desc = "";
+            foreach (KeyValuePair<string, string> entry in dict)
+            {
+                string key = entry.Key;
+                string value = entry.Value;
+                string tag = "`" + key + "`: ";
+                string val = "" + value + "";
+                desc = desc + tag + " " + val + "\n\n";
+            }
+            TriggerServerEvent("vMenu:LogToDiscord", "Server time has been set...", desc);
         }
         #endregion
 
@@ -3195,10 +3368,36 @@ namespace vMenuClient
                     if (sent)
                     {
                         Notify.Custom($"PM From: <C>{GetSafePlayerName(name)}</C>. Message: {message}");
+                        var dict = new Dictionary<string, string>();
+                        dict.Add("PM received by", GetSafePlayerName(name));
+                        dict.Add("Message", message);
+                        string desc = "";
+                        foreach (KeyValuePair<string, string> entry in dict)
+                        {
+                            string key = entry.Key;
+                            string value = entry.Value;
+                            string tag = "`" + key + "`: ";
+                            string val = "" + value + "";
+                            desc = desc + tag + " " + val + "\n\n";
+                        }
+                        TriggerServerEvent("vMenu:LogToDiscord", "New Private Message [Received]", desc);
                     }
                     else
                     {
                         Notify.Custom($"PM To: <C>{GetSafePlayerName(name)}</C>. Message: {message}");
+                        var dict = new Dictionary<string, string>();
+                        dict.Add("PM initiated by", GetSafePlayerName(name));
+                        dict.Add("Message", message);
+                        string desc = "";
+                        foreach (KeyValuePair<string, string> entry in dict)
+                        {
+                            string key = entry.Key;
+                            string value = entry.Value;
+                            string tag = "`" + key + "`: ";
+                            string val = "" + value + "";
+                            desc = desc + tag + " " + val + "\n\n";
+                        }
+                        TriggerServerEvent("vMenu:LogToDiscord", "New Private Message [Sent]", desc);
                     }
                 }
                 UnregisterPedheadshot(headshotHandle);
