@@ -205,7 +205,7 @@ namespace vMenuServer
                 }));
                 EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
                 EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
-                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, String[][]>(LogToDiscord));
+                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, Dictionary<string, string>>(LogToDiscord));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -236,18 +236,24 @@ namespace vMenuServer
         }
         #endregion
 
-        private async void LogToDiscord(Player player, string title, string[][] data)
+        private async void LogToDiscord([FromSource] Player player, string title, Dictionary<string, string> data)
         {
             // Implement the log to Discord code
             string desc = "";
-            foreach (string[] row in data)
+            foreach (KeyValuePair<string, string> entry in data)
             {
-                string tag = "`" + row[0] + "`: ";
-                string val = "" + row[1] + "";
+                string key = entry.Key;
+                string value = entry.Value;
+                string tag = "`" + key + "`: ";
+                string val = "" + value + "";
                 desc = desc + tag + " " + val + "\n";
             }
             string footer = "[" + player.Handle + "] " + player.Name;
-            await FiveMHttpRequests.SendWebhook("url", "vMenu Logs", "16711680", title, desc, footer);
+            string webhook = LoadResourceFile(GetCurrentResourceName(), "config/webhook.json") ?? "{}";
+            webhook = JsonConvert.DeserializeObject<Dictionary<string, string>>(webhook)["Webhook"];
+            Debug.WriteLine("The webhook is: " + webhook);
+            await FiveMHttpRequests.SendWebhook(webhook, "vMenu Logs", "16711680", title, desc, footer);
+            Debug.WriteLine("Got to end of FiveMHTTPRequests.SendWebhook");
         }
 
         #region command handler

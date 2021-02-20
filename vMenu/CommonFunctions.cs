@@ -750,9 +750,10 @@ namespace vMenuClient
                 // Kick the player using the specified reason.
                 TriggerServerEvent("vMenu:KickPlayer", player.ServerId, defaultReason);
                 Log($"Attempting to kick player {player.Name} (server id: {player.ServerId}, client id: {player.Handle}).");
-                TriggerServerEvent("vMenu:LogToDiscord","Player has been kicked...", new string[][] {
-                    new string[] {"Player kicked: ", player.Name }, 
-                    new string[] {"Reasoning: ", defaultReason } });
+                var dict = new Dictionary<string, string>();
+                dict.Add("Player Kicked", player.Name);
+                dict.Add("Reasoning", defaultReason);
+                TriggerServerEvent("vMenu:LogToDiscord","Player has been kicked...", dict);
             }
             else
             {
@@ -1138,9 +1139,11 @@ namespace vMenuClient
                     vehicleInfo: new VehicleInfo(), saveName: null);
             }
             // A new vehicle was spawned, log to Discord
-            TriggerServerEvent("vMenu:LogToDiscord", "Vehicle has been spawned...", new string[][] {
-                new string[] {"Vehicle named: ", vehicleName }, 
-                new string[] {"Spawn inside: ", spawnInside.ToString() }, new string[] {"Replace previous: ", replacePrevious.ToString()} });
+            var dict = new Dictionary<string, string>();
+            dict.Add("Vehicle Name", vehicleName);
+            dict.Add("Spawned Inside?", spawnInside.ToString());
+            dict.Add("Replaced previous?", replacePrevious.ToString());
+            TriggerServerEvent("vMenu:LogToDiscord", "Vehicle has been spawned...", dict);
         }
         #endregion
 
@@ -1942,10 +1945,10 @@ namespace vMenuClient
                 realMinutes = 0;
             }
             TriggerServerEvent("vMenu:UpdateServerTime", realHours, realMinutes, freezeTime);
-            TriggerServerEvent("vMenu:LogToDiscord", "Server time has been set...", new string[][] {
-                new string[] {"Hour: ", realHours.ToString() }, 
-                new string[] {"Minute: ", realMinutes.ToString() }, new string[] {"Freeze Time?: ", freezeTime.ToString()},
-            });
+            var dict = new Dictionary<string, string>();
+            dict.Add("Hour", realHours.ToString());
+            dict.Add("Minute", realMinutes.ToString());
+            TriggerServerEvent("vMenu:LogToDiscord", "Server time has been set...", dict);
         }
         #endregion
 
