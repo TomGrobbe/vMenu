@@ -596,8 +596,14 @@ namespace vMenuClient
                         PlayersList.RequestPlayerList();
 
                         await OnlinePlayersMenu.UpdatePlayerlist();
+                        OnlinePlayersMenu.UpdatePlayerListTimer();
                         menu.RefreshIndex();
                     }
+                };
+                
+                menu.OnMenuClose += (sender) =>
+                {
+                    OnlinePlayersMenu.StopUpdatePlayerInterval();
                 };
             }
             if (IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers))
