@@ -359,7 +359,10 @@ namespace vMenuClient
                     cancelUpdatePlayerTimer = false;
                     return;
                 }
-
+                
+                // Request players from server
+                MainMenu.PlayersList.RequestPlayerList();
+                
                 await UpdatePlayerlist(true);
             }
         }
@@ -368,7 +371,7 @@ namespace vMenuClient
         /// Set cancelUpdatePlayerTimer so that we stop the timer if we're not on the OnlinePlayers menu.
         /// </summary>
         /// <returns>OnlinePlayers</returns>
-        public OnlinePlayers StopUpdatePlayerInterval()
+        public OnlinePlayers StopUpdatePlayerTimer()
         {
             cancelUpdatePlayerTimer = true;
 
