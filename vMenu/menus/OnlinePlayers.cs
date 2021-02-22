@@ -22,6 +22,7 @@ namespace vMenuClient
 
         Menu playerMenu = new Menu("Online Players", "Player:");
         IPlayer currentPlayer = new NativePlayer(Game.Player);
+        private string currentPlayerName;
 
         private bool cancelUpdatePlayerTimer = false;
 
@@ -48,6 +49,17 @@ namespace vMenuClient
             MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
             MenuItem ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
             MenuItem tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+
+            menu.OnMenuClose += async (sender) =>
+            {
+                await BaseScript.Delay(100);
+                var currentMenu = MenuController.GetCurrentMenu();
+                
+                if (currentMenu != null && currentMenu.MenuSubtitle == "Main Menu")
+                {
+                    StopUpdatePlayerTimer();
+                }
+            };
 
             // always allowed
             playerMenu.AddMenuItem(sendMessage);
@@ -263,6 +275,7 @@ namespace vMenuClient
                     if (player != null)
                     {
                         currentPlayer = player;
+                        currentPlayerName = player.Name;
                         playerMenu.MenuSubtitle = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
                         playerMenu.CounterPreText = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
                     }
@@ -280,7 +293,9 @@ namespace vMenuClient
         {
             void UpdateStuff()
             {
-                menu.ClearMenuItems();
+                var oldIndex = menu.CurrentIndex;
+                
+                menu.ClearMenuItems(fromTimer);
 
                 var foundCurrentPlayer = false;
 
@@ -301,13 +316,23 @@ namespace vMenuClient
 
                 if (currentPlayer != null && !foundCurrentPlayer)
                 {
-                    Notify.Info($"Player: {currentPlayer.Name} has left the server.");
+                    Notify.Info($"Player: {currentPlayerName} has left the server.");
                     
                     playerMenu.GoBack();
+                    
+                    menu.RefreshIndex();
                 }
 
                 // We don't want to call RefreshIndex if calling from the timer, as we're on the list currently
-                if (fromTimer) return;
+                if (fromTimer)
+                {
+                    if (oldIndex > MainMenu.PlayersList.Count() - 1)
+                    {
+                        menu.RefreshIndex(MainMenu.PlayersList.Count() - 1);
+                    }
+                    
+                    return;
+                }
                 menu.RefreshIndex();
                 //menu.UpdateScaleform();
                 playerMenu.RefreshIndex();

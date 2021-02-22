@@ -600,11 +600,6 @@ namespace vMenuClient
                         menu.RefreshIndex();
                     }
                 };
-                
-                menu.OnMenuClose += (sender) =>
-                {
-                    OnlinePlayersMenu.StopUpdatePlayerTimer();
-                };
             }
             if (IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers))
             {
