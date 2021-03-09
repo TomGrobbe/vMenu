@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace vMenuClient
-{
-    class PedScenarios
-    {
-        public static List<string> PositionBasedScenarios = new List<string>()
-        {
+namespace vMenuClient {
+    class PedScenarios {
+        public static List<string> PositionBasedScenarios = new List<string> {
             "PROP_HUMAN_SEAT_ARMCHAIR",
             "PROP_HUMAN_SEAT_BAR",
             "PROP_HUMAN_SEAT_BENCH",
@@ -26,14 +19,13 @@ namespace vMenuClient
             "PROP_HUMAN_SEAT_SUNLOUNGER",
             "WORLD_HUMAN_SEAT_LEDGE",
             "WORLD_HUMAN_SEAT_STEPS",
-            "WORLD_HUMAN_SEAT_WALL",
+            "WORLD_HUMAN_SEAT_WALL"
         };
 
         /// <summary>
-        /// All scenario names (readable version) linked to the actual scenario strings (code names).
+        ///     All scenario names (readable version) linked to the actual scenario strings (code names).
         /// </summary>
-        public static Dictionary<string, string> ScenarioNames = new Dictionary<string, string>
-        {
+        public static Dictionary<string, string> ScenarioNames = new Dictionary<string, string> {
             ["AA Drink Coffee"] = "WORLD_HUMAN_AA_COFFEE",
             ["AA Smoke Cig"] = "WORLD_HUMAN_AA_SMOKE",
             ["Binoculars"] = "WORLD_HUMAN_BINOCULARS",
@@ -124,14 +116,13 @@ namespace vMenuClient
             ["Medic Tend To Dead"] = "CODE_HUMAN_MEDIC_TEND_TO_DEAD",
             ["Medic Time Of Death"] = "CODE_HUMAN_MEDIC_TIME_OF_DEATH",
             ["Police Crowd Control"] = "CODE_HUMAN_POLICE_CROWD_CONTROL",
-            ["Police Investigate"] = "CODE_HUMAN_POLICE_INVESTIGATE",
+            ["Police Investigate"] = "CODE_HUMAN_POLICE_INVESTIGATE"
         };
 
         /// <summary>
-        /// A list containing all readable strings.
+        ///     A list containing all readable strings.
         /// </summary>
-        public static List<string> Scenarios = new List<string>
-        {
+        public static List<string> Scenarios = new List<string> {
             "AA Drink Coffee",
             "AA Smoke Cig",
             "Binoculars",
@@ -222,7 +213,7 @@ namespace vMenuClient
             "Medic Tend To Dead",
             "Medic Time Of Death",
             "Police Crowd Control",
-            "Police Investigate",
+            "Police Investigate"
         };
     }
 }

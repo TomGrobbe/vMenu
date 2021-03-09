@@ -1,317 +1,329 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
-{
-    public struct ValidWeapon
-    {
+namespace vMenuClient {
+    public struct ValidWeapon {
         public uint Hash;
         public string Name;
         public Dictionary<string, uint> Components;
         public Permission Perm;
         public string SpawnName;
-        public int GetMaxAmmo { get { int ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, this.Hash, ref ammo); return ammo; } }
+
+        public int GetMaxAmmo {
+            get {
+                int ammo = 0;
+                GetMaxAmmo(Game.PlayerPed.Handle, Hash, ref ammo);
+                return ammo;
+            }
+        }
+
         public int CurrentAmmo;
         public int CurrentTint;
-        public float Accuracy { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudAccuracy; } }
-        public float Damage { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage; } }
-        public float Range { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange; } }
-        public float Speed { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed; } }
+
+        public float Accuracy {
+            get {
+                Game.WeaponHudStats stats = new Game.WeaponHudStats();
+                Game.GetWeaponHudStats(Hash, ref stats);
+                return stats.hudAccuracy;
+            }
+        }
+
+        public float Damage {
+            get {
+                Game.WeaponHudStats stats = new Game.WeaponHudStats();
+                Game.GetWeaponHudStats(Hash, ref stats);
+                return stats.hudDamage;
+            }
+        }
+
+        public float Range {
+            get {
+                Game.WeaponHudStats stats = new Game.WeaponHudStats();
+                Game.GetWeaponHudStats(Hash, ref stats);
+                return stats.hudRange;
+            }
+        }
+
+        public float Speed {
+            get {
+                Game.WeaponHudStats stats = new Game.WeaponHudStats();
+                Game.GetWeaponHudStats(Hash, ref stats);
+                return stats.hudSpeed;
+            }
+        }
     }
 
-    public static class ValidWeapons
-    {
-        private static List<ValidWeapon> _weaponsList = new List<ValidWeapon>();
+    public static class ValidWeapons {
+        static List<ValidWeapon> _weaponsList = new List<ValidWeapon>();
 
-        public static List<ValidWeapon> WeaponList
-        {
-            get
-            {
-                if (_weaponsList.Count == weaponNames.Count - 1)
-                {
+
+        static Dictionary<string, string> _components = new Dictionary<string, string>();
+
+        public static List<ValidWeapon> WeaponList {
+            get {
+                if (_weaponsList.Count == weaponNames.Count - 1) {
                     return _weaponsList;
                 }
+
                 CreateWeaponsList();
                 return _weaponsList;
             }
         }
 
-
-        private static Dictionary<string, string> _components = new Dictionary<string, string>();
         public static Dictionary<string, string> GetWeaponComponents()
         {
-            if (_components.Count == 0)
-            {
+            if (_components.Count == 0) {
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 _components = weaponComponentNames;
-                try
-                {
-                    var addonsFile = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
-                    if (addonsFile.ContainsKey("weapon_components"))
-                    {
-                        foreach (var item in addonsFile["weapon_components"])
-                        {
+                try {
+                    Dictionary<string, List<string>> addonsFile = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+                    if (addonsFile.ContainsKey("weapon_components")) {
+                        foreach (string item in addonsFile["weapon_components"]) {
                             string name = item;
                             string displayName = GetLabelText(name) ?? name;
                             int unused = 0;
-                            if (GetWeaponComponentHudStats((uint)GetHashKey(name), ref unused))
-                            {
+                            if (GetWeaponComponentHudStats((uint) GetHashKey(name), ref unused)) {
                                 _components.Add(name, displayName);
                             }
                         }
                     }
                 }
-                catch
-                {
+                catch {
                     Log("[WARNING] The addons.json contains invalid JSON.");
                 }
             }
+
             return _components;
         }
 
-        private static void CreateWeaponsList()
+        static void CreateWeaponsList()
         {
             _weaponsList.Clear();
-            foreach (var weapon in weaponNames)
-            {
+            foreach (KeyValuePair<string, string> weapon in weaponNames) {
                 string realName = weapon.Key;
                 string localizedName = weapon.Value;
-                if (realName != "weapon_unarmed")
-                {
-                    uint hash = (uint)GetHashKey(weapon.Key);
+                if (realName != "weapon_unarmed") {
+                    uint hash = (uint) GetHashKey(weapon.Key);
                     Dictionary<string, uint> componentHashes = new Dictionary<string, uint>();
-                    foreach (var comp in GetWeaponComponents().Keys)
-                    {
-                        if (DoesWeaponTakeWeaponComponent(hash, (uint)GetHashKey(comp)))
-                        {
-                            if (!componentHashes.ContainsKey(GetWeaponComponents()[comp]))
-                            {
-                                componentHashes.Add(GetWeaponComponents()[comp], (uint)GetHashKey(comp));
+                    foreach (string comp in GetWeaponComponents().Keys) {
+                        if (DoesWeaponTakeWeaponComponent(hash, (uint) GetHashKey(comp))) {
+                            if (!componentHashes.ContainsKey(GetWeaponComponents()[comp])) {
+                                componentHashes.Add(GetWeaponComponents()[comp], (uint) GetHashKey(comp));
                             }
                         }
                     }
-                    ValidWeapon vw = new ValidWeapon()
-                    {
+
+                    ValidWeapon vw = new ValidWeapon {
                         Hash = hash,
                         SpawnName = realName,
                         Name = localizedName,
                         Components = componentHashes,
                         Perm = weaponPermissions[realName]
                     };
-                    if (!_weaponsList.Contains(vw))
-                    {
+                    if (!_weaponsList.Contains(vw)) {
                         _weaponsList.Add(vw);
                     }
                 }
             }
         }
 
-        #region Weapon names, hashes and localized names (+ all components & tints).
-        #region weapon descriptions & names
-        public static readonly Dictionary<string, string> weaponDescriptions = new Dictionary<string, string>()
-        {
-            { "weapon_advancedrifle", GetLabelText("WTD_RIFLE_ADV") },
-            { "weapon_appistol", GetLabelText("WTD_PIST_AP") },
-            { "weapon_assaultrifle", GetLabelText("WTD_RIFLE_ASL") },
-            { "weapon_assaultrifle_mk2", GetLabelText("WTD_RIFLE_ASL2") },
-            { "weapon_assaultshotgun", GetLabelText("WTD_SG_ASL") },
-            { "weapon_assaultsmg", GetLabelText("WTD_SMG_ASL") },
-            { "weapon_autoshotgun", GetLabelText("WTD_AUTOSHGN") },
-            { "weapon_bat", GetLabelText("WTD_BAT") },
-            { "weapon_ball", GetLabelText("WT_BALL") + "."},
-            { "weapon_battleaxe", GetLabelText("WTD_BATTLEAXE") },
-            { "weapon_bottle", GetLabelText("WTD_BOTTLE") },
-            { "weapon_bullpuprifle", GetLabelText("WTD_BULLRIFLE") },
-            { "weapon_bullpuprifle_mk2", GetLabelText("WTD_BULLRIFLE2") },
-            { "weapon_bullpupshotgun", GetLabelText("WTD_SG_BLP") },
-            { "weapon_bzgas", GetLabelText("WT_BZGAS") + "."},
-            { "weapon_carbinerifle", GetLabelText("WTD_RIFLE_CBN") },
-            { "weapon_carbinerifle_mk2", GetLabelText("WTD_RIFLE_CBN2") },
-            { "weapon_combatmg", GetLabelText("WTD_MG_CBT") },
-            { "weapon_combatmg_mk2", GetLabelText("WTD_MG_CBT2") },
-            { "weapon_combatpdw", GetLabelText("WTD_COMBATPDW") },
-            { "weapon_combatpistol", GetLabelText("WTD_PIST_CBT") },
-            { "weapon_compactlauncher", GetLabelText("WTD_CMPGL") },
-            { "weapon_compactrifle", GetLabelText("WTD_CMPRIFLE") + "~n~" }, // this one is just too short to line-break properly, so we force another empty line
-            { "weapon_crowbar", GetLabelText("WTD_CROWBAR") },
-            { "weapon_dagger", GetLabelText("WTD_DAGGER") },
-            { "weapon_dbshotgun", GetLabelText("WTD_DBSHGN") },
-            { "weapon_doubleaction", GetLabelText("WTD_REV_DA") },
-            { "weapon_fireextinguisher", GetLabelText("WT_FIRE") + "." },
-            { "weapon_firework", GetLabelText("WT_FWRKLNCHR") + "." },
-            { "weapon_flare", GetLabelText("WT_FLARE") + "." },
-            { "weapon_flaregun", GetLabelText("WTD_FLAREGUN") },
-            { "weapon_flashlight", GetLabelText("WTD_FLASHLIGHT") },
-            { "weapon_golfclub", GetLabelText("WTD_GOLFCLUB") },
-            { "weapon_grenade", GetLabelText("WTD_GNADE") },
-            { "weapon_grenadelauncher", GetLabelText("WTD_GL") },
-            { "weapon_gusenberg", GetLabelText("WTD2_GUSNBRG") },
-            { "weapon_hammer", GetLabelText("WTD_HAMMER") },
-            { "weapon_hatchet", GetLabelText("WTD_HATCHET") },
-            { "weapon_heavypistol", GetLabelText("WTD2_HVYPISTOL") },
-            { "weapon_heavyshotgun", GetLabelText("WTD2_HVYSHGN") },
-            { "weapon_heavysniper", GetLabelText("WTD_SNIP_HVY") },
-            { "weapon_heavysniper_mk2", GetLabelText("WTD_SNIP_HVY2") },
-            { "weapon_hominglauncher", GetLabelText("WTD_HOMLNCH") },
-            { "weapon_knife", GetLabelText("WTD_KNIFE") },
-            { "weapon_knuckle", GetLabelText("WTD_KNUCKLE") },
-            { "weapon_machete", GetLabelText("WTD_MACHETE") },
-            { "weapon_machinepistol", GetLabelText("WTD_MCHPIST") },
-            { "weapon_marksmanpistol", GetLabelText("WTD_MKPISTOL") },
-            { "weapon_marksmanrifle", GetLabelText("WTD_MKRIFLE") },
-            { "weapon_marksmanrifle_mk2", GetLabelText("WTD_MKRIFLE2") },
-            { "weapon_mg", GetLabelText("WTD_MG") },
-            { "weapon_microsmg", GetLabelText("WTD_SMG_MCR") },
-            { "weapon_minigun", GetLabelText("WTD_MINIGUN") },
-            { "weapon_minismg", GetLabelText("WTD_MINISMG") },
-            { "weapon_molotov", GetLabelText("WTD_MOLOTOV") },
-            { "weapon_musket", GetLabelText("WTD_MUSKET") },
-            { "weapon_nightstick", GetLabelText("WTD_NGTSTK") },
-            { "weapon_petrolcan", GetLabelText("WTD_PETROL") },
-            { "weapon_pipebomb", GetLabelText("WTD_PIPEBOMB") },
-            { "weapon_pistol", GetLabelText("WT_PIST_DESC") },
-            { "weapon_pistol50", GetLabelText("WTD_PIST_50") },
-            { "weapon_pistol_mk2", GetLabelText("WTD_PIST2") },
-            { "weapon_poolcue", GetLabelText("WTD_POOLCUE") },
-            { "weapon_proxmine", GetLabelText("WTD_PRXMINE") },
-            { "weapon_pumpshotgun", GetLabelText("WTD_SG_PMP") },
-            { "weapon_pumpshotgun_mk2", GetLabelText("WTD_SG_PMP2") },
-            { "weapon_railgun", GetLabelText("WTD_RAILGUN") },
-            { "weapon_revolver", GetLabelText("WTD_REVOLVER") },
-            { "weapon_revolver_mk2", GetLabelText("WTD_REVOLVER2") },
-            { "weapon_rpg", GetLabelText("WTD_RPG") },
-            { "weapon_sawnoffshotgun", GetLabelText("WTD_SG_SOF") },
-            { "weapon_smg", GetLabelText("WTD_SMG") },
-            { "weapon_smg_mk2", GetLabelText("WTD_SMG2") },
-            { "weapon_smokegrenade", GetLabelText("WTD_GNADE_SMK") },
-            { "weapon_sniperrifle", GetLabelText("WTD_SNIP_RIF") },
-            { "weapon_snowball", GetLabelText("WT_SNWBALL") + "." },
-            { "weapon_snspistol", GetLabelText("WTD_SNSPISTOL") },
-            { "weapon_snspistol_mk2", GetLabelText("WTD_SNSPISTOL2") },
-            { "weapon_specialcarbine", GetLabelText("WTD_SPCARBINE") },
-            { "weapon_specialcarbine_mk2", GetLabelText("WTD_SPCARBINE2") },
-            { "weapon_stickybomb", GetLabelText("WTD_GNADE_STK") },
-            { "weapon_stungun", GetLabelText("WTD_STUN") },
-            { "weapon_switchblade", GetLabelText("WTD_SWBLADE") },
-            { "weapon_unarmed", GetLabelText("WTD_UNARMED") },
-            { "weapon_vintagepistol", GetLabelText("WTD_VPISTOL") },
-            { "weapon_wrench", GetLabelText("WTD_WRENCH") },
+    #region Weapon names, hashes and localized names (+ all components & tints).
+    #region weapon descriptions & names
+        public static readonly Dictionary<string, string> weaponDescriptions = new Dictionary<string, string> {
+            {"weapon_advancedrifle", GetLabelText("WTD_RIFLE_ADV")},
+            {"weapon_appistol", GetLabelText("WTD_PIST_AP")},
+            {"weapon_assaultrifle", GetLabelText("WTD_RIFLE_ASL")},
+            {"weapon_assaultrifle_mk2", GetLabelText("WTD_RIFLE_ASL2")},
+            {"weapon_assaultshotgun", GetLabelText("WTD_SG_ASL")},
+            {"weapon_assaultsmg", GetLabelText("WTD_SMG_ASL")},
+            {"weapon_autoshotgun", GetLabelText("WTD_AUTOSHGN")},
+            {"weapon_bat", GetLabelText("WTD_BAT")},
+            {"weapon_ball", GetLabelText("WT_BALL") + "."},
+            {"weapon_battleaxe", GetLabelText("WTD_BATTLEAXE")},
+            {"weapon_bottle", GetLabelText("WTD_BOTTLE")},
+            {"weapon_bullpuprifle", GetLabelText("WTD_BULLRIFLE")},
+            {"weapon_bullpuprifle_mk2", GetLabelText("WTD_BULLRIFLE2")},
+            {"weapon_bullpupshotgun", GetLabelText("WTD_SG_BLP")},
+            {"weapon_bzgas", GetLabelText("WT_BZGAS") + "."},
+            {"weapon_carbinerifle", GetLabelText("WTD_RIFLE_CBN")},
+            {"weapon_carbinerifle_mk2", GetLabelText("WTD_RIFLE_CBN2")},
+            {"weapon_combatmg", GetLabelText("WTD_MG_CBT")},
+            {"weapon_combatmg_mk2", GetLabelText("WTD_MG_CBT2")},
+            {"weapon_combatpdw", GetLabelText("WTD_COMBATPDW")},
+            {"weapon_combatpistol", GetLabelText("WTD_PIST_CBT")},
+            {"weapon_compactlauncher", GetLabelText("WTD_CMPGL")},
+            {"weapon_compactrifle", GetLabelText("WTD_CMPRIFLE") + "~n~"}, // this one is just too short to line-break properly, so we force another empty line
+            {"weapon_crowbar", GetLabelText("WTD_CROWBAR")},
+            {"weapon_dagger", GetLabelText("WTD_DAGGER")},
+            {"weapon_dbshotgun", GetLabelText("WTD_DBSHGN")},
+            {"weapon_doubleaction", GetLabelText("WTD_REV_DA")},
+            {"weapon_fireextinguisher", GetLabelText("WT_FIRE") + "."},
+            {"weapon_firework", GetLabelText("WT_FWRKLNCHR") + "."},
+            {"weapon_flare", GetLabelText("WT_FLARE") + "."},
+            {"weapon_flaregun", GetLabelText("WTD_FLAREGUN")},
+            {"weapon_flashlight", GetLabelText("WTD_FLASHLIGHT")},
+            {"weapon_golfclub", GetLabelText("WTD_GOLFCLUB")},
+            {"weapon_grenade", GetLabelText("WTD_GNADE")},
+            {"weapon_grenadelauncher", GetLabelText("WTD_GL")},
+            {"weapon_gusenberg", GetLabelText("WTD2_GUSNBRG")},
+            {"weapon_hammer", GetLabelText("WTD_HAMMER")},
+            {"weapon_hatchet", GetLabelText("WTD_HATCHET")},
+            {"weapon_heavypistol", GetLabelText("WTD2_HVYPISTOL")},
+            {"weapon_heavyshotgun", GetLabelText("WTD2_HVYSHGN")},
+            {"weapon_heavysniper", GetLabelText("WTD_SNIP_HVY")},
+            {"weapon_heavysniper_mk2", GetLabelText("WTD_SNIP_HVY2")},
+            {"weapon_hominglauncher", GetLabelText("WTD_HOMLNCH")},
+            {"weapon_knife", GetLabelText("WTD_KNIFE")},
+            {"weapon_knuckle", GetLabelText("WTD_KNUCKLE")},
+            {"weapon_machete", GetLabelText("WTD_MACHETE")},
+            {"weapon_machinepistol", GetLabelText("WTD_MCHPIST")},
+            {"weapon_marksmanpistol", GetLabelText("WTD_MKPISTOL")},
+            {"weapon_marksmanrifle", GetLabelText("WTD_MKRIFLE")},
+            {"weapon_marksmanrifle_mk2", GetLabelText("WTD_MKRIFLE2")},
+            {"weapon_mg", GetLabelText("WTD_MG")},
+            {"weapon_microsmg", GetLabelText("WTD_SMG_MCR")},
+            {"weapon_minigun", GetLabelText("WTD_MINIGUN")},
+            {"weapon_minismg", GetLabelText("WTD_MINISMG")},
+            {"weapon_molotov", GetLabelText("WTD_MOLOTOV")},
+            {"weapon_musket", GetLabelText("WTD_MUSKET")},
+            {"weapon_nightstick", GetLabelText("WTD_NGTSTK")},
+            {"weapon_petrolcan", GetLabelText("WTD_PETROL")},
+            {"weapon_pipebomb", GetLabelText("WTD_PIPEBOMB")},
+            {"weapon_pistol", GetLabelText("WT_PIST_DESC")},
+            {"weapon_pistol50", GetLabelText("WTD_PIST_50")},
+            {"weapon_pistol_mk2", GetLabelText("WTD_PIST2")},
+            {"weapon_poolcue", GetLabelText("WTD_POOLCUE")},
+            {"weapon_proxmine", GetLabelText("WTD_PRXMINE")},
+            {"weapon_pumpshotgun", GetLabelText("WTD_SG_PMP")},
+            {"weapon_pumpshotgun_mk2", GetLabelText("WTD_SG_PMP2")},
+            {"weapon_railgun", GetLabelText("WTD_RAILGUN")},
+            {"weapon_revolver", GetLabelText("WTD_REVOLVER")},
+            {"weapon_revolver_mk2", GetLabelText("WTD_REVOLVER2")},
+            {"weapon_rpg", GetLabelText("WTD_RPG")},
+            {"weapon_sawnoffshotgun", GetLabelText("WTD_SG_SOF")},
+            {"weapon_smg", GetLabelText("WTD_SMG")},
+            {"weapon_smg_mk2", GetLabelText("WTD_SMG2")},
+            {"weapon_smokegrenade", GetLabelText("WTD_GNADE_SMK")},
+            {"weapon_sniperrifle", GetLabelText("WTD_SNIP_RIF")},
+            {"weapon_snowball", GetLabelText("WT_SNWBALL") + "."},
+            {"weapon_snspistol", GetLabelText("WTD_SNSPISTOL")},
+            {"weapon_snspistol_mk2", GetLabelText("WTD_SNSPISTOL2")},
+            {"weapon_specialcarbine", GetLabelText("WTD_SPCARBINE")},
+            {"weapon_specialcarbine_mk2", GetLabelText("WTD_SPCARBINE2")},
+            {"weapon_stickybomb", GetLabelText("WTD_GNADE_STK")},
+            {"weapon_stungun", GetLabelText("WTD_STUN")},
+            {"weapon_switchblade", GetLabelText("WTD_SWBLADE")},
+            {"weapon_unarmed", GetLabelText("WTD_UNARMED")},
+            {"weapon_vintagepistol", GetLabelText("WTD_VPISTOL")},
+            {"weapon_wrench", GetLabelText("WTD_WRENCH")},
             // DLC CHRISTMAS2018 (v 1604)
-            { "weapon_raypistol", GetLabelText("WTD_RAYPISTOL") },
-            { "weapon_raycarbine", GetLabelText("WTD_RAYCARBINE") },
-            { "weapon_rayminigun", GetLabelText("WTD_RAYMINIGUN") },
-            { "weapon_stone_hatchet", GetLabelText("WTD_SHATCHET") }
+            {"weapon_raypistol", GetLabelText("WTD_RAYPISTOL")},
+            {"weapon_raycarbine", GetLabelText("WTD_RAYCARBINE")},
+            {"weapon_rayminigun", GetLabelText("WTD_RAYMINIGUN")},
+            {"weapon_stone_hatchet", GetLabelText("WTD_SHATCHET")}
         };
 
-        public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
-        {
-            { "weapon_advancedrifle", GetLabelText("WT_RIFLE_ADV") },
-            { "weapon_appistol", GetLabelText("WT_PIST_AP") },
-            { "weapon_assaultrifle", GetLabelText("WT_RIFLE_ASL") },
-            { "weapon_assaultrifle_mk2", GetLabelText("WT_RIFLE_ASL2") },
-            { "weapon_assaultshotgun", GetLabelText("WT_SG_ASL") },
-            { "weapon_assaultsmg", GetLabelText("WT_SMG_ASL") },
-            { "weapon_autoshotgun", GetLabelText("WT_AUTOSHGN") },
-            { "weapon_bat", GetLabelText("WT_BAT") },
-            { "weapon_ball", GetLabelText("WT_BALL") },
-            { "weapon_battleaxe", GetLabelText("WT_BATTLEAXE") },
-            { "weapon_bottle", GetLabelText("WT_BOTTLE") },
-            { "weapon_bullpuprifle", GetLabelText("WT_BULLRIFLE") },
-            { "weapon_bullpuprifle_mk2", GetLabelText("WT_BULLRIFLE2") },
-            { "weapon_bullpupshotgun", GetLabelText("WT_SG_BLP") },
-            { "weapon_bzgas", GetLabelText("WT_BZGAS") },
-            { "weapon_carbinerifle", GetLabelText("WT_RIFLE_CBN") },
-            { "weapon_carbinerifle_mk2", GetLabelText("WT_RIFLE_CBN2") },
-            { "weapon_combatmg", GetLabelText("WT_MG_CBT") },
-            { "weapon_combatmg_mk2", GetLabelText("WT_MG_CBT2") },
-            { "weapon_combatpdw", GetLabelText("WT_COMBATPDW") },
-            { "weapon_combatpistol", GetLabelText("WT_PIST_CBT") },
-            { "weapon_compactlauncher", GetLabelText("WT_CMPGL") },
-            { "weapon_compactrifle", GetLabelText("WT_CMPRIFLE")},
-            { "weapon_crowbar", GetLabelText("WT_CROWBAR") },
-            { "weapon_dagger", GetLabelText("WT_DAGGER") },
-            { "weapon_dbshotgun", GetLabelText("WT_DBSHGN") },
-            { "weapon_doubleaction", GetLabelText("WT_REV_DA") },
-            { "weapon_fireextinguisher", GetLabelText("WT_FIRE") },
-            { "weapon_firework", GetLabelText("WT_FWRKLNCHR") },
-            { "weapon_flare", GetLabelText("WT_FLARE") },
-            { "weapon_flaregun", GetLabelText("WT_FLAREGUN") },
-            { "weapon_flashlight", GetLabelText("WT_FLASHLIGHT") },
-            { "weapon_golfclub", GetLabelText("WT_GOLFCLUB") },
-            { "weapon_grenade", GetLabelText("WT_GNADE") },
-            { "weapon_grenadelauncher", GetLabelText("WT_GL") },
-            { "weapon_gusenberg", GetLabelText("WT_GUSENBERG") },
-            { "weapon_hammer", GetLabelText("WT_HAMMER") },
-            { "weapon_hatchet", GetLabelText("WT_HATCHET") },
-            { "weapon_heavypistol", GetLabelText("WT_HEAVYPSTL") },
-            { "weapon_heavyshotgun", GetLabelText("WT_HVYSHOT") },
-            { "weapon_heavysniper", GetLabelText("WT_SNIP_HVY") },
-            { "weapon_heavysniper_mk2", GetLabelText("WT_SNIP_HVY2") },
-            { "weapon_hominglauncher", GetLabelText("WT_HOMLNCH") },
-            { "weapon_knife", GetLabelText("WT_KNIFE") },
-            { "weapon_knuckle", GetLabelText("WT_KNUCKLE") },
-            { "weapon_machete", GetLabelText("WT_MACHETE") },
-            { "weapon_machinepistol", GetLabelText("WT_MCHPIST") },
-            { "weapon_marksmanpistol", GetLabelText("WT_MKPISTOL") },
-            { "weapon_marksmanrifle", GetLabelText("WT_MKRIFLE") },
-            { "weapon_marksmanrifle_mk2", GetLabelText("WT_MKRIFLE2") },
-            { "weapon_mg", GetLabelText("WT_MG") },
-            { "weapon_microsmg", GetLabelText("WT_SMG_MCR") },
-            { "weapon_minigun", GetLabelText("WT_MINIGUN") },
-            { "weapon_minismg", GetLabelText("WT_MINISMG") },
-            { "weapon_molotov", GetLabelText("WT_MOLOTOV") },
-            { "weapon_musket", GetLabelText("WT_MUSKET") },
-            { "weapon_nightstick", GetLabelText("WT_NGTSTK") },
-            { "weapon_petrolcan", GetLabelText("WT_PETROL") },
-            { "weapon_pipebomb", GetLabelText("WT_PIPEBOMB") },
-            { "weapon_pistol", GetLabelText("WT_PIST") },
-            { "weapon_pistol50", GetLabelText("WT_PIST_50") },
-            { "weapon_pistol_mk2", GetLabelText("WT_PIST2") },
-            { "weapon_poolcue", GetLabelText("WT_POOLCUE") },
-            { "weapon_proxmine", GetLabelText("WT_PRXMINE") },
-            { "weapon_pumpshotgun", GetLabelText("WT_SG_PMP") },
-            { "weapon_pumpshotgun_mk2", GetLabelText("WT_SG_PMP2") },
-            { "weapon_railgun", GetLabelText("WT_RAILGUN") },
-            { "weapon_revolver", GetLabelText("WT_REVOLVER") },
-            { "weapon_revolver_mk2", GetLabelText("WT_REVOLVER2") },
-            { "weapon_rpg", GetLabelText("WT_RPG") },
-            { "weapon_sawnoffshotgun", GetLabelText("WT_SG_SOF") },
-            { "weapon_smg", GetLabelText("WT_SMG") },
-            { "weapon_smg_mk2", GetLabelText("WT_SMG2") },
-            { "weapon_smokegrenade", GetLabelText("WT_GNADE_SMK") },
-            { "weapon_sniperrifle", GetLabelText("WT_SNIP_RIF") },
-            { "weapon_snowball", GetLabelText("WT_SNWBALL") },
-            { "weapon_snspistol", GetLabelText("WT_SNSPISTOL") },
-            { "weapon_snspistol_mk2", GetLabelText("WT_SNSPISTOL2") },
-            { "weapon_specialcarbine", GetLabelText("WT_RIFLE_SCBN") },
-            { "weapon_specialcarbine_mk2", GetLabelText("WT_SPCARBINE2") },
-            { "weapon_stickybomb", GetLabelText("WT_GNADE_STK") },
-            { "weapon_stungun", GetLabelText("WT_STUN") },
-            { "weapon_switchblade", GetLabelText("WT_SWBLADE") },
-            { "weapon_unarmed", GetLabelText("WT_UNARMED") },
-            { "weapon_vintagepistol", GetLabelText("WT_VPISTOL") },
-            { "weapon_wrench", GetLabelText("WT_WRENCH") },
+        public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string> {
+            {"weapon_advancedrifle", GetLabelText("WT_RIFLE_ADV")},
+            {"weapon_appistol", GetLabelText("WT_PIST_AP")},
+            {"weapon_assaultrifle", GetLabelText("WT_RIFLE_ASL")},
+            {"weapon_assaultrifle_mk2", GetLabelText("WT_RIFLE_ASL2")},
+            {"weapon_assaultshotgun", GetLabelText("WT_SG_ASL")},
+            {"weapon_assaultsmg", GetLabelText("WT_SMG_ASL")},
+            {"weapon_autoshotgun", GetLabelText("WT_AUTOSHGN")},
+            {"weapon_bat", GetLabelText("WT_BAT")},
+            {"weapon_ball", GetLabelText("WT_BALL")},
+            {"weapon_battleaxe", GetLabelText("WT_BATTLEAXE")},
+            {"weapon_bottle", GetLabelText("WT_BOTTLE")},
+            {"weapon_bullpuprifle", GetLabelText("WT_BULLRIFLE")},
+            {"weapon_bullpuprifle_mk2", GetLabelText("WT_BULLRIFLE2")},
+            {"weapon_bullpupshotgun", GetLabelText("WT_SG_BLP")},
+            {"weapon_bzgas", GetLabelText("WT_BZGAS")},
+            {"weapon_carbinerifle", GetLabelText("WT_RIFLE_CBN")},
+            {"weapon_carbinerifle_mk2", GetLabelText("WT_RIFLE_CBN2")},
+            {"weapon_combatmg", GetLabelText("WT_MG_CBT")},
+            {"weapon_combatmg_mk2", GetLabelText("WT_MG_CBT2")},
+            {"weapon_combatpdw", GetLabelText("WT_COMBATPDW")},
+            {"weapon_combatpistol", GetLabelText("WT_PIST_CBT")},
+            {"weapon_compactlauncher", GetLabelText("WT_CMPGL")},
+            {"weapon_compactrifle", GetLabelText("WT_CMPRIFLE")},
+            {"weapon_crowbar", GetLabelText("WT_CROWBAR")},
+            {"weapon_dagger", GetLabelText("WT_DAGGER")},
+            {"weapon_dbshotgun", GetLabelText("WT_DBSHGN")},
+            {"weapon_doubleaction", GetLabelText("WT_REV_DA")},
+            {"weapon_fireextinguisher", GetLabelText("WT_FIRE")},
+            {"weapon_firework", GetLabelText("WT_FWRKLNCHR")},
+            {"weapon_flare", GetLabelText("WT_FLARE")},
+            {"weapon_flaregun", GetLabelText("WT_FLAREGUN")},
+            {"weapon_flashlight", GetLabelText("WT_FLASHLIGHT")},
+            {"weapon_golfclub", GetLabelText("WT_GOLFCLUB")},
+            {"weapon_grenade", GetLabelText("WT_GNADE")},
+            {"weapon_grenadelauncher", GetLabelText("WT_GL")},
+            {"weapon_gusenberg", GetLabelText("WT_GUSENBERG")},
+            {"weapon_hammer", GetLabelText("WT_HAMMER")},
+            {"weapon_hatchet", GetLabelText("WT_HATCHET")},
+            {"weapon_heavypistol", GetLabelText("WT_HEAVYPSTL")},
+            {"weapon_heavyshotgun", GetLabelText("WT_HVYSHOT")},
+            {"weapon_heavysniper", GetLabelText("WT_SNIP_HVY")},
+            {"weapon_heavysniper_mk2", GetLabelText("WT_SNIP_HVY2")},
+            {"weapon_hominglauncher", GetLabelText("WT_HOMLNCH")},
+            {"weapon_knife", GetLabelText("WT_KNIFE")},
+            {"weapon_knuckle", GetLabelText("WT_KNUCKLE")},
+            {"weapon_machete", GetLabelText("WT_MACHETE")},
+            {"weapon_machinepistol", GetLabelText("WT_MCHPIST")},
+            {"weapon_marksmanpistol", GetLabelText("WT_MKPISTOL")},
+            {"weapon_marksmanrifle", GetLabelText("WT_MKRIFLE")},
+            {"weapon_marksmanrifle_mk2", GetLabelText("WT_MKRIFLE2")},
+            {"weapon_mg", GetLabelText("WT_MG")},
+            {"weapon_microsmg", GetLabelText("WT_SMG_MCR")},
+            {"weapon_minigun", GetLabelText("WT_MINIGUN")},
+            {"weapon_minismg", GetLabelText("WT_MINISMG")},
+            {"weapon_molotov", GetLabelText("WT_MOLOTOV")},
+            {"weapon_musket", GetLabelText("WT_MUSKET")},
+            {"weapon_nightstick", GetLabelText("WT_NGTSTK")},
+            {"weapon_petrolcan", GetLabelText("WT_PETROL")},
+            {"weapon_pipebomb", GetLabelText("WT_PIPEBOMB")},
+            {"weapon_pistol", GetLabelText("WT_PIST")},
+            {"weapon_pistol50", GetLabelText("WT_PIST_50")},
+            {"weapon_pistol_mk2", GetLabelText("WT_PIST2")},
+            {"weapon_poolcue", GetLabelText("WT_POOLCUE")},
+            {"weapon_proxmine", GetLabelText("WT_PRXMINE")},
+            {"weapon_pumpshotgun", GetLabelText("WT_SG_PMP")},
+            {"weapon_pumpshotgun_mk2", GetLabelText("WT_SG_PMP2")},
+            {"weapon_railgun", GetLabelText("WT_RAILGUN")},
+            {"weapon_revolver", GetLabelText("WT_REVOLVER")},
+            {"weapon_revolver_mk2", GetLabelText("WT_REVOLVER2")},
+            {"weapon_rpg", GetLabelText("WT_RPG")},
+            {"weapon_sawnoffshotgun", GetLabelText("WT_SG_SOF")},
+            {"weapon_smg", GetLabelText("WT_SMG")},
+            {"weapon_smg_mk2", GetLabelText("WT_SMG2")},
+            {"weapon_smokegrenade", GetLabelText("WT_GNADE_SMK")},
+            {"weapon_sniperrifle", GetLabelText("WT_SNIP_RIF")},
+            {"weapon_snowball", GetLabelText("WT_SNWBALL")},
+            {"weapon_snspistol", GetLabelText("WT_SNSPISTOL")},
+            {"weapon_snspistol_mk2", GetLabelText("WT_SNSPISTOL2")},
+            {"weapon_specialcarbine", GetLabelText("WT_RIFLE_SCBN")},
+            {"weapon_specialcarbine_mk2", GetLabelText("WT_SPCARBINE2")},
+            {"weapon_stickybomb", GetLabelText("WT_GNADE_STK")},
+            {"weapon_stungun", GetLabelText("WT_STUN")},
+            {"weapon_switchblade", GetLabelText("WT_SWBLADE")},
+            {"weapon_unarmed", GetLabelText("WT_UNARMED")},
+            {"weapon_vintagepistol", GetLabelText("WT_VPISTOL")},
+            {"weapon_wrench", GetLabelText("WT_WRENCH")},
             // DLC CHRISTMAS2018 (v 1604)
-            { "weapon_raypistol", GetLabelText("WT_RAYPISTOL") },
-            { "weapon_raycarbine", GetLabelText("WT_RAYCARBINE") },
-            { "weapon_rayminigun", GetLabelText("WT_RAYMINIGUN") },
-            { "weapon_stone_hatchet", GetLabelText("WT_SHATCHET") }
+            {"weapon_raypistol", GetLabelText("WT_RAYPISTOL")},
+            {"weapon_raycarbine", GetLabelText("WT_RAYCARBINE")},
+            {"weapon_rayminigun", GetLabelText("WT_RAYMINIGUN")},
+            {"weapon_stone_hatchet", GetLabelText("WT_SHATCHET")}
         };
-        #endregion
+    #endregion
 
-        #region weapon permissions
-        public static readonly Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
-        {
+    #region weapon permissions
+        public static readonly Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission> {
             ["weapon_advancedrifle"] = Permission.WPAdvancedRifle,
             ["weapon_appistol"] = Permission.WPAPPistol,
             ["weapon_assaultrifle"] = Permission.WPAssaultRifle,
@@ -402,13 +414,12 @@ namespace vMenuClient
             ["weapon_raypistol"] = Permission.WPPlasmaPistol,
             ["weapon_raycarbine"] = Permission.WPPlasmaCarbine,
             ["weapon_rayminigun"] = Permission.WPPlasmaMinigun,
-            ["weapon_stone_hatchet"] = Permission.WPStoneHatchet,
+            ["weapon_stone_hatchet"] = Permission.WPStoneHatchet
         };
-        #endregion
+    #endregion
 
-        #region weapon component names
-        private static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
-        {
+    #region weapon component names
+        static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string> {
             ["COMPONENT_ADVANCEDRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ADVANCEDRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_ADVANCEDRIFLE_VARMOD_LUXE"] = GetLabelText("WCT_VAR_METAL"),
@@ -768,11 +779,10 @@ namespace vMenuClient
             // CHRISTMAS 2018 DLC (v 1604)
             ["COMPONENT_RAYPISTOL_VARMOD_XMAS18"] = GetLabelText("WCT_VAR_RAY18")
         };
-        #endregion
+    #endregion
 
-        #region weapon tints
-        public static readonly Dictionary<string, int> WeaponTints = new Dictionary<string, int>()
-        {
+    #region weapon tints
+        public static readonly Dictionary<string, int> WeaponTints = new Dictionary<string, int> {
             ["Black"] = 0,
             ["Green"] = 1,
             ["Gold"] = 2,
@@ -780,13 +790,12 @@ namespace vMenuClient
             ["Army"] = 4,
             ["LSPD"] = 5,
             ["Orange"] = 6,
-            ["Platinum"] = 7,
+            ["Platinum"] = 7
         };
-        #endregion
+    #endregion
 
-        #region weapon mk2 tints
-        public static readonly Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int>()
-        {
+    #region weapon mk2 tints
+        public static readonly Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int> {
             ["Classic Black"] = 0,
             ["Classic Gray"] = 1,
             ["Classic Two Tone"] = 2,
@@ -820,7 +829,7 @@ namespace vMenuClient
             ["Metallic White & Aqua"] = 30,
             ["Metallic Red & Yellow"] = 31
         };
-        #endregion
-        #endregion
+    #endregion
+    #endregion
     }
 }

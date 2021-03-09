@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace vMenuClient
-{
-    public static class TimeCycles
-    {
-        public static List<string> Timecycles = new List<string>()
-        {
+namespace vMenuClient {
+    public static class TimeCycles {
+        public static List<string> Timecycles = new List<string> {
             "AmbientPUSH",
             "AP1_01_B_IntRefRange",
             "AP1_01_C_NoFog",

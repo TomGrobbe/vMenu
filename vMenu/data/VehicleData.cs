@@ -1,51 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
+﻿using System.Collections.Generic;
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuClient
-{
-    public static class VehicleData
-    {
-        public struct VehicleColor
-        {
-            public readonly int id;
-            public readonly string label;
-
-            public VehicleColor(int id, string label)
-            {
-                if (label == "veh_color_taxi_yellow")
-                {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_taxi_yellow") == "NULL")
-                    {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_taxi_yellow", $"Taxi {CitizenFX.Core.Native.API.GetLabelText("IEC_T20_2")}");
-                    }
-                }
-                else if (label == "veh_color_off_white")
-                {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_off_white") == "NULL")
-                    {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_off_white", "Off White");
-                    }
-                }
-                else if (label == "VERY_DARK_BLUE")
-                {
-                    if (CitizenFX.Core.Native.API.GetLabelText("VERY_DARK_BLUE") == "NULL")
-                    {
-                        CitizenFX.Core.Native.API.AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
-                    }
-                }
-
-                this.label = label;
-                this.id = id;
-            }
-        }
-
-        public static readonly List<VehicleColor> ClassicColors = new List<VehicleColor>()
-        {
+namespace vMenuClient {
+    public static class VehicleData {
+        public static readonly List<VehicleColor> ClassicColors = new List<VehicleColor> {
             new VehicleColor(0, "BLACK"),
             new VehicleColor(1, "GRAPHITE"),
             new VehicleColor(2, "BLACK_STEEL"),
@@ -131,11 +89,10 @@ namespace vMenuClient
             new VehicleColor(146, "VERY_DARK_BLUE"),
             new VehicleColor(147, "BLACK_GRAPHITE"),
 
-            new VehicleColor(150, "LAVA_RED"),
+            new VehicleColor(150, "LAVA_RED")
         };
 
-        public static readonly List<VehicleColor> MatteColors = new List<VehicleColor>()
-        {
+        public static readonly List<VehicleColor> MatteColors = new List<VehicleColor> {
             new VehicleColor(12, "BLACK"),
             new VehicleColor(13, "GREY"),
             new VehicleColor(14, "LIGHT_GREY"),
@@ -160,21 +117,19 @@ namespace vMenuClient
             new VehicleColor(152, "MATTE_OD"),
             new VehicleColor(153, "MATTE_DIRT"),
             new VehicleColor(154, "MATTE_DESERT"),
-            new VehicleColor(155, "MATTE_FOIL"),
+            new VehicleColor(155, "MATTE_FOIL")
         };
 
-        public static readonly List<VehicleColor> MetalColors = new List<VehicleColor>()
-        {
+        public static readonly List<VehicleColor> MetalColors = new List<VehicleColor> {
             new VehicleColor(117, "BR_STEEL"),
             new VehicleColor(118, "BR BLACK_STEEL"),
             new VehicleColor(119, "BR_ALUMINIUM"),
 
             new VehicleColor(158, "GOLD_P"),
-            new VehicleColor(159, "GOLD_S"),
+            new VehicleColor(159, "GOLD_S")
         };
 
-        public static readonly List<VehicleColor> UtilColors = new List<VehicleColor>()
-        {
+        public static readonly List<VehicleColor> UtilColors = new List<VehicleColor> {
             new VehicleColor(15, "BLACK"),
             new VehicleColor(16, "FMMC_COL1_1"),
             new VehicleColor(17, "DARK_SILVER"),
@@ -221,8 +176,7 @@ namespace vMenuClient
             new VehicleColor(160, "YELLOW")
         };
 
-        public static readonly List<VehicleColor> WornColors = new List<VehicleColor>()
-        {
+        public static readonly List<VehicleColor> WornColors = new List<VehicleColor> {
             new VehicleColor(21, "BLACK"),
             new VehicleColor(22, "GRAPHITE"),
             new VehicleColor(23, "LIGHT_GREY"),
@@ -258,16 +212,52 @@ namespace vMenuClient
             new VehicleColor(130, "ORANGE"),
             new VehicleColor(131, "WHITE"),
             new VehicleColor(132, "FROST_WHITE"),
-            new VehicleColor(133, "OLIVE_GREEN"),
+            new VehicleColor(133, "OLIVE_GREEN")
         };
 
-        public static class Vehicles
-        {
-            #region Vehicle List Per Class
+        public struct VehicleColor {
+            public readonly int id;
+            public readonly string label;
 
-            #region Compacts
-            public static List<string> Compacts { get; } = new List<string>()
+            public VehicleColor(int id, string label)
             {
+                if (label == "veh_color_taxi_yellow") {
+                    if (GetLabelText("veh_color_taxi_yellow") == "NULL") {
+                        AddTextEntry("veh_color_taxi_yellow", $"Taxi {GetLabelText("IEC_T20_2")}");
+                    }
+                }
+                else if (label == "veh_color_off_white") {
+                    if (GetLabelText("veh_color_off_white") == "NULL") {
+                        AddTextEntry("veh_color_off_white", "Off White");
+                    }
+                }
+                else if (label == "VERY_DARK_BLUE") {
+                    if (GetLabelText("VERY_DARK_BLUE") == "NULL") {
+                        AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
+                    }
+                }
+
+                this.label = label;
+                this.id = id;
+            }
+        }
+
+        public static class Vehicles {
+            public static string[] GetAllVehicles()
+            {
+                List<string> vehs = new List<string>();
+                foreach (KeyValuePair<string, List<string>> vc in VehicleClasses) {
+                    foreach (string c in vc.Value) {
+                        vehs.Add(c);
+                    }
+                }
+
+                return vehs.ToArray();
+            }
+
+        #region Vehicle List Per Class
+        #region Compacts
+            public static List<string> Compacts { get; } = new List<string> {
                 "ASBO", // CASINO (MPHEIST3) DLC
                 "BLISTA",
                 "BRIOSO",
@@ -282,12 +272,11 @@ namespace vMenuClient
                 "KANJO", // CASINO (MPHEIST3) DLC
                 "PANTO",
                 "PRAIRIE",
-                "RHAPSODY",
+                "RHAPSODY"
             };
-            #endregion
-            #region Sedans
-            public static List<string> Sedans { get; } = new List<string>()
-            {
+        #endregion
+        #region Sedans
+            public static List<string> Sedans { get; } = new List<string> {
                 "ASEA",
                 "ASEA2",
                 "ASTEROPE",
@@ -320,12 +309,11 @@ namespace vMenuClient
                 "SURGE",
                 "TAILGATER",
                 "WARRENER",
-                "WASHINGTON",
+                "WASHINGTON"
             };
-            #endregion
-            #region SUVs
-            public static List<string> SUVs { get; } = new List<string>()
-            {
+        #endregion
+        #region SUVs
+            public static List<string> SUVs { get; } = new List<string> {
                 "BALLER",
                 "BALLER2",
                 "BALLER3",
@@ -358,12 +346,11 @@ namespace vMenuClient
                 "SERRANO",
                 "TOROS", // MPCHRISTMAS2018 DLC
                 "XLS",
-                "XLS2",
+                "XLS2"
             };
-            #endregion
-            #region Coupes
-            public static List<string> Coupes { get; } = new List<string>()
-            {
+        #endregion
+        #region Coupes
+            public static List<string> Coupes { get; } = new List<string> {
                 "COGCABRIO",
                 "EXEMPLAR",
                 "F620",
@@ -377,12 +364,11 @@ namespace vMenuClient
                 "WINDSOR",
                 "WINDSOR2",
                 "ZION",
-                "ZION2",
+                "ZION2"
             };
-            #endregion
-            #region Muscle
-            public static List<string> Muscle { get; } = new List<string>()
-            {
+        #endregion
+        #region Muscle
+            public static List<string> Muscle { get; } = new List<string> {
                 "BLADE",
                 "BUCCANEER",
                 "BUCCANEER2",
@@ -453,12 +439,11 @@ namespace vMenuClient
                 "VOODOO",
                 "VOODOO2",
                 "YOSEMITE",
-                "YOSEMITE2", // CASINO (MPHEIST3) DLC
+                "YOSEMITE2" // CASINO (MPHEIST3) DLC
             };
-            #endregion
-            #region SportsClassics
-            public static List<string> SportsClassics { get; } = new List<string>()
-            {
+        #endregion
+        #region SportsClassics
+            public static List<string> SportsClassics { get; } = new List<string> {
                 "ARDENT",
                 "BTYPE",
                 "BTYPE2",
@@ -503,12 +488,11 @@ namespace vMenuClient
                 "VISERIS",
                 "Z190",
                 "ZION3", // MPVINEWOOD DLC
-                "ZTYPE",
+                "ZTYPE"
             };
-            #endregion
-            #region Sports
-            public static List<string> Sports { get; } = new List<string>()
-            {
+        #endregion
+        #region Sports
+            public static List<string> Sports { get; } = new List<string> {
                 "ALPHA",
                 "BANSHEE",
                 "BESTIAGTS",
@@ -584,12 +568,11 @@ namespace vMenuClient
                 "VSTR", // CASINO (MPHEIST3) DLC
                 "ZR380", // MPCHRISTMAS2018 DLC
                 "ZR3802", // MPCHRISTMAS2018 DLC
-                "ZR3803", // MPCHRISTMAS2018 DLC
+                "ZR3803" // MPCHRISTMAS2018 DLC
             };
-            #endregion
-            #region Super
-            public static List<string> Super { get; } = new List<string>()
-            {
+        #endregion
+        #region Super
+            public static List<string> Super { get; } = new List<string> {
                 "ADDER",
                 "AUTARCH",
                 "BANSHEE2",
@@ -637,12 +620,11 @@ namespace vMenuClient
                 "VOLTIC2",
                 "XA21",
                 "ZENTORNO",
-                "ZORRUSSO", // MPVINEWOOD DLC
+                "ZORRUSSO" // MPVINEWOOD DLC
             };
-            #endregion
-            #region Motorcycles
-            public static List<string> Motorcycles { get; } = new List<string>()
-            {
+        #endregion
+        #region Motorcycles
+            public static List<string> Motorcycles { get; } = new List<string> {
                 "AKUMA",
                 "AVARUS",
                 "BAGGER",
@@ -695,12 +677,11 @@ namespace vMenuClient
                 "VORTEX",
                 "WOLFSBANE",
                 "ZOMBIEA",
-                "ZOMBIEB",
+                "ZOMBIEB"
             };
-            #endregion
-            #region OffRoad
-            public static List<string> OffRoad { get; } = new List<string>()
-            {
+        #endregion
+        #region OffRoad
+            public static List<string> OffRoad { get; } = new List<string> {
                 "BFINJECTION",
                 "BIFTA",
                 "BLAZER",
@@ -757,12 +738,11 @@ namespace vMenuClient
                 "TROPHYTRUCK2",
                 "VAGRANT", // CASINO (MPHEIST3) DLC
                 "YOSEMITE3", // MPSUM2020
-                "ZHABA", // CASINO (MPHEIST3) DLC
+                "ZHABA" // CASINO (MPHEIST3) DLC
             };
-            #endregion
-            #region Industrial
-            public static List<string> Industrial { get; } = new List<string>()
-            {
+        #endregion
+        #region Industrial
+            public static List<string> Industrial { get; } = new List<string> {
                 "BULLDOZER",
                 "CUTTER",
                 "DUMP",
@@ -773,12 +753,11 @@ namespace vMenuClient
                 "MIXER2",
                 "RUBBLE",
                 "TIPTRUCK",
-                "TIPTRUCK2",
+                "TIPTRUCK2"
             };
-            #endregion
-            #region Utility
-            public static List<string> Utility { get; } = new List<string>()
-            {
+        #endregion
+        #region Utility
+            public static List<string> Utility { get; } = new List<string> {
                 "AIRTUG",
                 "CADDY",
                 "CADDY2",
@@ -807,7 +786,7 @@ namespace vMenuClient
                 "FREIGHTTRAILER", // Extended
                 "ARMYTANKER", // Army Tanker
                 "TRAILERLARGE", // Mobile Operations Center
-            
+
                 /// Large Trailers
                 "DOCKTRAILER", // Shipping Container Trailer
                 "TR3", // Large Boat Trailer (Sailboat)
@@ -822,23 +801,22 @@ namespace vMenuClient
                 "TRAILERLOGS", // Logs Trailer
                 "TANKER", // Ron Oil Tanker Trailer
                 "TANKER2", // Ron Oil Tanker Trailer (Heist Version)
-            
+
                 /// Medium Trailers
                 "BALETRAILER", // (Tractor Hay Bale Trailer)
                 "GRAINTRAILER", // (Tractor Grain Trailer)
-            
+
                 // Ortega's trailer, we don't want this one because you can't drive them.
                 //"PROPTRAILER",
 
                 /// Small Trailers
                 "BOATTRAILER", // Small Boat Trailer
                 "RAKETRAILER", // Tractor Tow Plow/Rake
-                "TRAILERSMALL", // Small Utility Trailer
+                "TRAILERSMALL" // Small Utility Trailer
             };
-            #endregion
-            #region Vans
-            public static List<string> Vans { get; } = new List<string>()
-            {
+        #endregion
+        #region Vans
+            public static List<string> Vans { get; } = new List<string> {
                 "BISON",
                 "BISON2",
                 "BISON3",
@@ -873,24 +851,22 @@ namespace vMenuClient
                 "TACO",
                 "YOUGA",
                 "YOUGA2",
-                "YOUGA3", // MPSUM2020
+                "YOUGA3" // MPSUM2020
             };
-            #endregion
-            #region Cycles
-            public static List<string> Cycles { get; } = new List<string>()
-            {
+        #endregion
+        #region Cycles
+            public static List<string> Cycles { get; } = new List<string> {
                 "BMX",
                 "CRUISER",
                 "FIXTER",
                 "SCORCHER",
                 "TRIBIKE",
                 "TRIBIKE2",
-                "TRIBIKE3",
+                "TRIBIKE3"
             };
-            #endregion
-            #region Boats
-            public static List<string> Boats { get; } = new List<string>()
-            {
+        #endregion
+        #region Boats
+            public static List<string> Boats { get; } = new List<string> {
                 "DINGHY",
                 "DINGHY2",
                 "DINGHY3",
@@ -911,12 +887,11 @@ namespace vMenuClient
                 "TORO2",
                 "TROPIC",
                 "TROPIC2",
-                "TUG",
+                "TUG"
             };
-            #endregion
-            #region Helicopters
-            public static List<string> Helicopters { get; } = new List<string>()
-            {
+        #endregion
+        #region Helicopters
+            public static List<string> Helicopters { get; } = new List<string> {
                 "AKULA",
                 "ANNIHILATOR",
                 "BUZZARD",
@@ -940,12 +915,11 @@ namespace vMenuClient
                 "SWIFT2",
                 "VALKYRIE",
                 "VALKYRIE2",
-                "VOLATUS",
+                "VOLATUS"
             };
-            #endregion
-            #region Planes
-            public static List<string> Planes { get; } = new List<string>()
-            {
+        #endregion
+        #region Planes
+            public static List<string> Planes { get; } = new List<string> {
                 "ALPHAZ1",
                 "AVENGER",
                 "AVENGER2",
@@ -983,12 +957,11 @@ namespace vMenuClient
                 "VELUM",
                 "VELUM2",
                 "VESTRA",
-                "VOLATOL",
+                "VOLATOL"
             };
-            #endregion
-            #region Service
-            public static List<string> Service { get; } = new List<string>()
-            {
+        #endregion
+        #region Service
+            public static List<string> Service { get; } = new List<string> {
                 "AIRBUS",
                 "BRICKADE",
                 "BUS",
@@ -1000,12 +973,11 @@ namespace vMenuClient
                 "TOURBUS",
                 "TRASH",
                 "TRASH2",
-                "WASTELANDER",
+                "WASTELANDER"
             };
-            #endregion
-            #region Emergency
-            public static List<string> Emergency { get; } = new List<string>()
-            {
+        #endregion
+        #region Emergency
+            public static List<string> Emergency { get; } = new List<string> {
                 "AMBULANCE",
                 "FBI",
                 "FBI2",
@@ -1026,12 +998,11 @@ namespace vMenuClient
                 "RIOT",
                 "RIOT2",
                 "SHERIFF",
-                "SHERIFF2",
+                "SHERIFF2"
             };
-            #endregion
-            #region Military
-            public static List<string> Military { get; } = new List<string>()
-            {
+        #endregion
+        #region Military
+            public static List<string> Military { get; } = new List<string> {
                 "APC",
                 "BARRACKS",
                 "BARRACKS2",
@@ -1047,12 +1018,11 @@ namespace vMenuClient
                 "SCARAB2", // MPCHRISTMAS2018 DLC
                 "SCARAB3", // MPCHRISTMAS2018 DLC
                 "THRUSTER", // Jetpack
-                "TRAILERSMALL2", // Anti Aircraft Trailer
+                "TRAILERSMALL2" // Anti Aircraft Trailer
             };
-            #endregion
-            #region Commercial
-            public static List<string> Commercial { get; } = new List<string>()
-            {
+        #endregion
+        #region Commercial
+            public static List<string> Commercial { get; } = new List<string> {
                 "BENSON",
                 "BIFF",
                 "CERBERUS", // MPCHRISTMAS2018 DLC
@@ -1072,12 +1042,11 @@ namespace vMenuClient
                 "POUNDER2", // dlc (mpbattle)
                 "STOCKADE",
                 "STOCKADE3",
-                "TERBYTE", // dlc (mpbattle)
+                "TERBYTE" // dlc (mpbattle)
             };
-            #endregion
-            #region Trains
-            public static List<string> Trains { get; } = new List<string>()
-            {
+        #endregion
+        #region Trains
+            public static List<string> Trains { get; } = new List<string> {
                 "CABLECAR",
                 "FREIGHT",
                 "FREIGHTCAR",
@@ -1085,18 +1054,17 @@ namespace vMenuClient
                 "FREIGHTCONT2",
                 "FREIGHTGRAIN",
                 "METROTRAIN",
-                "TANKERCAR",
+                "TANKERCAR"
             };
-            #endregion
-            #region OpenWheel
-            public static List<string> OpenWheel { get; } = new List<string>()
-            {
+        #endregion
+        #region OpenWheel
+            public static List<string> OpenWheel { get; } = new List<string> {
                 "FORMULA",
                 "FORMULA2",
                 "OPENWHEEL1", // MPSUM2020
-                "OPENWHEEL2", // MPSUM2020
+                "OPENWHEEL2" // MPSUM2020
             };
-            #endregion
+        #endregion
 
 
             /*
@@ -1124,8 +1092,7 @@ namespace vMenuClient
             Trains = 21
              */
 
-            public static Dictionary<string, List<string>> VehicleClasses { get; } = new Dictionary<string, List<string>>()
-            {
+            public static Dictionary<string, List<string>> VehicleClasses { get; } = new Dictionary<string, List<string>> {
                 [GetLabelText("VEH_CLASS_0")] = Compacts,
                 [GetLabelText("VEH_CLASS_1")] = Sedans,
                 [GetLabelText("VEH_CLASS_2")] = SUVs,
@@ -1148,22 +1115,9 @@ namespace vMenuClient
                 [GetLabelText("VEH_CLASS_19")] = Military,
                 [GetLabelText("VEH_CLASS_20")] = Commercial,
                 [GetLabelText("VEH_CLASS_21")] = Trains,
-                [GetLabelText("VEH_CLASS_22")] = OpenWheel,
+                [GetLabelText("VEH_CLASS_22")] = OpenWheel
             };
-            #endregion
-
-            public static string[] GetAllVehicles()
-            {
-                List<string> vehs = new List<string>();
-                foreach (var vc in VehicleClasses)
-                {
-                    foreach (var c in vc.Value)
-                    {
-                        vehs.Add(c);
-                    }
-                }
-                return vehs.ToArray();
-            }
+        #endregion
         }
     }
 }
