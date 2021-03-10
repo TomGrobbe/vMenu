@@ -1,15 +1,12 @@
-﻿using CitizenFX.Core;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuClient
-{
-    public interface IPlayer
-    {
+namespace vMenuClient {
+    public interface IPlayer {
         int Handle { get; }
         int ServerId { get; }
         Ped Character { get; }
@@ -18,8 +15,7 @@ namespace vMenuClient
         string Name { get; }
     }
 
-    public interface IPlayerList : IEnumerable<IPlayer>
-    {
+    public interface IPlayerList : IEnumerable<IPlayer> {
         void RequestPlayerList();
 
         void ReceivedPlayerList(IList<object> players);
@@ -27,9 +23,8 @@ namespace vMenuClient
         Task WaitRequested();
     }
 
-    public class NativePlayer : IPlayer
-    {
-        private readonly Player player;
+    public class NativePlayer : IPlayer {
+        readonly Player player;
 
         public NativePlayer(Player player)
         {
@@ -44,9 +39,8 @@ namespace vMenuClient
         public string Name => player.Name;
     }
 
-    public class NativePlayerList : IPlayerList
-    {
-        private readonly PlayerList playerList;
+    public class NativePlayerList : IPlayerList {
+        readonly PlayerList playerList;
 
         public NativePlayerList(PlayerList playerList)
         {
@@ -55,8 +49,7 @@ namespace vMenuClient
 
         public IEnumerator<IPlayer> GetEnumerator()
         {
-            foreach (var player in playerList)
-            {
+            foreach (Player player in playerList) {
                 yield return new NativePlayer(player);
             }
         }
@@ -68,7 +61,6 @@ namespace vMenuClient
 
         public void ReceivedPlayerList(IList<object> players)
         {
-
         }
 
         public Task WaitRequested()
@@ -79,15 +71,13 @@ namespace vMenuClient
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var player in playerList)
-            {
+            foreach (Player player in playerList) {
                 yield return new NativePlayer(player);
             }
         }
     }
 
-    public class InfinityPlayer : IPlayer
-    {
+    public class InfinityPlayer : IPlayer {
         public InfinityPlayer(int serverId, string name)
         {
             ServerId = serverId;
@@ -98,16 +88,12 @@ namespace vMenuClient
 
         public int ServerId { get; }
 
-        public Ped Character
-        {
-            get
-            {
-                if (Handle >= 0)
-                {
-                    var ped = GetPlayerPed(Handle);
+        public Ped Character {
+            get {
+                if (Handle >= 0) {
+                    int ped = GetPlayerPed(Handle);
 
-                    if (ped > 0)
-                    {
+                    if (ped > 0) {
                         return new Ped(ped);
                     }
                 }
@@ -122,36 +108,16 @@ namespace vMenuClient
         public string Name { get; }
     }
 
-    public class InfinityPlayerList : IPlayerList
-    {
-        private readonly PlayerList playerList;
-        private readonly Dictionary<int, InfinityPlayer> remotePlayerList;
+    public class InfinityPlayerList : IPlayerList {
+        readonly PlayerList playerList;
+        readonly Dictionary<int, InfinityPlayer> remotePlayerList;
 
-        private int updatingPlayerList;
+        int updatingPlayerList;
 
         public InfinityPlayerList(PlayerList playerList)
         {
             this.playerList = playerList;
-            this.remotePlayerList = new Dictionary<int, InfinityPlayer>();
-        }
-
-        private IEnumerator<IPlayer> GetEnumeratorInternal()
-        {
-            var nearPlayers = new HashSet<int>();
-
-            foreach (var player in playerList)
-            {
-                yield return new NativePlayer(player);
-                nearPlayers.Add(player.ServerId);
-            }
-
-            foreach (var player in remotePlayerList)
-            {
-                if (!nearPlayers.Contains(player.Value.ServerId))
-                {
-                    yield return player.Value;
-                }
-            }
+            remotePlayerList = new Dictionary<int, InfinityPlayer>();
         }
 
         public IEnumerator<IPlayer> GetEnumerator()
@@ -174,15 +140,11 @@ namespace vMenuClient
         {
             remotePlayerList.Clear();
 
-            foreach (var playerPair in players)
-            {
-                if (playerPair is IDictionary<string, object> playerDict)
-                {
-                    if (playerDict.TryGetValue("n", out var nameObj) && playerDict.TryGetValue("s", out var serverIdObj))
-                    {
-                        if (nameObj is string name)
-                        {
-                            var serverId = Convert.ToInt32(serverIdObj);
+            foreach (object playerPair in players) {
+                if (playerPair is IDictionary<string, object> playerDict) {
+                    if (playerDict.TryGetValue("n", out object nameObj) && playerDict.TryGetValue("s", out object serverIdObj)) {
+                        if (nameObj is string name) {
+                            int serverId = Convert.ToInt32(serverIdObj);
 
                             remotePlayerList[serverId] = new InfinityPlayer(serverId, name);
                         }
@@ -195,9 +157,24 @@ namespace vMenuClient
 
         public async Task WaitRequested()
         {
-            while (updatingPlayerList > 0)
-            {
+            while (updatingPlayerList > 0) {
                 await BaseScript.Delay(0);
+            }
+        }
+
+        IEnumerator<IPlayer> GetEnumeratorInternal()
+        {
+            HashSet<int> nearPlayers = new HashSet<int>();
+
+            foreach (Player player in playerList) {
+                yield return new NativePlayer(player);
+                nearPlayers.Add(player.ServerId);
+            }
+
+            foreach (KeyValuePair<int, InfinityPlayer> player in remotePlayerList) {
+                if (!nearPlayers.Contains(player.Value.ServerId)) {
+                    yield return player.Value;
+                }
             }
         }
     }

@@ -1,28 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
-using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
-{
-    public class NoClip : BaseScript
-    {
-        private static bool NoclipActive { get; set; } = false;
-        private static int MovingSpeed { get; set; } = 0;
-        private static int Scale { get; set; } = -1;
-        private static bool FollowCamMode { get; set; } = true;
-
-
-        private List<string> speeds = new List<string>()
-        {
+namespace vMenuClient {
+    public class NoClip : BaseScript {
+        List<string> speeds = new List<string> {
             "Very Slow",
             "Slow",
             "Normal",
@@ -38,6 +21,11 @@ namespace vMenuClient
             Tick += NoClipHandler;
         }
 
+        static bool NoclipActive { get; set; }
+        static int MovingSpeed { get; set; }
+        static int Scale { get; set; } = -1;
+        static bool FollowCamMode { get; set; } = true;
+
         internal static void SetNoclipActive(bool active)
         {
             NoclipActive = active;
@@ -48,20 +36,17 @@ namespace vMenuClient
             return NoclipActive;
         }
 
-        private async Task NoClipHandler()
+        async Task NoClipHandler()
         {
-            if (NoclipActive)
-            {
+            if (NoclipActive) {
                 Scale = RequestScaleformMovie("INSTRUCTIONAL_BUTTONS");
-                while (!HasScaleformMovieLoaded(Scale))
-                {
+                while (!HasScaleformMovieLoaded(Scale)) {
                     await Delay(0);
                 }
             }
-            while (NoclipActive)
-            {
-                if (!IsHudHidden())
-                {
+
+            while (NoclipActive) {
+                if (!IsHudHidden()) {
                     BeginScaleformMovieMethod(Scale, "CLEAR_ALL");
                     EndScaleformMovieMethod();
 
@@ -74,37 +59,37 @@ namespace vMenuClient
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(1);
                     PushScaleformMovieMethodParameterString("~INPUT_MOVE_LR~");
-                    PushScaleformMovieMethodParameterString($"Turn Left/Right");
+                    PushScaleformMovieMethodParameterString("Turn Left/Right");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(2);
                     PushScaleformMovieMethodParameterString("~INPUT_MOVE_UD~");
-                    PushScaleformMovieMethodParameterString($"Move");
+                    PushScaleformMovieMethodParameterString("Move");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(3);
                     PushScaleformMovieMethodParameterString("~INPUT_MULTIPLAYER_INFO~");
-                    PushScaleformMovieMethodParameterString($"Down");
+                    PushScaleformMovieMethodParameterString("Down");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(4);
                     PushScaleformMovieMethodParameterString("~INPUT_COVER~");
-                    PushScaleformMovieMethodParameterString($"Up");
+                    PushScaleformMovieMethodParameterString("Up");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(5);
                     PushScaleformMovieMethodParameterString("~INPUT_VEH_HEADLIGHT~");
-                    PushScaleformMovieMethodParameterString($"Cam Mode");
+                    PushScaleformMovieMethodParameterString("Cam Mode");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(6);
-                    PushScaleformMovieMethodParameterString(GetControlInstructionalButton(0, (int)MainMenu.NoClipKey, 1));
-                    PushScaleformMovieMethodParameterString($"Toggle NoClip");
+                    PushScaleformMovieMethodParameterString(GetControlInstructionalButton(0, MainMenu.NoClipKey, 1));
+                    PushScaleformMovieMethodParameterString("Toggle NoClip");
                     EndScaleformMovieMethod();
 
                     BeginScaleformMovieMethod(Scale, "DRAW_INSTRUCTIONAL_BUTTONS");
@@ -114,7 +99,7 @@ namespace vMenuClient
                     DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 255, 0);
                 }
 
-                var noclipEntity = Game.PlayerPed.IsInVehicle() ? Game.PlayerPed.CurrentVehicle.Handle : Game.PlayerPed.Handle;
+                int noclipEntity = Game.PlayerPed.IsInVehicle() ? Game.PlayerPed.CurrentVehicle.Handle : Game.PlayerPed.Handle;
 
                 FreezeEntityPosition(noclipEntity, true);
                 SetEntityInvincible(noclipEntity, true);
@@ -133,61 +118,59 @@ namespace vMenuClient
                 Game.DisableControlThisFrame(0, Control.Cover);
                 Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
                 Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
-                if (Game.PlayerPed.IsInVehicle())
+                if (Game.PlayerPed.IsInVehicle()) {
                     Game.DisableControlThisFrame(0, Control.VehicleRadioWheel);
+                }
 
-                var yoff = 0.0f;
-                var zoff = 0.0f;
+                float yoff = 0.0f;
+                float zoff = 0.0f;
 
-                if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && UpdateOnscreenKeyboard() != 0 && !Game.IsPaused)
-                {
-                    if (Game.IsControlJustPressed(0, Control.Sprint))
-                    {
+                if (Game.CurrentInputMode == InputMode.MouseAndKeyboard && UpdateOnscreenKeyboard() != 0 && !Game.IsPaused) {
+                    if (Game.IsControlJustPressed(0, Control.Sprint)) {
                         MovingSpeed++;
-                        if (MovingSpeed == speeds.Count)
-                        {
+                        if (MovingSpeed == speeds.Count) {
                             MovingSpeed = 0;
                         }
                     }
 
-                    if (Game.IsDisabledControlPressed(0, Control.MoveUpOnly))
-                    {
+                    if (Game.IsDisabledControlPressed(0, Control.MoveUpOnly)) {
                         yoff = 0.5f;
                     }
-                    if (Game.IsDisabledControlPressed(0, Control.MoveDownOnly))
-                    {
+
+                    if (Game.IsDisabledControlPressed(0, Control.MoveDownOnly)) {
                         yoff = -0.5f;
                     }
-                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveLeftOnly))
-                    {
+
+                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveLeftOnly)) {
                         SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) + 3f);
                     }
-                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveRightOnly))
-                    {
+
+                    if (!FollowCamMode && Game.IsDisabledControlPressed(0, Control.MoveRightOnly)) {
                         SetEntityHeading(Game.PlayerPed.Handle, GetEntityHeading(Game.PlayerPed.Handle) - 3f);
                     }
-                    if (Game.IsDisabledControlPressed(0, Control.Cover))
-                    {
+
+                    if (Game.IsDisabledControlPressed(0, Control.Cover)) {
                         zoff = 0.21f;
                     }
-                    if (Game.IsDisabledControlPressed(0, Control.MultiplayerInfo))
-                    {
+
+                    if (Game.IsDisabledControlPressed(0, Control.MultiplayerInfo)) {
                         zoff = -0.21f;
                     }
-                    if (Game.IsDisabledControlJustPressed(0, Control.VehicleHeadlight))
-                    {
+
+                    if (Game.IsDisabledControlJustPressed(0, Control.VehicleHeadlight)) {
                         FollowCamMode = !FollowCamMode;
                     }
                 }
-                float moveSpeed = (float)MovingSpeed;
-                if (MovingSpeed > speeds.Count / 2)
-                {
+
+                float moveSpeed = MovingSpeed;
+                if (MovingSpeed > speeds.Count / 2) {
                     moveSpeed *= 1.8f;
                 }
+
                 moveSpeed = moveSpeed / (1f / GetFrameTime()) * 60;
                 newPos = GetOffsetFromEntityInWorldCoords(noclipEntity, 0f, yoff * (moveSpeed + 0.3f), zoff * (moveSpeed + 0.3f));
 
-                var heading = GetEntityHeading(noclipEntity);
+                float heading = GetEntityHeading(noclipEntity);
                 SetEntityVelocity(noclipEntity, 0f, 0f, 0f);
                 SetEntityRotation(noclipEntity, 0f, 0f, 0f, 0, false);
                 SetEntityHeading(noclipEntity, FollowCamMode ? GetGameplayCamRelativeHeading() : heading);
@@ -196,7 +179,7 @@ namespace vMenuClient
 
                 SetEntityVisible(noclipEntity, false, false);
                 SetLocalPlayerVisibleLocally(true);
-                SetEntityAlpha(noclipEntity, (int)(255 * 0.2), 0);
+                SetEntityAlpha(noclipEntity, (int) (255 * 0.2), 0);
 
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, true);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, true);

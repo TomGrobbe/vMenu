@@ -1,28 +1,15 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+using MenuAPI;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
-using vMenuShared;
 
-namespace vMenuClient
-{
-    public class WeatherOptions
-    {
-        // Variables
-        private Menu menu;
+namespace vMenuClient {
+    public class WeatherOptions {
         public static Dictionary<uint, MenuItem> weatherHashMenuIndex = new Dictionary<uint, MenuItem>();
-        public MenuCheckboxItem dynamicWeatherEnabled;
-        public MenuCheckboxItem blackout;
-        public static readonly List<string> weatherTypes = new List<string>()
-        {
+
+        public static readonly List<string> weatherTypes = new List<string> {
             "EXTRASUNNY",
             "CLEAR",
             "NEUTRAL",
@@ -40,12 +27,20 @@ namespace vMenuClient
             "HALLOWEEN"
         };
 
-        private void CreateMenu()
+        public MenuCheckboxItem blackout;
+
+        public MenuCheckboxItem dynamicWeatherEnabled;
+
+        // Variables
+        Menu menu;
+
+        void CreateMenu()
         {
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Weather Options");
 
-            dynamicWeatherEnabled = new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.DynamicWeatherEnabled);
+            dynamicWeatherEnabled =
+                new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.DynamicWeatherEnabled);
             blackout = new MenuCheckboxItem("Toggle Blackout", "This disables or enables all lights across the map.", EventManager.IsBlackoutEnabled);
             MenuItem extrasunny = new MenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!");
             MenuItem clear = new MenuItem("Clear", "Set the weather to ~y~clear~s~!");
@@ -65,34 +60,33 @@ namespace vMenuClient
             MenuItem removeclouds = new MenuItem("Remove All Clouds", "Remove all clouds from the sky!");
             MenuItem randomizeclouds = new MenuItem("Randomize Clouds", "Add random clouds to the sky!");
 
-            var indexOffset = 2;
-            if (IsAllowed(Permission.WODynamic))
-            {
+            int indexOffset = 2;
+            if (IsAllowed(Permission.WODynamic)) {
                 menu.AddMenuItem(dynamicWeatherEnabled);
                 indexOffset--;
             }
-            if (IsAllowed(Permission.WOBlackout))
-            {
+
+            if (IsAllowed(Permission.WOBlackout)) {
                 menu.AddMenuItem(blackout);
                 indexOffset--;
             }
-            if (IsAllowed(Permission.WOSetWeather))
-            {
-                weatherHashMenuIndex.Add((uint)GetHashKey("EXTRASUNNY"), extrasunny);
-                weatherHashMenuIndex.Add((uint)GetHashKey("CLEAR"), clear);
-                weatherHashMenuIndex.Add((uint)GetHashKey("NEUTRAL"), neutral);
-                weatherHashMenuIndex.Add((uint)GetHashKey("SMOG"), smog);
-                weatherHashMenuIndex.Add((uint)GetHashKey("FOGGY"), foggy);
-                weatherHashMenuIndex.Add((uint)GetHashKey("CLOUDS"), clouds);
-                weatherHashMenuIndex.Add((uint)GetHashKey("OVERCAST"), overcast);
-                weatherHashMenuIndex.Add((uint)GetHashKey("CLEARING"), clearing);
-                weatherHashMenuIndex.Add((uint)GetHashKey("RAIN"), rain);
-                weatherHashMenuIndex.Add((uint)GetHashKey("THUNDER"), thunder);
-                weatherHashMenuIndex.Add((uint)GetHashKey("BLIZZARD"), blizzard);
-                weatherHashMenuIndex.Add((uint)GetHashKey("SNOW"), snow);
-                weatherHashMenuIndex.Add((uint)GetHashKey("SNOWLIGHT"), snowlight);
-                weatherHashMenuIndex.Add((uint)GetHashKey("XMAS"), xmas);
-                weatherHashMenuIndex.Add((uint)GetHashKey("HALLOWEEN"), halloween);
+
+            if (IsAllowed(Permission.WOSetWeather)) {
+                weatherHashMenuIndex.Add((uint) GetHashKey("EXTRASUNNY"), extrasunny);
+                weatherHashMenuIndex.Add((uint) GetHashKey("CLEAR"), clear);
+                weatherHashMenuIndex.Add((uint) GetHashKey("NEUTRAL"), neutral);
+                weatherHashMenuIndex.Add((uint) GetHashKey("SMOG"), smog);
+                weatherHashMenuIndex.Add((uint) GetHashKey("FOGGY"), foggy);
+                weatherHashMenuIndex.Add((uint) GetHashKey("CLOUDS"), clouds);
+                weatherHashMenuIndex.Add((uint) GetHashKey("OVERCAST"), overcast);
+                weatherHashMenuIndex.Add((uint) GetHashKey("CLEARING"), clearing);
+                weatherHashMenuIndex.Add((uint) GetHashKey("RAIN"), rain);
+                weatherHashMenuIndex.Add((uint) GetHashKey("THUNDER"), thunder);
+                weatherHashMenuIndex.Add((uint) GetHashKey("BLIZZARD"), blizzard);
+                weatherHashMenuIndex.Add((uint) GetHashKey("SNOW"), snow);
+                weatherHashMenuIndex.Add((uint) GetHashKey("SNOWLIGHT"), snowlight);
+                weatherHashMenuIndex.Add((uint) GetHashKey("XMAS"), xmas);
+                weatherHashMenuIndex.Add((uint) GetHashKey("HALLOWEEN"), halloween);
 
                 menu.AddMenuItem(extrasunny);
                 menu.AddMenuItem(clear);
@@ -110,44 +104,37 @@ namespace vMenuClient
                 menu.AddMenuItem(xmas);
                 menu.AddMenuItem(halloween);
             }
-            if (IsAllowed(Permission.WORandomizeClouds))
-            {
+
+            if (IsAllowed(Permission.WORandomizeClouds)) {
                 menu.AddMenuItem(removeclouds);
             }
 
-            if (IsAllowed(Permission.WORemoveClouds))
-            {
+            if (IsAllowed(Permission.WORemoveClouds)) {
                 menu.AddMenuItem(randomizeclouds);
             }
 
-            menu.OnItemSelect += (sender, item, index2) =>
-            {
-                var index = index2 + indexOffset;
+            menu.OnItemSelect += (sender, item, index2) => {
+                int index = index2 + indexOffset;
                 // A weather type is selected.
-                if (index >= 2 && index <= 16)
-                {
+                if (index >= 2 && index <= 16) {
                     Notify.Custom($"The weather will be changed to ~y~{item.Text}~s~. This will take {EventManager.WeatherChangeTime} seconds.");
                     UpdateServerWeather(weatherTypes[index - 2], EventManager.IsBlackoutEnabled, EventManager.DynamicWeatherEnabled);
                 }
-                if (item == removeclouds)
-                {
+
+                if (item == removeclouds) {
                     ModifyClouds(true);
                 }
-                else if (item == randomizeclouds)
-                {
+                else if (item == randomizeclouds) {
                     ModifyClouds(false);
                 }
             };
 
-            menu.OnCheckboxChange += (sender, item, index, _checked) =>
-            {
-                if (item == dynamicWeatherEnabled)
-                {
+            menu.OnCheckboxChange += (sender, item, index, _checked) => {
+                if (item == dynamicWeatherEnabled) {
                     Notify.Custom($"Dynamic weather changes are now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
                     UpdateServerWeather(EventManager.GetServerWeather, EventManager.IsBlackoutEnabled, _checked);
                 }
-                else if (item == blackout)
-                {
+                else if (item == blackout) {
                     Notify.Custom($"Blackout mode is now {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
                     UpdateServerWeather(EventManager.GetServerWeather, _checked, EventManager.DynamicWeatherEnabled);
                 }
@@ -155,17 +142,16 @@ namespace vMenuClient
         }
 
 
-
         /// <summary>
-        /// Create the menu if it doesn't exist, and then returns it.
+        ///     Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
         public Menu GetMenu()
         {
-            if (menu == null)
-            {
+            if (menu == null) {
                 CreateMenu();
             }
+
             return menu;
         }
     }

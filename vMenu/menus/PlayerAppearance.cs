@@ -1,44 +1,37 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+using MenuAPI;
+using vMenuShared;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
-{
-    public class PlayerAppearance
-    {
-        private Menu menu;
-
-        private Menu pedCustomizationMenu;
-        private Menu savedPedsMenu;
-        private Menu spawnPedsMenu;
-        private Menu addonPedsMenu;
-        private Menu mainPedsMenu = new Menu("Main Peds", "Spawn A Ped");
-        private Menu animalsPedsMenu = new Menu("Animals", "Spawn A Ped");
-        private Menu malePedsMenu = new Menu("Male Peds", "Spawn A Ped");
-        private Menu femalePedsMenu = new Menu("Female Peds", "Spawn A Ped");
-        private Menu otherPedsMenu = new Menu("Other Peds", "Spawn A Ped");
-
+namespace vMenuClient {
+    public class PlayerAppearance {
         public static Dictionary<string, uint> AddonPeds;
+        Menu addonPedsMenu;
+        Menu animalsPedsMenu = new Menu("Animals", "Spawn A Ped");
+
+        Dictionary<MenuListItem, int> drawablesMenuListItems = new Dictionary<MenuListItem, int>();
+        Menu femalePedsMenu = new Menu("Female Peds", "Spawn A Ped");
+        Menu mainPedsMenu = new Menu("Main Peds", "Spawn A Ped");
+        Menu malePedsMenu = new Menu("Male Peds", "Spawn A Ped");
+        Menu menu;
+        Menu otherPedsMenu = new Menu("Other Peds", "Spawn A Ped");
+
+        Menu pedCustomizationMenu;
+        Dictionary<MenuListItem, int> propsMenuListItems = new Dictionary<MenuListItem, int>();
+        Menu savedPedsMenu;
+        Menu spawnPedsMenu;
 
         public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
 
-        private Dictionary<MenuListItem, int> drawablesMenuListItems = new Dictionary<MenuListItem, int>();
-        private Dictionary<MenuListItem, int> propsMenuListItems = new Dictionary<MenuListItem, int>();
-
-        #region create the menu
+    #region create the menu
         /// <summary>
-        /// Creates the menu(s).
+        ///     Creates the menu(s).
         /// </summary>
-        private void CreateMenu()
+        void CreateMenu()
         {
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Player Appearance");
@@ -60,26 +53,33 @@ namespace vMenuClient
             MenuController.AddSubmenu(spawnPedsMenu, otherPedsMenu);
 
             // Create the menu items.
-            MenuItem pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") { Label = "→→→" };
-            MenuItem saveCurrentPed = new MenuItem("Save Ped", "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
-            MenuItem savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") { Label = "→→→" };
-            MenuItem spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.") { Label = "→→→" };
+            MenuItem pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") {Label = "→→→"};
+            MenuItem saveCurrentPed =
+                new MenuItem("Save Ped",
+                             "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
+            MenuItem savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") {Label = "→→→"};
+            MenuItem spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.")
+                {Label = "→→→"};
 
 
             MenuItem spawnByNameBtn = new MenuItem("Spawn By Name", "Spawn a ped by entering it's name manually.");
-            MenuItem addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") { Label = "→→→" };
-            MenuItem mainPedsBtn = new MenuItem("Main Peds", "Select a new ped from the main player-peds list.") { Label = "→→→" };
-            MenuItem animalPedsBtn = new MenuItem("Animals", "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.") { Label = "→→→" };
-            MenuItem malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") { Label = "→→→" };
-            MenuItem femalePedsBtn = new MenuItem("Female Peds", "Select a female ped.") { Label = "→→→" };
-            MenuItem otherPedsBtn = new MenuItem("Other Peds", "Select a ped.") { Label = "→→→" };
+            MenuItem addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") {Label = "→→→"};
+            MenuItem mainPedsBtn = new MenuItem("Main Peds", "Select a new ped from the main player-peds list.") {Label = "→→→"};
+            MenuItem animalPedsBtn =
+                new MenuItem("Animals",
+                             "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.")
+                    {Label = "→→→"};
+            MenuItem malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") {Label = "→→→"};
+            MenuItem femalePedsBtn = new MenuItem("Female Peds", "Select a female ped.") {Label = "→→→"};
+            MenuItem otherPedsBtn = new MenuItem("Other Peds", "Select a ped.") {Label = "→→→"};
 
-            List<string> walkstyles = new List<string>() { "Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster" };
+            List<string> walkstyles = new List<string> {"Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster"};
             MenuListItem walkingStyle = new MenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
-                "You need to re-apply this each time you change player model or load a saved ped.");
+                                                                                         "You need to re-apply this each time you change player model or load a saved ped.");
 
-            List<string> clothingGlowAnimations = new List<string>() { "On", "Off", "Fade", "Flash" };
-            MenuListItem clothingGlowType = new MenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType, "Set the style of the animation used on your player's illuminated clothing items.");
+            List<string> clothingGlowAnimations = new List<string> {"On", "Off", "Fade", "Flash"};
+            MenuListItem clothingGlowType = new MenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType,
+                                                             "Set the style of the animation used on your player's illuminated clothing items.");
 
             // Add items to the menu.
             menu.AddMenuItem(pedCustomization);
@@ -90,12 +90,10 @@ namespace vMenuClient
             menu.AddMenuItem(walkingStyle);
             menu.AddMenuItem(clothingGlowType);
 
-            if (IsAllowed(Permission.PACustomize))
-            {
+            if (IsAllowed(Permission.PACustomize)) {
                 MenuController.BindMenuItem(menu, pedCustomizationMenu, pedCustomization);
             }
-            else
-            {
+            else {
                 menu.RemoveMenuItem(pedCustomization);
             }
 
@@ -107,12 +105,13 @@ namespace vMenuClient
             MenuController.AddSubmenu(savedPedsMenu, selectedSavedPedMenu);
             MenuItem spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
             MenuItem cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
-            MenuItem renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
-            MenuItem replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
-            MenuItem deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            MenuItem renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") {LeftIcon = MenuItem.Icon.WARNING};
+            MenuItem replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!")
+                {LeftIcon = MenuItem.Icon.WARNING};
+            MenuItem deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!")
+                {LeftIcon = MenuItem.Icon.WARNING};
 
-            if (!IsAllowed(Permission.PASpawnSaved))
-            {
+            if (!IsAllowed(Permission.PASpawnSaved)) {
                 spawnSavedPed.Enabled = false;
                 spawnSavedPed.RightIcon = MenuItem.Icon.LOCK;
                 spawnSavedPed.Description = "You are not allowed to spawn saved peds.";
@@ -126,96 +125,76 @@ namespace vMenuClient
 
             KeyValuePair<string, PedInfo> savedPed = new KeyValuePair<string, PedInfo>();
 
-            selectedSavedPedMenu.OnItemSelect += async (sender, item, index) =>
-            {
-                if (item == spawnSavedPed)
-                {
-                    await SetPlayerSkin(savedPed.Value.model, savedPed.Value, true);
+            selectedSavedPedMenu.OnItemSelect += async (sender, item, index) => {
+                if (item == spawnSavedPed) {
+                    await SetPlayerSkin(savedPed.Value.model, savedPed.Value);
                 }
-                else if (item == cloneSavedPed)
-                {
+                else if (item == cloneSavedPed) {
                     string name = await GetUserInput($"Enter a clone name ({savedPed.Key.Substring(4)})", savedPed.Key.Substring(4), 30);
-                    if (string.IsNullOrEmpty(name))
-                    {
+                    if (string.IsNullOrEmpty(name)) {
                         Notify.Error(CommonErrors.InvalidSaveName);
                     }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(GetResourceKvpString($"ped_{name}")))
-                        {
+                    else {
+                        if (!string.IsNullOrEmpty(GetResourceKvpString($"ped_{name}"))) {
                             Notify.Error(CommonErrors.SaveNameAlreadyExists);
                         }
-                        else
-                        {
-                            if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
-                            {
+                        else {
+                            if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false)) {
                                 Notify.Success($"Saved Ped has successfully been cloned. Clone name: ~g~<C>{name}</C>~s~.");
                             }
-                            else
-                            {
-                                Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your cloned ped. Don't worry, your original ped is unharmed.");
+                            else {
+                                Notify.Error(CommonErrors.UnknownError,
+                                             placeholderValue: " Could not save your cloned ped. Don't worry, your original ped is unharmed.");
                             }
                         }
                     }
                 }
-                else if (item == renameSavedPed)
-                {
+                else if (item == renameSavedPed) {
                     string name = await GetUserInput($"Enter a new name for: {savedPed.Key.Substring(4)}", savedPed.Key.Substring(4), 30);
-                    if (string.IsNullOrEmpty(name))
-                    {
+                    if (string.IsNullOrEmpty(name)) {
                         Notify.Error(CommonErrors.InvalidSaveName);
                     }
-                    else
-                    {
-                        if ("ped_" + name == savedPed.Key)
-                        {
+                    else {
+                        if ("ped_" + name == savedPed.Key) {
                             Notify.Error("You need to choose a different name, you can't use the same name as your existing ped.");
                             return;
                         }
-                        if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
-                        {
+
+                        if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false)) {
                             Notify.Success($"Saved Ped has successfully been renamed. New ped name: ~g~<C>{name}</C>~s~.");
                             DeleteResourceKvp(savedPed.Key);
                             selectedSavedPedMenu.MenuSubtitle = name;
                             savedPed = new KeyValuePair<string, PedInfo>("ped_" + name, savedPed.Value);
                         }
-                        else
-                        {
+                        else {
                             Notify.Error(CommonErrors.SaveNameAlreadyExists);
                         }
                     }
                 }
-                else if (item == replaceSavedPed)
-                {
-                    if (item.Label == "Are you sure?")
-                    {
+                else if (item == replaceSavedPed) {
+                    if (item.Label == "Are you sure?") {
                         item.Label = "";
-                        bool success = await SavePed(savedPed.Key.Substring(4), overrideExistingPed: true);
-                        if (!success)
-                        {
-                            Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your replaced ped. Don't worry, your original ped is unharmed.");
+                        bool success = await SavePed(savedPed.Key.Substring(4), true);
+                        if (!success) {
+                            Notify.Error(CommonErrors.UnknownError,
+                                         placeholderValue: " Could not save your replaced ped. Don't worry, your original ped is unharmed.");
                         }
-                        else
-                        {
+                        else {
                             Notify.Success("Your saved ped has successfully been replaced.");
                             savedPed = new KeyValuePair<string, PedInfo>(savedPed.Key, StorageManager.GetSavedPedInfo(savedPed.Key));
                         }
                     }
-                    else
-                    {
+                    else {
                         item.Label = "Are you sure?";
                     }
                 }
-                else if (item == deleteSavedPed)
-                {
-                    if (item.Label == "Are you sure?")
-                    {
+                else if (item == deleteSavedPed) {
+                    if (item.Label == "Are you sure?") {
                         DeleteResourceKvp(savedPed.Key);
                         Notify.Success("Your saved ped has been deleted.");
                         selectedSavedPedMenu.GoBack();
                     }
-                    else
-                    {
+                    else {
                         item.Label = "Are you sure?";
                     }
                 }
@@ -223,18 +202,17 @@ namespace vMenuClient
 
             void ResetSavedPedsMenu(bool refreshIndex)
             {
-                foreach (var item in selectedSavedPedMenu.GetMenuItems())
-                {
+                foreach (MenuItem item in selectedSavedPedMenu.GetMenuItems()) {
                     item.Label = "";
                 }
-                if (refreshIndex)
-                {
+
+                if (refreshIndex) {
                     selectedSavedPedMenu.RefreshIndex();
                 }
             }
 
             selectedSavedPedMenu.OnIndexChange += (menu, newItem, oldItem, oldIndex, newIndex) => ResetSavedPedsMenu(false);
-            selectedSavedPedMenu.OnMenuOpen += (menu) => ResetSavedPedsMenu(true);
+            selectedSavedPedMenu.OnMenuOpen += menu => ResetSavedPedsMenu(true);
 
 
             void UpdateSavedPedsMenu()
@@ -243,96 +221,76 @@ namespace vMenuClient
 
                 Dictionary<string, PedInfo> savedPeds = StorageManager.GetSavedPeds();
 
-                foreach (var ped in savedPeds)
-                {
-                    if (size < 1 || !savedPedsMenu.GetMenuItems().Any(e => ped.Key == e.ItemData.Key))
-                    {
-                        MenuItem btn = new MenuItem(ped.Key.Substring(4), "Click to manage this saved ped.") { Label = "→→→", ItemData = ped };
+                foreach (KeyValuePair<string, PedInfo> ped in savedPeds) {
+                    if (size < 1 || !savedPedsMenu.GetMenuItems().Any(e => ped.Key == e.ItemData.Key)) {
+                        MenuItem btn = new MenuItem(ped.Key.Substring(4), "Click to manage this saved ped.") {Label = "→→→", ItemData = ped};
                         savedPedsMenu.AddMenuItem(btn);
                         MenuController.BindMenuItem(savedPedsMenu, selectedSavedPedMenu, btn);
                     }
                 }
 
-                if (savedPedsMenu.Size > 0)
-                {
-                    foreach (var d in savedPedsMenu.GetMenuItems())
-                    {
-                        if (!savedPeds.ContainsKey(d.ItemData.Key))
-                        {
+                if (savedPedsMenu.Size > 0) {
+                    foreach (MenuItem d in savedPedsMenu.GetMenuItems()) {
+                        if (!savedPeds.ContainsKey(d.ItemData.Key)) {
                             savedPedsMenu.RemoveMenuItem(d);
                         }
-                        else
-                        {
+                        else {
                             // Make sure the saved ped data is actually correct and up to date for this item.
-                            var p = savedPeds.First(e => e.Key == d.ItemData.Key);
-                            if (!string.IsNullOrEmpty(p.Key))
-                            {
+                            KeyValuePair<string, PedInfo> p = savedPeds.First(e => e.Key == d.ItemData.Key);
+                            if (!string.IsNullOrEmpty(p.Key)) {
                                 d.ItemData = p;
                             }
                         }
                     }
                 }
 
-                if (savedPedsMenu.Size > 0)
-                {
+                if (savedPedsMenu.Size > 0) {
                     savedPedsMenu.SortMenuItems((a, b) => a.Text.ToLower().CompareTo(b.Text.ToLower()));
                 }
 
                 // refresh index only if the size of the menu has changed.
-                if (size != savedPedsMenu.Size)
-                {
+                if (size != savedPedsMenu.Size) {
                     savedPedsMenu.RefreshIndex();
                 }
             }
 
-            savedPedsMenu.OnMenuOpen += (_) =>
-            {
-                UpdateSavedPedsMenu();
-            };
+            savedPedsMenu.OnMenuOpen += _ => { UpdateSavedPedsMenu(); };
 
-            savedPedsMenu.OnItemSelect += (_, item, __) =>
-            {
+            savedPedsMenu.OnItemSelect += (_, item, __) => {
                 savedPed = item.ItemData;
                 selectedSavedPedMenu.MenuSubtitle = item.Text;
             };
 
-            if (AddonPeds != null && AddonPeds.Count > 0 && IsAllowed(Permission.PAAddonPeds))
-            {
+            if (AddonPeds != null && AddonPeds.Count > 0 && IsAllowed(Permission.PAAddonPeds)) {
                 spawnPedsMenu.AddMenuItem(addonPedsBtn);
                 MenuController.BindMenuItem(spawnPedsMenu, addonPedsMenu, addonPedsBtn);
 
-                var addons = AddonPeds.ToList();
+                List<KeyValuePair<string, uint>> addons = AddonPeds.ToList();
 
                 addons.Sort((a, b) => a.Key.ToLower().CompareTo(b.Key.ToLower()));
 
-                foreach (var ped in addons)
-                {
+                foreach (KeyValuePair<string, uint> ped in addons) {
                     string name = GetLabelText(ped.Key);
-                    if (string.IsNullOrEmpty(name) || name == "NULL")
-                    {
+                    if (string.IsNullOrEmpty(name) || name == "NULL") {
                         name = ped.Key;
                     }
 
-                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this model.") { Label = $"({name})" };
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this model.") {Label = $"({name})"};
 
-                    if (!IsModelInCdimage(ped.Value) || !IsModelAPed(ped.Value))
-                    {
+                    if (!IsModelInCdimage(ped.Value) || !IsModelAPed(ped.Value)) {
                         pedBtn.Enabled = false;
                         pedBtn.LeftIcon = MenuItem.Icon.LOCK;
-                        pedBtn.Description = "This ped is not (correctly) streamed. If you are the server owner, please ensure that the ped name and model are valid!";
+                        pedBtn.Description =
+                            "This ped is not (correctly) streamed. If you are the server owner, please ensure that the ped name and model are valid!";
                     }
 
                     addonPedsMenu.AddMenuItem(pedBtn);
                 }
 
-                addonPedsMenu.OnItemSelect += async (sender, item, index) =>
-                {
-                    await SetPlayerSkin((uint)GetHashKey(item.Text), new PedInfo() { version = -1 }, true);
-                };
+                addonPedsMenu.OnItemSelect += async (sender, item, index) => { await SetPlayerSkin((uint) GetHashKey(item.Text), new PedInfo {version = -1}); };
             }
 
-            if (IsAllowed(Permission.PASpawnNew))
-            {
+            if (IsAllowed(Permission.PASpawnNew)) {
                 spawnPedsMenu.AddMenuItem(spawnByNameBtn);
                 spawnPedsMenu.AddMenuItem(mainPedsBtn);
                 spawnPedsMenu.AddMenuItem(animalPedsBtn);
@@ -341,12 +299,10 @@ namespace vMenuClient
                 spawnPedsMenu.AddMenuItem(otherPedsBtn);
 
                 MenuController.BindMenuItem(spawnPedsMenu, mainPedsMenu, mainPedsBtn);
-                if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_enable_animals_spawn_menu))
-                {
+                if (ConfigManager.GetSettingsBool(ConfigManager.Setting.vmenu_enable_animals_spawn_menu)) {
                     MenuController.BindMenuItem(spawnPedsMenu, animalsPedsMenu, animalPedsBtn);
                 }
-                else
-                {
+                else {
                     animalPedsBtn.Enabled = false;
                     animalPedsBtn.Description = "This is disabled by the server owner, probably for a good reason because animals quite often crash the game.";
                     animalPedsBtn.LeftIcon = MenuItem.Icon.LOCK;
@@ -356,46 +312,39 @@ namespace vMenuClient
                 MenuController.BindMenuItem(spawnPedsMenu, femalePedsMenu, femalePedsBtn);
                 MenuController.BindMenuItem(spawnPedsMenu, otherPedsMenu, otherPedsBtn);
 
-                foreach (var animal in animalModels)
-                {
-                    MenuItem animalBtn = new MenuItem(animal.Key, "Click to spawn this animal.") { Label = $"({animal.Value})" };
+                foreach (KeyValuePair<string, string> animal in animalModels) {
+                    MenuItem animalBtn = new MenuItem(animal.Key, "Click to spawn this animal.") {Label = $"({animal.Value})"};
                     animalsPedsMenu.AddMenuItem(animalBtn);
                 }
 
-                foreach (var ped in mainModels)
-                {
-                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                foreach (KeyValuePair<string, string> ped in mainModels) {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") {Label = $"({ped.Value})"};
                     mainPedsMenu.AddMenuItem(pedBtn);
                 }
 
-                foreach (var ped in maleModels)
-                {
-                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                foreach (KeyValuePair<string, string> ped in maleModels) {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") {Label = $"({ped.Value})"};
                     malePedsMenu.AddMenuItem(pedBtn);
                 }
 
-                foreach (var ped in femaleModels)
-                {
-                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                foreach (KeyValuePair<string, string> ped in femaleModels) {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") {Label = $"({ped.Value})"};
                     femalePedsMenu.AddMenuItem(pedBtn);
                 }
 
-                foreach (var ped in otherPeds)
-                {
-                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                foreach (KeyValuePair<string, string> ped in otherPeds) {
+                    MenuItem pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") {Label = $"({ped.Value})"};
                     otherPedsMenu.AddMenuItem(pedBtn);
                 }
 
                 async void FilterMenu(Menu m, Control c)
                 {
                     string input = await GetUserInput("Filter by ped model name, leave this empty to reset the filter");
-                    if (!string.IsNullOrEmpty(input))
-                    {
-                        m.FilterMenuItems((mb) => mb.Label.ToLower().Contains(input.ToLower()) || mb.Text.ToLower().Contains(input.ToLower()));
+                    if (!string.IsNullOrEmpty(input)) {
+                        m.FilterMenuItems(mb => mb.Label.ToLower().Contains(input.ToLower()) || mb.Text.ToLower().Contains(input.ToLower()));
                         Subtitle.Custom("Filter applied.");
                     }
-                    else
-                    {
+                    else {
                         m.ResetFilter();
                         Subtitle.Custom("Filter cleared.");
                     }
@@ -411,23 +360,20 @@ namespace vMenuClient
                 femalePedsMenu.OnMenuClose += ResetMenuFilter;
 
                 otherPedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
-                otherPedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+                otherPedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, FilterMenu, true));
 
                 malePedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
-                malePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+                malePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, FilterMenu, true));
 
                 femalePedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
-                femalePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
+                femalePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, FilterMenu, true));
 
 
                 async void SpawnPed(Menu m, MenuItem item, int index)
                 {
-
-                    uint model = (uint)GetHashKey(item.Text);
-                    if (m == animalsPedsMenu && !Game.PlayerPed.IsInWater)
-                    {
-                        switch (item.Text)
-                        {
+                    uint model = (uint) GetHashKey(item.Text);
+                    if (m == animalsPedsMenu && !Game.PlayerPed.IsInWater) {
+                        switch (item.Text) {
                             case "a_c_dolphin":
                             case "a_c_fish":
                             case "a_c_humpback":
@@ -436,18 +382,15 @@ namespace vMenuClient
                             case "a_c_sharktiger":
                                 Notify.Error("This animal can only be spawned when you are in water, otherwise you will die immediately.");
                                 return;
-                            default: break;
                         }
                     }
 
-                    if (IsModelInCdimage(model))
-                    {
+                    if (IsModelInCdimage(model)) {
                         // for animals we need to remove all weapons, this is because animals have their own weapons which you can't normally get and/or select in the weapon wheel.
                         // so we clear the weapons to force that specific weapon to be equipped.
-                        if (m == animalsPedsMenu)
-                        {
+                        if (m == animalsPedsMenu) {
                             Game.PlayerPed.Weapons.RemoveAll();
-                            await SetPlayerSkin(model, new PedInfo() { version = -1 }, false);
+                            await SetPlayerSkin(model, new PedInfo {version = -1}, false);
                             await Delay(1000);
                             SetPedComponentVariation(Game.PlayerPed.Handle, 0, 0, 0, 0);
                             await Delay(1000);
@@ -455,13 +398,11 @@ namespace vMenuClient
                             await Delay(1000);
                             SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
                         }
-                        else
-                        {
-                            await SetPlayerSkin(model, new PedInfo() { version = -1 }, true);
+                        else {
+                            await SetPlayerSkin(model, new PedInfo {version = -1});
                         }
                     }
-                    else
-                    {
+                    else {
                         Notify.Error(CommonErrors.InvalidModel);
                     }
                 }
@@ -472,17 +413,13 @@ namespace vMenuClient
                 animalsPedsMenu.OnItemSelect += SpawnPed;
                 otherPedsMenu.OnItemSelect += SpawnPed;
 
-                spawnPedsMenu.OnItemSelect += async (sender, item, index) =>
-                {
-                    if (item == spawnByNameBtn)
-                    {
+                spawnPedsMenu.OnItemSelect += async (sender, item, index) => {
+                    if (item == spawnByNameBtn) {
                         string model = await GetUserInput("Ped Model Name", 30);
-                        if (!string.IsNullOrEmpty(model))
-                        {
-                            await SetPlayerSkin(model, new PedInfo() { version = -1 }, true);
+                        if (!string.IsNullOrEmpty(model)) {
+                            await SetPlayerSkin(model, new PedInfo {version = -1});
                         }
-                        else
-                        {
+                        else {
                             Notify.Error(CommonErrors.InvalidInput);
                         }
                     }
@@ -491,70 +428,57 @@ namespace vMenuClient
 
 
             // Handle list selections.
-            menu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
-            {
-                if (item == walkingStyle)
-                {
+            menu.OnListItemSelect += (sender, item, listIndex, itemIndex) => {
+                if (item == walkingStyle) {
                     //if (MainMenu.DebugMode) Subtitle.Custom("Ped is: " + IsPedMale(Game.PlayerPed.Handle));
                     SetWalkingStyle(walkstyles[listIndex].ToString());
                 }
-                if (item == clothingGlowType)
-                {
+
+                if (item == clothingGlowType) {
                     ClothingAnimationType = item.ListIndex;
                 }
             };
 
             // Handle button presses.
-            menu.OnItemSelect += async (sender, item, index) =>
-            {
-                if (item == pedCustomization)
-                {
+            menu.OnItemSelect += async (sender, item, index) => {
+                if (item == pedCustomization) {
                     RefreshCustomizationMenu();
                 }
-                else if (item == saveCurrentPed)
-                {
-                    if (await SavePed())
-                    {
+                else if (item == saveCurrentPed) {
+                    if (await SavePed()) {
                         Notify.Success("Successfully saved your new ped.");
                     }
-                    else
-                    {
+                    else {
                         Notify.Error("Could not save your current ped, does that save name already exist?");
                     }
                 }
             };
 
 
-            #region ped drawable list changes
+        #region ped drawable list changes
             // Manage list changes.
-            pedCustomizationMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) =>
-            {
-                if (drawablesMenuListItems.ContainsKey(item))
-                {
+            pedCustomizationMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) => {
+                if (drawablesMenuListItems.ContainsKey(item)) {
                     int drawableID = drawablesMenuListItems[item];
                     SetPedComponentVariation(Game.PlayerPed.Handle, drawableID, newListIndex, 0, 0);
                 }
-                else if (propsMenuListItems.ContainsKey(item))
-                {
+                else if (propsMenuListItems.ContainsKey(item)) {
                     int propID = propsMenuListItems[item];
-                    if (newListIndex == 0)
-                    {
+                    if (newListIndex == 0) {
                         SetPedPropIndex(Game.PlayerPed.Handle, propID, newListIndex - 1, 0, false);
                         ClearPedProp(Game.PlayerPed.Handle, propID);
                     }
-                    else
-                    {
+                    else {
                         SetPedPropIndex(Game.PlayerPed.Handle, propID, newListIndex - 1, 0, true);
                     }
-                    if (propID == 0)
-                    {
-                        int component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
+
+                    if (propID == 0) {
+                        int component = GetPedPropIndex(Game.PlayerPed.Handle, 0); // helmet index
                         int texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                         int compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor. 
+                        if (N_0xd40aac51e8e4c663((uint) compHash) > 0) // helmet has visor. 
                         {
-                            if (!IsHelpMessageBeingDisplayed())
-                            {
+                            if (!IsHelpMessageBeingDisplayed()) {
                                 BeginTextCommandDisplayHelp("TWOSTRINGS");
                                 AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
                                 AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
@@ -562,21 +486,20 @@ namespace vMenuClient
                             }
                         }
                     }
-
                 }
             };
 
             // Manage list selections.
-            pedCustomizationMenu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
-            {
+            pedCustomizationMenu.OnListItemSelect += (sender, item, listIndex, itemIndex) => {
                 if (drawablesMenuListItems.ContainsKey(item)) // drawable
                 {
                     int currentDrawableID = drawablesMenuListItems[item];
                     int currentTextureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, currentDrawableID);
                     int maxDrawableTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, currentDrawableID, listIndex) - 1;
 
-                    if (currentTextureIndex == -1)
+                    if (currentTextureIndex == -1) {
                         currentTextureIndex = 0;
+                    }
 
                     int newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
 
@@ -593,93 +516,85 @@ namespace vMenuClient
                     SetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
                 }
             };
-            #endregion
-
-        }
-
-
         #endregion
+        }
+    #endregion
 
-        #region get the menu
+    #region get the menu
         /// <summary>
-        /// Create the menu if it doesn't exist, and then returns it.
+        ///     Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
         public Menu GetMenu()
         {
-            if (menu == null)
-            {
+            if (menu == null) {
                 CreateMenu();
             }
+
             return menu;
         }
-        #endregion
+    #endregion
 
-        #region Ped Customization Menu
+    #region Ped Customization Menu
         ///// <summary>
         ///// Refresh/create the ped customization menu.
         ///// </summary>
-        private void RefreshCustomizationMenu()
+        void RefreshCustomizationMenu()
         {
             drawablesMenuListItems.Clear();
             propsMenuListItems.Clear();
             pedCustomizationMenu.ClearMenuItems();
 
-            #region Ped Drawables
-            for (int drawable = 0; drawable < 12; drawable++)
-            {
+        #region Ped Drawables
+            for (int drawable = 0; drawable < 12; drawable++) {
                 int currentDrawable = GetPedDrawableVariation(Game.PlayerPed.Handle, drawable);
                 int maxVariations = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, drawable);
                 int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, drawable, currentDrawable);
 
-                if (maxVariations > 0)
-                {
+                if (maxVariations > 0) {
                     List<string> drawableTexturesList = new List<string>();
 
-                    for (int i = 0; i < maxVariations; i++)
-                    {
+                    for (int i = 0; i < maxVariations; i++) {
                         drawableTexturesList.Add($"Drawable #{i + 1} (of {maxVariations})");
                     }
 
-                    MenuListItem drawableTextures = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentDrawable, $"Use ← & → to select a ~o~{textureNames[drawable]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                    MenuListItem drawableTextures = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentDrawable,
+                                                                     $"Use ← & → to select a ~o~{textureNames[drawable]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                     drawablesMenuListItems.Add(drawableTextures, drawable);
                     pedCustomizationMenu.AddMenuItem(drawableTextures);
                 }
             }
-            #endregion
+        #endregion
 
-            #region Ped Props
-            for (int tmpProp = 0; tmpProp < 5; tmpProp++)
-            {
+        #region Ped Props
+            for (int tmpProp = 0; tmpProp < 5; tmpProp++) {
                 int realProp = tmpProp > 2 ? tmpProp + 3 : tmpProp;
 
                 int currentProp = GetPedPropIndex(Game.PlayerPed.Handle, realProp);
                 int maxPropVariations = GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, realProp);
 
-                if (maxPropVariations > 0)
-                {
+                if (maxPropVariations > 0) {
                     List<string> propTexturesList = new List<string>();
 
                     propTexturesList.Add($"Prop #1 (of {maxPropVariations + 1})");
-                    for (int i = 0; i < maxPropVariations; i++)
-                    {
+                    for (int i = 0; i < maxPropVariations; i++) {
                         propTexturesList.Add($"Prop #{i + 2} (of {maxPropVariations + 1})");
                     }
 
 
-                    MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                    MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1,
+                                                                 $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                     propsMenuListItems.Add(propTextures, realProp);
                     pedCustomizationMenu.AddMenuItem(propTextures);
-
                 }
             }
+
             pedCustomizationMenu.RefreshIndex();
-            #endregion
+        #endregion
         }
 
-        #region Textures & Props
-        private readonly List<string> textureNames = new List<string>()
-        {
+    #region Textures & Props
+        readonly List<string> textureNames = new List<string> {
             "Head",
             "Mask / Facial Hair",
             "Hair Style / Color",
@@ -691,22 +606,21 @@ namespace vMenuClient
             "Shirt / Accessory",
             "Body Armor / Accessory 2",
             "Badges / Logos",
-            "Shirt Overlay / Jackets",
+            "Shirt Overlay / Jackets"
         };
 
-        private readonly List<string> propNames = new List<string>()
-        {
+        readonly List<string> propNames = new List<string> {
             "Hats / Helmets", // id 0
             "Glasses", // id 1
             "Misc", // id 2
             "Watches", // id 6
-            "Bracelets", // id 7
+            "Bracelets" // id 7
         };
-        #endregion
-        #endregion
+    #endregion
+    #endregion
 
 
-        #region saved peds menus
+    #region saved peds menus
         ///// <summary>
         ///// Refresh the spawn saved peds menu.
         ///// </summary>
@@ -796,7 +710,7 @@ namespace vMenuClient
         //    deleteSavedPedMenu.RefreshIndex();
         //    //deleteSavedPedMenu.UpdateScaleform();
         //}
-        #endregion
+    #endregion
 
         //private List<string> stuff = new List<string>()
         //    {
@@ -1173,17 +1087,16 @@ namespace vMenuClient
         //    "u_m_y_zombie_01"
         //    };
 
-        #region Model Names
-        private Dictionary<string, string> mainModels = new Dictionary<string, string>()
-        {
+    #region Model Names
+        Dictionary<string, string> mainModels = new Dictionary<string, string> {
             ["player_one"] = "Franklin",
             ["player_two"] = "Trevor",
             ["player_zero"] = "Michael",
             ["mp_f_freemode_01"] = "FreemodeFemale01",
             ["mp_m_freemode_01"] = "FreemodeMale01"
         };
-        private Dictionary<string, string> animalModels = new Dictionary<string, string>()
-        {
+
+        Dictionary<string, string> animalModels = new Dictionary<string, string> {
             ["a_c_boar"] = "Boar",
             ["a_c_cat_01"] = "Cat",
             ["a_c_chickenhawk"] = "ChickenHawk",
@@ -1216,8 +1129,8 @@ namespace vMenuClient
             ["a_c_shepherd"] = "Shepherd",
             ["a_c_westy"] = "Westy"
         };
-        private Dictionary<string, string> maleModels = new Dictionary<string, string>()
-        {
+
+        Dictionary<string, string> maleModels = new Dictionary<string, string> {
             ["a_m_m_acult_01"] = "Acult01AMM",
             ["a_m_m_afriamer_01"] = "AfriAmer01AMM",
             ["a_m_m_beach_01"] = "Beach01AMM",
@@ -1342,8 +1255,8 @@ namespace vMenuClient
             ["a_m_y_vinewood_04"] = "Vinewood04AMY",
             ["a_m_y_yoga_01"] = "Yoga01AMY"
         };
-        private Dictionary<string, string> femaleModels = new Dictionary<string, string>()
-        {
+
+        Dictionary<string, string> femaleModels = new Dictionary<string, string> {
             ["a_f_m_beach_01"] = "Beach01AFM",
             ["a_f_m_bevhills_01"] = "Bevhills01AFM",
             ["a_f_m_bevhills_02"] = "Bevhills02AFM",
@@ -1414,8 +1327,8 @@ namespace vMenuClient
             ["a_f_y_vinewood_04"] = "Vinewood04AFY",
             ["a_f_y_yoga_01"] = "Yoga01AFY"
         };
-        private Dictionary<string, string> otherPeds = new Dictionary<string, string>()
-        {
+
+        Dictionary<string, string> otherPeds = new Dictionary<string, string> {
             ["csb_abigail"] = "AbigailCutscene",
             ["csb_anita"] = "AnitaCutscene",
             ["csb_anton"] = "AntonCutscene",
@@ -1782,11 +1695,8 @@ namespace vMenuClient
             ["u_m_y_sbike"] = "SbikeAMO",
             ["u_m_y_staggrm_01"] = "Staggrm01AMO",
             ["u_m_y_tattoo_01"] = "Tattoo01AMO",
-            ["u_m_y_zombie_01"] = "Zombie01",
+            ["u_m_y_zombie_01"] = "Zombie01"
         };
-
-
-        #endregion
-
+    #endregion
     }
 }

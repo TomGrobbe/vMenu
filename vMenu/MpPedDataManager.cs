@@ -1,36 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
 
-namespace vMenuClient
-{
-    public class MpPedDataManager : BaseScript
-    {
-        public struct DrawableVariations
-        {
+namespace vMenuClient {
+    public class MpPedDataManager : BaseScript {
+        public struct DrawableVariations {
             public Dictionary<int, KeyValuePair<int, int>> clothes;
         }
 
-        public struct PropVariations
-        {
+        public struct PropVariations {
             public Dictionary<int, KeyValuePair<int, int>> props;
         }
 
-        public struct FaceShapeFeatures
-        {
+        public struct FaceShapeFeatures {
             public Dictionary<int, float> features;
         }
 
-        public struct PedTattoos
-        {
+        public struct PedTattoos {
             public List<KeyValuePair<string, string>> TorsoTattoos;
             public List<KeyValuePair<string, string>> HeadTattoos;
             public List<KeyValuePair<string, string>> LeftArmTattoos;
@@ -41,10 +26,10 @@ namespace vMenuClient
         }
 
         // probably won't be needed, since there's already makeup and tattoos now.
-        public struct PedFacePaints { }
+        public struct PedFacePaints {
+        }
 
-        public struct PedAppearance
-        {
+        public struct PedAppearance {
             public int hairStyle;
             public int hairColor;
             public int hairHighlightColor;
@@ -108,8 +93,7 @@ namespace vMenuClient
             public int eyeColor;
         }
 
-        public struct MultiplayerPedData
-        {
+        public struct MultiplayerPedData {
             public PedHeadBlendData PedHeadBlendData;
             public DrawableVariations DrawableVariations;
             public PropVariations PropVariations;

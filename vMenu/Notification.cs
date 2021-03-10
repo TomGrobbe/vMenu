@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+using CitizenFX.Core.UI;
 using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
 
-namespace vMenuClient
-{
-    #region Error Templates
+namespace vMenuClient {
+#region Error Templates
     /// <summary>
-    /// List of error templates.
+    ///     List of error templates.
     /// </summary>
-    public enum CommonErrors
-    {
+    public enum CommonErrors {
         NoVehicle,
         NeedToBeTheDriver,
         UnknownError,
@@ -32,16 +23,15 @@ namespace vMenuClient
         PedNotFound,
         WalkingStyleNotForMale,
         WalkingStyleNotForFemale,
-        RightAlignedNotSupported,
-    };
+        RightAlignedNotSupported
+    }
 
     /// <summary>
-    /// Gets the formatted error message.
+    ///     Gets the formatted error message.
     /// </summary>
-    public static class ErrorMessage
-    {
+    public static class ErrorMessage {
         /// <summary>
-        /// Returns the formatted error message for the specified error type.
+        ///     Returns the formatted error message for the specified error type.
         /// </summary>
         /// <param name="errorType">The error type.</param>
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message (if applicable).</param>
@@ -50,8 +40,7 @@ namespace vMenuClient
         {
             string outputMessage = "";
             string placeholder = placeholderValue != null ? " " + placeholderValue : "";
-            switch (errorType)
-            {
+            switch (errorType) {
                 case CommonErrors.NeedToBeTheDriver:
                     outputMessage = "You need to be the driver of this vehicle.";
                     break;
@@ -100,20 +89,20 @@ namespace vMenuClient
                     outputMessage = $"An unknown error occurred, sorry!{placeholder}";
                     break;
             }
+
             return outputMessage;
         }
     }
-    #endregion
+#endregion
 
-    #region Notifications class
+#region Notifications class
     /// <summary>
-    /// Notifications class to easilly show notifications using custom made templates,
-    /// or completely custom style if none of the templates are fitting for the current task.
+    ///     Notifications class to easilly show notifications using custom made templates,
+    ///     or completely custom style if none of the templates are fitting for the current task.
     /// </summary>
-    public static class Notify
-    {
+    public static class Notify {
         /// <summary>
-        /// Show a custom notification above the minimap.
+        ///     Show a custom notification above the minimap.
         /// </summary>
         /// <param name="message">Message to display.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -121,15 +110,15 @@ namespace vMenuClient
         public static void Custom(string message, bool blink = true, bool saveToBrief = true)
         {
             SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
-            {
+            foreach (string s in Screen.StringToArray(message)) {
                 AddTextComponentSubstringPlayerName(s);
             }
+
             DrawNotification(blink, saveToBrief);
         }
 
         /// <summary>
-        /// Show a notification with "Alert: " prefixed to the message.
+        ///     Show a notification with "Alert: " prefixed to the message.
         /// </summary>
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -140,7 +129,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Show a notification with "Alert: " prefixed to the message.
+        ///     Show a notification with "Alert: " prefixed to the message.
         /// </summary>
         /// <param name="errorMessage">The error message template.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -153,7 +142,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Show a notification with "Error: " prefixed to the message.
+        ///     Show a notification with "Error: " prefixed to the message.
         /// </summary>
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -165,7 +154,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Show a notification with "Error: " prefixed to the message.
+        ///     Show a notification with "Error: " prefixed to the message.
         /// </summary>
         /// <param name="errorMessage">The error message template.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -178,7 +167,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Show a notification with "Info: " prefixed to the message.
+        ///     Show a notification with "Info: " prefixed to the message.
         /// </summary>
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -189,7 +178,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Show a notification with "Success: " prefixed to the message.
+        ///     Show a notification with "Success: " prefixed to the message.
         /// </summary>
         /// <param name="message">The message to be displayed on the notification.</param>
         /// <param name="blink">Should the notification blink 3 times?</param>
@@ -200,7 +189,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Shows a custom notification with an image attached.
+        ///     Shows a custom notification with an image attached.
         /// </summary>
         /// <param name="textureDict"></param>
         /// <param name="textureName"></param>
@@ -208,131 +197,160 @@ namespace vMenuClient
         /// <param name="title"></param>
         /// <param name="subtitle"></param>
         /// <param name="safeToBrief"></param>
-        public static void CustomImage(string textureDict, string textureName, string message, string title, string subtitle, bool saveToBrief, int iconType = 0)
+        public static void CustomImage(string textureDict, string textureName, string message, string title, string subtitle, bool saveToBrief,
+                                       int iconType = 0)
         {
             SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
-            {
+            foreach (string s in Screen.StringToArray(message)) {
                 AddTextComponentSubstringPlayerName(s);
             }
+
             SetNotificationMessage(textureName, textureDict, false, iconType, title, subtitle);
             DrawNotification(false, saveToBrief);
         }
     }
-    #endregion
+#endregion
 
-    #region Custom Subtitle class
+#region Custom Subtitle class
     /// <summary>
-    /// Custom Subtitle class used to display subtitles using preformatted templates.
-    /// Optionally you can also use a blank/custom style if you don't want to use an existing template.
+    ///     Custom Subtitle class used to display subtitles using preformatted templates.
+    ///     Optionally you can also use a blank/custom style if you don't want to use an existing template.
     /// </summary>
-    public static class Subtitle
-    {
+    public static class Subtitle {
         /// <summary>
-        /// Custom (white/custom text style subtitle)
+        ///     Custom (white/custom text style subtitle)
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
-        /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
+        /// <param name="drawImmediately">
+        ///     (Optional) draw the notification immediately or wait for the previous subtitle text to
+        ///     disappear.
+        /// </param>
         public static void Custom(string message, int duration = 2500, bool drawImmediately = true)
         {
             BeginTextCommandPrint("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
-            {
+            foreach (string s in Screen.StringToArray(message)) {
                 AddTextComponentSubstringPlayerName(s);
             }
+
             EndTextCommandPrint(duration, drawImmediately);
         }
 
         /// <summary>
-        /// Alert (yellow text subtitle).
+        ///     Alert (yellow text subtitle).
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
-        /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
-        /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
+        /// <param name="drawImmediately">
+        ///     (Optional) draw the notification immediately or wait for the previous subtitle text to
+        ///     disappear.
+        /// </param>
+        /// <param name="prefix">
+        ///     (Optional) add a prefix to your message, if you use this, only the prefix will be colored. The
+        ///     rest of the message will be left white.
+        /// </param>
         public static void Alert(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~y~" + prefix + " ~s~" : "~y~") + message, duration, drawImmediately);
         }
 
         /// <summary>
-        /// Error (red text subtitle).
+        ///     Error (red text subtitle).
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
-        /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
-        /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
+        /// <param name="drawImmediately">
+        ///     (Optional) draw the notification immediately or wait for the previous subtitle text to
+        ///     disappear.
+        /// </param>
+        /// <param name="prefix">
+        ///     (Optional) add a prefix to your message, if you use this, only the prefix will be colored. The
+        ///     rest of the message will be left white.
+        /// </param>
         public static void Error(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~r~" + prefix + " ~s~" : "~r~") + message, duration, drawImmediately);
         }
 
         /// <summary>
-        /// Info (blue text subtitle).
+        ///     Info (blue text subtitle).
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
-        /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
-        /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
+        /// <param name="drawImmediately">
+        ///     (Optional) draw the notification immediately or wait for the previous subtitle text to
+        ///     disappear.
+        /// </param>
+        /// <param name="prefix">
+        ///     (Optional) add a prefix to your message, if you use this, only the prefix will be colored. The
+        ///     rest of the message will be left white.
+        /// </param>
         public static void Info(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~b~" + prefix + " ~s~" : "~b~") + message, duration, drawImmediately);
         }
 
         /// <summary>
-        /// Success (green text subtitle).
+        ///     Success (green text subtitle).
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="duration">(Optional) duration in ms.</param>
-        /// <param name="drawImmediately">(Optional) draw the notification immediately or wait for the previous subtitle text to disappear.</param>
-        /// <param name="prefix">(Optional) add a prefix to your message, if you use this, only the prefix will be colored. The rest of the message will be left white.</param>
+        /// <param name="drawImmediately">
+        ///     (Optional) draw the notification immediately or wait for the previous subtitle text to
+        ///     disappear.
+        /// </param>
+        /// <param name="prefix">
+        ///     (Optional) add a prefix to your message, if you use this, only the prefix will be colored. The
+        ///     rest of the message will be left white.
+        /// </param>
         public static void Success(string message, int duration = 2500, bool drawImmediately = true, string prefix = null)
         {
             Custom((prefix != null ? "~g~" + prefix + " ~s~" : "~g~") + message, duration, drawImmediately);
         }
     }
-    #endregion
+#endregion
 
-    public static class HelpMessage
-    {
-
-
-        public enum Label
-        {
+    public static class HelpMessage {
+        public enum Label {
             EXIT_INTERIOR_HELP_MESSAGE
         }
 
-        private static Dictionary<Label, KeyValuePair<string, string>> labels = new Dictionary<Label, KeyValuePair<string, string>>()
-        {
+        static Dictionary<Label, KeyValuePair<string, string>> labels = new Dictionary<Label, KeyValuePair<string, string>> {
             [Label.EXIT_INTERIOR_HELP_MESSAGE] = new KeyValuePair<string, string>("EXIT_INTERIOR_HELP_MESSAGE", "Press ~INPUT_CONTEXT~ to exit the building.")
         };
 
 
+        public static void Custom(string message)
+        {
+            Custom(message, 6000, true);
+        }
 
-        public static void Custom(string message) => Custom(message, 6000, true);
-        public static void Custom(string message, int duration) => Custom(message, duration, true);
+        public static void Custom(string message, int duration)
+        {
+            Custom(message, duration, true);
+        }
+
         public static void Custom(string message, int duration, bool sound)
         {
             string[] array = CommonFunctions.StringToArray(message);
-            if (IsHelpMessageBeingDisplayed())
-            {
+            if (IsHelpMessageBeingDisplayed()) {
                 ClearAllHelpMessages();
             }
+
             BeginTextCommandDisplayHelp("CELL_EMAIL_BCON");
-            foreach (string s in array)
-            {
+            foreach (string s in array) {
                 AddTextComponentSubstringPlayerName(s);
             }
+
             EndTextCommandDisplayHelp(0, false, sound, duration);
         }
 
         public static void CustomLooped(Label label)
         {
-            if (GetLabelText(labels[label].Key) == "NULL")
-            {
+            if (GetLabelText(labels[label].Key) == "NULL") {
                 AddTextEntry(labels[label].Key, labels[label].Value);
             }
+
             //string[] array = CommonFunctions.StringToArray(message);
             //if (IsHelpMessageBeingDisplayed())
             //{

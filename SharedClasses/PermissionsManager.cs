@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CitizenFX.Core;
+using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuShared
-{
-    public static class PermissionsManager
-    {
-        public enum Permission
-        {
+namespace vMenuShared {
+    public static class PermissionsManager {
+        public enum Permission {
             // Global
-            #region global
+        #region global
             Everything,
             DontKickMe,
             DontBanMe,
             NoClip,
             Staff,
-            #endregion
+        #endregion
 
             // Online Players
-            #region online players
+        #region online players
             OPMenu,
             OPAll,
             OPTeleport,
@@ -37,10 +33,10 @@ namespace vMenuShared
             OPUnban,
             OPViewBannedPlayers,
             OPSeePrivateMessages,
-            #endregion
+        #endregion
 
             // Player Options
-            #region player options
+        #region player options
             POMenu,
             POAll,
             POGod,
@@ -62,10 +58,10 @@ namespace vMenuShared
             POFreeze,
             POScenarios,
             POUnlimitedStamina,
-            #endregion
+        #endregion
 
             // Vehicle Options
-            #region vehicle options
+        #region vehicle options
             VOMenu,
             VOAll,
             VOGod,
@@ -101,10 +97,10 @@ namespace vMenuShared
             VOInfiniteFuel,
             VOFlares,
             VOPlaneBombs,
-            #endregion
+        #endregion
 
             // Vehicle Spawner
-            #region vehicle spawner
+        #region vehicle spawner
             VSMenu,
             VSAll,
             VSDisableReplacePrevious,
@@ -133,17 +129,17 @@ namespace vMenuShared
             VSCommercial,
             VSTrains,
             VSOpenWheel,
-            #endregion
+        #endregion
 
             // Saved Vehicles
-            #region saved vehicles
+        #region saved vehicles
             SVMenu,
             SVAll,
             SVSpawn,
-            #endregion
+        #endregion
 
             // Personal Vehicle
-            #region personal vehicle
+        #region personal vehicle
             PVMenu,
             PVAll,
             PVToggleEngine,
@@ -155,28 +151,28 @@ namespace vMenuShared
             PVToggleAlarm,
             PVAddBlip,
             PVExclusiveDriver,
-            #endregion
+        #endregion
 
             // Player Appearance
-            #region player appearance
+        #region player appearance
             PAMenu,
             PAAll,
             PACustomize,
             PASpawnSaved,
             PASpawnNew,
             PAAddonPeds,
-            #endregion
+        #endregion
 
             // Time Options
-            #region time options
+        #region time options
             TOMenu,
             TOAll,
             TOFreezeTime,
             TOSetTime,
-            #endregion
+        #endregion
 
             // Weather Options
-            #region weather options
+        #region weather options
             WOMenu,
             WOAll,
             WODynamic,
@@ -184,10 +180,10 @@ namespace vMenuShared
             WOSetWeather,
             WORemoveClouds,
             WORandomizeClouds,
-            #endregion
+        #endregion
 
             // Weapon Options
-            #region weapon options
+        #region weapon options
             WPMenu,
             WPAll,
             WPGetAll,
@@ -197,10 +193,10 @@ namespace vMenuShared
             WPSpawn,
             WPSpawnByName,
             WPSetAllAmmo,
-            #endregion
+        #endregion
 
             //Weapons Permissions
-            #region weapon specific permissions
+        #region weapon specific permissions
             WPAPPistol,
             WPAdvancedRifle,
             WPAssaultRifle,
@@ -294,18 +290,18 @@ namespace vMenuShared
             WPPlasmaCarbine, // xmas 2018 dlc (1604)
             WPPlasmaMinigun, // xmas 2018 dlc (1604)
             WPStoneHatchet, // xmas 2018 dlc (1604)
-            #endregion
+        #endregion
 
             // Weapon Loadouts Menu
-            #region weapon loadouts
+        #region weapon loadouts
             WLMenu,
             WLAll,
             WLEquip,
             WLEquipOnRespawn,
-            #endregion
+        #endregion
 
             // Misc Settings
-            #region misc settings
+        #region misc settings
             MSAll,
             MSClearArea,
             MSTeleportToWp,
@@ -325,23 +321,23 @@ namespace vMenuShared
             MSRestoreAppearance,
             MSRestoreWeapons,
             MSDriftMode,
-            #endregion
+        #endregion
 
             // Voice Chat
-            #region voice chat
+        #region voice chat
             VCMenu,
             VCAll,
             VCEnable,
             VCShowSpeaker,
             VCStaffChannel,
-            #endregion
-        };
+        #endregion
+        }
 
         public static Dictionary<Permission, bool> Permissions { get; private set; } = new Dictionary<Permission, bool>();
         public static bool ArePermissionsSetup { get; set; } = false;
 
 
-#if SERVER
+    #if SERVER
         /// <summary>
         /// Public function to check if a permission is allowed.
         /// </summary>
@@ -350,29 +346,30 @@ namespace vMenuShared
         /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
         public static bool IsAllowed(Permission permission, Player source, bool checkAnyway = false) => IsAllowedServer(permission, source);
-#endif
+    #endif
 
-#if CLIENT
+    #if CLIENT
         /// <summary>
-        /// Public function to check if a permission is allowed.
+        ///     Public function to check if a permission is allowed.
         /// </summary>
         /// <param name="permission"></param>
         /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
-        public static bool IsAllowed(Permission permission, bool checkAnyway = false) => IsAllowedClient(permission, checkAnyway);
+        public static bool IsAllowed(Permission permission, bool checkAnyway = false)
+        {
+            return IsAllowedClient(permission, checkAnyway);
+        }
 
-        private static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
+        static Dictionary<Permission, bool> allowedPerms = new Dictionary<Permission, bool>();
         /// <summary>
-        /// Private function that handles client side permission requests.
+        ///     Private function that handles client side permission requests.
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private static bool IsAllowedClient(Permission permission, bool checkAnyway)
+        static bool IsAllowedClient(Permission permission, bool checkAnyway)
         {
-            if (ArePermissionsSetup || checkAnyway)
-            {
-                if (allowedPerms.ContainsKey(permission))
-                {
+            if (ArePermissionsSetup || checkAnyway) {
+                if (allowedPerms.ContainsKey(permission)) {
                     return allowedPerms[permission];
                 }
 
@@ -382,8 +379,7 @@ namespace vMenuShared
                 List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
 
                 // Check if any of those permissions is allowed, if so, return true.
-                if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p]))
-                {
+                if (permissionsToCheck.Any(p => Permissions.ContainsKey(p) && Permissions[p])) {
                     allowedPerms[permission] = true;
                     return true;
                 }
@@ -392,8 +388,8 @@ namespace vMenuShared
             // Return false if nothing is allowed.
             return false;
         }
-#endif
-#if SERVER
+    #endif
+    #if SERVER
         /// <summary>
         /// Checks if the player is allowed that specific permission.
         /// </summary>
@@ -413,44 +409,40 @@ namespace vMenuShared
             }
             return false;
         }
-#endif
+    #endif
 
-        private static Dictionary<Permission, List<Permission>> parentPermissions = new Dictionary<Permission, List<Permission>>();
+        static Dictionary<Permission, List<Permission>> parentPermissions = new Dictionary<Permission, List<Permission>>();
 
         /// <summary>
-        /// Gets the current permission and all parent permissions.
+        ///     Gets the current permission and all parent permissions.
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
         public static List<Permission> GetPermissionAndParentPermissions(Permission permission)
         {
-            if (parentPermissions.ContainsKey(permission))
-            {
+            if (parentPermissions.ContainsKey(permission)) {
                 return parentPermissions[permission];
             }
-            else
-            {
-                var list = new List<Permission>() { Permission.Everything, permission };
-                string permStr = permission.ToString();
 
-                // if the first 2 characters are both uppercase
-                if (permStr.Substring(0, 2).ToUpper() == permStr.Substring(0, 2))
-                {
-                    if (!(permStr.Substring(2) == "All" || permStr.Substring(2) == "Menu"))
-                    {
-                        list.AddRange(Enum.GetValues(typeof(Permission)).Cast<Permission>().Where(a => a.ToString() == permStr.Substring(0, 2) + "All"));
-                    }
+            List<Permission> list = new List<Permission> {Permission.Everything, permission};
+            string permStr = permission.ToString();
+
+            // if the first 2 characters are both uppercase
+            if (permStr.Substring(0, 2).ToUpper() == permStr.Substring(0, 2)) {
+                if (!(permStr.Substring(2) == "All" || permStr.Substring(2) == "Menu")) {
+                    list.AddRange(Enum.GetValues(typeof(Permission)).Cast<Permission>().Where(a => a.ToString() == permStr.Substring(0, 2) + "All"));
                 }
-                //else // it's one of the .Everything, .DontKickMe, DontBanMe, NoClip, Staff, etc perms that are not menu specific.
-                //{
-                //    // do nothing
-                //}
-                parentPermissions[permission] = list;
-                return list;
             }
+
+            //else // it's one of the .Everything, .DontKickMe, DontBanMe, NoClip, Staff, etc perms that are not menu specific.
+            //{
+            //    // do nothing
+            //}
+            parentPermissions[permission] = list;
+            return list;
         }
 
-#if SERVER
+    #if SERVER
         /// <summary>
         /// Sets the permissions for a specific player (checks server side, sends event to client side).
         /// </summary>
@@ -515,27 +507,24 @@ namespace vMenuShared
             player.TriggerEvent("vMenu:SetAddons");
             player.TriggerEvent("vMenu:UpdateTeleportLocations", Newtonsoft.Json.JsonConvert.SerializeObject(ConfigManager.GetTeleportLocationsData()));
         }
-#endif
-#if CLIENT
+    #endif
+    #if CLIENT
         /// <summary>
-        /// Sets the permission (client side event handler).
+        ///     Sets the permission (client side event handler).
         /// </summary>
         /// <param name="permissions"></param>
         public static void SetPermissions(string permissions)
         {
-            if (!IsDuplicityVersion())
-            {
-                Permissions = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<Permission, bool>>(permissions);
+            if (!IsDuplicityVersion()) {
+                Permissions = JsonConvert.DeserializeObject<Dictionary<Permission, bool>>(permissions);
                 // if debug logging.
-                if (GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true")
-                {
-                    Debug.WriteLine("[vMenu] [Permissions] " + Newtonsoft.Json.JsonConvert.SerializeObject(Permissions, Newtonsoft.Json.Formatting.None));
+                if (GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true") {
+                    Debug.WriteLine("[vMenu] [Permissions] " + JsonConvert.SerializeObject(Permissions, Formatting.None));
                 }
-
             }
         }
-#endif
-#if SERVER
+    #endif
+    #if SERVER
         /// <summary>
         /// Gets the full permission ace name for the specific <see cref="Permission"/> enum.
         /// </summary>
@@ -594,6 +583,6 @@ namespace vMenuShared
 
             return prefix + "." + name.Substring(2);
         }
-#endif
+    #endif
     }
 }

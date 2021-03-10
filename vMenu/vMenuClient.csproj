@@ -7,7 +7,6 @@
     <TargetName>$(AssemblyName)</TargetName>
     <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>CLIENT</DefineConstants>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
