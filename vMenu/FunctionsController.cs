@@ -182,6 +182,12 @@ namespace vMenuClient
                 {
                     SetSuperJumpThisFrame(Game.Player.Handle);
                 }
+                
+                // Manage PlayerInvisible
+                if (MainMenu.PlayerOptionsMenu.PlayerInvisible && IsAllowed(Permission.POInvisible))
+                {
+                    SetEntityVisible(Game.PlayerPed.Handle, false, false);
+                }
 
                 // Manage PlayerNoRagdoll
                 SetPedCanRagdoll(Game.PlayerPed.Handle, (!MainMenu.PlayerOptionsMenu.PlayerNoRagdoll && noRagdollAllowed) ||
