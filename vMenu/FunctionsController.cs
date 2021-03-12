@@ -7,6 +7,7 @@ using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using CitizenFX.Core.UI;
+using vMenuShared;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
@@ -184,7 +185,7 @@ namespace vMenuClient
                 }
                 
                 // Manage PlayerInvisible
-                if (MainMenu.PlayerOptionsMenu.PlayerInvisible && IsAllowed(Permission.POInvisible))
+                if (GetSettingsBool(Setting.vmenu_should_invisibility_tick) && MainMenu.PlayerOptionsMenu.PlayerInvisible && IsAllowed(Permission.POInvisible))
                 {
                     SetEntityVisible(Game.PlayerPed.Handle, false, false);
                 }
