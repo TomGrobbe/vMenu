@@ -214,8 +214,6 @@ namespace vMenuClient
                     ResetEntityAlpha(noclipEntity);
                 }
                 
-
-
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, false);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, false);
             }
