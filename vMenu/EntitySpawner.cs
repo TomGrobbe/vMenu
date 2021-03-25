@@ -21,7 +21,6 @@ namespace vMenuClient
         /// <summary>
         /// Constructor.
         /// </summary>
-
         public EntitySpawner()
         {
             #if DEBUG
@@ -47,7 +46,6 @@ namespace vMenuClient
         /// <param name="model">model of entity as string</param>
         /// <param name="coords">initial coords for the entity</param>
         /// <returns>true spawn was succesful</returns>
-        
         public static void SpawnEntity(string model, Vector3 coords)
         {
             SpawnEntity((uint) GetHashKey(model), coords);
@@ -113,7 +111,6 @@ namespace vMenuClient
         /// <summary>
         /// Method used to confirm location of prop and finish placement
         /// </summary>
-
         public static void FinishPlacement()
         {
             Active = false;
@@ -150,7 +147,6 @@ namespace vMenuClient
         /// </summary>
         /// <param name="rotation">Input rotation vector</param>
         /// <returns>Output direction vector</returns>
-
         private Vector3 RotationToDirection(Vector3 rotation)
         {
             Vector3 adj = new Vector3(
@@ -170,7 +166,6 @@ namespace vMenuClient
         /// Used to get coords of reycast from player camera;
         /// </summary>
         /// <returns>destination if no hit was found and coords of hit if there was one</returns>
-
         private Vector3 GetCoordsPlayerIsLookingAt()
         {
             Vector3 camRotation = GetGameplayCamRot(0);
@@ -178,9 +173,9 @@ namespace vMenuClient
             Vector3 camDirection = RotationToDirection(camRotation);
 
             Vector3 dest = new Vector3(
-                camCoords.X + camDirection.X * RayDistance,
-                camCoords.Y + camDirection.Y * RayDistance,
-                camCoords.Z + camDirection.Z * RayDistance
+                camCoords.X + (camDirection.X * RayDistance),
+                camCoords.Y + (camDirection.Y * RayDistance),
+                camCoords.Z + (camDirection.Z * RayDistance)
             );
 
             RaycastResult res = World.Raycast(camCoords, dest, IntersectOptions.Everything, Game.PlayerPed);
@@ -260,7 +255,6 @@ namespace vMenuClient
                 {
                     headingOffset -= rotateSpeed * Game.LastFrameTime;
                 }
-
 
                 await Delay(0);
 
