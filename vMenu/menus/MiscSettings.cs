@@ -140,6 +140,8 @@ namespace vMenuClient
             MenuItem spawnNewEntity = new MenuItem("Spawn New Entity", "Spawns entity into the world and lets you set its position and rotation");
             MenuItem confirmEntityPosition = new MenuItem("Confirm Entity Position", "Stops placing entity and sets it at it current location.");
             MenuItem cancelEntity = new MenuItem("Cancel", "Deletes current entity and cancels its placement");
+            MenuItem confirmAndDuplicate = new MenuItem("Confirm Entity Position And Duplicate", "Stops placing entity and sets it at it current location and creates new one to place.");
+            
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
 
@@ -516,8 +518,9 @@ namespace vMenuClient
                 
                 entitySpawnerMenu.AddMenuItem(spawnNewEntity);
                 entitySpawnerMenu.AddMenuItem(confirmEntityPosition);
+                entitySpawnerMenu.AddMenuItem(confirmAndDuplicate);
                 entitySpawnerMenu.AddMenuItem(cancelEntity);
-                
+
                 entitySpawnerMenu.OnItemSelect += async (sender, item, index) =>
                 {
                     if (item == spawnNewEntity)
@@ -536,11 +539,11 @@ namespace vMenuClient
                         }
 
                         EntitySpawner.SpawnEntity(result, Game.PlayerPed.Position);
-                    } else if (item == confirmEntityPosition)
+                    } else if (item == confirmEntityPosition || item == confirmAndDuplicate)
                     {
                         if (EntitySpawner.CurrentEntity != null)
                         {
-                            EntitySpawner.FinishPlacement();
+                            EntitySpawner.FinishPlacement(item == confirmAndDuplicate);
                         }
                         else
                         {
@@ -548,7 +551,14 @@ namespace vMenuClient
                         }
                     } else if (item == cancelEntity)
                     {
-                        EntitySpawner.CurrentEntity.Delete();
+                        if (EntitySpawner.CurrentEntity != null)
+                        {
+                            EntitySpawner.CurrentEntity.Delete();
+                        }
+                        else
+                        {
+                            Notify.Error("No entity to cancel!");
+                        }
                     }
                 };
             }

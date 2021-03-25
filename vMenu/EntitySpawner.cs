@@ -107,14 +107,25 @@ namespace vMenuClient
             if (!Active)
                 Active = true;
         }
-        
+
         /// <summary>
         /// Method used to confirm location of prop and finish placement
         /// </summary>
-        public static void FinishPlacement()
+        public static async void FinishPlacement(bool duplicate = false)
         {
-            Active = false;
-            CurrentEntity = null;
+            if (duplicate)
+            {
+                int hash = CurrentEntity.Model.Hash;
+                Vector3 position = CurrentEntity.Position;
+                CurrentEntity = null;
+                await Delay(1); // Mandatory
+                SpawnEntity((uint) hash, position);
+            }
+            else
+            {
+                Active = false;
+                CurrentEntity = null;
+            }
         }
 
         #endregion
@@ -215,13 +226,13 @@ namespace vMenuClient
             float headingOffset = 0f;
             while (Active)
             {
-                int handle = CurrentEntity.Handle;
                 if (CurrentEntity == null || !CurrentEntity.Exists())
                 {
                     Active = false;
                     CurrentEntity = null;
                     break;
                 }
+                int handle = CurrentEntity.Handle;
 
                 DrawButtons();
                 
