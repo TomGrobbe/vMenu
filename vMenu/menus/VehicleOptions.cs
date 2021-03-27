@@ -166,6 +166,8 @@ namespace vMenuClient
                 LeftIcon = MenuItem.Icon.WARNING
             };
 
+            MenuItem destroyEngine = new MenuItem("Destroy Engine", "Destroy the vehicle's engine.");
+
             // Create lists.
             var dirtlevel = new List<string> { "No Dirt", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
             MenuListItem setDirtLevel = new MenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ " +
@@ -407,6 +409,11 @@ namespace vMenuClient
             {
                 menu.AddMenuItem(deleteBtn);
             }
+
+            if (IsAllowed(Permission.VODestroyEngine)) // DESTROY ENGINE
+            {
+                menu.AddMenuItem(destroyEngine);
+            }
             #endregion
 
             #region delete vehicle handle stuff
@@ -496,6 +503,11 @@ namespace vMenuClient
                         else if (item == toggleEngine)
                         {
                             SetVehicleEngineOn(vehicle.Handle, !vehicle.IsEngineRunning, false, true);
+                        }
+                        // Destroy engine
+                        else if (item == destroyEngine)
+                        {
+                            SetVehicleEngineHealth(vehicle.Handle, -4000);
                         }
                         // Set license plate text
                         else if (item == setLicensePlateText)
