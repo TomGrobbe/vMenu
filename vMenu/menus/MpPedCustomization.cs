@@ -1831,197 +1831,205 @@ namespace vMenuClient
             {
                 return;
             }
-            if (IsModelInCdimage(currentCharacter.ModelHash))
+            int theplayerped = PlayerPedId();
+            if (IsPedInAnyVehicle(theplayerped, true) || IsEntityInAir(theplayerped) || IsPedFalling(theplayerped))
             {
-                if (!HasModelLoaded(currentCharacter.ModelHash))
+                Notify.Error("~w~You are not allowed to spawn ped right now! - ~y~Petris");
+            }
+            else
+            {
+                if (IsModelInCdimage(currentCharacter.ModelHash))
                 {
-                    RequestModel(currentCharacter.ModelHash);
-                    while (!HasModelLoaded(currentCharacter.ModelHash))
+                    if (!HasModelLoaded(currentCharacter.ModelHash))
+                    {
+                        RequestModel(currentCharacter.ModelHash);
+                        while (!HasModelLoaded(currentCharacter.ModelHash))
+                        {
+                            await BaseScript.Delay(0);
+                        }
+                    }
+                    int maxHealth = Game.PlayerPed.MaxHealth;
+                    int maxArmour = Game.Player.MaxArmor;
+                    int health = Game.PlayerPed.Health;
+                    int armour = Game.PlayerPed.Armor;
+
+                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SetPlayerModel(Game.Player.Handle, currentCharacter.ModelHash);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
+
+                    Game.Player.MaxArmor = maxArmour;
+                    Game.PlayerPed.MaxHealth = maxHealth;
+                    Game.PlayerPed.Health = health;
+                    Game.PlayerPed.Armor = armour;
+
+                    ClearPedDecorations(Game.PlayerPed.Handle);
+                    ClearPedFacialDecorations(Game.PlayerPed.Handle);
+                    SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
+                    SetPedHairColor(Game.PlayerPed.Handle, 0, 0);
+                    SetPedEyeColor(Game.PlayerPed.Handle, 0);
+                    ClearAllPedProps(Game.PlayerPed.Handle);
+
+                    #region headblend
+                    var data = currentCharacter.PedHeadBlendData;
+                    SetPedHeadBlendData(Game.PlayerPed.Handle, data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, 0f, data.IsParentInheritance);
+
+                    while (!HasPedHeadBlendFinished(Game.PlayerPed.Handle))
                     {
                         await BaseScript.Delay(0);
                     }
-                }
-                int maxHealth = Game.PlayerPed.MaxHealth;
-                int maxArmour = Game.Player.MaxArmor;
-                int health = Game.PlayerPed.Health;
-                int armour = Game.PlayerPed.Armor;
+                    #endregion
 
-                SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
-                SetPlayerModel(Game.Player.Handle, currentCharacter.ModelHash);
-                await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, true);
-
-                Game.Player.MaxArmor = maxArmour;
-                Game.PlayerPed.MaxHealth = maxHealth;
-                Game.PlayerPed.Health = health;
-                Game.PlayerPed.Armor = armour;
-
-                ClearPedDecorations(Game.PlayerPed.Handle);
-                ClearPedFacialDecorations(Game.PlayerPed.Handle);
-                SetPedDefaultComponentVariation(Game.PlayerPed.Handle);
-                SetPedHairColor(Game.PlayerPed.Handle, 0, 0);
-                SetPedEyeColor(Game.PlayerPed.Handle, 0);
-                ClearAllPedProps(Game.PlayerPed.Handle);
-
-                #region headblend
-                var data = currentCharacter.PedHeadBlendData;
-                SetPedHeadBlendData(Game.PlayerPed.Handle, data.FirstFaceShape, data.SecondFaceShape, data.ThirdFaceShape, data.FirstSkinTone, data.SecondSkinTone, data.ThirdSkinTone, data.ParentFaceShapePercent, data.ParentSkinTonePercent, 0f, data.IsParentInheritance);
-
-                while (!HasPedHeadBlendFinished(Game.PlayerPed.Handle))
-                {
-                    await BaseScript.Delay(0);
-                }
-                #endregion
-
-                #region appearance
-                var appData = currentCharacter.PedAppearance;
-                // hair
-                SetPedComponentVariation(Game.PlayerPed.Handle, 2, appData.hairStyle, 0, 0);
-                SetPedHairColor(Game.PlayerPed.Handle, appData.hairColor, appData.hairHighlightColor);
-                if (!string.IsNullOrEmpty(appData.HairOverlay.Key) && !string.IsNullOrEmpty(appData.HairOverlay.Value))
-                {
-                    SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(appData.HairOverlay.Key), (uint)GetHashKey(appData.HairOverlay.Value));
-                }
-                // blemishes
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 0, appData.blemishesStyle, appData.blemishesOpacity);
-                // bread
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 1, appData.beardStyle, appData.beardOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 1, 1, appData.beardColor, appData.beardColor);
-                // eyebrows
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 2, appData.eyebrowsStyle, appData.eyebrowsOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 2, 1, appData.eyebrowsColor, appData.eyebrowsColor);
-                // ageing
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 3, appData.ageingStyle, appData.ageingOpacity);
-                // makeup
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 4, appData.makeupStyle, appData.makeupOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 4, 2, appData.makeupColor, appData.makeupColor);
-                // blush
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 5, appData.blushStyle, appData.blushOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 5, 2, appData.blushColor, appData.blushColor);
-                // complexion
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 6, appData.complexionStyle, appData.complexionOpacity);
-                // sundamage
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 7, appData.sunDamageStyle, appData.sunDamageOpacity);
-                // lipstick
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 8, appData.lipstickStyle, appData.lipstickOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 8, 2, appData.lipstickColor, appData.lipstickColor);
-                // moles and freckles
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 9, appData.molesFrecklesStyle, appData.molesFrecklesOpacity);
-                // chest hair 
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 10, appData.chestHairStyle, appData.chestHairOpacity);
-                SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, appData.chestHairColor, appData.chestHairColor);
-                // body blemishes 
-                SetPedHeadOverlay(Game.PlayerPed.Handle, 11, appData.bodyBlemishesStyle, appData.bodyBlemishesOpacity);
-                // eyecolor
-                SetPedEyeColor(Game.PlayerPed.Handle, appData.eyeColor);
-                #endregion
-
-                #region Face Shape Data
-                for (var i = 0; i < 19; i++)
-                {
-                    SetPedFaceFeature(Game.PlayerPed.Handle, i, 0f);
-                }
-
-                if (currentCharacter.FaceShapeFeatures.features != null)
-                {
-                    foreach (var t in currentCharacter.FaceShapeFeatures.features)
+                    #region appearance
+                    var appData = currentCharacter.PedAppearance;
+                    // hair
+                    SetPedComponentVariation(Game.PlayerPed.Handle, 2, appData.hairStyle, 0, 0);
+                    SetPedHairColor(Game.PlayerPed.Handle, appData.hairColor, appData.hairHighlightColor);
+                    if (!string.IsNullOrEmpty(appData.HairOverlay.Key) && !string.IsNullOrEmpty(appData.HairOverlay.Value))
                     {
-                        SetPedFaceFeature(Game.PlayerPed.Handle, t.Key, t.Value);
+                        SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(appData.HairOverlay.Key), (uint)GetHashKey(appData.HairOverlay.Value));
                     }
-                }
-                else
-                {
-                    currentCharacter.FaceShapeFeatures.features = new Dictionary<int, float>();
-                }
+                    // blemishes
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 0, appData.blemishesStyle, appData.blemishesOpacity);
+                    // bread
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 1, appData.beardStyle, appData.beardOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 1, 1, appData.beardColor, appData.beardColor);
+                    // eyebrows
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 2, appData.eyebrowsStyle, appData.eyebrowsOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 2, 1, appData.eyebrowsColor, appData.eyebrowsColor);
+                    // ageing
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 3, appData.ageingStyle, appData.ageingOpacity);
+                    // makeup
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 4, appData.makeupStyle, appData.makeupOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 4, 2, appData.makeupColor, appData.makeupColor);
+                    // blush
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 5, appData.blushStyle, appData.blushOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 5, 2, appData.blushColor, appData.blushColor);
+                    // complexion
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 6, appData.complexionStyle, appData.complexionOpacity);
+                    // sundamage
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 7, appData.sunDamageStyle, appData.sunDamageOpacity);
+                    // lipstick
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 8, appData.lipstickStyle, appData.lipstickOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 8, 2, appData.lipstickColor, appData.lipstickColor);
+                    // moles and freckles
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 9, appData.molesFrecklesStyle, appData.molesFrecklesOpacity);
+                    // chest hair 
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 10, appData.chestHairStyle, appData.chestHairOpacity);
+                    SetPedHeadOverlayColor(Game.PlayerPed.Handle, 10, 1, appData.chestHairColor, appData.chestHairColor);
+                    // body blemishes 
+                    SetPedHeadOverlay(Game.PlayerPed.Handle, 11, appData.bodyBlemishesStyle, appData.bodyBlemishesOpacity);
+                    // eyecolor
+                    SetPedEyeColor(Game.PlayerPed.Handle, appData.eyeColor);
+                    #endregion
 
-                #endregion
-
-                #region Clothing Data
-                if (currentCharacter.DrawableVariations.clothes != null && currentCharacter.DrawableVariations.clothes.Count > 0)
-                {
-                    foreach (var cd in currentCharacter.DrawableVariations.clothes)
+                    #region Face Shape Data
+                    for (var i = 0; i < 19; i++)
                     {
-                        SetPedComponentVariation(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value, 0);
+                        SetPedFaceFeature(Game.PlayerPed.Handle, i, 0f);
                     }
-                }
-                #endregion
 
-                #region Props Data
-                if (currentCharacter.PropVariations.props != null && currentCharacter.PropVariations.props.Count > 0)
-                {
-                    foreach (var cd in currentCharacter.PropVariations.props)
+                    if (currentCharacter.FaceShapeFeatures.features != null)
                     {
-                        if (cd.Value.Key > -1)
+                        foreach (var t in currentCharacter.FaceShapeFeatures.features)
                         {
-                            SetPedPropIndex(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value > -1 ? cd.Value.Value : 0, true);
+                            SetPedFaceFeature(Game.PlayerPed.Handle, t.Key, t.Value);
                         }
                     }
-                }
-                #endregion
+                    else
+                    {
+                        currentCharacter.FaceShapeFeatures.features = new Dictionary<int, float>();
+                    }
 
-                #region Tattoos
+                    #endregion
 
-                if (currentCharacter.PedTatttoos.HeadTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.HeadTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.TorsoTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.TorsoTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.LeftArmTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.LeftArmTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.RightArmTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.RightArmTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.LeftLegTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.LeftLegTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.RightLegTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
-                }
-                if (currentCharacter.PedTatttoos.BadgeTattoos == null)
-                {
-                    currentCharacter.PedTatttoos.BadgeTattoos = new List<KeyValuePair<string, string>>();
+                    #region Clothing Data
+                    if (currentCharacter.DrawableVariations.clothes != null && currentCharacter.DrawableVariations.clothes.Count > 0)
+                    {
+                        foreach (var cd in currentCharacter.DrawableVariations.clothes)
+                        {
+                            SetPedComponentVariation(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value, 0);
+                        }
+                    }
+                    #endregion
+
+                    #region Props Data
+                    if (currentCharacter.PropVariations.props != null && currentCharacter.PropVariations.props.Count > 0)
+                    {
+                        foreach (var cd in currentCharacter.PropVariations.props)
+                        {
+                            if (cd.Value.Key > -1)
+                            {
+                                SetPedPropIndex(Game.PlayerPed.Handle, cd.Key, cd.Value.Key, cd.Value.Value > -1 ? cd.Value.Value : 0, true);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region Tattoos
+
+                    if (currentCharacter.PedTatttoos.HeadTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.HeadTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.TorsoTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.TorsoTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.LeftArmTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.LeftArmTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.RightArmTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.RightArmTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.LeftLegTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.LeftLegTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.RightLegTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
+                    }
+                    if (currentCharacter.PedTatttoos.BadgeTattoos == null)
+                    {
+                        currentCharacter.PedTatttoos.BadgeTattoos = new List<KeyValuePair<string, string>>();
+                    }
+
+                    foreach (var tattoo in currentCharacter.PedTatttoos.HeadTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.TorsoTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.LeftArmTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.RightArmTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.LeftLegTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.RightLegTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    foreach (var tattoo in currentCharacter.PedTatttoos.BadgeTattoos)
+                    {
+                        SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    }
+                    #endregion
                 }
 
-                foreach (var tattoo in currentCharacter.PedTatttoos.HeadTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.TorsoTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.LeftArmTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.RightArmTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.LeftLegTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.RightLegTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                foreach (var tattoo in currentCharacter.PedTatttoos.BadgeTattoos)
-                {
-                    SetPedDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-                }
-                #endregion
+                // Set the facial expression, or set it to 'normal' if it wasn't saved/set before.
+                SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
             }
-
-            // Set the facial expression, or set it to 'normal' if it wasn't saved/set before.
-            SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
         }
 
         /// <summary>
