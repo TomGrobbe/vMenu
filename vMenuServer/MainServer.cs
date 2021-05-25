@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
@@ -204,6 +205,7 @@ namespace vMenuServer
                 }));
                 EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
                 EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
+                EventHandlers.Add("vMenu:LogToDiscord", new Action<Player, String, String>(LogToDiscord));
 
                 // check addons file for errors
                 string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -233,6 +235,19 @@ namespace vMenuServer
             }
         }
         #endregion
+
+        private void LogToDiscord([FromSource] Player player, string title, string data)
+        {
+            // Implement the log to Discord code
+            string desc = data;
+            string footer = "[" + player.Handle + "] " + player.Name;
+            string webhook = GetConvar("vMenu_Webhook", null);
+            if (webhook != null && webhook.Length >= 5)
+            {
+                dynamic embed = HttpRequests.DiscordEmbed(title, "16711680", desc, footer);
+                HttpRequests.SendWebhook(webhook, "", embed);
+            }
+        }
 
         #region command handler
         [Command("vmenuserver", Restricted = true)]
