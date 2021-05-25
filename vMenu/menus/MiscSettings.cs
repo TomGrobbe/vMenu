@@ -597,11 +597,11 @@ namespace vMenuClient
             menu.AddMenuItem(drawTime); // always allowed
             if (IsAllowed(Permission.MSJoinQuitNotifs))
             {
-                menu.AddMenuItem(deathNotifs);
+                menu.AddMenuItem(joinQuitNotifs);
             }
             if (IsAllowed(Permission.MSDeathNotifs))
             {
-                menu.AddMenuItem(joinQuitNotifs);
+                menu.AddMenuItem(deathNotifs);
             }
             if (IsAllowed(Permission.MSNightVision))
             {
