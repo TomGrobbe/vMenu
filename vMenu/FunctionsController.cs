@@ -6,7 +6,6 @@ using MenuAPI;
 using Newtonsoft.Json;
 using CitizenFX.Core;
 using CitizenFX.Core.UI;
-using vMenuShared;
 using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
@@ -236,12 +235,12 @@ namespace vMenuClient
                     SetEntityInvincible(Game.PlayerPed.Handle, MainMenu.PlayerOptionsMenu.PlayerGodMode && godmodeAllowed);
                 }
             }
-                
-                // Manage PlayerInvisible
-                if (GetSettingsBool(Setting.vmenu_should_invisibility_tick) && MainMenu.PlayerOptionsMenu.PlayerInvisible && IsAllowed(Permission.POInvisible))
-                {
-                    SetEntityVisible(Game.PlayerPed.Handle, false, false);
-                }
+
+            // Manage PlayerInvisible
+            if (GetSettingsBool(Setting.vmenu_handle_invisibility) && MainMenu.PlayerOptionsMenu.PlayerInvisible && IsAllowed(Permission.POInvisible))
+            {
+                SetEntityVisible(Game.PlayerPed.Handle, false, false);
+            }
 
             // Manage Super jump.
             if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && IsAllowed(Permission.POSuperjump))

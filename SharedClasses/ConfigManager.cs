@@ -20,7 +20,7 @@ namespace vMenuShared
             vmenu_noclip_toggle_key,
             vmenu_keep_spawned_vehicles_persistent,
             vmenu_use_els_compatibility_mode,
-            vmenu_should_invisibility_tick,
+            vmenu_handle_invisibility,
             vmenu_quit_session_in_rockstar_editor,
             vmenu_server_info_message,
             vmenu_server_info_website_url,
