@@ -17,13 +17,13 @@ namespace vMenuClient
         private float rotateSpeed = 20f;
 
         private const float RayDistance = 25f;
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public EntitySpawner()
         {
-            #if DEBUG
+#if DEBUG
                 RegisterCommand("testEntity", new Action<int, List<object>>((source, args) =>
                 {
                     string prop = (string)args[0];
@@ -34,7 +34,7 @@ namespace vMenuClient
                 {
                     FinishPlacement();
                 }), false);
-            #endif
+#endif
         }
 
         #region PublicMethods
@@ -48,7 +48,7 @@ namespace vMenuClient
         /// <returns>true spawn was succesful</returns>
         public static void SpawnEntity(string model, Vector3 coords)
         {
-            SpawnEntity((uint) GetHashKey(model), coords);
+            SpawnEntity((uint)GetHashKey(model), coords);
         }
 
         /// <summary>
@@ -68,11 +68,11 @@ namespace vMenuClient
 
             if (CurrentEntity != null)
             {
-                Notify.Error("One entity is currently beeing processed");
+                Notify.Error("One entity is currently being processed.");
                 return;
             }
 
-            int handle = 0;
+            int handle;
             RequestModel(model);
             while (!HasModelLoaded(model))
             {
@@ -81,31 +81,27 @@ namespace vMenuClient
             if (IsModelAPed(model))
             {
                 handle = CreatePed(4, model, coords.X, coords.Y, coords.Z, Game.PlayerPed.Heading, true, true);
-            } else if (IsModelAVehicle(model))
+            }
+            else if (IsModelAVehicle(model))
             {
-                int modelClass = GetVehicleClassFromName(model);
-                if (!VehicleSpawner.allowedCategories[modelClass])
-                {
-                    Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
-                    return;
-                }
-                handle = CreateVehicle(model, coords.X, coords.Y, coords.Z, Game.PlayerPed.Heading, true, true);
+                handle = await CommonFunctions.SpawnVehicle(model, false, false, skipLoad: false, vehicleInfo: new CommonFunctions.VehicleInfo(), saveName: null, coords.X, coords.Y, coords.Z, Game.PlayerPed.Heading);
             }
             else
             {
                 handle = CreateObject((int)model, coords.X, coords.Y, coords.Z, true, true, true);
             }
-            
-            SetEntityAsMissionEntity(handle, true, true); // Set As mission to prevent despawning
 
             CurrentEntity = Entity.FromHandle(handle);
 
-            if (!CurrentEntity.Exists()) 
-                throw new Exception("Failed to create entity");
-            
+            if (!CurrentEntity.Exists())
+            {
+                Notify.Error("Failed to create entity");
+                return;
+            }
 
-            if (!Active)
-                Active = true;
+            SetEntityAsMissionEntity(handle, true, true); // Set As mission to prevent despawning
+
+            Active = true;
         }
 
         /// <summary>
@@ -119,7 +115,7 @@ namespace vMenuClient
                 Vector3 position = CurrentEntity.Position;
                 CurrentEntity = null;
                 await Delay(1); // Mandatory
-                SpawnEntity((uint) hash, position);
+                SpawnEntity((uint)hash, position);
             }
             else
             {
@@ -152,7 +148,7 @@ namespace vMenuClient
 
             DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255, 0);
         }
-        
+
         /// <summary>
         /// Used internally for getting direction vector from rotation vector
         /// </summary>
@@ -161,18 +157,18 @@ namespace vMenuClient
         private Vector3 RotationToDirection(Vector3 rotation)
         {
             Vector3 adj = new Vector3(
-            (float)Math.PI / 180f * rotation.X,
-            (float)Math.PI / 180f * rotation.Y,
-            (float)Math.PI / 180f * rotation.Z
+                (float)Math.PI / 180f * rotation.X,
+                (float)Math.PI / 180f * rotation.Y,
+                (float)Math.PI / 180f * rotation.Z
             );
-            
+
             return new Vector3(
-            (float)(-Math.Sin(adj.Z) * Math.Abs(Math.Cos(adj.X))),
-            (float)(Math.Cos(adj.Z) * Math.Abs(Math.Cos(adj.X))),
-            (float)Math.Sin(adj.X)
+                (float)(-Math.Sin(adj.Z) * Math.Abs(Math.Cos(adj.X))),
+                (float)(Math.Cos(adj.Z) * Math.Abs(Math.Cos(adj.X))),
+                (float)Math.Sin(adj.X)
             );
         }
-        
+
         /// <summary>
         /// Used to get coords of reycast from player camera;
         /// </summary>
@@ -190,7 +186,7 @@ namespace vMenuClient
             );
 
             RaycastResult res = World.Raycast(camCoords, dest, IntersectOptions.Everything, Game.PlayerPed);
-            
+
 #if DEBUG
             DrawLine(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y,Game.PlayerPed.Position.Z, dest.X, dest.Y, dest.Z, 255, 0, 0, 255);
 #endif
@@ -218,7 +214,7 @@ namespace vMenuClient
             {
                 if (scaleform != 0)
                 {
-                    SetScaleformMovieAsNoLongerNeeded(ref scaleform); //Unload scaleform if there is no need to draw it
+                    SetScaleformMovieAsNoLongerNeeded(ref scaleform); // Unload scaleform if there is no need to draw it
                     scaleform = 0;
                 }
             }
@@ -235,7 +231,7 @@ namespace vMenuClient
                 int handle = CurrentEntity.Handle;
 
                 DrawButtons();
-                
+
                 FreezeEntityPosition(handle, true);
                 SetEntityInvincible(handle, true);
                 SetEntityCollision(handle, false, false);
@@ -256,13 +252,13 @@ namespace vMenuClient
                         PlaceObjectOnGroundProperly(CurrentEntity.Handle);
                     }
                 }
-                
-                // Controls
 
+                // Controls
                 if (Game.IsControlPressed(0, Control.VehicleFlyRollLeftOnly))
                 {
                     headingOffset += rotateSpeed * Game.LastFrameTime;
-                } else if (Game.IsControlPressed(0, Control.VehicleFlyRollRightOnly))
+                }
+                else if (Game.IsControlPressed(0, Control.VehicleFlyRollRightOnly))
                 {
                     headingOffset -= rotateSpeed * Game.LastFrameTime;
                 }
