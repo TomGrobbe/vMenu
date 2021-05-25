@@ -207,10 +207,13 @@ namespace vMenuClient
                 SetEntityInvincible(noclipEntity, false);
                 SetEntityCollision(noclipEntity, true, true);
 
-                SetEntityVisible(noclipEntity, true, false);
-                SetLocalPlayerVisibleLocally(true);
-                ResetEntityAlpha(noclipEntity);
-
+                // If the player is set as invisible by PlayerOptions do not remove the invisibility
+                if (!MainMenu.PlayerOptionsMenu.PlayerInvisible) {
+                    SetEntityVisible(noclipEntity, true, false);
+                    SetLocalPlayerVisibleLocally(true);
+                    ResetEntityAlpha(noclipEntity);
+                }
+                
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, false);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, false);
             }
