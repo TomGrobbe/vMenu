@@ -133,7 +133,7 @@ namespace vMenuClient
                     int theplayerped = PlayerPedId();
                     if (IsPedInAnyVehicle(theplayerped, true) || IsEntityInAir(theplayerped) || IsPedFalling(theplayerped))
                     {
-                        Notify.Error("~w~You are not allowed to spawn ped right now! - ~y~Petris");
+                        return;
                     }
                     else
                     {
