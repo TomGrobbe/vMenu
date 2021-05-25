@@ -135,10 +135,7 @@ namespace vMenuClient
                     {
                         return;
                     }
-                    else
-                    {
-                        await SetPlayerSkin(savedPed.Value.model, savedPed.Value, true);
-                    }
+                    await SetPlayerSkin(savedPed.Value.model, savedPed.Value, true);
                 }
                 else if (item == cloneSavedPed)
                 {
