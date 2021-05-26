@@ -22,6 +22,9 @@ namespace vMenuClient
 
         Menu playerMenu = new Menu("Online Players", "Player:");
         IPlayer currentPlayer = new NativePlayer(Game.Player);
+        private string currentPlayerName;
+
+        private bool cancelUpdatePlayerTimer = false;
 
 
         /// <summary>
@@ -46,6 +49,17 @@ namespace vMenuClient
             MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
             MenuItem ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
             MenuItem tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+
+            menu.OnMenuClose += async (sender) =>
+            {
+                await BaseScript.Delay(100);
+                var currentMenu = MenuController.GetCurrentMenu();
+                
+                if (currentMenu != null && currentMenu.MenuSubtitle == "Main Menu")
+                {
+                    StopUpdatePlayerTimer();
+                }
+            };
 
             // always allowed
             playerMenu.AddMenuItem(sendMessage);
@@ -93,6 +107,8 @@ namespace vMenuClient
             {
                 playerMenu.RefreshIndex();
                 ban.Label = "";
+
+                currentPlayer = null;
             };
 
             playerMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) =>
@@ -257,6 +273,7 @@ namespace vMenuClient
                     if (player != null)
                     {
                         currentPlayer = player;
+                        currentPlayerName = player.Name;
                         playerMenu.MenuSubtitle = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
                         playerMenu.CounterPreText = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
                     }
@@ -270,11 +287,15 @@ namespace vMenuClient
         /// <summary>
         /// Updates the player items.
         /// </summary>
-        public async Task UpdatePlayerlist()
+        public async Task UpdatePlayerlist(bool fromTimer = false)
         {
             void UpdateStuff()
             {
-                menu.ClearMenuItems();
+                var oldIndex = menu.CurrentIndex;
+                
+                menu.ClearMenuItems(fromTimer);
+
+                var foundCurrentPlayer = false;
 
                 foreach (IPlayer p in MainMenu.PlayersList.OrderBy(a => a.Name))
                 {
@@ -284,8 +305,32 @@ namespace vMenuClient
                     };
                     menu.AddMenuItem(pItem);
                     MenuController.BindMenuItem(menu, playerMenu, pItem);
+
+                    if (currentPlayer != null && p.ServerId == currentPlayer.ServerId)
+                    {
+                        foundCurrentPlayer = true;
+                    }
                 }
 
+                if (currentPlayer != null && !foundCurrentPlayer)
+                {
+                    Notify.Info($"Player: {currentPlayerName} has left the server.");
+                    
+                    playerMenu.GoBack();
+                    
+                    menu.RefreshIndex();
+                }
+
+                // We don't want to call RefreshIndex if calling from the timer, as we're on the list currently
+                if (fromTimer)
+                {
+                    if (oldIndex > MainMenu.PlayersList.Count() - 1)
+                    {
+                        menu.RefreshIndex(MainMenu.PlayersList.Count() - 1);
+                    }
+                    
+                    return;
+                }
                 menu.RefreshIndex();
                 //menu.UpdateScaleform();
                 playerMenu.RefreshIndex();
@@ -317,6 +362,43 @@ namespace vMenuClient
                 _ = UpdatePlayerlist();
                 return menu;
             }
+        }
+
+        /// <summary>
+        /// Update player list while it's open every 10 seconds
+        /// We don't want this to happen onTick because that's excessive, but it's not
+        /// abnormal for a staff member to have Online Players open for long periods of time.
+        /// </summary>
+        /// <returns>void</returns>
+        public async Task UpdatePlayerListTimer()
+        {
+            while (true)
+            {
+                // Wait 10 seconds
+                await BaseScript.Delay(10000);
+
+                if (cancelUpdatePlayerTimer)
+                {
+                    cancelUpdatePlayerTimer = false;
+                    return;
+                }
+                
+                // Request players from server
+                MainMenu.PlayersList.RequestPlayerList();
+                
+                await UpdatePlayerlist(true);
+            }
+        }
+
+        /// <summary>
+        /// Set cancelUpdatePlayerTimer so that we stop the timer if we're not on the OnlinePlayers menu.
+        /// </summary>
+        /// <returns>OnlinePlayers</returns>
+        public OnlinePlayers StopUpdatePlayerTimer()
+        {
+            cancelUpdatePlayerTimer = true;
+
+            return this;
         }
     }
 }
