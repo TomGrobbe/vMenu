@@ -192,12 +192,14 @@ namespace vMenuClient
                         {
                             if (_checked)
                             {
-                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle, 1);
+                                // SetVehicleExclusiveDriver, but the current version is broken in C# so we manually execute it.
+                                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x41062318F23ED854, CurrentPersonalVehicle, true);
                                 SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle, 1);
                             }
                             else
                             {
-                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, 0, 1);
+                                // SetVehicleExclusiveDriver, but the current version is broken in C# so we manually execute it.
+                                CitizenFX.Core.Native.Function.Call((CitizenFX.Core.Native.Hash)0x41062318F23ED854, CurrentPersonalVehicle, false);
                                 SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, 0, 1);
                             }
                         }
