@@ -394,9 +394,9 @@ namespace vMenuClient
                 vehicleClassMenu.ShowVehicleStatsPanel = true;
 
                 // Handle button presses
-                vehicleClassMenu.OnItemSelect += (sender2, item2, index2) =>
+                vehicleClassMenu.OnItemSelect += async (sender2, item2, index2) =>
                 {
-                    SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
+                    await SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
                 };
 
                 void HandleStatsPanel(Menu openedMenu, MenuItem currentItem)
@@ -430,12 +430,12 @@ namespace vMenuClient
 
             #region handle events
             // Handle button presses.
-            menu.OnItemSelect += (sender, item, index) =>
+            menu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == spawnByName)
                 {
                     // Passing "custom" as the vehicle name, will ask the user for input.
-                    SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
+                    await SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
                 }
             };
 
