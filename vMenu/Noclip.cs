@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
@@ -95,7 +95,7 @@ namespace vMenuClient
 
                     BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
                     ScaleformMovieMethodAddParamInt(6);
-                    PushScaleformMovieMethodParameterString(GetControlInstructionalButton(0, (int)MainMenu.NoClipKey, 1));
+                    PushScaleformMovieMethodParameterString(GetControlInstructionalButton(0, MainMenu.NoClipKey, 1));
                     PushScaleformMovieMethodParameterString($"Toggle NoClip");
                     EndScaleformMovieMethod();
 
@@ -171,7 +171,7 @@ namespace vMenuClient
                         FollowCamMode = !FollowCamMode;
                     }
                 }
-                float moveSpeed = (float)MovingSpeed;
+                float moveSpeed = MovingSpeed;
                 if (MovingSpeed > speeds.Count / 2)
                 {
                     moveSpeed *= 1.8f;
@@ -200,7 +200,7 @@ namespace vMenuClient
                 SetEntityCollision(noclipEntity, true, true);
 
                 // If the player is not set as invisible by PlayerOptions or if the noclip entity is not the player ped, reset the visibility
-                if (!MainMenu.PlayerOptionsMenu.PlayerInvisible || (MainMenu.PlayerOptionsMenu.PlayerInvisible && noclipEntity == Game.PlayerPed.Handle))
+                if (MainMenu.PlayerOptionsMenu == null || (!MainMenu.PlayerOptionsMenu.PlayerInvisible || (MainMenu.PlayerOptionsMenu.PlayerInvisible && noclipEntity == Game.PlayerPed.Handle)))
                 {
                     SetEntityVisible(noclipEntity, true, false);
                     SetLocalPlayerVisibleLocally(true);
