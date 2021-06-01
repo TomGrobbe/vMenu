@@ -210,7 +210,15 @@ namespace vMenuClient
             { "weapon_raypistol", GetLabelText("WTD_RAYPISTOL") },
             { "weapon_raycarbine", GetLabelText("WTD_RAYCARBINE") },
             { "weapon_rayminigun", GetLabelText("WTD_RAYMINIGUN") },
-            { "weapon_stone_hatchet", GetLabelText("WTD_SHATCHET") }
+            { "weapon_stone_hatchet", GetLabelText("WTD_SHATCHET") },
+            // DLC CHRISTMAS2019 (v 1868)
+            { "weapon_ceramicpistol", GetLabelText("WTD_CERPST") },
+            { "weapon_navyrevolver", GetLabelText("WTD_REV_NV") },
+            { "weapon_hazardcan", "Hazard Can" }, //(Does not have label text)
+            // DLC CHRISTMAS2020 (v 2189)
+            { "weapon_gadgetpistol", GetLabelText("WTD_GDGTPST") },
+            { "weapon_militaryrifle", GetLabelText("WTD_MLTRYRFL") },
+            { "weapon_combatshotgun", GetLabelText("WTD_CMBSHGN") }
         };
 
         public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
