@@ -452,7 +452,7 @@ namespace vMenuClient
                     }
 
                     // Manage "no helmet"
-                    var ped = new Ped(Game.PlayerPed.Handle);
+                    var ped = Game.PlayerPed;
                     // If the no helmet feature is turned on, disalbe "ped can wear helmet"
                     if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && IsAllowed(Permission.VONoHelmet))
                     {
@@ -487,7 +487,6 @@ namespace vMenuClient
                             }
                         }
                     }
-
                     await Delay(0);
                 }
             }

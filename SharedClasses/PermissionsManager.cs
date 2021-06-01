@@ -378,6 +378,17 @@ namespace vMenuShared
         {
             if (ArePermissionsSetup || checkAnyway)
             {
+                bool staffPermissionAllowed = (
+                    allowedPerms.ContainsKey(Permission.Staff) && allowedPerms[Permission.Staff]
+                ) || (
+                    allowedPerms.ContainsKey(Permission.Everything) && allowedPerms[Permission.Everything]
+                );
+                // Return false immediately if the staff only convar is set and the user is not a staff member.
+                if (ConfigManager.GetSettingsBool(ConfigManager.Setting.vmenu_menu_staff_only) && !staffPermissionAllowed)
+                {
+                    return false;
+                }
+
                 if (allowedPerms.ContainsKey(permission))
                 {
                     return allowedPerms[permission];
