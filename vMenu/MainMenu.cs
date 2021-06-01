@@ -376,7 +376,6 @@ namespace vMenuClient
                 await Delay(100);
             }
             PostPermissionsSetup();
-            TriggerEvent("vMenu:SetupTickFunctions");
         }
         #endregion
 
@@ -448,6 +447,8 @@ namespace vMenuClient
                     StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
                     StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
                 }
+
+                TriggerEvent("vMenu:SetupTickFunctions");
             }
             else
             {
