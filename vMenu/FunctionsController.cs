@@ -1589,6 +1589,143 @@ namespace vMenuClient
                         Game.PlayerPed.Task.ClearAll();
                     }
 
+                    if (Game.IsControlJustReleased(0, Control.ReplayShowhotkey))
+                    {
+                        if (MainMenu.MpPedCustomizationMenu.clothesMenu.Visible)
+                        {
+                            int currentComponentId = 1;
+                            switch (MainMenu.MpPedCustomizationMenu.clothesItemIndex)
+                            {
+                                case 0:
+                                    currentComponentId = 1;
+                                    break;
+                                case 1:
+                                    currentComponentId = 3;
+                                    break;
+                                case 2:
+                                    currentComponentId = 4;
+                                    break;
+                                case 3:
+                                    currentComponentId = 5;
+                                    break;
+                                case 4:
+                                    currentComponentId = 6;
+                                    break;
+                                case 5:
+                                    currentComponentId = 7;
+                                    break;
+                                case 6:
+                                    currentComponentId = 8;
+                                    break;
+                                case 7:
+                                    currentComponentId = 9;
+                                    break;
+                                case 8:
+                                    currentComponentId = 10;
+                                    break;
+                                case 9:
+                                    currentComponentId = 11;
+                                    break;
+                            }
+                            int maxNum = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, currentComponentId) - 1;
+                            string inputResult = await GetUserInput($"Input Drawable Number | Min: 0 Max: {maxNum}", maxNum.ToString().Length);
+
+                            bool isNumber = int.TryParse(inputResult, out int intVersion);
+
+                            if (string.IsNullOrEmpty(inputResult) || !isNumber)
+                            {
+                                Notify.Error(CommonErrors.InvalidInput);
+                            }
+                            else
+                            {
+                                if (intVersion > maxNum || intVersion < 0)
+                                {
+                                    Notify.Error(CommonErrors.InvalidInput);
+                                }
+                                else
+                                {
+                                    MainMenu.MpPedCustomizationMenu.clothesItems[MainMenu.MpPedCustomizationMenu.clothesItemIndex].ListIndex = intVersion;
+                                    SetPedComponentVariation(Game.PlayerPed.Handle, currentComponentId, intVersion, 0, 0);
+                                    int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, currentComponentId, intVersion);
+                                    MainMenu.MpPedCustomizationMenu.currentCharacter.DrawableVariations.clothes[currentComponentId] = new KeyValuePair<int, int>(intVersion, 0);
+                                    MainMenu.MpPedCustomizationMenu.clothesItems[MainMenu.MpPedCustomizationMenu.clothesItemIndex].Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #1 (of {maxTextures}).";
+                                };
+                            };
+                        }
+                        else if (MainMenu.MpPedCustomizationMenu.propsMenu.Visible)
+                        {
+                            int currentPropId = 0;
+                            switch (MainMenu.MpPedCustomizationMenu.propsItemIndex)
+                            {
+                                case 0:
+                                    currentPropId = 0;
+                                    break;
+                                case 1:
+                                    currentPropId = 1;
+                                    break;
+                                case 2:
+                                    currentPropId = 2;
+                                    break;
+                                case 3:
+                                    currentPropId = 6;
+                                    break;
+                                case 4:
+                                    currentPropId = 7;
+                                    break;
+                            }
+                            int maxNum = GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, currentPropId) - 1;
+                            string inputResult = await GetUserInput($"Input Prop Number | Min: -1 Max: {maxNum}", maxNum.ToString().Length);
+
+                            bool isNumber = int.TryParse(inputResult, out int intVersion);
+
+                            if (string.IsNullOrEmpty(inputResult) || !isNumber)
+                            {
+                                Notify.Error(CommonErrors.InvalidInput);
+                            }
+                            else
+                            {
+                                if (intVersion > maxNum || intVersion < -1)
+                                {
+                                    Notify.Error(CommonErrors.InvalidInput);
+                                }
+                                else
+                                {
+                                    MainMenu.MpPedCustomizationMenu.propsItems[MainMenu.MpPedCustomizationMenu.propsItemIndex].ListIndex = intVersion;
+                                    
+                                    if (intVersion == -1)
+                                    {
+                                        SetPedPropIndex(Game.PlayerPed.Handle, currentPropId, -1, -1, false);
+                                        ClearPedProp(Game.PlayerPed.Handle, currentPropId);
+                                        if (MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props == null)
+                                        {
+                                            MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                                        }
+                                        MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props[currentPropId] = new KeyValuePair<int, int>(-1, -1);
+                                        MainMenu.MpPedCustomizationMenu.propsItems[MainMenu.MpPedCustomizationMenu.propsItemIndex].Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                                    }
+                                    else
+                                    {
+                                        SetPedPropIndex(Game.PlayerPed.Handle, currentPropId, intVersion, 0, true);
+                                        if (MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props == null)
+                                        {
+                                            MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
+                                        }
+                                        MainMenu.MpPedCustomizationMenu.currentCharacter.PropVariations.props[currentPropId] = new KeyValuePair<int, int>(intVersion, 0);
+                                        if (GetPedPropIndex(Game.PlayerPed.Handle, currentPropId) == -1)
+                                        {
+                                            MainMenu.MpPedCustomizationMenu.propsItems[MainMenu.MpPedCustomizationMenu.propsItemIndex].Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.";
+                                        }
+                                        else
+                                        {
+                                            int maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, currentPropId, intVersion);
+                                            MainMenu.MpPedCustomizationMenu.propsItems[MainMenu.MpPedCustomizationMenu.propsItemIndex].Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #0 (of {maxPropTextures}).";
+                                        }
+                                    }
+                                };
+                            };
+                        };
+                    };
+
                     var xOffset = 0f;
                     var yOffset = 0f;
 
