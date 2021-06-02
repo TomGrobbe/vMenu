@@ -39,9 +39,13 @@ namespace vMenuClient
         private bool isEdidtingPed = false;
         private readonly List<string> facial_expressions = new List<string>() { "mood_Normal_1", "mood_Happy_1", "mood_Angry_1", "mood_Aiming_1", "mood_Injured_1", "mood_stressed_1", "mood_smug_1", "mood_sulk_1", };
 
-        private MultiplayerPedData currentCharacter = new MultiplayerPedData();
+        public MultiplayerPedData currentCharacter = new MultiplayerPedData();
 
+        public int clothesItemIndex = 0;
+        public List<MenuListItem> clothesItems = new List<MenuListItem>();
 
+        public int propsItemIndex = 0;
+        public List<MenuListItem> propsItems = new List<MenuListItem>();
 
         /// <summary>
         /// Makes or updates the character creator menu. Also has an option to load data from the <see cref="currentCharacter"/> data, to allow for editing an existing ped.
@@ -494,13 +498,14 @@ namespace vMenuClient
                     List<string> items = new List<string>();
                     for (int x = 0; x < maxDrawables; x++)
                     {
-                        items.Add($"Drawable #{x} (of {maxDrawables})");
+                        items.Add($"Drawable #{x} (of {maxDrawables - 1})");
                     }
 
                     int maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, i, currentVariationIndex);
 
                     MenuListItem listItem = new MenuListItem(clothingCategoryNames[i], items, currentVariationIndex, $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentVariationTextureIndex + 1} (of {maxTextures}).");
                     clothesMenu.AddMenuItem(listItem);
+                    clothesItems.Add(listItem);
                 }
             }
             #endregion
@@ -521,7 +526,7 @@ namespace vMenuClient
                 List<string> propsList = new List<string>();
                 for (int i = 0; i < GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId); i++)
                 {
-                    propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId)})");
+                    propsList.Add($"Prop #{i} (of {GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId) - 1})");
                 }
                 propsList.Add("No Prop");
 
@@ -531,11 +536,13 @@ namespace vMenuClient
                     int maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propId, currentProp);
                     MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{currentPropTexture + 1} (of {maxPropTextures}).");
                     propsMenu.AddMenuItem(propListItem);
+                    propsItems.Add(propListItem);
                 }
                 else
                 {
                     MenuListItem propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, "Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.");
                     propsMenu.AddMenuItem(propListItem);
+                    propsItems.Add(propListItem);
                 }
 
 
@@ -813,6 +820,8 @@ namespace vMenuClient
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            clothesMenu.InstructionalButtons.Add(Control.ReplayShowhotkey, "Input Drawable Number");
+            propsMenu.InstructionalButtons.Add(Control.ReplayShowhotkey, "Input Prop Number");
 
 
             MenuItem inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
@@ -1182,6 +1191,23 @@ namespace vMenuClient
                 currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(listIndex, newTextureIndex);
                 listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxTextures}).";
             };
+
+            createCharacterMenu.OnMenuClose += (menu) =>
+            {
+                clothesItemIndex = 0;
+                propsItemIndex = 0;
+            };
+
+            createCharacterMenu.OnMenuOpen += (menu) =>
+            {
+                clothesItemIndex = 0;
+                propsItemIndex = 0;
+            };
+
+            clothesMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) =>
+            {
+                clothesItemIndex = newIndex;
+            };
             #endregion
 
             #region props
@@ -1273,6 +1299,11 @@ namespace vMenuClient
                     }
                 }
                 //propsMenu.UpdateScaleform();
+            };
+
+            propsMenu.OnIndexChange += (sender, oldItem, newItem, oldIndex, newIndex) =>
+            {
+                propsItemIndex = newIndex;
             };
             #endregion
 
@@ -1807,6 +1838,18 @@ namespace vMenuClient
                 {
                     UpdateSavedPedsMenu();
                 }
+            };
+
+            createCharacterMenu.OnMenuClose += (menu) =>
+            {
+                clothesItemIndex = 0;
+                propsItemIndex = 0;
+            };
+
+            createCharacterMenu.OnMenuOpen += (menu) =>
+            {
+                clothesItemIndex = 0;
+                propsItemIndex = 0;
             };
         }
 
