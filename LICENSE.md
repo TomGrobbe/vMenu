@@ -4,7 +4,7 @@ Copyright © 2017-2019
 
 ----
 ## German
-Sie können diesen Code nach Belieben verwenden und bearbeiten. Behaupten Sie jedoch niemals, dass es sich um Ihren eigenen Code handelt, und geben Sie immer eine angemessenen Credit an.
+Sie können diesen Code nach Belieben verwenden und bearbeiten. Behaupten Sie jedoch niemals, dass es sich um Ihren eigenen Code handelt, und geben Sie immer einen angemessenen Credit an.
 Ich werde Ihnen jedoch nicht helfen, wenn Sie meinen Code ändern möchten.
 
 ## English
