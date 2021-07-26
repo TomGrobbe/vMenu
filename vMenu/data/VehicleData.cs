@@ -268,23 +268,23 @@ namespace vMenuClient
             #region Compacts
             public static List<string> Compacts { get; } = new List<string>()
             {
-                "ASBO", // CASINO (MPHEIST3) DLC
+                "ASBO", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "BLISTA",
                 "BRIOSO",
-                "BRIOSO2", // MPCAYOPERICO DLC
-                "CLUB", // MPSUM2020
+                "BRIOSO2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "CLUB", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "DILETTANTE",
                 "DILETTANTE2",
                 "ISSI2",
                 "ISSI3",
-                "ISSI4", // MPCHRISTMAS2018 DLC
-                "ISSI5", // MPCHRISTMAS2018 DLC
-                "ISSI6", // MPCHRISTMAS2018 DLC
-                "KANJO", // CASINO (MPHEIST3) DLC
+                "ISSI4",
+                "ISSI5",
+                "ISSI6",
+                "KANJO", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "PANTO",
                 "PRAIRIE",
                 "RHAPSODY",
-                "WEEVIL", // MPCAYOPERICO DLC
+                "WEEVIL", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
             };
             #endregion
             #region Sedans
@@ -302,7 +302,7 @@ namespace vMenuClient
                 "EMPEROR3",
                 "FUGITIVE",
                 "GLENDALE",
-                "GLENDALE2", // MPSUM2020
+                "GLENDALE2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
@@ -314,13 +314,14 @@ namespace vMenuClient
                 "SCHAFTER2",
                 "SCHAFTER5",
                 "SCHAFTER6",
-                "STAFFORD", // dlc (mpbattle)
+                "STAFFORD",
                 "STANIER",
                 "STRATUM",
                 "STRETCH",
                 "SUPERD",
                 "SURGE",
                 "TAILGATER",
+                "TAILGATER2", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "WARRENER",
                 "WASHINGTON",
             };
@@ -346,20 +347,20 @@ namespace vMenuClient
                 "HABANERO",
                 "HUNTLEY",
                 "LANDSTALKER",
-                "LANDSTALKER2", // MPSUM2020
+                "LANDSTALKER2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "MESA",
                 "MESA2",
-                "NOVAK", // MPVINEWOOD DLC
+                "NOVAK", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PATRIOT",
-                "PATRIOT2", // dlc (mpbattle)
+                "PATRIOT2",
                 "RADI",
-                "REBLA", // CASINO (MPHEIST3) DLC
+                "REBLA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "ROCOTO",
                 "SEMINOLE",
-                "SEMINOLE2", // MPSUM2020
+                "SEMINOLE2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "SERRANO",
-                "SQUADDIE", // MPCAYOPERICO DLC
-                "TOROS", // MPCHRISTMAS2018 DLC
+                "SQUADDIE", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "TOROS",
                 "XLS",
                 "XLS2",
             };
@@ -375,6 +376,7 @@ namespace vMenuClient
                 "JACKAL",
                 "ORACLE",
                 "ORACLE2",
+                "PREVION", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "SENTINEL",
                 "SENTINEL2",
                 "WINDSOR",
@@ -391,43 +393,44 @@ namespace vMenuClient
                 "BUCCANEER2",
                 "CHINO",
                 "CHINO2",
-                "CLIQUE", // MPCHRISTMAS2018 DLC
+                "CLIQUE",
                 "COQUETTE3",
-                "DEVIANT", // MPCHRISTMAS2018 DLC
+                "DEVIANT",
                 "DOMINATOR",
                 "DOMINATOR2",
                 "DOMINATOR3",
-                "DOMINATOR4", // MPCHRISTMAS2018 DLC
-                "DOMINATOR5", // MPCHRISTMAS2018 DLC
-                "DOMINATOR6", // MPCHRISTMAS2018 DLC
+                "DOMINATOR4",
+                "DOMINATOR5",
+                "DOMINATOR6",
+                "DOMINATOR7", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DUKES",
                 "DUKES2",
-                "DUKES3", // MPSUM2020
+                "DUKES3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "ELLIE",
                 "FACTION",
                 "FACTION2",
                 "FACTION3",
                 "GAUNTLET",
                 "GAUNTLET2",
-                "GAUNTLET3", // MPVINEWOOD DLC
-                "GAUNTLET4", // MPVINEWOOD DLC
-                "GAUNTLET5", // MPSUM2020
+                "GAUNTLET3", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "GAUNTLET4", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "GAUNTLET5", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "HERMES",
                 "HOTKNIFE",
                 "HUSTLER",
-                "IMPALER", // MPCHRISTMAS2018 DLC
-                "IMPALER2", // MPCHRISTMAS2018 DLC
-                "IMPALER3", // MPCHRISTMAS2018 DLC
-                "IMPALER4", // MPCHRISTMAS2018 DLC
-                "IMPERATOR", // MPCHRISTMAS2018 DLC
-                "IMPERATOR2", // MPCHRISTMAS2018 DLC
-                "IMPERATOR3", // MPCHRISTMAS2018 DLC
+                "IMPALER",
+                "IMPALER2",
+                "IMPALER3",
+                "IMPALER4",
+                "IMPERATOR",
+                "IMPERATOR2",
+                "IMPERATOR3",
                 "LURCHER",
-                "MANANA2", // MPSUM2020
+                "MANANA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "MOONBEAM",
                 "MOONBEAM2",
                 "NIGHTSHADE",
-                "PEYOTE2", // MPVINEWOOD DLC
+                "PEYOTE2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PHOENIX",
                 "PICADOR",
                 "RATLOADER",
@@ -440,15 +443,15 @@ namespace vMenuClient
                 "SLAMVAN",
                 "SLAMVAN2",
                 "SLAMVAN3",
-                "SLAMVAN4", // MPCHRISTMAS2018 DLC
-                "SLAMVAN5", // MPCHRISTMAS2018 DLC
-                "SLAMVAN6", // MPCHRISTMAS2018 DLC
+                "SLAMVAN4",
+                "SLAMVAN5",
+                "SLAMVAN6",
                 "STALION",
                 "STALION2",
                 "TAMPA",
                 "TAMPA3",
-                "TULIP", // MPCHRISTMAS2018 DLC
-                "VAMOS", // MPCHRISTMAS2018 DLC
+                "TULIP",
+                "VAMOS",
                 "VIGERO",
                 "VIRGO",
                 "VIRGO2",
@@ -456,7 +459,7 @@ namespace vMenuClient
                 "VOODOO",
                 "VOODOO2",
                 "YOSEMITE",
-                "YOSEMITE2", // CASINO (MPHEIST3) DLC
+                "YOSEMITE2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
             };
             #endregion
             #region SportsClassics
@@ -471,31 +474,31 @@ namespace vMenuClient
                 "CHEETAH2",
                 "COQUETTE2",
                 "DELUXO",
-                "DYNASTY", // MPVINEWOOD DLC
+                "DYNASTY", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "FAGALOA",
                 "FELTZER3", // Stirling GT
                 "GT500",
                 "INFERNUS2",
                 "JB700",
-                "JB7002", // CASINO (MPHEIST3) DLC
+                "JB7002", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "JESTER3",
                 "MAMBA",
                 "MANANA",
                 "MICHELLI",
                 "MONROE",
-                "NEBULA", // MPVINEWOOD DLC
+                "NEBULA", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PEYOTE",
-                "PEYOTE3", // MPSUM2020
+                "PEYOTE3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "PIGALLE",
                 "RAPIDGT3",
                 "RETINUE",
-                "RETINUE2", // CASINO (MPHEIST3) DLC
+                "RETINUE2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "SAVESTRA",
                 "STINGER",
                 "STINGERGT",
                 "STROMBERG",
-                "SWINGER", // dlc (mpbattle)
-                "TOREADOR", // MPCAYOPERICO DLC
+                "SWINGER",
+                "TOREADOR", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TORERO",
                 "TORNADO",
                 "TORNADO2",
@@ -506,7 +509,7 @@ namespace vMenuClient
                 "TURISMO2",
                 "VISERIS",
                 "Z190",
-                "ZION3", // MPVINEWOOD DLC
+                "ZION3", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ZTYPE",
             };
             #endregion
@@ -521,77 +524,88 @@ namespace vMenuClient
                 "BUFFALO",
                 "BUFFALO2",
                 "BUFFALO3",
+                "CALICO", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "CARBONIZZARE",
                 "COMET2",
                 "COMET3",
                 "COMET4",
                 "COMET5",
+                "COMET6", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "COQUETTE",
-                "COQUETTE4", // MPSUM2020
-                "DRAFTER", // MPVINEWOOD DLC
+                "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ELEGY",
                 "ELEGY2",
+                "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "FELTZER2",
                 "FLASHGT",
                 "FUROREGT",
                 "FUSILADE",
                 "FUTO",
+                "FUTO2", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "GB200",
+                "GROWLER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "HOTRING",
-                "IMORGON", // CASINO (MPHEIST3) DLC
-                "ISSI7", // MPVINEWOOD DLC
-                "ITALIGTO", // MPCHRISTMAS2018 DLC
-                "ITALIRSX", // MPCAYOPERICO DLC
+                "IMORGON", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "ISSI7", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "ITALIGTO",
+                "ITALIRSX", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "JESTER",
                 "JESTER2",
-                "JUGULAR", // MPVINEWOOD DLC
+                "JESTER4", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "JUGULAR", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "KHAMELION",
-                "KOMODA", // CASINO (MPHEIST3) DLC
+                "KOMODA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "KURUMA",
                 "KURUMA2",
-                "LOCUST", // MPVINEWOOD DLC
+                "LOCUST", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "LYNX",
                 "MASSACRO",
                 "MASSACRO2",
-                "NEO", // MPVINEWOOD DLC
-                "NEON", // Doomsday Heist Update
+                "NEO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "NEON",
                 "NINEF",
                 "NINEF2",
                 "OMNIS",
-                "PARAGON", // MPVINEWOOD DLC
-                "PARAGON2", // MPVINEWOOD DLC
+                "PARAGON", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "PARAGON2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PARIAH",
                 "PENUMBRA",
-                "PENUMBRA2", // MPSUM2020
+                "PENUMBRA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "RAIDEN",
                 "RAPIDGT",
                 "RAPIDGT2",
                 "RAPTOR",
+                "REMUS", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "REVOLTER",
                 "RUSTON",
                 "SCHAFTER2",
                 "SCHAFTER3",
                 "SCHAFTER4",
                 "SCHAFTER5",
-                "SCHLAGEN", // MPCHRISTMAS2018 DLC
+                "SCHLAGEN",
                 "SCHWARZER",
                 "SENTINEL3",
                 "SEVEN70",
                 "SPECTER",
                 "SPECTER2",
-                "SUGOI", // CASINO (MPHEIST3) DLC
+                "SUGOI", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "SULTAN",
-                "SULTAN2", // CASINO (MPHEIST3) DLC
+                "SULTAN2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "SULTAN3", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "SURANO",
                 "TAMPA2",
                 "TROPOS",
                 "VERLIERER2",
-                "VETO", // MPCAYOPERICO DLC
-                "VETO2", // MPCAYOPERICO DLC
-                "VSTR", // CASINO (MPHEIST3) DLC
-                "ZR380", // MPCHRISTMAS2018 DLC
-                "ZR3802", // MPCHRISTMAS2018 DLC
-                "ZR3803", // MPCHRISTMAS2018 DLC
+                "VECTRE", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "VETO", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "VETO2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "VSTR", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "ZR350", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "ZR380",
+                "ZR3802",
+                "ZR3803",
             };
             #endregion
             #region Super
@@ -603,17 +617,17 @@ namespace vMenuClient
                 "BULLET",
                 "CHEETAH",
                 "CYCLONE",
-                "DEVESTE", // MPCHRISTMAS2018 DLC
-                "EMERUS", // MPVINEWOOD DLC
+                "DEVESTE",
+                "EMERUS", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ENTITYXF",
                 "ENTITY2",
                 "FMJ",
-                "FURIA", // CASINO (MPHEIST3) DLC
+                "FURIA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "GP1",
                 "INFERNUS",
                 "ITALIGTB",
                 "ITALIGTB2",
-                "KRIEGER", // MPVINEWOOD DLC
+                "KRIEGER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "LE7B",
                 "NERO",
                 "NERO2",
@@ -622,17 +636,17 @@ namespace vMenuClient
                 "PFISTER811",
                 "PROTOTIPO",
                 "REAPER",
-                "S80", // MPVINEWOOD DLC
+                "S80", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "SC1",
-                "SCRAMJET", // dlc (mpbattle)
+                "SCRAMJET",
                 "SHEAVA", // ETR1
                 "SULTANRS",
                 "T20",
                 "TAIPAN",
                 "TEMPESTA",
                 "TEZERACT",
-                "THRAX", // MPVINEWOOD DLC
-                "TIGON", // MPSUM2020
+                "THRAX", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "TIGON", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "TURISMOR",
                 "TYRANT",
                 "TYRUS",
@@ -644,7 +658,7 @@ namespace vMenuClient
                 "VOLTIC2",
                 "XA21",
                 "ZENTORNO",
-                "ZORRUSSO", // MPVINEWOOD DLC
+                "ZORRUSSO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
             };
             #endregion
             #region Motorcycles
@@ -662,9 +676,9 @@ namespace vMenuClient
                 "DAEMON",
                 "DAEMON2",
                 "DEFILER",
-                "DEATHBIKE", // MPCHRISTMAS2018 DLC
-                "DEATHBIKE2", // MPCHRISTMAS2018 DLC
-                "DEATHBIKE3", // MPCHRISTMAS2018 DLC
+                "DEATHBIKE",
+                "DEATHBIKE2",
+                "DEATHBIKE3",
                 "DIABLOUS",
                 "DIABLOUS2",
                 "DOUBLE",
@@ -682,21 +696,21 @@ namespace vMenuClient
                 "INNOVATION",
                 "LECTRO",
                 "MANCHEZ",
-                "MANCHEZ2", // MPCAYOPERICO DLC
+                "MANCHEZ2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "NEMESIS",
                 "NIGHTBLADE",
                 "OPPRESSOR",
-                "OPPRESSOR2", // dlc (mpbattle)
+                "OPPRESSOR2",
                 "PCJ",
                 "RATBIKE",
-                "RROCKET", // MPVINEWOOD DLC
+                "RROCKET", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "RUFFIAN",
                 "SANCHEZ",
                 "SANCHEZ2",
                 "SANCTUS",
                 "SHOTARO",
                 "SOVEREIGN",
-                "STRYDER", // CASINO (MPHEIST3) DLC
+                "STRYDER", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "THRUST",
                 "VADER",
                 "VINDICATOR",
@@ -718,14 +732,14 @@ namespace vMenuClient
                 "BLAZER5",
                 "BODHI2",
                 "BRAWLER",
-                "BRUISER", // MPCHRISTMAS2018 DLC
-                "BRUISER2", // MPCHRISTMAS2018 DLC
-                "BRUISER3", // MPCHRISTMAS2018 DLC
-                "BRUTUS", // MPCHRISTMAS2018 DLC
-                "BRUTUS2", // MPCHRISTMAS2018 DLC
-                "BRUTUS3", // MPCHRISTMAS2018 DLC
+                "BRUISER",
+                "BRUISER2",
+                "BRUISER3",
+                "BRUTUS",
+                "BRUTUS2",
+                "BRUTUS3",
                 "CARACARA",
-                "CARACARA2", // MPVINEWOOD DLC
+                "CARACARA2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "DLOADER",
                 "DUBSTA3",
                 "DUNE",
@@ -733,26 +747,26 @@ namespace vMenuClient
                 "DUNE3",
                 "DUNE4",
                 "DUNE5",
-                "EVERON", // CASINO (MPHEIST3) DLC
-                "FREECRAWLER", // dlc (mpbattle)
-                "HELLION", // MPVINEWOOD DLC
+                "EVERON", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "FREECRAWLER",
+                "HELLION", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "INSURGENT",
                 "INSURGENT2",
                 "INSURGENT3",
                 "KALAHARI",
                 "KAMACHO",
                 "MARSHALL",
-                "MENACER", // dlc (mpbattle)
+                "MENACER",
                 "MESA3",
                 "MONSTER",
-                "MONSTER3", // MPCHRISTMAS2018 DLC
-                "MONSTER4", // MPCHRISTMAS2018 DLC
-                "MONSTER5", // MPCHRISTMAS2018 DLC
+                "MONSTER3",
+                "MONSTER4",
+                "MONSTER5",
                 "NIGHTSHARK",
-                "OUTLAW", // CASINO (MPHEIST3) DLC
+                "OUTLAW", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "RANCHERXL",
                 "RANCHERXL2",
-                "RCBANDITO", // MPCHRISTMAS2018 DLC
+                "RCBANDITO",
                 "REBEL",
                 "REBEL2",
                 "RIATA",
@@ -763,11 +777,11 @@ namespace vMenuClient
                 "TECHNICAL3",
                 "TROPHYTRUCK",
                 "TROPHYTRUCK2",
-                "VAGRANT", // CASINO (MPHEIST3) DLC
-                "VERUS", // MPCAYOPERICO DLC
-                "WINKY", // MPCAYOPERICO DLC
-                "YOSEMITE3", // MPSUM2020
-                "ZHABA", // CASINO (MPHEIST3) DLC
+                "VAGRANT", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "VERUS", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "WINKY", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "YOSEMITE3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "ZHABA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
             };
             #endregion
             #region Industrial
@@ -795,17 +809,17 @@ namespace vMenuClient
                 "CADDY3",
                 "DOCKTUG",
                 "FORKLIFT",
-                "TRACTOR2", // Fieldmaster
-                "TRACTOR3", // Fieldmaster
                 "MOWER", // Lawnmower
                 "RIPLEY",
                 "SADLER",
                 "SADLER2",
                 "SCRAP",
-                "SLAMTRUCK", // MPCAYOPERICO DLC
+                "SLAMTRUCK", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TOWTRUCK",
                 "TOWTRUCK2",
                 "TRACTOR", // Tractor (rusted/old)
+                "TRACTOR2", // Fieldmaster
+                "TRACTOR3", // Fieldmaster
                 "UTILLITRUCK",
                 "UTILLITRUCK2",
                 "UTILLITRUCK3",
@@ -878,13 +892,13 @@ namespace vMenuClient
                 "RUMPO3",
                 "SPEEDO",
                 "SPEEDO2",
-                "SPEEDO4", // dlc (mpbattle)
+                "SPEEDO4",
                 "SURFER",
                 "SURFER2",
                 "TACO",
                 "YOUGA",
                 "YOUGA2",
-                "YOUGA3", // MPSUM2020
+                "YOUGA3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
             };
             #endregion
             #region Cycles
@@ -902,17 +916,17 @@ namespace vMenuClient
             #region Boats
             public static List<string> Boats { get; } = new List<string>()
             {
-                "AVISA", // MPCAYOPERICO DLC
+                "AVISA", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "DINGHY",
                 "DINGHY2",
                 "DINGHY3",
                 "DINGHY4",
-                "DINGHY5", // MPCAYOPERICO DLC
+                "DINGHY5", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "JETMAX",
-                "KOSATKA", // MPCAYOPERICO DLC
-                "LONGFIN", // MPCAYOPERICO DLC
+                "KOSATKA", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "LONGFIN", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "MARQUIS",
-                "PATROLBOAT", // MPCAYOPERICO DLC
+                "PATROLBOAT", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "PREDATOR",
                 "SEASHARK",
                 "SEASHARK2",
@@ -935,7 +949,7 @@ namespace vMenuClient
             {
                 "AKULA",
                 "ANNIHILATOR",
-                "ANNIHILATOR2", // MPCAYOPERICO DLC
+                "ANNIHILATOR2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "BUZZARD",
                 "BUZZARD2",
                 "CARGOBOB",
@@ -950,8 +964,8 @@ namespace vMenuClient
                 "POLMAV",
                 "SAVAGE",
                 "SEASPARROW",
-                "SEASPARROW2", // MPCAYOPERICO DLC
-                "SEASPARROW3", // MPCAYOPERICO DLC
+                "SEASPARROW2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "SEASPARROW3", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "SKYLIFT",
                 "SUPERVOLITO",
                 "SUPERVOLITO2",
@@ -965,14 +979,14 @@ namespace vMenuClient
             #region Planes
             public static List<string> Planes { get; } = new List<string>()
             {
-                "ALKONOST", // MPCAYOPERICO DLC
+                "ALKONOST", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "ALPHAZ1",
                 "AVENGER",
                 "AVENGER2",
                 "BESRA",
                 "BLIMP",
                 "BLIMP2",
-                "BLIMP3", // dlc (mpbattle)
+                "BLIMP3",
                 "BOMBUSHKA",
                 "CARGOPLANE",
                 "CUBAN800",
@@ -996,7 +1010,7 @@ namespace vMenuClient
                 "SEABREEZE",
                 "SHAMAL",
                 "STARLING",
-                "STRIKEFORCE", // dlc (mpbattle)
+                "STRIKEFORCE",
                 "STUNT",
                 "TITAN",
                 "TULA",
@@ -1013,7 +1027,7 @@ namespace vMenuClient
                 "BRICKADE",
                 "BUS",
                 "COACH",
-                "PBUS2", // dlc (mpbattle)
+                "PBUS2",
                 "RALLYTRUCK",
                 "RENTALBUS",
                 "TAXI",
@@ -1061,14 +1075,14 @@ namespace vMenuClient
                 "CRUSADER",
                 "HALFTRACK",
                 "KHANJALI",
-                "MINITANK", // CASINO (MPHEIST3) DLC
+                "MINITANK", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "RHINO",
-                "SCARAB", // MPCHRISTMAS2018 DLC
-                "SCARAB2", // MPCHRISTMAS2018 DLC
-                "SCARAB3", // MPCHRISTMAS2018 DLC
+                "SCARAB",
+                "SCARAB2",
+                "SCARAB3",
                 "THRUSTER", // Jetpack
                 "TRAILERSMALL2", // Anti Aircraft Trailer
-                "VETIR", // MPCAYOPERICO DLC
+                "VETIR", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
             };
             #endregion
             #region Commercial
@@ -1076,24 +1090,24 @@ namespace vMenuClient
             {
                 "BENSON",
                 "BIFF",
-                "CERBERUS", // MPCHRISTMAS2018 DLC
-                "CERBERUS2", // MPCHRISTMAS2018 DLC
-                "CERBERUS3", // MPCHRISTMAS2018 DLC
+                "CERBERUS",
+                "CERBERUS2",
+                "CERBERUS3",
                 "HAULER",
                 "HAULER2",
                 "MULE",
                 "MULE2",
                 "MULE3",
-                "MULE4", // dlc (mpbattle)
+                "MULE4",
                 "PACKER",
                 "PHANTOM",
                 "PHANTOM2",
                 "PHANTOM3",
                 "POUNDER",
-                "POUNDER2", // dlc (mpbattle)
+                "POUNDER2",
                 "STOCKADE",
                 "STOCKADE3",
-                "TERBYTE", // dlc (mpbattle)
+                "TERBYTE",
             };
             #endregion
             #region Trains
@@ -1114,8 +1128,8 @@ namespace vMenuClient
             {
                 "FORMULA",
                 "FORMULA2",
-                "OPENWHEEL1", // MPSUM2020
-                "OPENWHEEL2", // MPSUM2020
+                "OPENWHEEL1", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "OPENWHEEL2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
             };
             #endregion
 
