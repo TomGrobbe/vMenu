@@ -323,6 +323,7 @@ namespace vMenuClient
                 "TAILGATER",
                 "TAILGATER2", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "WARRENER",
+                "WARRENER2", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "WASHINGTON",
             };
             #endregion
@@ -403,6 +404,7 @@ namespace vMenuClient
                 "DOMINATOR5",
                 "DOMINATOR6",
                 "DOMINATOR7", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "DOMINATOR8", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DUKES",
                 "DUKES2",
                 "DUKES3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
@@ -579,6 +581,7 @@ namespace vMenuClient
                 "RAPTOR",
                 "REMUS", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "REVOLTER",
+                "RT3000", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "RUSTON",
                 "SCHAFTER2",
                 "SCHAFTER3",
