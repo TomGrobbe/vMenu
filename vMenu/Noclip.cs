@@ -49,6 +49,8 @@ namespace vMenuClient
                 {
                     await Delay(0);
                 }
+
+                DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 0, 0);
             }
             while (NoclipActive)
             {
