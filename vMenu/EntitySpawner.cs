@@ -209,6 +209,8 @@ namespace vMenuClient
                 {
                     await Delay(0);
                 }
+
+                DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 0, 0);
             }
             else
             {
