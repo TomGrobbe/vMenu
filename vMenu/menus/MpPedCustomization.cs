@@ -850,14 +850,76 @@ namespace vMenuClient
             MenuController.BindMenuItem(createCharacterMenu, propsMenu, propsButton);
 
             #region inheritance
-            List<string> parents = new List<string>();
-            for (int i = 0; i < 46; i++)
+            Dictionary<string, int> dads = new Dictionary<string, int>();
+            Dictionary<string, int> moms = new Dictionary<string, int>();
+
+            void AddInheritance(Dictionary<string, int> dict, int listId, string textPrefix)
             {
-                parents.Add($"#{i}");
+                var baseIdx = dict.Count;
+                var basePed = GetPedHeadBlendFirstIndex(listId);
+
+                // list 0/2 are male, list 1/3 are female
+                var suffix = $" ({((listId % 2) == 0 ? "Male" : "Female")})";
+
+                for (int i = 0; i < GetNumParentPedsOfType(listId); i++)
+                {
+                    // get the actual parent name, or the index if none
+                    var label = GetLabelText($"{textPrefix}{i}");
+                    if (string.IsNullOrWhiteSpace(label) || label == "NULL")
+                    {
+                        label = $"{baseIdx + i}";
+                    }
+
+                    // append the gender of the list
+                    label += suffix;
+                    dict[label] = basePed + i;
+                }
             }
 
-            var inheritanceDads = new MenuListItem("Father", parents, 0, "Select a father.");
-            var inheritanceMoms = new MenuListItem("Mother", parents, 0, "Select a mother.");
+            int GetInheritance(Dictionary<string, int> list, MenuListItem listItem)
+            {
+                if (listItem.ListIndex < listItem.ListItems.Count)
+                {
+                    if (list.TryGetValue(listItem.ListItems[listItem.ListIndex], out int idx))
+                    {
+                        return idx;
+                    }
+                }
+
+                return 0;
+            }
+
+            var listIdx = 0;
+            foreach (var list in new[] { dads, moms })
+            {
+                void AddDads()
+                {
+                    AddInheritance(list, 0, "Male_");
+                    AddInheritance(list, 2, "Special_Male_");
+                }
+
+                void AddMoms()
+                {
+                    AddInheritance(list, 1, "Female_");
+                    AddInheritance(list, 3, "Special_Female_");
+                }
+
+                if (listIdx == 0)
+                {
+                    AddDads();
+                    AddMoms();
+                }
+                else
+                {
+                    AddMoms();
+                    AddDads();
+                }
+
+                listIdx++;
+            }
+
+            var inheritanceDads = new MenuListItem("Father", dads.Keys.ToList(), 0, "Select a father.");
+            var inheritanceMoms = new MenuListItem("Mother", moms.Keys.ToList(), 0, "Select a mother.");
             List<float> mixValues = new List<float>() { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f };
             var inheritanceShapeMix = new MenuSliderItem("Head Shape Mix", "Select how much of your head shape should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
             var inheritanceSkinMix = new MenuSliderItem("Body Skin Mix", "Select how much of your body skin tone should be inherited from your father or mother. All the way on the left is your dad, all the way on the right is your mom.", 0, 10, 5, true) { SliderLeftIcon = MenuItem.Icon.MALE, SliderRightIcon = MenuItem.Icon.FEMALE };
@@ -867,9 +929,38 @@ namespace vMenuClient
             inheritanceMenu.AddMenuItem(inheritanceShapeMix);
             inheritanceMenu.AddMenuItem(inheritanceSkinMix);
 
+            // formula from maintransition.#sc
+            float GetMinimum()
+            {
+                return currentCharacter.IsMale ? 0.05f : 0.3f;
+            }
+
+            float GetMaximum()
+            {
+                return currentCharacter.IsMale ? 0.7f : 0.95f;
+            }
+
+            float ClampMix(int value)
+            {
+                float sliderFraction = mixValues[value];
+                float min = GetMinimum();
+                float max = GetMaximum();
+
+                return (min + (sliderFraction * (max - min)));
+            }
+
+            int UnclampMix(float value)
+            {
+                float min = GetMinimum();
+                float max = GetMaximum();
+
+                float origFraction = (value - min) / (max - min);
+                return Math.Max(Math.Min((int)(origFraction * 10), 10), 0);
+            }
+
             void SetHeadBlend()
             {
-                SetPedHeadBlendData(Game.PlayerPed.Handle, inheritanceDads.ListIndex, inheritanceMoms.ListIndex, 0, inheritanceDads.ListIndex, inheritanceMoms.ListIndex, 0, mixValues[inheritanceShapeMix.Position], mixValues[inheritanceSkinMix.Position], 0f, false);
+                SetPedHeadBlendData(Game.PlayerPed.Handle, GetInheritance(dads, inheritanceDads), GetInheritance(moms, inheritanceMoms), 0, GetInheritance(dads, inheritanceDads), GetInheritance(moms, inheritanceMoms), 0, ClampMix(inheritanceShapeMix.Position), ClampMix(inheritanceSkinMix.Position), 0f, true);
             }
 
             inheritanceMenu.OnListIndexChange += (_menu, listItem, oldSelectionIndex, newSelectionIndex, itemIndex) =>
@@ -1720,10 +1811,10 @@ namespace vMenuClient
                 else if (item == inheritanceButton) // update the inheritance menu anytime it's opened to prevent some weird glitch where old data is used.
                 {
                     var data = Game.PlayerPed.GetHeadBlendData();
-                    inheritanceDads.ListIndex = data.FirstFaceShape;
-                    inheritanceMoms.ListIndex = data.SecondFaceShape;
-                    inheritanceShapeMix.Position = (int)(data.ParentFaceShapePercent * 10f);
-                    inheritanceSkinMix.Position = (int)(data.ParentSkinTonePercent * 10f);
+                    inheritanceDads.ListIndex = inheritanceDads.ListItems.IndexOf(dads.FirstOrDefault(entry => entry.Value == data.FirstFaceShape).Key);
+                    inheritanceMoms.ListIndex = inheritanceMoms.ListItems.IndexOf(moms.FirstOrDefault(entry => entry.Value == data.SecondFaceShape).Key);
+                    inheritanceShapeMix.Position = UnclampMix(data.ParentFaceShapePercent);
+                    inheritanceSkinMix.Position = UnclampMix(data.ParentSkinTonePercent);
                     inheritanceMenu.RefreshIndex();
                 }
             };
