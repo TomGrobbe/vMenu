@@ -271,6 +271,7 @@ namespace vMenuClient
                 "ASBO", // CASINO (MPHEIST3) DLC
                 "BLISTA",
                 "BRIOSO",
+                "BRIOSO2", // MPCAYOPERICO DLC
                 "CLUB", // MPSUM2020
                 "DILETTANTE",
                 "DILETTANTE2",
@@ -283,6 +284,7 @@ namespace vMenuClient
                 "PANTO",
                 "PRAIRIE",
                 "RHAPSODY",
+                "WEEVIL", // MPCAYOPERICO DLC
             };
             #endregion
             #region Sedans
@@ -356,6 +358,7 @@ namespace vMenuClient
                 "SEMINOLE",
                 "SEMINOLE2", // MPSUM2020
                 "SERRANO",
+                "SQUADDIE", // MPCAYOPERICO DLC
                 "TOROS", // MPCHRISTMAS2018 DLC
                 "XLS",
                 "XLS2",
@@ -492,6 +495,7 @@ namespace vMenuClient
                 "STINGERGT",
                 "STROMBERG",
                 "SWINGER", // dlc (mpbattle)
+                "TOREADOR", // MPCAYOPERICO DLC
                 "TORERO",
                 "TORNADO",
                 "TORNADO2",
@@ -537,6 +541,7 @@ namespace vMenuClient
                 "IMORGON", // CASINO (MPHEIST3) DLC
                 "ISSI7", // MPVINEWOOD DLC
                 "ITALIGTO", // MPCHRISTMAS2018 DLC
+                "ITALIRSX", // MPCAYOPERICO DLC
                 "JESTER",
                 "JESTER2",
                 "JUGULAR", // MPVINEWOOD DLC
@@ -581,6 +586,8 @@ namespace vMenuClient
                 "TAMPA2",
                 "TROPOS",
                 "VERLIERER2",
+                "VETO", // MPCAYOPERICO DLC
+                "VETO2", // MPCAYOPERICO DLC
                 "VSTR", // CASINO (MPHEIST3) DLC
                 "ZR380", // MPCHRISTMAS2018 DLC
                 "ZR3802", // MPCHRISTMAS2018 DLC
@@ -675,6 +682,7 @@ namespace vMenuClient
                 "INNOVATION",
                 "LECTRO",
                 "MANCHEZ",
+                "MANCHEZ2", // MPCAYOPERICO DLC
                 "NEMESIS",
                 "NIGHTBLADE",
                 "OPPRESSOR",
@@ -756,6 +764,8 @@ namespace vMenuClient
                 "TROPHYTRUCK",
                 "TROPHYTRUCK2",
                 "VAGRANT", // CASINO (MPHEIST3) DLC
+                "VERUS", // MPCAYOPERICO DLC
+                "WINKY", // MPCAYOPERICO DLC
                 "YOSEMITE3", // MPSUM2020
                 "ZHABA", // CASINO (MPHEIST3) DLC
             };
@@ -792,6 +802,7 @@ namespace vMenuClient
                 "SADLER",
                 "SADLER2",
                 "SCRAP",
+                "SLAMTRUCK", // MPCAYOPERICO DLC
                 "TOWTRUCK",
                 "TOWTRUCK2",
                 "TRACTOR", // Tractor (rusted/old)
@@ -891,12 +902,17 @@ namespace vMenuClient
             #region Boats
             public static List<string> Boats { get; } = new List<string>()
             {
+                "AVISA", // MPCAYOPERICO DLC
                 "DINGHY",
                 "DINGHY2",
                 "DINGHY3",
                 "DINGHY4",
+                "DINGHY5", // MPCAYOPERICO DLC
                 "JETMAX",
+                "KOSATKA", // MPCAYOPERICO DLC
+                "LONGFIN", // MPCAYOPERICO DLC
                 "MARQUIS",
+                "PATROLBOAT", // MPCAYOPERICO DLC
                 "PREDATOR",
                 "SEASHARK",
                 "SEASHARK2",
@@ -919,6 +935,7 @@ namespace vMenuClient
             {
                 "AKULA",
                 "ANNIHILATOR",
+                "ANNIHILATOR2", // MPCAYOPERICO DLC
                 "BUZZARD",
                 "BUZZARD2",
                 "CARGOBOB",
@@ -933,6 +950,8 @@ namespace vMenuClient
                 "POLMAV",
                 "SAVAGE",
                 "SEASPARROW",
+                "SEASPARROW2", // MPCAYOPERICO DLC
+                "SEASPARROW3", // MPCAYOPERICO DLC
                 "SKYLIFT",
                 "SUPERVOLITO",
                 "SUPERVOLITO2",
@@ -946,6 +965,7 @@ namespace vMenuClient
             #region Planes
             public static List<string> Planes { get; } = new List<string>()
             {
+                "ALKONOST", // MPCAYOPERICO DLC
                 "ALPHAZ1",
                 "AVENGER",
                 "AVENGER2",
@@ -1048,6 +1068,7 @@ namespace vMenuClient
                 "SCARAB3", // MPCHRISTMAS2018 DLC
                 "THRUSTER", // Jetpack
                 "TRAILERSMALL2", // Anti Aircraft Trailer
+                "VETIR", // MPCAYOPERICO DLC
             };
             #endregion
             #region Commercial

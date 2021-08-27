@@ -616,9 +616,6 @@ namespace vMenuClient
                 VehicleGodAutoRepair = MainMenu.VehicleOptionsMenu.VehicleGodAutoRepair;
                 prefs.Add("vehicleGodAutoRepair", VehicleGodAutoRepair);
 
-                //VehicleSpecialGodMode = MainMenu.VehicleOptionsMenu.VehicleSpecialGodMode;
-                //prefs.Add("vehicleSpecialGodMode", VehicleSpecialGodMode);
-
                 VehicleNeverDirty = MainMenu.VehicleOptionsMenu.VehicleNeverDirty;
                 prefs.Add("vehicleNeverDirty", VehicleNeverDirty);
 

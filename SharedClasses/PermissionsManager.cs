@@ -294,6 +294,12 @@ namespace vMenuShared
             WPPlasmaCarbine, // xmas 2018 dlc (1604)
             WPPlasmaMinigun, // xmas 2018 dlc (1604)
             WPStoneHatchet, // xmas 2018 dlc (1604)
+            WPCeramicPistol, // xmas 2019 dlc (1868)
+            WPNavyRevolver, // xmas 2019 dlc (1868)
+            //WPHazardCan, // xmas 2019 dlc (1868) (Does not have label text)
+            WPPericoPistol, // xmas 2020 dlc (2189)
+            WPMilitaryRifle, // xmas 2020 dlc (2189)
+            WPCombatShotgun, // xmas 2020 dlc (2189)
             #endregion
 
             // Weapon Loadouts Menu
@@ -325,6 +331,7 @@ namespace vMenuShared
             MSRestoreAppearance,
             MSRestoreWeapons,
             MSDriftMode,
+            MSEntitySpawner,
             #endregion
 
             // Voice Chat

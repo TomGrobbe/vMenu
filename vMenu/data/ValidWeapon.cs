@@ -305,7 +305,15 @@ namespace vMenuClient
             { "weapon_raypistol", GetLabelText("WT_RAYPISTOL") },
             { "weapon_raycarbine", GetLabelText("WT_RAYCARBINE") },
             { "weapon_rayminigun", GetLabelText("WT_RAYMINIGUN") },
-            { "weapon_stone_hatchet", GetLabelText("WT_SHATCHET") }
+            { "weapon_stone_hatchet", GetLabelText("WT_SHATCHET") },
+            // DLC CHRISTMAS2019 (v 1868)
+            { "weapon_ceramicpistol", GetLabelText("WT_CERPST") },
+            { "weapon_navyrevolver", GetLabelText("WT_REV_NV") },
+            //{ "weapon_hazardcan", GetLabelText("WT_") }, (Does not have label text)
+            // DLC CHRISTMAS2020 (v 2189)
+            { "weapon_gadgetpistol", GetLabelText("WT_GDGTPST") },
+            { "weapon_militaryrifle", GetLabelText("WT_MLTRYRFL") },
+            { "weapon_combatshotgun", GetLabelText("WT_CMBSHGN") }
         };
         #endregion
 
@@ -403,6 +411,14 @@ namespace vMenuClient
             ["weapon_raycarbine"] = Permission.WPPlasmaCarbine,
             ["weapon_rayminigun"] = Permission.WPPlasmaMinigun,
             ["weapon_stone_hatchet"] = Permission.WPStoneHatchet,
+            // DLC CHRISTMAS2019 (v 1868)
+            ["weapon_ceramicpistol"] = Permission.WPCeramicPistol,
+            ["weapon_navyrevolver"] = Permission.WPNavyRevolver,
+            //["weapon_hazardcan"] = Permission.WPHazardCan, (Does not have label text)
+            // DLC CHRISTMAS2020 (v 2189)
+            ["weapon_gadgetpistol"] = Permission.WPPericoPistol,
+            ["weapon_militaryrifle"] = Permission.WPMilitaryRifle,
+            ["weapon_combatshotgun"] = Permission.WPCombatShotgun,
         };
         #endregion
 
