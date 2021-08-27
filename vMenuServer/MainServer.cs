@@ -98,7 +98,7 @@ namespace vMenuServer
                 var value = GetSettingsString(Setting.vmenu_current_weather, "CLEAR");
                 if (!WeatherTypes.Contains(value.ToUpper()))
                 {
-                    return "clear";
+                    return "CLEAR";
                 }
                 return value;
             }
@@ -115,6 +115,11 @@ namespace vMenuServer
         {
             get { return GetSettingsBool(Setting.vmenu_enable_dynamic_weather); }
             set { SetConvarReplicated(Setting.vmenu_enable_dynamic_weather.ToString(), value.ToString().ToLower()); }
+        }
+        private bool ManualSnowEnabled
+        {
+            get { return GetSettingsBool(Setting.vmenu_enable_snow); }
+            set { SetConvarReplicated(Setting.vmenu_enable_snow.ToString(), value.ToString().ToLower()); }
         }
         private bool BlackoutEnabled
         {
@@ -304,7 +309,7 @@ namespace vMenuServer
                             string wtype = args[1].ToString().ToUpper();
                             if (WeatherTypes.Contains(wtype))
                             {
-                                TriggerEvent("vMenu:UpdateServerWeather", wtype, BlackoutEnabled, DynamicWeatherEnabled);
+                                TriggerEvent("vMenu:UpdateServerWeather", wtype, BlackoutEnabled, DynamicWeatherEnabled, ManualSnowEnabled);
                                 Debug.WriteLine($"[vMenu] Weather is now set to: {wtype}");
                             }
                             else if (wtype.ToLower() == "dynamic")
@@ -313,12 +318,12 @@ namespace vMenuServer
                                 {
                                     if ((args[2].ToString().ToLower() ?? $"{DynamicWeatherEnabled}") == "true")
                                     {
-                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, true);
+                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, true, ManualSnowEnabled);
                                         Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
                                     }
                                     else if ((args[2].ToString().ToLower() ?? $"{DynamicWeatherEnabled}") == "false")
                                     {
-                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, false);
+                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, false, ManualSnowEnabled);
                                         Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
                                     }
                                     else
@@ -683,12 +688,20 @@ namespace vMenuServer
         /// <param name="blackoutNew"></param>
         /// <param name="dynamicWeatherNew"></param>
         [EventHandler("vMenu:UpdateServerWeather")]
-        private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew)
+        private void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew, bool enableSnow)
         {
+
+            // Automatically enable snow effects whenever one of the snow weather types is selected.
+            if (newWeather == "XMAS" || newWeather == "SNOWLIGHT" || newWeather == "SNOW" || newWeather == "BLIZZARD")
+            {
+                enableSnow = true;
+            }
+
             // Update the new weather related variables.
             CurrentWeather = newWeather;
             BlackoutEnabled = blackoutNew;
             DynamicWeatherEnabled = dynamicWeatherNew;
+            ManualSnowEnabled = enableSnow;
 
             // Reset the dynamic weather loop timer to another (default) 10 mintues.
             lastWeatherChange = GetGameTimer();

@@ -20,6 +20,7 @@ namespace vMenuShared
             vmenu_noclip_toggle_key,
             vmenu_keep_spawned_vehicles_persistent,
             vmenu_use_els_compatibility_mode,
+            vmenu_handle_invisibility,
             vmenu_quit_session_in_rockstar_editor,
             vmenu_server_info_message,
             vmenu_server_info_website_url,
@@ -30,6 +31,7 @@ namespace vMenuShared
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
+            vmenu_disable_player_stats_setup,
 
             // Kick & ban settings
             vmenu_default_ban_message_information,
@@ -45,6 +47,7 @@ namespace vMenuShared
             vmenu_current_weather,
             vmenu_blackout_enabled,
             vmenu_weather_change_duration,
+            vmenu_enable_snow,
 
             // Time settings
             vmenu_enable_time_sync,
@@ -52,7 +55,7 @@ namespace vMenuShared
             vmenu_ingame_minute_duration,
             vmenu_current_hour,
             vmenu_current_minute,
-            vmenu_sync_to_machine_time
+            vmenu_sync_to_machine_time,
         }
 
         /// <summary>

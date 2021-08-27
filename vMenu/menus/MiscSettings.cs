@@ -16,6 +16,7 @@ namespace vMenuClient
         private Menu menu;
         private Menu teleportOptionsMenu;
         private Menu developerToolsMenu;
+        private Menu entitySpawnerMenu;
 
         public bool ShowSpeedoKmh { get; private set; } = UserDefaults.MiscSpeedKmh;
         public bool ShowSpeedoMph { get; private set; } = UserDefaults.MiscSpeedMph;
@@ -81,6 +82,7 @@ namespace vMenuClient
             menu = new Menu(Game.Player.Name, "Misc Settings");
             teleportOptionsMenu = new Menu(Game.Player.Name, "Teleport Options");
             developerToolsMenu = new Menu(Game.Player.Name, "Development Tools");
+            entitySpawnerMenu = new Menu(Game.Player.Name, "Entity Spawner");
 
             // teleport menu
             Menu teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
@@ -134,7 +136,12 @@ namespace vMenuClient
             MenuCheckboxItem lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
             MenuCheckboxItem lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
 
-
+            // Entity spawner
+            MenuItem spawnNewEntity = new MenuItem("Spawn New Entity", "Spawns entity into the world and lets you set its position and rotation");
+            MenuItem confirmEntityPosition = new MenuItem("Confirm Entity Position", "Stops placing entity and sets it at it current location.");
+            MenuItem cancelEntity = new MenuItem("Cancel", "Deletes current entity and cancels its placement");
+            MenuItem confirmAndDuplicate = new MenuItem("Confirm Entity Position And Duplicate", "Stops placing entity and sets it at it current location and creates new one to place.");
+            
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
 
@@ -157,7 +164,7 @@ namespace vMenuClient
             MenuSliderItem timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, LastTimeCycleModifierStrength, true);
 
             MenuCheckboxItem locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
-            MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players.", ShowPlayerBlips);
+            MenuCheckboxItem playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players. ~y~Note for when the server is using OneSync Infinity: this won't work for players that are too far away.", ShowPlayerBlips);
             MenuCheckboxItem playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
             MenuCheckboxItem respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
             MenuCheckboxItem restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
@@ -503,6 +510,59 @@ namespace vMenuClient
                 }
             };
 
+            if (IsAllowed(Permission.MSEntitySpawner))
+            {
+                MenuItem entSpawnerMenuBtn = new MenuItem("Entity Spawner", "Spawn and move entities") { Label = "→→→" };
+                developerToolsMenu.AddMenuItem(entSpawnerMenuBtn);
+                MenuController.BindMenuItem(developerToolsMenu, entitySpawnerMenu, entSpawnerMenuBtn);
+                
+                entitySpawnerMenu.AddMenuItem(spawnNewEntity);
+                entitySpawnerMenu.AddMenuItem(confirmEntityPosition);
+                entitySpawnerMenu.AddMenuItem(confirmAndDuplicate);
+                entitySpawnerMenu.AddMenuItem(cancelEntity);
+
+                entitySpawnerMenu.OnItemSelect += async (sender, item, index) =>
+                {
+                    if (item == spawnNewEntity)
+                    {
+                        if (EntitySpawner.CurrentEntity != null || EntitySpawner.Active)
+                        {
+                            Notify.Error("You are already placing one entity, set its location or cancel and try again!");
+                            return;
+                        }
+                        
+                        string result = await GetUserInput(windowTitle: "Enter model name");
+
+                        if (String.IsNullOrEmpty(result))
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                        }
+
+                        EntitySpawner.SpawnEntity(result, Game.PlayerPed.Position);
+                    } else if (item == confirmEntityPosition || item == confirmAndDuplicate)
+                    {
+                        if (EntitySpawner.CurrentEntity != null)
+                        {
+                            EntitySpawner.FinishPlacement(item == confirmAndDuplicate);
+                        }
+                        else
+                        {
+                            Notify.Error("No entity to confirm position for!");
+                        }
+                    } else if (item == cancelEntity)
+                    {
+                        if (EntitySpawner.CurrentEntity != null)
+                        {
+                            EntitySpawner.CurrentEntity.Delete();
+                        }
+                        else
+                        {
+                            Notify.Error("No entity to cancel!");
+                        }
+                    }
+                };
+            }
+
             #endregion
 
 
@@ -537,11 +597,11 @@ namespace vMenuClient
             menu.AddMenuItem(drawTime); // always allowed
             if (IsAllowed(Permission.MSJoinQuitNotifs))
             {
-                menu.AddMenuItem(deathNotifs);
+                menu.AddMenuItem(joinQuitNotifs);
             }
             if (IsAllowed(Permission.MSDeathNotifs))
             {
-                menu.AddMenuItem(joinQuitNotifs);
+                menu.AddMenuItem(deathNotifs);
             }
             if (IsAllowed(Permission.MSNightVision))
             {

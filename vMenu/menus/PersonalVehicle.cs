@@ -192,12 +192,12 @@ namespace vMenuClient
                         {
                             if (_checked)
                             {
-                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle);
+                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle, 1);
                                 SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, Game.PlayerPed.Handle, 1);
                             }
                             else
                             {
-                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, 0);
+                                SetVehicleExclusiveDriver(CurrentPersonalVehicle.Handle, 0, 1);
                                 SetVehicleExclusiveDriver_2(CurrentPersonalVehicle.Handle, 0, 1);
                             }
                         }
