@@ -950,9 +950,39 @@ namespace vMenuClient
             }
             else
             {
+                Camera camera = null;
+
                 if (!player.IsActive)
                 {
-                    await TeleportToPlayer(player);
+                    // get the player position and make a cam to ensure they load in
+                    var playerPos = await MainMenu.RequestPlayerCoordinates(player.ServerId);
+
+                    DoScreenFadeOut(500);
+                    while (IsScreenFadingOut()) await Delay(0);
+
+                    camera = new Camera(CreateCam("DEFAULT_SCRIPTED_CAMERA", false));
+                    camera.Position = playerPos + new Vector3(0, -5, 0);
+                    camera.PointAt(playerPos);
+                    World.RenderingCamera = camera;
+
+                    // wait for the player to become active
+                    var timeout = GetGameTimer() + 1000;
+                    while (!player.IsActive || player.Character == null)
+                    {
+                        await Delay(0);
+                        World.RenderingCamera = camera;
+
+                        if (GetGameTimer() > timeout)
+                        {
+                            break;
+                        }
+                    }
+
+                    // fade back in if the player wasn't active
+                    if (!player.IsActive)
+                    {
+                        DoScreenFadeIn(500);
+                    }
                 }
 
                 if (player.Handle == Game.Player.Handle)
@@ -1018,6 +1048,13 @@ namespace vMenuClient
                             currentlySpectatingPlayer = player.Handle;
                         }
                     }
+                }
+
+                if (camera != null)
+                {
+                    // unset the camera
+                    camera.Delete();
+                    World.RenderingCamera = null;
                 }
             }
         }
