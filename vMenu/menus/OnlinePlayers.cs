@@ -16,6 +16,7 @@ namespace vMenuClient
     public class OnlinePlayers
     {
         public List<int> PlayersWaypointList = new List<int>();
+        public Dictionary<int, int> PlayerCoordWaypoints = new Dictionary<int, int>();
 
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
@@ -39,8 +40,8 @@ namespace vMenuClient
             MenuItem teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
             MenuItem teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
             MenuItem summon = new MenuItem("Summon Player", "Teleport the player to you.");
-            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player. ~y~Note for when the server is using OneSync Infinity: this may not work if the player is too far away.");
-            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating. ~y~Note for when the server is using OneSync Infinity: You will be teleported to the player if you're too far away, you might want to go into noclip to become invisible, before using this option!");
+            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
+            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
             MenuItem printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
             MenuItem kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
             MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
@@ -157,12 +158,29 @@ namespace vMenuClient
                     bool selectedPedRouteAlreadyActive = false;
                     if (PlayersWaypointList.Count > 0)
                     {
-                        if (PlayersWaypointList.Contains(currentPlayer.Handle))
+                        if (PlayersWaypointList.Contains(currentPlayer.ServerId))
                         {
                             selectedPedRouteAlreadyActive = true;
                         }
-                        foreach (int playerId in PlayersWaypointList)
+                        foreach (int serverId in PlayersWaypointList)
                         {
+                            // remove any coord blip
+                            if (PlayerCoordWaypoints.TryGetValue(serverId, out var wp))
+                            {
+                                SetBlipRoute(wp, false);
+                                RemoveBlip(ref wp);
+
+                                PlayerCoordWaypoints.Remove(serverId);
+                            }
+
+                            // remove any entity blip
+                            int playerId = GetPlayerFromServerId(serverId);
+
+                            if (playerId < 0)
+                            {
+                                continue;
+                            }
+
                             int playerPed = GetPlayerPed(playerId);
                             if (DoesEntityExist(playerPed) && DoesBlipExist(GetBlipFromEntity(playerPed)))
                             {
@@ -177,24 +195,34 @@ namespace vMenuClient
 
                     if (!selectedPedRouteAlreadyActive)
                     {
-                        if (currentPlayer.Handle != Game.Player.Handle)
+                        if (currentPlayer.ServerId != Game.Player.ServerId)
                         {
-                            int ped = GetPlayerPed(currentPlayer.Handle);
-                            int blip = GetBlipFromEntity(ped);
-                            if (DoesBlipExist(blip))
+                            int blip;
+
+                            if (currentPlayer.IsActive && currentPlayer.Character != null)
                             {
-                                SetBlipColour(blip, 58);
-                                SetBlipRouteColour(blip, 58);
-                                SetBlipRoute(blip, true);
+                                int ped = GetPlayerPed(currentPlayer.Handle);
+                                blip = GetBlipFromEntity(ped);
+                                if (!DoesBlipExist(blip))
+                                {
+                                    blip = AddBlipForEntity(ped);
+                                }
                             }
                             else
                             {
-                                blip = AddBlipForEntity(ped);
-                                SetBlipColour(blip, 58);
-                                SetBlipRouteColour(blip, 58);
-                                SetBlipRoute(blip, true);
+                                if (!PlayerCoordWaypoints.TryGetValue(currentPlayer.ServerId, out blip))
+                                {
+                                    var coords = await MainMenu.RequestPlayerCoordinates(currentPlayer.ServerId);
+                                    blip = AddBlipForCoord(coords.X, coords.Y, coords.Z);
+                                    PlayerCoordWaypoints[currentPlayer.ServerId] = blip;
+                                }
                             }
-                            PlayersWaypointList.Add(currentPlayer.Handle);
+
+                            SetBlipColour(blip, 58);
+                            SetBlipRouteColour(blip, 58);
+                            SetBlipRoute(blip, true);
+
+                            PlayersWaypointList.Add(currentPlayer.ServerId);
                             Notify.Custom($"~g~GPS route to ~s~<C>{GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now active, press the ~s~Toggle GPS Route~g~ button again to disable the route.");
                         }
                         else
