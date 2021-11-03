@@ -24,6 +24,7 @@ namespace vMenuClient
         private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
         private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>();
         private int deleteButtonPressedCount = 0;
+        private int replaceButtonPressedCount = 0;
 
 
         /// <summary>
@@ -107,6 +108,8 @@ namespace vMenuClient
                 selectedVehicleMenu.RefreshIndex();
                 deleteButtonPressedCount = 0;
                 deleteVehicle.Label = "";
+                replaceButtonPressedCount = 0;
+                replaceVehicle.Label = "";
             };
 
             selectedVehicleMenu.OnItemSelect += async (sender, item, index) =>
@@ -153,9 +156,20 @@ namespace vMenuClient
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
-                        SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
-                        selectedVehicleMenu.GoBack();
-                        Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
+                        if (replaceButtonPressedCount == 0)
+                        {
+                            replaceButtonPressedCount = 1;
+                            item.Label = "Press again to confirm.";
+                            Notify.Alert("Are you sure you want to replace this vehicle? Press the button again to confirm.");
+                        }
+                        else
+                        {
+                            replaceButtonPressedCount = 0;
+                            item.Label = "";
+                            SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
+                            selectedVehicleMenu.GoBack();
+                            Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
+                        }
                     }
                     else
                     {
@@ -184,6 +198,11 @@ namespace vMenuClient
                 {
                     deleteButtonPressedCount = 0;
                     deleteVehicle.Label = "";
+                }
+                if (item != replaceVehicle)
+                {
+                    replaceButtonPressedCount = 0;
+                    replaceVehicle.Label = "";
                 }
             };
             unavailableVehiclesMenu.InstructionalButtons.Add(Control.FrontendDelete, "Delete Vehicle!");
