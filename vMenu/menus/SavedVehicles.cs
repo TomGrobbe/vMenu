@@ -159,7 +159,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("You need to be in a vehicle before you can relplace your old vehicle.");
+                        Notify.Error("You need to be in a vehicle before you can replace your old vehicle.");
                     }
                 }
                 else if (item == deleteVehicle)
