@@ -103,12 +103,12 @@ namespace vMenuClient
             MenuController.BindMenuItem(menu, savedPedsMenu, savedPedsBtn);
             MenuController.BindMenuItem(menu, spawnPedsMenu, spawnPedsBtn);
 
-            Menu selectedSavedPedMenu = new Menu("Saved Ped", "renameme");
+            Menu selectedSavedPedMenu = new Menu("Saved Ped", "renameme"); // TODO: Add description
             MenuController.AddSubmenu(savedPedsMenu, selectedSavedPedMenu);
             MenuItem spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
             MenuItem cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
             MenuItem renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
-            MenuItem replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            MenuItem replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Replace this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
             MenuItem deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
 
             if (!IsAllowed(Permission.PASpawnSaved))

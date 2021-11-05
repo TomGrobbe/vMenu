@@ -297,7 +297,7 @@ namespace vMenuClient
                     else if (item == forceStopDriving)
                     {
                         ClearPedTasks(Game.PlayerPed.Handle);
-                        Notify.Info("Driving task cancelled.");
+                        Notify.Info("Driving task canceled.");
                     }
                 };
 

@@ -74,7 +74,7 @@ namespace vMenuClient
             // Create Checkboxes.
             MenuCheckboxItem vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Makes your vehicle not take any damage. Note, you need to go into the god menu options below to select what kind of damage you want to disable.", VehicleGodMode);
             MenuCheckboxItem vehicleNeverDirty = new MenuCheckboxItem("Keep Vehicle Clean", "This will constantly clean your car if the vehicle dirt level goes above 0. Note that this only cleans ~o~dust~s~ or ~o~dirt~s~. This does not clean mud, snow or other ~r~damage decals~s~. Repair your vehicle to remove them.", VehicleNeverDirty);
-            MenuCheckboxItem vehicleBikeSeatbelt = new MenuCheckboxItem("Bike Seatbelt", "Prevents you from being knocked off your bike, bicyle, ATV or similar.", VehicleBikeSeatbelt);
+            MenuCheckboxItem vehicleBikeSeatbelt = new MenuCheckboxItem("Bike Seatbelt", "Prevents you from being knocked off your bike, bicycle, ATV or similar.", VehicleBikeSeatbelt);
             MenuCheckboxItem vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
             MenuCheckboxItem vehicleNoTurbulence = new MenuCheckboxItem("Disable Plane Turbulence", "Disables the turbulence for all planes. Note only works for planes. Helicopters and other flying vehicles are not supported.", DisablePlaneTurbulence);
             MenuCheckboxItem vehicleNoSiren = new MenuCheckboxItem("Disable Siren", "Disables your vehicle's siren. Only works if your vehicle actually has a siren.", VehicleNoSiren);
@@ -82,7 +82,7 @@ namespace vMenuClient
             MenuCheckboxItem vehicleFreeze = new MenuCheckboxItem("Freeze Vehicle", "Freeze your vehicle's position.", VehicleFrozen);
             MenuCheckboxItem torqueEnabled = new MenuCheckboxItem("Enable Torque Multiplier", "Enables the torque multiplier selected from the list below.", VehicleTorqueMultiplier);
             MenuCheckboxItem powerEnabled = new MenuCheckboxItem("Enable Power Multiplier", "Enables the power multiplier selected from the list below.", VehiclePowerMultiplier);
-            MenuCheckboxItem highbeamsOnHonk = new MenuCheckboxItem("Flash Highbeams On Honk", "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
+            MenuCheckboxItem highbeamsOnHonk = new MenuCheckboxItem("Flash High Beams On Honk", "Turn on your high beams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
             MenuCheckboxItem showHealth = new MenuCheckboxItem("Show Vehicle Health", "Shows the vehicle health on the screen.", VehicleShowHealth);
             MenuCheckboxItem infiniteFuel = new MenuCheckboxItem("Infinite Fuel", "Enables or disables infinite fuel for this vehicle, only works if FRFuel is installed.", VehicleInfiniteFuel);
 
@@ -150,7 +150,7 @@ namespace vMenuClient
                 radioIndex = index;
             }
 
-            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
+            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a default radio station to be set when spawning new car");
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -183,7 +183,7 @@ namespace vMenuClient
             #endregion
 
             #region Submenus
-            // Submenu's
+            // Submenus
             VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
             VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
             VehicleModMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_PRESSED, new Action<Menu, Control>((m, c) =>
@@ -513,7 +513,7 @@ namespace vMenuClient
                                     visiblePeds.Add(p, p.IsVisible);
                                 }
 
-                                // Set the vehicle invisible or invincivble.
+                                // Set the vehicle invisible or invincible.
                                 vehicle.IsVisible = !vehicle.IsVisible;
 
                                 // Restore visibility for each ped.
@@ -524,7 +524,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                // Set the vehicle invisible or invincivble.
+                                // Set the vehicle invisible or invincible.
                                 vehicle.IsVisible = !vehicle.IsVisible;
                             }
                         }
@@ -598,7 +598,7 @@ namespace vMenuClient
                     if (vehicle != null && vehicle.Exists())
                         vehicle.IsSirenSilent = _checked;
                 }
-                else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
+                else if (item == vehicleNoBikeHelmet) // No Helmet Toggled
                 {
                     VehicleNoBikeHelemet = _checked;
                 }
@@ -656,7 +656,7 @@ namespace vMenuClient
                     {
                         // Get the selected value. Remove the "x" from the string.
                         var value = powerMultiplierList[newIndex].ToString().Replace("x", "");
-                        // Conver the string into a float and set it to be the value of the public variable.
+                        // Convert the string into a float and set it to be the value of the public variable.
                         VehiclePowerMultiplierAmount = float.Parse(value);
                         if (VehiclePowerMultiplier)
                         {
@@ -878,7 +878,7 @@ namespace vMenuClient
                                     {
                                         SetVehicleTyreFixed(veh.Handle, i);
                                     }
-                                    Notify.Success("All vehicle tyres have been fixed.");
+                                    Notify.Success("All vehicle tires have been fixed.");
                                 }
                                 else
                                 {
@@ -886,7 +886,7 @@ namespace vMenuClient
                                     {
                                         SetVehicleTyreBurst(veh.Handle, i, false, 1f);
                                     }
-                                    Notify.Success("All vehicle tyres have been destroyed.");
+                                    Notify.Success("All vehicle tires have been destroyed.");
                                 }
                             }
                             else
@@ -895,12 +895,12 @@ namespace vMenuClient
                                 if (IsVehicleTyreBurst(veh.Handle, index, false))
                                 {
                                     SetVehicleTyreFixed(veh.Handle, index);
-                                    Notify.Success($"Vehicle tyre #{listIndex} has been fixed.");
+                                    Notify.Success($"Vehicle tire #{listIndex} has been fixed.");
                                 }
                                 else
                                 {
                                     SetVehicleTyreBurst(veh.Handle, index, false, 1f);
-                                    Notify.Success($"Vehicle tyre #{listIndex} has been destroyed.");
+                                    Notify.Success($"Vehicle tire #{listIndex} has been destroyed.");
                                 }
                             }
                         }
@@ -1015,7 +1015,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
+                    Notify.Error("You need to be the driver of a drivable vehicle to change this.");
                 }
             };
             VehicleColorsMenu.OnSliderPositionChange += (m, sliderItem, oldPosition, newPosition, itemIndex) =>
@@ -1030,7 +1030,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this slider.");
+                    Notify.Error("You need to be the driver of a drivable vehicle to change this slider.");
                 }
             };
 
@@ -1127,14 +1127,14 @@ namespace vMenuClient
                         else if (listItem == dashColorList)
                         {
                             dashColor = VehicleData.ClassicColors[newIndex].id;
-                            // sadly these native names are mixed up :/ but ofc it's impossible to fix due to backwards compatibility.
+                            // sadly these native names are mixed up :/ but of course it's impossible to fix due to backwards compatibility.
                             // this should actually be called SetVehicleDashboardColour
                             SetVehicleInteriorColour(veh.Handle, dashColor);
                         }
                         else if (listItem == intColorList)
                         {
                             intColor = VehicleData.ClassicColors[newIndex].id;
-                            // sadly these native names are mixed up :/ but ofc it's impossible to fix due to backwards compatibility.
+                            // sadly these native names are mixed up :/ but of course it's impossible to fix due to backwards compatibility.
                             // this should actually be called SetVehicleInteriorColour
                             SetVehicleDashboardColour(veh.Handle, intColor);
                         }
@@ -1340,7 +1340,7 @@ namespace vMenuClient
             #region Vehicle Liveries Submenu Stuff
             menu.OnItemSelect += (sender, item, idex) =>
             {
-                // If the liverys menu button is selected.
+                // If the liveries menu button is selected.
                 if (item == liveriesMenuBtn)
                 {
                     // Get the player's vehicle.
@@ -1414,7 +1414,7 @@ namespace vMenuClient
             #region Vehicle Mod Submenu Stuff
             menu.OnItemSelect += (sender, item, index) =>
             {
-                // When the mod submenu is openend, reset all items in there.
+                // When the mod submenu is opened, reset all items in there.
                 if (item == modMenuBtn)
                 {
                     if (Game.PlayerPed.IsInVehicle())

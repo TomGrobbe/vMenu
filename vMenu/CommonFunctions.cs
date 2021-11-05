@@ -427,7 +427,7 @@ namespace vMenuClient
                 var playerId = player.Handle;
                 var playerPed = player.Character.Handle;
 
-                // If the player should be teleported inside the other player's vehcile.
+                // If the player should be teleported inside the other player's vehicle.
                 if (inVehicle)
                 {
                     // Wait until the target player vehicle has loaded, if they weren't active beforehand.
@@ -478,7 +478,7 @@ namespace vMenuClient
                         }
                     }
                 }
-                // The player is not being teleported into the vehicle, so the teleporting is successfull.
+                // The player is not being teleported into the vehicle, so the teleporting is successful.
                 // Notify the user.
                 else
                 {
@@ -488,7 +488,7 @@ namespace vMenuClient
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been canceled.");
             }
         }
         #endregion
@@ -797,14 +797,14 @@ namespace vMenuClient
                             else
                             {
                                 Notify.Error(CommonErrors.InvalidInput);
-                                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you canceled the action, please try again.");
                             }
                         }
                     }
                     else
                     {
                         Notify.Error(CommonErrors.InvalidInput);
-                        TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                        TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you canceled the action, please try again.");
                     }
 
                 }
@@ -812,7 +812,7 @@ namespace vMenuClient
             else
             {
                 Notify.Error(CommonErrors.InvalidInput);
-                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you canceled the action, please try again.");
             }
         }
         #endregion
@@ -1090,7 +1090,7 @@ namespace vMenuClient
                         }
                     }
                 }
-                // If the player is not in the "last" seat, loop through all the seats starrting from the driver's position.
+                // If the player is not in the "last" seat, loop through all the seats starting from the driver's position.
                 else
                 {
                     var switchedPlace = false;
@@ -1210,7 +1210,7 @@ namespace vMenuClient
                 }
             }
 
-            Log("Spawning of vehicle is NOT cancelled, if this model is invalid then there's something wrong.");
+            Log("Spawning of vehicle is NOT canceled, if this model is invalid then there's something wrong.");
 
             // Get the heading & position for where the vehicle should be spawned.
             Vector3 pos = new Vector3(x, y, z);
@@ -1544,12 +1544,12 @@ namespace vMenuClient
                         if (!string.IsNullOrEmpty(saveName))
                         {
                             // Save everything from the dictionary into the client's kvp storage.
-                            // If the save was successfull:
+                            // If the save was successful:
                             if (StorageManager.SaveVehicleInfo("veh_" + saveName, vi, false))
                             {
                                 Notify.Success($"Vehicle {saveName} saved.");
                             }
-                            // If the save was not successfull:
+                            // If the save was not successful:
                             else
                             {
                                 Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: "(" + saveName + ")");
@@ -1721,7 +1721,7 @@ namespace vMenuClient
                 switch (keyboardStatus)
                 {
                     case 3: // not displaying input field anymore somehow
-                    case 2: // cancelled
+                    case 2: // canceled
                         return null;
                     case 1: // finished editing
                         return GetOnscreenKeyboardResult();
@@ -1780,7 +1780,7 @@ namespace vMenuClient
 
         #region ToProperString()
         /// <summary>
-        /// Converts a PascalCaseString to a Propper Case String.
+        /// Converts a PascalCaseString to a Proper Case String.
         /// </summary>
         /// <param name="inputString"></param>
         /// <returns>Input string converted to a normal sentence.</returns>
@@ -1829,7 +1829,7 @@ namespace vMenuClient
         #region Play Scenarios
         /// <summary>
         /// Play the specified scenario name.
-        /// If "forcestop" is specified, any currrently playing scenarios will be forcefully stopped.
+        /// If "forcestop" is specified, any currently playing scenarios will be forcefully stopped.
         /// </summary>
         /// <param name="scenarioName"></param>
         public static void PlayScenario(string scenarioName)
@@ -1987,7 +1987,7 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Hud Functions
+        #region HUD Functions
         /// <summary>
         /// Draw text on the screen at the provided x and y locations.
         /// </summary>
@@ -2289,12 +2289,12 @@ namespace vMenuClient
 
                 //if (name != "vMenu_tmp_saved_ped") // only send a notification if the save wasn't triggered because the player died.
                 //{
-                //    // If the save was successfull.
+                //    // If the save was successful.
                 //    if (saveSuccessful)
                 //    {
                 //        //Notify.Success("Ped saved.");
                 //    }
-                //    // Save was not successfull.
+                //    // Save was not successful.
                 //    else
                 //    {
                 //        Notify.Error(CommonErrors.SaveNameAlreadyExists, placeholderValue: name);
@@ -2303,7 +2303,7 @@ namespace vMenuClient
 
                 return saveSuccessful;
             }
-            // User cancelled the saving or they did not enter a valid name.
+            // User canceled the saving or they did not enter a valid name.
             else
             {
                 Notify.Error(CommonErrors.InvalidSaveName);

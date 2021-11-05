@@ -296,7 +296,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Clear the area around the provided x, y, z coordinates. Clears everything like (destroyed) objects, peds, (ai) vehicles, etc.
+        /// Clear the area around the provided x, y, z coordinates. Clears everything like (destroyed) objects, peds, (AI) vehicles, etc.
         /// Also restores broken streetlights, etc.
         /// </summary>
         /// <param name="x"></param>

@@ -80,7 +80,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Saves an (old/nomral) ped data to storage.
+        /// Saves an (old/normal) ped data to storage.
         /// </summary>
         /// <param name="saveName"></param>
         /// <param name="pedData"></param>
@@ -277,7 +277,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Save json data. Returns true if save was successfull.
+        /// Save json data. Returns true if save was successful.
         /// </summary>
         /// <param name="saveName">Name to store the data under.</param>
         /// <param name="jsonData">The data to store.</param>

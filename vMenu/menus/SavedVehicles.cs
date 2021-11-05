@@ -241,7 +241,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("There are currrently no unavailable vehicles to delete!");
+                    Notify.Error("There are currently no unavailable vehicles to delete!");
                 }
             }), true));
 
@@ -266,7 +266,7 @@ namespace vMenuClient
         /// Updates the selected vehicle.
         /// </summary>
         /// <param name="selectedItem"></param>
-        /// <returns>A bool, true if successfull, false if unsuccessfull</returns>
+        /// <returns>A bool, true if successful, false if unsuccessful</returns>
         private bool UpdateSelectedVehicleMenu(MenuItem selectedItem, Menu parentMenu = null)
         {
             if (!svMenuItems.ContainsKey(selectedItem))

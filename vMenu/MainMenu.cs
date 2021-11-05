@@ -148,7 +148,7 @@ namespace vMenuClient
                         {
                             DebugMode = !DebugMode;
                             Notify.Custom($"Debug mode is now set to: {DebugMode}.");
-                            // Set discord rich precense once, allowing it to be overruled by other resources once those load.
+                            // Set discord rich presence once, allowing it to be overruled by other resources once those load.
                             if (DebugMode)
                             {
                                 SetRichPresence($"Debugging vMenu {Version}!");

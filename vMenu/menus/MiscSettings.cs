@@ -127,9 +127,9 @@ namespace vMenuClient
             MenuCheckboxItem vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you.", ShowVehicleModelDimensions);
             MenuCheckboxItem propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you.", ShowPropModelDimensions);
             MenuCheckboxItem pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you.", ShowPedModelDimensions);
-            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
-            MenuCheckboxItem showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
-            MenuCheckboxItem showEntityNetOwners = new MenuCheckboxItem("Show Network Owners", "Draws the the entity net owner for all close entities (you must enable the outline functions above for this to work).", ShowEntityNetOwners);
+            MenuCheckboxItem showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
+            MenuCheckboxItem showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
+            MenuCheckboxItem showEntityNetOwners = new MenuCheckboxItem("Show Network Owners", "Draws the entity net owner for all close entities (you must enable the outline functions above for this to work).", ShowEntityNetOwners);
             MenuSliderItem dimensionsDistanceSlider = new MenuSliderItem("Show Dimensions Radius", "Show entity model/handle/dimension draw range.", 0, 20, 20, false);
 
             MenuItem clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");

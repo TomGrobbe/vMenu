@@ -65,7 +65,7 @@ namespace vMenuClient
                     outputMessage = $"This model~r~{placeholder} ~s~could not be found, are you sure it's valid?";
                     break;
                 case CommonErrors.InvalidInput:
-                    outputMessage = $"The input~r~{placeholder} ~s~is invalid or you cancelled the action, please try again.";
+                    outputMessage = $"The input~r~{placeholder} ~s~is invalid or you canceled the action, please try again.";
                     break;
                 case CommonErrors.InvalidSaveName:
                     outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~s~is invalid.";
@@ -107,7 +107,7 @@ namespace vMenuClient
 
     #region Notifications class
     /// <summary>
-    /// Notifications class to easilly show notifications using custom made templates,
+    /// Notifications class to easily show notifications using custom made templates,
     /// or completely custom style if none of the templates are fitting for the current task.
     /// </summary>
     public static class Notify

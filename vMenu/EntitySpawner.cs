@@ -45,7 +45,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="model">model of entity as string</param>
         /// <param name="coords">initial coords for the entity</param>
-        /// <returns>true spawn was succesful</returns>
+        /// <returns>true spawn was successful</returns>
         public static void SpawnEntity(string model, Vector3 coords)
         {
             SpawnEntity((uint)GetHashKey(model), coords);
@@ -57,7 +57,7 @@ namespace vMenuClient
         /// </summary>
         /// <param name="model">model of entity as hash</param>
         /// <param name="coords">initial coords for the entity</param>
-        /// <returns>true spawn was succesful</returns>
+        /// <returns>true spawn was successful</returns>
         public static async void SpawnEntity(uint model, Vector3 coords)
         {
             if (!IsModelValid(model))
@@ -170,7 +170,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Used to get coords of reycast from player camera;
+        /// Used to get coords of raycast from player camera;
         /// </summary>
         /// <returns>destination if no hit was found and coords of hit if there was one</returns>
         private Vector3 GetCoordsPlayerIsLookingAt()

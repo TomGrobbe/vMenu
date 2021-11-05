@@ -1255,7 +1255,7 @@ namespace vMenuClient
             clothesMenu.OnListItemSelect += (sender, listItem, listIndex, realIndex) =>
             {
                 int componentIndex = realIndex + 1; // skip face options as that fucks up with inheritance faces
-                if (realIndex > 0) // skip hair features as that is done in the appeareance menu
+                if (realIndex > 0) // skip hair features as that is done in the appearance menu
                 {
                     componentIndex += 1;
                 }

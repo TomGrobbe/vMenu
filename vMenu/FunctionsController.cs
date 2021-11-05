@@ -453,7 +453,7 @@ namespace vMenuClient
 
                     // Manage "no helmet"
                     var ped = Game.PlayerPed;
-                    // If the no helmet feature is turned on, disalbe "ped can wear helmet"
+                    // If the no helmet feature is turned on, disable "ped can wear helmet"
                     if (MainMenu.VehicleOptionsMenu.VehicleNoBikeHelemet && IsAllowed(Permission.VONoHelmet))
                     {
                         ped.CanWearHelmet = false;
@@ -536,7 +536,7 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Vehicle control options for flashing highbeams.
+        /// Vehicle control options for flashing high beams.
         /// </summary>
         /// <returns></returns>
         private async Task VehicleHighbeamFlashTick()
@@ -731,7 +731,7 @@ namespace vMenuClient
                 GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
                 crossingName = GetStreetNameFromHashKey(crossing);
 
-                // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
+                // Set the suffix for the road name to the crossing name, or to an empty string if there's no crossing.
                 suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
 
                 await Delay(200);
@@ -839,7 +839,7 @@ namespace vMenuClient
         int radarSwitchTimer = 0;
         int lastPressedPoint = 0;
         /// <summary>
-        /// Run all tasks that need to be handeled for the Misc Settings Menu.
+        /// Run all tasks that need to be handled for the Misc Settings Menu.
         /// </summary>
         /// <returns></returns>
         private async Task MiscSettings()
@@ -1369,7 +1369,7 @@ namespace vMenuClient
 
         #region Weapon Options Tasks
         /// <summary>
-        /// Manage all weapon options that need to be handeled every tick.
+        /// Manage all weapon options that need to be handled every tick.
         /// </summary>
         /// <returns></returns>
         private async Task WeaponOptions()
@@ -2138,7 +2138,7 @@ namespace vMenuClient
                         // continue only if this player is valid.
                         if (p != null && NetworkIsPlayerActive(p.Handle) && p.Character != null && p.Character.Exists())
                         {
-                            // if blips are enabled and the player has permisisons to use them.
+                            // if blips are enabled and the player has permissions to use them.
                             if (enabled)
                             {
                                 if (!p.IsLocal)
@@ -2378,7 +2378,7 @@ namespace vMenuClient
         }
         #endregion
 
-        #region Flares and plane bombs controler (UNUSED)
+        #region Flares and plane bombs controller (UNUSED)
         /*
         private readonly List<uint> flareVehicles = new List<uint>()
         {
@@ -3067,7 +3067,7 @@ namespace vMenuClient
                         if (GetGameTimer() - timeoutTimer > 1000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function. Dbg: fault in location 1.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation to start took too long. Preventing hanging of function. Debug: fault in location 1.");
                             return;
                         }
                         await Delay(0);
@@ -3080,7 +3080,7 @@ namespace vMenuClient
                         if (GetGameTimer() - timeoutTimer > 3000)
                         {
                             ClearPedTasks(Game.PlayerPed.Handle);
-                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function. Dbg: fault in location 2.");
+                            Debug.WriteLine("[vMenu] [WARNING] Waiting for animation duration took too long. Preventing hanging of function. Debug: fault in location 2.");
                             return;
                         }
                         if (GetEntityAnimCurrentTime(Game.PlayerPed.Handle, animDict, animName) > 0.39f)

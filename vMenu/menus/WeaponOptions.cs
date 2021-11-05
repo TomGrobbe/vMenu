@@ -44,7 +44,7 @@ namespace vMenuClient
 
             MenuItem getAllWeapons = new MenuItem("Get All Weapons", "Get all weapons.");
             MenuItem removeAllWeapons = new MenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
-            MenuCheckboxItem unlimitedAmmo = new MenuCheckboxItem("Unlimited Ammo", "Unlimited ammonition supply.", UnlimitedAmmo);
+            MenuCheckboxItem unlimitedAmmo = new MenuCheckboxItem("Unlimited Ammo", "Unlimited ammunition supply.", UnlimitedAmmo);
             MenuCheckboxItem noReload = new MenuCheckboxItem("No Reload", "Never reload.", NoReload);
             MenuItem setAmmo = new MenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
             MenuItem refillMaxAmmo = new MenuItem("Refill All Ammo", "Give all your weapons max ammo.");
@@ -512,7 +512,7 @@ namespace vMenuClient
                                                 SetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, clipAmmo);
 
                                                 SetPedAmmo(Game.PlayerPed.Handle, Weapon.Hash, ammo);
-                                                Subtitle.Custom("Component equiped.");
+                                                Subtitle.Custom("Component equipped.");
                                             }
                                         }
                                         else
@@ -554,7 +554,7 @@ namespace vMenuClient
                         MenuController.BindMenuItem(smgs, weaponMenu, weaponItem);
                         smgs.AddMenuItem(weaponItem);
                     }
-                    else if (cat == 1548507267 || cat == 4257178988 || cat == 1595662460) // 1548507267 throwables // 4257178988 fire extinghuiser // jerry can
+                    else if (cat == 1548507267 || cat == 4257178988 || cat == 1595662460) // 1548507267 throwables // 4257178988 fire extinguisher // jerry can
                     {
                         MenuController.AddSubmenu(throwables, weaponMenu);
                         MenuController.BindMenuItem(throwables, weaponMenu, weaponItem);
