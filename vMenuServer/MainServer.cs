@@ -508,7 +508,7 @@ namespace vMenuServer
         }
         #endregion
 
-        #region clear area near pos
+        #region clear area near position
         /// <summary>
         /// Clear the area near this point for all players.
         /// </summary>
@@ -688,7 +688,7 @@ namespace vMenuServer
             DynamicWeatherEnabled = dynamicWeatherNew;
             ManualSnowEnabled = enableSnow;
 
-            // Reset the dynamic weather loop timer to another (default) 10 mintues.
+            // Reset the dynamic weather loop timer to another (default) 10 minutes.
             lastWeatherChange = GetGameTimer();
         }
 

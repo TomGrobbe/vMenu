@@ -187,7 +187,7 @@ namespace vMenuServer
                     Log("Target player is not null so moving on.", LogLevel.info);
                     if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
-                        Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban them.", LogLevel.info);
+                        Log("Target player (Player) does not have the 'don't ban me' permission, so we can continue to ban them.", LogLevel.info);
                         var banduration = (banDurationHours > 0 ?
                                                 /* ban temporarily */ (DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0)) :
                                                 /* ban forever */ (new DateTime(3000, 1, 1)));
@@ -208,7 +208,7 @@ namespace vMenuServer
                         TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
 
                         string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                        target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                        target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                         source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                     }
                     else
@@ -336,7 +336,7 @@ namespace vMenuServer
 
                 if (string.IsNullOrEmpty(reason))
                 {
-                    reason = $"You have been automatically banned. If you believe this was done by error, please contact the server owner for support. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.";
+                    reason = $"You have been automatically banned. If you believe this was done by error, please contact the server owner for support. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.";
                 }
                 var ban = new BanRecord(
                     GetSafePlayerName(source.Name),
