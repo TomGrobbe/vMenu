@@ -321,7 +321,9 @@ namespace vMenuClient
                 "SUPERD",
                 "SURGE",
                 "TAILGATER",
+                "TAILGATER2", // MPTUNER DLC
                 "WARRENER",
+                "WARRENER2", // MPTUNER DLC
                 "WASHINGTON",
             };
             #endregion
@@ -375,6 +377,7 @@ namespace vMenuClient
                 "JACKAL",
                 "ORACLE",
                 "ORACLE2",
+                "PREVION", // MPTUNER DLC
                 "SENTINEL",
                 "SENTINEL2",
                 "WINDSOR",
@@ -400,6 +403,8 @@ namespace vMenuClient
                 "DOMINATOR4", // MPCHRISTMAS2018 DLC
                 "DOMINATOR5", // MPCHRISTMAS2018 DLC
                 "DOMINATOR6", // MPCHRISTMAS2018 DLC
+                "DOMINATOR7", // MPTUNER DLC
+                "DOMINATOR8", // MPTUNER DLC
                 "DUKES",
                 "DUKES2",
                 "DUKES3", // MPSUM2020
@@ -521,22 +526,28 @@ namespace vMenuClient
                 "BUFFALO",
                 "BUFFALO2",
                 "BUFFALO3",
+                "CALICO", // MPTUNER DLC
                 "CARBONIZZARE",
                 "COMET2",
                 "COMET3",
                 "COMET4",
                 "COMET5",
+                "COMET6", // MPTUNER DLC
                 "COQUETTE",
                 "COQUETTE4", // MPSUM2020
+                "CYPHER", // MPTUNER DLC
                 "DRAFTER", // MPVINEWOOD DLC
                 "ELEGY",
                 "ELEGY2",
+                "EUROS", // MPTUNER DLC
                 "FELTZER2",
                 "FLASHGT",
                 "FUROREGT",
                 "FUSILADE",
                 "FUTO",
+                "FUTO2", // MPTUNER DLC
                 "GB200",
+                "GROWLER", // MPTUNER DLC
                 "HOTRING",
                 "IMORGON", // CASINO (MPHEIST3) DLC
                 "ISSI7", // MPVINEWOOD DLC
@@ -544,6 +555,7 @@ namespace vMenuClient
                 "ITALIRSX", // MPCAYOPERICO DLC
                 "JESTER",
                 "JESTER2",
+                "JESTER4", // MPTUNER DLC
                 "JUGULAR", // MPVINEWOOD DLC
                 "KHAMELION",
                 "KOMODA", // CASINO (MPHEIST3) DLC
@@ -567,7 +579,9 @@ namespace vMenuClient
                 "RAPIDGT",
                 "RAPIDGT2",
                 "RAPTOR",
+                "REMUS", // MPTUNER DLC
                 "REVOLTER",
+                "RT3000", // MPTUNER DLC
                 "RUSTON",
                 "SCHAFTER2",
                 "SCHAFTER3",
@@ -582,13 +596,16 @@ namespace vMenuClient
                 "SUGOI", // CASINO (MPHEIST3) DLC
                 "SULTAN",
                 "SULTAN2", // CASINO (MPHEIST3) DLC
+                "SULTAN3", // MPTUNER DLC
                 "SURANO",
                 "TAMPA2",
                 "TROPOS",
+                "VECTRE", // MPTUNER DLC
                 "VERLIERER2",
                 "VETO", // MPCAYOPERICO DLC
                 "VETO2", // MPCAYOPERICO DLC
                 "VSTR", // CASINO (MPHEIST3) DLC
+                "ZR350", // MPTUNER DLC
                 "ZR380", // MPCHRISTMAS2018 DLC
                 "ZR3802", // MPCHRISTMAS2018 DLC
                 "ZR3803", // MPCHRISTMAS2018 DLC
