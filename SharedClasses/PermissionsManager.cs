@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -379,9 +379,9 @@ namespace vMenuShared
             if (ArePermissionsSetup || checkAnyway)
             {
                 bool staffPermissionAllowed = (
-                    allowedPerms.ContainsKey(Permission.Staff) && allowedPerms[Permission.Staff]
+                    Permissions.ContainsKey(Permission.Staff) && Permissions[Permission.Staff]
                 ) || (
-                    allowedPerms.ContainsKey(Permission.Everything) && allowedPerms[Permission.Everything]
+                    Permissions.ContainsKey(Permission.Everything) && Permissions[Permission.Everything]
                 );
                 // Return false immediately if the staff only convar is set and the user is not a staff member.
                 if (ConfigManager.GetSettingsBool(ConfigManager.Setting.vmenu_menu_staff_only) && !staffPermissionAllowed)
@@ -389,12 +389,10 @@ namespace vMenuShared
                     return false;
                 }
 
-                if (allowedPerms.ContainsKey(permission))
-                {
-                    return allowedPerms[permission];
-                }
-
-                allowedPerms[permission] = false;
+                if (allowedPerms.ContainsKey(permission) && allowedPerms[permission])
+                    return true;
+                else if (!allowedPerms.ContainsKey(permission))
+                    allowedPerms[permission] = false;
 
                 // Get a list of all permissions that are (parents) of the current permission, including the current permission.
                 List<Permission> permissionsToCheck = GetPermissionAndParentPermissions(permission);
@@ -406,8 +404,6 @@ namespace vMenuShared
                     return true;
                 }
             }
-
-            // Return false if nothing is allowed.
             return false;
         }
 #endif
@@ -541,15 +537,11 @@ namespace vMenuShared
         /// <param name="permissions"></param>
         public static void SetPermissions(string permissions)
         {
-            if (!IsDuplicityVersion())
+            Permissions = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<Permission, bool>>(permissions);
+            // if debug logging.
+            if (GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true")
             {
-                Permissions = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<Permission, bool>>(permissions);
-                // if debug logging.
-                if (GetResourceMetadata(GetCurrentResourceName(), "client_debug_mode", 0) == "true")
-                {
-                    Debug.WriteLine("[vMenu] [Permissions] " + Newtonsoft.Json.JsonConvert.SerializeObject(Permissions, Newtonsoft.Json.Formatting.None));
-                }
-
+                Debug.WriteLine("[vMenu] [Permissions] " + Newtonsoft.Json.JsonConvert.SerializeObject(Permissions, Newtonsoft.Json.Formatting.None));
             }
         }
 #endif
