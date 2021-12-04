@@ -270,7 +270,7 @@ namespace vMenuClient
             }
             try
             {
-                SetClockDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+                 SetClockDate(1, 1, 2022);
             }
             catch (InvalidTimeZoneException timeEx)
             {
