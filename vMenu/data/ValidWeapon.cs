@@ -320,7 +320,7 @@ namespace vMenuClient
             // MPHEIST3 DLC (v 1868)
             { "weapon_ceramicpistol", GetLabelText("WT_CERPST") },
             { "weapon_navyrevolver", GetLabelText("WT_REV_NV") },
-            { "weapon_hazardcan", GetLabelText("WTD_HAZARDCAN") },
+            { "weapon_hazardcan", GetLabelText("WT_HAZARDCAN") },
             // MPHEIST4 DLC (v 2189)
             { "weapon_gadgetpistol", GetLabelText("WT_GDGTPST") },
             { "weapon_militaryrifle", GetLabelText("WT_MLTRYRFL") },
