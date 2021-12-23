@@ -148,6 +148,7 @@ namespace vMenuShared
             PVAll,
             PVToggleEngine,
             PVToggleLights,
+            PVToggleStance,
             PVKickPassengers,
             PVLockDoors,
             PVDoors,
