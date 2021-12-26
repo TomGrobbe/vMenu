@@ -644,6 +644,7 @@ namespace vMenuClient
                 else if (item == infiniteFuel)
                 {
                     VehicleInfiniteFuel = _checked;
+                    TriggerEvent("vMenu:InfiniteFuelToggled", _checked);
                 }
             };
             #endregion
