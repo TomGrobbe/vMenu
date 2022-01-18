@@ -293,16 +293,19 @@ namespace vMenuClient
                 "ASEA",
                 "ASEA2",
                 "ASTEROPE",
+                "CINQUEMILA", // The Contract Dlc - Requires b2545
                 "COG55",
                 "COG552",
                 "COGNOSCENTI",
                 "COGNOSCENTI2",
+                "DEITY", // The Contract Dlc - Requires b2545
                 "EMPEROR",
                 "EMPEROR2",
                 "EMPEROR3",
                 "FUGITIVE",
                 "GLENDALE",
                 "GLENDALE2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "IGNUS", // The Contract Dlc - Requires b2545
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
@@ -330,12 +333,14 @@ namespace vMenuClient
             #region SUVs
             public static List<string> SUVs { get; } = new List<string>()
             {
+                "ASTRON", // The Contract Dlc - Requires b2545
                 "BALLER",
                 "BALLER2",
                 "BALLER3",
                 "BALLER4",
                 "BALLER5",
                 "BALLER6",
+                "BALLER7", // The Contract Dlc - Requires b2545
                 "BJXL",
                 "CAVALCADE",
                 "CAVALCADE2",
@@ -344,9 +349,12 @@ namespace vMenuClient
                 "DUBSTA2",
                 "FQ2",
                 "GRANGER",
+                "GRANGER2", // The Contract Dlc - Requires b2545
                 "GRESLEY",
                 "HABANERO",
                 "HUNTLEY",
+                "IWAGEN", // The Contract Dlc - Requires b2545
+                "JUBILEE", // The Contract Dlc - Requires 
                 "LANDSTALKER",
                 "LANDSTALKER2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "MESA",
@@ -392,6 +400,7 @@ namespace vMenuClient
                 "BLADE",
                 "BUCCANEER",
                 "BUCCANEER2",
+                "BUFFALO4", // The Contract Dlc - Requires b2545
                 "CHINO",
                 "CHINO2",
                 "CLIQUE",
@@ -533,6 +542,7 @@ namespace vMenuClient
                 "COMET4",
                 "COMET5",
                 "COMET6", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "COMET7", // The Contract Dlc - Requires b2545
                 "COQUETTE",
                 "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
@@ -618,6 +628,7 @@ namespace vMenuClient
                 "AUTARCH",
                 "BANSHEE2",
                 "BULLET",
+                "CHAMPION",  // The Contract Dlc - Requires b2545
                 "CHEETAH",
                 "CYCLONE",
                 "DEVESTE",
@@ -660,6 +671,7 @@ namespace vMenuClient
                 "VOLTIC",
                 "VOLTIC2",
                 "XA21",
+                "ZENO", // The Contract Dlc - Requires b2545
                 "ZENTORNO",
                 "ZORRUSSO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
             };
@@ -706,11 +718,13 @@ namespace vMenuClient
                 "OPPRESSOR2",
                 "PCJ",
                 "RATBIKE",
+                "REEVER",  // The Contract Dlc - Requires b2545
                 "RROCKET", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "RUFFIAN",
                 "SANCHEZ",
                 "SANCHEZ2",
                 "SANCTUS",
+                "SHINOBI", // The Contract Dlc - Requires b2545
                 "SHOTARO",
                 "SOVEREIGN",
                 "STRYDER", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
@@ -767,6 +781,7 @@ namespace vMenuClient
                 "MONSTER5",
                 "NIGHTSHARK",
                 "OUTLAW", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "PATRIOT3", // The Contract Dlc - Requires b2545
                 "RANCHERXL",
                 "RANCHERXL2",
                 "RCBANDITO",
@@ -902,6 +917,7 @@ namespace vMenuClient
                 "YOUGA",
                 "YOUGA2",
                 "YOUGA3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "YOUGA4", // The Contract Dlc - Requires b2545
             };
             #endregion
             #region Cycles
@@ -1102,6 +1118,7 @@ namespace vMenuClient
                 "MULE2",
                 "MULE3",
                 "MULE4",
+                "MULE5", // The Contract Dlc - Requires b2545
                 "PACKER",
                 "PHANTOM",
                 "PHANTOM2",
