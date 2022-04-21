@@ -130,6 +130,11 @@ namespace vMenuClient
             {
                 if (item == spawnSavedPed)
                 {
+                    int theplayerped = PlayerPedId();
+                    if (IsPedInAnyVehicle(theplayerped, true) || IsEntityInAir(theplayerped) || IsPedFalling(theplayerped))
+                    {
+                        return;
+                    }
                     await SetPlayerSkin(savedPed.Value.model, savedPed.Value, true);
                 }
                 else if (item == cloneSavedPed)
