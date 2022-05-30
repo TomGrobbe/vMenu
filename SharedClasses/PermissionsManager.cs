@@ -544,6 +544,7 @@ namespace vMenuShared
 
             // Also tell the client to do the addons setup.
             player.TriggerEvent("vMenu:SetAddons");
+            player.TriggerEvent("vMenu:SetExtras");
             player.TriggerEvent("vMenu:UpdateTeleportLocations", Newtonsoft.Json.JsonConvert.SerializeObject(ConfigManager.GetTeleportLocationsData()));
         }
 #endif
