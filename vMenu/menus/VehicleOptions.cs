@@ -10,6 +10,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -964,6 +965,7 @@ namespace vMenuClient
             List<string> metals = new List<string>();
             List<string> util = new List<string>();
             List<string> worn = new List<string>();
+            List<string> chameleon = new List<string>();
             List<string> wheelColors = new List<string>() { "Default Alloy" };
 
             // Just quick and dirty solution to put this in a new enclosed section so that we can still use 'i' as a counter in the other code parts.
@@ -1001,6 +1003,15 @@ namespace vMenuClient
                 {
                     worn.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.WornColors.Count})");
                     i++;
+                }
+                
+                if (IsServerUsingChameleonColours()) {
+                    i = 0;
+                    foreach (var vc in VehicleData.ChameleonColors)
+                    {
+                        chameleon.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.ChameleonColors.Count})");
+                        i++;
+                    }
                 }
 
                 wheelColors.AddRange(classic);
@@ -1095,6 +1106,16 @@ namespace vMenuClient
                                 primaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
+                        
+                        if (IsServerUsingChameleonColours()) {
+                            if (itemIndex == 6) {
+                                primaryColor = VehicleData.ChameleonColors[newIndex].id;
+                                secondaryColor = VehicleData.ChameleonColors[newIndex].id;
+                                
+                                SetVehicleModKit(veh.Handle, 0);
+                            }
+                        }
+                        
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == secondaryColorsMenu)
@@ -1178,6 +1199,11 @@ namespace vMenuClient
                     primaryColorsMenu.AddMenuItem(metalList);
                     primaryColorsMenu.AddMenuItem(utilList);
                     primaryColorsMenu.AddMenuItem(wornList);
+                    if (IsServerUsingChameleonColours()) {
+                        var chameleonList = new MenuListItem("Chameleon", chameleon, 0);
+
+                        primaryColorsMenu.AddMenuItem(chameleonList);
+                    }
 
                     primaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
                 }
