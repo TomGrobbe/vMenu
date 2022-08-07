@@ -144,7 +144,7 @@ namespace vMenuShared
         /// <returns></returns>
         public static bool IsServerUsingChameleonColours()
         {
-            return GetResourceMetadata("vMenu", "server_using_chameleon_colours", 0).ToLower() == "true";
+            return GetConvar("server_using_chameleon_colours", "false");
         }
 
         #region Get saved locations from the locations.json
