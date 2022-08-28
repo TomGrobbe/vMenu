@@ -154,7 +154,8 @@ namespace vMenuClient
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
-
+            
+            MenuItem destroyEngine = new MenuItem("Destroy Engine", "Destroys your vehicle engine.");
             MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!")
             {
                 LeftIcon = MenuItem.Icon.WARNING,
@@ -368,6 +369,10 @@ namespace vMenuClient
                 menu.AddMenuItem(vehicleTiresList);
                 //menu.AddMenuItem(destroyTireList);
             }
+            if (IsAllowed(Permission.VODestroyEngine)) // TOGGLE ENGINE ON/OFF
+            {
+                menu.AddMenuItem(destroyEngine);
+            }
             if (IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
                 menu.AddMenuItem(vehicleFreeze);
@@ -527,6 +532,10 @@ namespace vMenuClient
                                 // Set the vehicle invisible or invincivble.
                                 vehicle.IsVisible = !vehicle.IsVisible;
                             }
+                        }
+                        else if (item == destroyEngine) 
+                        {
+                            SetVehicleEngineHealth(vehicle.Handle, -4000);
                         }
                     }
 
@@ -1812,6 +1821,7 @@ namespace vMenuClient
                 MenuCheckboxItem xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
                 MenuCheckboxItem turbo = new MenuCheckboxItem("Turbo", "Enable or disable the ~y~turbo~s~ for this vehicle.", IsToggleModOn(veh.Handle, 18));
                 MenuCheckboxItem bulletProofTires = new MenuCheckboxItem("Bullet Proof Tires", "Enable or disable ~y~bullet proof tires~s~ for this vehicle.", !GetVehicleTyresCanBurst(veh.Handle));
+                MenuCheckboxItem lowGripTires = new MenuCheckboxItem("Low Grip Tires", "Enable or disable ~y~low grip tires~s~ for this vehicle.", GetDriftTyresEnabled(veh.Handle));
 
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
@@ -1825,6 +1835,7 @@ namespace vMenuClient
                 VehicleModMenu.AddMenuItem(headlightColor);
                 VehicleModMenu.AddMenuItem(turbo);
                 VehicleModMenu.AddMenuItem(bulletProofTires);
+                VehicleModMenu.AddMenuItem(lowGripTires);
                 // Create a list of tire smoke options.
                 List<string> tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                 Dictionary<string, int[]> tireSmokeColors = new Dictionary<string, int[]>()
@@ -1918,6 +1929,10 @@ namespace vMenuClient
                     else if (item2 == bulletProofTires)
                     {
                         SetVehicleTyresCanBurst(veh.Handle, !_checked);
+                    }
+                    else if (item2 == lowGripTires) 
+                    {
+                        SetDriftTyresEnabled(veh.Handle, _checked);
                     }
                     // Custom Wheels
                     else if (item2 == toggleCustomWheels)
