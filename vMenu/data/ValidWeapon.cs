@@ -806,7 +806,6 @@ namespace vMenuClient
             ["COMPONENT_VINTAGEPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             // CHRISTMAS 2018 DLC (v 1604)
             ["COMPONENT_RAYPISTOL_VARMOD_XMAS18"] = GetLabelText("WCT_VAR_RAY18")
-            ["COMPONENT_RAYPISTOL_VARMOD_XMAS18"] = GetLabelText("WCT_VAR_RAY18")
         };
         #endregion
 
