@@ -475,7 +475,7 @@ namespace vMenuClient
                 "VIRGO3",
                 "VOODOO",
                 "VOODOO2",
-                "WEEVIL2"
+                "WEEVIL2",
                 "YOSEMITE",
                 "YOSEMITE2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
             };
@@ -992,7 +992,7 @@ namespace vMenuClient
                 "CARGOBOB2",
                 "CARGOBOB3",
                 "CARGOBOB4",
-                "CONADA"
+                "CONADA",
                 "FROGGER",
                 "FROGGER2",
                 "HAVOK",
