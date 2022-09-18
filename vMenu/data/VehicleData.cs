@@ -272,6 +272,7 @@ namespace vMenuClient
                 "BLISTA",
                 "BRIOSO",
                 "BRIOSO2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "BRIOSO3",
                 "CLUB", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "DILETTANTE",
                 "DILETTANTE2",
@@ -293,10 +294,12 @@ namespace vMenuClient
                 "ASEA",
                 "ASEA2",
                 "ASTEROPE",
+                "CINQUEMILA",
                 "COG55",
                 "COG552",
                 "COGNOSCENTI",
                 "COGNOSCENTI2",
+                "DEITY",
                 "EMPEROR",
                 "EMPEROR2",
                 "EMPEROR3",
@@ -310,6 +313,7 @@ namespace vMenuClient
                 "PRIMO",
                 "PRIMO2",
                 "REGINA",
+                "RHINEHART",
                 "ROMERO",
                 "SCHAFTER2",
                 "SCHAFTER5",
@@ -330,12 +334,14 @@ namespace vMenuClient
             #region SUVs
             public static List<string> SUVs { get; } = new List<string>()
             {
+                "ASTRON",
                 "BALLER",
                 "BALLER2",
                 "BALLER3",
                 "BALLER4",
                 "BALLER5",
                 "BALLER6",
+                "BALLER7",
                 "BJXL",
                 "CAVALCADE",
                 "CAVALCADE2",
@@ -344,9 +350,12 @@ namespace vMenuClient
                 "DUBSTA2",
                 "FQ2",
                 "GRANGER",
+                "GRANGER2",
                 "GRESLEY",
                 "HABANERO",
                 "HUNTLEY",
+                "IWAGEN",
+                "JUBILEE",
                 "LANDSTALKER",
                 "LANDSTALKER2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "MESA",
@@ -375,8 +384,10 @@ namespace vMenuClient
                 "FELON",
                 "FELON2",
                 "JACKAL",
+                "KANJOSJ",
                 "ORACLE",
                 "ORACLE2",
+                "POSTLUDE",
                 "PREVION", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "SENTINEL",
                 "SENTINEL2",
@@ -392,6 +403,7 @@ namespace vMenuClient
                 "BLADE",
                 "BUCCANEER",
                 "BUCCANEER2",
+                "BUFFALO4",
                 "CHINO",
                 "CHINO2",
                 "CLIQUE",
@@ -417,6 +429,7 @@ namespace vMenuClient
                 "GAUNTLET3", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "GAUNTLET4", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "GAUNTLET5", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "GREENWOOD",
                 "HERMES",
                 "HOTKNIFE",
                 "HUSTLER",
@@ -440,6 +453,7 @@ namespace vMenuClient
                 "RUINER",
                 "RUINER2",
                 "RUINER3",
+                "RUINER4",
                 "SABREGT",
                 "SABREGT2",
                 "SLAMVAN",
@@ -455,11 +469,13 @@ namespace vMenuClient
                 "TULIP",
                 "VAMOS",
                 "VIGERO",
+                "VIGERO2",
                 "VIRGO",
                 "VIRGO2",
                 "VIRGO3",
                 "VOODOO",
                 "VOODOO2",
+                "WEEVIL2"
                 "YOSEMITE",
                 "YOSEMITE2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
             };
@@ -518,97 +534,104 @@ namespace vMenuClient
             #region Sports
             public static List<string> Sports { get; } = new List<string>()
             {
-                "ALPHA",
-                "BANSHEE",
-                "BESTIAGTS",
-                "BLISTA2",
-                "BLISTA3",
-                "BUFFALO",
-                "BUFFALO2",
-                "BUFFALO3",
-                "CALICO", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "CARBONIZZARE",
-                "COMET2",
-                "COMET3",
-                "COMET4",
-                "COMET5",
-                "COMET6", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "COQUETTE",
-                "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
-                "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "ELEGY",
-                "ELEGY2",
-                "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "FELTZER2",
-                "FLASHGT",
-                "FUROREGT",
-                "FUSILADE",
-                "FUTO",
-                "FUTO2", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "GB200",
-                "GROWLER", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "HOTRING",
-                "IMORGON", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
-                "ISSI7", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "ITALIGTO",
-                "ITALIRSX", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
-                "JESTER",
-                "JESTER2",
-                "JESTER4", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "JUGULAR", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "KHAMELION",
-                "KOMODA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
-                "KURUMA",
-                "KURUMA2",
-                "LOCUST", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "LYNX",
-                "MASSACRO",
-                "MASSACRO2",
-                "NEO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "NEON",
-                "NINEF",
-                "NINEF2",
-                "OMNIS",
-                "PARAGON", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "PARAGON2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "PARIAH",
-                "PENUMBRA",
-                "PENUMBRA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
-                "RAIDEN",
-                "RAPIDGT",
-                "RAPIDGT2",
-                "RAPTOR",
-                "REMUS", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "REVOLTER",
-                "RT3000", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "RUSTON",
-                "SCHAFTER2",
-                "SCHAFTER3",
-                "SCHAFTER4",
-                "SCHAFTER5",
-                "SCHLAGEN",
-                "SCHWARZER",
-                "SENTINEL3",
-                "SEVEN70",
-                "SPECTER",
-                "SPECTER2",
-                "SUGOI", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
-                "SULTAN",
-                "SULTAN2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
-                "SULTAN3", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "SURANO",
-                "TAMPA2",
-                "TROPOS",
-                "VERLIERER2",
-                "VECTRE", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "VETO", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
-                "VETO2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
-                "VSTR", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
-                "ZR350", // LS TUNERS (MPTUNER) DLC - Requires b2372
-                "ZR380",
-                "ZR3802",
-                "ZR3803",
+               "ALPHA",
+               "BANSHEE",
+               "BESTIAGTS",
+               "BLISTA2",
+               "BLISTA3",
+               "BUFFALO",
+               "BUFFALO2",
+               "BUFFALO3",
+               "CALICO", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "CARBONIZZARE",
+               "COMET2",
+               "COMET3",
+               "COMET4",
+               "COMET5",
+               "COMET6", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "COMET7",
+               "COQUETTE",
+               "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+               "CORSITA",
+               "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "ELEGY",
+               "ELEGY2",
+               "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "FELTZER2",
+               "FLASHGT",
+               "FUROREGT",
+               "FUSILADE",
+               "FUTO",
+               "FUTO2", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "GB200",
+               "GROWLER", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "HOTRING",
+               "IMORGON", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+               "ISSI7", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "ITALIGTO",
+               "ITALIRSX", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+               "JESTER",
+               "JESTER2",
+               "JESTER4", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "JUGULAR", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "KHAMELION",
+               "KOMODA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+               "KURUMA",
+               "KURUMA2",
+               "LOCUST", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "LYNX",
+               "MASSACRO",
+               "MASSACRO2",
+               "NEO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "NEON",
+               "NINEF",
+               "NINEF2",
+               "OMNIS",
+               "OMNISEGT",
+               "PARAGON", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "PARAGON2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+               "PARIAH",
+               "PENUMBRA",
+               "PENUMBRA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+               "RAIDEN",
+               "RAPIDGT",
+               "RAPIDGT2",
+               "RAPTOR",
+               "REMUS", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "REVOLTER",
+               "RT3000", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "RUSTON",
+               "SCHAFTER2",
+               "SCHAFTER3",
+               "SCHAFTER4",
+               "SCHAFTER5",
+               "SCHLAGEN",
+               "SCHWARZER",
+               "SENTINEL3",
+               "SENTINEL4",
+               "SEVEN70",
+               "SM722",
+               "SPECTER",
+               "SPECTER2",
+               "SUGOI", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+               "SULTAN",
+               "SULTAN2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+               "SULTAN3", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "SURANO",
+               "TAMPA2",
+               "TENF",
+               "TENF2",
+               "TROPOS",
+               "VECTRE", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "VERLIERER2",
+               "VETO", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+               "VETO2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+               "VSTR", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+               "ZR350", // LS TUNERS (MPTUNER) DLC - Requires b2372
+               "ZR380",
+               "ZR3802",
+               "ZR3803",
             };
             #endregion
             #region Super
@@ -618,20 +641,23 @@ namespace vMenuClient
                 "AUTARCH",
                 "BANSHEE2",
                 "BULLET",
+                "CHAMPION",
                 "CHEETAH",
                 "CYCLONE",
                 "DEVESTE",
                 "EMERUS", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
-                "ENTITYXF",
                 "ENTITY2",
+                "ENTITYXF",
                 "FMJ",
                 "FURIA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "GP1",
+                "IGNUS",
                 "INFERNUS",
                 "ITALIGTB",
                 "ITALIGTB2",
                 "KRIEGER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "LE7B",
+                "LM87",
                 "NERO",
                 "NERO2",
                 "OSIRIS",
@@ -650,6 +676,7 @@ namespace vMenuClient
                 "TEZERACT",
                 "THRAX", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "TIGON", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "TORERO2",
                 "TURISMOR",
                 "TYRANT",
                 "TYRUS",
@@ -660,6 +687,7 @@ namespace vMenuClient
                 "VOLTIC",
                 "VOLTIC2",
                 "XA21",
+                "ZENO",
                 "ZENTORNO",
                 "ZORRUSSO", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
             };
@@ -706,11 +734,13 @@ namespace vMenuClient
                 "OPPRESSOR2",
                 "PCJ",
                 "RATBIKE",
+                "REEVER",
                 "RROCKET", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "RUFFIAN",
                 "SANCHEZ",
                 "SANCHEZ2",
                 "SANCTUS",
+                "SHINOBI",
                 "SHOTARO",
                 "SOVEREIGN",
                 "STRYDER", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
@@ -744,6 +774,7 @@ namespace vMenuClient
                 "CARACARA",
                 "CARACARA2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "DLOADER",
+                "DRAUGUR",
                 "DUBSTA3",
                 "DUNE",
                 "DUNE2",
@@ -767,6 +798,7 @@ namespace vMenuClient
                 "MONSTER5",
                 "NIGHTSHARK",
                 "OUTLAW", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
+                "PATRIOT3",
                 "RANCHERXL",
                 "RANCHERXL2",
                 "RCBANDITO",
@@ -902,6 +934,7 @@ namespace vMenuClient
                 "YOUGA",
                 "YOUGA2",
                 "YOUGA3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "YOUGA4",
             };
             #endregion
             #region Cycles
@@ -959,6 +992,7 @@ namespace vMenuClient
                 "CARGOBOB2",
                 "CARGOBOB3",
                 "CARGOBOB4",
+                "CONADA"
                 "FROGGER",
                 "FROGGER2",
                 "HAVOK",
@@ -1102,6 +1136,7 @@ namespace vMenuClient
                 "MULE2",
                 "MULE3",
                 "MULE4",
+                "MULE5",
                 "PACKER",
                 "PHANTOM",
                 "PHANTOM2",
