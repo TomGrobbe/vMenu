@@ -30,7 +30,9 @@ namespace vMenuClient
         public bool PlayerIsIgnored { get; private set; } = UserDefaults.EveryoneIgnorePlayer;
         public bool PlayerStayInVehicle { get; private set; } = UserDefaults.PlayerStayInVehicle;
         public bool PlayerFrozen { get; private set; } = false;
-        private Menu CustomDrivingStyleMenu = new Menu("Driving Style", "Custom Driving Style");
+        private Menu CustomDrivingStyleMenu = Lm.GetMenu(new Menu("Driving Style", "Custom Driving Style"));
+
+        private static readonly LanguageManager Lm = new LanguageManager();
 
         /// <summary>
         /// Creates the menu.
@@ -67,7 +69,7 @@ namespace vMenuClient
             MenuItem wetPlayerBtn = new MenuItem("Wet Player Clothes", "Make your player clothes wet.");
             MenuItem suicidePlayerBtn = new MenuItem("~r~Commit Suicide", "Kill yourself by taking the pill. Or by using a pistol if you have one.");
 
-            Menu vehicleAutoPilot = new Menu("Auto Pilot", "Vehicle auto pilot options.");
+            Menu vehicleAutoPilot = Lm.GetMenu(new Menu("Auto Pilot", "Vehicle auto pilot options."));
 
             MenuController.AddSubmenu(menu, vehicleAutoPilot);
 

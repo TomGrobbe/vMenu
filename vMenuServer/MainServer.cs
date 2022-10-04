@@ -982,5 +982,40 @@ namespace vMenuServer
             }
         }
         #endregion
+
+        #region Language template dumper
+
+        [EventHandler("vMenu:DumpLanguageTemplate:Server")]
+        private void DumpLangaugeTemplate(string data)
+        {
+            try
+            {
+                string newDataString = "{\n";
+                Dictionary<string, string> languageTemplate = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
+                foreach (var item in languageTemplate)
+                {
+                    newDataString += $"    \"{item.Key}\": \"{item.Key}\",\n";
+                }
+                if (newDataString.EndsWith(",\n"))
+                    newDataString = newDataString.Substring(0, newDataString.Length - 2);
+                newDataString += "\n}";
+
+                bool successful = SaveResourceFile(GetCurrentResourceName(), "config/languages/TEMPLATE.json", newDataString, -1);
+                if (successful)
+                {
+                    Debug.WriteLine($"\n\n^2[vMenu] [SUCCESS] ^7Template created successfully!\n\n");
+                }
+                else
+                {
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Could not save the language template!\n\n");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your TEMPLATE.json file could not be created or accessed! Error details: {e.Message}\n\n");
+            }
+        }
+
+        #endregion
     }
 }

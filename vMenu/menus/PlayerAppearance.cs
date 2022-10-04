@@ -34,6 +34,8 @@ namespace vMenuClient
         private Dictionary<MenuListItem, int> drawablesMenuListItems = new Dictionary<MenuListItem, int>();
         private Dictionary<MenuListItem, int> propsMenuListItems = new Dictionary<MenuListItem, int>();
 
+        private static readonly LanguageManager Lm = new LanguageManager();
+
         #region create the menu
         /// <summary>
         /// Creates the menu(s).
@@ -43,8 +45,8 @@ namespace vMenuClient
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Player Appearance");
             savedPedsMenu = new Menu(Game.Player.Name, "Saved Peds");
-            pedCustomizationMenu = new Menu(Game.Player.Name, "Customize Saved Ped");
-            spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
+            pedCustomizationMenu = Lm.GetMenu(new Menu(Game.Player.Name, "Customize Saved Ped"));
+            spawnPedsMenu = Lm.GetMenu(new Menu(Game.Player.Name, "Spawn Ped"));
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
 
 
@@ -103,7 +105,7 @@ namespace vMenuClient
             MenuController.BindMenuItem(menu, savedPedsMenu, savedPedsBtn);
             MenuController.BindMenuItem(menu, spawnPedsMenu, spawnPedsBtn);
 
-            Menu selectedSavedPedMenu = new Menu("Saved Ped", "renameme");
+            Menu selectedSavedPedMenu = Lm.GetMenu(new Menu("Saved Ped", "renameme"));
             MenuController.AddSubmenu(savedPedsMenu, selectedSavedPedMenu);
             MenuItem spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
             MenuItem cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");

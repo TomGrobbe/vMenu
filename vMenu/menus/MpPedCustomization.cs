@@ -18,15 +18,15 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        public Menu createCharacterMenu = new Menu("Create Character", "Create A New Character");
+        public Menu createCharacterMenu = Lm.GetMenu(new Menu("Create Character", "Create A New Character"));
         public Menu savedCharactersMenu = new Menu("vMenu", "Manage Saved Characters");
-        public Menu inheritanceMenu = new Menu("vMenu", "Character Inheritance Options");
-        public Menu appearanceMenu = new Menu("vMenu", "Character Appearance Options");
-        public Menu faceShapeMenu = new Menu("vMenu", "Character Face Shape Options");
-        public Menu tattoosMenu = new Menu("vMenu", "Character Tattoo Options");
-        public Menu clothesMenu = new Menu("vMenu", "Character Clothing Options");
-        public Menu propsMenu = new Menu("vMenu", "Character Props Options");
-        private Menu manageSavedCharacterMenu = new Menu("vMenu", "Manage MP Character");
+        public Menu inheritanceMenu = Lm.GetMenu(new Menu("vMenu", "Character Inheritance Options"));
+        public Menu appearanceMenu = Lm.GetMenu(new Menu("vMenu", "Character Appearance Options"));
+        public Menu faceShapeMenu = Lm.GetMenu(new Menu("vMenu", "Character Face Shape Options"));
+        public Menu tattoosMenu = Lm.GetMenu(new Menu("vMenu", "Character Tattoo Options"));
+        public Menu clothesMenu = Lm.GetMenu(new Menu("vMenu", "Character Clothing Options"));
+        public Menu propsMenu = Lm.GetMenu(new Menu("vMenu", "Character Props Options"));
+        private Menu manageSavedCharacterMenu = Lm.GetMenu(new Menu("vMenu", "Manage MP Character"));
 
         // Need to be able to disable/enable these buttons from another class.
         internal MenuItem createMaleBtn = new MenuItem("Create Male Character", "Create a new male character.") { Label = "→→→" };
@@ -41,7 +41,7 @@ namespace vMenuClient
 
         private MultiplayerPedData currentCharacter = new MultiplayerPedData();
 
-
+        private static readonly LanguageManager Lm = new LanguageManager();
 
         /// <summary>
         /// Makes or updates the character creator menu. Also has an option to load data from the <see cref="currentCharacter"/> data, to allow for editing an existing ped.

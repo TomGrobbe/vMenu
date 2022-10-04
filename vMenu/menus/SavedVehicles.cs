@@ -17,8 +17,8 @@ namespace vMenuClient
     {
         // Variables
         private Menu menu;
-        private Menu selectedVehicleMenu = new Menu("Manage Vehicle", "Manage this saved vehicle.");
-        private Menu unavailableVehiclesMenu = new Menu("Missing Vehicles", "Unavailable Saved Vehicles");
+        private Menu selectedVehicleMenu = Lm.GetMenu(new Menu("Manage Vehicle", "Manage this saved vehicle."));
+        private Menu unavailableVehiclesMenu = Lm.GetMenu(new Menu("Missing Vehicles", "Unavailable Saved Vehicles"));
         private Dictionary<string, VehicleInfo> savedVehicles = new Dictionary<string, VehicleInfo>();
         private List<Menu> subMenus = new List<Menu>();
         private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
@@ -26,6 +26,7 @@ namespace vMenuClient
         private int deleteButtonPressedCount = 0;
         private int replaceButtonPressedCount = 0;
 
+        private static readonly LanguageManager Lm = new LanguageManager();
 
         /// <summary>
         /// Creates the menu.

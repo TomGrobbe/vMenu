@@ -54,6 +54,8 @@ namespace vMenuClient
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
 
         private Dictionary<MenuItem, int> vehicleExtras = new Dictionary<MenuItem, int>();
+
+        private static readonly LanguageManager Lm = new LanguageManager();
         #endregion
 
         #region CreateMenu()
@@ -67,7 +69,7 @@ namespace vMenuClient
 
             #region menu items variables
             // vehicle god mode menu
-            Menu vehGodMenu = new Menu("Vehicle Godmode", "Vehicle Godmode Options");
+            Menu vehGodMenu = Lm.GetMenu(new Menu("Vehicle Godmode", "Vehicle Godmode Options"));
             MenuItem vehGodMenuBtn = new MenuItem("God Mode Options", "Enable or disable specific damage types.") { Label = "→→→" };
             MenuController.AddSubmenu(menu, vehGodMenu);
 
@@ -150,7 +152,7 @@ namespace vMenuClient
                 radioIndex = index;
             }
 
-            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a default radio station to be set when spawning new car");
+            MenuListItem radioStations = new MenuListItem("Default Radio Station", stationNames, radioIndex, "Select a default radio station to be set when spawning new car");
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -184,7 +186,7 @@ namespace vMenuClient
 
             #region Submenus
             // Submenu's
-            VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
+            VehicleModMenu = Lm.GetMenu(new Menu("Mod Menu", "Vehicle Mods"));
             VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
             VehicleModMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_PRESSED, new Action<Menu, Control>((m, c) =>
             {
@@ -205,13 +207,13 @@ namespace vMenuClient
                     }
                 }
             }), false));
-            VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
-            VehicleWindowsMenu = new Menu("Vehicle Windows", "Vehicle Windows Management");
-            VehicleComponentsMenu = new Menu("Vehicle Extras", "Vehicle Extras/Components");
+            VehicleDoorsMenu = Lm.GetMenu(new Menu("Vehicle Doors", "Vehicle Doors Management"));
+            VehicleWindowsMenu = Lm.GetMenu(new Menu("Vehicle Windows", "Vehicle Windows Management"));
+            VehicleComponentsMenu = Lm.GetMenu(new Menu("Vehicle Extras", "Vehicle Extras/Components"));
             VehicleLiveriesMenu = new Menu("Vehicle Liveries", "Vehicle Liveries");
-            VehicleColorsMenu = new Menu("Vehicle Colors", "Vehicle Colors");
-            DeleteConfirmMenu = new Menu("Confirm Action", "Delete Vehicle, Are You Sure?");
-            VehicleUnderglowMenu = new Menu("Vehicle Neon Kits", "Vehicle Neon Underglow Options");
+            VehicleColorsMenu = Lm.GetMenu(new Menu("Vehicle Colors", "Vehicle Colors"));
+            DeleteConfirmMenu = Lm.GetMenu(new Menu("Confirm Action", "Delete Vehicle, Are You Sure?"));
+            VehicleUnderglowMenu = Lm.GetMenu(new Menu("Vehicle Neon Kits", "Vehicle Neon Underglow Options"));
 
             MenuController.AddSubmenu(menu, VehicleModMenu);
             MenuController.AddSubmenu(menu, VehicleDoorsMenu);
@@ -931,7 +933,7 @@ namespace vMenuClient
 
             #region Vehicle Colors Submenu Stuff
             // primary menu
-            Menu primaryColorsMenu = new Menu("Vehicle Colors", "Primary Colors");
+            Menu primaryColorsMenu = Lm.GetMenu(new Menu("Vehicle Colors", "Primary Colors"));
             MenuController.AddSubmenu(VehicleColorsMenu, primaryColorsMenu);
 
             MenuItem primaryColorsBtn = new MenuItem("Primary Color") { Label = "→→→" };
@@ -939,7 +941,7 @@ namespace vMenuClient
             MenuController.BindMenuItem(VehicleColorsMenu, primaryColorsMenu, primaryColorsBtn);
 
             // secondary menu
-            Menu secondaryColorsMenu = new Menu("Vehicle Colors", "Secondary Colors");
+            Menu secondaryColorsMenu = Lm.GetMenu(new Menu("Vehicle Colors", "Secondary Colors"));
             MenuController.AddSubmenu(VehicleColorsMenu, secondaryColorsMenu);
 
             MenuItem secondaryColorsBtn = new MenuItem("Secondary Color") { Label = "→→→" };

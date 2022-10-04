@@ -18,7 +18,7 @@ namespace vMenuClient
         // Variables
         private Menu menu = null;
         private Menu SavedLoadoutsMenu = new Menu("Saved Loadouts", "saved weapon loadouts list");
-        private Menu ManageLoadoutMenu = new Menu("Mange Loadout", "Manage saved weapon loadout");
+        private Menu ManageLoadoutMenu = Lm.GetMenu(new Menu("Manage Loadout", "Manage saved weapon loadout"));
         public bool WeaponLoadoutsSetLoadoutOnRespawn { get; private set; } = UserDefaults.WeaponLoadoutsSetLoadoutOnRespawn;
 
         private Dictionary<string, List<ValidWeapon>> SavedWeapons = new Dictionary<string, List<ValidWeapon>>();
@@ -72,6 +72,8 @@ namespace vMenuClient
 
             return SavedWeapons;
         }
+
+        private static readonly LanguageManager Lm = new LanguageManager();
 
         /// <summary>
         /// Creates the menu if it doesn't exist yet and sets the event handlers.
