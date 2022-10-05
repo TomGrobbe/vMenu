@@ -34,7 +34,7 @@ namespace vMenuClient
         private static readonly List<Menu> ExtractedListOfMenus = new List<Menu>();
 
         /// <summary>
-        /// To indicate whether the original language has 
+        /// To indicate whether the original language has been stored yet.
         /// </summary>
         private static bool IsOriginalLanguageStored = false;
 
