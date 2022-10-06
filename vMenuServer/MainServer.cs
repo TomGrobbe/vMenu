@@ -990,17 +990,7 @@ namespace vMenuServer
         {
             try
             {
-                string newDataString = "{\n";
-                Dictionary<string, string> languageTemplate = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
-                foreach (var item in languageTemplate)
-                {
-                    newDataString += $"    \"{item.Key}\": \"{item.Key}\",\n";
-                }
-                if (newDataString.EndsWith(",\n"))
-                    newDataString = newDataString.Substring(0, newDataString.Length - 2);
-                newDataString += "\n}";
-
-                bool successful = SaveResourceFile(GetCurrentResourceName(), "config/languages/TEMPLATE.json", newDataString, -1);
+                bool successful = SaveResourceFile(GetCurrentResourceName(), "config/languages/TEMPLATE.json", data, -1);
                 if (successful)
                 {
                     Debug.WriteLine($"\n\n^2[vMenu] [SUCCESS] ^7Template created successfully!\n\n");

@@ -63,7 +63,7 @@ namespace vMenuClient
             OriginalLanguage.Remove("vMenu");
 
             // Send to the server
-            TriggerServerEvent("vMenu:DumpLanguageTemplate:Server", Newtonsoft.Json.JsonConvert.SerializeObject(OriginalLanguage));
+            TriggerServerEvent("vMenu:DumpLanguageTemplate:Server", Newtonsoft.Json.JsonConvert.SerializeObject(OriginalLanguage, Newtonsoft.Json.Formatting.Indented));
         }
 
         #endregion
