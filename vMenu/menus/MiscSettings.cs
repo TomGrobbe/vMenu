@@ -126,7 +126,7 @@ namespace vMenuClient
             {
                 languageList.Add(LanguageManager.Languages.Keys.ToArray()[i]);
             }
-            MenuListItem changeLanguage = new MenuListItem("Change Language", languageList, languageList.IndexOf(CurrentLanguage) /*Soon to be from kvp*/, "Choose your preferred language.");
+            MenuListItem changeLanguage = new MenuListItem("Change Language", languageList, languageList.IndexOf(CurrentLanguage), "Choose your preferred language.");
             MenuItem saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.")
             {
                 RightIcon = MenuItem.Icon.TICK
