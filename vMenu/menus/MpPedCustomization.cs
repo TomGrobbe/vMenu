@@ -2129,6 +2129,10 @@ namespace vMenuClient
             MenuItem clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
             MenuItem setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
             MenuItem renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
+            MenuItem saveCurrentPedAsCharacter = new MenuItem("Update Character Clothing", "This saves your current clothing options to this character. ~r~This will overwrite the save file entry for this character.~w~.")
+            {
+                LeftIcon = MenuItem.Icon.WARNING
+            };
             MenuItem delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!")
             {
                 LeftIcon = MenuItem.Icon.WARNING
@@ -2137,6 +2141,7 @@ namespace vMenuClient
             manageSavedCharacterMenu.AddMenuItem(editPedBtn);
             manageSavedCharacterMenu.AddMenuItem(clonePed);
             manageSavedCharacterMenu.AddMenuItem(setAsDefaultPed);
+            manageSavedCharacterMenu.AddMenuItem(saveCurrentPedAsCharacter);
             manageSavedCharacterMenu.AddMenuItem(renameCharacter);
             manageSavedCharacterMenu.AddMenuItem(delPed);
 
@@ -2222,6 +2227,30 @@ namespace vMenuClient
                         }
                     }
                 }
+                else if (item == saveCurrentPedAsCharacter)
+                {
+                    if (saveCurrentPedAsCharacter.Label == "Are you sure?")
+                    {
+                        saveCurrentPedAsCharacter.Label = "";
+                        var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
+
+                        tmpCharacter = LoadCurrentPedData(tmpCharacter);
+
+                        if (StorageManager.SaveJsonData(tmpCharacter.SaveName, JsonConvert.SerializeObject(tmpCharacter), true))
+                        {
+                            Notify.Success($"This character's clothing has been updated!");
+                            UpdateSavedPedsMenu();
+                        }
+                        else
+                        {
+                            Notify.Error("Unable to update this character's clothing. The reason is unknown.");
+                        }
+                    }
+                    else
+                    {
+                        saveCurrentPedAsCharacter.Label = "Are you sure?";
+                    }
+                }
                 else if (item == delPed)
                 {
                     if (delPed.Label == "Are you sure?")
@@ -2266,6 +2295,27 @@ namespace vMenuClient
                 manageSavedCharacterMenu.CounterPreText = $"{(item.Label.Substring(0, 3) == "(M)" ? "(Male) " : "(Female) ")}";
                 manageSavedCharacterMenu.RefreshIndex();
             };
+        }
+
+        private MultiplayerPedData LoadCurrentPedData(MultiplayerPedData character)
+        {
+            int handle = Game.PlayerPed.Handle;
+            // Drawables
+            for (int i = 0; i < 12; i++)
+            {
+                int drawable = GetPedDrawableVariation(handle, i);
+                int texture = GetPedTextureVariation(handle, i);
+                character.DrawableVariations.clothes[i] = new KeyValuePair<int, int>(drawable, texture);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                int prop = GetPedPropIndex(handle, i);
+                int texture = GetPedPropTextureIndex(handle, i);
+                character.PropVariations.props[i] = new KeyValuePair<int, int>(prop, texture);
+            }
+
+            return character;
         }
 
         /// <summary>
