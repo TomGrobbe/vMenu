@@ -1293,10 +1293,10 @@ namespace vMenuClient
                         {
                             if (!currentlyTalking)
                             {
-                                DrawTextOnScreen("~s~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
+                                DrawTextOnScreen("~t~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
                                 currentlyTalking = true;
                             }
-                            DrawTextOnScreen($"~b~{p.Name}", 0.5f, 0.00f + (i * 0.03f), 0.5f, Alignment.Center, 6);
+                            DrawTextOnScreen($"~w~{p.Name}", 0.5f, 0.00f + (i * 0.01f), 0.5f, Alignment.Center, 6);
                             i++;
                         }
                     }
