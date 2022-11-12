@@ -45,6 +45,7 @@ namespace vMenuClient
         public static MiscSettings MiscSettingsMenu { get; private set; }
         public static VoiceChat VoiceChatSettingsMenu { get; private set; }
         public static About AboutMenu { get; private set; }
+        public static ElsMenu ElsMenu { get; private set; }
         public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
         public static IPlayerList PlayersList;
 
@@ -797,6 +798,17 @@ namespace vMenuClient
                 Label = "→→→"
             };
             AddMenu(Menu, sub, btn);
+
+            // Add ELS Menu
+            {
+                ElsMenu = new ElsMenu();
+                Menu menu = ElsMenu.GetMenu();
+                MenuItem button = new MenuItem("Server Options", "Options for this amazing server.")
+                {
+                    Label = "→→→"
+                };
+                AddMenu(Menu, menu, button);
+            }
 
             // Refresh everything.
             MenuController.Menus.ForEach((m) => m.RefreshIndex());
