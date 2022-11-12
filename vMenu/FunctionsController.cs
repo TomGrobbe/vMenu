@@ -1296,7 +1296,7 @@ namespace vMenuClient
                                 DrawTextOnScreen("~t~Currently Talking", 0.5f, 0.00f, 0.5f, Alignment.Center, 6);
                                 currentlyTalking = true;
                             }
-                            DrawTextOnScreen($"~w~{p.Name}", 0.5f, 0.00f + (i * 0.01f), 0.5f, Alignment.Center, 6);
+                            DrawTextOnScreen($"~w~{p.Name}", 0.5f, 0.00f + (i * 0.02f), 0.5f, Alignment.Center, 6);
                             i++;
                         }
                     }
