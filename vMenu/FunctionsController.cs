@@ -686,7 +686,7 @@ namespace vMenuClient
                 string timestring = $"{(hour < 10 ? "0" + hour.ToString() : hour.ToString())}:{(minute < 10 ? "0" + minute.ToString() : minute.ToString())}";
                 SetScriptGfxAlign(0, 84);
                 SetScriptGfxAlignParams(0f, 0f, 0f, 0f);
-                DrawTextOnScreen($"~c~{timestring}", 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.4f, 1), 0.40f, Alignment.Center);
+                DrawTextOnScreen($"~t~{timestring}", 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.4f, 1), 0.40f, Alignment.Center);
                 ResetScriptGfxAlign();
             }
 
@@ -756,7 +756,7 @@ namespace vMenuClient
             // So we set the prefix to "Near " (<streetname>).
             if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
             {
-                prefix = "~m~Near ~s~";
+                prefix = "~t~Near ~s~";
             }
 
             string headingCharacter;

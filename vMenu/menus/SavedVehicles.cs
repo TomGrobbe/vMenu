@@ -91,10 +91,12 @@ namespace vMenuClient
             MenuController.AddMenu(selectedVehicleMenu);
             MenuItem spawnVehicle = new MenuItem("Spawn Vehicle", "Spawn this saved vehicle.");
             MenuItem renameVehicle = new MenuItem("Rename Vehicle", "Rename your saved vehicle.");
+            MenuItem replateVehicle = new MenuItem("Edit Vehicle Plate", "Edit your saved vehicle's plate.");
             MenuItem replaceVehicle = new MenuItem("~r~Replace Vehicle", "Your saved vehicle will be replaced with the vehicle you are currently sitting in. ~r~Warning: this can NOT be undone!");
             MenuItem deleteVehicle = new MenuItem("~r~Delete Vehicle", "~r~This will delete your saved vehicle. Warning: this can NOT be undone!");
             selectedVehicleMenu.AddMenuItem(spawnVehicle);
             selectedVehicleMenu.AddMenuItem(renameVehicle);
+            selectedVehicleMenu.AddMenuItem(replateVehicle);
             selectedVehicleMenu.AddMenuItem(replaceVehicle);
             selectedVehicleMenu.AddMenuItem(deleteVehicle);
 
@@ -150,6 +152,28 @@ namespace vMenuClient
                         {
                             Notify.Error("This name is already in use or something unknown failed. Contact the server owner if you believe something is wrong.");
                         }
+                    }
+                }
+                else if (item == replateVehicle)
+                {
+                    VehicleInfo newVehicle = currentlySelectedVehicle.Value;
+                    newVehicle.plateText = await GetUserInput(windowTitle: "Enter License Plate", maxInputLength: 8, defaultText: currentlySelectedVehicle.Value.plateText ?? "");
+
+                    if (StorageManager.SaveVehicleInfo(currentlySelectedVehicle.Key, newVehicle, true))
+                    {
+                        while (!selectedVehicleMenu.Visible)
+                        {
+                            await BaseScript.Delay(0);
+                        }
+
+                        Notify.Success("Your vehicle's license plate has successfully been changed.");
+                        UpdateMenuAvailableCategories();
+                        selectedVehicleMenu.GoBack();
+                        currentlySelectedVehicle = new KeyValuePair<string, VehicleInfo>(); // clear the old info
+                    }
+                    else
+                    {
+                        Notify.Error("This name is already in use or something unknown failed. Contact the server owner if you believe something is wrong.");
                     }
                 }
                 else if (item == replaceVehicle)
