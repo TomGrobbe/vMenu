@@ -173,7 +173,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("This name is already in use or something unknown failed. Contact the server owner if you believe something is wrong.");
+                        Notify.Error("This plate is already in use or something unknown failed. Contact the server owner if you believe something is wrong.");
                     }
                 }
                 else if (item == replaceVehicle)
