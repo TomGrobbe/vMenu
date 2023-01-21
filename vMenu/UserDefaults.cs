@@ -1,15 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
-using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -159,7 +151,7 @@ namespace vMenuClient
             get { return GetSettingsBool("vehicleBikeSeatbelt"); }
             set { SetSavedSettingsBool("vehicleBikeSeatbelt", value); }
         }
-        
+
         public static int VehicleDefaultRadio
         {
             get { return GetSettingsInt("vehicleDefaultRadio"); }

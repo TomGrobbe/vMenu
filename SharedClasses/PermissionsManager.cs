@@ -1,9 +1,7 @@
-﻿using System;
+﻿using CitizenFX.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuShared
@@ -111,6 +109,8 @@ namespace vMenuShared
             VSDisableReplacePrevious,
             VSSpawnByName,
             VSAddon,
+            VSStaff,
+            VSGroups,
             VSCompacts,
             VSSedans,
             VSSUVs,
@@ -166,6 +166,8 @@ namespace vMenuShared
             PACustomize,
             PASpawnSaved,
             PASpawnNew,
+            PAStaff,
+            PAGroups,
             PAAddonPeds,
             #endregion
 
@@ -312,6 +314,11 @@ namespace vMenuShared
             // MPSUM2 DLC (v 2699)
             WPPrecisionRifle,
             WPTacticalRifle,
+            // (v 2802)
+            WPCandyCane,
+            WPAcidPackage,
+            WPPistolXm3,
+            WPRailgunXm3,
             #endregion
 
             // Weapon Loadouts Menu
@@ -481,7 +488,7 @@ namespace vMenuShared
         /// Sets the permissions for a specific player (checks server side, sends event to client side).
         /// </summary>
         /// <param name="player"></param>
-        public static void SetPermissionsForPlayer([FromSource]Player player)
+        public static void SetPermissionsForPlayer([FromSource] Player player)
         {
             if (player == null)
             {

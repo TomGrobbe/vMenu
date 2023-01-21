@@ -1,10 +1,7 @@
-﻿using System;
+﻿using CitizenFX.Core;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
-using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
@@ -24,16 +21,16 @@ namespace vMenuClient
         public EntitySpawner()
         {
 #if DEBUG
-                RegisterCommand("testEntity", new Action<int, List<object>>((source, args) =>
-                {
-                    string prop = (string)args[0];
-                    SpawnEntity(prop, Game.PlayerPed.Position);
-                }), false);
-                
-                RegisterCommand("endTest", new Action(() =>
-                {
-                    FinishPlacement();
-                }), false);
+            RegisterCommand("testEntity", new Action<int, List<object>>((source, args) =>
+            {
+                string prop = (string)args[0];
+                SpawnEntity(prop, Game.PlayerPed.Position);
+            }), false);
+
+            RegisterCommand("endTest", new Action(() =>
+            {
+                FinishPlacement();
+            }), false);
 #endif
         }
 
@@ -188,7 +185,7 @@ namespace vMenuClient
             RaycastResult res = World.Raycast(camCoords, dest, IntersectOptions.Everything, Game.PlayerPed);
 
 #if DEBUG
-            DrawLine(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y,Game.PlayerPed.Position.Z, dest.X, dest.Y, dest.Z, 255, 0, 0, 255);
+            DrawLine(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, dest.X, dest.Y, dest.Z, 255, 0, 0, 255);
 #endif
 
             return res.DitHit ? res.HitPosition : dest;

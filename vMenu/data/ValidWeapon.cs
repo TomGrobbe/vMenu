@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
@@ -100,17 +94,24 @@ namespace vMenuClient
                             }
                         }
                     }
-                    ValidWeapon vw = new ValidWeapon()
+                    try
                     {
-                        Hash = hash,
-                        SpawnName = realName,
-                        Name = localizedName,
-                        Components = componentHashes,
-                        Perm = weaponPermissions[realName]
-                    };
-                    if (!_weaponsList.Contains(vw))
+                        ValidWeapon vw = new ValidWeapon()
+                        {
+                            Hash = hash,
+                            SpawnName = realName,
+                            Name = localizedName,
+                            Components = componentHashes,
+                            Perm = weaponPermissions[realName]
+                        };
+                        if (!_weaponsList.Contains(vw))
+                        {
+                            _weaponsList.Add(vw);
+                        }
+                    }
+                    catch
                     {
-                        _weaponsList.Add(vw);
+                        Debug.WriteLine($"Weapon {realName} was not in the permissions list");
                     }
                 }
             }
@@ -226,6 +227,11 @@ namespace vMenuClient
             //MPSUM2 DLC (V 2699)
             { "weapon_tacticalrifle", GetLabelText("WTD_TACRIFLE") },
             { "weapon_precisionrifle", GetLabelText("WTD_PRCSRIFLE") },
+            // b2802
+            { "WEAPON_CANDYCANE", GetLabelText("WTD_CANDYCANE") },
+            { "WEAPON_ACIDPACKAGE", GetLabelText("WTD_ACIDPACKAGE") },
+            { "WEAPON_PISTOLXM3", GetLabelText("WTD_PISTOLXM3") },
+            { "WEAPON_RAILGUNXM3", GetLabelText("WTD_RAILGUNXM3") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
@@ -336,6 +342,11 @@ namespace vMenuClient
             //MPSUM2 DLC (V 2699)
             { "weapon_tacticalrifle", GetLabelText("WT_TACRIFLE") },
             { "weapon_precisionrifle", GetLabelText("WT_PRCSRIFLE") },
+            // b2802
+            { "WEAPON_CANDYCANE", GetLabelText("WT_CANDYCANE") },
+            { "WEAPON_ACIDPACKAGE", GetLabelText("WT_ACIDPACKAGE") },
+            { "WEAPON_PISTOLXM3", GetLabelText("WT_PISTOLXM3") },
+            { "WEAPON_RAILGUNXM3", GetLabelText("WT_RAILGUNXM3") },
         };
         #endregion
 
@@ -448,6 +459,11 @@ namespace vMenuClient
             //MPSUM2 DLC (V 2699)
             ["weapon_tacticalrifle"] = Permission.WPTacticalRifle,
             ["weapon_precisionrifle"] = Permission.WPPrecisionRifle,
+            // b2802
+            ["WEAPON_CANDYCANE"] = Permission.WPCandyCane,
+            ["WEAPON_ACIDPACKAGE"] = Permission.WPAcidPackage,
+            ["WEAPON_PISTOLXM3"] = Permission.WPPistolXm3,
+            ["WEAPON_RAILGUNXM3"] = Permission.WPRailgunXm3
         };
         #endregion
 
@@ -460,9 +476,11 @@ namespace vMenuClient
             ["COMPONENT_APPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_APPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_APPISTOL_VARMOD_LUXE"] = GetLabelText("WCT_VAR_METAL"),
+            ["COMPONENT_APPISTOL_VARMOD_SECURITY"] = GetLabelText("WCT_VAR_STUD"),
             ["COMPONENT_ASSAULTRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ASSAULTRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_ASSAULTRIFLE_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            ["COMPONENT_ASSAULTRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -473,7 +491,6 @@ namespace vMenuClient
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_ASSAULTRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_ASSAULTRIFLE_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -486,13 +503,14 @@ namespace vMenuClient
             ["COMPONENT_ASSAULTSMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ASSAULTSMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_ASSAULTSMG_VARMOD_LOWRIDER"] = GetLabelText("WCT_VAR_GOLD"),
-            ["COMPONENT_AT_AR_AFGRIP_02"] = GetLabelText("WCT_GRIP"),
             ["COMPONENT_AT_AR_AFGRIP"] = GetLabelText("WCT_GRIP"),
+            ["COMPONENT_AT_AR_AFGRIP_02"] = GetLabelText("WCT_GRIP"),
             ["COMPONENT_AT_AR_BARREL_01"] = GetLabelText("WCT_BARR"),
             ["COMPONENT_AT_AR_BARREL_02"] = GetLabelText("WCT_BARR2"),
             ["COMPONENT_AT_AR_FLSH"] = GetLabelText("WCT_FLASH"),
-            ["COMPONENT_AT_AR_SUPP_02"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_AR_FLSH_REH"] = GetLabelText("WCT_FLASH"),
             ["COMPONENT_AT_AR_SUPP"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_AR_SUPP_02"] = GetLabelText("WCT_SUPP"),
             ["COMPONENT_AT_BP_BARREL_01"] = GetLabelText("WCT_BARR"),
             ["COMPONENT_AT_BP_BARREL_02"] = GetLabelText("WCT_BARR2"),
             ["COMPONENT_AT_CR_BARREL_01"] = GetLabelText("WCT_BARR"),
@@ -510,46 +528,51 @@ namespace vMenuClient
             ["COMPONENT_AT_MUZZLE_07"] = GetLabelText("WCT_MUZZ7"),
             ["COMPONENT_AT_MUZZLE_08"] = GetLabelText("WCT_MUZZ"),
             ["COMPONENT_AT_MUZZLE_09"] = GetLabelText("WCT_MUZZ9"),
+            ["COMPONENT_AT_PI_COMP"] = GetLabelText("WCT_COMP"),
             ["COMPONENT_AT_PI_COMP_02"] = GetLabelText("WCT_COMP"),
             ["COMPONENT_AT_PI_COMP_03"] = GetLabelText("WCT_COMP"),
-            ["COMPONENT_AT_PI_COMP"] = GetLabelText("WCT_COMP"),
+            ["COMPONENT_AT_PI_FLSH"] = GetLabelText("WCT_FLASH"),
             ["COMPONENT_AT_PI_FLSH_02"] = GetLabelText("WCT_FLASH"),
             ["COMPONENT_AT_PI_FLSH_03"] = GetLabelText("WCT_FLASH"),
-            ["COMPONENT_AT_PI_FLSH"] = GetLabelText("WCT_FLASH"),
-            ["COMPONENT_AT_PI_RAIL_02"] = GetLabelText("WCT_SCOPE_PI"),
             ["COMPONENT_AT_PI_RAIL"] = GetLabelText("WCT_SCOPE_PI"),
-            ["COMPONENT_AT_PI_SUPP_02"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_PI_RAIL_02"] = GetLabelText("WCT_SCOPE_PI"),
             ["COMPONENT_AT_PI_SUPP"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_PI_SUPP_02"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_PRECISIONRIFLE_SIGHT"] = GetLabelText("WCT_IRON_SIGHT"), // Precision Rifle Fix
+            ["COMPONENT_AT_PRMUZZLE"] = GetLabelText("WCT_PRMUZZLE"), // Precision Rifle Fix
             ["COMPONENT_AT_SB_BARREL_01"] = GetLabelText("WCT_BARR"),
             ["COMPONENT_AT_SB_BARREL_02"] = GetLabelText("WCT_BARR2"),
-            ["COMPONENT_AT_SC_BARREL_01"] = GetLabelText("WCT_BARR"),
-            ["COMPONENT_AT_SC_BARREL_02"] = GetLabelText("WCT_BARR2"),
-            ["COMPONENT_AT_SCOPE_LARGE_FIXED_ZOOM_MK2"] = GetLabelText("WCT_SCOPE_LRG2"),
-            ["COMPONENT_AT_SCOPE_LARGE_FIXED_ZOOM"] = GetLabelText("WCT_SCOPE_LRG"),
-            ["COMPONENT_AT_SCOPE_LARGE_MK2"] = GetLabelText("WCT_SCOPE_LRG2"),
             ["COMPONENT_AT_SCOPE_LARGE"] = GetLabelText("WCT_SCOPE_LRG"),
+            ["COMPONENT_AT_SCOPE_LARGE_FIXED_ZOOM"] = GetLabelText("WCT_SCOPE_LRG"),
+            ["COMPONENT_AT_SCOPE_LARGE_FIXED_ZOOM_MK2"] = GetLabelText("WCT_SCOPE_LRG2"),
+            ["COMPONENT_AT_SCOPE_LARGE_MK2"] = GetLabelText("WCT_SCOPE_LRG2"),
+            ["COMPONENT_AT_SCOPE_MACRO"] = GetLabelText("WCT_SCOPE_MAC"),
+            ["COMPONENT_AT_SCOPE_MACRO_02"] = GetLabelText("WCT_SCOPE_MAC"),
             ["COMPONENT_AT_SCOPE_MACRO_02_MK2"] = GetLabelText("WCT_SCOPE_MAC2"),
             ["COMPONENT_AT_SCOPE_MACRO_02_SMG_MK2"] = GetLabelText("WCT_SCOPE_MAC2"),
-            ["COMPONENT_AT_SCOPE_MACRO_02"] = GetLabelText("WCT_SCOPE_MAC"),
             ["COMPONENT_AT_SCOPE_MACRO_MK2"] = GetLabelText("WCT_SCOPE_MAC2"),
-            ["COMPONENT_AT_SCOPE_MACRO"] = GetLabelText("WCT_SCOPE_MAC"),
             ["COMPONENT_AT_SCOPE_MAX"] = GetLabelText("WCT_SCOPE_MAX"),
-            ["COMPONENT_AT_SCOPE_MEDIUM_MK2"] = GetLabelText("WCT_SCOPE_MED2"),
             ["COMPONENT_AT_SCOPE_MEDIUM"] = GetLabelText("WCT_SCOPE_LRG"),
+            ["COMPONENT_AT_SCOPE_MEDIUM_MK2"] = GetLabelText("WCT_SCOPE_MED2"),
             ["COMPONENT_AT_SCOPE_NV"] = GetLabelText("WCT_SCOPE_NV"),
+            ["COMPONENT_AT_SCOPE_SMALL"] = GetLabelText("WCT_SCOPE_SML"),
             ["COMPONENT_AT_SCOPE_SMALL_02"] = GetLabelText("WCT_SCOPE_SML"),
             ["COMPONENT_AT_SCOPE_SMALL_MK2"] = GetLabelText("WCT_SCOPE_SML2"),
             ["COMPONENT_AT_SCOPE_SMALL_SMG_MK2"] = GetLabelText("WCT_SCOPE_SML2"),
-            ["COMPONENT_AT_SCOPE_SMALL"] = GetLabelText("WCT_SCOPE_SML"),
             ["COMPONENT_AT_SCOPE_THERMAL"] = GetLabelText("WCT_SCOPE_TH"),
-            ["COMPONENT_AT_SIGHTS_SMG"] = GetLabelText("WCT_HOLO"),
+            ["COMPONENT_AT_SC_BARREL_01"] = GetLabelText("WCT_BARR"),
+            ["COMPONENT_AT_SC_BARREL_02"] = GetLabelText("WCT_BARR2"),
             ["COMPONENT_AT_SIGHTS"] = GetLabelText("WCT_HOLO"),
+            ["COMPONENT_AT_SIGHTS_SMG"] = GetLabelText("WCT_HOLO"),
             ["COMPONENT_AT_SR_BARREL_01"] = GetLabelText("WCT_BARR"),
             ["COMPONENT_AT_SR_BARREL_02"] = GetLabelText("WCT_BARR2"),
-            ["COMPONENT_AT_SR_SUPP_03"] = GetLabelText("WCT_SUPP"),
             ["COMPONENT_AT_SR_SUPP"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_AT_SR_SUPP_03"] = GetLabelText("WCT_SUPP"),
             ["COMPONENT_BULLPUPRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_BULLPUPRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_BENELLI_CLIP_01"] = GetLabelText("WCT_BETUBE"),
+            ["COMPONENT_BENELLI_CLIP_02"] = GetLabelText("WCT_BETUB2"),
+            ["COMPONENT_BULLPUPRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -560,7 +583,6 @@ namespace vMenuClient
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_BULLPUPRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_BULLPUPRIFLE_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -571,6 +593,7 @@ namespace vMenuClient
             ["COMPONENT_CARBINERIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_CARBINERIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_CARBINERIFLE_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            ["COMPONENT_CARBINERIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -581,7 +604,6 @@ namespace vMenuClient
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_CARBINERIFLE_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_CARBINERIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_CARBINERIFLE_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_CARBINERIFLE_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_CARBINERIFLE_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -589,8 +611,12 @@ namespace vMenuClient
             ["COMPONENT_CARBINERIFLE_MK2_CLIP_INCENDIARY"] = GetLabelText("WCT_CLIP_INC"),
             ["COMPONENT_CARBINERIFLE_MK2_CLIP_TRACER"] = GetLabelText("WCT_CLIP_TR"),
             ["COMPONENT_CARBINERIFLE_VARMOD_LUXE"] = GetLabelText("WCT_VAR_GOLD"),
+            ["COMPONENT_CERAMICPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_CERAMICPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_CERAMICPISTOL_SUPP"] = GetLabelText("WCT_SUPP"),
             ["COMPONENT_COMBATMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_COMBATMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_COMBATMG_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_COMBATMG_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_COMBATMG_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_COMBATMG_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -601,7 +627,6 @@ namespace vMenuClient
             ["COMPONENT_COMBATMG_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_COMBATMG_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_COMBATMG_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_COMBATMG_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_COMBATMG_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_COMBATMG_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_COMBATMG_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -621,10 +646,19 @@ namespace vMenuClient
             ["COMPONENT_GUSENBERG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_HEAVYPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_HEAVYPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_HEAVYPISTOL_02_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_HEAVYPISTOL_02_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_HEAVYPISTOL_45_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_HEAVYPISTOL_45_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_HEAVYPISTOL_VARMOD_LUXE"] = GetLabelText("WCT_VAR_WOOD"),
+            ["COMPONENT_HEAVYRIFLE_CAMO1"] = GetLabelText("WCT_VAR_FAM"),
+            ["COMPONENT_HEAVYRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_HEAVYRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_HEAVYRIFLE_SIGHT_01"] = GetLabelText("WCT_HVYRFLE_SIG"),
             ["COMPONENT_HEAVYSHOTGUN_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_HEAVYSHOTGUN_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_HEAVYSHOTGUN_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            ["COMPONENT_HEAVYSNIPER_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -635,7 +669,6 @@ namespace vMenuClient
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_HEAVYSNIPER_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_HEAVYSNIPER_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_HEAVYSNIPER_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_HEAVYSNIPER_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_HEAVYSNIPER_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -657,6 +690,7 @@ namespace vMenuClient
             ["COMPONENT_MACHINEPISTOL_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
             ["COMPONENT_MARKSMANRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_MARKSMANRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_MARKSMANRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -667,7 +701,6 @@ namespace vMenuClient
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_10"),
-            ["COMPONENT_MARKSMANRIFLE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_MARKSMANRIFLE_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -681,10 +714,18 @@ namespace vMenuClient
             ["COMPONENT_MICROSMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_MICROSMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_MICROSMG_VARMOD_LUXE"] = GetLabelText("WCT_VAR_GOLD"),
+            ["COMPONENT_MICROSMG_VARMOD_SECURITY"] = GetLabelText("WCT_VAR_WEED"),
+            ["COMPONENT_MILITARYRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_MILITARYRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_MILITARYRIFLE_SIGHT_01"] = GetLabelText("WCT_MRFL_SIGHT"),
             ["COMPONENT_MINISMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_MINISMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_PISTOL50_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_PISTOL50_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_PISTOL50_VARMOD_LUXE"] = GetLabelText("WCT_VAR_SIL"),
             ["COMPONENT_PISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_PISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_PISTOL_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_PISTOL_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_PISTOL_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_PISTOL_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -695,7 +736,6 @@ namespace vMenuClient
             ["COMPONENT_PISTOL_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_PISTOL_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_PISTOL_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_PISTOL_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_PISTOL_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_PISTOL_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_PISTOL_MK2_CLIP_FMJ"] = GetLabelText("WCT_CLIP_FMJ"),
@@ -703,9 +743,8 @@ namespace vMenuClient
             ["COMPONENT_PISTOL_MK2_CLIP_INCENDIARY"] = GetLabelText("WCT_CLIP_INC"),
             ["COMPONENT_PISTOL_MK2_CLIP_TRACER"] = GetLabelText("WCT_CLIP_TR"),
             ["COMPONENT_PISTOL_VARMOD_LUXE"] = GetLabelText("WCT_VAR_GOLD"),
-            ["COMPONENT_PISTOL50_CLIP_01"] = GetLabelText("WCT_CLIP1"),
-            ["COMPONENT_PISTOL50_CLIP_02"] = GetLabelText("WCT_CLIP2"),
-            ["COMPONENT_PISTOL50_VARMOD_LUXE"] = GetLabelText("WCT_VAR_SIL"),
+            ["COMPONENT_PRECISIONRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_PUMPSHOTGUN_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -716,13 +755,15 @@ namespace vMenuClient
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_PUMPSHOTGUN_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CLIP_01"] = GetLabelText("WCT_SHELL"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_SHELL_AP"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CLIP_EXPLOSIVE"] = GetLabelText("WCT_SHELL_EX"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CLIP_HOLLOWPOINT"] = GetLabelText("WCT_SHELL_HP"),
             ["COMPONENT_PUMPSHOTGUN_MK2_CLIP_INCENDIARY"] = GetLabelText("WCT_SHELL_INC"),
             ["COMPONENT_PUMPSHOTGUN_VARMOD_LOWRIDER"] = GetLabelText("WCT_VAR_GOLD"),
+            ["COMPONENT_PUMPSHOTGUN_VARMOD_SECURITY"] = GetLabelText("WCT_VAR_BONE"),
+            ["COMPONENT_RAYPISTOL_VARMOD_XMAS18"] = GetLabelText("WCT_VAR_RAY18"),
+            ["COMPONENT_REVOLVER_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_REVOLVER_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_REVOLVER_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_REVOLVER_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -733,7 +774,6 @@ namespace vMenuClient
             ["COMPONENT_REVOLVER_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_REVOLVER_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_REVOLVER_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_REVOLVER_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_REVOLVER_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1_RV"),
             ["COMPONENT_REVOLVER_MK2_CLIP_FMJ"] = GetLabelText("WCT_CLIP_FMJ"),
             ["COMPONENT_REVOLVER_MK2_CLIP_HOLLOWPOINT"] = GetLabelText("WCT_CLIP_HP"),
@@ -745,6 +785,7 @@ namespace vMenuClient
             ["COMPONENT_SMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_SMG_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            ["COMPONENT_SMG_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SMG_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_SMG_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_SMG_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -755,7 +796,6 @@ namespace vMenuClient
             ["COMPONENT_SMG_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_SMG_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_SMG_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_SMG_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SMG_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SMG_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_SMG_MK2_CLIP_FMJ"] = GetLabelText("WCT_CLIP_FMJ"),
@@ -766,6 +806,7 @@ namespace vMenuClient
             ["COMPONENT_SNIPERRIFLE_VARMOD_LUXE"] = GetLabelText("WCT_VAR_WOOD"),
             ["COMPONENT_SNSPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SNSPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_SNSPISTOL_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SNSPISTOL_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_SNSPISTOL_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_SNSPISTOL_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -776,7 +817,6 @@ namespace vMenuClient
             ["COMPONENT_SNSPISTOL_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_SNSPISTOL_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_SNSPISTOL_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_10"),
-            ["COMPONENT_SNSPISTOL_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SNSPISTOL_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SNSPISTOL_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_SNSPISTOL_MK2_CLIP_FMJ"] = GetLabelText("WCT_CLIP_FMJ"),
@@ -787,6 +827,7 @@ namespace vMenuClient
             ["COMPONENT_SPECIALCARBINE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SPECIALCARBINE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_SPECIALCARBINE_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            ["COMPONENT_SPECIALCARBINE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
@@ -797,7 +838,6 @@ namespace vMenuClient
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
             ["COMPONENT_SPECIALCARBINE_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
-            ["COMPONENT_SPECIALCARBINE_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
             ["COMPONENT_SPECIALCARBINE_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_SPECIALCARBINE_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_SPECIALCARBINE_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_CLIP_AP"),
@@ -808,6 +848,8 @@ namespace vMenuClient
             ["COMPONENT_SWITCHBLADE_VARMOD_BASE"] = GetLabelText("WCT_SB_BASE"),
             ["COMPONENT_SWITCHBLADE_VARMOD_VAR1"] = GetLabelText("WCT_SB_VAR1"),
             ["COMPONENT_SWITCHBLADE_VARMOD_VAR2"] = GetLabelText("WCT_SB_VAR2"),
+            ["COMPONENT_TACTICALRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_TACTICALRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_VINTAGEPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_VINTAGEPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_RAYPISTOL_VARMOD_XMAS18"] = GetLabelText("WCT_VAR_RAY18"),

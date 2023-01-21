@@ -1,11 +1,9 @@
-﻿using System;
+﻿using CitizenFX.Core;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
-using Newtonsoft.Json;
 
 namespace vMenuShared
 {
@@ -39,7 +37,7 @@ namespace vMenuShared
             vmenu_auto_ban_cheaters_ban_message,
             vmenu_log_ban_actions,
             vmenu_log_kick_actions,
-            
+
             // Weather settings
             vmenu_enable_weather_sync,
             vmenu_enable_dynamic_weather,
@@ -238,9 +236,84 @@ namespace vMenuShared
             }
         }
         #endregion
+
+        #region Get groups from groups.json
+        /// <summary>
+        /// Gets the groups.json data.
+        /// </summary>
+        /// <returns></returns>
+        public static AddonGroupConfig GetGroups()
+        {
+            AddonGroupConfig data = new AddonGroupConfig();
+
+            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/addon-groups.json");
+            try
+            {
+                if (string.IsNullOrEmpty(jsonFile))
+                {
+#if CLIENT
+                    vMenuClient.Notify.Error("The addon-groups.json file is empty or does not exist, please tell the server owner to fix this.");
+#endif
+#if SERVER
+                    vMenuServer.DebugLog.Log("The groups.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+#endif
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<AddonGroupConfig>(jsonFile);
+                }
+            }
+            catch (Exception e)
+            {
+#if CLIENT
+                vMenuClient.Notify.Error("An error occurred while processing the addon-groups.json file. Custom groups will be unavailable. Please correct any errors in the addon-groups.json file.");
+#endif
+                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Gets group data based on groupType
+        /// </summary>
+        /// <param name="groupType">vehicle, ped, weapon, weapon_components</param>
+        /// <returns></returns>
+        public static List<AddonGroup> GetGroupData(string groupType)
+        {
+            return GetGroups().Groups.Where(x => x.Type == groupType).ToList();
+        }
+
+        public class AddonGroupConfig
+        {
+            [JsonProperty("groups")]
+            public AddonGroup[] Groups { get; set; }
+        }
+
+        public class AddonGroup
+        {
+            [JsonProperty("staff")]
+            public bool IsStaff { get; set; }
+
+            [JsonProperty("type")]
+            public string Type { get; set; }
+
+            [JsonProperty("label")]
+            public string Label { get; set; }
+
+            [JsonProperty("options")]
+            public AddonGroupOption[] Options { get; set; }
+        }
+
+        public class AddonGroupOption
+        {
+            [JsonProperty("model")]
+            public string Model { get; set; }
+            
+            [JsonProperty("label")]
+            public string Label { get; set; }
+        }
+
+        #endregion
     }
-
-
-
-
 }
