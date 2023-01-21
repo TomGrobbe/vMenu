@@ -242,9 +242,9 @@ namespace vMenuShared
         /// Gets the groups.json data.
         /// </summary>
         /// <returns></returns>
-        public static CustomGroupConfig GetGroups()
+        public static AddonGroupConfig GetGroups()
         {
-            CustomGroupConfig data = new CustomGroupConfig();
+            AddonGroupConfig data = new AddonGroupConfig();
 
             string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/addon-groups.json");
             try
@@ -252,7 +252,7 @@ namespace vMenuShared
                 if (string.IsNullOrEmpty(jsonFile))
                 {
 #if CLIENT
-                    vMenuClient.Notify.Error("The groups.json file is empty or does not exist, please tell the server owner to fix this.");
+                    vMenuClient.Notify.Error("The addon-groups.json file is empty or does not exist, please tell the server owner to fix this.");
 #endif
 #if SERVER
                     vMenuServer.DebugLog.Log("The groups.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
@@ -260,13 +260,13 @@ namespace vMenuShared
                 }
                 else
                 {
-                    data = JsonConvert.DeserializeObject<CustomGroupConfig>(jsonFile);
+                    data = JsonConvert.DeserializeObject<AddonGroupConfig>(jsonFile);
                 }
             }
             catch (Exception e)
             {
 #if CLIENT
-                vMenuClient.Notify.Error("An error occurred while processing the groups.json file. Custom groups will be unavailable. Please correct any errors in the groups.json file.");
+                vMenuClient.Notify.Error("An error occurred while processing the addon-groups.json file. Custom groups will be unavailable. Please correct any errors in the addon-groups.json file.");
 #endif
                 Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
             }
@@ -279,24 +279,18 @@ namespace vMenuShared
         /// </summary>
         /// <param name="groupType">vehicle, ped, weapon, weapon_components</param>
         /// <returns></returns>
-        public static List<CustomGroup> GetGroupData(string groupType)
+        public static List<AddonGroup> GetGroupData(string groupType)
         {
             return GetGroups().Groups.Where(x => x.Type == groupType).ToList();
         }
 
-        /// <summary>
-        /// GroupConfig struct.
-        /// </summary>
-        public struct CustomGroupConfig
+        public class AddonGroupConfig
         {
             [JsonProperty("groups")]
-            public List<CustomGroup> Groups { get; set; }
+            public AddonGroup[] Groups { get; set; }
         }
 
-        /// <summary>
-        /// Group struct.
-        /// </summary>
-        public class CustomGroup
+        public class AddonGroup
         {
             [JsonProperty("staff")]
             public bool IsStaff { get; set; }
@@ -308,16 +302,16 @@ namespace vMenuShared
             public string Label { get; set; }
 
             [JsonProperty("options")]
-            public List<GroupOption> Options { get; set; } = new();
+            public AddonGroupOption[] Options { get; set; }
         }
 
-        public class GroupOption
+        public class AddonGroupOption
         {
-            [JsonProperty("label")]
-            public string Label { get; set; }
-
             [JsonProperty("model")]
             public string Model { get; set; }
+            
+            [JsonProperty("label")]
+            public string Label { get; set; }
         }
 
         #endregion

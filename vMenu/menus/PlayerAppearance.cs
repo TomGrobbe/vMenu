@@ -297,7 +297,7 @@ namespace vMenuClient
                 selectedSavedPedMenu.MenuSubtitle = item.Text;
             };
 
-            List<CustomGroup> customGroups = ConfigManager.GetGroupData("ped") ?? new();
+            List<AddonGroup> customGroups = ConfigManager.GetGroupData("ped") ?? new();
 
             if (customGroups != null && customGroups.Count > 0 && IsAllowed(Permission.PAGroups))
             {
@@ -307,7 +307,7 @@ namespace vMenuClient
                 MenuItem unavailablePedsBtn = new("Unavailable Peds", "These Ped Models are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
                 MenuController.AddSubmenu(groupPedsMenu, unavailablePeds);
 
-                foreach (CustomGroup group in customGroups)
+                foreach (AddonGroup group in customGroups)
                 {
                     if (group.IsStaff && !IsAllowed(Permission.PAStaff)) continue;
 
@@ -318,7 +318,7 @@ namespace vMenuClient
 
                     group.Options.OrderBy(x => x);
 
-                    foreach (GroupOption groupOption in group.Options)
+                    foreach (AddonGroupOption groupOption in group.Options)
                     {
                         uint pedHash = (uint)GetHashKey(groupOption.Model);
 

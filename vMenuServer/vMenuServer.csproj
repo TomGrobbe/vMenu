@@ -26,7 +26,6 @@
     <PackageReference Include="CitizenFX.Core.Server" Version="1.0.6228" ExcludeAssets="runtime" />
     
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" ExcludeAssets="Compile" GeneratePathProperty="true" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(PkgNewtonsoft_Json)\lib\portable-net40+sl5+win8+wp8+wpa81\Newtonsoft.Json.dll</HintPath>
@@ -34,6 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="config\addon-groups.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="config\addons.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -62,11 +64,5 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /f /r /y /i bin\Release ..\build" />
   </Target>
-
-  <ItemGroup>
-    <None Update="config\addon-groups.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
 </Project>

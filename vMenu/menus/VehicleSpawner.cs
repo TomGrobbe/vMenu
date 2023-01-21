@@ -48,7 +48,7 @@ namespace vMenuClient
 
             if (IsAllowed(Permission.VSGroups))
             {
-                List<CustomGroup> customGroup = ConfigManager.GetGroupData("vehicle") ?? new List<CustomGroup>();
+                List<AddonGroup> customGroup = ConfigManager.GetGroupData("vehicle") ?? new();
                 if (customGroup.Count > 0)
                 {
                     MenuController.BindMenuItem(menu, groupCarsMenu, groupCarsBtn);
@@ -57,7 +57,7 @@ namespace vMenuClient
                     MenuItem unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
                     MenuController.AddSubmenu(groupCarsMenu, unavailableCars);
 
-                    foreach (CustomGroup group in customGroup)
+                    foreach (AddonGroup group in customGroup)
                     {
                         if (group.IsStaff && !IsAllowed(Permission.VSStaff)) continue;
 
@@ -68,7 +68,7 @@ namespace vMenuClient
 
                         group.Options.OrderBy(x => x);
 
-                        foreach (GroupOption groupOption in group.Options)
+                        foreach (AddonGroupOption groupOption in group.Options)
                         {
                             uint vehicleHash = (uint)GetHashKey(groupOption.Model);
                             string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(vehicleHash));
