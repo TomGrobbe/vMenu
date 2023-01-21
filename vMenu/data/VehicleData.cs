@@ -1036,7 +1036,7 @@ namespace vMenuClient
                 "BLIMP3",
                 "BOMBUSHKA",
                 "CARGOPLANE",
-                "CARGOPL", // b2802
+                "cargoplane2", // b2802
                 "CUBAN800",
                 "DODO",
                 "DUSTER",
