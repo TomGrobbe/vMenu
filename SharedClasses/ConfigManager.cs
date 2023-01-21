@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuShared
@@ -235,9 +236,90 @@ namespace vMenuShared
             }
         }
         #endregion
+
+        #region Get groups from groups.json
+        /// <summary>
+        /// Gets the groups.json data.
+        /// </summary>
+        /// <returns></returns>
+        public static CustomGroupConfig GetGroups()
+        {
+            CustomGroupConfig data = new CustomGroupConfig();
+
+            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/addon-groups.json");
+            try
+            {
+                if (string.IsNullOrEmpty(jsonFile))
+                {
+#if CLIENT
+                    vMenuClient.Notify.Error("The groups.json file is empty or does not exist, please tell the server owner to fix this.");
+#endif
+#if SERVER
+                    vMenuServer.DebugLog.Log("The groups.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+#endif
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<CustomGroupConfig>(jsonFile);
+                }
+            }
+            catch (Exception e)
+            {
+#if CLIENT
+                vMenuClient.Notify.Error("An error occurred while processing the groups.json file. Custom groups will be unavailable. Please correct any errors in the groups.json file.");
+#endif
+                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Gets group data based on groupType
+        /// </summary>
+        /// <param name="groupType">vehicle, ped, weapon, weapon_components</param>
+        /// <returns></returns>
+        public static List<CustomGroup> GetGroupData(string groupType)
+        {
+            return GetGroups().Groups.Where(x => x.Type == groupType).ToList();
+        }
+
+        /// <summary>
+        /// GroupConfig struct.
+        /// </summary>
+        public struct CustomGroupConfig
+        {
+            [JsonProperty("groups")]
+            public List<CustomGroup> Groups { get; set; }
+        }
+
+        /// <summary>
+        /// Group struct.
+        /// </summary>
+        public class CustomGroup
+        {
+            [JsonProperty("staff")]
+            public bool IsStaff { get; set; }
+
+            [JsonProperty("type")]
+            public string Type { get; set; }
+
+            [JsonProperty("label")]
+            public string Label { get; set; }
+
+            [JsonProperty("options")]
+            public List<GroupOption> Options { get; set; } = new();
+        }
+
+        public class GroupOption
+        {
+            [JsonProperty("label")]
+            public string Label { get; set; }
+
+            [JsonProperty("model")]
+            public string Model { get; set; }
+        }
+
+        #endregion
     }
-
-
-
-
 }

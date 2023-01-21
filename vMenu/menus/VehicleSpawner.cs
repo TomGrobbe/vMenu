@@ -2,8 +2,10 @@ using CitizenFX.Core;
 using MenuAPI;
 using System.Collections.Generic;
 using System.Linq;
+using vMenuShared;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
@@ -36,6 +38,102 @@ namespace vMenuClient
             }
             menu.AddMenuItem(spawnInVeh);
             menu.AddMenuItem(replacePrev);
+            #endregion
+
+            #region custom group
+            Menu groupCarsMenu = new Menu("Grouped Vehicles", "Spawn a Vehicle from a Group");
+            MenuItem groupCarsBtn = new MenuItem("Grouped Vehicles", "A list of vehicles with custom grouping available on this server.") { Label = "→→→" };
+
+            menu.AddMenuItem(groupCarsBtn);
+
+            if (IsAllowed(Permission.VSGroups))
+            {
+                List<CustomGroup> customGroup = ConfigManager.GetGroupData("vehicle") ?? new List<CustomGroup>();
+                if (customGroup.Count > 0)
+                {
+                    MenuController.BindMenuItem(menu, groupCarsMenu, groupCarsBtn);
+                    MenuController.AddSubmenu(menu, groupCarsMenu);
+                    Menu unavailableCars = new Menu("Grouped Vehicles", "Unavailable Vehicles");
+                    MenuItem unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
+                    MenuController.AddSubmenu(groupCarsMenu, unavailableCars);
+
+                    foreach (CustomGroup group in customGroup)
+                    {
+                        if (group.IsStaff && !IsAllowed(Permission.VSStaff)) continue;
+
+                        Menu categoryMenu = new Menu($"{group.Label} Spawner", group.Label);
+                        MenuItem categoryBtn = new MenuItem(group.Label, $"Spawn an addon vehicle from the {group.Label} group.") { Label = "→→→" };
+
+                        groupCarsMenu.AddMenuItem(categoryBtn);
+
+                        group.Options.OrderBy(x => x);
+
+                        foreach (GroupOption groupOption in group.Options)
+                        {
+                            uint vehicleHash = (uint)GetHashKey(groupOption.Model);
+                            string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(vehicleHash));
+
+                            string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(vehicleHash);
+                            name = name != "CARNOTFOUND" ? name : groupOption.Label;
+
+                            MenuItem carBtn = new MenuItem(name, $"Click to spawn {name}.")
+                            {
+                                Label = $"({groupOption.Model})",
+                                ItemData = groupOption.Model // store the model name in the button data.
+                            };
+
+                            // This should be impossible to be false, but we check it anyway.
+                            if (IsModelInCdimage(vehicleHash))
+                            {
+                                categoryMenu.AddMenuItem(carBtn);
+                            }
+                            else
+                            {
+                                carBtn.Enabled = false;
+                                carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
+                                carBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                unavailableCars.AddMenuItem(carBtn);
+                            }
+                        }
+
+                        if (categoryMenu.Size > 0)
+                        {
+                            MenuController.AddSubmenu(groupCarsMenu, categoryMenu);
+                            MenuController.BindMenuItem(groupCarsMenu, categoryMenu, categoryBtn);
+
+                            categoryMenu.OnItemSelect += (sender, item, index) =>
+                            {
+                                SpawnVehicle(item.ItemData.ToString(), SpawnInVehicle, ReplaceVehicle);
+                            };
+                        }
+                        else
+                        {
+                            categoryBtn.Description = "There are no cars available in this group.";
+                            categoryBtn.Enabled = false;
+                            categoryBtn.LeftIcon = MenuItem.Icon.LOCK;
+                            categoryBtn.Label = "";
+                        }
+                    }
+
+                    if (unavailableCars.Size > 0)
+                    {
+                        groupCarsMenu.AddMenuItem(unavailableCarsBtn);
+                        MenuController.BindMenuItem(groupCarsMenu, unavailableCars, unavailableCarsBtn);
+                    }
+                }
+                else
+                {
+                    groupCarsBtn.Enabled = false;
+                    groupCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
+                    groupCarsBtn.Description = "There are no vehicles available in this group.";
+                }
+            }
+            else
+            {
+                groupCarsBtn.Enabled = false;
+                groupCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
+                groupCarsBtn.Description = "Access to this list has been restricted by the server owner.";
+            }
             #endregion
 
             #region addon cars menu

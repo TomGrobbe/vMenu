@@ -1,0 +1,70 @@
+{
+  "groups": [
+    {
+      "staff": true,
+      "type": "vehicle",
+      "label": "Staff Vehicles",
+      "options": [
+        {
+          "model": "journey2",
+          "label": "Journey 2"
+        },
+        {
+          "model": "surfer3",
+          "label": "Surfer 3"
+        }
+      ]
+    },
+    {
+      "type": "vehicle",
+      "label": "Non-Staff Vehicles",
+      "options": [
+        {
+          "model": "tulip2",
+          "label": "Tulip 2"
+        },
+        {
+          "model": "everon2",
+          "label": "Everon 2"
+        },
+        {
+          "model": "invalid",
+          "label": "invalid"
+        }
+      ]
+    },
+    {
+      "staff": true,
+      "type": "ped",
+      "label": "Staff Peds",
+      "options": [
+        {
+          "model": "ig_acidlabcook",
+          "label": "Acid Lab Cook"
+        },
+        {
+          "model": "a_c_chimp_02",
+          "label": "Chimp"
+        }
+      ]
+    },
+    {
+      "type": "ped",
+      "label": "Non-Staff Peds",
+      "options": [
+        {
+          "model": "ig_furry",
+          "label": "Furry"
+        },
+        {
+          "model": "u_m_m_yulemonster",
+          "label": "Yule Monster"
+        },
+        {
+          "model": "invalid",
+          "label": "invalid"
+        }
+      ]
+    }
+  ]
+}

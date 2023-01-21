@@ -109,6 +109,8 @@ namespace vMenuShared
             VSDisableReplacePrevious,
             VSSpawnByName,
             VSAddon,
+            VSStaff,
+            VSGroups,
             VSCompacts,
             VSSedans,
             VSSUVs,
@@ -164,6 +166,8 @@ namespace vMenuShared
             PACustomize,
             PASpawnSaved,
             PASpawnNew,
+            PAStaff,
+            PAGroups,
             PAAddonPeds,
             #endregion
 
