@@ -39,6 +39,7 @@ namespace vMenuClient
             MenuItem setVehice = new MenuItem("Set Vehicle", "Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.") { Label = "Current Vehicle: None" };
             MenuItem toggleEngine = new MenuItem("Toggle Engine", "Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle.");
             MenuListItem toggleLights = new MenuListItem("Set Vehicle Lights", new List<string>() { "Force On", "Force Off", "Reset" }, 0, "This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work.");
+            MenuListItem toggleStance = new MenuListItem("Vehicle Stance", new List<string>() { "Default", "Lowered" }, 0, "Select stance for your Personal Vehicle.");
             MenuItem kickAllPassengers = new MenuItem("Kick Passengers", "This will remove all passengers from your personal vehicle.");
             //MenuItem
             MenuItem lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
@@ -71,6 +72,12 @@ namespace vMenuClient
             if (IsAllowed(Permission.PVToggleLights))
             {
                 menu.AddMenuItem(toggleLights);
+            }
+            
+            // Toggle stance
+            if (IsAllowed(Permission.PVToggleStance))
+            {
+                menu.AddMenuItem(toggleStance);
             }
 
             // Kick vehicle passengers
@@ -146,6 +153,19 @@ namespace vMenuClient
                             SetVehicleLights(CurrentPersonalVehicle.Handle, 0);
                         }
                     }
+                    else if (item == toggleStance)
+                    {
+                        PressKeyFob(CurrentPersonalVehicle);
+                        if (itemIndex == 0)
+                        {
+                            SetReduceDriftVehicleSuspension(CurrentPersonalVehicle.Handle, false);
+                        }
+                        else if (itemIndex == 1)
+                        {
+                            SetReduceDriftVehicleSuspension(CurrentPersonalVehicle.Handle, true);
+                        }
+                    }
+
                 }
                 else
                 {

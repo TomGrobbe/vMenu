@@ -964,7 +964,7 @@ namespace vMenuClient
                 // Press the B button on keyboard once to toggle.
                 else
                 {
-                    if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && !Game.PlayerPed.IsInVehicle())
+                    if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && UpdateOnscreenKeyboard() != 0 && !Game.PlayerPed.IsInVehicle())
                     {
                         await TogglePointing();
                     }
@@ -979,18 +979,18 @@ namespace vMenuClient
                     }
                     else
                     {
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Pitch", GetPointingPitch());
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Heading", GetPointingHeading());
-                        N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isBlocked", GetPointingIsBlocked());
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Pitch", GetPointingPitch());
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Heading", GetPointingHeading());
+                        SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isBlocked", GetPointingIsBlocked());
                         if (GetFollowPedCamViewMode() == 4)
                         {
-                            N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", true);
+                            SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isFirstPerson", true);
                         }
                         else
                         {
-                            N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", false);
+                            SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isFirstPerson", false);
                         }
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Speed", 0.25f);
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Speed", 0.25f);
                     }
                 }
             }
@@ -1382,9 +1382,9 @@ namespace vMenuClient
             }
 
             // Enable/disable infinite ammo.
-            if (Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
+            if (IsAllowed(Permission.WPUnlimitedAmmo) && Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
             {
-                Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && IsAllowed(Permission.WPUnlimitedAmmo);
+                Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
             }
 
             if (MainMenu.WeaponOptionsMenu.AutoEquipChute)
