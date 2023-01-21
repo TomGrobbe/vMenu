@@ -1,12 +1,10 @@
-﻿using System;
+﻿using CitizenFX.Core;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
 using System.Text.RegularExpressions;
+using static CitizenFX.Core.Native.API;
 using static vMenuServer.DebugLog;
 
 namespace vMenuServer

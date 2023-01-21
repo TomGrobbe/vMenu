@@ -52,4 +52,12 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
   </Target>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="G:\FiveM Projects\Forks\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="G:\FiveM Projects\Forks\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
 </Project>

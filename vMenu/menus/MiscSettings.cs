@@ -1,9 +1,9 @@
+using CitizenFX.Core;
+using MenuAPI;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
@@ -141,7 +141,7 @@ namespace vMenuClient
             MenuItem confirmEntityPosition = new MenuItem("Confirm Entity Position", "Stops placing entity and sets it at it current location.");
             MenuItem cancelEntity = new MenuItem("Cancel", "Deletes current entity and cancels its placement");
             MenuItem confirmAndDuplicate = new MenuItem("Confirm Entity Position And Duplicate", "Stops placing entity and sets it at it current location and creates new one to place.");
-            
+
             Menu connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
             MenuItem connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
 
@@ -515,7 +515,7 @@ namespace vMenuClient
                 MenuItem entSpawnerMenuBtn = new MenuItem("Entity Spawner", "Spawn and move entities") { Label = "→→→" };
                 developerToolsMenu.AddMenuItem(entSpawnerMenuBtn);
                 MenuController.BindMenuItem(developerToolsMenu, entitySpawnerMenu, entSpawnerMenuBtn);
-                
+
                 entitySpawnerMenu.AddMenuItem(spawnNewEntity);
                 entitySpawnerMenu.AddMenuItem(confirmEntityPosition);
                 entitySpawnerMenu.AddMenuItem(confirmAndDuplicate);
@@ -530,7 +530,7 @@ namespace vMenuClient
                             Notify.Error("You are already placing one entity, set its location or cancel and try again!");
                             return;
                         }
-                        
+
                         string result = await GetUserInput(windowTitle: "Enter model name");
 
                         if (String.IsNullOrEmpty(result))
@@ -539,7 +539,8 @@ namespace vMenuClient
                         }
 
                         EntitySpawner.SpawnEntity(result, Game.PlayerPed.Position);
-                    } else if (item == confirmEntityPosition || item == confirmAndDuplicate)
+                    }
+                    else if (item == confirmEntityPosition || item == confirmAndDuplicate)
                     {
                         if (EntitySpawner.CurrentEntity != null)
                         {
@@ -549,7 +550,8 @@ namespace vMenuClient
                         {
                             Notify.Error("No entity to confirm position for!");
                         }
-                    } else if (item == cancelEntity)
+                    }
+                    else if (item == cancelEntity)
                     {
                         if (EntitySpawner.CurrentEntity != null)
                         {

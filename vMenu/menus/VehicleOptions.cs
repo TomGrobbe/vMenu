@@ -1,12 +1,8 @@
+using CitizenFX.Core;
+using MenuAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
@@ -509,7 +505,7 @@ namespace vMenuClient
                             SetLicensePlateCustomText();
                         }
                         // Make vehicle invisible.
-                        else if (item == vehicleInvisible) 
+                        else if (item == vehicleInvisible)
                         {
                             if (vehicle.IsVisible)
                             {
@@ -1760,7 +1756,7 @@ namespace vMenuClient
                     var modlist = new List<string>();
 
                     // Get the current item index ({current}/{max upgrades})
-                    var currentItem = $"[1/{ mod.ModCount + 1}]";
+                    var currentItem = $"[1/{mod.ModCount + 1}]";
 
                     // Add the stock value for this mod.
                     var name = $"Stock {typeName} {currentItem}";
@@ -1770,7 +1766,7 @@ namespace vMenuClient
                     for (var x = 0; x < mod.ModCount; x++)
                     {
                         // Create the item index.
-                        currentItem = $"[{2 + x}/{ mod.ModCount + 1}]";
+                        currentItem = $"[{2 + x}/{mod.ModCount + 1}]";
 
                         // Create the name (again, converting to proper case), then add the name.
                         name = mod.GetLocalizedModName(x) != "" ? $"{ToProperString(mod.GetLocalizedModName(x))} {currentItem}" : $"{typeName} #{x} {currentItem}";
