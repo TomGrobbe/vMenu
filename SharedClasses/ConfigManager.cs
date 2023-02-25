@@ -284,6 +284,33 @@ namespace vMenuShared
             return GetGroups().Groups.Where(x => x.Type == groupType).ToList();
         }
 
+#if SERVER
+        /// <summary>
+        /// Gets group data based on groupType
+        /// </summary>
+        /// <param name="source">The source of the player.</param>
+        /// <param name="groupType">vehicle, ped, weapon, weapon_components</param>
+        /// <returns></returns>
+        public static List<AddonGroup> GetGroupData(Player player, string groupType)
+        {
+            List<AddonGroup> lst = GetGroups().Groups.Where(x => x.Type == groupType).ToList();
+            List<AddonGroup> finalLst = new();
+            foreach (AddonGroup group in lst)
+            {
+                string permission = group.Permission;
+                if (string.IsNullOrEmpty(permission))
+                {
+                    finalLst.Add(group);
+                }
+                else if (PermissionsManager.IsAllowed(group.Permission, player))
+                {
+                    finalLst.Add(group);
+                }
+            }
+            return finalLst;
+        }
+#endif
+
         public class AddonGroupConfig
         {
             [JsonProperty("groups")]
@@ -292,8 +319,8 @@ namespace vMenuShared
 
         public class AddonGroup
         {
-            [JsonProperty("staff")]
-            public bool IsStaff { get; set; }
+            [JsonProperty("permission")]
+            public string Permission { get; set; }
 
             [JsonProperty("type")]
             public string Type { get; set; }
@@ -309,7 +336,7 @@ namespace vMenuShared
         {
             [JsonProperty("model")]
             public string Model { get; set; }
-            
+
             [JsonProperty("label")]
             public string Label { get; set; }
         }
