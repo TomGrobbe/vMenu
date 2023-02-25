@@ -376,6 +376,7 @@ namespace vMenuShared
         /// <param name="checkAnyway">if true, then the permissions will be checked even if they aren't setup yet.</param>
         /// <returns></returns>
         public static bool IsAllowed(Permission permission, Player source, bool checkAnyway = false) => IsAllowedServer(permission, source);
+        public static bool IsAllowed(string permission, Player source, bool checkAnyway = false) => IsAllowedServer(permission, source);
 #endif
 
 #if CLIENT
@@ -441,6 +442,26 @@ namespace vMenuShared
             }
 
             if (IsPlayerAceAllowed(source.Handle, GetAceName(permission)))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the player is allowed that specific permission.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static bool IsAllowedServer(string permission, Player source)
+        {
+            if (source == null)
+            {
+                return false;
+            }
+
+            if (IsPlayerAceAllowed(source.Handle, GetAceNameFromString(permission)))
             {
                 return true;
             }
@@ -572,11 +593,19 @@ namespace vMenuShared
         /// <returns></returns>
         private static string GetAceName(Permission permission)
         {
-            string name = permission.ToString();
+            return GetAceNameFromString(permission.ToString());
+        }
 
+        /// <summary>
+        /// Gets the full permission ace name for the specific permission string.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <returns></returns>
+        private static string GetAceNameFromString(string permission)
+        {
             string prefix = "vMenu.";
 
-            switch (name.Substring(0, 2))
+            switch (permission.Substring(0, 2))
             {
                 case "OP":
                     prefix += "OnlinePlayers";
@@ -618,10 +647,10 @@ namespace vMenuShared
                     prefix += "VoiceChat";
                     break;
                 default:
-                    return prefix + name;
+                    return prefix + permission;
             }
 
-            return prefix + "." + name.Substring(2);
+            return prefix + "." + permission.Substring(2);
         }
 #endif
     }

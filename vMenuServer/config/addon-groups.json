@@ -1,7 +1,7 @@
 {
   "groups": [
     {
-      "staff": true,
+      "permission": "VehicleSpawner.Staff",
       "type": "vehicle",
       "label": "Staff Vehicles",
       "options": [
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "staff": true,
+      "permission": "PlayerAppearance.Staff",
       "type": "ped",
       "label": "Staff Peds",
       "options": [

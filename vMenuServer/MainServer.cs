@@ -982,5 +982,16 @@ namespace vMenuServer
             }
         }
         #endregion
+
+        #region Addon Lists with Server Side Permissions
+
+        [EventHandler("vMenu:RequestAddonList")]
+        private void RequestAddonList([FromSource] Player sourcePlayer, string addonListType, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            List<AddonGroup> lst = ConfigManager.GetGroupData(sourcePlayer, addonListType);
+            _ = networkCallbackDelegate(JsonConvert.SerializeObject(lst));
+        }
+
+        #endregion
     }
 }

@@ -1,9 +1,10 @@
 using CitizenFX.Core;
 using MenuAPI;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using vMenuShared;
+using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
@@ -37,7 +38,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates the menu(s).
         /// </summary>
-        private void CreateMenu()
+        private async Task CreateMenu()
         {
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Player Appearance");
@@ -297,7 +298,31 @@ namespace vMenuClient
                 selectedSavedPedMenu.MenuSubtitle = item.Text;
             };
 
-            List<AddonGroup> customGroups = ConfigManager.GetGroupData("ped") ?? new();
+            List<AddonGroup> customGroups = new();
+
+            bool completed = false;
+            int wait = 0;
+
+            // TODO: replace with client<->server RPC once implemented in CitizenFX!
+            Func<string, bool> getGroups = (data) =>
+            {
+                customGroups = JsonConvert.DeserializeObject<List<AddonGroup>>(data);
+                completed = true;
+                return true;
+            };
+
+            while (!completed)
+            {
+                TriggerServerEvent("vMenu:RequestAddonList", "ped", getGroups);
+                await BaseScript.Delay(500);
+
+                wait++;
+                if (wait > 1000)
+                {
+                    Notify.Error("Failed to get addon ped groups from the server. Please try again later.");
+                    break;
+                }
+            }
 
             if (customGroups != null && customGroups.Count > 0 && IsAllowed(Permission.PAGroups))
             {
@@ -309,8 +334,6 @@ namespace vMenuClient
 
                 foreach (AddonGroup group in customGroups)
                 {
-                    if (group.IsStaff && !IsAllowed(Permission.PAStaff)) continue;
-
                     Menu categoryMenu = new($"{group.Label} Spawner", group.Label);
                     MenuItem categoryBtn = new(group.Label, $"Spawn an addon vehicle from the {group.Label} group.") { Label = "→→→" };
 
@@ -681,11 +704,11 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public Menu GetMenu()
+        public async Task<Menu> GetMenu()
         {
             if (menu == null)
             {
-                CreateMenu();
+                await CreateMenu();
             }
             return menu;
         }

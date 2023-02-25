@@ -1,8 +1,10 @@
 using CitizenFX.Core;
 using MenuAPI;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using vMenuShared;
+using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
@@ -20,7 +22,7 @@ namespace vMenuClient
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
         public static List<bool> allowedCategories;
 
-        private void CreateMenu()
+        private async Task CreateMenu()
         {
             #region initial setup.
             // Create the menu.
@@ -48,8 +50,32 @@ namespace vMenuClient
 
             if (IsAllowed(Permission.VSGroups))
             {
-                List<AddonGroup> customGroup = ConfigManager.GetGroupData("vehicle") ?? new();
-                if (customGroup.Count > 0)
+                List<AddonGroup> customGroups = new();
+
+                bool completed = false;
+                int wait = 0;
+
+                // TODO: replace with client<->server RPC once implemented in CitizenFX!
+                Func<string, bool> getGroups = (data) =>
+                {
+                    customGroups = JsonConvert.DeserializeObject<List<AddonGroup>>(data);
+                    completed = true;
+                    return true;
+                };
+
+                while (!completed)
+                {
+                    TriggerServerEvent("vMenu:RequestAddonList", "vehicle", getGroups);
+                    await BaseScript.Delay(500);
+                    wait++;
+                    if (wait > 1000)
+                    {
+                        Notify.Error("Failed to get addon ped groups from the server. Please try again later.");
+                        break;
+                    }
+                }
+
+                if (customGroups.Count > 0)
                 {
                     MenuController.BindMenuItem(menu, groupCarsMenu, groupCarsBtn);
                     MenuController.AddSubmenu(menu, groupCarsMenu);
@@ -57,9 +83,9 @@ namespace vMenuClient
                     MenuItem unavailableCarsBtn = new MenuItem("Unavailable Vehicles", "These vehicles are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
                     MenuController.AddSubmenu(groupCarsMenu, unavailableCars);
 
-                    foreach (AddonGroup group in customGroup)
+                    foreach (AddonGroup group in customGroups) // need to move a list to the server
                     {
-                        if (group.IsStaff && !IsAllowed(Permission.VSStaff)) continue;
+                        if (!IsAllowed(Permission.VSStaff)) continue;
 
                         Menu categoryMenu = new Menu($"{group.Label} Spawner", group.Label);
                         MenuItem categoryBtn = new MenuItem(group.Label, $"Spawn an addon vehicle from the {group.Label} group.") { Label = "→→→" };
@@ -551,11 +577,11 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public Menu GetMenu()
+        public async Task<Menu> GetMenu()
         {
             if (menu == null)
             {
-                CreateMenu();
+                await CreateMenu();
             }
             return menu;
         }
