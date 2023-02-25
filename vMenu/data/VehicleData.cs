@@ -33,6 +33,71 @@ namespace vMenuClient
                         CitizenFX.Core.Native.API.AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
                     }
                 }
+                // Chameleon Colour Labels //
+                else if (label == "G9_PAINT01")
+                {
+                    AddTextEntry("G9_PAINT01", "Monochrome");
+                }
+                else if (label == "G9_PAINT02")
+                {
+                    AddTextEntry("G9_PAINT02", "Night & Day");
+                }
+                else if (label == "G9_PAINT03")
+                {
+                    AddTextEntry("G9_PAINT03", "The Verlierer");
+                }
+                else if (label == "G9_PAINT04")
+                {
+                    AddTextEntry("G9_PAINT04", "Sprunk Extreme");
+                }
+                else if (label == "G9_PAINT05")
+                {
+                    AddTextEntry("G9_PAINT05", "Vice City");
+                }
+                else if (label == "G9_PAINT06")
+                {
+                    AddTextEntry("G9_PAINT06", "Synthwave Nights");
+                }
+                else if (label == "G9_PAINT07")
+                {
+                    AddTextEntry("G9_PAINT07", "Four Seasons");
+                }
+                else if (label == "G9_PAINT08")
+                {
+                    AddTextEntry("G9_PAINT08", "Maisonette 9 Throwback");
+                }
+                else if (label == "G9_PAINT09")
+                {
+                    AddTextEntry("G9_PAINT09", "Bubblegum");
+                }
+                else if (label == "G9_PAINT10")
+                {
+                    AddTextEntry("G9_PAINT10", "Full Rainbow");
+                }
+                else if (label == "G9_PAINT11")
+                {
+                    AddTextEntry("G9_PAINT11", "Sunset");
+                }
+                else if (label == "G9_PAINT12")
+                {
+                    AddTextEntry("G9_PAINT12", "The Seven");
+                }
+                else if (label == "G9_PAINT13")
+                {
+                    AddTextEntry("G9_PAINT13", "Kamen Rider");
+                }
+                else if (label == "G9_PAINT14")
+                {
+                    AddTextEntry("G9_PAINT14", "Chromatic Aberration");
+                }
+                else if (label == "G9_PAINT15")
+                {
+                    AddTextEntry("G9_PAINT15", "It's Christmas!");
+                }
+                else if (label == "G9_PAINT16")
+                {
+                    AddTextEntry("G9_PAINT16", "Temperature");
+                }
 
                 this.label = label;
                 this.id = id;
@@ -254,6 +319,27 @@ namespace vMenuClient
             new VehicleColor(131, "WHITE"),
             new VehicleColor(132, "FROST_WHITE"),
             new VehicleColor(133, "OLIVE_GREEN"),
+        };
+        
+        // Chameleon Colour List //
+        public static readonly List<VehicleColor> ChameleonColors = new List<VehicleColor>()
+        {
+            new VehicleColor(223, "G9_PAINT01"),
+            new VehicleColor(224, "G9_PAINT02"),
+            new VehicleColor(225, "G9_PAINT03"),
+            new VehicleColor(226, "G9_PAINT04"),
+            new VehicleColor(227, "G9_PAINT05"),
+            new VehicleColor(228, "G9_PAINT06"),
+            new VehicleColor(229, "G9_PAINT07"),
+            new VehicleColor(230, "G9_PAINT08"),
+            new VehicleColor(231, "G9_PAINT09"),
+            new VehicleColor(232, "G9_PAINT10"),
+            new VehicleColor(233, "G9_PAINT11"),
+            new VehicleColor(234, "G9_PAINT12"),
+            new VehicleColor(235, "G9_PAINT13"),
+            new VehicleColor(236, "G9_PAINT14"),
+            new VehicleColor(237, "G9_PAINT15"),
+            new VehicleColor(238, "G9_PAINT16"),
         };
 
         public static class Vehicles

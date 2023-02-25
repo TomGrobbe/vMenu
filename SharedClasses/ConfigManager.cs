@@ -135,6 +135,15 @@ namespace vMenuShared
         {
             return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
         }
+        
+        /// <summary>
+        /// Default value for server-side chameleon colours.
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsServerUsingChameleonColours()
+        {
+            return GetConvar("server_using_chameleon_colours", "false");
+        }
 
         #region Get saved locations from the locations.json
         /// <summary>
