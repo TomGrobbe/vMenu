@@ -135,7 +135,7 @@ namespace vMenuShared
         {
             return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
         }
-        
+
         /// <summary>
         /// Default value for server-side chameleon colours.
         /// </summary>

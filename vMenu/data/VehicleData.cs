@@ -320,7 +320,7 @@ namespace vMenuClient
             new VehicleColor(132, "FROST_WHITE"),
             new VehicleColor(133, "OLIVE_GREEN"),
         };
-        
+
         // Chameleon Colour List //
         public static readonly List<VehicleColor> ChameleonColors = new List<VehicleColor>()
         {

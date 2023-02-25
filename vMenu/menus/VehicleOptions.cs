@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
-using static vMenuShared.PermissionsManager;
 using static vMenuShared.ConfigManager;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
@@ -1000,8 +1000,9 @@ namespace vMenuClient
                     worn.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.WornColors.Count})");
                     i++;
                 }
-                
-                if (IsServerUsingChameleonColours()) {
+
+                if (IsServerUsingChameleonColours())
+                {
                     i = 0;
                     foreach (var vc in VehicleData.ChameleonColors)
                     {
@@ -1102,16 +1103,18 @@ namespace vMenuClient
                                 primaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
-                        
-                        if (IsServerUsingChameleonColours()) {
-                            if (itemIndex == 6) {
+
+                        if (IsServerUsingChameleonColours())
+                        {
+                            if (itemIndex == 6)
+                            {
                                 primaryColor = VehicleData.ChameleonColors[newIndex].id;
                                 secondaryColor = VehicleData.ChameleonColors[newIndex].id;
-                                
+
                                 SetVehicleModKit(veh.Handle, 0);
                             }
                         }
-                        
+
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == secondaryColorsMenu)
@@ -1195,7 +1198,8 @@ namespace vMenuClient
                     primaryColorsMenu.AddMenuItem(metalList);
                     primaryColorsMenu.AddMenuItem(utilList);
                     primaryColorsMenu.AddMenuItem(wornList);
-                    if (IsServerUsingChameleonColours()) {
+                    if (IsServerUsingChameleonColours())
+                    {
                         var chameleonList = new MenuListItem("Chameleon", chameleon, 0);
 
                         primaryColorsMenu.AddMenuItem(chameleonList);

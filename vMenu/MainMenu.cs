@@ -371,7 +371,7 @@ namespace vMenuClient
         /// It triggers the menu creations, setting of initial flags like PVP, player stats,
         /// and triggers the creation of Tick functions from the FunctionsController class.
         /// </summary>
-        private static async void PostPermissionsSetup()
+        private static void PostPermissionsSetup()
         {
             switch (GetSettingsInt(Setting.vmenu_pvp_mode))
             {
@@ -429,7 +429,7 @@ namespace vMenuClient
             MenuController.AddSubmenu(Menu, WorldSubmenu);
 
             // Create all (sub)menus.
-            await CreateSubmenus();
+            CreateSubmenus();
 
             if (!GetSettingsBool(Setting.vmenu_disable_player_stats_setup))
             {
@@ -553,7 +553,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.
         /// </summary>
-        private async static Task CreateSubmenus()
+        private static void CreateSubmenus()
         {
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
@@ -628,7 +628,7 @@ namespace vMenuClient
             if (IsAllowed(Permission.VSMenu))
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
-                Menu menu = await VehicleSpawnerMenu.GetMenu();
+                Menu menu = VehicleSpawnerMenu.GetMenu();
                 MenuItem button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.")
                 {
                     Label = "→→→"
@@ -671,7 +671,7 @@ namespace vMenuClient
             if (IsAllowed(Permission.PAMenu))
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
-                Menu menu = await PlayerAppearanceMenu.GetMenu();
+                Menu menu = PlayerAppearanceMenu.GetMenu();
                 MenuItem button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.")
                 {
                     Label = "→→→"
