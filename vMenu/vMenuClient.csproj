@@ -6,7 +6,6 @@
     <AssemblyName>vMenuClient.net</AssemblyName>
     <TargetName>$(AssemblyName)</TargetName>
     <DefineConstants>CLIENT</DefineConstants>
-    <LangVersion>latest</LangVersion>
     <PackageId>vMenuClient.net</PackageId>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <BaseOutputPath></BaseOutputPath>

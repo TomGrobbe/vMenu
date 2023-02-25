@@ -303,7 +303,7 @@ namespace vMenuShared
         public static List<AddonGroup> GetGroupData(Player player, string groupType)
         {
             List<AddonGroup> lst = GetGroups().Groups.Where(x => x.Type == groupType).ToList();
-            List<AddonGroup> finalLst = new();
+            List<AddonGroup> finalLst = new List<AddonGroup>();
             foreach (AddonGroup group in lst)
             {
                 string permission = group.Permission;

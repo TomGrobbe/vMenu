@@ -3,7 +3,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>vMenuServer.net</AssemblyName>
     <PackageId>vMenuServer.net</PackageId>
-    <LangVersion>latest</LangVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <BaseOutputPath></BaseOutputPath>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
