@@ -21,14 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    
     <PackageReference Include="CitizenFX.Core.Server" Version="1.0.6290" ExcludeAssets="runtime" />
-    
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" ExcludeAssets="Compile" GeneratePathProperty="true" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(PkgNewtonsoft_Json)\lib\portable-net40+sl5+win8+wp8+wpa81\Newtonsoft.Json.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -58,6 +52,13 @@
 
   <ItemGroup>
     <None Include=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

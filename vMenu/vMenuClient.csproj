@@ -20,15 +20,11 @@
 
   <ItemGroup>
     <PackageReference Include="MenuAPI.FiveM" Version="3.2.2" />
-
     <Reference Include="Microsoft.CSharp" />
-    
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.6290" ExcludeAssets="runtime" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" ExcludeAssets="Compile" GeneratePathProperty="true" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>$(PkgNewtonsoft_Json)\lib\portable-net40+sl5+win8+wp8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
     </Reference>
-
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.6290" ExcludeAssets="runtime" />
   </ItemGroup>
   
   <ItemGroup>
