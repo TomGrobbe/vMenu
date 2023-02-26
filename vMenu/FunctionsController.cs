@@ -62,8 +62,13 @@ namespace vMenuClient
         /// Setup the required tick functions
         /// </summary>
         [EventHandler("vMenu:SetupTickFunctions")]
-        public void SetupTickFunctions()
+        public async void SetupTickFunctions()
         {
+            while (MainMenu.MiscSettingsMenu == null)
+            {
+                await BaseScript.Delay(0);
+            }
+
             // Always needed
             Tick += AnimationsAndInteractions;
             Tick += PlayerClothingAnimationsController;
