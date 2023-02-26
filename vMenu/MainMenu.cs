@@ -553,7 +553,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates all the submenus depending on the permissions of the user.
         /// </summary>
-        private static void CreateSubmenus()
+        private static async void CreateSubmenus()
         {
             // Add the online players menu.
             if (IsAllowed(Permission.OPMenu))
@@ -628,7 +628,7 @@ namespace vMenuClient
             if (IsAllowed(Permission.VSMenu))
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
-                Menu menu = VehicleSpawnerMenu.GetMenu();
+                Menu menu = await VehicleSpawnerMenu.GetMenu();
                 MenuItem button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.")
                 {
                     Label = "→→→"
@@ -671,7 +671,7 @@ namespace vMenuClient
             if (IsAllowed(Permission.PAMenu))
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
-                Menu menu = PlayerAppearanceMenu.GetMenu();
+                Menu menu = await PlayerAppearanceMenu.GetMenu();
                 MenuItem button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.")
                 {
                     Label = "→→→"

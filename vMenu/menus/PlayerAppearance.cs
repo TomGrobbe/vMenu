@@ -1,10 +1,13 @@
 using CitizenFX.Core;
 using MenuAPI;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
@@ -17,6 +20,7 @@ namespace vMenuClient
         private Menu savedPedsMenu;
         private Menu spawnPedsMenu;
         private Menu addonPedsMenu;
+        private Menu groupPedsMenu;
         private Menu mainPedsMenu = new Menu("Main Peds", "Spawn A Ped");
         private Menu animalsPedsMenu = new Menu("Animals", "Spawn A Ped");
         private Menu malePedsMenu = new Menu("Male Peds", "Spawn A Ped");
@@ -34,7 +38,7 @@ namespace vMenuClient
         /// <summary>
         /// Creates the menu(s).
         /// </summary>
-        private void CreateMenu()
+        private async Task CreateMenu()
         {
             // Create the menu.
             menu = new Menu(Game.Player.Name, "Player Appearance");
@@ -42,12 +46,13 @@ namespace vMenuClient
             pedCustomizationMenu = new Menu(Game.Player.Name, "Customize Saved Ped");
             spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
-
+            groupPedsMenu = new Menu(Game.Player.Name, "Ped Groups");
 
             // Add the (submenus) to the menu pool.
             MenuController.AddSubmenu(menu, pedCustomizationMenu);
             MenuController.AddSubmenu(menu, savedPedsMenu);
             MenuController.AddSubmenu(menu, spawnPedsMenu);
+            MenuController.AddSubmenu(spawnPedsMenu, groupPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, addonPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, mainPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, animalsPedsMenu);
@@ -64,6 +69,7 @@ namespace vMenuClient
 
             MenuItem spawnByNameBtn = new MenuItem("Spawn By Name", "Spawn a ped by entering it's name manually.");
             MenuItem addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") { Label = "→→→" };
+            MenuItem groupPedsBtn = new MenuItem("Ped Groups", "Spawn a ped from the groups list.") { Label = "→→→" };
             MenuItem mainPedsBtn = new MenuItem("Main Peds", "Select a new ped from the main player-peds list.") { Label = "→→→" };
             MenuItem animalPedsBtn = new MenuItem("Animals", "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.") { Label = "→→→" };
             MenuItem malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") { Label = "→→→" };
@@ -291,6 +297,103 @@ namespace vMenuClient
                 savedPed = item.ItemData;
                 selectedSavedPedMenu.MenuSubtitle = item.Text;
             };
+
+            List<AddonGroup> customGroups = new List<AddonGroup>();
+
+            bool completed = false;
+            int wait = 0;
+
+            // TODO: replace with client<->server RPC once implemented in CitizenFX!
+            Func<string, bool> getGroups = (data) =>
+            {
+                customGroups = JsonConvert.DeserializeObject<List<AddonGroup>>(data);
+                completed = true;
+                return true;
+            };
+
+            while (!completed)
+            {
+                TriggerServerEvent("vMenu:RequestAddonList", "ped", getGroups);
+                await BaseScript.Delay(500);
+
+                wait++;
+                if (wait > 1000)
+                {
+                    Notify.Error("Failed to get addon ped groups from the server. Please try again later.");
+                    break;
+                }
+            }
+
+            if (customGroups != null && customGroups.Count > 0 && IsAllowed(Permission.PAGroups))
+            {
+                spawnPedsMenu.AddMenuItem(groupPedsBtn);
+                MenuController.BindMenuItem(spawnPedsMenu, groupPedsMenu, groupPedsBtn);
+                Menu unavailablePeds = new Menu("Grouped Peds", "Unavailable Ped Models");
+                MenuItem unavailablePedsBtn = new MenuItem("Unavailable Peds", "These Ped Models are not currently being streamed (correctly) and are not able to be spawned.") { Label = "→→→" };
+                MenuController.AddSubmenu(groupPedsMenu, unavailablePeds);
+
+                foreach (AddonGroup group in customGroups)
+                {
+                    Menu categoryMenu = new Menu($"{group.Label} Spawner", group.Label);
+                    MenuItem categoryBtn = new MenuItem(group.Label, $"Spawn an addon vehicle from the {group.Label} group.") { Label = "→→→" };
+
+                    groupPedsMenu.AddMenuItem(categoryBtn);
+
+                    group.Options.OrderBy(x => x);
+
+                    foreach (AddonGroupOption groupOption in group.Options)
+                    {
+                        uint pedHash = (uint)GetHashKey(groupOption.Model);
+
+                        string name = GetLabelText(groupOption.Model);
+                        if (string.IsNullOrEmpty(name) || name == "NULL")
+                            name = groupOption.Label;
+
+                        MenuItem pedBtn = new MenuItem(name, $"Click to spawn {name}.")
+                        {
+                            Label = $"({groupOption.Model})",
+                            ItemData = groupOption.Model // store the model name in the button data.
+                        };
+
+                        // This should be impossible to be false, but we check it anyway.
+                        if (IsModelInCdimage(pedHash))
+                        {
+                            categoryMenu.AddMenuItem(pedBtn);
+                        }
+                        else
+                        {
+                            pedBtn.Enabled = false;
+                            pedBtn.Description = "This ped model is not available. Please ask the server owner to check if the ped model is being streamed correctly.";
+                            pedBtn.LeftIcon = MenuItem.Icon.LOCK;
+                            unavailablePeds.AddMenuItem(pedBtn);
+                        }
+                    }
+
+                    if (categoryMenu.Size > 0)
+                    {
+                        MenuController.AddSubmenu(groupPedsMenu, categoryMenu);
+                        MenuController.BindMenuItem(groupPedsMenu, categoryMenu, categoryBtn);
+
+                        categoryMenu.OnItemSelect += async (sender, item, index) =>
+                        {
+                            await SetPlayerSkin((uint)GetHashKey(item.ItemData), new PedInfo() { version = -1 }, true);
+                        };
+                    }
+                    else
+                    {
+                        categoryBtn.Description = "There are no peds available in this category.";
+                        categoryBtn.Enabled = false;
+                        categoryBtn.LeftIcon = MenuItem.Icon.LOCK;
+                        categoryBtn.Label = "";
+                    }
+                }
+
+                if (unavailablePeds.Size > 0)
+                {
+                    groupPedsMenu.AddMenuItem(unavailablePedsBtn);
+                    MenuController.BindMenuItem(groupPedsMenu, unavailablePeds, unavailablePedsBtn);
+                }
+            }
 
             if (AddonPeds != null && AddonPeds.Count > 0 && IsAllowed(Permission.PAAddonPeds))
             {
@@ -601,11 +704,11 @@ namespace vMenuClient
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>
         /// <returns>The Menu</returns>
-        public Menu GetMenu()
+        public async Task<Menu> GetMenu()
         {
             if (menu == null)
             {
-                CreateMenu();
+                await CreateMenu();
             }
             return menu;
         }
@@ -1184,6 +1287,7 @@ namespace vMenuClient
             ["a_c_cat_01"] = "Cat",
             ["a_c_chickenhawk"] = "ChickenHawk",
             ["a_c_chimp"] = "Chimp",
+            ["A_C_Chimp_02"] = "Chimp 2", // b2802
             ["a_c_chop"] = "Chop",
             ["a_c_chop_02"] = "Chop 2", // mpsecurity
             ["a_c_cormorant"] = "Cormorant",
@@ -1204,6 +1308,7 @@ namespace vMenuClient
             ["a_c_poodle"] = "Poodle",
             ["a_c_pug"] = "Pug",
             ["a_c_rabbit_01"] = "Rabbit",
+            ["a_c_rabbit_02"] = "Rabbit 2", // b2802
             ["a_c_rat"] = "Rat",
             ["a_c_retriever"] = "Retriever",
             ["a_c_rhesus"] = "Rhesus",
@@ -1219,6 +1324,7 @@ namespace vMenuClient
         {
             ["a_m_m_acult_01"] = "Acult01AMM",
             ["a_m_m_afriamer_01"] = "AfriAmer01AMM",
+            ["A_M_M_BankRobber_01"] = "AMMBankRobber",
             ["a_m_m_beach_01"] = "Beach01AMM",
             ["a_m_m_beach_02"] = "Beach02AMM",
             ["a_m_m_bevhills_01"] = "Bevhills01AMM",
@@ -1466,10 +1572,12 @@ namespace vMenuClient
             ["csb_celeb_01"] = "Celeb01Cutscene", // mpheist3
             ["csb_chef"] = "ChefCutscene",
             ["csb_chef2"] = "Chef2Cutscene",
+            ["csb_chef3"] = "Chef3Cutscene",
             ["csb_chin_goon"] = "ChinGoonCutscene",
             ["csb_cletus"] = "CletusCutscene",
             ["csb_cop"] = "CopCutscene",
             ["csb_customer"] = "CustomerCutscene",
+            ["csb_dax"] = "DaxCutscene",
             ["csb_denise_friend"] = "DeniseFriendCutscene",
             ["csb_dix"] = "DixCutscene",
             ["csb_djblamadon"] = "DJBlaMadonCutscene",
@@ -1502,6 +1610,8 @@ namespace vMenuClient
             ["csb_jio_02"] = "JIO02Cutscene", // mpsecurity
             ["csb_johnny_guns"] = "JohnnyGunsCutscene", // mpsecurity
             ["csb_juanstrickler"] = "JuanStricklerCutscene", // mpheist4
+            ["CSB_Labrat"] = "LabRatCutscene",
+            ["CSB_Luchadora"] = "LuchadoraCutscene",
             ["csb_maude"] = "MaudeCutscene",
             ["csb_miguelmadrazo"] = "MiguelMadrazoCutscene", // mpheist4
             ["csb_mimi"] = "MimiCutscene", // mptuner
@@ -1555,6 +1665,7 @@ namespace vMenuClient
             ["g_f_importexport_01"] = "ImportExport01GF",
             ["g_f_y_ballas_01"] = "Ballas01GFY",
             ["g_f_y_families_01"] = "Families01GFY",
+            ["G_F_M_Fooliganz_01"] = "Fooliganz01GFM",
             ["g_f_y_lost_01"] = "Lost01GFY",
             ["g_f_y_vagos_01"] = "Vagos01GFY",
             ["g_m_importexport_01"] = "ImportExport01GM",
@@ -1569,6 +1680,8 @@ namespace vMenuClient
             ["g_m_m_chicold_01"] = "ChiCold01GMM",
             ["g_m_m_chigoon_01"] = "ChiGoon01GMM",
             ["g_m_m_chigoon_02"] = "ChiGoon02GMM",
+            ["G_M_M_Fooliganz_01"] = "Fooliganz01GMM",
+            ["G_M_M_FriedlanderGoons_01"] = "FriedlanderGoons01GMM",
             ["g_m_m_genthug_01"] = "GenThug01GMM", // mpsum2
             ["g_m_m_goons_01"] = "Goons01GMM", // mpsecurity
             ["g_m_m_korboss_01"] = "KorBoss01GMM",
@@ -1606,6 +1719,7 @@ namespace vMenuClient
             ["hc_gunman"] = "PestContGunman",
             ["hc_hacker"] = "Hacker",
             ["ig_abigail"] = "Abigail",
+            ["IG_AcidLabCook"] = "AcidLabCook",
             ["ig_agatha"] = "Agatha", // mpvinewood
             ["ig_agent"] = "Agent",
             ["ig_agent_02"] = "Agent02", //mpsum2
@@ -1635,6 +1749,7 @@ namespace vMenuClient
             ["ig_celeb_01"] = "Celeb01", // mpheist3
             ["ig_chef"] = "Chef",
             ["ig_chef2"] = "Chef2",
+            ["ig_chef_03"] = "Chef3",
             ["ig_chengsr"] = "WeiCheng",
             ["ig_chrisformage"] = "CrisFormage",
             ["ig_claypain"] = "Claypain",
@@ -1642,6 +1757,7 @@ namespace vMenuClient
             ["ig_cletus"] = "Cletus",
             ["ig_dale"] = "Dale",
             ["ig_davenorton"] = "DaveNorton",
+            ["IG_Dax"] = "Dax",
             ["ig_denise"] = "Denise",
             ["ig_devin"] = "Devin",
             ["ig_dix"] = "Dix",
@@ -1661,6 +1777,7 @@ namespace vMenuClient
             ["ig_dom"] = "Dom",
             ["ig_dreyfuss"] = "Dreyfuss",
             ["ig_drfriedlander"] = "DrFriedlander",
+            ["ig_drfriedlander_02"] = "DrFriedlander02",
             ["ig_drugdealer"] = "DrugDealer", // mptuner
             ["ig_englishdave"] = "EnglishDave",
             ["ig_englishdave_02"] = "EnglishDave02", // mpheist4
@@ -1669,15 +1786,20 @@ namespace vMenuClient
             ["ig_fabien"] = "Fabien",
             ["ig_fbisuit_01"] = "FbiSuit01",
             ["ig_floyd"] = "Floyd",
+            ["IG_Fooliganz_01"] = "Fooliganz01",
+            ["IG_Fooliganz_02"] = "Fooliganz02",
+            ["IG_Furry"] = "Furry",
             ["ig_g"] = "G",
             ["ig_georginacheng"] = "GeorginaCheng", // mpheist3
             ["ig_golfer_a"] = "GolferA", // mpsecurity
             ["ig_golfer_b"] = "GolferB", // mpsecurity
             ["ig_groom"] = "Groom",
+            ["IG_GunVanSeller"] = "GunVanSeller", // mpheist4
             ["ig_gustavo"] = "Gustavo", // mpheist4
             ["ig_hao"] = "Hao",
             ["ig_hao_02"] = "Hao02", // patchday26ng
             ["ig_helmsmanpavel"] = "HelmsmanPavel", // mpheist4
+            ["IG_HippyLeader"] = "HippyLeader", // mpheist4
             ["ig_huang"] = "Huang", // mpheist3
             ["ig_hunter"] = "Hunter",
             ["ig_imani"] = "Imani", // mpsecurity
@@ -1709,6 +1831,7 @@ namespace vMenuClient
             ["ig_kaylee"] = "Kaylee", // mpheist4
             ["ig_kerrymcintosh"] = "KerryMcIntosh",
             ["ig_kerrymcintosh_02"] = "KerryMcIntosh02",
+            ["IG_Labrat"] = "Labrat",
             ["ig_lacey_jones_02"] = "LaceyJones02",
             ["ig_lamardavis"] = "LamarDavis",
             ["ig_lamardavis_02"] = "LamarDavis02", // mpsecurity
@@ -1720,6 +1843,7 @@ namespace vMenuClient
             ["ig_lifeinvad_01"] = "Lifeinvad01",
             ["ig_lifeinvad_02"] = "Lifeinvad02",
             ["ig_lildee"] = "LilDee", // mptuner
+            ["IG_Luchadora"] = "Luchadora", // mptuner
             ["ig_magenta"] = "Magenta",
             ["ig_malc"] = "Malc",
             ["ig_manuel"] = "Manuel",
@@ -1743,6 +1867,7 @@ namespace vMenuClient
             ["ig_musician_00"] = "Musician00", // mpsecurity
             ["ig_natalia"] = "Natalia",
             ["ig_nervousron"] = "NervousRon",
+            ["IG_NervousRon_02"] = "NervousRon02",
             ["ig_nigel"] = "Nigel",
             ["ig_old_man1a"] = "OldMan1a",
             ["ig_old_man2"] = "OldMan2",
@@ -1900,6 +2025,7 @@ namespace vMenuClient
             ["s_m_m_gardener_01"] = "Gardener01SMM",
             ["s_m_m_gentransport"] = "GentransportSMM",
             ["s_m_m_hairdress_01"] = "Hairdress01SMM",
+            ["S_M_M_HazmatWorker_01"] = "HazmatWorker01SMM",
             ["s_m_m_highsec_01"] = "Highsec01SMM",
             ["s_m_m_highsec_02"] = "Highsec02SMM",
             ["s_m_m_highsec_03"] = "Highsec03SMM", // mpheist3
@@ -2042,6 +2168,7 @@ namespace vMenuClient
             ["u_m_m_streetart_01"] = "StreetArt01",
             ["u_m_m_vince"] = "Vince", // mpvinewood
             ["u_m_m_willyfist"] = "WillyFist",
+            ["U_M_M_YuleMonster"] = "YuleMonster",
             ["u_m_o_dean"] = "Dean", // mpvinewood
             ["u_m_o_finguru_01"] = "Finguru01",
             ["u_m_o_taphillbilly"] = "Taphillbilly",
