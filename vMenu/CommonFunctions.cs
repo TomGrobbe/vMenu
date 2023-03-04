@@ -567,6 +567,27 @@ namespace vMenuClient
                     // it seem to load the world ANY faster than without, but whatever.
                     RequestCollisionAtCoord(pos.X, pos.Y, z);
 
+                    // Set focus for that area.
+                    SetFocusPosAndVel(pos.X, pos.Y, pos.Z, 0, 0, 0);
+
+                    // Start to load the scene.
+                    NewLoadSceneStart(pos.X, pos.Y, pos.Z, pos.X, pos.Y, pos.Z, 50f, 0);
+
+                    // Reset the timer.
+                    tempTimer = GetGameTimer();
+
+                    // Wait for the scene to be loaded with a timeout.
+                    while (!IsNewLoadSceneLoaded() && Game.GameTime - tempTimer < 10000) // Can take up to 10 seconds
+                    {
+                        await BaseScript.Delay(0);
+                    }
+
+                    // Clear the focus for that area.
+                    ClearFocus();
+
+                    // Important! This step was missing before, not setting this would cause areas outside the scene to become unrendered aka "city mud" would appear.
+                    NewLoadSceneStop();
+
                     // If the player is in a vehicle, teleport the vehicle to this new position.
                     if (inVehicle())
                     {
@@ -666,27 +687,6 @@ namespace vMenuClient
                     }
                     Game.PlayerPed.IsPositionFrozen = false;
                 }
-
-                // Set focus for that area.
-                SetFocusPosAndVel(pos.X, pos.Y, pos.Z, 0, 0, 0);
-
-                // Start to load the scene.
-                NewLoadSceneStart(pos.X, pos.Y, pos.Z, pos.X, pos.Y, pos.Z, 50f, 0);
-
-                // Reset the timer.
-                tempTimer = GetGameTimer();
-
-                // Wait for the scene to be loaded with a timeout.
-                while (!IsNewLoadSceneLoaded() && Game.GameTime - tempTimer < 10000) // Can take up to 10 seconds
-                {
-                    await BaseScript.Delay(0);
-                }
-
-                // Clear the focus for that area.
-                ClearFocus();
-
-                // Important! This step was missing before, not setting this would cause areas outside the scene to become unrendered aka "city mud" would appear.
-                NewLoadSceneStop();
 
                 // Fade screen in and reset the camera angle.
                 DoScreenFadeIn(500);
