@@ -16,7 +16,9 @@ namespace vMenuClient.data
             (uint)GetHashKey("a_c_cat_01"),
             (uint)GetHashKey("a_c_chickenhawk"),
             (uint)GetHashKey("a_c_chimp"),
+            (uint)GetHashKey("a_c_chimp_02"), // mpchristmas3
             (uint)GetHashKey("a_c_chop"),
+            (uint)GetHashKey("a_c_chop_02"), // mpsecurity
             (uint)GetHashKey("a_c_cormorant"),
             (uint)GetHashKey("a_c_cow"),
             (uint)GetHashKey("a_c_coyote"),
@@ -29,11 +31,13 @@ namespace vMenuClient.data
             (uint)GetHashKey("a_c_husky"),
             (uint)GetHashKey("a_c_killerwhale"),
             (uint)GetHashKey("a_c_mtlion"),
+            (uint)GetHashKey("a_c_panther"), // mpheist4
             (uint)GetHashKey("a_c_pig"),
             (uint)GetHashKey("a_c_pigeon"),
             (uint)GetHashKey("a_c_poodle"),
             (uint)GetHashKey("a_c_pug"),
             (uint)GetHashKey("a_c_rabbit_01"),
+            (uint)GetHashKey("a_c_rabbit_02"), // mpchristmas3
             (uint)GetHashKey("a_c_rat"),
             (uint)GetHashKey("a_c_retriever"),
             (uint)GetHashKey("a_c_rhesus"),
