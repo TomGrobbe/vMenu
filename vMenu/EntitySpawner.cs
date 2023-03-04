@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
+
 using CitizenFX.Core;
+
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
