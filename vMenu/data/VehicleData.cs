@@ -354,7 +354,7 @@ namespace vMenuClient
                 "GRESLEY",
                 "HABANERO",
                 "HUNTLEY",
-                "ISSI8", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "ISSI8", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "IWAGEN", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "JUBILEE", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "LANDSTALKER",
@@ -402,7 +402,7 @@ namespace vMenuClient
             public static List<string> Muscle { get; } = new List<string>()
             {
                 "BLADE",
-                "BROADWAY", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "BROADWAY", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "BUCCANEER",
                 "BUCCANEER2",
                 "BUFFALO4", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
@@ -424,6 +424,7 @@ namespace vMenuClient
                 "DUKES3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "EUDORA", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
                 "ELLIE",
+                "EUDORA", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "FACTION",
                 "FACTION2",
                 "FACTION3",
@@ -467,11 +468,12 @@ namespace vMenuClient
                 "SLAMVAN6",
                 "STALION",
                 "STALION2",
-                "TAHOMA", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "TAHOMA", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "TAMPA",
                 "TULIP2", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
                 "TAMPA3",
                 "TULIP",
+                "TULIP2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "VAMOS",
                 "VIGERO",
                 "VIGERO2", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
@@ -564,6 +566,7 @@ namespace vMenuClient
                 "ELEGY2",
                 "EVERON2", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
                 "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "EVERON2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "FELTZER2",
                 "FLASHGT",
                 "FUROREGT",
@@ -595,13 +598,13 @@ namespace vMenuClient
                 "NINEF2",
                 "OMNIS",
                 "OMNISEGT", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
-                "PANTHERE", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "PANTHERE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "PARAGON", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PARAGON2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PARIAH",
                 "PENUMBRA",
                 "PENUMBRA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
-                "R300", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "R300", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "RAIDEN",
                 "RAPIDGT",
                 "RAPIDGT2",
@@ -656,7 +659,7 @@ namespace vMenuClient
                 "EMERUS", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ENTITYXF",
                 "ENTITY2",
-                "ENTITY3", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "ENTITY3", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "FMJ",
                 "FURIA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "GP1",
@@ -692,7 +695,7 @@ namespace vMenuClient
                 "VACCA",
                 "VAGNER",
                 "VIGILANTE",
-                "VIRTUE", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "VIRTUE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "VISIONE",
                 "VOLTIC",
                 "VOLTIC2",
@@ -738,13 +741,13 @@ namespace vMenuClient
                 "LECTRO",
                 "MANCHEZ",
                 "MANCHEZ2", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
-                "MANCHEZ3", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "MANCHEZ3", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "NEMESIS",
                 "NIGHTBLADE",
                 "OPPRESSOR",
                 "OPPRESSOR2",
                 "PCJ",
-                "POWERSURGE", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "POWERSURGE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "RATBIKE",
                 "REEVER", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "RROCKET", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
@@ -776,7 +779,7 @@ namespace vMenuClient
                 "BLAZER4",
                 "BLAZER5",
                 "BODHI2",
-                "BOOR", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "BOOR", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "BRAWLER",
                 "BRUISER",
                 "BRUISER2",
@@ -930,7 +933,7 @@ namespace vMenuClient
                 "GBURRITO",
                 "GBURRITO2",
                 "JOURNEY",
-                "JOURNEY2", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "JOURNEY2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "MINIVAN",
                 "MINIVAN2",
                 "PARADISE",
@@ -944,7 +947,7 @@ namespace vMenuClient
                 "SPEEDO4",
                 "SURFER",
                 "SURFER2",
-                "SURFER3", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "SURFER3", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "TACO",
                 "YOUGA",
                 "YOUGA2",
@@ -1041,7 +1044,7 @@ namespace vMenuClient
                 "BLIMP3",
                 "BOMBUSHKA",
                 "CARGOPLANE",
-                "CARGOPLANE2", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "CARGOPLANE2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "CUBAN800",
                 "DODO",
                 "DUSTER",
@@ -1078,7 +1081,7 @@ namespace vMenuClient
             {
                 "AIRBUS",
                 "BRICKADE",
-                "BRICKADE2", // LOS SANTOS DRUG WARS (mpchristmas3) DLC - Requires b2802
+                "BRICKADE2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "BUS",
                 "COACH",
                 "PBUS2",
@@ -1212,7 +1215,8 @@ namespace vMenuClient
             Military = 19,
             Commercial = 20,
             Trains = 21
-             */
+            OpenWheel = 22
+            */
 
             public static Dictionary<string, List<string>> VehicleClasses { get; } = new Dictionary<string, List<string>>()
             {
