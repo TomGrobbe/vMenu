@@ -577,7 +577,7 @@ namespace vMenuClient
                     tempTimer = GetGameTimer();
 
                     // Wait for the scene to be loaded with a timeout.
-                    while (!IsNewLoadSceneLoaded() && Game.GameTime - tempTimer < 10000) // Can take up to 10 seconds
+                    while (!IsNewLoadSceneLoaded() && Game.GameTime - tempTimer < 3000)
                     {
                         await BaseScript.Delay(0);
                     }
