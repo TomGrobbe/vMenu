@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
+
 using Newtonsoft.Json;
 using System.Collections;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenuShared
 {
@@ -40,7 +40,7 @@ namespace vMenuShared
             vmenu_auto_ban_cheaters_ban_message,
             vmenu_log_ban_actions,
             vmenu_log_kick_actions,
-            
+
             // Weather settings
             vmenu_enable_weather_sync,
             vmenu_enable_dynamic_weather,
