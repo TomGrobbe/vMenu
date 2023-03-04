@@ -540,6 +540,9 @@ namespace vMenuClient
                     await Delay(0);
                 }
 
+                // Timer to make sure things don't get out of hand (player having to wait forever to get teleported if something fails).
+                int tempTimer;
+
                 // This will be used to get the return value from the groundz native.
                 float groundZ = 850.0f;
 
@@ -564,24 +567,26 @@ namespace vMenuClient
                     // it seem to load the world ANY faster than without, but whatever.
                     RequestCollisionAtCoord(pos.X, pos.Y, z);
 
-                    // Request a new scene. This will trigger the world to be loaded around that area.
-                    NewLoadSceneStart(pos.X, pos.Y, z, pos.X, pos.Y, z, 50f, 0);
+                    // Set focus for that area.
+                    SetFocusPosAndVel(pos.X, pos.Y, pos.Z, 0, 0, 0);
 
-                    // Timer to make sure things don't get out of hand (player having to wait forever to get teleported if something fails).
-                    int tempTimer = GetGameTimer();
+                    // Start to load the scene.
+                    NewLoadSceneStart(pos.X, pos.Y, pos.Z, pos.X, pos.Y, pos.Z, 50f, 0);
 
-                    // Wait for the new scene to be loaded.
-                    while (IsNetworkLoadingScene())
+                    // Reset the timer.
+                    tempTimer = GetGameTimer();
+
+                    // Wait for the scene to be loaded with a timeout.
+                    while (!IsNewLoadSceneLoaded() && Game.GameTime - tempTimer < 3000)
                     {
-                        // If this takes longer than 1 second, just abort. It's not worth waiting that long.
-                        if (GetGameTimer() - tempTimer > 1000)
-                        {
-                            Log("Waiting for the scene to load is taking too long (more than 1s). Breaking from wait loop.");
-                            break;
-                        }
-
-                        await Delay(0);
+                        await BaseScript.Delay(0);
                     }
+
+                    // Clear the focus for that area.
+                    ClearFocus();
+
+                    // Important! This step was missing before, not setting this would cause areas outside the scene to become unrendered aka "city mud" would appear.
+                    NewLoadSceneStop();
 
                     // If the player is in a vehicle, teleport the vehicle to this new position.
                     if (inVehicle())
