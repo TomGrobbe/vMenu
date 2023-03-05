@@ -38,8 +38,6 @@ namespace vMenuClient
         /// </summary>
         private static bool IsOriginalLanguageStored = false;
 
-        //private bool 
-
         #endregion
 
         #region Constructor
@@ -94,157 +92,17 @@ namespace vMenuClient
                 {
                     MenuItem item = list[i1];
 
-                    #region Translate item parent menu title
+                    if (!string.IsNullOrEmpty(item.ParentMenu.MenuTitle))
+                        item.ParentMenu.MenuTitle = TranslateHelper(item.ParentMenu.MenuTitle);
 
-                    // Reset the item parent menu title to the original language
-                    item.ParentMenu.MenuTitle = OriginalLanguage.ContainsValue(item.ParentMenu.MenuTitle) ? OriginalLanguage.First(x => x.Value == item.ParentMenu.MenuTitle).Key : item.ParentMenu.MenuTitle;
-
-                    // Check if the languages dictionary contains the key matching the item parent menu title
-                    if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.ParentMenu.MenuTitle))
-                    {
-                        // Update the original language value with the new language translation
-                        OriginalLanguage[item.ParentMenu.MenuTitle] = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuTitle];
-
-                        // Set the new language
-                        item.ParentMenu.MenuTitle = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuTitle];
-                    }
-                    else
-                    {
-                        // These are the duplicate words that lost their way in the dictionary, we can recover them like this
-                        foreach (var lang in Languages)
-                        {
-                            if (lang.Value.ContainsValue(item.ParentMenu.MenuTitle))
-                            {
-                                // Default the item parent menu title
-                                item.ParentMenu.MenuTitle = lang.Value.First(x => x.Value.Equals(item.ParentMenu.MenuTitle)).Key;
-
-                                // Update it
-                                if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.ParentMenu.MenuTitle))
-                                {
-                                    // Set the new language
-                                    item.ParentMenu.MenuTitle = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuTitle];
-                                }
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Translate item parent menu subtitle
-
-                    // item parent menu subtitle isn't always available so we check for it being null or empty
                     if (!string.IsNullOrEmpty(item.ParentMenu.MenuSubtitle))
-                    {
-                        // Reset the item parent menu subtitle to the original language
-                        item.ParentMenu.MenuSubtitle = OriginalLanguage.ContainsValue(item.ParentMenu.MenuSubtitle) ? OriginalLanguage.First(x => x.Value == item.ParentMenu.MenuSubtitle).Key : item.ParentMenu.MenuSubtitle;
+                        item.ParentMenu.MenuSubtitle = TranslateHelper(item.ParentMenu.MenuSubtitle);
 
-                        // Check if the languages dictionary contains the key matching the item parent menu subtitle
-                        if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.ParentMenu.MenuSubtitle))
-                        {
-                            // Update the original language value with the new language translation
-                            OriginalLanguage[item.ParentMenu.MenuSubtitle] = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuSubtitle];
+                    if (!string.IsNullOrEmpty(item.Text))
+                        item.Text = TranslateHelper(item.Text);
 
-                            // Set the new language
-                            item.ParentMenu.MenuSubtitle = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuSubtitle];
-                        }
-                        else
-                        {
-                            // These are the duplicate words that lost their way in the dictionary, we can recover them like this
-                            foreach (var lang in Languages)
-                            {
-                                if (lang.Value.ContainsValue(item.ParentMenu.MenuSubtitle))
-                                {
-                                    // Default the item parent menu subtitle
-                                    item.ParentMenu.MenuSubtitle = lang.Value.First(x => x.Value.Equals(item.ParentMenu.MenuSubtitle)).Key;
-
-                                    // Update it
-                                    if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.ParentMenu.MenuSubtitle))
-                                    {
-                                        // Set the new language
-                                        item.ParentMenu.MenuSubtitle = Languages[MiscSettings.CurrentLanguage][item.ParentMenu.MenuSubtitle];
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Translate item text
-
-                    // Reset the item text to the original language
-                    item.Text = OriginalLanguage.ContainsValue(item.Text) ? OriginalLanguage.First(x => x.Value == item.Text).Key : item.Text;
-
-                    // Check if the languages dictionary contains the key matching the item text
-                    if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.Text))
-                    {
-                        // Update the original language value with the new language translation
-                        OriginalLanguage[item.Text] = Languages[MiscSettings.CurrentLanguage][item.Text];
-
-                        // Set the new language
-                        item.Text = Languages[MiscSettings.CurrentLanguage][item.Text];
-                    }
-                    else
-                    {
-                        // These are the duplicate words that lost their way in the dictionary, we can recover them like this
-                        foreach (var lang in Languages)
-                        {
-                            if (lang.Value.ContainsValue(item.Text))
-                            {
-                                // Default the text
-                                item.Text = lang.Value.First(x => x.Value.Equals(item.Text)).Key;
-
-                                // Update it
-                                if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.Text))
-                                {
-                                    // Set the new language
-                                    item.Text = Languages[MiscSettings.CurrentLanguage][item.Text];
-                                }
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region Translate item description
-
-                    // Description isn't always available so we check for it being null or empty
                     if (!string.IsNullOrEmpty(item.Description))
-                    {
-                        // Reset the item description to the original language
-                        item.Description = OriginalLanguage.ContainsValue(item.Description) ? OriginalLanguage.First(x => x.Value == item.Description).Key : item.Description;
-
-                        // Check if the languages dictionary contains the key matching the item description
-                        if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.Description))
-                        {
-                            // Update the original language value with the new language translation
-                            OriginalLanguage[item.Description] = Languages[MiscSettings.CurrentLanguage][item.Description];
-
-                            // Set the new language
-                            item.Description = Languages[MiscSettings.CurrentLanguage][item.Description];
-                        }
-                        else
-                        {
-                            // These are the duplicate words that lost their way in the dictionary, we can recover them like this
-                            foreach (var lang in Languages)
-                            {
-                                if (lang.Value.ContainsValue(item.Description))
-                                {
-                                    // Default the description
-                                    item.Description = lang.Value.First(x => x.Value.Equals(item.Description)).Key;
-
-                                    // Update it
-                                    if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(item.Description))
-                                    {
-                                        // Set the new language
-                                        item.Description = Languages[MiscSettings.CurrentLanguage][item.Description];
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    #endregion
+                        item.Description = TranslateHelper(item.Description);
 
                     // Solves resource time warning spiking so high when building the menu
                     if (slowDownLoop)
@@ -253,6 +111,47 @@ namespace vMenuClient
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region Translate helper
+
+        private static string TranslateHelper(string text)
+        {
+            // Reset the text to the original language.
+            text = OriginalLanguage.ContainsValue(text) ? OriginalLanguage.First(x => x.Value == text).Key : text;
+
+            // Check if the languages dictionary contains the key matching the text.
+            if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(text))
+            {
+                // Update the original language value with the new language translation.
+                OriginalLanguage[text] = Languages[MiscSettings.CurrentLanguage][text];
+
+                // Return the new translation.
+                return Languages[MiscSettings.CurrentLanguage][text];
+            }
+            else
+            {
+                // These are the duplicate words that lost their way in the dictionary, we can recover them like this.
+                foreach (var lang in Languages)
+                {
+                    if (lang.Value.ContainsValue(text))
+                    {
+                        // Default the text.
+                        text = lang.Value.First(x => x.Value.Equals(text)).Key;
+
+                        // Update it.
+                        if (Languages.ContainsKey(MiscSettings.CurrentLanguage) && Languages[MiscSettings.CurrentLanguage].ContainsKey(text))
+                        {
+                            // Return the new translation.
+                            return Languages[MiscSettings.CurrentLanguage][text];
+                        }
+                    }
+                }
+            }
+
+            return text;
         }
 
         #endregion
