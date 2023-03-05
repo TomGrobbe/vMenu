@@ -982,5 +982,30 @@ namespace vMenuServer
             }
         }
         #endregion
+
+        #region Language template dumper
+
+        [EventHandler("vMenu:DumpLanguageTemplate:Server")]
+        private void DumpLangaugeTemplate(string data)
+        {
+            try
+            {
+                bool successful = SaveResourceFile(GetCurrentResourceName(), "config/languages/TEMPLATE.json", data, -1);
+                if (successful)
+                {
+                    Debug.WriteLine($"\n\n^2[vMenu] [SUCCESS] ^7Template created successfully!\n\n");
+                }
+                else
+                {
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Could not save the language template!\n\n");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your TEMPLATE.json file could not be created or accessed! Error details: {e.Message}\n\n");
+            }
+        }
+
+        #endregion
     }
 }

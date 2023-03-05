@@ -28,6 +28,8 @@ namespace vMenuClient
         private Dictionary<Menu, ValidWeapon> weaponInfo;
         private Dictionary<MenuItem, string> weaponComponents;
 
+        private static readonly LanguageManager Lm = new LanguageManager();
+
         #region Create Menu
         /// <summary>
         /// Creates the menu.
@@ -131,7 +133,7 @@ namespace vMenuClient
             if (IsAllowed(Permission.WPParachute))
             {
                 // main parachute options menu setup
-                Menu parachuteMenu = new Menu("Parachute Options", "Parachute Options");
+                Menu parachuteMenu = Lm.GetMenu(new Menu("Parachute Options", "Parachute Options"));
                 MenuItem parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.") { Label = "→→→" };
 
                 MenuController.AddSubmenu(menu, parachuteMenu);
@@ -286,28 +288,28 @@ namespace vMenuClient
             MenuItem spacer = GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddMenuItem(spacer);
 
-            Menu handGuns = new Menu("Weapons", "Handguns");
+            Menu handGuns = Lm.GetMenu(new Menu("Weapons", "Handguns"));
             MenuItem handGunsBtn = new MenuItem("Handguns");
 
-            Menu rifles = new Menu("Weapons", "Assault Rifles");
+            Menu rifles = Lm.GetMenu(new Menu("Weapons", "Assault Rifles"));
             MenuItem riflesBtn = new MenuItem("Assault Rifles");
 
-            Menu shotguns = new Menu("Weapons", "Shotguns");
+            Menu shotguns = Lm.GetMenu(new Menu("Weapons", "Shotguns"));
             MenuItem shotgunsBtn = new MenuItem("Shotguns");
 
-            Menu smgs = new Menu("Weapons", "Sub-/Light Machine Guns");
+            Menu smgs = Lm.GetMenu(new Menu("Weapons", "Sub-/Light Machine Guns"));
             MenuItem smgsBtn = new MenuItem("Sub-/Light Machine Guns");
 
-            Menu throwables = new Menu("Weapons", "Throwables");
+            Menu throwables = Lm.GetMenu(new Menu("Weapons", "Throwables"));
             MenuItem throwablesBtn = new MenuItem("Throwables");
 
-            Menu melee = new Menu("Weapons", "Melee");
+            Menu melee = Lm.GetMenu(new Menu("Weapons", "Melee"));
             MenuItem meleeBtn = new MenuItem("Melee");
 
-            Menu heavy = new Menu("Weapons", "Heavy Weapons");
+            Menu heavy = Lm.GetMenu(new Menu("Weapons", "Heavy Weapons"));
             MenuItem heavyBtn = new MenuItem("Heavy Weapons");
 
-            Menu snipers = new Menu("Weapons", "Sniper Rifles");
+            Menu snipers = Lm.GetMenu(new Menu("Weapons", "Sniper Rifles"));
             MenuItem snipersBtn = new MenuItem("Sniper Rifles");
 
             MenuController.AddSubmenu(menu, handGuns);

@@ -19,6 +19,7 @@ namespace vMenuShared
             DontBanMe,
             NoClip,
             Staff,
+            DumpLang,
             #endregion
 
             // Online Players

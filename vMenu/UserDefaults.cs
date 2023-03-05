@@ -304,6 +304,12 @@ namespace vMenuClient
             set { SetSavedSettingsInt("miscLastTimeCycleModifierStrength", value); }
         }
 
+        public static string MiscCurrentLanguage
+        {
+            get { return GetResourceKvpString($"{SETTINGS_PREFIX}miscCurrentLanguage"); }
+            set { SetResourceKvp($"{SETTINGS_PREFIX}miscCurrentLanguage", value); }
+        }
+
         #region keybind menu
         public static bool KbTpToWaypoint
         {
@@ -587,6 +593,9 @@ namespace vMenuClient
 
                 KbPointKeys = MainMenu.MiscSettingsMenu.KbPointKeys;
                 prefs.Add("kbPointKeys", KbPointKeys);
+
+                MiscCurrentLanguage = MiscSettings.CurrentLanguage;
+                prefs.Add("miscCurrentLanguage", MiscCurrentLanguage);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
