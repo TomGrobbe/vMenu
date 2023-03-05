@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
@@ -21,6 +21,7 @@ namespace vMenuClient
         private Menu savedPedsMenu;
         private Menu spawnPedsMenu;
         private Menu addonPedsMenu;
+        private Menu groupedAddonPedsMenu;
         private Menu mainPedsMenu = new Menu("Main Peds", "Spawn A Ped");
         private Menu animalsPedsMenu = new Menu("Animals", "Spawn A Ped");
         private Menu malePedsMenu = new Menu("Male Peds", "Spawn A Ped");
@@ -28,6 +29,7 @@ namespace vMenuClient
         private Menu otherPedsMenu = new Menu("Other Peds", "Spawn A Ped");
 
         public static Dictionary<string, uint> AddonPeds;
+        public static List<Group> AddonPedGroups;
 
         public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
 
@@ -46,6 +48,7 @@ namespace vMenuClient
             pedCustomizationMenu = new Menu(Game.Player.Name, "Customize Saved Ped");
             spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
+            groupedAddonPedsMenu = new Menu(Game.Player.Name, "Grouped Addon Peds");
 
 
             // Add the (submenus) to the menu pool.
@@ -53,6 +56,7 @@ namespace vMenuClient
             MenuController.AddSubmenu(menu, savedPedsMenu);
             MenuController.AddSubmenu(menu, spawnPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, addonPedsMenu);
+            MenuController.AddSubmenu(spawnPedsMenu, groupedAddonPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, mainPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, animalsPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, malePedsMenu);
@@ -68,6 +72,7 @@ namespace vMenuClient
 
             MenuItem spawnByNameBtn = new MenuItem("Spawn By Name", "Spawn a ped by entering it's name manually.");
             MenuItem addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") { Label = "→→→" };
+            MenuItem groupedAddonPedsBtn = new MenuItem("Grouped Addon Peds", "Spawn a ped from the groups addon peds list.") { Label = "→→→" };
             MenuItem mainPedsBtn = new MenuItem("Main Peds", "Select a new ped from the main player-peds list.") { Label = "→→→" };
             MenuItem animalPedsBtn = new MenuItem("Animals", "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.") { Label = "→→→" };
             MenuItem malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") { Label = "→→→" };
@@ -329,6 +334,81 @@ namespace vMenuClient
                 {
                     await SetPlayerSkin((uint)GetHashKey(item.Text), new PedInfo() { version = -1 }, true);
                 };
+            }
+
+            if (AddonPedGroups != null && AddonPedGroups.Count > 0 && IsAllowed(Permission.PAAddonPeds))
+            {
+                spawnPedsMenu.AddMenuItem(groupedAddonPedsBtn);
+                MenuController.BindMenuItem(spawnPedsMenu, groupedAddonPedsMenu, groupedAddonPedsBtn);
+
+                Menu unavailablePeds = new Menu("Grouped Addon Peds", "Unavailable Grouped Addon Peds");
+                MenuItem unavailablePedsBtn = new MenuItem("Unavailable Peds", "These peds are not (correctly) streamed. If you are the server owner, please ensure that the ped name and model are valid!") { Label = "→→→" };
+                MenuController.AddSubmenu(groupedAddonPedsMenu, unavailablePeds);
+
+                var addons = AddonPedGroups.ToList();
+
+                foreach (Group group in AddonPedGroups)
+                {
+                    Menu groupMenu = new Menu($"{group.label} Spawner", group.description);
+                    MenuItem groupButton = new MenuItem(group.label, $"Spawn an addon ped from the {group.label} group.") { Label = "→→→" };
+
+                    groupedAddonPedsMenu.AddMenuItem(groupButton);
+
+                    group.items.OrderBy(x => x);
+
+                    foreach (GroupItem groupOption in group.items)
+                    {
+                        uint pedHash = (uint)GetHashKey(groupOption.model);
+                        string name = GetLabelText(groupOption.model);
+
+                        if (string.IsNullOrEmpty(name) || name == "NULL")
+                        {
+                            name = groupOption.model;
+                        }
+
+                        MenuItem pedButton = new MenuItem(name, $"Click to spawn {name}.")
+                        {
+                            Label = $"({groupOption.model})",
+                            ItemData = groupOption.model
+                        };
+
+                        if (IsModelInCdimage(pedHash))
+                        {
+                            groupMenu.AddMenuItem(pedButton);
+                        }
+                        else
+                        {
+                            pedButton.Enabled = false;
+                            pedButton.Description = "This ped is not available. Please ask the server owner to check if the ped is being streamed correctly.";
+                            pedButton.LeftIcon = MenuItem.Icon.LOCK;
+                            unavailablePeds.AddMenuItem(pedButton);
+                        }
+                    }
+
+                    if (groupMenu.Size > 0)
+                    {
+                        MenuController.AddSubmenu(groupedAddonPedsMenu, groupMenu);
+                        MenuController.BindMenuItem(groupedAddonPedsMenu, groupMenu, groupButton);
+
+                        groupMenu.OnItemSelect += async (sender, item, index) =>
+                        {
+                            await SetPlayerSkin((uint)GetHashKey(item.ItemData), new PedInfo() { version = -1 }, true);
+                        };
+                    }
+                    else
+                    {
+                        groupButton.Description = "There are no peds available in this group.";
+                        groupButton.Enabled = false;
+                        groupButton.LeftIcon = MenuItem.Icon.LOCK;
+                        groupButton.Label = "";
+                    }
+                }
+
+                if (unavailablePeds.Size > 0)
+                {
+                    groupedAddonPedsMenu.AddMenuItem(unavailablePedsBtn);
+                    MenuController.BindMenuItem(groupedAddonPedsMenu, unavailablePeds, unavailablePedsBtn);
+                }
             }
 
             if (IsAllowed(Permission.PASpawnNew))

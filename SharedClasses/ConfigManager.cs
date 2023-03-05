@@ -238,6 +238,131 @@ namespace vMenuShared
             }
         }
         #endregion
+
+        #region Addons
+
+        /// <summary>
+        /// Gets the addons.json data.
+        /// </summary>
+        /// <returns></returns>
+        public static Addons GetAddons()
+        {
+            Addons data = new Addons();
+
+            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/addons.json");
+            try
+            {
+                if (string.IsNullOrEmpty(jsonFile))
+                {
+#if CLIENT
+                    vMenuClient.Notify.Error("The addons.json file is empty or does not exist, please tell the server owner to fix this.");
+#endif
+#if SERVER
+                    vMenuServer.DebugLog.Log("The addons.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+#endif
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<Addons>(jsonFile);
+                }
+            }
+            catch (Exception e)
+            {
+#if CLIENT
+                vMenuClient.Notify.Error("An error occurred while processing the addons.json file. Please correct any errors in the addons.json file.");
+#endif
+                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+            }
+
+            return data;
+        }
+
+#if SERVER
+        /// <summary>
+        /// Gets the vehicle group data from the addons.json file.
+        /// </summary>
+        /// <param name="source">The source of the player.</param>
+        /// <returns></returns>
+        public static List<Group> GetAddonsVehicleGroupData(Player player)
+        {
+            return CreateAddonsListFromGroupData(player, GetAddons().groups.vehicles);
+        }
+
+        /// <summary>
+        /// Gets the ped group data from the addons.json file.
+        /// </summary>
+        /// <param name="source">The source of the player.</param>
+        /// <returns></returns>
+        public static List<Group> GetAddonsPedGroupData(Player player)
+        {
+            return CreateAddonsListFromGroupData(player, GetAddons().groups.peds);
+        }
+
+        /// <summary>
+        /// Gets the weapon group data from the addons.json file.
+        /// </summary>
+        /// <param name="source">The source of the player.</param>
+        /// <returns></returns>
+        public static List<Group> GetAddonsWeaponGroupData(Player player)
+        {
+            return CreateAddonsListFromGroupData(player, GetAddons().groups.weapons);
+        }
+
+        /// <summary>
+        /// Generates a list of groups based on the group permission in the addons.json file.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="groups"></param>
+        /// <returns></returns>
+        private static List<Group> CreateAddonsListFromGroupData(Player player, List<Group> groups)
+        {
+            List<Group> finalLst = new List<Group>();
+            foreach (Group group in groups)
+            {
+                string permission = group.permission;
+                if (string.IsNullOrEmpty(permission))
+                {
+                    finalLst.Add(group);
+                }
+                else if (PermissionsManager.IsAllowed(group.permission, player))
+                {
+                    finalLst.Add(group);
+                }
+            }
+            return finalLst;
+        }
+#endif
+
+        public struct Addons
+        {
+            public string[] vehicles { get; set; }
+            public string[] peds { get; set; }
+            public string[] weapons { get; set; }
+            public string[] weapon_components { get; set; }
+            public Groups groups { get; set; }
+        }
+
+        public struct Groups
+        {
+            public List<Group> vehicles { get; set; }
+            public List<Group> peds { get; set; }
+            public List<Group> weapons { get; set; }
+        }
+
+        public struct Group
+        {
+            public string permission { get; set; }
+            public string label { get; set; }
+            public string description { get; set; }
+            public List<GroupItem> items { get; set; }
+        }
+
+        public struct GroupItem
+        {
+            public string label { get; set; }
+            public string model { get; set; }
+        }
+        #endregion
     }
 
 

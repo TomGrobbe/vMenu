@@ -1,14 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
@@ -24,6 +23,7 @@ namespace vMenuClient
         public bool UnlimitedParachutes { get; private set; } = UserDefaults.WeaponsUnlimitedParachutes;
 
         public static Dictionary<string, uint> AddonWeapons = new Dictionary<string, uint>();
+        public static List<Group> AddonWeaponGroups;
 
         private Dictionary<Menu, ValidWeapon> weaponInfo;
         private Dictionary<MenuItem, string> weaponComponents;
@@ -124,6 +124,85 @@ namespace vMenuClient
             }
             #endregion
             addonWeaponsMenu.RefreshIndex();
+            #endregion
+
+            #region group addon weapons submenu
+            MenuItem groupAddonWeaponsBtn = new MenuItem("Grouped Addon Weapons", "Equip / remove addon weapons available on this server.");
+            Menu groupAddonWeaponsMenu = new Menu("Grouped Addon Weapons", "Equip/Remove Addon Weapons");
+            menu.AddMenuItem(groupAddonWeaponsBtn);
+
+            #region manage creating and accessing grouped addon weapons menu
+
+            if (AddonWeaponGroups != null && AddonWeaponGroups.Count > 0 && IsAllowed(Permission.WPSpawn))
+            {
+                MenuController.BindMenuItem(menu, groupAddonWeaponsMenu, groupAddonWeaponsBtn);
+                MenuController.AddSubmenu(menu, groupAddonWeaponsMenu);
+
+                foreach (Group group in AddonWeaponGroups)
+                {
+                    Menu groupMenu = new Menu($"{group.label}", group.description);
+                    MenuItem groupButton = new MenuItem(group.label, $"Equip/remove a grouped addon weapon from the {group.label} group.") { Label = "→→→" };
+
+                    groupAddonWeaponsMenu.AddMenuItem(groupButton);
+
+                    group.items.OrderBy(x => x);
+
+                    foreach (GroupItem groupOption in group.items)
+                    {
+                        string name = groupOption.label;
+                        uint model = (uint)GetHashKey(groupOption.model);
+                        var item = new MenuItem(name, $"Click to add/remove this weapon ({name}) to/from your inventory.")
+                        {
+                            ItemData = model
+                        };
+                        addonWeaponsMenu.AddMenuItem(item);
+
+                        if (!IsWeaponValid(model))
+                        {
+                            item.Enabled = false;
+                            item.LeftIcon = MenuItem.Icon.LOCK;
+                            item.Description = "This model is not available. Please ask the server owner to verify it's being streamed correctly.";
+                        }
+                    }
+
+                    if (groupMenu.Size > 0)
+                    {
+                        MenuController.AddSubmenu(groupAddonWeaponsMenu, groupMenu);
+                        MenuController.BindMenuItem(groupAddonWeaponsMenu, groupMenu, groupButton);
+
+                        groupMenu.OnItemSelect += (sender, item, index) =>
+                        {
+                            var weapon = item.ItemData;
+                            if (HasPedGotWeapon(Game.PlayerPed.Handle, weapon, false))
+                            {
+                                RemoveWeaponFromPed(Game.PlayerPed.Handle, weapon);
+                            }
+                            else
+                            {
+                                var maxAmmo = 200;
+                                GetMaxAmmo(Game.PlayerPed.Handle, weapon, ref maxAmmo);
+                                GiveWeaponToPed(Game.PlayerPed.Handle, weapon, maxAmmo, false, true);
+                            }
+                        };
+                    }
+                    else
+                    {
+                        groupButton.Description = "There are no weapons available in this group.";
+                        groupButton.Enabled = false;
+                        groupButton.LeftIcon = MenuItem.Icon.LOCK;
+                        groupButton.Label = "";
+                    }
+                }
+            }
+            else
+            {
+                addonWeaponsBtn.LeftIcon = MenuItem.Icon.LOCK;
+                addonWeaponsBtn.Enabled = false;
+                addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
+            }
+
+            #endregion
+            groupAddonWeaponsMenu.RefreshIndex();
             #endregion
 
             #region parachute options menu

@@ -14,5 +14,100 @@
   "weapon_components": [
     "weapon_component_name_1",
     "weapon_component_name_2"
-  ]
+  ],
+  "groups": {
+    "vehicles": [
+      {
+        "permission": "VehicleSpawner.Staff",
+        "label": "Staff Vehicles",
+        "description": "Staff Vehicles",
+        "items": [
+          {
+            "label": "Addon Vehicle Name 1",
+            "model": "addonvehiclename1"
+          },
+          {
+            "label": "Addon Vehicle Name 2",
+            "model": "addonvehiclename2"
+          }
+        ]
+      },
+      {
+        "label": "Other Vehicles",
+        "description": "Other Vehicles",
+        "items": [
+          {
+            "label": "Addon Vehicle Name 1",
+            "model": "addonvehiclename1"
+          },
+          {
+            "label": "Addon Vehicle Name 2",
+            "model": "addonvehiclename2"
+          }
+        ]
+      }
+    ],
+    "peds": [
+      {
+        "permission": "PlayerAppearance.Staff",
+        "label": "Staff Peds",
+        "description": "Staff Peds",
+        "items": [
+          {
+            "label": "Addon Ped Name 1",
+            "model": "addonpedname1"
+          },
+          {
+            "label": "Addon Ped Name 2",
+            "model": "addonpedname2"
+          }
+        ]
+      },
+      {
+        "label": "Other Peds",
+        "description": "Other Peds",
+        "items": [
+          {
+            "label": "Addon Ped Name 1",
+            "model": "addonpedname1"
+          },
+          {
+            "label": "Addon Ped Name 2",
+            "model": "addonpedname2"
+          }
+        ]
+      }
+    ],
+    "weapons": [
+      {
+        "permission": "WeaponOptions.Staff",
+        "label": "Staff Weapons",
+        "description": "Staff Weapons",
+        "items": [
+          {
+            "label": "Addon Weapon Name 1",
+            "model": "addonweaponname1"
+          },
+          {
+            "label": "Addon Weapon Name 2",
+            "model": "addonweaponname2"
+          }
+        ]
+      },
+      {
+        "label": "Other Weapons",
+        "description": "Other Weapons",
+        "items": [
+          {
+            "label": "Addon Weapon Name 1",
+            "model": "addonweaponname1"
+          },
+          {
+            "label": "Addon Weapon Name 2",
+            "model": "addonweaponname2"
+          }
+        ]
+      }
+    ]
+  }  
 }

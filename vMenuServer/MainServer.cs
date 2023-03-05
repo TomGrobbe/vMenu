@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
+
 using Newtonsoft.Json;
+
+using vMenuShared;
+
+using static CitizenFX.Core.Native.API;
 using static vMenuServer.DebugLog;
 using static vMenuShared.ConfigManager;
-using vMenuShared;
 
 namespace vMenuServer
 {
@@ -981,6 +985,31 @@ namespace vMenuServer
                 }
             }
         }
+        #endregion
+
+        #region Addon Lists with Server Side Permissions
+
+        [EventHandler("vMenu:RequestAddonVehicleGroups")]
+        private void RequestAddonVehicleGroups([FromSource] Player sourcePlayer, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            List<Group> lst = ConfigManager.GetAddonsVehicleGroupData(sourcePlayer);
+            _ = networkCallbackDelegate(JsonConvert.SerializeObject(lst));
+        }
+
+        [EventHandler("vMenu:RequestAddonPedGroups")]
+        private void RequestAddonPedGroups([FromSource] Player sourcePlayer, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            List<Group> lst = ConfigManager.GetAddonsPedGroupData(sourcePlayer);
+            _ = networkCallbackDelegate(JsonConvert.SerializeObject(lst));
+        }
+
+        [EventHandler("vMenu:RequestAddonWeaponGroups")]
+        private void RequestAddonWeaponGroups([FromSource] Player sourcePlayer, NetworkCallbackDelegate networkCallbackDelegate)
+        {
+            List<Group> lst = ConfigManager.GetAddonsWeaponGroupData(sourcePlayer);
+            _ = networkCallbackDelegate(JsonConvert.SerializeObject(lst));
+        }
+
         #endregion
     }
 }

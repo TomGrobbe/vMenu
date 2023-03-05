@@ -7,6 +7,8 @@ using CitizenFX.Core;
 
 using Newtonsoft.Json;
 
+using vMenuShared;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
@@ -105,23 +107,33 @@ namespace vMenuClient
         /// <summary>
         /// Sets the addon models from the addons.json file.
         /// </summary>
-        private void SetAddons()
+        private async void SetAddons()
         {
             // reset addons
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
-            WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
-            PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
+            VehicleSpawner.AddonVehiclesGroups = new List<Group>();
 
-            string jsonData = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+            WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
+            WeaponOptions.AddonWeaponGroups = new List<Group>();
+
+            PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
+            PlayerAppearance.AddonPedGroups = new List<Group>();
+
+            bool isVehicleGroupEventComplete = false;
+            bool isWeaponGroupEventComplete = false;
+            bool isPedGroupEventComplete = false;
+
+            int eventTimeout = 0;
+
             try
             {
                 // load new addons.
-                var addons = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
+                var addons = ConfigManager.GetAddons();
 
                 // load vehicles
-                if (addons.ContainsKey("vehicles"))
+                if (addons.vehicles.Length > 0)
                 {
-                    foreach (string addon in addons["vehicles"])
+                    foreach (string addon in addons.vehicles)
                     {
                         if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
                             VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
@@ -131,9 +143,9 @@ namespace vMenuClient
                 }
 
                 // load weapons
-                if (addons.ContainsKey("weapons"))
+                if (addons.weapons.Length > 0)
                 {
-                    foreach (string addon in addons["weapons"])
+                    foreach (string addon in addons.weapons)
                     {
                         if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
                             WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
@@ -143,14 +155,76 @@ namespace vMenuClient
                 }
 
                 // load peds.
-                if (addons.ContainsKey("peds"))
+                if (addons.peds.Length > 0)
                 {
-                    foreach (string addon in addons["peds"])
+                    foreach (string addon in addons.peds)
                     {
                         if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
                             PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
                         else
                             Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same ped name! ({addon}) Please remove duplicate lines!");
+                    }
+                }
+
+                Func<string, bool> getVehicleGroup = (data) =>
+                {
+                    VehicleSpawner.AddonVehiclesGroups = JsonConvert.DeserializeObject<List<Group>>(data);
+                    isVehicleGroupEventComplete = true;
+                    return true;
+                };
+
+                // load vehicle groups from the server.
+                while (!isVehicleGroupEventComplete)
+                {
+                    TriggerServerEvent("vMenu:RequestAddonVehicleGroups", getVehicleGroup);
+                    await BaseScript.Delay(500);
+                    eventTimeout++;
+                    if (eventTimeout > 10)
+                    {
+                        Notify.Error("Failed to get addon vehicle groups from the server.");
+                        break;
+                    }
+                }
+
+                // load ped groups from the server.
+                Func<string, bool> getPedGroup = (data) =>
+                {
+                    PlayerAppearance.AddonPedGroups = JsonConvert.DeserializeObject<List<Group>>(data);
+                    isPedGroupEventComplete = true;
+                    return true;
+                };
+
+                eventTimeout = 0;
+                while (!isPedGroupEventComplete)
+                {
+                    TriggerServerEvent("vMenu:RequestAddonPedGroups", getPedGroup);
+                    await BaseScript.Delay(500);
+                    eventTimeout++;
+                    if (eventTimeout > 10)
+                    {
+                        Notify.Error("Failed to get addon ped groups from the server.");
+                        break;
+                    }
+                }
+
+                // load weapon groups from the server.
+                Func<string, bool> getWeaponGroup = (data) =>
+                {
+                    WeaponOptions.AddonWeaponGroups = JsonConvert.DeserializeObject<List<Group>>(data);
+                    isWeaponGroupEventComplete = true;
+                    return true;
+                };
+
+                eventTimeout = 0;
+                while (!isWeaponGroupEventComplete)
+                {
+                    TriggerServerEvent("vMenu:RequestAddonWeaponGroups", getWeaponGroup);
+                    await BaseScript.Delay(500);
+                    eventTimeout++;
+                    if (eventTimeout > 10)
+                    {
+                        Notify.Error("Failed to get addon weapon groups from the server.");
+                        break;
                     }
                 }
             }
