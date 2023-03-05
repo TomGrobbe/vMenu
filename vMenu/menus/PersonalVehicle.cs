@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
@@ -86,7 +84,7 @@ namespace vMenuClient
                 menu.AddMenuItem(unlockDoors);
             }
 
-            if(IsAllowed(Permission.PVDoors))
+            if (IsAllowed(Permission.PVDoors))
             {
                 menu.AddMenuItem(doorsMenuBtn);
             }
@@ -348,7 +346,7 @@ namespace vMenuClient
             VehicleDoorsMenu.OnListItemSelect += (sender, item, index, itemIndex) =>
             {
                 Vehicle veh = CurrentPersonalVehicle;
-                if(veh != null && veh.Exists())
+                if (veh != null && veh.Exists())
                 {
                     if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
                     {
@@ -359,7 +357,7 @@ namespace vMenuClient
                         }
                     }
 
-                    if(item == removeDoorList)
+                    if (item == removeDoorList)
                     {
                         PressKeyFob(veh);
                         SetVehicleDoorBroken(veh.Handle, index, deleteDoors.Checked);
@@ -370,7 +368,7 @@ namespace vMenuClient
             VehicleDoorsMenu.OnItemSelect += (sender, item, index) =>
             {
                 Vehicle veh = CurrentPersonalVehicle;
-                if(veh != null && veh.Exists() && !veh.IsDead)
+                if (veh != null && veh.Exists() && !veh.IsDead)
                 {
                     if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
                     {
@@ -385,39 +383,45 @@ namespace vMenuClient
                     {
                         bool open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f;
                         PressKeyFob(veh);
-                        if(open)
+                        if (open)
                         {
                             SetVehicleDoorShut(veh.Handle, index, false);
-                        } else
+                        }
+                        else
                         {
                             SetVehicleDoorOpen(veh.Handle, index, false, false);
                         }
-                    } else if(item == openAll)
+                    }
+                    else if (item == openAll)
                     {
                         PressKeyFob(veh);
-                        for(var door = 0; door < 8; door++)
+                        for (var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
-                    } else if(item == closeAll)
+                    }
+                    else if (item == closeAll)
                     {
                         PressKeyFob(veh);
-                        for(var door = 0; door < 8; door++)
+                        for (var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorShut(veh.Handle, door, false);
                         }
-                    } else if(item == BB && veh.HasBombBay)
+                    }
+                    else if (item == BB && veh.HasBombBay)
                     {
                         PressKeyFob(veh);
                         bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
-                        if(bombBayOpen)
+                        if (bombBayOpen)
                         {
                             veh.CloseBombBay();
-                        } else
+                        }
+                        else
                         {
                             veh.OpenBombBay();
                         }
-                    } else
+                    }
+                    else
                     {
                         Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
                     }

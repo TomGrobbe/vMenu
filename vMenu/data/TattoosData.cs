@@ -3,11 +3,7 @@
     Data source: GTA V <update>_overlays.xml files.
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace vMenuClient
 {

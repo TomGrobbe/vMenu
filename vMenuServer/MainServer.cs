@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
+
 using Newtonsoft.Json;
+
+using vMenuShared;
+
+using static CitizenFX.Core.Native.API;
 using static vMenuServer.DebugLog;
 using static vMenuShared.ConfigManager;
-using vMenuShared;
 
 namespace vMenuServer
 {
