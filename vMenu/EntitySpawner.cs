@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
+
 using CitizenFX.Core;
+
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient
@@ -24,16 +23,16 @@ namespace vMenuClient
         public EntitySpawner()
         {
 #if DEBUG
-                RegisterCommand("testEntity", new Action<int, List<object>>((source, args) =>
-                {
-                    string prop = (string)args[0];
-                    SpawnEntity(prop, Game.PlayerPed.Position);
-                }), false);
-                
-                RegisterCommand("endTest", new Action(() =>
-                {
-                    FinishPlacement();
-                }), false);
+            RegisterCommand("testEntity", new Action<int, List<object>>((source, args) =>
+            {
+                var prop = (string)args[0];
+                SpawnEntity(prop, Game.PlayerPed.Position);
+            }), false);
+
+            RegisterCommand("endTest", new Action(() =>
+            {
+                FinishPlacement();
+            }), false);
 #endif
         }
 
@@ -111,8 +110,8 @@ namespace vMenuClient
         {
             if (duplicate)
             {
-                int hash = CurrentEntity.Model.Hash;
-                Vector3 position = CurrentEntity.Position;
+                var hash = CurrentEntity.Model.Hash;
+                var position = CurrentEntity.Position;
                 CurrentEntity = null;
                 await Delay(1); // Mandatory
                 SpawnEntity((uint)hash, position);
@@ -156,7 +155,7 @@ namespace vMenuClient
         /// <returns>Output direction vector</returns>
         private Vector3 RotationToDirection(Vector3 rotation)
         {
-            Vector3 adj = new Vector3(
+            var adj = new Vector3(
                 (float)Math.PI / 180f * rotation.X,
                 (float)Math.PI / 180f * rotation.Y,
                 (float)Math.PI / 180f * rotation.Z
@@ -175,20 +174,20 @@ namespace vMenuClient
         /// <returns>destination if no hit was found and coords of hit if there was one</returns>
         private Vector3 GetCoordsPlayerIsLookingAt()
         {
-            Vector3 camRotation = GetGameplayCamRot(0);
-            Vector3 camCoords = GetGameplayCamCoord();
-            Vector3 camDirection = RotationToDirection(camRotation);
+            var camRotation = GetGameplayCamRot(0);
+            var camCoords = GetGameplayCamCoord();
+            var camDirection = RotationToDirection(camRotation);
 
-            Vector3 dest = new Vector3(
+            var dest = new Vector3(
                 camCoords.X + (camDirection.X * RayDistance),
                 camCoords.Y + (camDirection.Y * RayDistance),
                 camCoords.Z + (camDirection.Z * RayDistance)
             );
 
-            RaycastResult res = World.Raycast(camCoords, dest, IntersectOptions.Everything, Game.PlayerPed);
+            var res = World.Raycast(camCoords, dest, IntersectOptions.Everything, Game.PlayerPed);
 
 #if DEBUG
-            DrawLine(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y,Game.PlayerPed.Position.Z, dest.X, dest.Y, dest.Z, 255, 0, 0, 255);
+            DrawLine(Game.PlayerPed.Position.X, Game.PlayerPed.Position.Y, Game.PlayerPed.Position.Z, dest.X, dest.Y, dest.Z, 255, 0, 0, 255);
 #endif
 
             return res.DitHit ? res.HitPosition : dest;
@@ -221,7 +220,7 @@ namespace vMenuClient
                 }
             }
 
-            float headingOffset = 0f;
+            var headingOffset = 0f;
             while (Active)
             {
                 if (CurrentEntity == null || !CurrentEntity.Exists())
@@ -230,7 +229,7 @@ namespace vMenuClient
                     CurrentEntity = null;
                     break;
                 }
-                int handle = CurrentEntity.Handle;
+                var handle = CurrentEntity.Handle;
 
                 DrawButtons();
 
@@ -240,7 +239,7 @@ namespace vMenuClient
                 SetEntityAlpha(handle, (int)(255 * 0.4), 0);
                 CurrentEntity.Heading = (GetGameplayCamRot(0).Z + headingOffset) % 360f;
 
-                Vector3 newPosition = GetCoordsPlayerIsLookingAt();
+                var newPosition = GetCoordsPlayerIsLookingAt();
 
                 CurrentEntity.Position = newPosition;
                 if (CurrentEntity.HeightAboveGround < 3.0f)
