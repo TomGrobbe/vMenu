@@ -2,16 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
 using CitizenFX.Core.UI;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
+using Newtonsoft.Json;
+
 using static CitizenFX.Core.Native.API;
+using static CitizenFX.Core.UI.Screen;
 using static vMenuClient.CommonFunctions;
+using static vMenuClient.data.PedModels;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
-using static vMenuClient.data.PedModels;
 
 namespace vMenuClient
 {
