@@ -31,13 +31,11 @@ namespace vMenuClient
         private float cameraRotationHeading = 0f;
 
         // show location variables
-        private Vector3 currentPos = Game.PlayerPed.Position;
-        private Vector3 nodePos = Game.PlayerPed.Position;
-        private float heading = 0f;
         private float safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-        private uint crossing = 1;
-        private string crossingName = "";
-        private string suffix = "";
+        private string zoneDisplay = "";
+        private string streetDisplay = "";
+        private string headingDisplay = "";
+
         private List<int> waypointPlayerIdsToRemove = new List<int>();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
@@ -717,26 +715,44 @@ namespace vMenuClient
             if (MainMenu.MiscSettingsMenu.ShowLocation)
             {
                 // Get the current location.
-                currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
+                var currentPos = GetEntityCoords(Game.PlayerPed.Handle, true);
+                var heading = Game.PlayerPed.Heading;
+                zoneDisplay = World.GetZoneLocalizedName(currentPos);
 
                 // Get the nearest vehicle node.
-                nodePos = currentPos;
+                var nodePos = Vector3.Zero;
                 GetNthClosestVehicleNode(currentPos.X, currentPos.Y, currentPos.Z, 0, ref nodePos, 0, 0, 0);
-                heading = Game.PlayerPed.Heading;
 
                 // Get the safezone size for x and y to be able to move with the minimap.
                 safeZoneSizeX = (1 / GetSafeZoneSize() / 3.0f) - 0.358f;
-                //safeZoneSizeY = GetSafeZoneSize() - 0.27f;
-                //safeZoneSizeY = (1 / GetSafeZoneSize() / 3.6f) - 0.27f;
 
                 // Get the cross road.
-                var p1 = (uint)1; // unused
-                crossing = (uint)1;
-                GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref p1, ref crossing);
-                crossingName = GetStreetNameFromHashKey(crossing);
+                uint mainSt = 0, crossSt = 0;
+                GetStreetNameAtCoord(currentPos.X, currentPos.Y, currentPos.Z, ref mainSt, ref crossSt);
+                var mainName = GetStreetNameFromHashKey(mainSt);
+                var crossName = GetStreetNameFromHashKey(crossSt);
 
                 // Set the suffix for the road name to the corssing name, or to an empty string if there's no crossing.
-                suffix = (crossingName != "" && crossingName != "NULL" && crossingName != null) ? "~t~ / " + crossingName : "";
+                var prefix = currentPos.DistanceToSquared(nodePos) > 1400f ? "~m~Near ~s~" : "~s~";
+                var suffix = crossSt != 0 ? "~t~ / " + crossName : "";
+                streetDisplay = prefix + mainName + suffix;
+
+                if (heading > 320 || heading < 45) // North
+                {
+                    headingDisplay = "N";
+                }
+                else if (heading >= 45 && heading <= 135) // West
+                {
+                    headingDisplay = "W";
+                }
+                else if (heading > 135 && heading < 225) // South
+                {
+                    headingDisplay = "S";
+                }
+                else // East
+                {
+                    headingDisplay = "E";
+                }
 
                 await Delay(200);
             }
@@ -753,54 +769,20 @@ namespace vMenuClient
         /// </summary>
         private void ShowLocation()
         {
-            // Create the default prefix.
-            var prefix = "~s~";
-
-            // If the vehicle node is further away than 1400f, then the player is not near a valid road.
-            // So we set the prefix to "Near " (<streetname>).
-            if (Vdist2(currentPos.X, currentPos.Y, currentPos.Z, nodePos.X, nodePos.Y, nodePos.Z) > 1400f)
-            {
-                prefix = "~m~Near ~s~";
-            }
-
-            string headingCharacter;
-
-            // Heading Facing North
-            if (heading > 320 || heading < 45)
-            {
-                headingCharacter = "N";
-            }
-            // Heading Facing West
-            else if (heading >= 45 && heading <= 135)
-            {
-                headingCharacter = "W";
-            }
-            // Heading Facing South
-            else if (heading > 135 && heading < 225)
-            {
-                headingCharacter = "S";
-            }
-            // Heading Facing East
-            else
-            {
-                headingCharacter = "E";
-            }
-
             // Draw the street name + crossing.
             SetTextWrap(0f, 1f);
-            DrawTextOnScreen(prefix + World.GetStreetName(currentPos) + suffix, 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.48f, 6) - GetTextScaleHeight(0.48f, 6)/*0.925f - safeZoneSizeY*/, 0.48f);
+            DrawTextOnScreen(streetDisplay, 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.48f, 6) - GetTextScaleHeight(0.48f, 6)/*0.925f - safeZoneSizeY*/, 0.48f);
 
             // Draw the zone name.
             SetTextWrap(0f, 1f);
-            DrawTextOnScreen(World.GetZoneLocalizedName(currentPos), 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.45f, 6) - GetTextScaleHeight(0.95f, 6)/*0.9485f - safeZoneSizeY*/, 0.45f);
+            DrawTextOnScreen(zoneDisplay, 0.234f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(0.45f, 6) - GetTextScaleHeight(0.95f, 6)/*0.9485f - safeZoneSizeY*/, 0.45f);
 
             // Draw the left border for the heading character.
-            SetTextWrap(0f, 1f);
             DrawTextOnScreen("~t~|", 0.188f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Left);
 
             // Draw the heading character.
             SetTextWrap(0f, 1f);
-            DrawTextOnScreen(headingCharacter, 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Center);
+            DrawTextOnScreen(headingDisplay, 0.208f + safeZoneSizeX, GetSafeZoneSize() - GetTextScaleHeight(1.2f, 6) - GetTextScaleHeight(0.4f, 6)/*0.915f - safeZoneSizeY*/, 1.2f, Alignment.Center);
 
             // Draw the right border for the heading character.
             SetTextWrap(0f, 1f);
@@ -968,7 +950,7 @@ namespace vMenuClient
                 // Press the B button on keyboard once to toggle.
                 else
                 {
-                    if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && !Game.PlayerPed.IsInVehicle())
+                    if (Game.IsControlJustReleased(0, Control.SpecialAbilitySecondary) && UpdateOnscreenKeyboard() != 0 && !Game.PlayerPed.IsInVehicle())
                     {
                         await TogglePointing();
                     }
@@ -983,18 +965,18 @@ namespace vMenuClient
                     }
                     else
                     {
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Pitch", GetPointingPitch());
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Heading", GetPointingHeading());
-                        N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isBlocked", GetPointingIsBlocked());
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Pitch", GetPointingPitch());
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Heading", GetPointingHeading());
+                        SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isBlocked", GetPointingIsBlocked());
                         if (GetFollowPedCamViewMode() == 4)
                         {
-                            N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", true);
+                            SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isFirstPerson", true);
                         }
                         else
                         {
-                            N_0xb0a6cfd2c69c1088(Game.PlayerPed.Handle, "isFirstPerson", false);
+                            SetTaskMoveNetworkSignalBool(Game.PlayerPed.Handle, "isFirstPerson", false);
                         }
-                        N_0xd5bb4025ae449a4e(Game.PlayerPed.Handle, "Speed", 0.25f);
+                        SetTaskMoveNetworkSignalFloat(Game.PlayerPed.Handle, "Speed", 0.25f);
                     }
                 }
             }
@@ -1386,9 +1368,9 @@ namespace vMenuClient
             }
 
             // Enable/disable infinite ammo.
-            if (Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
+            if (IsAllowed(Permission.WPUnlimitedAmmo) && Game.PlayerPed.Weapons.Current != null && Game.PlayerPed.Weapons.Current.Hash != WeaponHash.Unarmed)
             {
-                Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo && IsAllowed(Permission.WPUnlimitedAmmo);
+                Game.PlayerPed.Weapons.Current.InfiniteAmmo = MainMenu.WeaponOptionsMenu.UnlimitedAmmo;
             }
 
             if (MainMenu.WeaponOptionsMenu.AutoEquipChute)
