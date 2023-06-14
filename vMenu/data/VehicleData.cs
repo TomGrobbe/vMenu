@@ -1049,6 +1049,7 @@ namespace vMenuClient
                 "AVENGER",
                 "AVENGER2",
                 "AVENGER3", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
+                "AVENGER4", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "BESRA",
                 "BLIMP",
                 "BLIMP2",
