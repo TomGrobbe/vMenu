@@ -402,13 +402,16 @@ namespace vMenuClient
             public static List<string> Muscle { get; } = new List<string>()
             {
                 "BLADE",
+                "BRIGHAM", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "BROADWAY", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "BUCCANEER",
                 "BUCCANEER2",
                 "BUFFALO4", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
+                "BUFFALO5", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CHINO",
                 "CHINO2",
                 "CLIQUE",
+                "CLIQUE2", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "COQUETTE3",
                 "DEVIANT",
                 "DOMINATOR",
@@ -558,6 +561,7 @@ namespace vMenuClient
                 "COQUETTE",
                 "COQUETTE4", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "CORSITA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "COUREUR", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "ELEGY",
@@ -570,6 +574,7 @@ namespace vMenuClient
                 "FUSILADE",
                 "FUTO",
                 "FUTO2", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "GAUNTLET6", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "GB200",
                 "GROWLER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "HOTRING",
@@ -622,6 +627,7 @@ namespace vMenuClient
                 "SM722", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "SPECTER",
                 "SPECTER2",
+                "STINGERTT", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SUGOI", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "SULTAN",
                 "SULTAN2", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
@@ -797,6 +803,7 @@ namespace vMenuClient
                 "EVERON", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "FREECRAWLER",
                 "HELLION", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "L35", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "INSURGENT",
                 "INSURGENT2",
                 "INSURGENT3",
@@ -809,11 +816,13 @@ namespace vMenuClient
                 "MONSTER3",
                 "MONSTER4",
                 "MONSTER5",
+                "MONSTROCITI", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "NIGHTSHARK",
                 "OUTLAW", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "PATRIOT3", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "RANCHERXL",
                 "RANCHERXL2",
+                "RATEL", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "RCBANDITO",
                 "REBEL",
                 "REBEL2",
@@ -942,6 +951,7 @@ namespace vMenuClient
                 "SPEEDO",
                 "SPEEDO2",
                 "SPEEDO4",
+                "SPEEDO5", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SURFER",
                 "SURFER2",
                 "SURFER3", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
@@ -958,6 +968,8 @@ namespace vMenuClient
                 "BMX",
                 "CRUISER",
                 "FIXTER",
+                "INDUCTOR", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
+                "INDUCTOR2", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "SCORCHER",
                 "TRIBIKE",
                 "TRIBIKE2",
@@ -1008,6 +1020,7 @@ namespace vMenuClient
                 "CARGOBOB3",
                 "CARGOBOB4",
                 "CONADA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "CONADA2", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "FROGGER",
                 "FROGGER2",
                 "HAVOK",
@@ -1035,6 +1048,7 @@ namespace vMenuClient
                 "ALPHAZ1",
                 "AVENGER",
                 "AVENGER2",
+                "AVENGER3", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "BESRA",
                 "BLIMP",
                 "BLIMP2",
@@ -1059,10 +1073,12 @@ namespace vMenuClient
                 "NIMBUS",
                 "NOKOTA",
                 "PYRO",
+                "RAIJU", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "ROGUE",
                 "SEABREEZE",
                 "SHAMAL",
                 "STARLING",
+                "STEAMER216", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "STRIKEFORCE",
                 "STUNT",
                 "TITAN",
