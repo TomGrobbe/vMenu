@@ -317,6 +317,7 @@ namespace vMenuShared
             WPCandyCane,
             WPRailgunXM3,
             WPAcidPackage,
+            WPTecPistol,
             #endregion
 
             // Weapon Loadouts Menu
