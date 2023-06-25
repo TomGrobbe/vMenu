@@ -300,6 +300,48 @@ namespace vMenuShared
             WPPericoPistol, // xmas 2020 dlc (2189)
             WPMilitaryRifle, // xmas 2020 dlc (2189)
             WPCombatShotgun, // xmas 2020 dlc (2189)
+
+            WPFertilizerCan,
+            WPHeavyRifle,
+            WPEMPLauncher,
+            WPStunGunMP,
+            WPTacticalRifle,
+            WPPrecisionRifle,
+
+            // Custom
+            WPFM19X,
+            WPFMSIG,
+            WPFMP90,
+            WPFMAKS74U,
+            WPFM50BEO,
+            WPFMAR15,
+            WPFMM1101,
+            WPFMM1102,
+            WPFMM1103,
+            WPFMMDR,
+            WPFMMDR2,
+            WPFMSCAR,
+            WPFMSR25,
+            WPMMAXMC,
+            WPMMM2,
+            WPMMG17,
+            WPMMG36,
+            WPMMG45,
+            WPMMM700A,
+            WPMMM870,
+            WPMMMK18,
+            WPMMMPX,
+            WPMMNSR9,
+            WPMMPP19,
+            WPMMRPK,
+            WPMM2011,
+            WPSKSPEAR,
+            WPSK417,
+            WPSKX2,
+            WPSKX26,
+            WPSKX26G,
+            WPSKBEANBAG,
+            WPFlashBang,
             #endregion
 
             // Weapon Loadouts Menu
