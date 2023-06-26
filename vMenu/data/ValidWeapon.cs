@@ -258,7 +258,7 @@ namespace vMenuClient
             { "weapon_mpx", "SIG MPX" },
             { "weapon_nsr9", "NSR-9" },
             { "weapon_pp19", "PP-19 Vityaz" },
-            { "weapon_rpk-16", "RPK-16" },
+            { "weapon_rpk16", "RPK-16" },
             { "weapon_2011", "STI DVC 2011" },
 
             // Mine
