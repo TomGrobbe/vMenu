@@ -1890,7 +1890,7 @@ namespace vMenuClient
             ["COMPONENT_HK417_CLIP_01"] = "Standard Magazine",
             ["COMPONENT_HK417_CLIP_02"] = "Extended Magazine",
             ["COMPONENT_HK417_FLSH"] = "Laser-Light-Module",
-            ["COMPONENT_HK417_SCOPE_MEDIUM"] = "Scope",
+            ["COMPONENT_HK417_SCOPE_MEDIUM"] = "Scope"
         };
         #endregion
 
