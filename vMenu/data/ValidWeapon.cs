@@ -252,6 +252,7 @@ namespace vMenuClient
             // MM
             { "weapon_axmc", "AI AXMC" },
             { "weapon_benellim2", "Benelli M2" },
+            { "weapon_ctsfomcx", "CTSFO MCX" },
             { "weapon_g17", "Glock 17 (MarkoMods)" },
             { "weapon_g17a", "Glock 17 v2 (MarkoMods)" },
             { "weapon_g36", "HK G-36" },
@@ -416,6 +417,7 @@ namespace vMenuClient
             // MM
             { "weapon_axmc", "AI AXMC" },
             { "weapon_benellim2", "Benelli M2" },
+            { "weapon_ctsfomcx", "CTSFO MCX" },
             { "weapon_g17", "Glock 17 (MarkoMods)" },
             { "weapon_g17a", "Glock 17 v2 (MarkoMods)" },
             { "weapon_g36", "HK G-36" },
@@ -584,6 +586,7 @@ namespace vMenuClient
             // MM
             ["weapon_axmc"] = Permission.WPMMAXMC,
             ["weapon_benellim2"] = Permission.WPMMM2,
+            ["weapon_ctsfomcx"] = Permission.WPMMCTSFO,
             ["weapon_g17"] = Permission.WPMMG17,
             ["weapon_g17a"] = Permission.WPMMG17A,
             ["weapon_g36"] = Permission.WPMMG36,
@@ -1543,6 +1546,13 @@ namespace vMenuClient
             ["COMPONENT_MARKOMODSBENELLIM2_SCOPE_08"] = "Scope #8",
             ["COMPONENT_MARKOMODSBENELLIM2_SCOPE_09"] = "Scope #9",
             ["COMPONENT_MARKOMODSBENELLIM2_SCOPE_10"] = "Scope #10",
+
+            // CTSFO MCX
+            ["COMPONENT_CTSFOMCX_CLIP_01"] = "Magazine",
+            ["COMPONENT_CTSFOMCX_FLSH"] = "Flashlight",
+            ["COMPONENT_CTSFOMCX_GRIP"] = "Grip",
+            ["COMPONENT_CTSFOMCX_SCOPE"] = "Scope",
+            ["COMPONENT_CTSFOMCX_SUPP"] = "Suppressor",
 
             // G17
             ["COMPONENT_G17_BARREL_01"] = "Regular Barrel",

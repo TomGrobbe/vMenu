@@ -327,6 +327,7 @@ namespace vMenuShared
             WPFMSR25,
             WPMMAXMC,
             WPMMM2,
+            WPMMCTSFO,
             WPMMG17,
             WPMMG17A,
             WPMMG36,
