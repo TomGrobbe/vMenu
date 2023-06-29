@@ -563,7 +563,10 @@ namespace vMenuClient
             // CUSTOM WEAPONS
 
             // FM
+            ["weapon_akm"] = Permission.WPFMAKM,
+            ["weapon_glock"] = Permission.WPFMGLK17,
             ["weapon_glock19x"] = Permission.WPFM19X,
+            ["weapon_m4a1fm"] = Permission.WPFMM4A1,
             ["weapon_sig"] = Permission.WPFMSIG,
             ["weapon_p90fm"] = Permission.WPFMP90,
             ["weapon_aks74u"] = Permission.WPFMAKS74U,
@@ -582,16 +585,21 @@ namespace vMenuClient
             ["weapon_axmc"] = Permission.WPMMAXMC,
             ["weapon_benellim2"] = Permission.WPMMM2,
             ["weapon_g17"] = Permission.WPMMG17,
+            ["weapon_g17a"] = Permission.WPMMG17A,
             ["weapon_g36"] = Permission.WPMMG36,
             ["weapon_g45"] = Permission.WPMMG45,
+            ["weapon_m4"] = Permission.WPMMM4A1,
             ["weapon_m700a"] = Permission.WPMMM700A,
             ["weapon_m870"] = Permission.WPMMM870,
             ["weapon_mk18"] = Permission.WPMMMK18,
             ["weapon_mpx"] = Permission.WPMMMPX,
             ["weapon_nsr9"] = Permission.WPMMNSR9,
+            ["weapon_p320a"] = Permission.WPMMP320X5A,
+            ["weapon_p320b"] = Permission.WPMMP320X5B,
             ["weapon_pp19"] = Permission.WPMMPP19,
-            ["weapon_rpk-16"] = Permission.WPMMRPK,
+            ["weapon_rpk16"] = Permission.WPMMRPK,
             ["weapon_2011"] = Permission.WPMM2011,
+            ["weapon_miniuzi"] = Permission.WPMMUZI,
 
 
             // Mine
