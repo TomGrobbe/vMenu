@@ -232,7 +232,10 @@ namespace vMenuClient
             // CUSTOM WEAPONS
 
             // FM
+            { "weapon_akm", "AKM" },
+            { "weapon_glock", "Glock 17 (FluffyMods)" },
             { "weapon_glock19x", "Glock 19X" },
+            { "weapon_m4a1fm", "M4A1 (FluffyMods)" },
             { "weapon_sig", "SIG M18" },
             { "weapon_p90fm", "FN P-90" },
             { "weapon_aks74u", "AKS-74U" },
@@ -250,16 +253,21 @@ namespace vMenuClient
             { "weapon_axmc", "AI AXMC" },
             { "weapon_benellim2", "Benelli M2" },
             { "weapon_g17", "Glock 17 (MarkoMods)" },
+            { "weapon_g17a", "Glock 17 v2 (MarkoMods)" },
             { "weapon_g36", "HK G-36" },
             { "weapon_g45", "Glock 45" },
+            { "weapon_m4", "M4A1 (MarkoMods)" },
             { "weapon_m700a", "M-700 v2" },
             { "weapon_m870", "M-870" },
             { "weapon_mk18", "Mk-18" },
             { "weapon_mpx", "SIG MPX" },
             { "weapon_nsr9", "NSR-9" },
+            { "weapon_p320a", "SIG P-320" },
+            { "weapon_p320b", "SIG P-320 (Red Dot)" },
             { "weapon_pp19", "PP-19 Vityaz" },
             { "weapon_rpk16", "RPK-16" },
             { "weapon_2011", "STI DVC 2011" },
+            { "weapon_miniuzi", "IMI Mini Uzi" },
 
             // Mine
             { "weapon_mcxspear", "SIG MCX Spear" },
@@ -388,7 +396,10 @@ namespace vMenuClient
             // CUSTOM WEAPONS
 
             // FM
+            { "weapon_akm", "AKM" },
+            { "weapon_glock", "Glock 17 (FluffyMods)" },
             { "weapon_glock19x", "Glock 19X" },
+            { "weapon_m4a1fm", "M4A1 (FluffyMods)" },
             { "weapon_sig", "SIG M18" },
             { "weapon_p90fm", "FN P-90" },
             { "weapon_aks74u", "AKS-74U" },
@@ -406,16 +417,21 @@ namespace vMenuClient
             { "weapon_axmc", "AI AXMC" },
             { "weapon_benellim2", "Benelli M2" },
             { "weapon_g17", "Glock 17 (MarkoMods)" },
+            { "weapon_g17a", "Glock 17 v2 (MarkoMods)" },
             { "weapon_g36", "HK G-36" },
             { "weapon_g45", "Glock 45" },
+            { "weapon_m4", "M4A1 (MarkoMods)" },
             { "weapon_m700a", "M-700 v2" },
             { "weapon_m870", "M-870" },
             { "weapon_mk18", "Mk-18" },
             { "weapon_mpx", "SIG MPX" },
             { "weapon_nsr9", "NSR-9" },
+            { "weapon_p320a", "SIG P-320" },
+            { "weapon_p320b", "SIG P-320 (Red Dot)" },
             { "weapon_pp19", "PP-19 Vityaz" },
-            { "weapon_rpk-16", "RPK-16" },
+            { "weapon_rpk16", "RPK-16" },
             { "weapon_2011", "STI DVC 2011" },
+            { "weapon_miniuzi", "IMI Mini Uzi" },
 
             // Mine
             { "weapon_mcxspear", "SIG MCX Spear" },
