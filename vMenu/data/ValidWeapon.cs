@@ -399,11 +399,11 @@ namespace vMenuClient
             { "weapon_tacticalrifle", GetLabelText("WT_TACRIFLE") },
             { "weapon_precisionrifle", GetLabelText("WT_PRCSRIFLE") },
             // MPCHRISTMAS3 DLC (V 2802)
-            { "weapon_pistolxm3", GetLabelText("WTD_PISTOLXM3") },
-            { "weapon_candycane", GetLabelText("WTD_CANDYCANE") },
-            { "weapon_railgunxm3", GetLabelText("WTD_RAILGUNXM3") },
+            { "weapon_pistolxm3", GetLabelText("WT_PISTOLXM3") },
+            { "weapon_candycane", GetLabelText("WT_CANDYCANE") },
+            { "weapon_railgunxm3", GetLabelText("WT_RAILGUNXM3") },
             // MP2023_01 DLC (V 2944)
-            { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
+            { "weapon_tecpistol", GetLabelText("WT_TECPISTOL") },
 
 
             // CUSTOM WEAPONS
