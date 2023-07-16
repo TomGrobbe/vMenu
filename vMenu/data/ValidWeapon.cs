@@ -230,6 +230,8 @@ namespace vMenuClient
             { "weapon_pistolxm3", GetLabelText("WTD_PISTOLXM3") },
             { "weapon_candycane", GetLabelText("WTD_CANDYCANE") },
             { "weapon_railgunxm3", GetLabelText("WTD_RAILGUNXM3") },
+            // MP2023_01 DLC (V 2944)
+            { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
@@ -345,6 +347,8 @@ namespace vMenuClient
             { "weapon_candycane", GetLabelText("WT_CANDYCANE") },
             { "weapon_railgunxm3", GetLabelText("WT_RAILGUNXM3") },
             { "weapon_acidpackage", GetLabelText("WT_ACIDPACKAGE") },
+            // MP2023_01 DLC (V 2944)
+            { "weapon_tecpistol", GetLabelText("WT_TECPISTOL") },
         };
         #endregion
 
@@ -462,6 +466,8 @@ namespace vMenuClient
             ["weapon_candycane"] = Permission.WPCandyCane,
             ["weapon_railgunxm3"] = Permission.WPRailgunXM3,
             ["weapon_acidpackage"] = Permission.WPAcidPackage,
+            // MP2023_01 DLC (V 2944)
+            ["weapon_tecpistol"] = Permission.WPTecPistol,
         };
         #endregion
 
@@ -873,6 +879,12 @@ namespace vMenuClient
             ["COMPONENT_KNIFE_VARMOD_XM3_07"] = GetLabelText("WCT_KNIFE_XM307"),
             ["COMPONENT_KNIFE_VARMOD_XM3_08"] = GetLabelText("WCT_KNIFE_XM308"),
             ["COMPONENT_KNIFE_VARMOD_XM3_09"] = GetLabelText("WCT_KNIFE_XM309"),
+            // MP2023_01 DLC (V 2944)
+            ["COMPONENT_TECPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_TECPISTOL_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_MICROSMG_VARMOD_FRN"] = GetLabelText("WCT_MSMGFRN_VAR"),
+            ["COMPONENT_CARBINERIFLE_VARMOD_MICH"] = GetLabelText("WCT_CRBNMIC_VAR"),
+            ["COMPONENT_RPG_VARMOD_TVR"] = GetLabelText("WCT_RPGTVR_VAR"),
         };
         #endregion
 

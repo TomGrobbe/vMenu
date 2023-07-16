@@ -1460,6 +1460,7 @@ namespace vMenuClient
             ["csb_ary_02"] = "ARY02Cutscene", // mpsecurity
             ["csb_avery"] = "AveryCutscene", // mpvinewood
             ["csb_avischwartzman_02"] = "AviSchwartzman02Cutscene", // mptuner
+            ["csb_avischwartzman_03"] = "AviSchwartzman03Cutscene", // mp2023_01
             ["csb_avon"] = "AvonCutscene",
             ["csb_ballas_leader"] = "BallasLeaderCutscene", // mpsecurity
             ["csb_ballasog"] = "BallasogCutscene",
@@ -1472,6 +1473,7 @@ namespace vMenuClient
             ["csb_car3guy1"] = "Car3Guy1Cutscene",
             ["csb_car3guy2"] = "Car3Guy2Cutscene",
             ["csb_celeb_01"] = "Celeb01Cutscene", // mpheist3
+            ["csb_charlie_reed"] = "CharlieReedCutscene", // mp2023_01
             ["csb_chef"] = "ChefCutscene",
             ["csb_chef2"] = "Chef2Cutscene",
             ["csb_chef_03"] = "Chef3Cutscene", // mpchristmas3
@@ -1632,6 +1634,7 @@ namespace vMenuClient
             ["ig_ashley"] = "Ashley",
             ["ig_avery"] = "Avery", // mpvinewood
             ["ig_avischwartzman_02"] = "AviSchwartzman02", // mptuner
+            ["ig_avischwartzman_03"] = "AviSchwartzman03", // mp2023_01
             ["ig_avon"] = "Avon",
             ["ig_ballas_leader"] = "BallasLeader", // mpsecurity
             ["ig_ballasog"] = "Ballasog",
@@ -1649,6 +1652,7 @@ namespace vMenuClient
             ["ig_car3guy2"] = "Car3Guy2",
             ["ig_casey"] = "Casey",
             ["ig_celeb_01"] = "Celeb01", // mpheist3
+            ["ig_charlie_reed"] = "CharlieReed", // mp2023_01
             ["ig_chef"] = "Chef",
             ["ig_chef2"] = "Chef2",
             ["ig_chef_03"] = "Chef3", // mpchristmas3
@@ -1779,6 +1783,7 @@ namespace vMenuClient
             ["ig_orleans"] = "Orleans",
             ["ig_ortega"] = "Ortega",
             ["ig_paige"] = "Paige",
+            ["ig_parnell_moss"] = "ParnellMoss", // mp2023_01
             ["ig_paper"] = "Paper",
             ["ig_party_promo"] = "PartyPromo", // mpsecurity
             ["ig_patricia"] = "Patricia",
@@ -1794,6 +1799,7 @@ namespace vMenuClient
             ["ig_rashcosvki"] = "Rashcosvki",
             ["ig_req_officer"] = "ReqOfficer", // mpsecurity
             ["ig_roccopelosi"] = "RoccoPelosi",
+            ["ig_roostermccraw"] = "RoosterMcCraw", // mp2023_01
             ["ig_russiandrunk"] = "RussianDrunk",
             ["ig_sacha"] = "Sacha",
             ["ig_screen_writer"] = "ScreenWriter",
@@ -1913,6 +1919,7 @@ namespace vMenuClient
             ["s_m_m_bouncer_01"] = "Bouncer01SMM",
             ["s_m_m_bouncer_02"] = "Bouncer02SMM", // mpheist4
             ["s_m_m_ccrew_01"] = "CCrew01SMM",
+            ["s_m_m_ccrew_02"] = "CCrew02SMM", // mp2023_01
             ["s_m_m_chemsec_01"] = "ChemSec01SMM",
             ["s_m_m_ciasec_01"] = "CiaSec01SMM",
             ["s_m_m_cntrybar_01"] = "Cntrybar01SMM",
@@ -2061,6 +2068,7 @@ namespace vMenuClient
             ["u_m_m_jesus_01"] = "Jesus01",
             ["u_m_m_jewelsec_01"] = "JewelSec01",
             ["u_m_m_jewelthief"] = "JewelThief",
+            ["u_m_m_juggernaut_03"] = "Juggernaut03", // mp2023_01
             ["u_m_m_markfost"] = "Markfost",
             ["u_m_m_partytarget"] = "PartyTarget",
             ["u_m_m_prolsec_01"] = "PrologueSec01",
