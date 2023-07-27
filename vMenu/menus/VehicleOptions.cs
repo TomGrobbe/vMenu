@@ -10,6 +10,7 @@ using static CitizenFX.Core.UI.Screen;
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -150,12 +151,10 @@ namespace vMenuClient
                 radioIndex = index;
             }
 
-            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a default radio station to be set when spawning new car");
+            MenuListItem radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             MenuListItem vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
-
-            MenuItem destroyEngine = new MenuItem("Destroy Engine", "Destroys your vehicle's engine.");
 
             MenuItem deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!")
             {
@@ -370,10 +369,6 @@ namespace vMenuClient
                 menu.AddMenuItem(vehicleTiresList);
                 //menu.AddMenuItem(destroyTireList);
             }
-            if (IsAllowed(Permission.VODestroyEngine)) // DESTROY VEHICLE ENGINE
-            {
-                menu.AddMenuItem(destroyEngine);
-            }
             if (IsAllowed(Permission.VOFreeze)) // FREEZE VEHICLE
             {
                 menu.AddMenuItem(vehicleFreeze);
@@ -508,8 +503,7 @@ namespace vMenuClient
                         {
                             SetLicensePlateCustomText();
                         }
-                        // Make vehicle invisible.
-                        else if (item == vehicleInvisible) 
+                        else if (item == vehicleInvisible) // Make vehicle invisible.
                         {
                             if (vehicle.IsVisible)
                             {
@@ -534,11 +528,6 @@ namespace vMenuClient
                                 // Set the vehicle invisible or invincivble.
                                 vehicle.IsVisible = !vehicle.IsVisible;
                             }
-                        }
-                        // Destroy vehicle engine
-                        else if (item == destroyEngine)
-                        {
-                            SetVehicleEngineHealth(vehicle.Handle, -4000);
                         }
                     }
 
@@ -964,6 +953,7 @@ namespace vMenuClient
             List<string> metals = new List<string>();
             List<string> util = new List<string>();
             List<string> worn = new List<string>();
+            List<string> chameleon = new List<string>();
             List<string> wheelColors = new List<string>() { "Default Alloy" };
 
             // Just quick and dirty solution to put this in a new enclosed section so that we can still use 'i' as a counter in the other code parts.
@@ -1001,6 +991,16 @@ namespace vMenuClient
                 {
                     worn.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.WornColors.Count})");
                     i++;
+                }
+
+                if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
+                {
+                    i = 0;
+                    foreach (var vc in VehicleData.ChameleonColors)
+                    {
+                        chameleon.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.ChameleonColors.Count})");
+                        i++;
+                    }
                 }
 
                 wheelColors.AddRange(classic);
@@ -1095,6 +1095,18 @@ namespace vMenuClient
                                 primaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
+
+                        if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
+                        {
+                            if (itemIndex == 6)
+                            {
+                                primaryColor = VehicleData.ChameleonColors[newIndex].id;
+                                secondaryColor = VehicleData.ChameleonColors[newIndex].id;
+
+                                SetVehicleModKit(veh.Handle, 0);
+                            }
+                        }
+
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == secondaryColorsMenu)
@@ -1178,6 +1190,13 @@ namespace vMenuClient
                     primaryColorsMenu.AddMenuItem(metalList);
                     primaryColorsMenu.AddMenuItem(utilList);
                     primaryColorsMenu.AddMenuItem(wornList);
+
+                    if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
+                    {
+                        var chameleonList = new MenuListItem("Chameleon", chameleon, 0);
+
+                        primaryColorsMenu.AddMenuItem(chameleonList);
+                    }
 
                     primaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
                 }
@@ -1810,10 +1829,9 @@ namespace vMenuClient
                     "Benny's (1)",  // 8
                     "Benny's (2)",  // 9
                     "Open Wheel",   // 10
-                    "Street",       // 11
-                    "Track"         // 12
+                    "Street"        // 11
                 };
-                MenuListItem vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 12), $"Choose a ~y~wheel type~s~ for your vehicle.");
+                MenuListItem vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 11), $"Choose a ~y~wheel type~s~ for your vehicle.");
                 if (!veh.Model.IsBoat && !veh.Model.IsHelicopter && !veh.Model.IsPlane && !veh.Model.IsBicycle && !veh.Model.IsTrain)
                 {
                     VehicleModMenu.AddMenuItem(vehicleWheelType);
@@ -1824,7 +1842,6 @@ namespace vMenuClient
                 MenuCheckboxItem xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
                 MenuCheckboxItem turbo = new MenuCheckboxItem("Turbo", "Enable or disable the ~y~turbo~s~ for this vehicle.", IsToggleModOn(veh.Handle, 18));
                 MenuCheckboxItem bulletProofTires = new MenuCheckboxItem("Bullet Proof Tires", "Enable or disable ~y~bullet proof tires~s~ for this vehicle.", !GetVehicleTyresCanBurst(veh.Handle));
-                MenuCheckboxItem lowGripTires = new MenuCheckboxItem("Low Grip Tires", "Enable or disable ~y~low grip tires~s~ for this vehicle.", GetDriftTyresEnabled(veh.Handle));
 
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
@@ -1838,7 +1855,6 @@ namespace vMenuClient
                 VehicleModMenu.AddMenuItem(headlightColor);
                 VehicleModMenu.AddMenuItem(turbo);
                 VehicleModMenu.AddMenuItem(bulletProofTires);
-                VehicleModMenu.AddMenuItem(lowGripTires);
                 // Create a list of tire smoke options.
                 List<string> tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                 Dictionary<string, int[]> tireSmokeColors = new Dictionary<string, int[]>()
@@ -1932,11 +1948,6 @@ namespace vMenuClient
                     else if (item2 == bulletProofTires)
                     {
                         SetVehicleTyresCanBurst(veh.Handle, !_checked);
-                    }
-                    // Low Grip Tyres
-                    else if (item2 == lowGripTires)
-                    {
-                        SetDriftTyresEnabled(veh.Handle, _checked);
                     }
                     // Custom Wheels
                     else if (item2 == toggleCustomWheels)
