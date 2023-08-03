@@ -1165,7 +1165,7 @@ namespace vMenuClient
                 "SEABREEZE",
                 "SHAMAL",
                 "STARLING",
-                "STEAMER216", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
+                "STREAMER216", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "STRIKEFORCE",
                 "STUNT",
                 "TITAN",
