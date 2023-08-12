@@ -74,6 +74,16 @@ namespace vMenuClient
             Tick += GeneralTasks;
             Tick += GcTick;
 
+            if (GetSettingsBool(Setting.keep_player_head_props))
+            {
+                if (Game.PlayerPed is not null && Game.PlayerPed.Exists())
+                {
+                    SetPedCanLosePropsOnDamage(Game.PlayerPed.Handle, false, 0);
+                }
+
+                Tick += PlayerHeadPropsTick;
+            }
+
             // Configuration and permissions based
             if (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))
             {
@@ -161,6 +171,23 @@ namespace vMenuClient
             if (IsAllowed(Permission.OPSpectate))
             {
                 Tick += SpectateHandling;
+            }
+        }
+
+        private async Task PlayerHeadPropsTick()
+        {
+            if (Game.PlayerPed is not null && Game.PlayerPed.Exists())
+            {
+                var ped = Game.PlayerPed.Handle;
+                await Delay(100);
+                if (Game.PlayerPed.Handle != ped)
+                {
+                    SetPedCanLosePropsOnDamage(Game.PlayerPed.Handle, false, 0);
+                }
+            }
+            else
+            {
+                await Delay(1000);
             }
         }
 

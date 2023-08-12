@@ -28,6 +28,7 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
             vmenu_enable_animals_spawn_menu,
             vmenu_pvp_mode,
+            keep_player_head_props,
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
@@ -42,7 +43,7 @@ namespace vMenuShared
             vmenu_auto_ban_cheaters_ban_message,
             vmenu_log_ban_actions,
             vmenu_log_kick_actions,
-            
+
             // Weather settings
             vmenu_enable_weather_sync,
             vmenu_enable_dynamic_weather,
