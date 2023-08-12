@@ -44,7 +44,7 @@ namespace vMenuClient
 
             MenuItem getAllWeapons = new MenuItem("Get All Weapons", "Get all weapons.");
             MenuItem removeAllWeapons = new MenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
-            MenuCheckboxItem unlimitedAmmo = new MenuCheckboxItem("Unlimited Ammo", "Unlimited ammonition supply.", UnlimitedAmmo);
+            MenuCheckboxItem unlimitedAmmo = new MenuCheckboxItem("Unlimited Ammo", "Unlimited ammunition supply.", UnlimitedAmmo);
             MenuCheckboxItem noReload = new MenuCheckboxItem("No Reload", "Never reload.", NoReload);
             MenuItem setAmmo = new MenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
             MenuItem refillMaxAmmo = new MenuItem("Refill All Ammo", "Give all your weapons max ammo.");
