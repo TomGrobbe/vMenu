@@ -1799,12 +1799,17 @@ namespace vMenuClient
                 {
                     return menu.CurrentIndex switch
                     {
-                        // hats & helmets
+                        // 0 = hats & helmets
+                        // 1 = glasses
+                        // 2 = misc props
                         0 or 1 or 2 => 1,
-                        // watches
+
+                        // 3 = watches
                         3 => reverseCamera ? 5 : 6,
-                        // bracelets
+
+                        // 4 = bracelets
                         4 => 5,
+
                         _ => 0,
                     };
                 }
@@ -1812,12 +1817,46 @@ namespace vMenuClient
                 {
                     return menu.CurrentIndex switch
                     {
-                        // hair style
+                        // 0 = hair style
+                        // 1 = hair color
+                        // 2 = hair highlight color
+                        // 3 = blemishes
+                        // 4 = blemishes opacity
+                        // 5 = beard style
+                        // 6 = beard opacity
+                        // 7 = beard color
+                        // 8 = eyebrows style
+                        // 9 = eyebrows opacity
+                        // 10 = eyebrows color
+                        // 11 = ageing style
+                        // 12 = ageing opacity
+                        // 13 = makeup style
+                        // 14 = makeup opacity
+                        // 15 = makeup color
+                        // 16 = blush style
+                        // 17 = blush opacity
+                        // 18 = blush color
+                        // 19 = complexion style
+                        // 20 = complexion opacity
+                        // 21 = sun damage style
+                        // 22 = sun damage opacity
+                        // 23 = lipstick style
+                        // 24 = lipstick opacity
+                        // 25 = lipstick color
+                        // 26 = moles and freckles style
+                        // 27 = moles and freckles opacity
                         0 or 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15 or 16 or 17 or 18 or 19 or 20 or 21 or 22 or 23 or 24 or 25 or 26 or 27 => 1,
-                        // chest hair style
+
+                        // 28 = chest hair style
+                        // 29 = chest hair opacity
+                        // 30 = chest hair color
+                        // 31 = body blemishes style
+                        // 32 = body blemishes opacity
                         28 or 29 or 30 or 31 or 32 => 2,
-                        // eye colors
+
+                        // 33 = eye colors
                         33 => 1,
+
                         _ => 0,
                     };
                 }
@@ -1825,16 +1864,23 @@ namespace vMenuClient
                 {
                     return menu.CurrentIndex switch
                     {
-                        // head
+                        // 0 = head
                         0 => 1,
-                        // torso
+
+                        // 1 = torso
                         1 => 2,
-                        // left arm
+
+                        // 2 = left arm
+                        // 3 = right arm
                         2 or 3 => 6,
-                        // left leg 
+
+                        // 4 = left leg 
+                        // 5 = right leg
                         4 or 5 => 3,
-                        // badges
+
+                        // 6 = badges
                         6 => 2,
+
                         _ => 0,
                     };
                 }
