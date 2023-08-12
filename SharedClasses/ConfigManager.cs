@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
+
 using Newtonsoft.Json;
+
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenuShared
 {
@@ -79,10 +80,10 @@ namespace vMenuShared
         /// <returns></returns>
         public static int GetSettingsInt(Setting setting)
         {
-            int convarInt = GetConvarInt(setting.ToString(), -1);
+            var convarInt = GetConvarInt(setting.ToString(), -1);
             if (convarInt == -1)
             {
-                if (int.TryParse(GetConvar(setting.ToString(), "-1"), out int convarIntAlt))
+                if (int.TryParse(GetConvar(setting.ToString(), "-1"), out var convarIntAlt))
                 {
                     return convarIntAlt;
                 }
@@ -97,7 +98,7 @@ namespace vMenuShared
         /// <returns></returns>
         public static float GetSettingsFloat(Setting setting)
         {
-            if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out float result))
+            if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out var result))
             {
                 return result;
             }
@@ -149,9 +150,9 @@ namespace vMenuShared
         /// <returns></returns>
         public static Locations GetLocations()
         {
-            Locations data = new Locations();
+            var data = new Locations();
 
-            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+            var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
             try
             {
                 if (string.IsNullOrEmpty(jsonFile))

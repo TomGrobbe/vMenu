@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using Newtonsoft.Json;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.data
 {
     public struct ValidWeapon
     {
@@ -20,18 +17,48 @@ namespace vMenuClient
         public Dictionary<string, uint> Components;
         public Permission Perm;
         public string SpawnName;
-        public int GetMaxAmmo { get { int ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, this.Hash, ref ammo); return ammo; } }
+        public readonly int GetMaxAmmo
+        {
+            get
+            {
+                var ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, Hash, ref ammo); return ammo;
+            }
+        }
         public int CurrentAmmo;
         public int CurrentTint;
-        public float Accuracy { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudAccuracy; } }
-        public float Damage { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage; } }
-        public float Range { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange; } }
-        public float Speed { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed; } }
+        public readonly float Accuracy
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudAccuracy;
+            }
+        }
+        public readonly float Damage
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage;
+            }
+        }
+        public readonly float Range
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange;
+            }
+        }
+        public readonly float Speed
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed;
+            }
+        }
     }
 
     public static class ValidWeapons
     {
-        private static List<ValidWeapon> _weaponsList = new List<ValidWeapon>();
+        private static readonly List<ValidWeapon> _weaponsList = new();
 
         public static List<ValidWeapon> WeaponList
         {
@@ -47,12 +74,12 @@ namespace vMenuClient
         }
 
 
-        private static Dictionary<string, string> _components = new Dictionary<string, string>();
+        private static Dictionary<string, string> _components = new();
         public static Dictionary<string, string> GetWeaponComponents()
         {
             if (_components.Count == 0)
             {
-                string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+                var addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 _components = weaponComponentNames;
                 try
                 {
@@ -61,9 +88,9 @@ namespace vMenuClient
                     {
                         foreach (var item in addonsFile["weapon_components"])
                         {
-                            string name = item;
-                            string displayName = GetLabelText(name) ?? name;
-                            int unused = 0;
+                            var name = item;
+                            var displayName = GetLabelText(name) ?? name;
+                            var unused = 0;
                             if (GetWeaponComponentHudStats((uint)GetHashKey(name), ref unused))
                             {
                                 _components.Add(name, displayName);
@@ -84,12 +111,12 @@ namespace vMenuClient
             _weaponsList.Clear();
             foreach (var weapon in weaponNames)
             {
-                string realName = weapon.Key;
-                string localizedName = weapon.Value;
+                var realName = weapon.Key;
+                var localizedName = weapon.Value;
                 if (realName != "weapon_unarmed")
                 {
-                    uint hash = (uint)GetHashKey(weapon.Key);
-                    Dictionary<string, uint> componentHashes = new Dictionary<string, uint>();
+                    var hash = (uint)GetHashKey(weapon.Key);
+                    var componentHashes = new Dictionary<string, uint>();
                     foreach (var comp in GetWeaponComponents().Keys)
                     {
                         if (DoesWeaponTakeWeaponComponent(hash, (uint)GetHashKey(comp)))
@@ -100,7 +127,7 @@ namespace vMenuClient
                             }
                         }
                     }
-                    ValidWeapon vw = new ValidWeapon()
+                    var vw = new ValidWeapon()
                     {
                         Hash = hash,
                         SpawnName = realName,
@@ -118,7 +145,7 @@ namespace vMenuClient
 
         #region Weapon names, hashes and localized names (+ all components & tints).
         #region weapon descriptions & names
-        public static readonly Dictionary<string, string> weaponDescriptions = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> weaponDescriptions = new()
         {
             { "weapon_advancedrifle", GetLabelText("WTD_RIFLE_ADV") },
             { "weapon_appistol", GetLabelText("WTD_PIST_AP") },
@@ -234,7 +261,7 @@ namespace vMenuClient
             { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
         };
 
-        public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> weaponNames = new()
         {
             { "weapon_advancedrifle", GetLabelText("WT_RIFLE_ADV") },
             { "weapon_appistol", GetLabelText("WT_PIST_AP") },
@@ -353,7 +380,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon permissions
-        public static readonly Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
+        public static readonly Dictionary<string, Permission> weaponPermissions = new()
         {
             ["weapon_advancedrifle"] = Permission.WPAdvancedRifle,
             ["weapon_appistol"] = Permission.WPAPPistol,
@@ -472,7 +499,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon component names
-        private static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> weaponComponentNames = new()
         {
             ["COMPONENT_ADVANCEDRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ADVANCEDRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
@@ -889,7 +916,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon tints
-        public static readonly Dictionary<string, int> WeaponTints = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> WeaponTints = new()
         {
             ["Black"] = 0,
             ["Green"] = 1,
@@ -903,7 +930,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon mk2 tints
-        public static readonly Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> WeaponTintsMkII = new()
         {
             ["Classic Black"] = 0,
             ["Classic Gray"] = 1,

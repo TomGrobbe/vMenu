@@ -10,6 +10,9 @@ using MenuAPI;
 
 using Newtonsoft.Json;
 
+using vMenuClient.data;
+using vMenuClient.menus;
+
 using static CitizenFX.Core.Native.API;
 using static CitizenFX.Core.UI.Screen;
 using static vMenuClient.CommonFunctions;
@@ -27,7 +30,7 @@ namespace vMenuClient
     {
         private int LastVehicle = 0;
         private bool SwitchedVehicle = false;
-        private List<int> deadPlayers = new List<int>();
+        private readonly List<int> deadPlayers = new();
         private float cameraRotationHeading = 0f;
 
         // show location variables
@@ -36,7 +39,7 @@ namespace vMenuClient
         private string streetDisplay = "";
         private string headingDisplay = "";
 
-        private List<int> waypointPlayerIdsToRemove = new List<int>();
+        private readonly List<int> waypointPlayerIdsToRemove = new();
         private int voiceTimer = 0;
         private int voiceCycle = 1;
         private const float voiceIndicatorWidth = 0.02f;
@@ -54,9 +57,9 @@ namespace vMenuClient
         private bool stopPropsLoop = false;
         private bool stopVehiclesLoop = false;
         private bool stopPedsLoop = false;
-        private List<Prop> props = new List<Prop>();
-        private List<Vehicle> vehicles = new List<Vehicle>();
-        private List<Ped> peds = new List<Ped>();
+        private List<Prop> props = new();
+        private List<Vehicle> vehicles = new();
+        private List<Ped> peds = new();
 
         public FunctionsController() { }
 
@@ -248,7 +251,7 @@ namespace vMenuClient
             if (MainMenu.MpPedCustomizationMenu != null && MainMenu.MpPedCustomizationMenu.appearanceMenu != null && MainMenu.MpPedCustomizationMenu.faceShapeMenu != null && MainMenu.MpPedCustomizationMenu.createCharacterMenu != null && MainMenu.MpPedCustomizationMenu.inheritanceMenu != null && MainMenu.MpPedCustomizationMenu.propsMenu != null && MainMenu.MpPedCustomizationMenu.clothesMenu != null && MainMenu.MpPedCustomizationMenu.tattoosMenu != null)
             {
                 // Manage Player God Mode
-                bool IsMpPedCreatorOpen()
+                static bool IsMpPedCreatorOpen()
                 {
                     return
                         MainMenu.MpPedCustomizationMenu.appearanceMenu.Visible ||
@@ -363,10 +366,14 @@ namespace vMenuClient
                     SetRampVehicleReceivesRampDamage(veh.Handle, !rampGod);
 
                     if (visualGod && IsVehicleDamaged(veh.Handle))
+                    {
                         RemoveDecalsFromVehicle(veh.Handle);
+                    }
 
                     if (autoRepairGod && IsVehicleDamaged(veh.Handle))
+                    {
                         veh.Repair();
+                    }
 
                     veh.CanBeVisiblyDamaged = !visualGod;
 
@@ -572,7 +579,9 @@ namespace vMenuClient
             {
                 await Delay(100);
                 if (GetVehicle(true) != null)
+                {
                     SetVehicleEngineOn(GetVehicle(true).Handle, true, true, true);
+                }
             }
             await Task.FromResult(0);
         }
@@ -617,7 +626,7 @@ namespace vMenuClient
                 var veh = GetVehicle();
                 if (veh != null && veh.Exists())
                 {
-                    string GetHealthString(double health)
+                    static string GetHealthString(double health)
                     {
                         string color;
                         if (health <= 0)
@@ -768,15 +777,15 @@ namespace vMenuClient
                 var suffix = crossSt != 0 ? "~t~ / " + crossName : "";
                 streetDisplay = prefix + mainName + suffix;
 
-                if (heading > 320 || heading < 45) // North
+                if (heading is > 320 or < 45) // North
                 {
                     headingDisplay = "N";
                 }
-                else if (heading >= 45 && heading <= 135) // West
+                else if (heading is >= 45 and <= 135) // West
                 {
                     headingDisplay = "W";
                 }
-                else if (heading > 135 && heading < 225) // South
+                else if (heading is > 135 and < 225) // South
                 {
                     headingDisplay = "S";
                 }
@@ -942,7 +951,7 @@ namespace vMenuClient
             }
             if (MainMenu.MiscSettingsMenu.KbPointKeys)
             {
-                async Task TogglePointing()
+                static async Task TogglePointing()
                 {
                     if (IsPedPointing(Game.PlayerPed.Handle))
                     {
@@ -1162,7 +1171,7 @@ namespace vMenuClient
         /// </summary>
         /// <returns></returns>
         [EventHandler("vMenu:PlayerJoinQuit")]
-        private void OnJoinQuitNotification(string playerName, string dropReason)
+        internal void OnJoinQuitNotification(string playerName, string dropReason)
         {
             if (MainMenu.PermissionsSetupComplete && MainMenu.MiscSettingsMenu != null)
             {
@@ -1655,9 +1664,14 @@ namespace vMenuClient
 
                     Vector3 pos;
                     if (reverseCamera)
+                    {
                         pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, (CameraOffsets[index].Key.X + xOffset) * -1f, (CameraOffsets[index].Key.Y + yOffset) * -1f, CameraOffsets[index].Key.Z);
+                    }
                     else
+                    {
                         pos = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, CameraOffsets[index].Key.X + xOffset, CameraOffsets[index].Key.Y + yOffset, CameraOffsets[index].Key.Z);
+                    }
+
                     var pointAt = GetOffsetFromEntityInWorldCoords(Game.PlayerPed.Handle, CameraOffsets[index].Value.X, CameraOffsets[index].Value.Y, CameraOffsets[index].Value.Z);
 
                     if (Game.IsControlPressed(0, Control.MoveLeftOnly))
@@ -1783,84 +1797,46 @@ namespace vMenuClient
                 }
                 else if (menu == MainMenu.MpPedCustomizationMenu.propsMenu)
                 {
-                    switch (menu.CurrentIndex)
+                    return menu.CurrentIndex switch
                     {
-                        case 0: // hats & helmets
-                        case 1: // glasses
-                        case 2: // misc props
-                            return 1;
-                        case 3: // watches
-                            return reverseCamera ? 5 : 6;
-                        case 4: // bracelets
-                            return 5;
-                        default:
-                            return 0;
-                    }
+                        // hats & helmets
+                        0 or 1 or 2 => 1,
+                        // watches
+                        3 => reverseCamera ? 5 : 6,
+                        // bracelets
+                        4 => 5,
+                        _ => 0,
+                    };
                 }
                 else if (menu == MainMenu.MpPedCustomizationMenu.appearanceMenu)
                 {
-                    switch (menu.CurrentIndex)
+                    return menu.CurrentIndex switch
                     {
-                        case 0: // hair style
-                        case 1: // hair color
-                        case 2: // hair highlight color
-                        case 3: // blemishes
-                        case 4: // blemishes opacity
-                        case 5: // beard style
-                        case 6: // beard opacity
-                        case 7: // beard color
-                        case 8: // eyebrows style
-                        case 9: // eyebrows opacity
-                        case 10: // eyebrows color
-                        case 11: // ageing style
-                        case 12: // ageing opacity
-                        case 13: // makeup style
-                        case 14: // makeup opacity
-                        case 15: // makeup color
-                        case 16: // blush style
-                        case 17: // blush opacity
-                        case 18: // blush color
-                        case 19: // complexion style
-                        case 20: // complexion opacity
-                        case 21: // sun damage style
-                        case 22: // sun damage opacity
-                        case 23: // lipstick style
-                        case 24: // lipstick opacity
-                        case 25: // lipstick color
-                        case 26: // moles and freckles style
-                        case 27: // moles and freckles opacity
-                            return 1;
-                        case 28: // chest hair style
-                        case 29: // chest hair opacity
-                        case 30: // chest hair color
-                        case 31: // body blemishes style
-                        case 32: // body blemishes opacity
-                            return 2;
-                        case 33: // eye colors
-                            return 1;
-                        default:
-                            return 0;
-                    }
+                        // hair style
+                        0 or 1 or 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15 or 16 or 17 or 18 or 19 or 20 or 21 or 22 or 23 or 24 or 25 or 26 or 27 => 1,
+                        // chest hair style
+                        28 or 29 or 30 or 31 or 32 => 2,
+                        // eye colors
+                        33 => 1,
+                        _ => 0,
+                    };
                 }
                 else if (menu == MainMenu.MpPedCustomizationMenu.tattoosMenu)
                 {
-                    switch (menu.CurrentIndex)
+                    return menu.CurrentIndex switch
                     {
-                        case 0: // head
-                            return 1;
-                        case 1: // torso
-                            return 2;
-                        case 2: // left arm
-                        case 3: // right arm
-                            return 6;
-                        case 4: // left leg 
-                        case 5: // right leg
-                            return 3;
-                        case 6: // badges
-                            return 2;
-                        default:
-                            return 0;
-                    }
+                        // head
+                        0 => 1,
+                        // torso
+                        1 => 2,
+                        // left arm
+                        2 or 3 => 6,
+                        // left leg 
+                        4 or 5 => 3,
+                        // badges
+                        6 => 2,
+                        _ => 0,
+                    };
                 }
                 else if (menu == MainMenu.MpPedCustomizationMenu.faceShapeMenu)
                 {
@@ -2066,14 +2042,14 @@ namespace vMenuClient
                                 var result = 0f;
                                 if (clothingAnimationReverse)
                                 {
-                                    if (clothingOpacity >= 0f && clothingOpacity <= 0.5f) // || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
+                                    if (clothingOpacity is >= 0f and <= 0.5f) // || (clothingOpacity >= 0.5f && clothingOpacity <= 0.75f))
                                     {
                                         result = 1f;
                                     }
                                 }
                                 else
                                 {
-                                    if (clothingOpacity >= 0.5f && clothingOpacity <= 1.0f) //|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
+                                    if (clothingOpacity is >= 0.5f and <= 1.0f) //|| (clothingOpacity >= 0.75f && clothingOpacity <= 1.0f))
                                     {
                                         result = 1f;
                                     }
@@ -2267,9 +2243,9 @@ namespace vMenuClient
         #endregion
 
         #region player overhead names
-        private Dictionary<Player, int> gamerTags = new Dictionary<Player, int>();
+        private readonly Dictionary<Player, int> gamerTags = new();
 
-        private float playerNamesDistance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f;
+        private readonly float playerNamesDistance = GetSettingsFloat(Setting.vmenu_player_names_distance) > 10f ? GetSettingsFloat(Setting.vmenu_player_names_distance) : 500f;
 
 
         /// <summary>
@@ -2917,22 +2893,22 @@ namespace vMenuClient
                     var animName = component < newHelmet ? "visor_up" : "visor_down";
                     if (Game.PlayerPed.Model == PedHash.FreemodeFemale01)
                     {
-                        if (component == 66 || component == 81)
+                        if (component is 66 or 81)
                         {
                             animName = component > newHelmet ? "visor_up" : "visor_down";
                         }
-                        if (component >= 115 && component <= 118)
+                        if (component is >= 115 and <= 118)
                         {
                             animName = component < newHelmet ? "goggles_up" : "goggles_down";
                         }
                     }
                     else
                     {
-                        if (component == 67 || component == 82)
+                        if (component is 67 or 82)
                         {
                             animName = component > newHelmet ? "visor_up" : "visor_down";
                         }
-                        if (component >= 116 && component <= 119)
+                        if (component is >= 116 and <= 119)
                         {
                             animName = component < newHelmet ? "goggles_up" : "goggles_down";
                         }

@@ -6,12 +6,14 @@ using CitizenFX.Core;
 
 using MenuAPI;
 
+using vMenuClient.data;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class VehicleOptions
     {
@@ -54,7 +56,7 @@ namespace vMenuClient
         public float VehicleTorqueMultiplierAmount { get; private set; } = 2f;
         public float VehiclePowerMultiplierAmount { get; private set; } = 2f;
 
-        private Dictionary<MenuItem, int> vehicleExtras = new Dictionary<MenuItem, int>();
+        private readonly Dictionary<MenuItem, int> vehicleExtras = new();
         #endregion
 
         #region CreateMenu()
@@ -393,7 +395,7 @@ namespace vMenuClient
             // I don't really see why would you want to disable this so I will not add useless permissions
             menu.AddMenuItem(radioStations);
 
-            if (IsAllowed(Permission.VONoSiren) && !vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
+            if (IsAllowed(Permission.VONoSiren) && !GetSettingsBool(Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
             {
                 menu.AddMenuItem(vehicleNoSiren);
             }
@@ -579,12 +581,16 @@ namespace vMenuClient
                     if (_checked)
                     {
                         if (vehicle != null && vehicle.Exists())
+                        {
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, VehiclePowerMultiplierAmount);
+                        }
                     }
                     else
                     {
                         if (vehicle != null && vehicle.Exists())
+                        {
                             SetVehicleEnginePowerMultiplier(vehicle.Handle, 1f);
+                        }
                     }
                 }
                 else if (item == vehicleEngineAO) // Leave Engine Running (vehicle always on) Toggled
@@ -599,7 +605,9 @@ namespace vMenuClient
                 {
                     VehicleNoSiren = _checked;
                     if (vehicle != null && vehicle.Exists())
+                    {
                         vehicle.IsSirenSilent = _checked;
+                    }
                 }
                 else if (item == vehicleNoBikeHelmet) // No Helemet Toggled
                 {
@@ -859,11 +867,11 @@ namespace vMenuClient
                                         SetEntityMaxSpeed(vehicle.Handle, outInt + 0.01f);
                                         if (ShouldUseMetricMeasurements()) // kph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round((float)outInt * 3.6f, 1)} KPH~s~.");
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outInt * 3.6f, 1)} KPH~s~.");
                                         }
                                         else // mph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round((float)outInt * 2.237f, 1)} MPH~s~.");
+                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outInt * 2.237f, 1)} MPH~s~.");
                                         }
                                     }
                                     else
@@ -1089,9 +1097,13 @@ namespace vMenuClient
                     if (sender == primaryColorsMenu)
                     {
                         if (itemIndex == 1)
+                        {
                             pearlColor = VehicleData.ClassicColors[newIndex].id;
+                        }
                         else
+                        {
                             pearlColor = 0;
+                        }
 
                         switch (itemIndex)
                         {
@@ -1297,7 +1309,7 @@ namespace vMenuClient
                     if (index < 8)
                     {
                         // If the door is open.
-                        var open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f ? true : false;
+                        var open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f;
 
                         if (open)
                         {
@@ -1318,14 +1330,20 @@ namespace vMenuClient
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
-                        if (veh.HasBombBay) veh.OpenBombBay();
+                        if (veh.HasBombBay)
+                        {
+                            veh.OpenBombBay();
+                        }
                     }
                     // If the index >= 8, and the button is "closeAll": close all doors.
                     else if (item == closeAll)
                     {
                         // Close all doors.
                         SetVehicleDoorsShut(veh.Handle, false);
-                        if (veh.HasBombBay) veh.CloseBombBay();
+                        if (veh.HasBombBay)
+                        {
+                            veh.CloseBombBay();
+                        }
                     }
                     // If bomb bay doors button is pressed and the vehicle has bomb bay doors.
                     else if (item == BB && veh.HasBombBay)
@@ -1333,10 +1351,14 @@ namespace vMenuClient
                         var bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
                         // If open, close them.
                         if (bombBayOpen)
+                        {
                             veh.CloseBombBay();
+                        }
                         // Otherwise, open them.
                         else
+                        {
                             veh.OpenBombBay();
+                        }
                     }
                 }
                 else
@@ -1863,8 +1885,8 @@ namespace vMenuClient
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
                 VehicleModMenu.AddMenuItem(xenonHeadlights);
-                var currentHeadlightColor = _GetHeadlightsColorFromVehicle(veh);
-                if (currentHeadlightColor < 0 || currentHeadlightColor > 12)
+                var currentHeadlightColor = GetHeadlightsColorForVehicle(veh);
+                if (currentHeadlightColor is < 0 or > 12)
                 {
                     currentHeadlightColor = 13;
                 }
@@ -2123,11 +2145,11 @@ namespace vMenuClient
                     {
                         if (newIndex == 13) // default
                         {
-                            _SetHeadlightsColorOnVehicle(veh, 255);
+                            SetHeadlightsColorForVehicle(veh, 255);
                         }
-                        else if (newIndex > -1 && newIndex < 13)
+                        else if (newIndex is > (-1) and < 13)
                         {
-                            _SetHeadlightsColorOnVehicle(veh, newIndex);
+                            SetHeadlightsColorForVehicle(veh, newIndex);
                         }
                     }
                     #endregion
@@ -2150,12 +2172,12 @@ namespace vMenuClient
             //VehicleModMenu.CurrentIndex = selectedIndex;
         }
 
-        internal static void _SetHeadlightsColorOnVehicle(Vehicle veh, int newIndex)
+        internal static void SetHeadlightsColorForVehicle(Vehicle veh, int newIndex)
         {
 
             if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
             {
-                if (newIndex > -1 && newIndex < 13)
+                if (newIndex is > (-1) and < 13)
                 {
                     SetVehicleHeadlightsColour(veh.Handle, newIndex);
                 }
@@ -2166,14 +2188,14 @@ namespace vMenuClient
             }
         }
 
-        internal static int _GetHeadlightsColorFromVehicle(Vehicle vehicle)
+        internal static int GetHeadlightsColorForVehicle(Vehicle vehicle)
         {
             if (vehicle != null && vehicle.Exists())
             {
                 if (IsToggleModOn(vehicle.Handle, 22))
                 {
                     var val = GetVehicleHeadlightsColour(vehicle.Handle);
-                    if (val > -1 && val < 13)
+                    if (val is > (-1) and < 13)
                     {
                         return val;
                     }
@@ -2186,7 +2208,7 @@ namespace vMenuClient
 
         #region GetColorFromIndex function (underglow)
 
-        private readonly List<int[]> _VehicleNeonLightColors = new List<int[]>()
+        private readonly List<int[]> _VehicleNeonLightColors = new()
         {
             { new int[3] { 255, 255, 255 } },   // White
             { new int[3] { 2, 21, 255 } },      // Blue
@@ -2210,7 +2232,7 @@ namespace vMenuClient
         /// <returns></returns>
         private System.Drawing.Color GetColorFromIndex(int index)
         {
-            if (index >= 0 && index < 13)
+            if (index is >= 0 and < 13)
             {
                 return System.Drawing.Color.FromArgb(_VehicleNeonLightColors[index][0], _VehicleNeonLightColors[index][1], _VehicleNeonLightColors[index][2]);
             }

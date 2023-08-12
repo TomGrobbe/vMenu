@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
+﻿using System.Collections.Generic;
+
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuClient
+namespace vMenuClient.data
 {
     public static class VehicleData
     {
-        public struct VehicleColor
+        public readonly struct VehicleColor
         {
             public readonly int id;
             public readonly string label;
@@ -19,23 +15,23 @@ namespace vMenuClient
             {
                 if (label == "veh_color_taxi_yellow")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_taxi_yellow") == "NULL")
+                    if (GetLabelText("veh_color_taxi_yellow") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_taxi_yellow", $"Taxi {CitizenFX.Core.Native.API.GetLabelText("IEC_T20_2")}");
+                        AddTextEntry("veh_color_taxi_yellow", $"Taxi {GetLabelText("IEC_T20_2")}");
                     }
                 }
                 else if (label == "veh_color_off_white")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("veh_color_off_white") == "NULL")
+                    if (GetLabelText("veh_color_off_white") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("veh_color_off_white", "Off White");
+                        AddTextEntry("veh_color_off_white", "Off White");
                     }
                 }
                 else if (label == "VERY_DARK_BLUE")
                 {
-                    if (CitizenFX.Core.Native.API.GetLabelText("VERY_DARK_BLUE") == "NULL")
+                    if (GetLabelText("VERY_DARK_BLUE") == "NULL")
                     {
-                        CitizenFX.Core.Native.API.AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
+                        AddTextEntry("VERY_DARK_BLUE", "Very Dark Blue");
                     }
                 }
                 // Chameleon Colour Labels //
@@ -109,7 +105,7 @@ namespace vMenuClient
             }
         }
 
-        public static readonly List<VehicleColor> ClassicColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> ClassicColors = new()
         {
             new VehicleColor(0, "BLACK"),
             new VehicleColor(1, "GRAPHITE"),
@@ -199,7 +195,7 @@ namespace vMenuClient
             new VehicleColor(150, "LAVA_RED"),
         };
 
-        public static readonly List<VehicleColor> MatteColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> MatteColors = new()
         {
             new VehicleColor(12, "BLACK"),
             new VehicleColor(13, "GREY"),
@@ -228,7 +224,7 @@ namespace vMenuClient
             new VehicleColor(155, "MATTE_FOIL"),
         };
 
-        public static readonly List<VehicleColor> MetalColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> MetalColors = new()
         {
             new VehicleColor(117, "BR_STEEL"),
             new VehicleColor(118, "BR BLACK_STEEL"),
@@ -238,7 +234,7 @@ namespace vMenuClient
             new VehicleColor(159, "GOLD_S"),
         };
 
-        public static readonly List<VehicleColor> UtilColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> UtilColors = new()
         {
             new VehicleColor(15, "BLACK"),
             new VehicleColor(16, "FMMC_COL1_1"),
@@ -286,7 +282,7 @@ namespace vMenuClient
             new VehicleColor(160, "YELLOW")
         };
 
-        public static readonly List<VehicleColor> WornColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> WornColors = new()
         {
             new VehicleColor(21, "BLACK"),
             new VehicleColor(22, "GRAPHITE"),
@@ -325,9 +321,9 @@ namespace vMenuClient
             new VehicleColor(132, "FROST_WHITE"),
             new VehicleColor(133, "OLIVE_GREEN"),
         };
-        
+
         // Chameleon Colour List //
-        public static readonly List<VehicleColor> ChameleonColors = new List<VehicleColor>()
+        public static readonly List<VehicleColor> ChameleonColors = new()
         {
             new VehicleColor(223, "G9_PAINT01"),
             new VehicleColor(224, "G9_PAINT02"),
@@ -1348,7 +1344,7 @@ namespace vMenuClient
 
             public static string[] GetAllVehicles()
             {
-                List<string> vehs = new List<string>();
+                var vehs = new List<string>();
                 foreach (var vc in VehicleClasses)
                 {
                     foreach (var c in vc.Value)

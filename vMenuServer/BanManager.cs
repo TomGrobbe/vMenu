@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
 using System.Text.RegularExpressions;
+
+using CitizenFX.Core;
+
+using Newtonsoft.Json;
+
+using static CitizenFX.Core.Native.API;
 using static vMenuServer.DebugLog;
 
 namespace vMenuServer
@@ -32,7 +33,7 @@ namespace vMenuServer
                 this.identifiers = identifiers;
                 this.bannedUntil = bannedUntil;
                 this.banReason = banReason;
-                string uuidSuffix = $"\nYour ban id: {uuid}";
+                var uuidSuffix = $"\nYour ban id: {uuid}";
                 if (!this.banReason.Contains(uuidSuffix) && uuid != Guid.Empty)
                 {
                     this.banReason += uuidSuffix;
@@ -61,11 +62,11 @@ namespace vMenuServer
         private void SendBanList([FromSource] Player source)
         {
             Log("Updating player with new banlist.\n");
-            string data = JsonConvert.SerializeObject(GetBanList()).ToString();
+            var data = JsonConvert.SerializeObject(GetBanList()).ToString();
             source.TriggerEvent("vMenu:SetBanList", data);
         }
 
-        private static List<BanRecord> cachedBansList = new List<BanRecord>();
+        private static List<BanRecord> cachedBansList = new();
         private static bool bansHaveChanged = true;
 
         /// <summary>
@@ -77,19 +78,23 @@ namespace vMenuServer
             if (bansHaveChanged)
             {
                 bansHaveChanged = false;
-                int handle = StartFindKvp(BAN_KVP_PREFIX);
-                List<string> kvpIds = new List<string>();
+                var handle = StartFindKvp(BAN_KVP_PREFIX);
+                var kvpIds = new List<string>();
                 while (true)
                 {
-                    string id = FindKvp(handle);
-                    if (string.IsNullOrEmpty(id)) break;
+                    var id = FindKvp(handle);
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        break;
+                    }
+
                     kvpIds.Add(id);
                 }
                 EndFindKvp(handle);
 
-                List<BanRecord> banRecords = new List<BanRecord>();
+                var banRecords = new List<BanRecord>();
 
-                foreach (string kvpId in kvpIds)
+                foreach (var kvpId in kvpIds)
                 {
                     banRecords.Add(JsonConvert.DeserializeObject<BanRecord>(GetResourceKvpString(kvpId)));
                 }
@@ -181,18 +186,18 @@ namespace vMenuServer
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.TempBan") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") || IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
                 Log("Source player is allowed to ban others.", LogLevel.info);
-                Player target = Players[targetPlayer];
+                var target = Players[targetPlayer];
                 if (target != null)
                 {
                     Log("Target player is not null so moving on.", LogLevel.info);
                     if (!IsPlayerAceAllowed(target.Handle, "vMenu.DontBanMe"))
                     {
                         Log("Target player (Player) does not have the 'dont ban me' permission, so we can continue to ban them.", LogLevel.info);
-                        var banduration = (banDurationHours > 0 ?
-                                                /* ban temporarily */ (DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0)) :
-                                                /* ban forever */ (new DateTime(3000, 1, 1)));
+                        var banduration = banDurationHours > 0 ?
+                                                /* ban temporarily */ DateTime.Now.AddHours(banDurationHours <= 720.0 ? banDurationHours : 720.0) :
+                                                /* ban forever */ new DateTime(3000, 1, 1);
 
-                        BanRecord ban = new BanRecord(
+                        var ban = new BanRecord(
                             GetSafePlayerName(target.Name),
                             target.Identifiers.ToList(),
                             banduration,
@@ -207,7 +212,7 @@ namespace vMenuServer
                             $"'{ban.bannedBy}' for '{ban.banReason}' until '{ban.bannedUntil}'.");
                         TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
 
-                        string timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
+                        var timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
                         target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                         source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
                     }
@@ -264,7 +269,7 @@ namespace vMenuServer
         /// <returns></returns>
         internal static void AddBan(BanRecord ban)
         {
-            string existingRecord = GetResourceKvpString(BAN_KVP_PREFIX + ban.uuid.ToString());
+            var existingRecord = GetResourceKvpString(BAN_KVP_PREFIX + ban.uuid.ToString());
             if (string.IsNullOrEmpty(existingRecord))
             {
                 SetResourceKvp(BAN_KVP_PREFIX + ban.uuid.ToString(), JsonConvert.SerializeObject(ban));
@@ -329,10 +334,10 @@ namespace vMenuServer
         /// <param name="source"></param>
         public static void BanCheater(Player source)
         {
-            bool enabled = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters);
+            var enabled = vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters);
             if (enabled)
             {
-                string reason = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters_ban_message);
+                var reason = vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_auto_ban_cheaters_ban_message);
 
                 if (string.IsNullOrEmpty(reason))
                 {
@@ -366,7 +371,7 @@ namespace vMenuServer
         {
             if (!string.IsNullOrEmpty(playerName))
             {
-                string safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
+                var safeName = playerName.Replace("^", "").Replace("<", "").Replace(">", "").Replace("~", "");
                 safeName = Regex.Replace(safeName, @"[^\u0000-\u007F]+", string.Empty);
                 safeName = safeName.Trim(new char[] { '.', ',', ' ', '!', '?' });
                 if (string.IsNullOrEmpty(safeName))
@@ -386,15 +391,15 @@ namespace vMenuServer
         {
             if (vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_log_ban_actions))
             {
-                string file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
-                DateTime date = DateTime.Now;
-                string formattedDate = (date.Day < 10 ? "0" : "") + date.Day + "-" +
+                var file = LoadResourceFile(GetCurrentResourceName(), "vmenu.log") ?? "";
+                var date = DateTime.Now;
+                var formattedDate = (date.Day < 10 ? "0" : "") + date.Day + "-" +
                     (date.Month < 10 ? "0" : "") + date.Month + "-" +
                     (date.Year < 10 ? "0" : "") + date.Year + " " +
                     (date.Hour < 10 ? "0" : "") + date.Hour + ":" +
                     (date.Minute < 10 ? "0" : "") + date.Minute + ":" +
                     (date.Second < 10 ? "0" : "") + date.Second;
-                string outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
+                var outputFile = file + $"[\t{formattedDate}\t] [BAN ACTION] {banActionMessage}\n";
                 SaveResourceFile(GetCurrentResourceName(), "vmenu.log", outputFile, -1);
                 Debug.WriteLine("^2[vMenu] [SUCCESS] [BAN]^7 " + banActionMessage);
             }

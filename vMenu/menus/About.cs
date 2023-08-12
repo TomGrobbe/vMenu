@@ -1,6 +1,6 @@
 ﻿using MenuAPI;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class About
     {
