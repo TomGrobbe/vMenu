@@ -2,6 +2,8 @@
 
 using Newtonsoft.Json;
 
+using vMenuClient.menus;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 
@@ -408,24 +410,24 @@ namespace vMenuClient
             {
                 // Some options should be enabled by default:
                 if (
-                    kvpString == "unlimitedStamina" ||
-                    kvpString == "miscDeathNotifications" ||
-                    kvpString == "miscJoinQuitNotifications" ||
-                    kvpString == "vehicleSpawnerSpawnInside" ||
-                    kvpString == "vehicleSpawnerReplacePrevious" ||
-                    kvpString == "neverWanted" ||
-                    kvpString == "voiceChatShowSpeaker" ||
-                    kvpString == "voiceChatEnabled" ||
-                    kvpString == "autoEquipParachuteWhenInPlane" ||
-                    kvpString == "miscRestorePlayerAppearance" ||
-                    kvpString == "miscRestorePlayerWeapons" ||
-                    kvpString == "miscRightAlignMenu" ||
-                    kvpString == "miscRespawnDefaultCharacter" ||
-                    kvpString == "vehicleGodInvincible" ||
-                    kvpString == "vehicleGodEngine" ||
-                    kvpString == "vehicleGodVisual" ||
-                    kvpString == "vehicleGodStrongWheels" ||
-                    kvpString == "vehicleGodRamp"
+                    kvpString is "unlimitedStamina" or
+                    "miscDeathNotifications" or
+                    "miscJoinQuitNotifications" or
+                    "vehicleSpawnerSpawnInside" or
+                    "vehicleSpawnerReplacePrevious" or
+                    "neverWanted" or
+                    "voiceChatShowSpeaker" or
+                    "voiceChatEnabled" or
+                    "autoEquipParachuteWhenInPlane" or
+                    "miscRestorePlayerAppearance" or
+                    "miscRestorePlayerWeapons" or
+                    "miscRightAlignMenu" or
+                    "miscRespawnDefaultCharacter" or
+                    "vehicleGodInvincible" or
+                    "vehicleGodEngine" or
+                    "vehicleGodVisual" or
+                    "vehicleGodStrongWheels" or
+                    "vehicleGodRamp"
                     )
                 {
                     SetSavedSettingsBool(kvpString, true);

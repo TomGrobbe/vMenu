@@ -13,7 +13,7 @@ namespace vMenuClient
         public static bool Active { get; private set; } = false;
         public static Entity CurrentEntity { get; private set; } = null;
         private int scaleform = 0;
-        private float rotateSpeed = 20f;
+        private readonly float rotateSpeed = 20f;
 
         private const float RayDistance = 25f;
 
@@ -199,7 +199,7 @@ namespace vMenuClient
         /// Main tick method for class
         /// </summary>
         [Tick]
-        private async Task MoveHandler()
+        internal async Task MoveHandler()
         {
             if (Active)
             {

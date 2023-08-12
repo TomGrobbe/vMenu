@@ -1,27 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
+using Newtonsoft.Json;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class OnlinePlayers
     {
-        public List<int> PlayersWaypointList = new List<int>();
-        public Dictionary<int, int> PlayerCoordWaypoints = new Dictionary<int, int>();
+        public List<int> PlayersWaypointList = new();
+        public Dictionary<int, int> PlayerCoordWaypoints = new();
 
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
 
-        Menu playerMenu = new Menu("Online Players", "Player:");
+        readonly Menu playerMenu = new("Online Players", "Player:");
         IPlayer currentPlayer = new NativePlayer(Game.Player);
 
 
@@ -31,22 +33,24 @@ namespace vMenuClient
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Online Players") { };
-            menu.CounterPreText = "Players: ";
+            menu = new Menu(Game.Player.Name, "Online Players")
+            {
+                CounterPreText = "Players: "
+            };
 
             MenuController.AddSubmenu(menu, playerMenu);
 
-            MenuItem sendMessage = new MenuItem("Send Private Message", "Sends a private message to this player. ~r~Note: staff may be able to see all PM's.");
-            MenuItem teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
-            MenuItem teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
-            MenuItem summon = new MenuItem("Summon Player", "Teleport the player to you.");
-            MenuItem toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
-            MenuItem spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
-            MenuItem printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
-            MenuItem kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
-            MenuItem kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
-            MenuItem ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
-            MenuItem tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+            var sendMessage = new MenuItem("Send Private Message", "Sends a private message to this player. ~r~Note: staff may be able to see all PM's.");
+            var teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
+            var teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
+            var summon = new MenuItem("Summon Player", "Teleport the player to you.");
+            var toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
+            var spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
+            var printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
+            var kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
+            var kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
+            var ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
+            var tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
 
             // always allowed
             playerMenu.AddMenuItem(sendMessage);
@@ -109,7 +113,7 @@ namespace vMenuClient
                 {
                     if (MainMenu.MiscSettingsMenu != null && !MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages)
                     {
-                        string message = await GetUserInput($"Private Message To {currentPlayer.Name}", 200);
+                        var message = await GetUserInput($"Private Message To {currentPlayer.Name}", 200);
                         if (string.IsNullOrEmpty(message))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
@@ -130,17 +134,25 @@ namespace vMenuClient
                 else if (item == teleport || item == teleportVeh)
                 {
                     if (!currentPlayer.IsLocal)
+                    {
                         _ = TeleportToPlayer(currentPlayer, item == teleportVeh); // teleport to the player. optionally in the player's vehicle if that button was pressed.
+                    }
                     else
+                    {
                         Notify.Error("You can not teleport to yourself!");
+                    }
                 }
                 // summon button
                 else if (item == summon)
                 {
                     if (Game.Player.Handle != currentPlayer.Handle)
+                    {
                         SummonPlayer(currentPlayer);
+                    }
                     else
+                    {
                         Notify.Error("You can't summon yourself.");
+                    }
                 }
                 // spectating
                 else if (item == spectate)
@@ -155,14 +167,14 @@ namespace vMenuClient
                 // manage the gps route being clicked.
                 else if (item == toggleGPS)
                 {
-                    bool selectedPedRouteAlreadyActive = false;
+                    var selectedPedRouteAlreadyActive = false;
                     if (PlayersWaypointList.Count > 0)
                     {
                         if (PlayersWaypointList.Contains(currentPlayer.ServerId))
                         {
                             selectedPedRouteAlreadyActive = true;
                         }
-                        foreach (int serverId in PlayersWaypointList)
+                        foreach (var serverId in PlayersWaypointList)
                         {
                             // remove any coord blip
                             if (PlayerCoordWaypoints.TryGetValue(serverId, out var wp))
@@ -174,17 +186,17 @@ namespace vMenuClient
                             }
 
                             // remove any entity blip
-                            int playerId = GetPlayerFromServerId(serverId);
+                            var playerId = GetPlayerFromServerId(serverId);
 
                             if (playerId < 0)
                             {
                                 continue;
                             }
 
-                            int playerPed = GetPlayerPed(playerId);
+                            var playerPed = GetPlayerPed(playerId);
                             if (DoesEntityExist(playerPed) && DoesBlipExist(GetBlipFromEntity(playerPed)))
                             {
-                                int oldBlip = GetBlipFromEntity(playerPed);
+                                var oldBlip = GetBlipFromEntity(playerPed);
                                 SetBlipRoute(oldBlip, false);
                                 RemoveBlip(ref oldBlip);
                                 Notify.Custom($"~g~GPS route to ~s~<C>{GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now disabled.");
@@ -201,7 +213,7 @@ namespace vMenuClient
 
                             if (currentPlayer.IsActive && currentPlayer.Character != null)
                             {
-                                int ped = GetPlayerPed(currentPlayer.Handle);
+                                var ped = GetPlayerPed(currentPlayer.Handle);
                                 blip = GetBlipFromEntity(ped);
                                 if (!DoesBlipExist(blip))
                                 {
@@ -236,8 +248,8 @@ namespace vMenuClient
                     Func<string, string> CallbackFunction = (data) =>
                     {
                         Debug.WriteLine(data);
-                        string ids = "~s~";
-                        foreach (string s in JsonConvert.DeserializeObject<string[]>(data))
+                        var ids = "~s~";
+                        foreach (var s in JsonConvert.DeserializeObject<string[]>(data))
                         {
                             ids += "~n~" + s;
                         }
@@ -250,9 +262,13 @@ namespace vMenuClient
                 else if (item == kick)
                 {
                     if (currentPlayer.Handle != Game.Player.Handle)
+                    {
                         KickPlayer(currentPlayer, true);
+                    }
                     else
+                    {
                         Notify.Error("You cannot kick yourself!");
+                    }
                 }
                 // temp ban
                 else if (item == tempban)
@@ -304,9 +320,9 @@ namespace vMenuClient
             {
                 menu.ClearMenuItems();
 
-                foreach (IPlayer p in MainMenu.PlayersList.OrderBy(a => a.Name))
+                foreach (var p in MainMenu.PlayersList.OrderBy(a => a.Name))
                 {
-                    MenuItem pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
+                    var pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
                     {
                         Label = $"Server #{p.ServerId} →→→"
                     };
