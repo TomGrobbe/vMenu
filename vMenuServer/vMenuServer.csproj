@@ -7,6 +7,7 @@
     <TargetName>$(AssemblyName)</TargetName>
     <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>SERVER</DefineConstants>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
@@ -19,7 +20,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     
-    <PackageReference Include="CitizenFX.Core.Server" Version="1.0.6302">
+    <PackageReference Include="CitizenFX.Core.Server" Version="1.0.6335">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     
@@ -45,6 +46,14 @@
     <None Update="System.Numerics.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenuServer\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenuServer\.editorconfig" />
   </ItemGroup>
 
 </Project>

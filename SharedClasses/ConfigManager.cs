@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using CitizenFX.Core;
 
 using Newtonsoft.Json;
+
 
 using static CitizenFX.Core.Native.API;
 
@@ -28,10 +29,14 @@ namespace vMenuShared
             vmenu_disable_spawning_as_default_character,
             vmenu_enable_animals_spawn_menu,
             vmenu_pvp_mode,
+            keep_player_head_props,
             vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
             vmenu_disable_player_stats_setup,
+
+            // Vehicle Chameleon Colours
+            vmenu_using_chameleon_colours,
 
             // Kick & ban settings
             vmenu_default_ban_message_information,
@@ -75,10 +80,10 @@ namespace vMenuShared
         /// <returns></returns>
         public static int GetSettingsInt(Setting setting)
         {
-            int convarInt = GetConvarInt(setting.ToString(), -1);
+            var convarInt = GetConvarInt(setting.ToString(), -1);
             if (convarInt == -1)
             {
-                if (int.TryParse(GetConvar(setting.ToString(), "-1"), out int convarIntAlt))
+                if (int.TryParse(GetConvar(setting.ToString(), "-1"), out var convarIntAlt))
                 {
                     return convarIntAlt;
                 }
@@ -93,7 +98,7 @@ namespace vMenuShared
         /// <returns></returns>
         public static float GetSettingsFloat(Setting setting)
         {
-            if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out float result))
+            if (float.TryParse(GetConvar(setting.ToString(), "-1.0"), out var result))
             {
                 return result;
             }
@@ -145,9 +150,9 @@ namespace vMenuShared
         /// <returns></returns>
         public static Locations GetLocations()
         {
-            Locations data = new Locations();
+            var data = new Locations();
 
-            string jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
+            var jsonFile = LoadResourceFile(GetCurrentResourceName(), "config/locations.json");
             try
             {
                 if (string.IsNullOrEmpty(jsonFile))

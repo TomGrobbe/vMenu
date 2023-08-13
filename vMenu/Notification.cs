@@ -43,58 +43,26 @@ namespace vMenuClient
         /// <returns>The error message.</returns>
         public static string Get(CommonErrors errorType, string placeholderValue = null)
         {
-            string outputMessage = "";
-            string placeholder = placeholderValue != null ? " " + placeholderValue : "";
-            switch (errorType)
+            var outputMessage = "";
+            var placeholder = placeholderValue != null ? " " + placeholderValue : "";
+            outputMessage = errorType switch
             {
-                case CommonErrors.NeedToBeTheDriver:
-                    outputMessage = "You need to be the driver of this vehicle.";
-                    break;
-                case CommonErrors.NoVehicle:
-                    outputMessage = $"You need to be inside a vehicle{placeholder}.";
-                    break;
-                case CommonErrors.NotAllowed:
-                    outputMessage = $"You are not allowed to{placeholder}, sorry.";
-                    break;
-                case CommonErrors.InvalidModel:
-                    outputMessage = $"This model~r~{placeholder} ~s~could not be found, are you sure it's valid?";
-                    break;
-                case CommonErrors.InvalidInput:
-                    outputMessage = $"The input~r~{placeholder} ~s~is invalid or you cancelled the action, please try again.";
-                    break;
-                case CommonErrors.InvalidSaveName:
-                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~s~is invalid.";
-                    break;
-                case CommonErrors.SaveNameAlreadyExists:
-                    outputMessage = $"Saving failed because the provided save name~r~{placeholder} ~s~already exists.";
-                    break;
-                case CommonErrors.CouldNotLoadSave:
-                    outputMessage = $"Loading of~r~{placeholder} ~s~failed! Is the saves file corrupt?";
-                    break;
-                case CommonErrors.CouldNotLoad:
-                    outputMessage = $"Could not load~r~{placeholder}~s~, sorry!";
-                    break;
-                case CommonErrors.PedNotFound:
-                    outputMessage = $"The specified ped could not be found.{placeholder}";
-                    break;
-                case CommonErrors.PlayerNotFound:
-                    outputMessage = $"The specified player could not be found.{placeholder}";
-                    break;
-                case CommonErrors.WalkingStyleNotForMale:
-                    outputMessage = $"This walking style is not available for male peds.{placeholder}";
-                    break;
-                case CommonErrors.WalkingStyleNotForFemale:
-                    outputMessage = $"This walking style is not available for female peds.{placeholder}";
-                    break;
-                case CommonErrors.RightAlignedNotSupported:
-                    outputMessage = $"Right aligned menus are not supported for ultra wide aspect ratios.{placeholder}";
-                    break;
-
-                case CommonErrors.UnknownError:
-                default:
-                    outputMessage = $"An unknown error occurred, sorry!{placeholder}";
-                    break;
-            }
+                CommonErrors.NeedToBeTheDriver => "You need to be the driver of this vehicle.",
+                CommonErrors.NoVehicle => $"You need to be inside a vehicle{placeholder}.",
+                CommonErrors.NotAllowed => $"You are not allowed to{placeholder}, sorry.",
+                CommonErrors.InvalidModel => $"This model~r~{placeholder} ~s~could not be found, are you sure it's valid?",
+                CommonErrors.InvalidInput => $"The input~r~{placeholder} ~s~is invalid or you cancelled the action, please try again.",
+                CommonErrors.InvalidSaveName => $"Saving failed because the provided save name~r~{placeholder} ~s~is invalid.",
+                CommonErrors.SaveNameAlreadyExists => $"Saving failed because the provided save name~r~{placeholder} ~s~already exists.",
+                CommonErrors.CouldNotLoadSave => $"Loading of~r~{placeholder} ~s~failed! Is the saves file corrupt?",
+                CommonErrors.CouldNotLoad => $"Could not load~r~{placeholder}~s~, sorry!",
+                CommonErrors.PedNotFound => $"The specified ped could not be found.{placeholder}",
+                CommonErrors.PlayerNotFound => $"The specified player could not be found.{placeholder}",
+                CommonErrors.WalkingStyleNotForMale => $"This walking style is not available for male peds.{placeholder}",
+                CommonErrors.WalkingStyleNotForFemale => $"This walking style is not available for female peds.{placeholder}",
+                CommonErrors.RightAlignedNotSupported => $"Right aligned menus are not supported for ultra wide aspect ratios.{placeholder}",
+                _ => $"An unknown error occurred, sorry!{placeholder}",
+            };
             return outputMessage;
         }
     }
@@ -116,7 +84,7 @@ namespace vMenuClient
         public static void Custom(string message, bool blink = true, bool saveToBrief = true)
         {
             SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
+            foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
                 AddTextComponentSubstringPlayerName(s);
             }
@@ -143,7 +111,7 @@ namespace vMenuClient
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
         public static void Alert(CommonErrors errorMessage, bool blink = true, bool saveToBrief = true, string placeholderValue = null)
         {
-            string message = ErrorMessage.Get(errorMessage, placeholderValue);
+            var message = ErrorMessage.Get(errorMessage, placeholderValue);
             Alert(message, blink, saveToBrief);
         }
 
@@ -168,7 +136,7 @@ namespace vMenuClient
         /// <param name="placeholderValue">An optional string that will be replaced inside the error message template.</param>
         public static void Error(CommonErrors errorMessage, bool blink = true, bool saveToBrief = true, string placeholderValue = null)
         {
-            string message = ErrorMessage.Get(errorMessage, placeholderValue);
+            var message = ErrorMessage.Get(errorMessage, placeholderValue);
             Error(message, blink, saveToBrief);
         }
 
@@ -206,7 +174,7 @@ namespace vMenuClient
         public static void CustomImage(string textureDict, string textureName, string message, string title, string subtitle, bool saveToBrief, int iconType = 0)
         {
             SetNotificationTextEntry("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
+            foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
                 AddTextComponentSubstringPlayerName(s);
             }
@@ -232,7 +200,7 @@ namespace vMenuClient
         public static void Custom(string message, int duration = 2500, bool drawImmediately = true)
         {
             BeginTextCommandPrint("CELL_EMAIL_BCON"); // 10x ~a~
-            foreach (string s in CitizenFX.Core.UI.Screen.StringToArray(message))
+            foreach (var s in CitizenFX.Core.UI.Screen.StringToArray(message))
             {
                 AddTextComponentSubstringPlayerName(s);
             }
@@ -298,7 +266,7 @@ namespace vMenuClient
             EXIT_INTERIOR_HELP_MESSAGE
         }
 
-        private static Dictionary<Label, KeyValuePair<string, string>> labels = new Dictionary<Label, KeyValuePair<string, string>>()
+        private static readonly Dictionary<Label, KeyValuePair<string, string>> labels = new()
         {
             [Label.EXIT_INTERIOR_HELP_MESSAGE] = new KeyValuePair<string, string>("EXIT_INTERIOR_HELP_MESSAGE", "Press ~INPUT_CONTEXT~ to exit the building.")
         };
@@ -309,13 +277,13 @@ namespace vMenuClient
         public static void Custom(string message, int duration) => Custom(message, duration, true);
         public static void Custom(string message, int duration, bool sound)
         {
-            string[] array = CommonFunctions.StringToArray(message);
+            var array = CommonFunctions.StringToArray(message);
             if (IsHelpMessageBeingDisplayed())
             {
                 ClearAllHelpMessages();
             }
             BeginTextCommandDisplayHelp("CELL_EMAIL_BCON");
-            foreach (string s in array)
+            foreach (var s in array)
             {
                 AddTextComponentSubstringPlayerName(s);
             }
