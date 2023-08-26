@@ -269,7 +269,7 @@ namespace vMenuClient
             if (GetNextWeatherType() != GetHashKey(GetServerWeather))
             {
                 SetWeatherTypeOvertimePersist(GetServerWeather, (float)WeatherChangeTime);
-                await Delay(WeatherChangeTime * 1000 + 2000);
+                await Delay((WeatherChangeTime * 1000) + 2000);
 
                 TriggerEvent("vMenu:WeatherChangeComplete", GetServerWeather);
             }

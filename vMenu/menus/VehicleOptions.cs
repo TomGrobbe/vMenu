@@ -275,7 +275,6 @@ namespace vMenuClient
                         VehicleGodAutoRepair = _checked;
                     }
                 };
-
             }
             if (IsAllowed(Permission.VORepair)) // REPAIR VEHICLE
             {
@@ -444,7 +443,6 @@ namespace vMenuClient
                         {
                             Notify.Alert("You need to be in the driver's seat if you want to delete a vehicle.");
                         }
-
                     }
                     DeleteConfirmMenu.GoBack();
                     menu.GoBack();
@@ -820,7 +818,6 @@ namespace vMenuClient
                                 {
                                     Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(vehicle.Speed * 2.237f, 1)} MPH~s~.");
                                 }
-
                             }
                             else if (listIndex == 1) // Reset
                             {
@@ -1439,7 +1436,6 @@ namespace vMenuClient
                         VehicleModMenu.CloseMenu();
                         menu.OpenMenu();
                     }
-
                 }
             };
             #endregion
@@ -1495,8 +1491,6 @@ namespace vMenuClient
                             }
                         }
 
-
-
                         if (vehicleExtras.Count > 0)
                         {
                             MenuItem backBtn = new MenuItem("Go Back", "Go back to the Vehicle Options menu.");
@@ -1521,7 +1515,6 @@ namespace vMenuClient
                         // And update the submenu to prevent weird glitches.
                         VehicleComponentsMenu.RefreshIndex();
                         //VehicleComponentsMenu.UpdateScaleform();
-
                     }
                 }
             };
@@ -1704,7 +1697,6 @@ namespace vMenuClient
                 });
             };
             #endregion
-
         }
         #endregion
 
@@ -1742,7 +1734,6 @@ namespace vMenuClient
                 {
                     VehicleModMenu.ClearMenuItems(false);
                 }
-
             }
 
             // Get the vehicle.
@@ -2134,7 +2125,6 @@ namespace vMenuClient
 
         internal static void _SetHeadlightsColorOnVehicle(Vehicle veh, int newIndex)
         {
-
             if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
             {
                 if (newIndex > -1 && newIndex < 13)
