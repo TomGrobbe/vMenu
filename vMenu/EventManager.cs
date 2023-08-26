@@ -33,8 +33,8 @@ namespace vMenuClient
         public EventManager()
         {
             // Add event handlers.
-            EventHandlers.Add("vMenu:SetAddons", new Action(SetAddons));
-            EventHandlers.Add("vMenu:SetExtras", new Action(SetExtras));
+            EventHandlers.Add("vMenu:SetAddons", new Action(SetConfigOptions)); // DEPRECATED: Backwards-compatible event handler; use 'vMenu:SetConfigOptions' instead
+            EventHandlers.Add("vMenu:SetConfigOptions", new Action(SetConfigOptions));
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
             EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
@@ -101,6 +101,17 @@ namespace vMenuClient
 
                 }
             }
+        }
+
+        /// <summary>
+        /// Sets the addon models from the addons.json file.
+        /// </summary>
+        private void SetConfigOptions()
+        {
+            SetAddons();
+            SetExtras();
+
+            MainMenu.ConfigOptionsSetupComplete = true;
         }
 
         /// <summary>
@@ -201,8 +212,6 @@ namespace vMenuClient
             {
                 Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your extras.json file contains a problem! Error details: {ex.Message}\n\n");
             }
-
-            MainMenu.ConfigOptionsSetupComplete = true;
         }
 
         /// <summary>
