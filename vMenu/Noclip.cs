@@ -15,7 +15,7 @@ namespace vMenuClient
         private static bool FollowCamMode { get; set; } = true;
 
 
-        private List<string> speeds = new List<string>()
+        private readonly List<string> speeds = new()
         {
             "Very Slow",
             "Slow",
@@ -130,7 +130,9 @@ namespace vMenuClient
                 Game.DisableControlThisFrame(0, Control.MultiplayerInfo);
                 Game.DisableControlThisFrame(0, Control.VehicleHeadlight);
                 if (Game.PlayerPed.IsInVehicle())
+                {
                     Game.DisableControlThisFrame(0, Control.VehicleRadioWheel);
+                }
 
                 var yoff = 0.0f;
                 var zoff = 0.0f;
@@ -204,7 +206,7 @@ namespace vMenuClient
                 SetEntityCollision(noclipEntity, true, true);
 
                 // If the player is not set as invisible by PlayerOptions or if the noclip entity is not the player ped, reset the visibility
-                if (MainMenu.PlayerOptionsMenu == null || (!MainMenu.PlayerOptionsMenu.PlayerInvisible || (MainMenu.PlayerOptionsMenu.PlayerInvisible && noclipEntity == Game.PlayerPed.Handle)))
+                if (MainMenu.PlayerOptionsMenu == null || !MainMenu.PlayerOptionsMenu.PlayerInvisible || (MainMenu.PlayerOptionsMenu.PlayerInvisible && noclipEntity == Game.PlayerPed.Handle))
                 {
                     SetEntityVisible(noclipEntity, true, false);
                     SetLocalPlayerVisibleLocally(true);

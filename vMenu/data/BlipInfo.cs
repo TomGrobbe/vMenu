@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
-using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
+﻿using System.Collections.Generic;
 
-namespace vMenuClient
+using static CitizenFX.Core.Native.API;
+
+namespace vMenuClient.data
 {
     public static class BlipInfo
     {
         public static int GetBlipSpriteForVehicle(int vehicle)
         {
-            uint model = (uint)GetEntityModel(vehicle);
-            Dictionary<uint, int> sprites = new Dictionary<uint, int>()
+            var model = (uint)GetEntityModel(vehicle);
+            var sprites = new Dictionary<uint, int>()
             {
                 { (uint)GetHashKey("taxi"), 56 },
                 //
