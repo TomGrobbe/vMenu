@@ -11,7 +11,7 @@ namespace vMenuClient
     {
         private static bool NoclipActive { get; set; } = false;
         private static int MovingSpeed { get; set; } = 0;
-        private static int Scale { get; set; } = -1;
+        private static int Scale = -1;
         private static bool FollowCamMode { get; set; } = true;
 
 
@@ -35,6 +35,13 @@ namespace vMenuClient
         internal static void SetNoclipActive(bool active)
         {
             NoclipActive = active;
+
+            if (!active)
+            {
+                SetScaleformMovieAsNoLongerNeeded(ref Scale);
+
+                Scale = -1;
+            }
         }
 
         internal static bool IsNoclipActive()
