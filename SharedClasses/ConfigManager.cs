@@ -64,6 +64,9 @@ namespace vMenuShared
 
             // Voice Chat Settings
             vmenu_override_voicechat_default_range,
+
+            // Key Mapping
+            vmenu_keymapping_id,
         }
 
         /// <summary>
