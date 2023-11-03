@@ -6,6 +6,8 @@ using MenuAPI;
 
 using static vMenuShared.PermissionsManager;
 
+using static vMenuShared.ConfigManager;
+
 namespace vMenuClient.menus
 {
     public class VoiceChat
@@ -15,7 +17,7 @@ namespace vMenuClient.menus
         public bool EnableVoicechat = UserDefaults.VoiceChatEnabled;
         public bool ShowCurrentSpeaker = UserDefaults.ShowCurrentSpeaker;
         public bool ShowVoiceStatus = UserDefaults.ShowVoiceStatus;
-        public float currentProximity = UserDefaults.VoiceChatProximity;
+        public float currentProximity = (GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) != 0.0) ? GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) : UserDefaults.VoiceChatProximity;
         public List<string> channels = new()
         {
             "Channel 1 (Default)",
