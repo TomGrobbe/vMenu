@@ -24,7 +24,6 @@ namespace vMenuClient
         public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
-        //public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
         public static string MenuToggleKey { get; private set; } = "M"; // M by default
         public static string NoClipKey { get; private set; } = "F2"; // F2 by default 
         public static Menu Menu { get; private set; }
@@ -346,7 +345,6 @@ namespace vMenuClient
             // Request server state from the server.
             TriggerServerEvent("vMenu:RequestServerState");
 
-             MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle keyMenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
         }
 
         #region Infinity bits
@@ -481,7 +479,6 @@ namespace vMenuClient
                 MenuController.DisableMenuButtons = true;
                 MenuController.DontOpenAnyMenu = true;
                 MenuEnabled = false;
-                MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
                 return;
             }
             // Create the main menu.
