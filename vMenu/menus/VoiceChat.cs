@@ -34,8 +34,8 @@ namespace vMenuClient.menus
             20f, // 20m
             100f, // 100m
             300f, // 300m
-            1000f, // 1.000m
-            2000f, // 2.000m
+            1000f, // 1.000km
+            2000f, // 2.000km
             0f, // global
         };
 
