@@ -69,7 +69,6 @@ namespace vMenuClient.menus
                 "2 km",
                 "Global",
             };
-            //var voiceChatProximity = new MenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
             var voiceChatProximity = new MenuItem("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")" ,  "Set the voice chat receiving proximity in meters. Set to 0 for global.");
             var voiceChatChannel = new MenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
 
@@ -84,7 +83,6 @@ namespace vMenuClient.menus
                 }
 
                 menu.AddMenuItem(voiceChatProximity);
-                //menu.AddMenuItem(voiceChatProximity2);
                 menu.AddMenuItem(voiceChatChannel);
                 menu.AddMenuItem(showVoiceStatus);
             }
