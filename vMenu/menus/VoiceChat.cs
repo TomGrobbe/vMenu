@@ -144,7 +144,7 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    val = input / 1000 + "km";
+                    val = (input / 1000) + "km";
                 }
             }
             if (input==0)

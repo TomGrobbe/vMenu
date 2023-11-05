@@ -344,7 +344,6 @@ namespace vMenuClient
 
             // Request server state from the server.
             TriggerServerEvent("vMenu:RequestServerState");
-
         }
 
         #region Infinity bits
