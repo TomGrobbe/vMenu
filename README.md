@@ -1,4 +1,4 @@
-# vMenu (Revamped/Re-write - WIP 2023)
+# vMenu (Revamped/Rewrite - WIP 2023)
 vMenu is server sided menu for FiveM servers, including full\* permission support.
 
 --------
