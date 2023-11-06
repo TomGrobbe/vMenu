@@ -4,7 +4,11 @@ using CitizenFX.Core;
 
 using MenuAPI;
 
+using static vMenuClient.CommonFunctions;
+
 using static vMenuShared.PermissionsManager;
+
+using static vMenuShared.ConfigManager;
 
 namespace vMenuClient.menus
 {
@@ -15,7 +19,7 @@ namespace vMenuClient.menus
         public bool EnableVoicechat = UserDefaults.VoiceChatEnabled;
         public bool ShowCurrentSpeaker = UserDefaults.ShowCurrentSpeaker;
         public bool ShowVoiceStatus = UserDefaults.ShowVoiceStatus;
-        public float currentProximity = UserDefaults.VoiceChatProximity;
+        public float currentProximity = (GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) != 0.0) ? GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) : UserDefaults.VoiceChatProximity;
         public List<string> channels = new()
         {
             "Channel 1 (Default)",
@@ -32,8 +36,8 @@ namespace vMenuClient.menus
             20f, // 20m
             100f, // 100m
             300f, // 300m
-            1000f, // 1.000m
-            2000f, // 2.000m
+            1000f, // 1.000km
+            2000f, // 2.000km
             0f, // global
         };
 
@@ -65,7 +69,7 @@ namespace vMenuClient.menus
                 "2 km",
                 "Global",
             };
-            var voiceChatProximity = new MenuListItem("Voice Chat Proximity", proximity, proximityRange.IndexOf(currentProximity), "Set the voice chat receiving proximity in meters.");
+            var voiceChatProximity = new MenuItem("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")" ,  "Set the voice chat receiving proximity in meters. Set to 0 for global.");
             var voiceChatChannel = new MenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
 
             if (IsAllowed(Permission.VCEnable))
@@ -101,20 +105,52 @@ namespace vMenuClient.menus
 
             menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
             {
-                if (item == voiceChatProximity)
-                {
-                    currentProximity = proximityRange[newIndex];
-                    Subtitle.Custom($"New voice chat proximity set to: ~b~{proximity[newIndex]}~s~.");
-                }
-                else if (item == voiceChatChannel)
+                if (item == voiceChatChannel)
                 {
                     currentChannel = channels[newIndex];
                     Subtitle.Custom($"New voice chat channel set to: ~b~{channels[newIndex]}~s~.");
                 }
             };
+            menu.OnItemSelect += async (sender, item, index) =>
+            {
+                if (item == voiceChatProximity)
+                {
+                    var result = await GetUserInput(windowTitle: $"Enter Proximity In Meters. Current: ({ConvertToMetric(currentProximity)})", maxInputLength: 6);
+
+                    if (float.TryParse(result, out var resultfloat))
+                    {
+                        currentProximity = resultfloat;
+                        Subtitle.Custom($"New voice chat proximity set to: ~b~{ConvertToMetric(currentProximity)}~s~.");
+                        voiceChatProximity.Text = ("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")" );
+                    }
+                }
+            };
 
         }
-
+        static string ConvertToMetric(float input)
+        {
+            string val = "0m";
+            if (input < 1.0)
+            {
+                val = (input * 100) + "cm";
+            }
+            else if (input >= 1.0)
+            {
+                if (input < 1000)
+                {
+                    val = input + "m";
+                }
+                else
+                {
+                    val = (input / 1000) + "km";
+                }
+            }
+            if (input==0)
+            {
+                val = "global";
+            }
+            return val;
+        }
         /// <summary>
         /// Create the menu if it doesn't exist, and then returns it.
         /// </summary>

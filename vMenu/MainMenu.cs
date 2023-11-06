@@ -24,8 +24,8 @@ namespace vMenuClient
         public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
 
-        public static Control MenuToggleKey { get { return MenuController.MenuToggleKey; } private set { MenuController.MenuToggleKey = value; } } // M by default (InteractionMenu)
-        public static int NoClipKey { get; private set; } = 289; // F2 by default (ReplayStartStopRecordingSecondary)
+        public static string MenuToggleKey { get; private set; } = "M"; // M by default
+        public static string NoClipKey { get; private set; } = "F2"; // F2 by default 
         public static Menu Menu { get; private set; }
         public static Menu PlayerSubmenu { get; private set; }
         public static Menu VehicleSubmenu { get; private set; }
@@ -57,6 +57,8 @@ namespace vMenuClient
 
         public static bool DontOpenMenus { get { return MenuController.DontOpenAnyMenu; } set { MenuController.DontOpenAnyMenu = value; } }
         public static bool DisableControls { get { return MenuController.DisableMenuButtons; } set { MenuController.DisableMenuButtons = value; } }
+
+        public static bool MenuEnabled { get; private set; } = true;
 
         private const int currentCleanupVersion = 2;
         #endregion
@@ -117,7 +119,67 @@ namespace vMenuClient
                 Debug.WriteLine("[vMenu] Cleanup of old unused KVP items completed.");
             }
             #endregion
+            #region keymapping
+            string KeyMappingID = String.IsNullOrWhiteSpace(GetSettingsString(Setting.vmenu_keymapping_id)) ? "Default" :  GetSettingsString(Setting.vmenu_keymapping_id);
+            RegisterCommand($"vMenu:{KeyMappingID}:NoClip", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+                if ( IsAllowed(Permission.NoClip) )
+                {
+                    if (Game.PlayerPed.IsInVehicle())
+                    {
+                        var veh = GetVehicle();
+                        if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
+                        {
+                            NoClipEnabled = !NoClipEnabled;
+                        }
+                        else
+                        {
+                            NoClipEnabled = false;
+                            Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                        }
+                    }
+                    else
+                    {
+                        NoClipEnabled = !NoClipEnabled;
+                    }
+                }
+            }), false);
+            RegisterCommand($"vMenu:{KeyMappingID}:MenuToggle", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
+            {
+               if (MenuEnabled)
+               {
+                   if (!MenuController.IsAnyMenuOpen())
+                   {
+                       Menu.OpenMenu();
+                   }
+                   else
+                   {
+                       MenuController.CloseAllMenus();
+                   }
+               }
+            }), false);
 
+            if (!(GetSettingsString(Setting.vmenu_noclip_toggle_key) == null))
+            {
+                NoClipKey = GetSettingsString(Setting.vmenu_noclip_toggle_key);
+            }
+            else
+            {
+                NoClipKey = "F2";
+            }
+
+            if (!(GetSettingsString(Setting.vmenu_menu_toggle_key) == null))
+            {
+                MenuToggleKey = GetSettingsString(Setting.vmenu_menu_toggle_key);
+            }
+            else
+            {
+                MenuToggleKey = "M";
+            }
+
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:NoClip", "vMenu NoClip Toggle Button", "keyboard", NoClipKey);
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu Toggle Button", "keyboard", MenuToggleKey);
+            #endregion
             if (EnableExperimentalFeatures)
             {
                 RegisterCommand("testped", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
@@ -415,20 +477,9 @@ namespace vMenuClient
                 MenuController.MainMenu = null;
                 MenuController.DisableMenuButtons = true;
                 MenuController.DontOpenAnyMenu = true;
-                MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
+                MenuEnabled = false;
                 return;
             }
-
-            if (GetSettingsInt(Setting.vmenu_menu_toggle_key) != -1)
-            {
-                MenuToggleKey = (Control)GetSettingsInt(Setting.vmenu_menu_toggle_key);
-                //MenuToggleKey = GetSettingsInt(Setting.vmenu_menu_toggle_key);
-            }
-            if (GetSettingsInt(Setting.vmenu_noclip_toggle_key) != -1)
-            {
-                NoClipKey = GetSettingsInt(Setting.vmenu_noclip_toggle_key);
-            }
-
             // Create the main menu.
             Menu = new Menu(Game.Player.Name, "Main Menu");
             PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
@@ -521,34 +572,34 @@ namespace vMenuClient
                     Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
                 }
 
-                if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
-                {
-                    if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
-                    {
-                        if (Game.PlayerPed.IsInVehicle())
-                        {
-                            var veh = GetVehicle();
-                            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
-                            {
-                                NoClipEnabled = !NoClipEnabled;
-                            }
-                            else
-                            {
-                                NoClipEnabled = false;
-                                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
-                            }
-                        }
-                        else
-                        {
-                            NoClipEnabled = !NoClipEnabled;
-                        }
-                    }
-                }
+                //if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
+                //{
+                //    if (Game.IsControlJustPressed(0, (Control)NoClipKey) && IsAllowed(Permission.NoClip) && UpdateOnscreenKeyboard() != 0)
+                //    {
+                //        if (Game.PlayerPed.IsInVehicle())
+                //        {
+                //            var veh = GetVehicle();
+                //            if (veh != null && veh.Exists() && veh.Driver == Game.PlayerPed)
+                //            {
+                //                NoClipEnabled = !NoClipEnabled;
+                //            }
+                //            else
+                //            {
+                //                NoClipEnabled = false;
+                //                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                //            }
+                //        }
+                //        else
+                //        {
+                //            NoClipEnabled = !NoClipEnabled;
+                //        }
+                //    }
+                //}
 
                 #endregion
 
                 // Menu toggle button.
-                Game.DisableControlThisFrame(0, MenuToggleKey);
+                //Game.DisableControlThisFrame(0, MenuToggleKey);
             }
         }
 
