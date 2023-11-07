@@ -1,5 +1,6 @@
 using CitizenFX.Core;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using ScaleformUI;
 using System;
 using System.Collections.Generic;
@@ -23,5 +24,7 @@ namespace vMenu.Client.MenuSettings
         public static bool enableAnimation = false;
         public static MenuBuildingAnimation buildingAnimation = MenuBuildingAnimation.NONE;
         public static ScrollingType scrollingType = ScrollingType.ENDLESS;
+        public static SColor HighlightColor = SColor.FromArgb(255, 236, 236, 236) ;
+        public static SColor BackgroundColor = SColor.HUD_Panel_light;
     }
 }

@@ -1,5 +1,6 @@
 using CitizenFX.Core;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,10 +31,10 @@ namespace vMenu.Client.Menus
                 EnableAnimation = menuSettings.enableAnimation,
             };
 
-            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu");
+            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", menuSettings.BackgroundColor, menuSettings.HighlightColor);
             vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~");
-            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/");
+            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", menuSettings.BackgroundColor, menuSettings.HighlightColor);
 
             aboutMenu.AddItem(vMenuVersion);
             aboutMenu.AddItem(vMenuCredits);

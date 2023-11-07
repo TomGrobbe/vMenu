@@ -1,5 +1,6 @@
 using CitizenFX.Core;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,7 +31,7 @@ namespace vMenu.Client.Menus
                 EnableAnimation = menuSettings.enableAnimation,
             };
             
-            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~");
+            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", menuSettings.BackgroundColor, menuSettings.HighlightColor);
 
             voiceChatSettings.AddItem(button);
 

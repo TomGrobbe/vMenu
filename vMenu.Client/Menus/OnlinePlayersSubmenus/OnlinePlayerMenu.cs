@@ -2,6 +2,7 @@
 using CitizenFX.FiveM;
 using CitizenFX.Shared;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -39,7 +40,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
             onlinePlayerMenu.Windows.Clear();
             onlinePlayerMenu.MenuItems.Clear();
 
-            UIMenuItem spectatePlayer = new UIMenuItem("Spectate Player", "Click to spectate this player");
+            UIMenuItem spectatePlayer = new UIMenuItem("Spectate Player", "Click to spectate this player", menuSettings.BackgroundColor, menuSettings.HighlightColor);
 
             UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Name}~h~", $"Server ID: {player.ServerId}\nLocal ID: {player.Handle}", $"Steam ID: test\nDiscord ID: yeet", new UIDetailImage()
             {

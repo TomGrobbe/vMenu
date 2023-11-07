@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,7 +31,7 @@ namespace vMenu.Client.Menus
                 EnableAnimation = menuSettings.enableAnimation,
             };
 
-            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)");
+            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)", menuSettings.BackgroundColor, menuSettings.HighlightColor);
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
             miscOptionsMenu.AddItem(toggleMenuAlign);
 

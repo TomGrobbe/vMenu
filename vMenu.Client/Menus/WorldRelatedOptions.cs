@@ -1,4 +1,6 @@
 using CitizenFX.Core;
+
+using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 using System;
 using System.Collections.Generic;
@@ -29,7 +31,7 @@ namespace vMenu.Client.Menus
                 ControlDisablingEnabled = menuSettings.controlDisablingEnabled,
                 EnableAnimation = menuSettings.enableAnimation,
             };
-            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~");
+            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", menuSettings.BackgroundColor, menuSettings.HighlightColor);
 
             worldRelatedOptions.AddItem(button);
 

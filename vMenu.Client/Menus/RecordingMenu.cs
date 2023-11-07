@@ -1,5 +1,6 @@
 using CitizenFX.Core;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -34,11 +35,11 @@ namespace vMenu.Client.Menus
                 EnableAnimation = menuSettings.enableAnimation,
             };
 
-            UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.");
-            UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.");
-            UIMenuItem startRecording = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
-            UIMenuItem stopRecording = new UIMenuItem("Stop Recording", "Stop and save your current recording.");
-            UIMenuItem openRockstarEditor = new UIMenuItem("Rockstar Editor", "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.");
+            UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem startRecording = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem stopRecording = new UIMenuItem("Stop Recording", "Stop and save your current recording.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem openRockstarEditor = new UIMenuItem("Rockstar Editor", "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
             recordingMenu.AddItem(takePicture);
             recordingMenu.AddItem(openPmGallery);
             recordingMenu.AddItem(startRecording);
@@ -65,7 +66,7 @@ namespace vMenu.Client.Menus
                 }
                 else
                 {
-                    StartRecording(0);
+                    StartRecording(1);
                 }                
             };
 
@@ -85,7 +86,7 @@ namespace vMenu.Client.Menus
             {
                 if (true)
                 {
-                    MenuFunctions.QuitSession();
+                    //MenuFunctions.QuitSession();
                 }
                 ActivateRockstarEditor();
                 // wait for the editor to be closed again.

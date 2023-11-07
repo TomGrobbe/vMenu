@@ -2,6 +2,7 @@
 using CitizenFX.FiveM;
 using ScaleformUI;
 using ScaleformUI.Menu;
+using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -57,7 +58,7 @@ namespace vMenu.Client.Menus
 
             foreach (Player player in PlayersList.OrderBy(a => a.Name))
             {
-                UIMenuItem onlinePlayer = new UIMenuItem(player.Name, "Click to view the options for this player");
+                UIMenuItem onlinePlayer = new UIMenuItem(player.Name, "Click to view the options for this player", menuSettings.BackgroundColor, menuSettings.HighlightColor);
                 onlinePlayer.SetRightLabel($"Server ID: {player.ServerId}");
 
                 int mugshot = RegisterPedheadshot(player.Character.Handle);
