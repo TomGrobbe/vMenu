@@ -21,6 +21,8 @@ namespace vMenu.Client.Functions
 
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
+        public static void QuitSession() => NetworkSessionEnd(true, true);
+
         public MenuFunctions()
         {
 

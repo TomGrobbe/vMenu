@@ -35,7 +35,7 @@ namespace vMenu.Client.Menus
         {
             mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Menu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
             {
-                MaxItemsOnScreen = 7,
+                MaxItemsOnScreen = 9,
                 BuildingAnimation = MenuBuildingAnimation.NONE,
                 ScrollingType = ScrollingType.ENDLESS,
                 Enabled3DAnimations = false,
@@ -62,7 +62,7 @@ namespace vMenu.Client.Menus
             UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
             voiceChatSettings.SetRightLabel(">>>");
 
-            UIMenuItem recordingOptions = new UIMenuItem("Recording Options", "In-game recording options.");
+            UIMenuItem recordingOptions = new UIMenuItem("Recording Options (Broken)", "In-game recording options.");
             recordingOptions.SetRightLabel(">>>");
 
             UIMenuItem miscOptions = new UIMenuItem("Misc. Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu");
@@ -84,6 +84,37 @@ namespace vMenu.Client.Menus
             onlinePlayers.Activated += (sender, i) =>
             {
                 sender.SwitchTo(OnlinePlayersMenu.Menu(), inheritOldMenuParams: true);
+            };
+
+            bannedPlayers.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(BannedPlayersMenu.Menu(), inheritOldMenuParams: true);
+            };
+
+            playerRelatedOptions.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(PlayerRelatedOptions.Menu(), inheritOldMenuParams: true);
+            };
+
+            vehicleRelatedOptions.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(VehicleRelatedOptions.Menu(), inheritOldMenuParams: true);
+            };
+
+            worldRelatedOptions.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(WorldRelatedOptions.Menu(), inheritOldMenuParams: true);
+            };
+
+            voiceChatSettings.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(VoiceChatSettings.Menu(), inheritOldMenuParams: true);
+            };
+
+
+            recordingOptions.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(RecordingMenu.Menu(), inheritOldMenuParams: true);
             };
 
             miscOptions.Activated += (sender, i) =>
