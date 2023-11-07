@@ -18,7 +18,16 @@ namespace vMenu.Client.Menus
 
         public MiscOptionsMenu()
         {
-            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
+            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 9,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
 
             UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)");
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
@@ -29,14 +38,12 @@ namespace vMenu.Client.Menus
                 if (Main.MenuAlign == Shared.Enums.MenuAlign.Left)
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Right;
-                    sender.Visible = false;
-                    sender.Visible = true;
+                    MenuFunctions.RestartMenu();
                 }
                 else
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Left;
-                    sender.Visible = false;
-                    sender.Visible = true;
+                    MenuFunctions.RestartMenu();
                 }
             };
 

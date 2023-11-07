@@ -38,7 +38,7 @@ namespace vMenu.Client
             // This will be used instead of the texture set above (only when set) - Link must be a static image or gif (.png, .jpg, .gif, etc...) //
             // The image/gif MUST be 288x130px //
             // SET THIS AS null IF NOT USING //
-            TextureUrl = null
+            TextureUrl = "https://i.imgur.com/3QNZJbm.png"
         };
 
         public Main()
