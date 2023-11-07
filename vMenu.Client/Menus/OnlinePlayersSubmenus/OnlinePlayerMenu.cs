@@ -20,7 +20,16 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 
         public OnlinePlayerMenu()
         {
-            onlinePlayerMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
+            onlinePlayerMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 7,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
             Main.Menus.Add(onlinePlayerMenu);
         }
 

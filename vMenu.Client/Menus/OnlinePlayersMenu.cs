@@ -23,8 +23,17 @@ namespace vMenu.Client.Menus
 
         public OnlinePlayersMenu()
         {
-            onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
-            
+            onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 7,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
+
             UIMenuSeparatorItem onlinePlayerq = new UIMenuSeparatorItem("No Players Online", false);
             onlinePlayersMenu.AddItem(onlinePlayerq);
 

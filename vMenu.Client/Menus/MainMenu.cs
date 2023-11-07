@@ -37,10 +37,11 @@ namespace vMenu.Client.Menus
             {
                 MaxItemsOnScreen = 7,
                 BuildingAnimation = MenuBuildingAnimation.NONE,
-                ScrollingType = ScrollingType.CLASSIC,
+                ScrollingType = ScrollingType.ENDLESS,
                 Enabled3DAnimations = false,
                 MouseControlsEnabled = false,
                 ControlDisablingEnabled = false,
+                EnableAnimation = false,
             };
 
             UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players");
