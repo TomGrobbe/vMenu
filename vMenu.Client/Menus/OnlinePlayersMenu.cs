@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using vMenu.Client.Functions;
 using static CitizenFX.FiveM.Native.Natives;
 using static CitizenFX.FiveM.PlayerList;
+using vMenu.Client.MenuSettings;
 
 namespace vMenu.Client.Menus
 {
@@ -23,15 +24,15 @@ namespace vMenu.Client.Menus
 
         public OnlinePlayersMenu()
         {
-            onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, menuSettings.Glare, menuSettings.AlternativeTitle, menuSettings.fadingTime)
             {
-                MaxItemsOnScreen = 7,
-                BuildingAnimation = MenuBuildingAnimation.NONE,
-                ScrollingType = ScrollingType.ENDLESS,
-                Enabled3DAnimations = false,
-                MouseControlsEnabled = false,
-                ControlDisablingEnabled = false,
-                EnableAnimation = false,
+                MaxItemsOnScreen = menuSettings.maxItemsOnScreen,
+                BuildingAnimation = menuSettings.buildingAnimation,
+                ScrollingType = menuSettings.scrollingType,
+                Enabled3DAnimations = menuSettings.enabled3DAnimations,
+                MouseControlsEnabled = menuSettings.mouseControlsEnabled,
+                ControlDisablingEnabled = menuSettings.controlDisablingEnabled,
+                EnableAnimation = menuSettings.enableAnimation,
             };
 
             UIMenuSeparatorItem onlinePlayerq = new UIMenuSeparatorItem("No Players Online", false);

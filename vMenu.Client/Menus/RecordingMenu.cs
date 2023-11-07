@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
 using static CitizenFX.FiveM.Native.Natives;
+using vMenu.Client.MenuSettings;
 
 namespace vMenu.Client.Menus
 {
@@ -22,15 +23,15 @@ namespace vMenu.Client.Menus
             AddTextEntryByHash(0x86F10CE6, "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
             AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
-            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, menuSettings.Glare, menuSettings.AlternativeTitle, menuSettings.fadingTime)
             {
-                MaxItemsOnScreen = 9,
-                BuildingAnimation = MenuBuildingAnimation.NONE,
-                ScrollingType = ScrollingType.ENDLESS,
-                Enabled3DAnimations = false,
-                MouseControlsEnabled = false,
-                ControlDisablingEnabled = false,
-                EnableAnimation = false,
+                MaxItemsOnScreen = menuSettings.maxItemsOnScreen,
+                BuildingAnimation = menuSettings.buildingAnimation,
+                ScrollingType = menuSettings.scrollingType,
+                Enabled3DAnimations = menuSettings.enabled3DAnimations,
+                MouseControlsEnabled = menuSettings.mouseControlsEnabled,
+                ControlDisablingEnabled = menuSettings.controlDisablingEnabled,
+                EnableAnimation = menuSettings.enableAnimation,
             };
 
             UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.");
