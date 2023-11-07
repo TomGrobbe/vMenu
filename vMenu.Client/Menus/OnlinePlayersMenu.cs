@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.FiveM;
+using ScaleformUI;
 using ScaleformUI.Menu;
 using System;
 using System.Collections.Generic;
@@ -20,79 +21,59 @@ namespace vMenu.Client.Menus
 
         private static UIMenu onlinePlayersMenu = null;
 
-        private static int updatingPlayerList;
-
         public OnlinePlayersMenu()
         {
-            
-        }
-
-        public static UIMenu Menu()
-        {
             onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
+            
             UIMenuSeparatorItem onlinePlayerq = new UIMenuSeparatorItem("No Players Online", false);
             onlinePlayersMenu.AddItem(onlinePlayerq);
 
             Main.Menus.Add(onlinePlayersMenu);
+        }
 
+        public static UIMenu Menu()
+        {
             return onlinePlayersMenu;
         }
 
         public static async Coroutine UpdateOnlinePlayers()
         {
-            PlayerList PlayersList = Players;
-            updatingPlayerList = PlayersList.Count();
+            PlayerList PlayersList = new PlayerList();
+            int onlinePlayers = PlayersList.Count();
+            int onlinePlayersUpdateListCount = onlinePlayers;
 
-            async void UpdateStuffAsync()
+            onlinePlayersMenu.Windows.Clear();
+            onlinePlayersMenu.MenuItems.Clear();
+
+            foreach (Player player in PlayersList.OrderBy(a => a.Name))
             {
-                onlinePlayersMenu.MenuItems.Clear();
-                onlinePlayersMenu.Windows.Clear();
+                UIMenuItem onlinePlayer = new UIMenuItem(player.Name, "Click to view the options for this player");
+                onlinePlayer.SetRightLabel($"Server ID: {player.ServerId}");
 
-                foreach (Player player in PlayersList.OrderBy(a => a.Name))
+                int mugshot = RegisterPedheadshot(player.Character.Handle);
+
+                while (!IsPedheadshotReady(mugshot)) await Yield();
+
+                string mugtxd = GetPedheadshotTxdString(mugshot);
+
+                UnregisterPedheadshot(mugshot);
+
+                onlinePlayer.Activated += (sender, e) =>
                 {
-                    UIMenuItem onlinePlayer = new UIMenuItem(player.Name, "Click to view the options for this player");
+                    sender.SwitchTo(OnlinePlayersSubmenus.OnlinePlayerMenu.Menu(player, mugtxd), inheritOldMenuParams: true);
+                };
 
-                    int mugshot = RegisterPedheadshot(player.Character.Handle);
+                onlinePlayersMenu.AddItem(onlinePlayer);
 
-                    while (!IsPedheadshotReady(mugshot)) await WaitUntilNextFrame();
-
-                    string mugtxd = GetPedheadshotTxdString(mugshot);
-
-                    UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Name}~h~", $"Server ID: {player.ServerId}\nLocal ID: {player.Handle}", $"Steam ID: test\nDiscord ID: yeet", new UIDetailImage()
-                    {
-                        Txd = mugtxd,
-                        Txn = mugtxd,
-                        Size = new Size(60, 60)
-                    });
-
-                    onlinePlayersMenu.AddWindow(playerDetails);
-                    onlinePlayersMenu.AddItem(onlinePlayer);
-
-                    onlinePlayersMenu.Visible = false;
-                    onlinePlayersMenu.Visible = true;
-
-                    updatingPlayerList--;
-                }
+                onlinePlayersUpdateListCount--;
             }
 
-            if (onlinePlayersMenu != null && updatingPlayerList > 0)
+            while (onlinePlayersUpdateListCount > 0)
             {
-                Debug.WriteLine(onlinePlayersMenu.Subtitle);
-                Debug.WriteLine(updatingPlayerList);
-
-                UpdateStuffAsync();
-
-                while (updatingPlayerList > 0)
-                {
-                    await Wait(100);
-                }
-
-                await Wait(5000);
+                await Wait(100);
             }
-            else
-            {
-                await Wait(5000);
-            }
+
+            await Wait(3000);
         }
     }
 }

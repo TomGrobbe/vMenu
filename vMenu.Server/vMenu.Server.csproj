@@ -20,7 +20,6 @@
     <ProjectReference Include="..\vMenu.Shared\vMenu.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Events\" />
     <Folder Include="Functions\" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@ using static CitizenFX.FiveM.Native.Natives;
 
 // vMenu Namespaces //
 using vMenu.Client.Menus;
+using ScaleformUI.Menu;
 
 namespace vMenu.Client.KeyMappings
 {
@@ -25,13 +26,14 @@ namespace vMenu.Client.KeyMappings
         [Command("vMenu:OpenMenu")]
         private void MenuOpen()
         {
-            if (ScaleformUI.MenuHandler.IsAnyMenuOpen)
+            if (ScaleformUI.MenuHandler.CurrentMenu != null)
             {
                 ScaleformUI.MenuHandler.CurrentMenu.Visible = false;
             }
             else
             {
-                MainMenu.Menu().Visible = true;
+                UIMenu Menu = MainMenu.Menu();
+                Menu.Visible = true;
             }
         }
     }

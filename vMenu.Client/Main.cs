@@ -44,7 +44,6 @@ namespace vMenu.Client
         public Main()
         {
             MenuFunctions.SetBannerTexture();
-            Tick += Client.Menus.OnlinePlayersMenu.UpdateOnlinePlayers;
         }
     }
 }

@@ -29,16 +29,11 @@ namespace vMenu.Client.Menus
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
-        private static UIMenu mainMenu;
+        private static UIMenu mainMenu = null;
 
         public MainMenu()
         {
-            
-        }
-
-        public static UIMenu Menu()
-        {
-            mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Men", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Menu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
             {
                 MaxItemsOnScreen = 7,
                 BuildingAnimation = MenuBuildingAnimation.NONE,
@@ -47,8 +42,6 @@ namespace vMenu.Client.Menus
                 MouseControlsEnabled = false,
                 ControlDisablingEnabled = false,
             };
-
-            Main.Menus.Add(mainMenu);
 
             UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players");
             onlinePlayers.SetRightLabel(">>>");
@@ -69,6 +62,11 @@ namespace vMenu.Client.Menus
                 sender.SwitchTo(MiscOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
 
+            Main.Menus.Add(mainMenu);
+        }
+
+        public static UIMenu Menu()
+        {
             return mainMenu;
         }
     }
