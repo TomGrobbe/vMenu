@@ -18,8 +18,16 @@ namespace vMenu.Client.Menus
 
         public BannedPlayersMenu()
         {
-            bannedPlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Banned Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
-            
+            bannedPlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Banned Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 9,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
             UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~");
 
             bannedPlayersMenu.AddItem(button);

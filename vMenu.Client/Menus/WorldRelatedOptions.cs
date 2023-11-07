@@ -18,8 +18,16 @@ namespace vMenu.Client.Menus
 
         public WorldRelatedOptions()
         {
-            worldRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "World Related Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
-            
+            worldRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "World Related Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 9,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
             UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~");
 
             worldRelatedOptions.AddItem(button);

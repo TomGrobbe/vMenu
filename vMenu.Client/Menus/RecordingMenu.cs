@@ -22,7 +22,16 @@ namespace vMenu.Client.Menus
             AddTextEntryByHash(0x86F10CE6, "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
             AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
-            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
+            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true)
+            {
+                MaxItemsOnScreen = 9,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
+            };
 
             UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.");
             UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.");

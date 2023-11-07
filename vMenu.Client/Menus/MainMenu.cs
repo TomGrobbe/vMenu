@@ -111,7 +111,6 @@ namespace vMenu.Client.Menus
                 sender.SwitchTo(VoiceChatSettings.Menu(), inheritOldMenuParams: true);
             };
 
-
             recordingOptions.Activated += (sender, i) =>
             {
                 sender.SwitchTo(RecordingMenu.Menu(), inheritOldMenuParams: true);
