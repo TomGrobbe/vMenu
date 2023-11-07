@@ -9,6 +9,14 @@
     <OutputPath>..\Build\Server\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="ResourceFiles\stream\ScaleformUI\LobbyMenu.gfx" />
+    <None Remove="ResourceFiles\stream\ScaleformUI\PauseMenu.gfx" />
+    <None Remove="ResourceFiles\stream\ScaleformUI\PauseMenuHeader.gfx" />
+    <None Remove="ResourceFiles\stream\ScaleformUI\RadialMenu.gfx" />
+    <None Remove="ResourceFiles\stream\ScaleformUI\RadioMenu.gfx" />
+    <None Remove="ResourceFiles\stream\ScaleformUI\scaleformui.gfx" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="CitizenFX.Core">
       <HintPath>..\CitizenFX.Natives\Server\CitizenFX.Core.dll</HintPath>
     </Reference>
@@ -24,6 +32,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResourceFiles\fxmanifest.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\LobbyMenu.gfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\PauseMenu.gfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\PauseMenuHeader.gfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\RadialMenu.gfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\RadioMenu.gfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\stream\ScaleformUI\scaleformui.gfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
