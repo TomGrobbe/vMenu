@@ -47,11 +47,39 @@ namespace vMenu.Client.Menus
             UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players");
             onlinePlayers.SetRightLabel(">>>");
 
+            UIMenuItem bannedPlayers = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.");
+            bannedPlayers.SetRightLabel(">>>");
+
+            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Related Options", "Open this submenu for player related subcategories.");
+            playerRelatedOptions.SetRightLabel(">>>");
+
+            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.");
+            vehicleRelatedOptions.SetRightLabel(">>>");
+
+            UIMenuItem worldRelatedOptions = new UIMenuItem("World Related Options", "Open this submenu for world related subcategories.");
+            worldRelatedOptions.SetRightLabel(">>>");
+
+            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.");
+            voiceChatSettings.SetRightLabel(">>>");
+
+            UIMenuItem recordingOptions = new UIMenuItem("Recording Options", "In-game recording options.");
+            recordingOptions.SetRightLabel(">>>");
+
             UIMenuItem miscOptions = new UIMenuItem("Misc. Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu");
             miscOptions.SetRightLabel(">>>");
 
+            UIMenuItem aboutvMenu = new UIMenuItem("About vMenu", "Information about vMenu.");
+            aboutvMenu.SetRightLabel(">>>");
+
             mainMenu.AddItem(onlinePlayers);
+            mainMenu.AddItem(bannedPlayers);
+            mainMenu.AddItem(playerRelatedOptions);
+            mainMenu.AddItem(vehicleRelatedOptions);
+            mainMenu.AddItem(worldRelatedOptions);
+            mainMenu.AddItem(voiceChatSettings);
+            mainMenu.AddItem(recordingOptions);
             mainMenu.AddItem(miscOptions);
+            mainMenu.AddItem(aboutvMenu);
 
             onlinePlayers.Activated += (sender, i) =>
             {
@@ -61,6 +89,11 @@ namespace vMenu.Client.Menus
             miscOptions.Activated += (sender, i) =>
             {
                 sender.SwitchTo(MiscOptionsMenu.Menu(), inheritOldMenuParams: true);
+            };
+
+            aboutvMenu.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(AboutMenu.Menu(), inheritOldMenuParams: true);
             };
 
             Main.Menus.Add(mainMenu);

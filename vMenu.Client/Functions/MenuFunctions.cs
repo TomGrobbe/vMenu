@@ -18,6 +18,9 @@ namespace vMenu.Client.Functions
 {
     public class MenuFunctions : BaseScript
     {
+
+        public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
+
         public MenuFunctions()
         {
 
