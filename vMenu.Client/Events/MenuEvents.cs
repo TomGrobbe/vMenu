@@ -41,6 +41,11 @@ namespace vMenu.Client.Events
         {
             if (resource == GetCurrentResourceName())
             {
+                if (Menus.OnlinePlayersMenu.Menu() != null && ScaleformUI.MenuHandler.CurrentMenu != Menus.OnlinePlayersMenu.Menu())
+                {
+                    Tick += Menus.OnlinePlayersMenu.UpdateOnlinePlayers;
+                }
+
                 Debug.WriteLine("vMenu has started.");
             }
         }

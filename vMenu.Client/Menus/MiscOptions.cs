@@ -14,18 +14,11 @@ namespace vMenu.Client.Menus
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
-        private static UIMenu miscOptionsMenu;
+        private static UIMenu miscOptionsMenu = null;
 
         public MiscOptionsMenu()
         {
-            
-        }
-
-        public static UIMenu Menu()
-        {
             miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true);
-
-            Main.Menus.Add(miscOptionsMenu);
 
             UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)");
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
@@ -37,19 +30,21 @@ namespace vMenu.Client.Menus
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Right;
                     sender.Visible = false;
-                    //miscOptionsMenu.
                     sender.Visible = true;
                 }
                 else
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Left;
                     sender.Visible = false;
-                    //sender.Clear();
-                    //new MiscOptionsMenu();
                     sender.Visible = true;
                 }
             };
 
+            Main.Menus.Add(miscOptionsMenu);
+        }
+
+        public static UIMenu Menu()
+        {
             return miscOptionsMenu;
         }
     }
