@@ -1,8 +1,8 @@
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using static CitizenFX.Core.Native.API;
-using ScaleformUI.Menu;
 using ScaleformUI.Elements;
+using ScaleformUI.Menu;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,15 +14,15 @@ using vMenu.Client.Settings;
 
 namespace vMenu.Client.Menus
 {
-    public class AboutMenu : BaseScript
+    public class VehicleOptionsMenu : BaseScript
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
-        private static UIMenu aboutMenu = null;
+        private static UIMenu vehicleRelatedOptions = null;
 
-        public AboutMenu()
+        public VehicleOptionsMenu()
         {
-            aboutMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
+            vehicleRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "Vehicle Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -34,22 +34,16 @@ namespace vMenu.Client.Menus
                 ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
+            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
 
-            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
-            vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
-            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            vehicleRelatedOptions.AddItem(button);
 
-            aboutMenu.AddItem(vMenuVersion);
-            aboutMenu.AddItem(vMenuCredits);
-            aboutMenu.AddItem(vMenuFounder);
-
-            Main.Menus.Add(aboutMenu);
+            Main.Menus.Add(vehicleRelatedOptions);
         }
 
         public static UIMenu Menu()
         {
-            return aboutMenu;
+            return vehicleRelatedOptions;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net452</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <OutputType>Library</OutputType>
     <AssemblyName>vMenu.Shared.net</AssemblyName>

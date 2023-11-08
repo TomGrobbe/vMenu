@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
-using vMenu.Client.MenuSettings;
+using vMenu.Client.Settings;
 
 namespace vMenu.Client.Menus
 {
@@ -25,22 +25,24 @@ namespace vMenu.Client.Menus
             AddTextEntryByHash(0x86F10CE6, "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
             AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
-            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, menuSettings.Glare, menuSettings.AlternativeTitle, menuSettings.fadingTime)
+            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Recording Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
             {
-                MaxItemsOnScreen = menuSettings.maxItemsOnScreen,
-                BuildingAnimation = menuSettings.buildingAnimation,
-                ScrollingType = menuSettings.scrollingType,
-                Enabled3DAnimations = menuSettings.enabled3DAnimations,
-                MouseControlsEnabled = menuSettings.mouseControlsEnabled,
-                ControlDisablingEnabled = menuSettings.controlDisablingEnabled,
-                EnableAnimation = menuSettings.enableAnimation,
+                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
+                BuildingAnimation = MenuSettings.BuildingAnimation,
+                ScrollingType = MenuSettings.ScrollingType,
+                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
+                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
+                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
+                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
+                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
+                EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
-            UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
-            UIMenuItem startRecording = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
-            UIMenuItem stopRecording = new UIMenuItem("Stop Recording", "Stop and save your current recording.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
-            UIMenuItem openRockstarEditor = new UIMenuItem("Rockstar Editor", "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem startRecording = new UIMenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem stopRecording = new UIMenuItem("Stop Recording", "Stop and save your current recording.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem openRockstarEditor = new UIMenuItem("Rockstar Editor", "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             recordingMenu.AddItem(takePicture);
             recordingMenu.AddItem(openPmGallery);
             recordingMenu.AddItem(startRecording);

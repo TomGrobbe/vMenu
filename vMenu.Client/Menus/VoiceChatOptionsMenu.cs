@@ -14,15 +14,15 @@ using vMenu.Client.Settings;
 
 namespace vMenu.Client.Menus
 {
-    public class AboutMenu : BaseScript
+    public class VoiceChatOptionsMenu : BaseScript
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
-        private static UIMenu aboutMenu = null;
+        private static UIMenu voiceChatSettings = null;
 
-        public AboutMenu()
+        public VoiceChatOptionsMenu()
         {
-            aboutMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
+            voiceChatSettings = new UIMenu(Main.MenuBanner.BannerTitle, "Voice Chat Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -35,21 +35,16 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
-            vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
-            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
 
-            aboutMenu.AddItem(vMenuVersion);
-            aboutMenu.AddItem(vMenuCredits);
-            aboutMenu.AddItem(vMenuFounder);
+            voiceChatSettings.AddItem(button);
 
-            Main.Menus.Add(aboutMenu);
+            Main.Menus.Add(voiceChatSettings);
         }
 
         public static UIMenu Menu()
         {
-            return aboutMenu;
+            return voiceChatSettings;
         }
     }
 }
