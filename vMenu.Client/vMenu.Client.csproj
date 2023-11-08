@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net452</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>vMenu.Client.net</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -29,7 +29,7 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net462\" "$(SolutionDir)Build\[Resource]\vMenu"
+    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu"
 del "$(SolutionDir)Build\[Resource]\vMenu\CitizenFX.*.*"
 del "$(SolutionDir)Build\[Resource]\vMenu\System.*.*"
 del "$(SolutionDir)Build\[Resource]\vMenu\Microsoft.*.*"
