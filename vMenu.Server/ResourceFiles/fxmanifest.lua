@@ -13,7 +13,10 @@ shared_script 'vMenu.Shared.net.dll'
 files {
 	'ScaleformUI.dll',
 	'Newtonsoft.Json.dll',
+	'FxEvents.Server.dll',
+	'FxEvents.Client.dll',
+	'netstandard.dll',
 	'stream/**/*'
 }
 
-mono_rt2 'Prerelease expiring 2023-06-30. See https://aka.cfx.re/mono-rt2-preview for info.'
+fxevents_debug_mode '1'

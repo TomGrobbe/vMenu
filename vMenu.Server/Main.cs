@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 // CitizenFX Libraries //
 using CitizenFX.Core;
-using CitizenFX.Server.Native;
+using CitizenFX.Core.Native;
+using FxEvents.Shared.Snowflakes;
+using FxEvents;
 
 namespace vMenu.Server
 {
-    public class Main : ServerScript
+    public class Main : BaseScript
     {
         public Main()
         {
+            //EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
             Debug.WriteLine("vMenu has started.");
         }
     }

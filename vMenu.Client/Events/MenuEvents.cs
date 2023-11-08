@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
-using static CitizenFX.FiveM.Native.Natives;
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Events
 {
@@ -41,7 +41,7 @@ namespace vMenu.Client.Events
         {
             if (resource == GetCurrentResourceName())
             {
-                if (Menus.OnlinePlayersMenu.Menu() != null && ScaleformUI.MenuHandler.CurrentMenu != Menus.OnlinePlayersMenu.Menu())
+                if (Menus.OnlinePlayersMenu.Menu() != null)
                 {
                     Tick += MenuFunctions.UpdateOnlinePlayers;
                 }

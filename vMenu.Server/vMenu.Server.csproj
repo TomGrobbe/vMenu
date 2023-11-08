@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>vMenu.Server.net</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\Build\Server\</OutputPath>
@@ -17,18 +18,7 @@
     <None Remove="ResourceFiles\stream\ScaleformUI\scaleformui.gfx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core">
-      <HintPath>..\CitizenFX.Natives\Server\CitizenFX.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CitizenFX.Server">
-      <HintPath>..\CitizenFX.Natives\Server\CitizenFX.Server.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\vMenu.Shared\vMenu.Shared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Functions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResourceFiles\fxmanifest.lua">
@@ -59,13 +49,25 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Server" Version="1.0.7080" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FxEvents.Server">
+      <HintPath>..\CitizenFX.Natives\Server\FxEvents.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Server\net452\" "$(SolutionDir)Build\[Resource]\vMenu"
+    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Server\netstandard2.0\" "$(SolutionDir)Build\[Resource]\vMenu"
 xcopy /E /Y "$(SolutionDir)Build\[Resource]\vMenu\ResourceFiles\" "$(SolutionDir)Build\[Resource]\vMenu"
 del "$(SolutionDir)Build\[Resource]\vMenu\CitizenFX.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\System.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\Microsoft.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\MsgPack.dll"
 RD /S /Q "$(SolutionDir)Build\[Resource]\vMenu\ResourceFiles\"</PostBuildEvent>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>

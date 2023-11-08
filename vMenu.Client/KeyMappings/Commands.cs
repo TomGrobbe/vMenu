@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 // CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using static CitizenFX.FiveM.Native.Natives;
+using static CitizenFX.Core.Native.API;
 
 // vMenu Namespaces //
 using vMenu.Client.Menus;
@@ -18,12 +18,9 @@ namespace vMenu.Client.KeyMappings
 {
     public class Commands : BaseScript
     {
-        public static bool NoClipEnabled { get { return Functions.NoClip.IsNoclipActive(); } set { Functions.NoClip.SetNoclipActive(value); } }
-
         public Commands()
         {
             RegisterKeyMapping("vMenu:OpenMenu", "Open vMenu Toggle", "keyboard", "M");
-            RegisterKeyMapping("vMenu:NoClip", "Open vMenu NoClip", "keyboard", "F2");
         }
 
         [Command("vMenu:OpenMenu")]
@@ -38,11 +35,6 @@ namespace vMenu.Client.KeyMappings
                 UIMenu Menu = MainMenu.Menu();
                 Menu.Visible = true;
             }
-        }
-        [Command("vMenu:NoClip")]
-        private void NoClip()
-        {
-            NoClipEnabled = !NoClipEnabled;
         }
     }
 }

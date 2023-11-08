@@ -1,4 +1,4 @@
-// System Libraries //
+﻿// System Libraries //
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 // CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using CitizenFX.FiveM;
 using ScaleformUI;
 using ScaleformUI.Menu;
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
-using static CitizenFX.FiveM.Native.Natives;
+using vMenu.Shared.Interfaces;
+using static CitizenFX.Core.Native.API;
+using FxEvents;
+using Newtonsoft.Json;
 
 namespace vMenu.Client.Functions
 {
@@ -63,18 +65,28 @@ namespace vMenu.Client.Functions
             MainMenu.Menu().Visible = true;
         }
 
-        public async Coroutine UpdateOnlinePlayers()
+        public async Task UpdateOnlinePlayers()
         {
-            int PlayersLeftToAdd = 0;
+            Debug.WriteLine($"Test 1");
 
-            CitizenFX.Core.Events.TriggerServerEvent("vMenu:Server:RequestPlayersList", new Action<PlayerList>(async players => {
+            try
+            {
+                string playersSt = await EventDispatcher.Get<string>("RequestPlayersList");
+
+                List<IOnlinePlayersCB> playersObj = JsonConvert.DeserializeObject<List<IOnlinePlayersCB>>(playersSt);
+
+                Debug.WriteLine($"Test 2");
+
                 Main.OnlinePlayers.Clear();
-                PlayersLeftToAdd = players.Count();
 
-                foreach (Player player in players)
+                int PlayersLeftToAdd = playersObj.Count();
+
+                foreach (IOnlinePlayersCB playerData in playersObj)
                 {
+                    Player player = Players[playerData.ServerId];
+
                     int mugshot = RegisterPedheadshot(player.Character.Handle);
-                    while (!IsPedheadshotReady(mugshot)) await Yield();
+                    while (!IsPedheadshotReady(mugshot)) await Delay(100);
                     string mugtxd = GetPedheadshotTxdString(mugshot);
 
                     Main.OnlinePlayers.Add(new KeyValuePair<Player, string>(player, mugtxd));
@@ -83,16 +95,20 @@ namespace vMenu.Client.Functions
 
                     PlayersLeftToAdd--;
                 }
-            }));
 
-            while (PlayersLeftToAdd > 0)
+                while (PlayersLeftToAdd > 0)
+                {
+                    await Delay(100);
+                }
+
+                OnlinePlayersMenu.ReplaceMenuItems();
+            }
+            catch (Exception err)
             {
-                await Wait(100);
+                Debug.WriteLine(err.ToString());
             }
 
-            OnlinePlayersMenu.ReplaceMenuItems();
-
-            await Wait(1000);
+            await Delay(4000);
         }
 
         public PointF GetMenuOffset()
