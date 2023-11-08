@@ -1,6 +1,5 @@
 ﻿using CitizenFX.Core;
 using ScaleformUI.Menu;
-using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
-using vMenu.Client.MenuSettings;
 
 namespace vMenu.Client.Menus
 {
@@ -20,18 +18,20 @@ namespace vMenu.Client.Menus
 
         public MiscOptionsMenu()
         {
-            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, menuSettings.Glare, menuSettings.AlternativeTitle, menuSettings.fadingTime)
+            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
             {
-                MaxItemsOnScreen = menuSettings.maxItemsOnScreen,
-                BuildingAnimation = menuSettings.buildingAnimation,
-                ScrollingType = menuSettings.scrollingType,
-                Enabled3DAnimations = menuSettings.enabled3DAnimations,
-                MouseControlsEnabled = menuSettings.mouseControlsEnabled,
-                ControlDisablingEnabled = menuSettings.controlDisablingEnabled,
-                EnableAnimation = menuSettings.enableAnimation,
+                MaxItemsOnScreen = 7,
+                BuildingAnimation = MenuBuildingAnimation.NONE,
+                ScrollingType = ScrollingType.ENDLESS,
+                Enabled3DAnimations = false,
+                MouseControlsEnabled = false,
+                MouseEdgeEnabled = false,
+                MouseWheelControlEnabled = true,
+                ControlDisablingEnabled = false,
+                EnableAnimation = false,
             };
 
-            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)", menuSettings.BackgroundColor, menuSettings.HighlightColor);
+            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)");
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
             miscOptionsMenu.AddItem(toggleMenuAlign);
 

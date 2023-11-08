@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
-    <LangVersion>8.0</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <OutputType>Library</OutputType>
     <AssemblyName>vMenu.Shared.net</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -12,14 +12,6 @@
     <OutputPath>..\Build\Shared\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="CitizenFX.Core">
-      <HintPath>..\CitizenFX.Natives\Shared\CitizenFX.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CitizenFX.FiveM">
-      <HintPath>..\CitizenFX.Natives\Client\CitizenFX.FiveM.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 // CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using static CitizenFX.FiveM.Native.Natives;
+using static CitizenFX.Core.Native.API;
 
 // vMenu Namespaces //
 using vMenu.Client.Functions;
 using vMenu.Shared.Objects;
 using vMenu.Shared.Enums;
 using ScaleformUI.Menu;
-using CitizenFX.FiveM;
+using FxEvents;
 
 namespace vMenu.Client
 {
@@ -45,6 +45,7 @@ namespace vMenu.Client
 
         public Main()
         {
+            EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
             MenuFunctions.SetBannerTexture();
         }
     }

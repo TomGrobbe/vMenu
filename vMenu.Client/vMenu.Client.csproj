@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>vMenu.Client.net</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>embedded</DebugType>
@@ -12,35 +13,26 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CitizenFX.Core">
-      <HintPath>..\CitizenFX.Natives\Client\CitizenFX.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CitizenFX.FiveM">
-      <HintPath>..\CitizenFX.Natives\Client\CitizenFX.FiveM.dll</HintPath>
-    </Reference>
-    <Reference Include="CitizenFX.FiveM.Native">
-      <HintPath>..\CitizenFX.Natives\Client\CitizenFX.FiveM.Native.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="ScaleformUI">
-      <HintPath>..\..\ScaleformUI\CompiledLibs\Debug\net452\ScaleformUI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vMenu.Shared\vMenu.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.7080" />
+    <PackageReference Include="FxEvents.FiveM.Client" Version="2.5.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="ScaleformUI" Version="4.8.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu"
-del "$(SolutionDir)Build\[Resource]\vMenu\CitizenFX.*.*"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net462\" "$(SolutionDir)Build\[Resource]\vMenu"
+del "$(SolutionDir)Build\[Resource]\vMenu\CitizenFX.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\System.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\Microsoft.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\MsgPack.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
