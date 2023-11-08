@@ -53,16 +53,16 @@ namespace vMenu.Client.Menus
             UIMenuItem bannedPlayers = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             bannedPlayers.SetRightLabel(">>>");
 
-            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Related Options", "Open this submenu for player related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Options", "Open this submenu for player related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             playerRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Options", "Open this submenu for vehicle related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             vehicleRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem worldRelatedOptions = new UIMenuItem("World Related Options", "Open this submenu for world related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem worldRelatedOptions = new UIMenuItem("World Options", "Open this submenu for world related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             worldRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Settings", "Change Voice Chat options here.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Options", "Change Voice Chat options here.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
             voiceChatSettings.SetRightLabel(">>>");
 
             UIMenuItem recordingOptions = new UIMenuItem("Recording Options (Broken)", "In-game recording options.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
