@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using CitizenFX.Core;
-using CitizenFX.FiveM;
-using static CitizenFX.FiveM.Native.Natives;
+using CitizenFX.Core.Native;
+using static CitizenFX.Core.Native.API;
+
 
 namespace vMenu.Client.Functions
 {
@@ -72,7 +73,7 @@ namespace vMenu.Client.Functions
     
             return hash.ToString("X");
         }
-        private async Coroutine NoClipHandler()
+        private async Task NoClipHandler()
         {
             if (NoclipActive)
             {
@@ -304,7 +305,7 @@ namespace vMenu.Client.Functions
 
                 SetEntityVisible(noclipEntity, false, false);
                 SetLocalPlayerVisibleLocally(true);
-                SetEntityAlpha(noclipEntity, (int)(255 * 0.2), false);
+                SetEntityAlpha(noclipEntity, (int)(255 * 0.2), 0);
 
                 SetEveryoneIgnorePlayer(Game.PlayerPed.Handle, true);
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, true);
