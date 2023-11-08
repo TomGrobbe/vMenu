@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 // CitizenFX Libraries //
-using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
-using static CitizenFX.FiveM.Native.Natives;
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using static CitizenFX.Core.Native.API;
 using ScaleformUI;
 
 namespace vMenu.Client.Functions

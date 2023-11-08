@@ -1,4 +1,6 @@
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using static CitizenFX.Core.Native.API;
 using ScaleformUI.Menu;
 using ScaleformUI.Elements;
 using System;
@@ -8,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
-using static CitizenFX.FiveM.Native.Natives;
 using vMenu.Client.MenuSettings;
 
 namespace vMenu.Client.Menus

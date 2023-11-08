@@ -1,4 +1,6 @@
 ﻿using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using static CitizenFX.Core.Native.API;
 using ScaleformUI.Menu;
 using System;
 using System.Collections.Generic;
