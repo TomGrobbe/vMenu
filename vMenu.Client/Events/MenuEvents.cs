@@ -43,7 +43,7 @@ namespace vMenu.Client.Events
             {
                 if (Menus.OnlinePlayersMenu.Menu() != null && ScaleformUI.MenuHandler.CurrentMenu != Menus.OnlinePlayersMenu.Menu())
                 {
-                    Tick += Menus.OnlinePlayersMenu.UpdateOnlinePlayers;
+                    Tick += MenuFunctions.UpdateOnlinePlayers;
                 }
 
                 Debug.WriteLine("vMenu has started.");

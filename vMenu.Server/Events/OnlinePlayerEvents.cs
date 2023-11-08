@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CitizenFX.Server.Native;
+using CitizenFX.Server;
 
 namespace vMenu.Server.Events
 {
@@ -13,10 +14,12 @@ namespace vMenu.Server.Events
     {
         public OnlinePlayerEvents() { }
 
-        //[EventHandler("", Binding.Remote)]
-        //private void vMenuOnPlayerListRequest(CallbackDele networkCB)
-        //{
+        [EventHandler("vMenu:Server:RequestPlayersList", Binding.Remote)]
+        private void vMenuOnPlayerListRequest(Callback networkCB)
+        {
+            PlayerList players = new PlayerList();
 
-        //}
+            networkCB(players);
+        }
     }
 }
