@@ -45,44 +45,25 @@ namespace vMenu.Client.Menus
             return onlinePlayersMenu;
         }
 
-        public static async Coroutine UpdateOnlinePlayers()
+        public static void ReplaceMenuItems()
         {
-            PlayerList PlayersList = new PlayerList();
-            int onlinePlayers = PlayersList.Count();
-            int onlinePlayersUpdateListCount = onlinePlayers;
-
-            onlinePlayersMenu.Windows.Clear();
             onlinePlayersMenu.MenuItems.Clear();
 
-            foreach (Player player in PlayersList.OrderBy(a => a.Name))
+            foreach (KeyValuePair<Player, string> player in Main.OnlinePlayers.OrderBy(a => a.Key.Name))
             {
-                UIMenuItem onlinePlayer = new UIMenuItem(player.Name, "Click to view the options for this player");
-                onlinePlayer.SetRightLabel($"Server ID: {player.ServerId}");
+                var playerData = player.Key;
+                var playerTexture = player.Value;
 
-                int mugshot = RegisterPedheadshot(player.Character.Handle);
-
-                while (!IsPedheadshotReady(mugshot)) await Yield();
-
-                string mugtxd = GetPedheadshotTxdString(mugshot);
-
-                UnregisterPedheadshot(mugshot);
+                UIMenuItem onlinePlayer = new UIMenuItem(playerData.Name, "Click to view the options for this player");
+                onlinePlayer.SetRightLabel($"Server #{playerData.ServerId}");
 
                 onlinePlayer.Activated += (sender, e) =>
                 {
-                    sender.SwitchTo(OnlinePlayersSubmenus.OnlinePlayerMenu.Menu(player, mugtxd), inheritOldMenuParams: true);
+                    sender.SwitchTo(OnlinePlayersSubmenus.OnlinePlayerMenu.Menu(playerData, playerTexture), inheritOldMenuParams: true);
                 };
 
                 onlinePlayersMenu.AddItem(onlinePlayer);
-
-                onlinePlayersUpdateListCount--;
             }
-
-            while (onlinePlayersUpdateListCount > 0)
-            {
-                await Wait(100);
-            }
-
-            await Wait(3000);
         }
     }
 }

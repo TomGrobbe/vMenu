@@ -21,6 +21,8 @@ namespace vMenu.Client
 {
     public class Main : BaseScript
     {
+        public static List<KeyValuePair<Player, string>> OnlinePlayers = new List<KeyValuePair<Player, string>>();
+
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
         public static MenuAlign MenuAlign = MenuAlign.Left;
