@@ -9,15 +9,14 @@ using System.Threading.Tasks;
 
 // CitizenFX Libraries //
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
 using ScaleformUI;
-using ScaleformUI.Menu;
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
-using vMenu.Shared.Interfaces;
 using static CitizenFX.Core.Native.API;
 using FxEvents;
 using Newtonsoft.Json;
+using vMenu.Shared.Objects;
+using ScaleformUI.Menu;
 
 namespace vMenu.Client.Functions
 {
@@ -26,11 +25,6 @@ namespace vMenu.Client.Functions
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
         public static void QuitSession() => NetworkSessionEnd(true, true);
-
-        public MenuFunctions()
-        {
-
-        }
 
         public void SetBannerTexture()
         {
@@ -48,7 +42,7 @@ namespace vMenu.Client.Functions
         {
             return
               assembly.GetTypes()
-                      .Where(t => String.Equals(t.Namespace, nameSpace, StringComparison.Ordinal))
+                      .Where(t => string.Equals(t.Namespace, nameSpace, StringComparison.Ordinal))
                       .ToArray();
         }
 
@@ -65,50 +59,55 @@ namespace vMenu.Client.Functions
             MainMenu.Menu().Visible = true;
         }
 
-        public async Task UpdateOnlinePlayers()
+        public async void UpdateOnlinePlayers(UIMenu menu, UIMenuItem item)
         {
-            Debug.WriteLine($"Test 1");
-
             try
             {
                 string playersSt = await EventDispatcher.Get<string>("RequestPlayersList");
 
-                List<IOnlinePlayersCB> playersObj = JsonConvert.DeserializeObject<List<IOnlinePlayersCB>>(playersSt);
-
-                Debug.WriteLine($"Test 2");
+                List<OnlinePlayersCB> playersObj = JsonConvert.DeserializeObject<List<OnlinePlayersCB>>(playersSt);
+                int PlayersLeftToAdd = playersObj.Count();
 
                 Main.OnlinePlayers.Clear();
 
-                int PlayersLeftToAdd = playersObj.Count();
-
-                foreach (IOnlinePlayersCB playerData in playersObj)
+                playersObj.ForEach(async (OnlinePlayersCB playerData) =>
                 {
-                    Player player = Players[playerData.ServerId];
+                    CitizenFX.Core.Player ply = Main.PlayerList[playerData.Player.ServerId];
 
-                    int mugshot = RegisterPedheadshot(player.Character.Handle);
-                    while (!IsPedheadshotReady(mugshot)) await Delay(100);
-                    string mugtxd = GetPedheadshotTxdString(mugshot);
+                    if (ply != null && ply.Character != null && ply.Character.Exists())
+                    {
+                        int mugshotHandle = RegisterPedheadshot(ply.Character.Handle);
 
-                    Main.OnlinePlayers.Add(new KeyValuePair<Player, string>(player, mugtxd));
+                        while (!IsPedheadshotReady(mugshotHandle) || !IsPedheadshotValid(mugshotHandle))
+                        {
+                            await Delay(0);
+                        }
 
-                    UnregisterPedheadshot(mugshot);
+                        string mugtxd = GetPedheadshotTxdString(mugshotHandle);
 
-                    PlayersLeftToAdd--;
-                }
+                        Main.OnlinePlayers.Add(new KeyValuePair<OnlinePlayersCB, string>(playerData, mugtxd));
+
+                        UnregisterPedheadshot(mugshotHandle);
+
+                        PlayersLeftToAdd--;
+                    }
+                    else
+                    {
+                        PlayersLeftToAdd--;
+                    }
+                });
 
                 while (PlayersLeftToAdd > 0)
                 {
-                    await Delay(100);
+                    await Delay(0);
                 }
 
-                OnlinePlayersMenu.ReplaceMenuItems();
+                OnlinePlayersMenu.ReplaceMenuItems(menu, item);
             }
-            catch (Exception err)
+            catch(Exception err)
             {
                 Debug.WriteLine(err.ToString());
             }
-
-            await Delay(4000);
         }
 
         public PointF GetMenuOffset()

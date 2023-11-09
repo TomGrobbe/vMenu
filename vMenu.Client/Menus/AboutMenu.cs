@@ -35,10 +35,10 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
-            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
             aboutMenu.AddItem(vMenuVersion);
             aboutMenu.AddItem(vMenuCredits);

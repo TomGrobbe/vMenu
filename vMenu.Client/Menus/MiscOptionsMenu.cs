@@ -21,7 +21,7 @@ namespace vMenu.Client.Menus
 
         public MiscOptionsMenu()
         {
-            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
+            miscOptionsMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Misc. Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -34,7 +34,7 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)");
+            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
             miscOptionsMenu.AddItem(toggleMenuAlign);
 

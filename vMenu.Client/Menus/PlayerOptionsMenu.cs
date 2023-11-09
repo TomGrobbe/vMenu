@@ -24,7 +24,7 @@ namespace vMenu.Client.Menus
 
         public PlayerOptionsMenu()
         {
-            playerRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "Player Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
+            playerRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "Player Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -37,12 +37,18 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
+            {
+                MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
+                HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
+                HighlightedTextColor = MenuSettings.Colours.Spacers.HighlightedTextColor,
+                TextColor = MenuSettings.Colours.Spacers.TextColor
+            };
 
-            UIMenuItem NoClip = new UIMenuItem("NoClip Toggle", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem NoClip = new UIMenuItem("NoClip Toggle", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
-            playerRelatedOptions.AddItem(NoClip);
             playerRelatedOptions.AddItem(button);
+            playerRelatedOptions.AddItem(NoClip);
 
             NoClip.Activated += (sender, i) =>
             {

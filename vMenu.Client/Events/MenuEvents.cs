@@ -36,18 +36,10 @@ namespace vMenu.Client.Events
             }
         }
 
-        [EventHandler("onClientResourceStart")]
-        private void OnClientResourceStart(string resource)
+        [EventHandler("playerSpawned")]
+        private void OnClientResourceStart()
         {
-            if (resource == GetCurrentResourceName())
-            {
-                if (Menus.OnlinePlayersMenu.Menu() != null)
-                {
-                    Tick += MenuFunctions.UpdateOnlinePlayers;
-                }
-
-                Debug.WriteLine("vMenu has started.");
-            }
+            Debug.WriteLine("vMenu has started.");
         }
     }
 }
