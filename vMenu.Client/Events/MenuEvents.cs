@@ -1,4 +1,4 @@
-﻿using CitizenFX.Core;
+using CitizenFX.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace vMenu.Client.Events
             }
         }
 
-        [EventHandler("playerSpawned")]
+        [EventHandler("onClientResourceStart")]
         private void OnClientResourceStart()
         {
             Debug.WriteLine("vMenu has started.");
