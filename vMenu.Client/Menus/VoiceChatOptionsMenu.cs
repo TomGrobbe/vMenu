@@ -22,7 +22,7 @@ namespace vMenu.Client.Menus
 
         public VoiceChatOptionsMenu()
         {
-            voiceChatSettings = new UIMenu(Main.MenuBanner.BannerTitle, "Voice Chat Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
+            voiceChatSettings = new UIMenu(Main.MenuBanner.BannerTitle, "Voice Chat Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -35,7 +35,13 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem button = new UIMenuItem("~r~~h~Under Construction!~h~", "", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
+            {
+                MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
+                HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
+                HighlightedTextColor = MenuSettings.Colours.Spacers.HighlightedTextColor,
+                TextColor = MenuSettings.Colours.Spacers.TextColor
+            };
 
             voiceChatSettings.AddItem(button);
 

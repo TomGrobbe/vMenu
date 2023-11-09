@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
+using vMenu.Shared.Objects;
 
 namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 {
@@ -19,7 +20,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 
         public OnlinePlayerMenu()
         {
-            onlinePlayerMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
+            onlinePlayerMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -35,14 +36,14 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
             Main.Menus.Add(onlinePlayerMenu);
         }
 
-        public static UIMenu Menu(Player player, string texture)
+        public static UIMenu Menu(OnlinePlayersCB player, string texture)
         {
             onlinePlayerMenu.Windows.Clear();
             onlinePlayerMenu.MenuItems.Clear();
 
-            UIMenuItem spectatePlayer = new UIMenuItem("Spectate Player", "Click to spectate this player");
+            UIMenuItem spectatePlayer = new UIMenuItem("Spectate Player", "Click to spectate this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
-            UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Name}~h~", $"Server ID: {player.ServerId}\nLocal ID: {player.Handle}", $"Steam ID: test\nDiscord ID: yeet", new UIDetailImage()
+            UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Player.Name}~h~", $"Server ID: {player.Player.ServerId}\nPed Handle: {player.Player.CharacterHandle}", $"Steam ID: {player.SteamIdentifier ?? "None"}\nDiscord ID: {player.DiscordIdentifier ?? "None"}", new UIDetailImage()
             {
                 Txd = texture,
                 Txn = texture,

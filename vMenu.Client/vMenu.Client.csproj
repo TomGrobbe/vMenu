@@ -23,16 +23,19 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CitizenFX.Core.Client" Version="1.0.7080" />
-    <PackageReference Include="FxEvents.FiveM.Client" Version="2.5.4" />
+    <PackageReference Include="FxEvents.FiveM.Client" Version="2.5.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="ScaleformUI" Version="4.8.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Objects\" />
+  </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu"
-del "$(SolutionDir)Build\[Resource]\vMenu\CitizenFX.*.*"
-del "$(SolutionDir)Build\[Resource]\vMenu\System.*.*"
-del "$(SolutionDir)Build\[Resource]\vMenu\Microsoft.*.*"
-del "$(SolutionDir)Build\[Resource]\vMenu\MsgPack.dll"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu\Client"
+del "$(SolutionDir)Build\[Resource]\vMenu\Client\CitizenFX.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\Client\System.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\Client\Microsoft.*.*"
+del "$(SolutionDir)Build\[Resource]\vMenu\Client\MsgPack.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>

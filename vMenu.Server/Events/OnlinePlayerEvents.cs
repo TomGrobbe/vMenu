@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using CitizenFX.Core.Native;
+using static CitizenFX.Core.Native.API;
 using static CitizenFX.Core.PlayerList;
-using vMenu.Shared.Interfaces;
 
 using FxEvents;
 using FxEvents.Shared.Snowflakes;
 using FxEvents.Shared.EventSubsystem;
 using vMenu.Server.Functions;
 using Newtonsoft.Json;
+using vMenu.Shared.Objects;
 
 namespace vMenu.Server.Events
 {
@@ -21,46 +21,39 @@ namespace vMenu.Server.Events
     {
         public OnlinePlayerEvents()
         {
-            try 
+            EventDispatcher.Mount("RequestPlayersList", new Func<Task<string>>(OnRequestPlayersList));
+        }
+
+        private async Task<string> OnRequestPlayersList()
+        {
+            List<OnlinePlayersCB> OnlinePlayersData = new();
+
+            int PlayersCountAdd = Main.PlayerList.Count();
+
+            foreach (CitizenFX.Core.Player player in Main.PlayerList)
             {
-                Debug.WriteLine("Test 1");
-                EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
-                Debug.WriteLine("Test 2");
-                EventDispatcher.Mount("RequestPlayersList", new Func<ISource, Task<string>>(async ([FromSource] source) =>
+                OnlinePlayersData.Add(new OnlinePlayersCB
                 {
-                    Debug.WriteLine("testtttt");
-
-                    PlayerList OnlinePlayers = Players;
-
-                    int PlayersCountAdd = OnlinePlayers.Count();
-
-                    List<IOnlinePlayersCB> OnlinePlayersData = new();
-
-                    foreach (Player player in OnlinePlayers)
+                    Player = new Shared.Objects.Player()
                     {
-                        OnlinePlayersData.Add(new IOnlinePlayersCB
-                        {
-                            PlayerName = player.Name,
-                            ServerId = int.Parse(player.Handle),
-                            Identifiers = player.Identifiers.ToArray()
-                        });
+                        Name = player.Name,
+                        ServerId = int.Parse(player.Handle),
+                        LocalId = 0,
+                        CharacterHandle = player.Character.Handle
+                    },
+                    SteamIdentifier = player.Identifiers["steam"],
+                    DiscordIdentifier = player.Identifiers["discord"]
+                });
 
-                        PlayersCountAdd--;
-                    }
-
-                    while (PlayersCountAdd > 0)
-                    {
-                        await Delay(100);
-                    }
-
-                    return JsonConvert.SerializeObject(OnlinePlayersData);
-                }));
-                Debug.WriteLine("Test 3");
+                PlayersCountAdd--;
             }
-            catch (Exception err)
+
+            while (PlayersCountAdd > 0)
             {
-                Debug.WriteLine(err.ToString());
+                await Delay(50);
             }
+
+            return JsonConvert.SerializeObject(OnlinePlayersData);
         }
     }
 }

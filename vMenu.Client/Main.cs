@@ -16,12 +16,14 @@ using vMenu.Shared.Objects;
 using vMenu.Shared.Enums;
 using ScaleformUI.Menu;
 using FxEvents;
+using Logger;
 
 namespace vMenu.Client
 {
     public class Main : BaseScript
     {
-        public static List<KeyValuePair<Player, string>> OnlinePlayers = new List<KeyValuePair<Player, string>>();
+        public static PlayerList PlayerList;
+        public static List<KeyValuePair<OnlinePlayersCB, string>> OnlinePlayers = new List<KeyValuePair<OnlinePlayersCB, string>>();
 
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -45,7 +47,9 @@ namespace vMenu.Client
 
         public Main()
         {
+            PlayerList = Players;
             EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
+
             MenuFunctions.SetBannerTexture();
         }
     }

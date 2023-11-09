@@ -26,7 +26,23 @@ namespace vMenu.Client.Settings
         public static bool EnableAnimation = false;
         public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
         public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
-        public static SColor HighlightColor = SColor.FromArgb(255, 236, 236, 236);
-        public static SColor BackgroundColor = SColor.HUD_Panel_light;
+
+        public struct Colours
+        {
+            public struct Items {
+                public static SColor HighlightColor = SColor.FromArgb(255, 243, 200, 87);
+                public static SColor BackgroundColor = SColor.FromArgb(255, 21, 175, 173);
+                public static SColor HighlightedTextColor = SColor.FromArgb(255, 234, 67, 67);
+                public static SColor TextColor = SColor.FromArgb(255, 24, 47, 52);
+            }
+
+            public struct Spacers
+            {
+                public static SColor HighlightColor = SColor.FromArgb(255, 238, 52, 92);
+                public static SColor BackgroundColor = SColor.FromArgb(255, 238, 52, 92);
+                public static SColor HighlightedTextColor = SColor.FromArgb(255, 243, 200, 87);
+                public static SColor TextColor = SColor.FromArgb(255, 243, 200, 87);
+            }
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace vMenu.Client.Menus
 
         public MainMenu()
         {
-            mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Menu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, false, true, fadingTime: 0.01f)
+            mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Menu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
@@ -47,31 +47,31 @@ namespace vMenu.Client.Menus
                 EnableAnimation = MenuSettings.EnableAnimation,
             };
 
-            UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             onlinePlayers.SetRightLabel(">>>");
 
-            UIMenuItem bannedPlayers = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem bannedPlayers = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             bannedPlayers.SetRightLabel(">>>");
 
-            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Options", "Open this submenu for player related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Options", "Open this submenu for player related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             playerRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Options", "Open this submenu for vehicle related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Options", "Open this submenu for vehicle related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             vehicleRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem worldRelatedOptions = new UIMenuItem("World Options", "Open this submenu for world related subcategories.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem worldRelatedOptions = new UIMenuItem("World Options", "Open this submenu for world related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             worldRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Options", "Change Voice Chat options here.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Options", "Change Voice Chat options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             voiceChatSettings.SetRightLabel(">>>");
 
-            UIMenuItem recordingOptions = new UIMenuItem("Recording Options (Broken)", "In-game recording options.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem recordingOptions = new UIMenuItem("Recording Options (Broken)", "In-game recording options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             recordingOptions.SetRightLabel(">>>");
 
-            UIMenuItem miscOptions = new UIMenuItem("Misc. Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem miscOptions = new UIMenuItem("Misc. Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             miscOptions.SetRightLabel(">>>");
 
-            UIMenuItem aboutvMenu = new UIMenuItem("About vMenu", "Information about vMenu.", MenuSettings.BackgroundColor, MenuSettings.HighlightColor);
+            UIMenuItem aboutvMenu = new UIMenuItem("About vMenu", "Information about vMenu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             aboutvMenu.SetRightLabel(">>>");
 
             mainMenu.AddItem(onlinePlayers);
@@ -86,7 +86,8 @@ namespace vMenu.Client.Menus
 
             onlinePlayers.Activated += (sender, i) =>
             {
-                sender.SwitchTo(OnlinePlayersMenu.Menu(), inheritOldMenuParams: true);
+                i.Label = "Loading Online Players";
+                MenuFunctions.UpdateOnlinePlayers(sender, i);
             };
 
             bannedPlayers.Activated += (sender, i) =>

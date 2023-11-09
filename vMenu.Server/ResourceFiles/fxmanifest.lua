@@ -6,17 +6,15 @@ description 'vMenu Revamped - WIP'
 version '1.0.0'
 
 
-client_script 'vMenu.Client.net.dll'
-server_script 'vMenu.Server.net.dll'
-shared_script 'vMenu.Shared.net.dll'
+client_script 'Client/vMenu.Client.net.dll'
+server_script 'Server/vMenu.Server.net.dll'
+shared_script 'Server/vMenu.Shared.net.dll'
 
 files {
-	'ScaleformUI.dll',
-	'Newtonsoft.Json.dll',
-	'FxEvents.Server.dll',
-	'FxEvents.Client.dll',
-	'netstandard.dll',
+	'Client/ScaleformUI.dll',
+	'Client/Newtonsoft.Json.dll',
+	'Client/FxEvents.Client.dll',
 	'stream/**/*'
 }
 
-fxevents_debug_mode '1'
+--fxevents_debug_mode '1'
