@@ -14,7 +14,10 @@ files {
 	'Client/ScaleformUI.dll',
 	'Client/Newtonsoft.Json.dll',
 	'Client/FxEvents.Client.dll',
-	'stream/**/*'
+	'stream/**/*',
+	'Theme.json',
+	'KeyMapping.json',
+	'RichPresence.json'
 }
 
 --fxevents_debug_mode '1'

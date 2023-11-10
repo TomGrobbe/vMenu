@@ -1,0 +1,15 @@
+{
+"MenuTheme" : "Revamp", // options {NativeUI, Revamp, Custom}
+
+// spacers
+"SpacerHighlightARGB" : {"alpha":255, "red":229, "green":143, "blue":42}, // for Custom
+"SpacerBackgroundARGB" : {"alpha":180, "red":22, "green":176, "blue":176}, // for Custom
+"SpacerHighlightedTextARGB" : {"alpha":255, "red":255, "green":255, "blue":255}, // for Custom
+"SpacerTextARGB" : {"alpha":255, "red":255, "green":255, "blue":255}, // for Custom
+
+// items
+"ItemHighlightARGB" : {"alpha":255, "red":229, "green":143, "blue":42}, // for Custom
+"ItemBackgroundARGB" : {"alpha":180, "red":22, "green":176, "blue":176}, // for Custom
+"ItemHighlightedTextARGB" : {"alpha":255, "red":255, "green":255, "blue":255}, // for Custom
+"ItemTextARGB" : {"alpha":255, "red":255, "green":255, "blue":255} // for Custom
+}

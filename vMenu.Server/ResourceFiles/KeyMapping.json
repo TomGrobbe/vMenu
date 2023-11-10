@@ -1,0 +1,4 @@
+{
+"vMenu:OpenMenu" : {"Description":"Open vMenu Toggle", "ControlType":"keyboard", "Button":"M"},
+"vMenu:NoClip" : {"Description":"Toggle NoClip", "ControlType":"keyboard", "Button":"F2"}
+}
