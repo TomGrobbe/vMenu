@@ -18,7 +18,7 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {
-    public class RecordingMenu : BaseScript
+    public class RecordingMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -29,18 +29,7 @@ namespace vMenu.Client.Menus
             AddTextEntryByHash(0x86F10CE6, "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
             AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
-            recordingMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Recording Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            recordingMenu = new Objects.vMenu("R* Editor Options").Create();
 
             UIMenuItem takePicture = new UIMenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             UIMenuItem openPmGallery = new UIMenuItem("Open Gallery", "Opens the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);

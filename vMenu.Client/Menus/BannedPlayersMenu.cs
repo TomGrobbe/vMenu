@@ -18,7 +18,7 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {
-    public class BannedPlayersMenu : BaseScript
+    public class BannedPlayersMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -26,18 +26,7 @@ namespace vMenu.Client.Menus
 
         public BannedPlayersMenu()
         {
-            bannedPlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Banned Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            bannedPlayersMenu = new Objects.vMenu("Banned Players").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

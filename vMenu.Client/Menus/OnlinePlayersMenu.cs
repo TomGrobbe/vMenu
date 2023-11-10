@@ -21,7 +21,7 @@ using static CitizenFX.Core.PlayerList;
 
 namespace vMenu.Client.Menus
 {
-    public class OnlinePlayersMenu : BaseScript
+    public class OnlinePlayersMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -29,18 +29,7 @@ namespace vMenu.Client.Menus
 
         public OnlinePlayersMenu()
         {
-            onlinePlayersMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            onlinePlayersMenu = new Objects.vMenu("Online Players").Create();
 
             UIMenuSeparatorItem onlinePlayerq = new UIMenuSeparatorItem("No Players Online", false)
             {
@@ -86,7 +75,7 @@ namespace vMenu.Client.Menus
 
             while (OnlinePlayersCount > 0)
             {
-                await Delay(0);
+                await BaseScript.Delay(0);
             }
 
             await menu.SwitchTo(Menu(), inheritOldMenuParams: true);

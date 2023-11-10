@@ -52,6 +52,18 @@ namespace vMenu.Client
             EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
 
             MenuFunctions.SetBannerTexture();
+
+            _ = new Menus.MainMenu();
+            _ = new Menus.OnlinePlayersMenu();
+            _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
+            _ = new Menus.BannedPlayersMenu();
+            _ = new Menus.PlayerOptionsMenu();
+            _ = new Menus.VehicleOptionsMenu();
+            _ = new Menus.WorldOptionsMenu();
+            _ = new Menus.VoiceChatOptionsMenu();
+            _ = new Menus.RecordingMenu();
+            _ = new Menus.MiscOptionsMenu();
+            _ = new Menus.AboutMenu();
         }
     }
 }
