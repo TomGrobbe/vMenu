@@ -44,7 +44,7 @@ namespace vMenu.Client.KeyMappings
 
         public Commands()
         {
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), "KeyMapping.json") ?? "{}";
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "Server/KeyMapping.json") ?? "{}";
             var JsonCommand = JsonConvert.DeserializeObject<Dictionary<string, CommandStructure>>(JsonData);
 
             foreach (var CommandData in JsonCommand)
