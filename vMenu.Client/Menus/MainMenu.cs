@@ -25,7 +25,7 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {
-    public class MainMenu : BaseScript
+    public class MainMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -33,18 +33,7 @@ namespace vMenu.Client.Menus
 
         public MainMenu()
         {
-            mainMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Main Menu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            mainMenu = new Objects.vMenu("Main Menu").Create();
 
             UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             onlinePlayers.SetRightLabel(">>>");
@@ -64,10 +53,10 @@ namespace vMenu.Client.Menus
             UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Options", "Change Voice Chat options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             voiceChatSettings.SetRightLabel(">>>");
 
-            UIMenuItem recordingOptions = new UIMenuItem("Recording Options", "In-game recording options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem recordingOptions = new UIMenuItem("R* Editor Options", "In-game Rockstar Editor Options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             recordingOptions.SetRightLabel(">>>");
 
-            UIMenuItem miscOptions = new UIMenuItem("Misc. Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem miscOptions = new UIMenuItem("Miscellaneous Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             miscOptions.SetRightLabel(">>>");
 
             UIMenuItem aboutvMenu = new UIMenuItem("About vMenu", "Information about vMenu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);

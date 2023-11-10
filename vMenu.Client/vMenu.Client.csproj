@@ -28,9 +28,6 @@
     <PackageReference Include="ScaleformUI" Version="4.8.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Objects\" />
-  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu\Client"
 del "$(SolutionDir)Build\[Resource]\vMenu\Client\CitizenFX.*.*"

@@ -18,7 +18,7 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {
-    public class WorldOptionsMenu : BaseScript
+    public class WorldOptionsMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -26,18 +26,7 @@ namespace vMenu.Client.Menus
 
         public WorldOptionsMenu()
         {
-            worldRelatedOptions = new UIMenu(Main.MenuBanner.BannerTitle, "World Options", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            worldRelatedOptions = new Objects.vMenu("World Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

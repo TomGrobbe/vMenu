@@ -10,15 +10,17 @@ using CitizenFX.Core.Native;
 
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
+using ScaleformUI.Menus;
 
 using vMenu.Client.Functions;
+using vMenu.Client.Objects;
 using vMenu.Client.Settings;
 
 using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {
-    public class AboutMenu : BaseScript
+    public class AboutMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -26,18 +28,7 @@ namespace vMenu.Client.Menus
 
         public AboutMenu()
         {
-            aboutMenu = new UIMenu(Main.MenuBanner.BannerTitle, "About vMenu", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            aboutMenu = new Objects.vMenu("About vMenu").Create();
 
             UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");

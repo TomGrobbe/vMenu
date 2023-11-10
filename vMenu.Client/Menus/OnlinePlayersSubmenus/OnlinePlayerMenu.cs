@@ -15,7 +15,7 @@ using vMenu.Shared.Objects;
 
 namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 {
-    public class OnlinePlayerMenu : BaseScript
+    public class OnlinePlayerMenu
     {
         public static MenuFunctions MenuFunctions = new MenuFunctions();
 
@@ -23,18 +23,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 
         public OnlinePlayerMenu()
         {
-            onlinePlayerMenu = new UIMenu(Main.MenuBanner.BannerTitle, "Online Players", MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
-            {
-                MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
-                BuildingAnimation = MenuSettings.BuildingAnimation,
-                ScrollingType = MenuSettings.ScrollingType,
-                Enabled3DAnimations = MenuSettings.Enabled3DAnimations,
-                MouseControlsEnabled = MenuSettings.MouseControlsEnabled,
-                MouseEdgeEnabled = MenuSettings.MouseEdgeEnabled,
-                MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
-                ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
-                EnableAnimation = MenuSettings.EnableAnimation,
-            };
+            onlinePlayerMenu = new Objects.vMenu("Online Player").Create();
 
             Main.Menus.Add(onlinePlayerMenu);
         }
