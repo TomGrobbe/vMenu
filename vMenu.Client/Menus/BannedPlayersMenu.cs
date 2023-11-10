@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class BannedPlayersMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu bannedPlayersMenu = null;
 
         public BannedPlayersMenu()

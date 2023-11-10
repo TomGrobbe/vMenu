@@ -22,8 +22,6 @@ namespace vMenu.Client.Menus
 {
     public class AboutMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu aboutMenu = null;
 
         public AboutMenu()

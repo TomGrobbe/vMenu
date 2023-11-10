@@ -10,13 +10,33 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Functions
 {
-    public class NoClip : BaseScript
+    public class NoClip
     {
+        private static readonly object _padlock = new();
+        private static NoClip _instance;
+
         private static bool NoclipActive { get; set; } = false;
         private static int MovingSpeed { get; set; } = 0;
         private static int Scale { get; set; } = -1;
         private static bool FollowCamMode { get; set; } = true;
         private static bool FlyCamMode { get; set; } = true;
+
+        public NoClip()
+        {
+            Main.Instance.AttachTick(NoClipHandler);
+            Debug.WriteLine("NoClip Initialized");
+        }
+
+        internal static NoClip Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new NoClip();
+                }
+            }
+        }
 
 
         private List<string> speeds = new List<string>()
@@ -30,11 +50,6 @@ namespace vMenu.Client.Functions
             "Extremely Fast v2.0 | 7/8",
             "Max Speed | 8/8"
         };
-
-        public NoClip()
-        {
-            Tick += NoClipHandler;
-        }
 
         internal static void SetNoclipActive(bool active)
         {
@@ -81,7 +96,7 @@ namespace vMenu.Client.Functions
                 Scale = RequestScaleformMovie("INSTRUCTIONAL_BUTTONS");
                 while (!HasScaleformMovieLoaded(Scale))
                 {
-                    await Delay(0);
+                    await BaseScript.Delay(0);
                 }
 
                 DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 0, 0);
@@ -312,7 +327,7 @@ namespace vMenu.Client.Functions
                 SetPoliceIgnorePlayer(Game.PlayerPed.Handle, true);
 
                 // After the next game tick, reset the entity properties.
-                await Delay(0);
+                await BaseScript.Delay(0);
                 FreezeEntityPosition(noclipEntity, false);
                 SetEntityInvincible(noclipEntity, false);
                 SetEntityCollision(noclipEntity, true, true);

@@ -15,8 +15,27 @@ using vMenu.Client.Functions;
 
 namespace vMenu.Client.Settings
 {
-    public class MenuSettings : BaseScript
+    public class MenuSettings
     {
+        private static readonly object _padlock = new();
+        private static MenuSettings _instance;
+
+        public MenuSettings()
+        {
+            Debug.WriteLine("MenuSettings Initialized");
+        }
+
+        internal static MenuSettings Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new MenuSettings();
+                }
+            }
+        }
+
         public static int MaxItemsOnScreen = 9;
         public static float FadingTime = 0.01f;
         public static bool AlternativeTitle = true;

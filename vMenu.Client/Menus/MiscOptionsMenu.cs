@@ -19,8 +19,6 @@ namespace vMenu.Client.Menus
 {
     public class MiscOptionsMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu miscOptionsMenu = null;
 
         public MiscOptionsMenu()
@@ -36,12 +34,12 @@ namespace vMenu.Client.Menus
                 if (Main.MenuAlign == Shared.Enums.MenuAlign.Left)
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Right;
-                    MenuFunctions.RestartMenu();
+                    MenuFunctions.Instance.RestartMenu();
                 }
                 else
                 {
                     Main.MenuAlign = Shared.Enums.MenuAlign.Left;
-                    MenuFunctions.RestartMenu();
+                    MenuFunctions.Instance.RestartMenu();
                 }
             };
 

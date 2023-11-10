@@ -17,14 +17,34 @@ using ScaleformUI.Menu;
 
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
+using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
 using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Functions
 {
-    public class MenuFunctions : BaseScript
+    public class MenuFunctions
     {
+        private static readonly object _padlock = new();
+        private static MenuFunctions _instance;
+
+        public MenuFunctions()
+        {
+            Debug.WriteLine("MenuFunctions Initialized");
+        }
+
+        internal static MenuFunctions Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new MenuFunctions();
+                }
+            }
+        }
+
         public static string Version { get { return GetResourceMetadata(GetCurrentResourceName(), "version", 0); } }
 
         public static void QuitSession() => NetworkSessionEnd(true, true);
@@ -53,12 +73,7 @@ namespace vMenu.Client.Functions
         {
             MenuHandler.CurrentMenu.Visible = false;
             MenuHandler.CloseAndClearHistory();
-            //var test = GetClassesInMenusNamespace(Assembly.GetExecutingAssembly(), "vMenu.Client.Menus");
-
-            new MainMenu();
-            new OnlinePlayersMenu();
-            new OnlinePlayerMenu();
-            new MiscOptionsMenu();
+            InitializeAllMenus();
             MainMenu.Menu().Visible = true;
         }
 
@@ -83,7 +98,7 @@ namespace vMenu.Client.Functions
 
                         while (!IsPedheadshotReady(mugshotHandle) || !IsPedheadshotValid(mugshotHandle))
                         {
-                            await Delay(0);
+                            await BaseScript.Delay(0);
                         }
 
                         string mugtxd = GetPedheadshotTxdString(mugshotHandle);
@@ -102,7 +117,7 @@ namespace vMenu.Client.Functions
 
                 while (PlayersLeftToAdd > 0)
                 {
-                    await Delay(0);
+                    await BaseScript.Delay(0);
                 }
 
                 OnlinePlayersMenu.ReplaceMenuItems(menu, item);
@@ -123,6 +138,21 @@ namespace vMenu.Client.Functions
             {
                 return new PointF(970, 20);
             }
+        }
+
+        public void InitializeAllMenus()
+        {
+            _ = new OnlinePlayersMenu();
+            _ = new OnlinePlayerMenu();
+            _ = new BannedPlayersMenu();
+            _ = new PlayerOptionsMenu();
+            _ = new VehicleOptionsMenu();
+            _ = new WorldOptionsMenu();
+            _ = new VoiceChatOptionsMenu();
+            _ = new RecordingMenu();
+            _ = new MiscOptionsMenu();
+            _ = new AboutMenu();
+            _ = new MainMenu();
         }
     }
 }

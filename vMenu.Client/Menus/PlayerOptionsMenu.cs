@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class PlayerOptionsMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu playerRelatedOptions = null;
 
         public static bool NoClipEnabled { get { return NoClip.IsNoclipActive(); } set { NoClip.SetNoclipActive(value); } }
