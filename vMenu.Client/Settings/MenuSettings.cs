@@ -66,7 +66,7 @@ namespace vMenu.Client.Settings
             }
         }
 
-        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "Client/Theme.json") ?? "{}";
+        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "Server/Theme.json") ?? "{}";
         private static Theme JsonTheme = JsonConvert.DeserializeObject<Theme>(JsonData);
         private static string Themes = JsonTheme.MenuTheme;
 
