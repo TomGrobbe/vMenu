@@ -1,16 +1,20 @@
-using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using static CitizenFX.Core.Native.API;
-using ScaleformUI.Menu;
-using ScaleformUI.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using ScaleformUI.Elements;
+using ScaleformUI.Menu;
+
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {

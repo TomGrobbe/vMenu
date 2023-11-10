@@ -1,4 +1,3 @@
-// System Libraries //
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,13 +6,15 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-// CitizenFX Libraries //
-using vMenu.Client.Menus;
-using vMenu.Client.Menus.OnlinePlayersSubmenus;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using static CitizenFX.Core.Native.API;
+
 using ScaleformUI;
+
+using vMenu.Client.Menus;
+using vMenu.Client.Menus.OnlinePlayersSubmenus;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Functions
 {

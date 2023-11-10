@@ -1,20 +1,23 @@
-﻿using CitizenFX.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CitizenFX.Core.Native.API;
-using static CitizenFX.Core.PlayerList;
+using CitizenFX.Core;
 
 using FxEvents;
-using FxEvents.Shared.Snowflakes;
 using FxEvents.Shared.EventSubsystem;
-using vMenu.Server.Functions;
-using Newtonsoft.Json;
-using vMenu.Shared.Objects;
+using FxEvents.Shared.Snowflakes;
 using FxEvents.Shared.TypeExtensions;
+
+using Newtonsoft.Json;
+
+using vMenu.Server.Functions;
+using vMenu.Shared.Objects;
+
+using static CitizenFX.Core.Native.API;
+using static CitizenFX.Core.PlayerList;
 
 namespace vMenu.Server.Events
 {
