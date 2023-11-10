@@ -1,16 +1,19 @@
-using CitizenFX.Core;
-using static CitizenFX.Core.Native.API;
-using ScaleformUI.Menu;
-using ScaleformUI.Elements;
-using ScaleformUI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using vMenu.Client.Functions;
 using Newtonsoft.Json;
+
+using CitizenFX.Core;
+
+using ScaleformUI;
+using ScaleformUI.Elements;
+using ScaleformUI.Menu;
+
+using vMenu.Client.Functions;
+
 namespace vMenu.Client.Settings
 {
     public class MenuSettings : BaseScript

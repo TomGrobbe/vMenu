@@ -1,15 +1,15 @@
-﻿// System Libraries //
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-// CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using FxEvents.Shared.Snowflakes;
+
 using FxEvents;
+using FxEvents.Shared.Snowflakes;
+
 using Logger;
 
 namespace vMenu.Server

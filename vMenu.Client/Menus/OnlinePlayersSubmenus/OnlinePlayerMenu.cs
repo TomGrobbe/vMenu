@@ -1,11 +1,14 @@
-﻿using CitizenFX.Core;
-using ScaleformUI.Menu;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using CitizenFX.Core;
+
+using ScaleformUI.Menu;
+
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;

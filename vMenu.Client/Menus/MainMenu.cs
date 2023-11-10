@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 
-// CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using static CitizenFX.Core.Native.API;
 
-// ScaleformUI Libraries //
 using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.LobbyMenu;
@@ -20,8 +17,11 @@ using ScaleformUI.PauseMenus;
 using ScaleformUI.Radial;
 using ScaleformUI.Radio;
 using ScaleformUI.Scaleforms;
+
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus
 {

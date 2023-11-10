@@ -1,5 +1,4 @@
-﻿// System Libraries //
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -7,16 +6,20 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-// CitizenFX Libraries //
 using CitizenFX.Core;
+
+using FxEvents;
+
+using Newtonsoft.Json;
+
 using ScaleformUI;
+using ScaleformUI.Menu;
+
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
-using static CitizenFX.Core.Native.API;
-using FxEvents;
-using Newtonsoft.Json;
 using vMenu.Shared.Objects;
-using ScaleformUI.Menu;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Functions
 {

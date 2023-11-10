@@ -1,19 +1,23 @@
-﻿using CitizenFX.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static CitizenFX.Core.Native.API;
-using static CitizenFX.Core.PlayerList;
+using CitizenFX.Core;
 
 using FxEvents;
-using FxEvents.Shared.Snowflakes;
 using FxEvents.Shared.EventSubsystem;
-using vMenu.Server.Functions;
+using FxEvents.Shared.Snowflakes;
+using FxEvents.Shared.TypeExtensions;
+
 using Newtonsoft.Json;
+
+using vMenu.Server.Functions;
 using vMenu.Shared.Objects;
+
+using static CitizenFX.Core.Native.API;
+using static CitizenFX.Core.PlayerList;
 
 namespace vMenu.Server.Events
 {
@@ -28,25 +32,42 @@ namespace vMenu.Server.Events
         {
             List<OnlinePlayersCB> OnlinePlayersData = new();
 
-            int PlayersCountAdd = Main.PlayerList.Count();
+            PlayerList Players = Main.PlayerList;
 
-            foreach (CitizenFX.Core.Player player in Main.PlayerList)
+            int PlayersCountAdd = Players.Count();
+
+            Players.ForEach((CitizenFX.Core.Player player) =>
             {
-                OnlinePlayersData.Add(new OnlinePlayersCB
+                if (player != null)
                 {
-                    Player = new Shared.Objects.Player()
+                    Shared.Objects.Player playerDat = new Shared.Objects.Player()
                     {
-                        Name = player.Name,
-                        ServerId = int.Parse(player.Handle),
+                        Name = player.Name ?? "NULL",
+                        ServerId = int.Parse(player.Handle ?? "0"),
                         LocalId = 0,
-                        CharacterHandle = player.Character.Handle
-                    },
-                    SteamIdentifier = player.Identifiers["steam"],
-                    DiscordIdentifier = player.Identifiers["discord"]
-                });
+                        CharacterHandle = player.Character != null ? player.Character.Handle : 0,
+                        PlayerLocation = new Shared.Objects.Vector3()
+                        {
+                            X = player.Character.Position.X,
+                            Y = player.Character.Position.Y,
+                            Z = player.Character.Position.Z,
+                        }
+                    };
 
-                PlayersCountAdd--;
-            }
+                    OnlinePlayersData.Add(new OnlinePlayersCB()
+                    {
+                        Player = playerDat,
+                        SteamIdentifier = player.Identifiers["steam"],
+                        DiscordIdentifier = player.Identifiers["discord"]
+                    });
+
+                    PlayersCountAdd--;
+                }
+                else
+                {
+                    PlayersCountAdd--;
+                }
+            });
 
             while (PlayersCountAdd > 0)
             {

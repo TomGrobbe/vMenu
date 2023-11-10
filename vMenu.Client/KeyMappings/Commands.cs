@@ -1,20 +1,19 @@
-﻿// System Libraries //
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-// CitizenFX Libraries //
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using static CitizenFX.Core.Native.API;
 
-// vMenu Namespaces //
-using vMenu.Client.Menus;
 using ScaleformUI.Menu;
 using vMenu.Client.Functions;
+
+using vMenu.Client.Menus;
+
+using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.KeyMappings
 {
