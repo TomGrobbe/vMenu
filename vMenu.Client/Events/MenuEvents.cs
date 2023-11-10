@@ -7,21 +7,36 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 
 using vMenu.Client.Functions;
+using vMenu.Client.KeyMappings;
+using vMenu.Client.Settings;
 
 using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Events
 {
-    public class MenuEvents : BaseScript
+    public class MenuEvents
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
+        private static readonly object _padlock = new();
+        private static MenuEvents _instance;
 
         public MenuEvents()
         {
-
+            Main.Instance.AddEventHandler("onResourceStop", OnResourceStop);
+            Main.Instance.AddEventHandler("onClientResourceStart", OnClientResourceStart);
+            Debug.WriteLine("MenuEvents Initialized");
         }
 
-        [EventHandler("onResourceStop")]
+        internal static MenuEvents Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new MenuEvents();
+                }
+            }
+        }
+
         private void OnResourceStop(string resource)
         {
             if (resource == GetCurrentResourceName())
@@ -39,10 +54,21 @@ namespace vMenu.Client.Events
             }
         }
 
-        [EventHandler("onClientResourceStart")]
-        private void OnClientResourceStart()
+        private void OnClientResourceStart(string resource)
         {
-            Debug.WriteLine("vMenu has started.");
+            if (resource == GetCurrentResourceName())
+            {
+                _ = MenuSettings.Instance;
+                _ = MenuFunctions.Instance;
+                _ = Commands.Instance;
+                _ = NoClip.Instance;
+                _ = Notify.Instance;
+                _ = Subtitle.Instance;
+
+                MenuFunctions.Instance.SetBannerTexture();
+                MenuFunctions.Instance.InitializeAllMenus();
+                Debug.WriteLine("vMenu has started.");
+            }
         }
     }
 }

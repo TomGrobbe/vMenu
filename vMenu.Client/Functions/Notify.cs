@@ -11,6 +11,7 @@ using CitizenFX.Core.Native;
 
 using ScaleformUI;
 
+using vMenu.Client.KeyMappings;
 using vMenu.Client.Menus;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
 
@@ -18,8 +19,27 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Functions
 {
-    public class Notify : BaseScript
+    public class Notify
     {
+        private static readonly object _padlock = new();
+        private static Notify _instance;
+
+        public Notify()
+        {
+            Debug.WriteLine("Notify Initialized");
+        }
+
+        internal static Notify Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new Notify();
+                }
+            }
+        }
+
         public static void Error(string message, bool blink = true, bool SaveToBrief = true)
         {
             Notifications.ShowNotification($"~h~Error:~h~ {message}", NotificationColor.Red, blink, SaveToBrief);
@@ -41,9 +61,29 @@ namespace vMenu.Client.Functions
             Notifications.ShowNotification(message, color, blink, SaveToBrief);
         }         
     }
-    public class Subtitle : BaseScript
+
+    public class Subtitle
     {
-        private static void subtitle(string message, int time, bool drawImmediately)
+        private static readonly object _padlock = new();
+        private static Subtitle _instance;
+
+        public Subtitle()
+        {
+            Debug.WriteLine("Subtitle Initialized");
+        }
+
+        internal static Subtitle Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new Subtitle();
+                }
+            }
+        }
+
+        private static void DrawSubtitle(string message, int time, bool drawImmediately)
         {
             BeginTextCommandPrint("STRING");
             AddTextComponentSubstringPlayerName(message);
@@ -51,23 +91,23 @@ namespace vMenu.Client.Functions
         }
         public static void Error(string message, int time = 5000, bool drawImmediately = true)
         {
-            subtitle($"~h~~r~Error:~h~~s~ {message}", time, drawImmediately);
+            DrawSubtitle($"~h~~r~Error:~h~~s~ {message}", time, drawImmediately);
         }
         public static void Success(string message, int time = 5000, bool drawImmediately = true)
         {
-            subtitle($"~h~~g~Success:~h~~s~ {message}", time, drawImmediately);
+            DrawSubtitle($"~h~~g~Success:~h~~s~ {message}", time, drawImmediately);
         }
         public static void Info(string message, int time = 5000, bool drawImmediately = true)
         {
-            subtitle($"~h~~b~Info:~h~~s~ {message}", time, drawImmediately);
+            DrawSubtitle($"~h~~b~Info:~h~~s~ {message}", time, drawImmediately);
         }
         public static void Alert(string message, int time = 5000, bool drawImmediately = true)
         {
-            subtitle($"~h~~y~Alert:~h~~s~ {message}", time, drawImmediately);
+            DrawSubtitle($"~h~~y~Alert:~h~~s~ {message}", time, drawImmediately);
         }
         public static void Custom(string message, int time = 5000, bool drawImmediately = true)
         {
-            subtitle(message, time, drawImmediately);
+            DrawSubtitle(message, time, drawImmediately);
         }
     }
 }

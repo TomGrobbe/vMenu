@@ -1,24 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
-using ScaleformUI.Menu;
-using vMenu.Client.Functions;
+using FxEvents.Shared.EventSubsystem;
 
+using Newtonsoft.Json;
+
+using ScaleformUI.Menu;
+
+using vMenu.Client.Events;
+using vMenu.Client.Functions;
 using vMenu.Client.Menus;
 
 using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.KeyMappings
 {
-    public class Commands : BaseScript
+    public class Commands
     {
+        private static readonly object _padlock = new();
+        private static Commands _instance;
+
         public static bool NoClipEnabled { get { return Functions.NoClip.IsNoclipActive(); } set { Functions.NoClip.SetNoclipActive(value); } }
 
         public struct CommandStructure
@@ -34,6 +41,7 @@ namespace vMenu.Client.KeyMappings
                 this.Button = Button;
             }
         }
+
         public Commands()
         {
             string JsonData = LoadResourceFile(GetCurrentResourceName(), "KeyMapping.json") ?? "{}";
@@ -43,14 +51,30 @@ namespace vMenu.Client.KeyMappings
             {
                 RegisterKeyMapping(CommandData.Key, CommandData.Value.Description, CommandData.Value.ControlType, CommandData.Value.Button);
             }
+
+            RegisterCommand("vMenu:OpenMenu", MenuOpen, false);
+            RegisterCommand("vMenu:NoClip", NoClip, false);
+
+            Debug.WriteLine("Commands Initialized");
         }
-        [Command("vMenu:NoClip")]
-        private void NoClip()
+
+        internal static Commands Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new Commands();
+                }
+            }
+        }
+
+        private InputArgument NoClip = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
             NoClipEnabled = !NoClipEnabled;
-        }
-        [Command("vMenu:OpenMenu")]
-        private void MenuOpen()
+        });
+
+        private InputArgument MenuOpen = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
             if (ScaleformUI.MenuHandler.CurrentMenu != null)
             {
@@ -61,6 +85,6 @@ namespace vMenu.Client.KeyMappings
                 UIMenu Menu = MainMenu.Menu();
                 Menu.Visible = true;
             }
-        }
+        });
     }
 }

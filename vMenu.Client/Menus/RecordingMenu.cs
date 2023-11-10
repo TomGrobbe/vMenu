@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class RecordingMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu recordingMenu = null;
 
         public RecordingMenu()

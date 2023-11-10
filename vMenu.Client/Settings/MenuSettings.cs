@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using CitizenFX.Core;
 
@@ -12,12 +11,18 @@ using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
+using static CitizenFX.Core.Native.API;
+
 using vMenu.Client.Functions;
+using Newtonsoft.Json;
 
 namespace vMenu.Client.Settings
 {
-    public class MenuSettings : BaseScript
+    public class MenuSettings
     {
+        private static readonly object _padlock = new();
+        private static MenuSettings _instance;
+
         public struct Theme
         {
             public string MenuTheme;
@@ -29,6 +34,7 @@ namespace vMenu.Client.Settings
             public ARGBTheme SpacerHighlightedTextARGB;
             public ARGBTheme SpacerTextARGB;
             public ARGBTheme ItemBackgroundARGB;
+
             public Theme(string MenuTheme, ARGBTheme SpacerHighlightARGB, ARGBTheme SpacerBackgroundARGB, ARGBTheme ItemHighlightARGB, ARGBTheme ItemBackgroundARGB, ARGBTheme ItemHighlightedTextARGB, ARGBTheme ItemTextARGB, ARGBTheme SpacerHighlightedTextARGB, ARGBTheme SpacerTextARGB)
             {
                 this.MenuTheme = MenuTheme;
@@ -59,19 +65,8 @@ namespace vMenu.Client.Settings
                 this.blue = blue;
             }
         }
-        public static int MaxItemsOnScreen = 9;
-        public static float FadingTime = 0.001f;
-        public static bool AlternativeTitle = true;
-        public static bool Glare = false;
-        public static bool Enabled3DAnimations = false;
-        public static bool MouseControlsEnabled = false;
-        public static bool MouseEdgeEnabled = false;
-        public static bool MouseWheelControlEnabled = true;
-        public static bool ControlDisablingEnabled = false;
-        public static bool EnableAnimation = false;
-        public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
-        public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
-        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "Theme.json") ?? "{}";
+
+        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "Client/Theme.json") ?? "{}";
         private static Theme JsonTheme = JsonConvert.DeserializeObject<Theme>(JsonData);
         private static string Themes = JsonTheme.MenuTheme;
 
@@ -110,17 +105,44 @@ namespace vMenu.Client.Settings
             else if (Themes == "Custom")
             {
                 Colours.Spacers.HighlightColor = SColor.FromArgb(JsonTheme.SpacerHighlightARGB.alpha, JsonTheme.SpacerHighlightARGB.red, JsonTheme.SpacerHighlightARGB.green, JsonTheme.SpacerHighlightARGB.blue);
-                Colours.Spacers.BackgroundColor = SColor.FromArgb(JsonTheme.SpacerBackgroundARGB.alpha, JsonTheme.SpacerBackgroundARGB.red, JsonTheme.SpacerBackgroundARGB.green, JsonTheme.SpacerBackgroundARGB.blue); 
-                Colours.Spacers.HighlightedTextColor = SColor.FromArgb(JsonTheme.SpacerHighlightedTextARGB.alpha, JsonTheme.SpacerHighlightedTextARGB.red, JsonTheme.SpacerHighlightedTextARGB.green, JsonTheme.SpacerHighlightedTextARGB.blue); 
-                Colours.Spacers.TextColor = SColor.FromArgb(JsonTheme.SpacerTextARGB.alpha, JsonTheme.SpacerTextARGB.red, JsonTheme.SpacerTextARGB.green, JsonTheme.SpacerTextARGB.blue); 
+                Colours.Spacers.BackgroundColor = SColor.FromArgb(JsonTheme.SpacerBackgroundARGB.alpha, JsonTheme.SpacerBackgroundARGB.red, JsonTheme.SpacerBackgroundARGB.green, JsonTheme.SpacerBackgroundARGB.blue);
+                Colours.Spacers.HighlightedTextColor = SColor.FromArgb(JsonTheme.SpacerHighlightedTextARGB.alpha, JsonTheme.SpacerHighlightedTextARGB.red, JsonTheme.SpacerHighlightedTextARGB.green, JsonTheme.SpacerHighlightedTextARGB.blue);
+                Colours.Spacers.TextColor = SColor.FromArgb(JsonTheme.SpacerTextARGB.alpha, JsonTheme.SpacerTextARGB.red, JsonTheme.SpacerTextARGB.green, JsonTheme.SpacerTextARGB.blue);
                 // items
-                Colours.Items.HighlightColor = SColor.FromArgb(JsonTheme.ItemHighlightARGB.alpha, JsonTheme.ItemHighlightARGB.red, JsonTheme.ItemHighlightARGB.green, JsonTheme.ItemHighlightARGB.blue); 
-                Colours.Items.BackgroundColor = SColor.FromArgb(JsonTheme.ItemBackgroundARGB.alpha, JsonTheme.ItemBackgroundARGB.red, JsonTheme.ItemBackgroundARGB.green, JsonTheme.ItemBackgroundARGB.blue); 
-                Colours.Items.HighlightedTextColor = SColor.FromArgb(JsonTheme.ItemHighlightedTextARGB.alpha, JsonTheme.ItemHighlightedTextARGB.red, JsonTheme.ItemHighlightedTextARGB.green, JsonTheme.ItemHighlightedTextARGB.blue); 
-                Colours.Items.TextColor = SColor.FromArgb(JsonTheme.ItemTextARGB.alpha, JsonTheme.ItemTextARGB.red, JsonTheme.ItemTextARGB.green, JsonTheme.ItemTextARGB.blue); 
-                
+                Colours.Items.HighlightColor = SColor.FromArgb(JsonTheme.ItemHighlightARGB.alpha, JsonTheme.ItemHighlightARGB.red, JsonTheme.ItemHighlightARGB.green, JsonTheme.ItemHighlightARGB.blue);
+                Colours.Items.BackgroundColor = SColor.FromArgb(JsonTheme.ItemBackgroundARGB.alpha, JsonTheme.ItemBackgroundARGB.red, JsonTheme.ItemBackgroundARGB.green, JsonTheme.ItemBackgroundARGB.blue);
+                Colours.Items.HighlightedTextColor = SColor.FromArgb(JsonTheme.ItemHighlightedTextARGB.alpha, JsonTheme.ItemHighlightedTextARGB.red, JsonTheme.ItemHighlightedTextARGB.green, JsonTheme.ItemHighlightedTextARGB.blue);
+                Colours.Items.TextColor = SColor.FromArgb(JsonTheme.ItemTextARGB.alpha, JsonTheme.ItemTextARGB.red, JsonTheme.ItemTextARGB.green, JsonTheme.ItemTextARGB.blue);
+
+            }
+
+            Debug.WriteLine("MenuSettings Initialized");
+        }
+
+        internal static MenuSettings Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new MenuSettings();
+                }
             }
         }
+
+        public static int MaxItemsOnScreen = 9;
+        public static float FadingTime = 0.01f;
+        public static bool AlternativeTitle = true;
+        public static bool Glare = false;
+        public static bool Enabled3DAnimations = false;
+        public static bool MouseControlsEnabled = false;
+        public static bool MouseEdgeEnabled = false;
+        public static bool MouseWheelControlEnabled = true;
+        public static bool ControlDisablingEnabled = false;
+        public static bool EnableAnimation = false;
+        public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
+        public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
+
         public struct Colours
         {
             public struct Items {

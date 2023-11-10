@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class WorldOptionsMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu worldRelatedOptions = null;
 
         public WorldOptionsMenu()

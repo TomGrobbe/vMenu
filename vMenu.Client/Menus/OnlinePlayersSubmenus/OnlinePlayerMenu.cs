@@ -9,7 +9,6 @@ using CitizenFX.Core;
 
 using ScaleformUI.Menu;
 
-using vMenu.Client.Functions;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
@@ -17,8 +16,6 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 {
     public class OnlinePlayerMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu onlinePlayerMenu = null;
 
         public OnlinePlayerMenu()

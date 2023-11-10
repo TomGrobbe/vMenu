@@ -13,7 +13,10 @@ using Logger;
 
 using ScaleformUI.Menu;
 
+using vMenu.Client.Events;
 using vMenu.Client.Functions;
+using vMenu.Client.KeyMappings;
+using vMenu.Client.Settings;
 using vMenu.Shared.Enums;
 using vMenu.Shared.Objects;
 
@@ -23,10 +26,9 @@ namespace vMenu.Client
 {
     public class Main : BaseScript
     {
+        public static Main Instance { get; private set; }
         public static PlayerList PlayerList;
         public static List<KeyValuePair<OnlinePlayersCB, string>> OnlinePlayers = new List<KeyValuePair<OnlinePlayersCB, string>>();
-
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
 
         public static MenuAlign MenuAlign = MenuAlign.Left;
 
@@ -49,21 +51,32 @@ namespace vMenu.Client
         public Main()
         {
             PlayerList = Players;
+
             EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
 
-            MenuFunctions.SetBannerTexture();
+            Instance = this;
 
-            _ = new Menus.MainMenu();
-            _ = new Menus.OnlinePlayersMenu();
-            _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
-            _ = new Menus.BannedPlayersMenu();
-            _ = new Menus.PlayerOptionsMenu();
-            _ = new Menus.VehicleOptionsMenu();
-            _ = new Menus.WorldOptionsMenu();
-            _ = new Menus.VoiceChatOptionsMenu();
-            _ = new Menus.RecordingMenu();
-            _ = new Menus.MiscOptionsMenu();
-            _ = new Menus.AboutMenu();
+            Init();
+        }
+
+        public void Init()
+        {
+            _ = MenuEvents.Instance;
+        }
+
+        internal void AddEventHandler(string eventName, Delegate @delegate)
+        {
+            EventHandlers[eventName] += @delegate;
+        }
+
+        internal void AttachTick(Func<Task> task)
+        {
+            Tick += task;
+        }
+
+        internal void DetachTick(Func<Task> task)
+        {
+            Tick -= task;
         }
     }
 }

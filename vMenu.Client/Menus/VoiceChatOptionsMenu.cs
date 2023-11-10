@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class VoiceChatOptionsMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu voiceChatSettings = null;
 
         public VoiceChatOptionsMenu()

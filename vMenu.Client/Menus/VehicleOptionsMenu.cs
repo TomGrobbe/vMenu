@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus
 {
     public class VehicleOptionsMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu vehicleRelatedOptions = null;
 
         public VehicleOptionsMenu()

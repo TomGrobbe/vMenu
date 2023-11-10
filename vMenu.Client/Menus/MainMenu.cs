@@ -27,8 +27,6 @@ namespace vMenu.Client.Menus
 {
     public class MainMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu mainMenu = null;
 
         public MainMenu()
@@ -75,7 +73,7 @@ namespace vMenu.Client.Menus
             onlinePlayers.Activated += (sender, i) =>
             {
                 i.Label = "Loading Online Players";
-                MenuFunctions.UpdateOnlinePlayers(sender, i);
+                MenuFunctions.Instance.UpdateOnlinePlayers(sender, i);
             };
 
             bannedPlayers.Activated += (sender, i) =>

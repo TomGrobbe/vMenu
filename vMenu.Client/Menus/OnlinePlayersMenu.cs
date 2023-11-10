@@ -23,8 +23,6 @@ namespace vMenu.Client.Menus
 {
     public class OnlinePlayersMenu
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu onlinePlayersMenu = null;
 
         public OnlinePlayersMenu()

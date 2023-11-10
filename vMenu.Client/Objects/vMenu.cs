@@ -13,8 +13,6 @@ namespace vMenu.Client.Objects
 {
     public class vMenu
     {
-        private static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static string MenuName;
 
         public vMenu(string _menuName)
@@ -24,7 +22,7 @@ namespace vMenu.Client.Objects
 
         public UIMenu Create()
         {
-            return new UIMenu(Main.MenuBanner.BannerTitle, MenuName, MenuFunctions.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
+            return new UIMenu(Main.MenuBanner.BannerTitle, MenuName, MenuFunctions.Instance.GetMenuOffset(), Main.MenuBanner.TextureDictionary, Main.MenuBanner.TextureName, MenuSettings.Glare, MenuSettings.AlternativeTitle, MenuSettings.FadingTime)
             {
                 MaxItemsOnScreen = MenuSettings.MaxItemsOnScreen,
                 BuildingAnimation = MenuSettings.BuildingAnimation,
