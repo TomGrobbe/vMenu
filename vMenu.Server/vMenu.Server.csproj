@@ -51,6 +51,9 @@
     <Content Include="ResourceFiles\RichPresence.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ResourceFiles\MenuSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResourceFiles\stream\vmenu_textures.ytd">

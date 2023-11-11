@@ -17,7 +17,8 @@ files {
 	'stream/**/*',
 	'Theme.json',
 	'KeyMapping.json',
-	'RichPresence.json'
+	'RichPresence.json',
+	'MenuSettings.json'
 }
 
 --fxevents_debug_mode '1'
