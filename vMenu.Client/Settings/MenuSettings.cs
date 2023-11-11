@@ -23,6 +23,42 @@ namespace vMenu.Client.Settings
         private static readonly object _padlock = new();
         private static MenuSettings _instance;
 
+        public struct MenuSettingJson
+        {
+            public int MaxItemsOnScreen;
+            public float FadingTime;
+            public bool AlternativeTitle;
+            public bool Glare;
+            public bool Enabled3DAnimations;
+            public bool MouseControlsEnabled;
+            public bool MouseEdgeEnabled;
+            public bool MouseWheelControlEnabled;
+            public bool ControlDisablingEnabled;
+            public bool EnableAnimation;
+            public string BannerTitle;
+            public string TextureDictionary;
+            public string TextureName; 
+
+            public MenuSettingJson(int MaxItemsOnScreen, float FadingTime, bool AlternativeTitle, bool Glare, bool Enabled3DAnimations, bool MouseControlsEnabled, bool MouseEdgeEnabled, bool MouseWheelControlEnabled, bool ControlDisablingEnabled, bool EnableAnimation, string BannerTitle, string TextureDictionary, string TextureName)
+            {
+                this.MaxItemsOnScreen = MaxItemsOnScreen;
+                this.FadingTime = FadingTime;
+                this.AlternativeTitle = AlternativeTitle;
+                this.Glare = Glare;
+                this.Enabled3DAnimations = Enabled3DAnimations;
+                this.MouseControlsEnabled = MouseControlsEnabled;
+                this.MouseEdgeEnabled = MouseEdgeEnabled;
+                this.MouseWheelControlEnabled = MouseWheelControlEnabled;
+                this.ControlDisablingEnabled = ControlDisablingEnabled;
+                this.EnableAnimation = EnableAnimation;
+                this.BannerTitle = BannerTitle;
+                this.TextureDictionary = TextureDictionary;
+                this.TextureName = TextureName;
+            }
+        }
+
+
+
         public struct Theme
         {
             public string MenuTheme;
@@ -130,16 +166,19 @@ namespace vMenu.Client.Settings
             }
         }
 
-        public static int MaxItemsOnScreen = 9;
-        public static float FadingTime = 0.01f;
-        public static bool AlternativeTitle = true;
-        public static bool Glare = false;
-        public static bool Enabled3DAnimations = false;
-        public static bool MouseControlsEnabled = false;
-        public static bool MouseEdgeEnabled = false;
-        public static bool MouseWheelControlEnabled = true;
-        public static bool ControlDisablingEnabled = false;
-        public static bool EnableAnimation = false;
+        private static string JsonSettingsData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.json") ?? "{}";
+        private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonSettingsData);
+
+        public static int MaxItemsOnScreen = JsonSettings.MaxItemsOnScreen; 
+        public static float FadingTime = JsonSettings.FadingTime;
+        public static bool AlternativeTitle = JsonSettings.AlternativeTitle; 
+        public static bool Glare = JsonSettings.Glare; 
+        public static bool Enabled3DAnimations = JsonSettings.Enabled3DAnimations; 
+        public static bool MouseControlsEnabled = JsonSettings.MouseControlsEnabled; 
+        public static bool MouseEdgeEnabled = JsonSettings.MouseEdgeEnabled; 
+        public static bool MouseWheelControlEnabled = JsonSettings.MouseWheelControlEnabled; 
+        public static bool ControlDisablingEnabled = JsonSettings.ControlDisablingEnabled; 
+        public static bool EnableAnimation = JsonSettings.EnableAnimation; 
         public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
         public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
 

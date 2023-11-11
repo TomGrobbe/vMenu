@@ -1,0 +1,15 @@
+{
+    "MaxItemsOnScreen":9,
+    "FadingTime":0.01,
+    "AlternativeTitle":true,
+    "Glare":false,
+    "Enabled3DAnimations":false,
+    "MouseControlsEnabled":false,
+    "MouseEdgeEnabled":false,
+    "MouseWheelControlEnabled":true,
+    "ControlDisablingEnabled":false,
+    "EnableAnimation":false,
+    "BannerTitle":"vMenu ~y~Revamped",
+    "TextureDictionary":"vmenu_textures",
+    "TextureName":"menubanner"
+}

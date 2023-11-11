@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
@@ -25,16 +26,24 @@ namespace vMenu.Client.Menus
         public WorldOptionsMenu()
         {
             worldRelatedOptions = new Objects.vMenu("World Options").Create();
+            
+            UIMenuItem TimeOptionsButton = new UIMenuItem("Time Options", "Change the time, and edit other time related options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            TimeOptionsButton.SetRightLabel(">>>");
+            UIMenuItem WeatherOptionsButton = new UIMenuItem("Weather Options", "Change all weather related options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            WeatherOptionsButton.SetRightLabel(">>>");
 
-            UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
+
+            TimeOptionsButton.Activated += (sender, i) =>
             {
-                MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
-                HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
-                HighlightedTextColor = MenuSettings.Colours.Spacers.HighlightedTextColor,
-                TextColor = MenuSettings.Colours.Spacers.TextColor
+                sender.SwitchTo(WorldRelated.TimeOptions.Menu(), inheritOldMenuParams: true);
+            };
+            WeatherOptionsButton.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(WorldRelated.WeatherOptions.Menu(), inheritOldMenuParams: true);
             };
 
-            worldRelatedOptions.AddItem(button);
+            worldRelatedOptions.AddItem(TimeOptionsButton);
+            worldRelatedOptions.AddItem(WeatherOptionsButton);
 
             Main.Menus.Add(worldRelatedOptions);
         }
