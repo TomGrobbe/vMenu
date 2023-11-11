@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus.WorldRelated
 {
     public class WeatherOptions
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu WeatherOptionsMenu = null;
 
         public WeatherOptions()

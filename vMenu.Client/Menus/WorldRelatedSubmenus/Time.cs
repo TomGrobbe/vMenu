@@ -20,8 +20,6 @@ namespace vMenu.Client.Menus.WorldRelated
 {
     public class TimeOptions
     {
-        public static MenuFunctions MenuFunctions = new MenuFunctions();
-
         private static UIMenu TimeOptionsMenu = null;
 
         public TimeOptions()
