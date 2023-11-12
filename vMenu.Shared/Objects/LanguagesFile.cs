@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +22,7 @@ namespace vMenu.Shared.Objects
     {
         public string? Name;
         public string? Description;
-        public dynamic? DynamicDetails;
+        public Dictionary<string, string>? DynamicDetails;
     }
 
     public struct Notifications

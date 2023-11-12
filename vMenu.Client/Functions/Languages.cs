@@ -20,7 +20,7 @@ using vMenu.Shared.Objects;
 
 namespace vMenu.Client.Functions
 {
-    public class Languages : BaseScript
+    public class Languages
     {
         private static readonly object _padlock = new();
         private static Languages _instance;
@@ -30,7 +30,7 @@ namespace vMenu.Client.Functions
         private Languages()
         {
             string languageAbbrv = GetResourceMetadata(GetCurrentResourceName(), "language", 0);
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), $"/languages/{languageAbbrv}.json") ?? LoadResourceFile(GetCurrentResourceName(), $"/languages/en.json");
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), $"languages/{languageAbbrv}.json") ?? LoadResourceFile(GetCurrentResourceName(), $"languages/en.json");
             LanguagesFile LanguagesJson = JsonConvert.DeserializeObject<LanguagesFile>(JsonData);
 
             // Menu Info Format //
