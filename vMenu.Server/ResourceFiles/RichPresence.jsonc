@@ -1,7 +1,8 @@
 {
-	"1172907858199859271": { // App ID
+	/* Discord Application ID */
+	"1172907858199859271": {
 		"Enable": {
-			"toggle": true
+			"toggle": true /* Disable the vMenu Rich Presence by changing this to `false` */
 		},
 		"RichPresence": {
 			"text": "Playing in amazing FiveM server!"
