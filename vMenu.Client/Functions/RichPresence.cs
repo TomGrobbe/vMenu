@@ -23,42 +23,61 @@ namespace vMenu.Client.Functions
     {
     	public struct RichPresenceStruct
         {
+            public RichPresenceToggle Enable;
             public RichPresenceTextStruct RichPresence;
-			public RichPresenceButton ButtonOne;
+            public RichPresenceButton ButtonOne;
 			public RichPresenceButton ButtonTwo;
 			public RichPresenceImage SmallImage;
 			public RichPresenceImage LargeImage;
-            public RichPresenceStruct(RichPresenceTextStruct RichPresence, RichPresenceButton ButtonOne, RichPresenceButton ButtonTwo, RichPresenceImage SmallImage, RichPresenceImage LargeImage)
+
+            public RichPresenceStruct(RichPresenceToggle Enable, RichPresenceTextStruct RichPresence, RichPresenceButton ButtonOne, RichPresenceButton ButtonTwo, RichPresenceImage SmallImage, RichPresenceImage LargeImage)
             {
+                this.Enable = Enable;
                 this.RichPresence = RichPresence;
 				this.ButtonOne = ButtonOne;
 				this.ButtonTwo = ButtonTwo;
 				this.SmallImage = SmallImage;
 				this.LargeImage = LargeImage;
             }
-        }    	
-    	public struct RichPresenceTextStruct
+        }
+
+        public struct RichPresenceToggle
+        {
+            public bool toggle;
+
+            public RichPresenceToggle(bool toggle)
+            {
+                this.toggle = toggle;
+            }
+        }
+        
+        public struct RichPresenceTextStruct
         {
             public string text;
+
             public RichPresenceTextStruct(string text)
             {
                 this.text = text;
             }
         }
+
     	public struct RichPresenceButton
         {
             public string text;
             public string link;
+
             public RichPresenceButton(string text,string link)
             {
                 this.text = text;
                 this.link = link;
             }
         }
+
     	public struct RichPresenceImage
         {
             public string text;
             public string image;
+
             public RichPresenceImage(string text,string image)
             {
                 this.text = text;
@@ -66,36 +85,64 @@ namespace vMenu.Client.Functions
             }
         }
 
+        RichPresenceStruct JsonRichPresence;
+        string JsonRichPresenceAppId;
+
         public RichPresence ()
         {
-            Tick += DiscordRichPresence;
-        }
-        public async Task DiscordRichPresence()
-        {
             string JsonData = LoadResourceFile(GetCurrentResourceName(), "RichPresence.jsonc") ?? "{}";
-            var JsonRichPresence = JsonConvert.DeserializeObject<Dictionary<string, RichPresenceStruct>>(JsonData);
-            foreach (var RichPresenceData in JsonRichPresence)
+            Dictionary<string, RichPresenceStruct> JsonRichPresenceObj = JsonConvert.DeserializeObject<Dictionary<string, RichPresenceStruct>>(JsonData);
+            JsonRichPresence = JsonRichPresenceObj.FirstOrDefault().Value;
+
+            if (JsonRichPresenceObj.FirstOrDefault().Key != "")
             {
-            var data = RichPresenceData.Value;
-                if (RichPresenceData.Key != "")
+                if (JsonRichPresence.Enable.toggle != false)
                 {
-                    SetDiscordAppId(RichPresenceData.Key);
-                    if (data.RichPresence.text != "")
-                    SetRichPresence(data.RichPresence.text);
-                    if (data.ButtonOne.link != "" || data.ButtonOne.text != "" )
-                    SetDiscordRichPresenceAction(0, data.ButtonOne.text, data.ButtonOne.link);
-                    if (data.ButtonTwo.link != "" || data.ButtonTwo.text != "")
-                    SetDiscordRichPresenceAction(1, data.ButtonTwo.text, data.ButtonTwo.link);
-                    if (data.LargeImage.image != "")
-                    SetDiscordRichPresenceAsset(data.LargeImage.image);
-                    if (data.LargeImage.text != "")
-                    SetDiscordRichPresenceAssetText(data.LargeImage.text);
-                    if (data.SmallImage.image != "")
-                    SetDiscordRichPresenceAssetSmall(data.SmallImage.image);
-                    if (data.SmallImage.text != "")
-                    SetDiscordRichPresenceAssetSmallText(data.SmallImage.text);
+                    JsonRichPresenceAppId = JsonRichPresenceObj.FirstOrDefault().Key;
+                    Tick += DiscordRichPresence;
                 }
             }
+        }
+
+        public async Task DiscordRichPresence()
+        {
+            SetDiscordAppId(JsonRichPresenceAppId);
+
+            if (JsonRichPresence.RichPresence.text != "")
+            {
+                SetRichPresence(JsonRichPresence.RichPresence.text);
+            }
+
+            if (JsonRichPresence.ButtonOne.link != "" || JsonRichPresence.ButtonOne.text != "")
+            {
+                SetDiscordRichPresenceAction(0, JsonRichPresence.ButtonOne.text, JsonRichPresence.ButtonOne.link);
+            }
+
+            if (JsonRichPresence.ButtonTwo.link != "" || JsonRichPresence.ButtonTwo.text != "")
+            {
+                SetDiscordRichPresenceAction(1, JsonRichPresence.ButtonTwo.text, JsonRichPresence.ButtonTwo.link);
+            }
+
+            if (JsonRichPresence.LargeImage.image != "")
+            {
+                SetDiscordRichPresenceAsset(JsonRichPresence.LargeImage.image);
+            }
+
+            if (JsonRichPresence.LargeImage.text != "")
+            {
+                SetDiscordRichPresenceAssetText(JsonRichPresence.LargeImage.text);
+            }
+
+            if (JsonRichPresence.SmallImage.image != "")
+            {
+                SetDiscordRichPresenceAssetSmall(JsonRichPresence.SmallImage.image);
+            }
+
+            if (JsonRichPresence.SmallImage.text != "")
+            {
+                SetDiscordRichPresenceAssetSmallText(JsonRichPresence.SmallImage.text);
+            }
+
             await Delay(5000);
         }
 

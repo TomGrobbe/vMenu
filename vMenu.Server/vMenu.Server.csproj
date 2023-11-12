@@ -71,9 +71,6 @@
       <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ResourceFiles\languages\" />
-  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Server\netstandard2.0\" "$(SolutionDir)Build\[Resource]\vMenu\Server"
 xcopy /E /Y "$(SolutionDir)Build\[Resource]\vMenu\Server\ResourceFiles\" "$(SolutionDir)Build\[Resource]\vMenu"

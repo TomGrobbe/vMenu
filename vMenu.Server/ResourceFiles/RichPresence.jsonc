@@ -1,11 +1,26 @@
 {
-	"1172907858199859271" : { // App ID
-		"RichPresence":{"text":"vMenu Revamped"},
-		"ButtonOne":{"text":"Discord", "link":"https://discord.gg/QXr8N7wG"},
-		"ButtonTwo":{"text":"Github", "link":"https://github.com/TomGrobbe/vMenu/tree/revamped"},
-		"SmallImage": {"text":"Snaily", "image":"https://imgur.com/hvgCIFa.png"},
-		"LargeImage": {"text":"Vespura", "image":"https://imgur.com/CFMBy9A.png"},
-
+	"1172907858199859271": { // App ID
+		"Enable": {
+			"toggle": true
+		},
+		"RichPresence": {
+			"text": "Playing in amazing FiveM server!"
+		},
+		"ButtonOne": {
+			"text": "Discord",
+			"link": "https://discord.gg/QXr8N7wG"
+		},
+		"ButtonTwo": {
+			"text": "Github",
+			"link": "https://github.com/TomGrobbe/vMenu/tree/revamped"
+		},
+		"SmallImage": {
+			"text": "Snaily",
+			"image": "https://imgur.com/hvgCIFa.png"
+		},
+		"LargeImage": {
+			"text": "Vespura",
+			"image": "https://imgur.com/CFMBy9A.png"
+		}
 	}
-
 }
