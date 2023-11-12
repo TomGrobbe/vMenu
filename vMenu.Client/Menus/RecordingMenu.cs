@@ -26,8 +26,8 @@ namespace vMenu.Client.Menus
         {
             var MenuLanguage = Languages.Menus["RecordingMenu"];
 
-            AddTextEntryByHash(0x86F10CE6, MenuLanguage.Items["Others"].DynamicDetails.UploadToCfxVar ?? "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
-            AddTextEntry("ERROR_UPLOAD", MenuLanguage.Items["Others"].DynamicDetails.AreYouSure ?? "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
+            AddTextEntryByHash(0x86F10CE6, MenuLanguage.Items["Others"].DynamicDetails["UploadToCfxVar"] ?? "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
+            AddTextEntry("ERROR_UPLOAD", MenuLanguage.Items["Others"].DynamicDetails["AreYouSure"] ?? "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
             recordingMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Rockstar Editor Options").Create();
 

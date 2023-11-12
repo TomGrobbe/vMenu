@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,7 +58,6 @@ namespace vMenu.Client.Events
         {
             if (resource == GetCurrentResourceName())
             {
-                _ = Languages.Instance;
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;

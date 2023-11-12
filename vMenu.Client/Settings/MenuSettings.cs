@@ -104,12 +104,32 @@ namespace vMenu.Client.Settings
             }
         }
 
-        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "Themes.jsonc") ?? "{}";
-        private static Theme JsonTheme = JsonConvert.DeserializeObject<Theme>(JsonData);
-        private static string Themes = JsonTheme.MenuTheme;
+        private static string Themes;
+
+        private static string JsonSettingsData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.jsonc") ?? "{}";
+        private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonSettingsData);
+
+        public static int MaxItemsOnScreen = JsonSettings.MaxItemsOnScreen;
+        public static float FadingTime = JsonSettings.FadingTime;
+        public static bool AlternativeTitle = JsonSettings.AlternativeTitle;
+        public static bool Glare = JsonSettings.Glare;
+        public static bool Enabled3DAnimations = JsonSettings.Enabled3DAnimations;
+        public static bool MouseControlsEnabled = JsonSettings.MouseControlsEnabled;
+        public static bool MouseEdgeEnabled = JsonSettings.MouseEdgeEnabled;
+        public static bool MouseWheelControlEnabled = JsonSettings.MouseWheelControlEnabled;
+        public static bool ControlDisablingEnabled = JsonSettings.ControlDisablingEnabled;
+        public static bool EnableAnimation = JsonSettings.EnableAnimation;
+        public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
+        public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
 
         public MenuSettings()
         {
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "Themes.jsonc") ?? "{}";
+
+            Theme JsonTheme = JsonConvert.DeserializeObject<Theme>(JsonData);
+
+            Themes = JsonTheme.MenuTheme;
+
             if (Themes == "NativeUI")
             {
                 // spacers
@@ -167,22 +187,6 @@ namespace vMenu.Client.Settings
                 }
             }
         }
-
-        private static string JsonSettingsData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.json") ?? "{}";
-        private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonSettingsData);
-
-        public static int MaxItemsOnScreen = JsonSettings.MaxItemsOnScreen; 
-        public static float FadingTime = JsonSettings.FadingTime;
-        public static bool AlternativeTitle = JsonSettings.AlternativeTitle; 
-        public static bool Glare = JsonSettings.Glare; 
-        public static bool Enabled3DAnimations = JsonSettings.Enabled3DAnimations; 
-        public static bool MouseControlsEnabled = JsonSettings.MouseControlsEnabled; 
-        public static bool MouseEdgeEnabled = JsonSettings.MouseEdgeEnabled; 
-        public static bool MouseWheelControlEnabled = JsonSettings.MouseWheelControlEnabled; 
-        public static bool ControlDisablingEnabled = JsonSettings.ControlDisablingEnabled; 
-        public static bool EnableAnimation = JsonSettings.EnableAnimation; 
-        public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
-        public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
 
         public struct Colours
         {

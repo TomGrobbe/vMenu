@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
             onlinePlayerMenu.Windows.Clear();
             onlinePlayerMenu.MenuItems.Clear();
 
-            UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Player.Name}~h~", $"{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails.ServerIdVar ?? "Server Id"}: {player.Player.ServerId}\n{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails.PedHandleVar ?? "Ped Handle"}: {player.Player.CharacterHandle}", $"{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails.SteamIdVar ?? "Steam Id"}: {player.SteamIdentifier ?? "None"}\n{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails.DiscordIdVar ?? "Discord Id"}: {player.DiscordIdentifier ?? "None"}", new UIDetailImage()
+            UIMenuDetailsWindow playerDetails = new UIMenuDetailsWindow($"~h~{player.Player.Name}~h~", $"{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails["ServerIdVar"] ?? "Server Id"}: {player.Player.ServerId}\n{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails["PedHandleVar"] ?? "Ped Handle"}: {player.Player.CharacterHandle}", $"{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails["SteamIdVar"] ?? "Steam Id"}: {player.SteamIdentifier ?? "None"}\n{MenuLanguage.Items["PlayerDetailsWindow"].DynamicDetails["DiscordIdVar"] ?? "Discord Id"}: {player.DiscordIdentifier ?? "None"}", new UIDetailImage()
             {
                 Txd = texture,
                 Txn = texture,

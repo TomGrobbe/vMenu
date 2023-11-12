@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,7 +36,7 @@ namespace vMenu.Client
 
         public static List<UIMenu> Menus = new List<UIMenu>();
 
-        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.json") ?? "{}";
+        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.jsonc") ?? "{}";
         private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonData);
 
         public static long DuiObject = 0;
@@ -66,6 +66,7 @@ namespace vMenu.Client
 
         public void Init()
         {
+            _ = Languages.Instance;
             _ = MenuEvents.Instance;
         }
 
