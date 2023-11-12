@@ -49,8 +49,8 @@ namespace vMenu.Client
 
             // This will be used instead of the texture set above (only when set) - Link must be a static image or gif (.png, .jpg, .gif, etc...) //
             // The image/gif MUST be 288x130px //
-            // SET THIS AS null IF NOT USING //
-            //TextureUrl = "https://domain.com/image.png"
+            // COMMENT OUT THE LINE BELOW IF NOT USING //
+            //TextureUrl = JsonSettings.TextureUrl
         };
 
         public Main()

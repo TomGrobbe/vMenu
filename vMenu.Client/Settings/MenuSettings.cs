@@ -36,10 +36,11 @@ namespace vMenu.Client.Settings
             public bool ControlDisablingEnabled;
             public bool EnableAnimation;
             public string BannerTitle;
+            public string TextureUrl;
             public string TextureDictionary;
             public string TextureName; 
 
-            public MenuSettingJson(int MaxItemsOnScreen, float FadingTime, bool AlternativeTitle, bool Glare, bool Enabled3DAnimations, bool MouseControlsEnabled, bool MouseEdgeEnabled, bool MouseWheelControlEnabled, bool ControlDisablingEnabled, bool EnableAnimation, string BannerTitle, string TextureDictionary, string TextureName)
+            public MenuSettingJson(int MaxItemsOnScreen, float FadingTime, bool AlternativeTitle, bool Glare, bool Enabled3DAnimations, bool MouseControlsEnabled, bool MouseEdgeEnabled, bool MouseWheelControlEnabled, bool ControlDisablingEnabled, bool EnableAnimation, string BannerTitle, string TextureUrl, string TextureDictionary, string TextureName)
             {
                 this.MaxItemsOnScreen = MaxItemsOnScreen;
                 this.FadingTime = FadingTime;
@@ -52,6 +53,7 @@ namespace vMenu.Client.Settings
                 this.ControlDisablingEnabled = ControlDisablingEnabled;
                 this.EnableAnimation = EnableAnimation;
                 this.BannerTitle = BannerTitle;
+                this.TextureUrl = TextureUrl;
                 this.TextureDictionary = TextureDictionary;
                 this.TextureName = TextureName;
             }

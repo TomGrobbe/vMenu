@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -16,7 +16,6 @@ using ScaleformUI;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Menus;
-using vMenu.Client.Menus.OnlinePlayersSubmenus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
@@ -142,11 +141,14 @@ namespace vMenu.Client.Functions
 
         public void InitializeAllMenus()
         {
-            _ = new Menus.WorldRelated.WeatherOptions();
-            _ = new Menus.WorldRelated.TimeOptions();
-            _ = new Menus.PlayerRelated.WeaponOptions();
+            // Submenus //
+            _ = new Menus.WorldSubmenus.WeatherOptions();
+            _ = new Menus.WorldSubmenus.TimeOptions();
+            _ = new Menus.PlayerSubmenus.WeaponOptions();
+            _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
+
+            // Menus //
             _ = new OnlinePlayersMenu();
-            _ = new OnlinePlayerMenu();
             _ = new BannedPlayersMenu();
             _ = new PlayerOptionsMenu();
             _ = new VehicleOptionsMenu();
