@@ -10,19 +10,22 @@ using CitizenFX.Core;
 
 using ScaleformUI.Menu;
 
+using vMenu.Client.Functions;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
 namespace vMenu.Client.Menus.PlayerSubmenus
 {
-    public class WeaponOptions
+    public class WeaponOptionsMenu
     {
         private static UIMenu weaponOptionsMenu = null;
 
-        public WeaponOptions()
+        public WeaponOptionsMenu()
         {
-            weaponOptionsMenu = new Objects.vMenu("Weapon Related Options").Create();
+            var MenuLanguage = Languages.Menus["WeaponOptionsMenu"];
+
+            weaponOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Weapon Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

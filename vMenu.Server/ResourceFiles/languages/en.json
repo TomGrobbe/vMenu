@@ -1,0 +1,228 @@
+{
+  "Menus": {
+    "MainMenu": {
+      "Subtitle": "Main Menu",
+
+      "Items": {
+        "OnlinePlayersItem": {
+          "Name": "Online Players",
+          "Description": "All currently connected players."
+        },
+
+        "OnlinePlayersLoadingItem": {
+          "Name": "Loading Online Players",
+          "Description": ""
+        },
+
+        "BannedPlayersItem": {
+          "Name": "Banned Players",
+          "Description": "View and manage all banned players in this menu."
+        },
+
+        "PlayerOptionsItem": {
+          "Name": "Player Options",
+          "Description": "Open this submenu for player related subcategories."
+        },
+
+        "VehicleOptionsItem": {
+          "Name": "Vehicle Options",
+          "Description": "Open this submenu for vehicle related subcategories."
+        },
+
+        "WorldOptionsItem": {
+          "Name": "World Options",
+          "Description": "Open this submenu for world related subcategories."
+        },
+
+        "VoiceChatOptionsItem": {
+          "Name": "Voice Chat Options",
+          "Description": "Change Voice Chat options here."
+        },
+
+        "RockstarEditorOptionsItem": {
+          "Name": "R* Editor Options",
+          "Description": "In-game Rockstar Editor Options."
+        },
+
+        "MiscellaneousOptionsItem": {
+          "Name": "Miscellaneous Options",
+          "Description": "In-game Rockstar Editor Options."
+        },
+
+        "AboutvMenuItem": {
+          "Name": "About vMenu",
+          "Description": "Information about vMenu."
+        }
+      }
+    },
+
+    "OnlinePlayersMenu": {
+      "Subtitle": "Online Players",
+
+      "Items": {
+        "NoOnlinePlayersSpacer": {
+          "Name": "No Players Online"
+        },
+
+        "OnlinePlayerItem": {
+          "Description": "Click to view the options for this player"
+        }
+      }
+    },
+
+    "OnlinePlayerMenu": {
+      "Subtitle": "Online Player",
+
+      "Items": {
+        "SpectatePlayerItem": {
+          "Name": "Spectate Player",
+          "Description": "Click to spectate this player"
+        },
+
+        "PlayerDetailsWindow": {
+          "DynamicDetails": {
+            "ServerIdVar": "Server Id",
+            "PedHandleVar": "Ped Handle",
+            "SteamIdVar": "Steam Id",
+            "DiscordIdVar": "Discord Id"
+          }
+        }
+      }
+    },
+
+    "BannedPlayersMenu": {
+      "Subtitle": "Banned Players"
+    },
+
+    "PlayerOptionsMenu": {
+      "Subtitle": "Player Options",
+
+      "Items": {
+        "WeaponOptionsItem": {
+          "Name": "Weapon Options",
+          "Description": "Spawn weapons, refill ammo and more through this menu!"
+        },
+
+        "NoClipItem": {
+          "Name": "NoClip Toggle",
+          "Description": "Toggle to fly around in NoClip mode."
+        }
+      }
+    },
+
+    "WeaponOptionsMenu": {
+      "Subtitle": "Weapon Options"
+    },
+
+    "VehicleOptionsMenu": {
+      "Subtitle": "Vehicle Options"
+    },
+
+    "WorldOptionsMenu": {
+      "Subtitle": "World Options",
+
+      "Items": {
+        "TimeOptionsItem": {
+          "Name": "Time Options",
+          "Description": "Change the time, and edit other time related options."
+        },
+
+        "WeatherOptionsItem": {
+          "Name": "Weather Options",
+          "Description": "Change all weather related options here."
+        }
+      }
+    },
+
+    "TimeOptionsMenu": {
+      "Subtitle": "Time Options"
+    },
+
+    "WeatherOptionsMenu": {
+      "Subtitle": "Weather Options"
+    },
+
+    "VoiceChatOptionsMenu": {
+      "Subtitle": "Voice Chat Options"
+    },
+
+    "RecordingMenu": {
+      "Subtitle": "Rockstar Editor Options",
+
+      "Items": {
+        "TakePictureItem": {
+          "Name": "Take Photo",
+          "Description": "Takes a photo and saves it to the Pause Menu gallery."
+        },
+
+        "OpenPmGalleryItem": {
+          "Name": "Open Gallery",
+          "Description": "Opens the Pause Menu gallery."
+        },
+
+        "StartRecordingItem": {
+          "Name": "Start Recording",
+          "Description": "Start a new game recording using GTA V's built in recording."
+        },
+
+        "StopRecordingItem": {
+          "Name": "Stop Recording",
+          "Description": "Stop and save your current recording."
+        },
+
+        "OpenRockstarEditorItem": {
+          "Name": "Rockstar Editor",
+          "Description": "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues."
+        },
+
+        "Others": {
+          "DynamicDetails": {
+            "UploadToCfxVar": "Upload To Cfx.re Forum",
+            "AreYouSure": "Are you sure you want to upload this photo to Cfx.re forum?"
+          }
+        }
+      }
+    },
+
+    "MiscOptionsMenu": {
+      "Subtitle": "Miscellaneous Options",
+
+      "Items": {
+        "ToggleMenuAlignItem": {
+          "Name": "Toggle Menu Align",
+          "Description": "Change the Menu Alignment (Left | Right)"
+        }
+      }
+    },
+
+    "AboutMenu": {
+      "Subtitle": "About vMenu",
+
+      "Items": {
+        "VMenuVersionItem": {
+          "Name": "vMenu Version",
+          "Description": ""
+        },
+
+        "VMenuCreditsItem": {
+          "Name": "vMenu Credits",
+          "Description": "vMenu Revamped was created by XdGoldenTiger, Ricky, Katt, and the FiveM community"
+        },
+
+        "VMenuDevBoardItem": {
+          "Name": "Dev Board",
+          "Description": "https://trello.com/b/HpQdFX9J/"
+        },
+
+        "VMenuFounderItem": {
+          "Name": "vMenu Founder",
+          "Description": "https://vespura.com/"
+        }
+      }
+    }
+  },
+
+  "Notifications": {
+
+  }
+}

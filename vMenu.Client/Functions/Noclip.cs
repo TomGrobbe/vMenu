@@ -21,7 +21,7 @@ namespace vMenu.Client.Functions
         private static bool FollowCamMode { get; set; } = true;
         private static bool FlyCamMode { get; set; } = true;
 
-        public NoClip()
+        private NoClip()
         {
             Main.Instance.AttachTick(NoClipHandler);
             Debug.WriteLine("NoClip Initialized");

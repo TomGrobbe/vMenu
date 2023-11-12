@@ -27,12 +27,14 @@ namespace vMenu.Client.Menus
 
         public PlayerOptionsMenu()
         {
-            playerRelatedOptions = new Objects.vMenu("Player Options").Create();
+            var MenuLanguage = Languages.Menus["PlayerOptionsMenu"];
 
-            UIMenuItem WeaponOptionsButton = new UIMenuItem("Weapon Options", "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            playerRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "Player Options").Create();
+
+            UIMenuItem WeaponOptionsButton = new UIMenuItem(MenuLanguage.Items["WeaponOptionsItem"].Name ?? "Weapon Options", MenuLanguage.Items["WeaponOptionsItem"].Description ?? "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             WeaponOptionsButton.SetRightLabel(">>>");
 
-            UIMenuItem NoClip = new UIMenuItem("NoClip Toggle", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem NoClip = new UIMenuItem(MenuLanguage.Items["NoClipItem"].Name ?? "NoClip Toggle", MenuLanguage.Items["NoClipItem"].Description ?? "Toggle to fly around in NoClip mode.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
             playerRelatedOptions.AddItem(NoClip);
             playerRelatedOptions.AddItem(WeaponOptionsButton);
@@ -40,6 +42,7 @@ namespace vMenu.Client.Menus
             NoClip.Activated += (sender, i) =>
             {
                 NoClipEnabled = !NoClipEnabled;
+
                 if (!NoClipEnabled)
                 {
                     playerRelatedOptions.Visible = false;
@@ -49,7 +52,7 @@ namespace vMenu.Client.Menus
 
             WeaponOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(PlayerSubmenus.WeaponOptions.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(PlayerSubmenus.WeaponOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
 
             Main.Menus.Add(playerRelatedOptions);

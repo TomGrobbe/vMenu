@@ -31,33 +31,35 @@ namespace vMenu.Client.Menus
 
         public MainMenu()
         {
-            mainMenu = new Objects.vMenu("Main Menu").Create();
+            var MenuLanguage = Languages.Menus["MainMenu"];
 
-            UIMenuItem onlinePlayers = new UIMenuItem("Online Players", "All currently connected players", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            mainMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Main Menu").Create();
+
+            UIMenuItem onlinePlayers = new UIMenuItem(MenuLanguage.Items["OnlinePlayersItem"].Name ?? "Online Players", MenuLanguage.Items["OnlinePlayersItem"].Description ?? "All currently connected players.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             onlinePlayers.SetRightLabel(">>>");
 
-            UIMenuItem bannedPlayers = new UIMenuItem("Banned Players", "View and manage all banned players in this menu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem bannedPlayers = new UIMenuItem(MenuLanguage.Items["BannedPlayersItem"].Name ?? "Banned Players", MenuLanguage.Items["BannedPlayersItem"].Description ?? "View and manage all banned players in this menu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             bannedPlayers.SetRightLabel(">>>");
 
-            UIMenuItem playerRelatedOptions = new UIMenuItem("Player Options", "Open this submenu for player related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem playerRelatedOptions = new UIMenuItem(MenuLanguage.Items["PlayerOptionsItem"].Name ?? "Player Options", MenuLanguage.Items["PlayerOptionsItem"].Description ?? "Open this submenu for player related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             playerRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem vehicleRelatedOptions = new UIMenuItem("Vehicle Options", "Open this submenu for vehicle related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vehicleRelatedOptions = new UIMenuItem(MenuLanguage.Items["VehicleOptionsItem"].Name ?? "Vehicle Options", MenuLanguage.Items["VehicleOptionsItem"].Description ?? "Open this submenu for vehicle related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             vehicleRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem worldRelatedOptions = new UIMenuItem("World Options", "Open this submenu for world related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem worldRelatedOptions = new UIMenuItem(MenuLanguage.Items["WorldOptionsItem"].Name ?? "World Options", MenuLanguage.Items["WorldOptionsItem"].Description ?? "Open this submenu for world related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             worldRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem voiceChatSettings = new UIMenuItem("Voice Chat Options", "Change Voice Chat options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem voiceChatSettings = new UIMenuItem(MenuLanguage.Items["VoiceChatOptionsItem"].Name ?? "Voice Chat Options", MenuLanguage.Items["VoiceChatOptionsItem"].Description ?? "Change Voice Chat options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             voiceChatSettings.SetRightLabel(">>>");
 
-            UIMenuItem recordingOptions = new UIMenuItem("R* Editor Options", "In-game Rockstar Editor Options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem recordingOptions = new UIMenuItem(MenuLanguage.Items["RockstarEditorOptionsItem"].Name ?? "R* Editor Options", MenuLanguage.Items["RockstarEditorOptionsItem"].Description ?? "In-game Rockstar Editor Options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             recordingOptions.SetRightLabel(">>>");
 
-            UIMenuItem miscOptions = new UIMenuItem("Miscellaneous Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem miscOptions = new UIMenuItem(MenuLanguage.Items["MiscellaneousOptionsItem"].Name ?? "Miscellaneous Options", MenuLanguage.Items["MiscellaneousOptionsItem"].Description ?? "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             miscOptions.SetRightLabel(">>>");
 
-            UIMenuItem aboutvMenu = new UIMenuItem("About vMenu", "Information about vMenu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem aboutvMenu = new UIMenuItem(MenuLanguage.Items["AboutvMenuItem"].Name ?? "About vMenu", MenuLanguage.Items["AboutvMenuItem"].Description ?? "Information about vMenu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             aboutvMenu.SetRightLabel(">>>");
 
             mainMenu.AddItem(onlinePlayers);
@@ -72,7 +74,7 @@ namespace vMenu.Client.Menus
 
             onlinePlayers.Activated += (sender, i) =>
             {
-                i.Label = "Loading Online Players";
+                i.Label = MenuLanguage.Items["OnlinePlayersLoadingItem"].Name ?? "Loading Online Players";
                 MenuFunctions.Instance.UpdateOnlinePlayers(sender, i);
             };
 

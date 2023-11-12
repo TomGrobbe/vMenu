@@ -1,0 +1,27 @@
+{
+	/* Discord Application ID */
+	"1172907858199859271": {
+		"Enable": {
+			"toggle": true /* Disable the vMenu Rich Presence by changing this to `false` */
+		},
+		"RichPresence": {
+			"text": "Playing in amazing FiveM server!"
+		},
+		"ButtonOne": {
+			"text": "Discord",
+			"link": "https://discord.gg/QXr8N7wG"
+		},
+		"ButtonTwo": {
+			"text": "Github",
+			"link": "https://github.com/TomGrobbe/vMenu/tree/revamped"
+		},
+		"SmallImage": {
+			"text": "Snaily",
+			"image": "https://imgur.com/hvgCIFa.png"
+		},
+		"LargeImage": {
+			"text": "Vespura",
+			"image": "https://imgur.com/CFMBy9A.png"
+		}
+	}
+}

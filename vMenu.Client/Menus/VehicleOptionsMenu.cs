@@ -24,7 +24,9 @@ namespace vMenu.Client.Menus
 
         public VehicleOptionsMenu()
         {
-            vehicleRelatedOptions = new Objects.vMenu("Vehicle Options").Create();
+            var MenuLanguage = Languages.Menus["VehicleOptionsMenu"];
+
+            vehicleRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "Vehicle Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

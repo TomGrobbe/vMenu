@@ -1,9 +1,18 @@
-fx_version 'cerulean'
+﻿fx_version 'cerulean'
 game 'gta5'
 
-author 'Vespura, XdGoldenTiger, and the community'
-description 'vMenu Revamped - WIP'
+author 'Original vMenu Creator: Vespura'
+description 'vMenu Revamped was created by XdGoldenTiger, Ricky, Katt, and the FiveM community'
 version '1.0.0'
+
+--[[
+	Set the language for vMenu.
+	See /languages for all known vMenu languages.
+	Only enter the name of the file, not including the file extension!
+	✅ `language 'en'`
+	❎ `language 'en.json'`
+--]]
+language 'en'
 
 
 client_script 'Client/vMenu.Client.net.dll'
@@ -15,10 +24,6 @@ files {
 	'Client/Newtonsoft.Json.dll',
 	'Client/FxEvents.Client.dll',
 	'stream/**/*',
-	'Theme.json',
-	'KeyMapping.json',
-	'RichPresence.json',
-	'MenuSettings.json'
+	'Languages/*.json',
+	'*.jsonc',
 }
-
---fxevents_debug_mode '1'

@@ -18,13 +18,15 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus.WorldSubmenus
 {
-    public class TimeOptions
+    public class TimeOptionsMenu
     {
-        private static UIMenu TimeOptionsMenu = null;
+        private static UIMenu timeOptionsMenu = null;
 
-        public TimeOptions()
+        public TimeOptionsMenu()
         {
-            TimeOptionsMenu = new Objects.vMenu("Time Options").Create();
+            var MenuLanguage = Languages.Menus["TimeOptionsMenu"];
+
+            timeOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Time Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {
@@ -34,14 +36,14 @@ namespace vMenu.Client.Menus.WorldSubmenus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
-            TimeOptionsMenu.AddItem(button);
+            timeOptionsMenu.AddItem(button);
 
-            Main.Menus.Add(TimeOptionsMenu);
+            Main.Menus.Add(timeOptionsMenu);
         }
 
         public static UIMenu Menu()
         {
-            return TimeOptionsMenu;
+            return timeOptionsMenu;
         }
     }
 }

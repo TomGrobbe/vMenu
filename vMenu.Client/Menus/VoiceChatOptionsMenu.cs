@@ -24,7 +24,9 @@ namespace vMenu.Client.Menus
 
         public VoiceChatOptionsMenu()
         {
-            voiceChatSettings = new Objects.vMenu("Voice Chat Options").Create();
+            var MenuLanguage = Languages.Menus["VoiceChatOptionsMenu"];
+
+            voiceChatSettings = new Objects.vMenu(MenuLanguage.Subtitle ?? "Voice Chat Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

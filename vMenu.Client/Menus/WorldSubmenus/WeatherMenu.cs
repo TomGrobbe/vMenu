@@ -18,13 +18,15 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus.WorldSubmenus
 {
-    public class WeatherOptions
+    public class WeatherOptionsMenu
     {
-        private static UIMenu WeatherOptionsMenu = null;
+        private static UIMenu weatherOptionsMenu = null;
 
-        public WeatherOptions()
+        public WeatherOptionsMenu()
         {
-            WeatherOptionsMenu = new Objects.vMenu("Weather Options").Create();
+            var MenuLanguage = Languages.Menus["WeatherOptionsMenu"];
+
+            weatherOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Weather Options").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {
@@ -34,14 +36,14 @@ namespace vMenu.Client.Menus.WorldSubmenus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
-            WeatherOptionsMenu.AddItem(button);
+            weatherOptionsMenu.AddItem(button);
 
-            Main.Menus.Add(WeatherOptionsMenu);
+            Main.Menus.Add(weatherOptionsMenu);
         }
 
         public static UIMenu Menu()
         {
-            return WeatherOptionsMenu;
+            return weatherOptionsMenu;
         }
     }
 }

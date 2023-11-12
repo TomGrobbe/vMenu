@@ -25,22 +25,24 @@ namespace vMenu.Client.Menus
 
         public WorldOptionsMenu()
         {
-            worldRelatedOptions = new Objects.vMenu("World Options").Create();
+            var MenuLanguage = Languages.Menus["WorldOptionsMenu"];
+
+            worldRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "World Options").Create();
             
-            UIMenuItem TimeOptionsButton = new UIMenuItem("Time Options", "Change the time, and edit other time related options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem TimeOptionsButton = new UIMenuItem(MenuLanguage.Items["TimeOptionsItem"].Name ?? "Time Options", MenuLanguage.Items["TimeOptionsItem"].Description ?? "Change the time, and edit other time related options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             TimeOptionsButton.SetRightLabel(">>>");
-            UIMenuItem WeatherOptionsButton = new UIMenuItem("Weather Options", "Change all weather related options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem WeatherOptionsButton = new UIMenuItem(MenuLanguage.Items["WeatherOptionsItem"].Name ?? "Weather Options", MenuLanguage.Items["WeatherOptionsItem"].Description ?? "Change all weather related options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             WeatherOptionsButton.SetRightLabel(">>>");
 
 
             TimeOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(WorldSubmenus.TimeOptions.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(WorldSubmenus.TimeOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
 
             WeatherOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(WorldSubmenus.WeatherOptions.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(WorldSubmenus.WeatherOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
 
             worldRelatedOptions.AddItem(TimeOptionsButton);
