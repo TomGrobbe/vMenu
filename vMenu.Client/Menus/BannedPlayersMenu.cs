@@ -24,7 +24,9 @@ namespace vMenu.Client.Menus
 
         public BannedPlayersMenu()
         {
-            bannedPlayersMenu = new Objects.vMenu("Banned Players").Create();
+            var MenuLanguage = Languages.Menus["BannedPlayersMenu"];
+
+            bannedPlayersMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Banned Players").Create();
 
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {

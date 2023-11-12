@@ -27,9 +27,11 @@ namespace vMenu.Client.Menus
 
         public OnlinePlayersMenu()
         {
-            onlinePlayersMenu = new Objects.vMenu("Online Players").Create();
+            var MenuLanguage = Languages.Menus["OnlinePlayersMenu"];
 
-            UIMenuSeparatorItem onlinePlayerq = new UIMenuSeparatorItem("No Players Online", false)
+            onlinePlayersMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Online Players").Create();
+
+            UIMenuSeparatorItem noOnlinePlayersSpacer = new UIMenuSeparatorItem(MenuLanguage.Items["NoOnlinePlayersSpacer"].Name ?? "No Players Online", false)
             {
                 MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
@@ -37,7 +39,7 @@ namespace vMenu.Client.Menus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
-            onlinePlayersMenu.AddItem(onlinePlayerq);
+            onlinePlayersMenu.AddItem(noOnlinePlayersSpacer);
 
             Main.Menus.Add(onlinePlayersMenu);
         }
@@ -49,6 +51,8 @@ namespace vMenu.Client.Menus
 
         public static async void ReplaceMenuItems(UIMenu menu, UIMenuItem item)
         {
+            var MenuLanguage = Languages.Menus["OnlinePlayersMenu"];
+
             onlinePlayersMenu.MenuItems.Clear();
 
             List<KeyValuePair<OnlinePlayersCB, string>> OnlinePlayers = Main.OnlinePlayers;
@@ -59,7 +63,7 @@ namespace vMenu.Client.Menus
                 var playerData = player.Key;
                 var playerTexture = player.Value;
 
-                UIMenuItem onlinePlayer = new UIMenuItem(playerData.Player.Name, "Click to view the options for this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+                UIMenuItem onlinePlayer = new UIMenuItem(playerData.Player.Name, MenuLanguage.Items["OnlinePlayerItem"].Description ?? "Click to view the options for this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
                 onlinePlayer.SetRightLabel($"Server #{playerData.Player.ServerId}");
 
                 onlinePlayer.Activated += (sender, e) =>
@@ -78,7 +82,7 @@ namespace vMenu.Client.Menus
 
             await menu.SwitchTo(Menu(), inheritOldMenuParams: true);
 
-            item.Label = "Online Players";
+            item.Label = Languages.Menus["MainMenu"].Items["OnlinePlayersItem"].Name ?? "Online Players";
         }
     }
 }

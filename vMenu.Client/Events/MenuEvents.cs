@@ -58,12 +58,14 @@ namespace vMenu.Client.Events
         {
             if (resource == GetCurrentResourceName())
             {
+                _ = Languages.Instance;
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;
                 _ = NoClip.Instance;
                 _ = Notify.Instance;
                 _ = Subtitle.Instance;
+                _ = RichPresence.Instance;
 
                 MenuFunctions.Instance.SetBannerTexture();
                 MenuFunctions.Instance.InitializeAllMenus();

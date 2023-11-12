@@ -23,9 +23,11 @@ namespace vMenu.Client.Menus
 
         public MiscOptionsMenu()
         {
-            miscOptionsMenu = new Objects.vMenu("Miscellaneous Options").Create();
+            var MenuLanguage = Languages.Menus["MiscOptionsMenu"];
 
-            UIMenuItem toggleMenuAlign = new UIMenuItem("Toggle Menu Align", "Change the Menu Alignment (Left | Right)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            miscOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Miscellaneous Options").Create();
+
+            UIMenuItem toggleMenuAlign = new UIMenuItem(MenuLanguage.Items["ToggleMenuAlignItem"].Name ?? "Toggle Menu Align", MenuLanguage.Items["ToggleMenuAlignItem"].Description ?? "Change the Menu Alignment (Left | Right)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
             miscOptionsMenu.AddItem(toggleMenuAlign);
 

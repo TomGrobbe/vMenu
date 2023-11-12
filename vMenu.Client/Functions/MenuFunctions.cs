@@ -28,7 +28,7 @@ namespace vMenu.Client.Functions
         private static readonly object _padlock = new();
         private static MenuFunctions _instance;
 
-        public MenuFunctions()
+        private MenuFunctions()
         {
             Debug.WriteLine("MenuFunctions Initialized");
         }
@@ -142,9 +142,9 @@ namespace vMenu.Client.Functions
         public void InitializeAllMenus()
         {
             // Submenus //
-            _ = new Menus.WorldSubmenus.WeatherOptions();
-            _ = new Menus.WorldSubmenus.TimeOptions();
-            _ = new Menus.PlayerSubmenus.WeaponOptions();
+            _ = new Menus.WorldSubmenus.WeatherOptionsMenu();
+            _ = new Menus.WorldSubmenus.TimeOptionsMenu();
+            _ = new Menus.PlayerSubmenus.WeaponOptionsMenu();
             _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
 
             // Menus //

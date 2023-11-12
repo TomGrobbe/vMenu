@@ -24,7 +24,7 @@ namespace vMenu.Client.Functions
         private static readonly object _padlock = new();
         private static Notify _instance;
 
-        public Notify()
+        private Notify()
         {
             Debug.WriteLine("Notify Initialized");
         }
@@ -67,7 +67,7 @@ namespace vMenu.Client.Functions
         private static readonly object _padlock = new();
         private static Subtitle _instance;
 
-        public Subtitle()
+        private Subtitle()
         {
             Debug.WriteLine("Subtitle Initialized");
         }

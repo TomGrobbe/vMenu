@@ -19,7 +19,7 @@ using static vMenu.Client.KeyMappings.Commands;
 
 namespace vMenu.Client.Functions
 {
-    public class RichPresence : BaseScript
+    public class RichPresence
     {
     	public struct RichPresenceStruct
         {
@@ -85,10 +85,13 @@ namespace vMenu.Client.Functions
             }
         }
 
+        private static readonly object _padlock = new();
+        private static RichPresence _instance;
+
         RichPresenceStruct JsonRichPresence;
         string JsonRichPresenceAppId;
 
-        public RichPresence ()
+        private RichPresence ()
         {
             string JsonData = LoadResourceFile(GetCurrentResourceName(), "RichPresence.jsonc") ?? "{}";
             Dictionary<string, RichPresenceStruct> JsonRichPresenceObj = JsonConvert.DeserializeObject<Dictionary<string, RichPresenceStruct>>(JsonData);
@@ -99,7 +102,18 @@ namespace vMenu.Client.Functions
                 if (JsonRichPresence.Enable.toggle != false)
                 {
                     JsonRichPresenceAppId = JsonRichPresenceObj.FirstOrDefault().Key;
-                    Tick += DiscordRichPresence;
+                    Main.Instance.AttachTick(DiscordRichPresence);
+                }
+            }
+        }
+
+        internal static RichPresence Instance
+        {
+            get
+            {
+                lock (_padlock)
+                {
+                    return _instance ??= new RichPresence();
                 }
             }
         }
@@ -143,7 +157,7 @@ namespace vMenu.Client.Functions
                 SetDiscordRichPresenceAssetSmallText(JsonRichPresence.SmallImage.text);
             }
 
-            await Delay(5000);
+            await BaseScript.Delay(5000);
         }
 
     }
