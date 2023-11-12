@@ -37,7 +37,6 @@ namespace vMenu.Client.Menus
             {
                 sender.SwitchTo(WorldRelated.TimeOptions.Menu(), inheritOldMenuParams: true);
             };
-
             WeatherOptionsButton.Activated += (sender, i) =>
             {
                 sender.SwitchTo(WorldRelated.WeatherOptions.Menu(), inheritOldMenuParams: true);

@@ -32,10 +32,18 @@ namespace vMenu.Client.Menus
             UIMenuItem WeaponOptionsButton = new UIMenuItem("Weapon Options", "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             WeaponOptionsButton.SetRightLabel(">>>");
 
+            UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
+            {
+                MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
+                HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
+                HighlightedTextColor = MenuSettings.Colours.Spacers.HighlightedTextColor,
+                TextColor = MenuSettings.Colours.Spacers.TextColor
+            };
+
             UIMenuItem NoClip = new UIMenuItem("NoClip Toggle", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
+            playerRelatedOptions.AddItem(button);
             playerRelatedOptions.AddItem(NoClip);
-            playerRelatedOptions.AddItem(WeaponOptionsButton);
 
             NoClip.Activated += (sender, i) =>
             {
@@ -51,6 +59,8 @@ namespace vMenu.Client.Menus
             {
                 sender.SwitchTo(PlayerRelated.WeaponOptions.Menu(), inheritOldMenuParams: true); ;
             };
+
+            playerRelatedOptions.AddItem(WeaponOptionsButton);
 
             Main.Menus.Add(playerRelatedOptions);
         }
