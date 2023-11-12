@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
@@ -28,6 +29,9 @@ namespace vMenu.Client.Menus
         {
             playerRelatedOptions = new Objects.vMenu("Player Options").Create();
 
+            UIMenuItem WeaponOptionsButton = new UIMenuItem("Weapon Options", "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            WeaponOptionsButton.SetRightLabel(">>>");
+
             UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
             {
                 MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
@@ -46,10 +50,17 @@ namespace vMenu.Client.Menus
                 NoClipEnabled = !NoClipEnabled;
                 if (!NoClipEnabled)
                 {
-                  playerRelatedOptions.Visible = false;  
-                  playerRelatedOptions.Visible = true;  
-                }      
+                    playerRelatedOptions.Visible = false;
+                    playerRelatedOptions.Visible = true;
+                }
             };
+
+            WeaponOptionsButton.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(PlayerRelated.WeaponOptions.Menu(), inheritOldMenuParams: true); ;
+            };
+
+            playerRelatedOptions.AddItem(WeaponOptionsButton);
 
             Main.Menus.Add(playerRelatedOptions);
         }
