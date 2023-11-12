@@ -15,10 +15,9 @@ files {
 	'Client/Newtonsoft.Json.dll',
 	'Client/FxEvents.Client.dll',
 	'stream/**/*',
-	'Theme.json',
-	'KeyMapping.json',
-	'RichPresence.json',
-	'MenuSettings.json'
+	'Languages/*.json',
+	'Theme.jsonc',
+	'*.jsonc',
 }
 
 --fxevents_debug_mode '1'

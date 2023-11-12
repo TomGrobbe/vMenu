@@ -72,7 +72,7 @@ namespace vMenu.Client.Functions
         }
         public async Task DiscordRichPresence()
         {
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), "RichPresence.json") ?? "{}";
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "RichPresence.jsonc") ?? "{}";
             var JsonRichPresence = JsonConvert.DeserializeObject<Dictionary<string, RichPresenceStruct>>(JsonData);
             foreach (var RichPresenceData in JsonRichPresence)
             {

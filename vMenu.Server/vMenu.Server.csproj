@@ -42,16 +42,16 @@
     <Content Include="ResourceFiles\stream\ScaleformUI\scaleformui.gfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\Theme.json">
+    <Content Include="ResourceFiles\Themes.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\KeyMapping.json">
+    <Content Include="ResourceFiles\KeyMapping.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\RichPresence.json">
+    <Content Include="ResourceFiles\RichPresence.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\MenuSettings.json">
+    <Content Include="ResourceFiles\MenuSettings.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -70,6 +70,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ResourceFiles\languages\" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Server\netstandard2.0\" "$(SolutionDir)Build\[Resource]\vMenu\Server"
