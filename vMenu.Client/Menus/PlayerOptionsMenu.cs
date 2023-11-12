@@ -49,7 +49,7 @@ namespace vMenu.Client.Menus
 
             WeaponOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(PlayerSubmenus.WeaponOptions.Menu(), inheritOldMenuParams: true); ;
+                sender.SwitchTo(PlayerSubmenus.WeaponOptions.Menu(), inheritOldMenuParams: true);
             };
 
             Main.Menus.Add(playerRelatedOptions);
