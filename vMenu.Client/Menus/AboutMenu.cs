@@ -30,11 +30,13 @@ namespace vMenu.Client.Menus
 
             UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~h~~g~v{MenuFunctions.Version}~s~", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuDevBoard = new UIMenuItem("Dev Board", $"https://trello.com/b/HpQdFX9J/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
             aboutMenu.AddItem(vMenuVersion);
             aboutMenu.AddItem(vMenuCredits);
+            aboutMenu.AddItem(vMenuDevBoard);
             aboutMenu.AddItem(vMenuFounder);
 
             Main.Menus.Add(aboutMenu);

@@ -35,11 +35,12 @@ namespace vMenu.Client.Menus
 
             TimeOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(WorldRelated.TimeOptions.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(WorldSubmenus.TimeOptions.Menu(), inheritOldMenuParams: true);
             };
+
             WeatherOptionsButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(WorldRelated.WeatherOptions.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(WorldSubmenus.WeatherOptions.Menu(), inheritOldMenuParams: true);
             };
 
             worldRelatedOptions.AddItem(TimeOptionsButton);

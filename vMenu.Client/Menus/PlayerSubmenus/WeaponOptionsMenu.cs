@@ -14,7 +14,7 @@ using vMenu.Client.Menus.OnlinePlayersSubmenus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
-namespace vMenu.Client.Menus.PlayerRelated
+namespace vMenu.Client.Menus.PlayerSubmenus
 {
     public class WeaponOptions
     {

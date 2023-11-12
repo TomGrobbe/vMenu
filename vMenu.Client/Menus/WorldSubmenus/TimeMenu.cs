@@ -16,7 +16,7 @@ using vMenu.Client.Settings;
 
 using static CitizenFX.Core.Native.API;
 
-namespace vMenu.Client.Menus.WorldRelated
+namespace vMenu.Client.Menus.WorldSubmenus
 {
     public class TimeOptions
     {
