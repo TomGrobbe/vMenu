@@ -9,8 +9,8 @@ version '1.0.0'
 	Set the language for vMenu.
 	See /languages for all known vMenu languages.
 	Only enter the name of the file, not including the file extension!
-	✅ `language 'en'`
-	❎ `language 'en.json'`
+	Yes: `language 'en'`
+	NO: `language 'en.json'`
 --]]
 language 'en'
 
