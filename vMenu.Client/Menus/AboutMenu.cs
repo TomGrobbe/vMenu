@@ -29,7 +29,7 @@ namespace vMenu.Client.Menus
             aboutMenu = new Objects.vMenu("About vMenu").Create();
 
             UIMenuItem vMenuVersion = new UIMenuItem("About vMenu", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
+            vMenuVersion.SetRightLabel($"~h~~g~v{MenuFunctions.Version}~g~~h~");
             UIMenuItem vMenuCredits = new UIMenuItem("About vMenu / Credits", $"This server is using vMenu ~b~~h~v{MenuFunctions.Version}~h~~s~", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             UIMenuItem vMenuFounder = new UIMenuItem("vMenu Founder Info", "https://vespura.com/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 

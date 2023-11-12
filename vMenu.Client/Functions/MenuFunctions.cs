@@ -142,6 +142,9 @@ namespace vMenu.Client.Functions
 
         public void InitializeAllMenus()
         {
+            _ = new Menus.WorldRelated.WeatherOptions();
+            _ = new Menus.WorldRelated.TimeOptions();
+            _ = new Menus.PlayerRelated.WeaponOptions();
             _ = new OnlinePlayersMenu();
             _ = new OnlinePlayerMenu();
             _ = new BannedPlayersMenu();

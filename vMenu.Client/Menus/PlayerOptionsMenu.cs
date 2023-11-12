@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
@@ -28,27 +29,27 @@ namespace vMenu.Client.Menus
         {
             playerRelatedOptions = new Objects.vMenu("Player Options").Create();
 
-            UIMenuSeparatorItem button = new UIMenuSeparatorItem("Under Construction!", false)
-            {
-                MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
-                HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
-                HighlightedTextColor = MenuSettings.Colours.Spacers.HighlightedTextColor,
-                TextColor = MenuSettings.Colours.Spacers.TextColor
-            };
+            UIMenuItem WeaponOptionsButton = new UIMenuItem("Weapon Options", "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            WeaponOptionsButton.SetRightLabel(">>>");
 
             UIMenuItem NoClip = new UIMenuItem("NoClip Toggle", "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
-            playerRelatedOptions.AddItem(button);
             playerRelatedOptions.AddItem(NoClip);
+            playerRelatedOptions.AddItem(WeaponOptionsButton);
 
             NoClip.Activated += (sender, i) =>
             {
                 NoClipEnabled = !NoClipEnabled;
                 if (!NoClipEnabled)
                 {
-                  playerRelatedOptions.Visible = false;  
-                  playerRelatedOptions.Visible = true;  
-                }      
+                    playerRelatedOptions.Visible = false;
+                    playerRelatedOptions.Visible = true;
+                }
+            };
+
+            WeaponOptionsButton.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(PlayerRelated.WeaponOptions.Menu(), inheritOldMenuParams: true); ;
             };
 
             Main.Menus.Add(playerRelatedOptions);

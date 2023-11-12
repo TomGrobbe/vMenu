@@ -13,6 +13,8 @@ using Logger;
 
 using ScaleformUI.Menu;
 
+using Newtonsoft.Json;
+
 using vMenu.Client.Events;
 using vMenu.Client.Functions;
 using vMenu.Client.KeyMappings;
@@ -34,13 +36,16 @@ namespace vMenu.Client
 
         public static List<UIMenu> Menus = new List<UIMenu>();
 
+        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.json") ?? "{}";
+        private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonData);
+
         public static long DuiObject = 0;
         public static MenuBannerObject MenuBanner = new MenuBannerObject()
         {
-            BannerTitle = "vMenu ~y~Revamped",
+            BannerTitle = JsonSettings.BannerTitle,
 
-            TextureDictionary = "vmenu_textures",
-            TextureName = "menubanner",
+            TextureDictionary = JsonSettings.TextureDictionary,
+            TextureName = JsonSettings.TextureName,
 
             // This will be used instead of the texture set above (only when set) - Link must be a static image or gif (.png, .jpg, .gif, etc...) //
             // The image/gif MUST be 288x130px //
