@@ -1,0 +1,248 @@
+{
+  "Menus": {
+    "MainMenu": {
+      "Subtitle": "Menu principal",
+      "Items": {
+        "OnlinePlayersItem": {
+          "Name": "Joueurs en ligne",
+          "Description": "Tous les joueurs actuellement connectés."
+        },
+        "OnlinePlayersLoadingItem": {
+          "Name": "Chargement des joueurs en ligne",
+          "Description": ""
+        },
+        "BannedPlayersItem": {
+          "Name": "Joueurs bannis",
+          "Description": "Affichez et gérez tous les joueurs bannis dans ce menu."
+        },
+        "PlayerOptionsItem": {
+          "Name": "Options du joueur",
+          "Description": "Ouvrez ce sous-menu pour les sous-catégories liées aux joueurs."
+        },
+        "VehicleOptionsItem": {
+          "Name": "Options du véhicule",
+          "Description": "Ouvrez ce sous-menu pour les sous-catégories liées aux véhicules."
+        },
+        "WorldOptionsItem": {
+          "Name": "Options mondiales",
+          "Description": "Ouvrez ce sous-menu pour les sous-catégories liées au monde."
+        },
+        "VoiceChatOptionsItem": {
+          "Name": "Options de discussion vocale",
+          "Description": "Modifiez les options de chat vocal ici."
+        },
+        "RockstarEditorOptionsItem": {
+          "Name": "Options de l'éditeur R*",
+          "Description": "Options de l'éditeur Rockstar dans le jeu."
+        },
+        "MiscellaneousOptionsItem": {
+          "Name": "Options diverses",
+          "Description": "Options de l'éditeur Rockstar dans le jeu."
+        },
+        "AboutvMenuItem": {
+          "Name": "À propos de vMenu",
+          "Description": "Informations sur vMenu."
+        }
+      }
+    },
+    "OnlinePlayersMenu": {
+      "Subtitle": "Joueurs en ligne",
+      "Items": {
+        "NoOnlinePlayersSpacer": {
+          "Name": "Aucun joueur en ligne"
+        },
+        "OnlinePlayerItem": {
+          "Description": "Cliquez pour voir les options pour ce joueur"
+        }
+      }
+    },
+    "OnlinePlayerMenu": {
+      "Subtitle": "Joueur en ligne",
+      "Items": {
+        "SpectatePlayerItem": {
+          "Name": "Joueur spectateur",
+          "Description": "Cliquez pour regarder ce joueur"
+        },
+        "PlayerDetailsWindow": {
+          "DynamicDetails": {
+            "ServerIdVar": "Identifiant du serveur",
+            "PedHandleVar": "Poignée Ped",
+            "SteamIdVar": "ID de vapeur",
+            "DiscordIdVar": "Identifiant Discorde"
+          }
+        }
+      }
+    },
+    "BannedPlayersMenu": {
+      "Subtitle": "Joueurs bannis"
+    },
+    "PlayerOptionsMenu": {
+      "Subtitle": "Options du joueur",
+      "Items": {
+        "WeaponOptionsItem": {
+          "Name": "Options d'armes",
+          "Description": "Générez des armes, rechargez des munitions et bien plus encore grâce à ce menu !"
+        },
+        "NoClipItem": {
+          "Name": "Basculer sans clip",
+          "Description": "Basculez pour voler en mode NoClip."
+        }
+      }
+    },
+    "WeaponOptionsMenu": {
+      "Subtitle": "Options d'armes",
+      "Items": {
+        "GetAllWeaponsItem": {
+          "Name": "Obtenez toutes les armes",
+          "Description": "Obtenez toutes les armes."
+        },
+        "UnlimitedAmmoItem": {
+          "Name": "Munitions illimitées",
+          "Description": "Approvisionnement illimité en munitions."
+        },
+        "NoReloadItem": {
+          "Name": "Pas de rechargement",
+          "Description": "Ne rechargez jamais."
+        },
+        "SetAmmoItem": {
+          "Name": "Définir le nombre de munitions",
+          "Description": "Définissez la quantité de munitions dans toutes vos armes."
+        },
+        "RefillMaxAmmoItem": {
+          "Name": "Recharger toutes les munitions",
+          "Description": "Donnez à toutes vos armes un maximum de munitions."
+        },
+        "SpawnByNameItem": {
+          "Name": "Générer une arme par nom",
+          "Description": "Entrez un nom de mode d'arme à apparaître."
+        },
+        "AddonWeaponsItem": {
+          "Name": "Armes supplémentaires",
+          "Description": "Équipez/supprimez les armes supplémentaires disponibles sur ce serveur."
+        },
+        "WeaponCategoryItem": {
+          "Name": "↓ Catégories d'armes ↓"
+        },
+        "HandGunsItem": {
+          "Name": "Armes de poing",
+          "Description": ""
+        },
+        "RiflesItem": {
+          "Name": "Fusils d'assaut",
+          "Description": ""
+        },
+        "ShotgunsItem": {
+          "Name": "Fusils de chasse",
+          "Description": ""
+        },
+        "SmgsItem": {
+          "Name": "Mitrailleuses sous-/légères",
+          "Description": ""
+        },
+        "ThrowablesItem": {
+          "Name": "Objets jetables",
+          "Description": ""
+        },
+        "MeleeItem": {
+          "Name": "Mêlée",
+          "Description": ""
+        },
+        "HeavyItem": {
+          "Name": "Artillerie lourde",
+          "Description": ""
+        },
+        "SnipersItem": {
+          "Name": "Fusils de sniper",
+          "Description": ""
+        }
+      }
+    },
+    "VehicleOptionsMenu": {
+      "Subtitle": "Options du véhicule"
+    },
+    "WorldOptionsMenu": {
+      "Subtitle": "Options mondiales",
+      "Items": {
+        "TimeOptionsItem": {
+          "Name": "Options de temps",
+          "Description": "Modifiez l'heure et modifiez d'autres options liées à l'heure."
+        },
+        "WeatherOptionsItem": {
+          "Name": "Options météo",
+          "Description": "Modifiez toutes les options liées à la météo ici."
+        }
+      }
+    },
+    "TimeOptionsMenu": {
+      "Subtitle": "Options de temps"
+    },
+    "WeatherOptionsMenu": {
+      "Subtitle": "Options météo"
+    },
+    "VoiceChatOptionsMenu": {
+      "Subtitle": "Options de discussion vocale"
+    },
+    "RecordingMenu": {
+      "Subtitle": "Options de l'éditeur Rockstar",
+      "Items": {
+        "TakePictureItem": {
+          "Name": "Prendre une photo",
+          "Description": "Prend une photo et l'enregistre dans la galerie du menu Pause."
+        },
+        "OpenPmGalleryItem": {
+          "Name": "Ouvrir la galerie",
+          "Description": "Ouvre la galerie du menu Pause."
+        },
+        "StartRecordingItem": {
+          "Name": "Commencer l'enregistrement",
+          "Description": "Démarrez un nouvel enregistrement de jeu à l'aide de l'enregistrement intégré de GTA V."
+        },
+        "StopRecordingItem": {
+          "Name": "Arrête d'enregistrer",
+          "Description": "Arrêtez et sauvegardez votre enregistrement en cours."
+        },
+        "OpenRockstarEditorItem": {
+          "Name": "Éditeur Rockstar",
+          "Description": "Ouvrez l'éditeur Rockstar. Notez que vous souhaiterez peut-être quitter la session avant de le faire pour éviter certains problèmes."
+        },
+        "Others": {
+          "DynamicDetails": {
+            "UploadToCfxVar": "Télécharger sur le forum Cfx.re",
+            "AreYouSure": "Êtes-vous sûr de vouloir télécharger cette photo sur le forum Cfx.re ?"
+          }
+        }
+      }
+    },
+    "MiscOptionsMenu": {
+      "Subtitle": "Options diverses",
+      "Items": {
+        "ToggleMenuAlignItem": {
+          "Name": "Basculer l'alignement du menu",
+          "Description": "Modifier l'alignement du menu (gauche | droite)"
+        }
+      }
+    },
+    "AboutMenu": {
+      "Subtitle": "À propos de vMenu",
+      "Items": {
+        "VMenuVersionItem": {
+          "Name": "Version du menu virtuel",
+          "Description": ""
+        },
+        "VMenuCreditsItem": {
+          "Name": "Crédits vMenu",
+          "Description": "vMenu Revamped a été créé par XdGoldenTiger, Ricky, Katt et la communauté FiveM"
+        },
+        "VMenuDevBoardItem": {
+          "Name": "Conseil de développement",
+          "Description": "https://trello.com/b/HpQdFX9J/"
+        },
+        "VMenuFounderItem": {
+          "Name": "Fondateur de vMenu",
+          "Description": "https://vespura.com/"
+        }
+      }
+    }
+  },
+  "Notifications": {}
+}

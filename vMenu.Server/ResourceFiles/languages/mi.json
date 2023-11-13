@@ -1,0 +1,248 @@
+{
+  "Menus": {
+    "MainMenu": {
+      "Subtitle": "Tahua Matua",
+      "Items": {
+        "OnlinePlayersItem": {
+          "Name": "Kaitakaro ipurangi",
+          "Description": "Ko nga kaitakaro katoa e hono ana inaianei."
+        },
+        "OnlinePlayersLoadingItem": {
+          "Name": "Uta ana i nga Kaitakaro Online",
+          "Description": ""
+        },
+        "BannedPlayersItem": {
+          "Name": "Ko nga Kaitakaro kua whakakorehia",
+          "Description": "Tirohia me te whakahaere i nga kaitakaro kua aukatihia i tenei tahua."
+        },
+        "PlayerOptionsItem": {
+          "Name": "Kōwhiringa Kaitākaro",
+          "Description": "Whakatuwherahia tenei tahuaroto mo nga waahanga iti e pa ana ki te kaitakaro."
+        },
+        "VehicleOptionsItem": {
+          "Name": "Kōwhiringa Waka",
+          "Description": "Whakatuwheratia tenei tahuaroto mo nga waahanga iti e pa ana ki te waka."
+        },
+        "WorldOptionsItem": {
+          "Name": "Kōwhiringa Ao",
+          "Description": "Whakatuwheratia tenei tahuaroto mo nga waahanga iti e pa ana ki te ao."
+        },
+        "VoiceChatOptionsItem": {
+          "Name": "Kōwhiringa Kōrerorero Reo",
+          "Description": "Hurihia nga whiringa korerorero reo i konei."
+        },
+        "RockstarEditorOptionsItem": {
+          "Name": "R* Kōwhiringa Kaiwhakatika",
+          "Description": "I roto i te keemu Rockstar Editor Kōwhiringa."
+        },
+        "MiscellaneousOptionsItem": {
+          "Name": "Nga momo whiringa",
+          "Description": "I roto i te keemu Rockstar Editor Kōwhiringa."
+        },
+        "AboutvMenuItem": {
+          "Name": "Mō vMenu",
+          "Description": "Nga korero mo vMenu."
+        }
+      }
+    },
+    "OnlinePlayersMenu": {
+      "Subtitle": "Kaitakaro ipurangi",
+      "Items": {
+        "NoOnlinePlayersSpacer": {
+          "Name": "Karekau he Kaitakaro Online"
+        },
+        "OnlinePlayerItem": {
+          "Description": "Pāwhiri ki te tiro i ngā kōwhiringa mō tēnei kaitākaro"
+        }
+      }
+    },
+    "OnlinePlayerMenu": {
+      "Subtitle": "Kaipara ipurangi",
+      "Items": {
+        "SpectatePlayerItem": {
+          "Name": "Kaitakaro matakitaki",
+          "Description": "Paatohia ki te matakitaki i tenei kaitakaro"
+        },
+        "PlayerDetailsWindow": {
+          "DynamicDetails": {
+            "ServerIdVar": "Id Tūmau",
+            "PedHandleVar": "Kakau Ped",
+            "SteamIdVar": "Steam Id",
+            "DiscordIdVar": "Discord Id"
+          }
+        }
+      }
+    },
+    "BannedPlayersMenu": {
+      "Subtitle": "Ko nga Kaitakaro kua whakakorehia"
+    },
+    "PlayerOptionsMenu": {
+      "Subtitle": "Kōwhiringa Kaitākaro",
+      "Items": {
+        "WeaponOptionsItem": {
+          "Name": "Kōwhiringa patu",
+          "Description": "Whakapaihia nga patu, whakakiia te ammo me etahi atu ma tenei tahua!"
+        },
+        "NoClipItem": {
+          "Name": "NoClip Takahuri",
+          "Description": "Takahuri ki te rere huri noa i te aratau NoClip."
+        }
+      }
+    },
+    "WeaponOptionsMenu": {
+      "Subtitle": "Kōwhiringa patu",
+      "Items": {
+        "GetAllWeaponsItem": {
+          "Name": "Tikina nga patu katoa",
+          "Description": "Tikina nga patu katoa."
+        },
+        "UnlimitedAmmoItem": {
+          "Name": "Ammo mutunga kore",
+          "Description": "Te tuku matā mutunga kore."
+        },
+        "NoReloadItem": {
+          "Name": "Kore Uta Anō",
+          "Description": "Kaua rawa e utaina."
+        },
+        "SetAmmoItem": {
+          "Name": "Tautuhia te Tatau Ammo Katoa",
+          "Description": "Whakaritehia te nui o te ammo i roto i au patu katoa."
+        },
+        "RefillMaxAmmoItem": {
+          "Name": "Whakakiia nga Ammo Katoa",
+          "Description": "Homai o patu katoa max ammo."
+        },
+        "SpawnByNameItem": {
+          "Name": "Whakapaihia te Weapon Na Ingoa",
+          "Description": "Whakauruhia he ingoa aratau patu hei whakatipu."
+        },
+        "AddonWeaponsItem": {
+          "Name": "Nga patu a Addon",
+          "Description": "Whakakapi / tango i nga patu taapiri e waatea ana i runga i tenei tūmau."
+        },
+        "WeaponCategoryItem": {
+          "Name": "↓ Nga waahanga patu ↓"
+        },
+        "HandGunsItem": {
+          "Name": "Pu pu",
+          "Description": ""
+        },
+        "RiflesItem": {
+          "Name": "Raiwhara Huaki",
+          "Description": ""
+        },
+        "ShotgunsItem": {
+          "Name": "Pū pū",
+          "Description": ""
+        },
+        "SmgsItem": {
+          "Name": "Nga Pu Miihini Maama",
+          "Description": ""
+        },
+        "ThrowablesItem": {
+          "Name": "Whakataka",
+          "Description": ""
+        },
+        "MeleeItem": {
+          "Name": "Karere",
+          "Description": ""
+        },
+        "HeavyItem": {
+          "Name": "Nga patu Taamaha",
+          "Description": ""
+        },
+        "SnipersItem": {
+          "Name": "Raiwhara Sniper",
+          "Description": ""
+        }
+      }
+    },
+    "VehicleOptionsMenu": {
+      "Subtitle": "Nga Kōwhiringa Waka"
+    },
+    "WorldOptionsMenu": {
+      "Subtitle": "Kōwhiringa Ao",
+      "Items": {
+        "TimeOptionsItem": {
+          "Name": "Kōwhiringa Wā",
+          "Description": "Hurihia te wa, ka whakatika i etahi atu whiringa e pa ana ki te waa."
+        },
+        "WeatherOptionsItem": {
+          "Name": "Kōwhiringa Huarere",
+          "Description": "Hurihia nga whiringa huarere katoa i konei."
+        }
+      }
+    },
+    "TimeOptionsMenu": {
+      "Subtitle": "Kōwhiringa Wā"
+    },
+    "WeatherOptionsMenu": {
+      "Subtitle": "Kōwhiringa Huarere"
+    },
+    "VoiceChatOptionsMenu": {
+      "Subtitle": "Kōwhiringa Kōrerorero Reo"
+    },
+    "RecordingMenu": {
+      "Subtitle": "Kōwhiringa Kaiwhakatika Rockstar",
+      "Items": {
+        "TakePictureItem": {
+          "Name": "Tango Whakaahua",
+          "Description": "Ka tango whakaahua ka tiakina ki te taiwhanga Tahua Pause."
+        },
+        "OpenPmGalleryItem": {
+          "Name": "Tuwhera te Taiwhanga",
+          "Description": "Ka whakatuwhera i te taiwhanga Tahua Okioki."
+        },
+        "StartRecordingItem": {
+          "Name": "Tīmatahia te tuhi",
+          "Description": "Tīmatahia he rekoata keemu hou ma te whakamahi i te rekoata a GTA V."
+        },
+        "StopRecordingItem": {
+          "Name": "Kati te tuhi",
+          "Description": "Kati ka tiaki i to rekoata o naianei."
+        },
+        "OpenRockstarEditorItem": {
+          "Name": "Etita Rockstar",
+          "Description": "Whakatuwheratia te Rockstar Editor, mahara ka hiahia koe ki te whakamutu i te huihuinga i mua i te mahi i tenei hei aukati i etahi take."
+        },
+        "Others": {
+          "DynamicDetails": {
+            "UploadToCfxVar": "Tukuatu Ki Cfx.re Huinga",
+            "AreYouSure": "Kei te tino hiahia koe ki te tuku ake i tenei whakaahua ki te huinga Cfx.re?"
+          }
+        }
+      }
+    },
+    "MiscOptionsMenu": {
+      "Subtitle": "Nga momo whiringa",
+      "Items": {
+        "ToggleMenuAlignItem": {
+          "Name": "Tahua Takahuri Tiaro",
+          "Description": "Hurihia te Tirohanga Tahua (Mauī | Matau)"
+        }
+      }
+    },
+    "AboutMenu": {
+      "Subtitle": "Mō vMenu",
+      "Items": {
+        "VMenuVersionItem": {
+          "Name": "vMenu Putanga",
+          "Description": ""
+        },
+        "VMenuCreditsItem": {
+          "Name": "vMenu Whiwhinga",
+          "Description": "vMenu Revamped i hangaia e XdGoldenTiger, Ricky, Katt, me te hapori FiveM"
+        },
+        "VMenuDevBoardItem": {
+          "Name": "Poari Dev",
+          "Description": "https://trello.com/b/HpQdFX9J/"
+        },
+        "VMenuFounderItem": {
+          "Name": "vMenu Kaihanga",
+          "Description": "https://vespura.com/"
+        }
+      }
+    }
+  },
+  "Notifications": {}
+}

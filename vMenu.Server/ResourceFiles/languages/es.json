@@ -1,0 +1,248 @@
+{
+  "Menus": {
+    "MainMenu": {
+      "Subtitle": "Menú principal",
+      "Items": {
+        "OnlinePlayersItem": {
+          "Name": "Jugadores en línea",
+          "Description": "Todos los jugadores actualmente conectados."
+        },
+        "OnlinePlayersLoadingItem": {
+          "Name": "Cargando jugadores en línea",
+          "Description": ""
+        },
+        "BannedPlayersItem": {
+          "Name": "Jugadores prohibidos",
+          "Description": "Vea y administre todos los jugadores prohibidos en este menú."
+        },
+        "PlayerOptionsItem": {
+          "Name": "Opciones del jugador",
+          "Description": "Abra este submenú para subcategorías relacionadas con jugadores."
+        },
+        "VehicleOptionsItem": {
+          "Name": "Opciones de vehículos",
+          "Description": "Abra este submenú para subcategorías relacionadas con vehículos."
+        },
+        "WorldOptionsItem": {
+          "Name": "Opciones mundiales",
+          "Description": "Abra este submenú para ver subcategorías relacionadas con el mundo."
+        },
+        "VoiceChatOptionsItem": {
+          "Name": "Opciones de chat de voz",
+          "Description": "Cambie las opciones del chat de voz aquí."
+        },
+        "RockstarEditorOptionsItem": {
+          "Name": "Opciones del editor R*",
+          "Description": "Opciones del editor Rockstar en el juego."
+        },
+        "MiscellaneousOptionsItem": {
+          "Name": "Opciones varias",
+          "Description": "Opciones del editor Rockstar en el juego."
+        },
+        "AboutvMenuItem": {
+          "Name": "Acerca de vMenú",
+          "Description": "Información sobre vMenu."
+        }
+      }
+    },
+    "OnlinePlayersMenu": {
+      "Subtitle": "Jugadores en línea",
+      "Items": {
+        "NoOnlinePlayersSpacer": {
+          "Name": "No hay jugadores en línea"
+        },
+        "OnlinePlayerItem": {
+          "Description": "Haga clic para ver las opciones para este reproductor."
+        }
+      }
+    },
+    "OnlinePlayerMenu": {
+      "Subtitle": "Jugador en línea",
+      "Items": {
+        "SpectatePlayerItem": {
+          "Name": "Jugador espectador",
+          "Description": "Haz clic para observar a este jugador."
+        },
+        "PlayerDetailsWindow": {
+          "DynamicDetails": {
+            "ServerIdVar": "Identificación del servidor",
+            "PedHandleVar": "Mango de pedal",
+            "SteamIdVar": "Identificacion de Steam",
+            "DiscordIdVar": "Identificación de discordia"
+          }
+        }
+      }
+    },
+    "BannedPlayersMenu": {
+      "Subtitle": "Jugadores prohibidos"
+    },
+    "PlayerOptionsMenu": {
+      "Subtitle": "Opciones del jugador",
+      "Items": {
+        "WeaponOptionsItem": {
+          "Name": "Opciones de armas",
+          "Description": "¡Genera armas, recarga munición y más a través de este menú!"
+        },
+        "NoClipItem": {
+          "Name": "Alternar sin clip",
+          "Description": "Alternar para volar en modo NoClip."
+        }
+      }
+    },
+    "WeaponOptionsMenu": {
+      "Subtitle": "Opciones de armas",
+      "Items": {
+        "GetAllWeaponsItem": {
+          "Name": "Consigue todas las armas",
+          "Description": "Consigue todas las armas."
+        },
+        "UnlimitedAmmoItem": {
+          "Name": "Munición ilimitada",
+          "Description": "Suministro ilimitado de munición."
+        },
+        "NoReloadItem": {
+          "Name": "No recarga",
+          "Description": "Nunca recargar."
+        },
+        "SetAmmoItem": {
+          "Name": "Establecer toda la cantidad de munición",
+          "Description": "Establece la cantidad de munición en todas tus armas."
+        },
+        "RefillMaxAmmoItem": {
+          "Name": "Recarga toda la munición",
+          "Description": "Dale a todas tus armas la munición máxima."
+        },
+        "SpawnByNameItem": {
+          "Name": "Generar arma por nombre",
+          "Description": "Ingresa un nombre de modo de arma para generar."
+        },
+        "AddonWeaponsItem": {
+          "Name": "Armas adicionales",
+          "Description": "Equipar/eliminar armas adicionales disponibles en este servidor."
+        },
+        "WeaponCategoryItem": {
+          "Name": "↓ Categorías de armas ↓"
+        },
+        "HandGunsItem": {
+          "Name": "pistolas",
+          "Description": ""
+        },
+        "RiflesItem": {
+          "Name": "Rifles de asalto",
+          "Description": ""
+        },
+        "ShotgunsItem": {
+          "Name": "Escopetas",
+          "Description": ""
+        },
+        "SmgsItem": {
+          "Name": "Ametralladoras subligeras/ligeras",
+          "Description": ""
+        },
+        "ThrowablesItem": {
+          "Name": "Lanzables",
+          "Description": ""
+        },
+        "MeleeItem": {
+          "Name": "Pelea confusa",
+          "Description": ""
+        },
+        "HeavyItem": {
+          "Name": "Armas pesadas",
+          "Description": ""
+        },
+        "SnipersItem": {
+          "Name": "Rifles de francotirador",
+          "Description": ""
+        }
+      }
+    },
+    "VehicleOptionsMenu": {
+      "Subtitle": "Opciones de vehículos"
+    },
+    "WorldOptionsMenu": {
+      "Subtitle": "Opciones mundiales",
+      "Items": {
+        "TimeOptionsItem": {
+          "Name": "Opciones de tiempo",
+          "Description": "Cambie la hora y edite otras opciones relacionadas con la hora."
+        },
+        "WeatherOptionsItem": {
+          "Name": "Opciones meteorológicas",
+          "Description": "Cambie todas las opciones relacionadas con el clima aquí."
+        }
+      }
+    },
+    "TimeOptionsMenu": {
+      "Subtitle": "Opciones de tiempo"
+    },
+    "WeatherOptionsMenu": {
+      "Subtitle": "Opciones meteorológicas"
+    },
+    "VoiceChatOptionsMenu": {
+      "Subtitle": "Opciones de chat de voz"
+    },
+    "RecordingMenu": {
+      "Subtitle": "Opciones del editor Rockstar",
+      "Items": {
+        "TakePictureItem": {
+          "Name": "Tomar foto",
+          "Description": "Toma una foto y la guarda en la galería del menú de pausa."
+        },
+        "OpenPmGalleryItem": {
+          "Name": "Abrir galería",
+          "Description": "Abre la galería del menú de pausa."
+        },
+        "StartRecordingItem": {
+          "Name": "Empezar a grabar",
+          "Description": "Inicie una nueva grabación de juego usando la grabación integrada de GTA V."
+        },
+        "StopRecordingItem": {
+          "Name": "Para de grabar",
+          "Description": "Detenga y guarde su grabación actual."
+        },
+        "OpenRockstarEditorItem": {
+          "Name": "Editor estrella de rock",
+          "Description": "Abra el Editor Rockstar. Tenga en cuenta que es posible que desee salir de la sesión antes de hacer esto para evitar algunos problemas."
+        },
+        "Others": {
+          "DynamicDetails": {
+            "UploadToCfxVar": "Subir al foro Cfx.re",
+            "AreYouSure": "¿Estás seguro de que quieres subir esta foto al foro Cfx.re?"
+          }
+        }
+      }
+    },
+    "MiscOptionsMenu": {
+      "Subtitle": "Opciones varias",
+      "Items": {
+        "ToggleMenuAlignItem": {
+          "Name": "Alternar menú Alinear",
+          "Description": "Cambiar la alineación del menú (izquierda | derecha)"
+        }
+      }
+    },
+    "AboutMenu": {
+      "Subtitle": "Acerca de vMenú",
+      "Items": {
+        "VMenuVersionItem": {
+          "Name": "Versión del menú virtual",
+          "Description": ""
+        },
+        "VMenuCreditsItem": {
+          "Name": "Créditos del vMenú",
+          "Description": "vMenu Revamped fue creado por XdGoldenTiger, Ricky, Katt y la comunidad FiveM"
+        },
+        "VMenuDevBoardItem": {
+          "Name": "Junta de desarrollo",
+          "Description": "https://trello.com/b/HpQdFX9J/"
+        },
+        "VMenuFounderItem": {
+          "Name": "Fundador de vMenu",
+          "Description": "https://vespura.com/"
+        }
+      }
+    }
+  },
+  "Notifications": {}
+}
