@@ -111,7 +111,88 @@
     },
 
     "WeaponOptionsMenu": {
-      "Subtitle": "Weapon Options"
+      "Subtitle": "Weapon Options",
+
+      "Items": {
+        "GetAllWeaponsItem": {
+          "Name": "Get All Weapons",
+          "Description": "Get all weapons."
+        },
+
+        "UnlimitedAmmoItem": {
+          "Name": "Unlimited Ammo",
+          "Description": "Unlimited ammunition supply."
+        },
+
+        "NoReloadItem": {
+          "Name": "No Reload",
+          "Description": "Never reload."
+        },
+
+        "SetAmmoItem": {
+          "Name": "Set All Ammo Count",
+          "Description": "Set the amount of ammo in all your weapons."
+        },
+
+        "RefillMaxAmmoItem": {
+          "Name": "Refill All Ammo",
+          "Description": "Give all your weapons max ammo."
+        },
+
+        "SpawnByNameItem": {
+          "Name": "Spawn Weapon By Name",
+          "Description": "Enter a weapon mode name to spawn."
+        },
+
+        "AddonWeaponsItem": {
+          "Name": "Addon Weapons",
+          "Description": "Equip / remove addon weapons available on this server."
+        },
+
+        "WeaponCategoryItem": {
+          "Name": "↓ Weapon Categories ↓"
+        },
+
+        "HandGunsItem": {
+          "Name": "Handguns",
+          "Description": ""
+        },
+
+        "RiflesItem": {
+          "Name": "Assault Rifles",
+          "Description": ""
+        },
+
+        "ShotgunsItem": {
+          "Name": "Shotguns",
+          "Description": ""
+        },
+
+        "SmgsItem": {
+          "Name": "Sub-/Light Machine Guns",
+          "Description": ""
+        },
+
+        "ThrowablesItem": {
+          "Name": "Throwables",
+          "Description": ""
+        },
+
+        "MeleeItem": {
+          "Name": "Melee",
+          "Description": ""
+        },
+
+        "HeavyItem": {
+          "Name": "Heavy Weapons",
+          "Description": ""
+        },
+
+        "SnipersItem": {
+          "Name": "Sniper Rifles",
+          "Description": ""
+        }
+      }
     },
 
     "VehicleOptionsMenu": {
