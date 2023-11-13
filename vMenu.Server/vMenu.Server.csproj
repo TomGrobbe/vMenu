@@ -10,7 +10,11 @@
     <OutputPath>..\Build\Server\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="ResourceFiles\languages\de.json" />
     <None Remove="ResourceFiles\languages\en.json" />
+    <None Remove="ResourceFiles\languages\es.json" />
+    <None Remove="ResourceFiles\languages\fr.json" />
+    <None Remove="ResourceFiles\languages\mi.json" />
     <None Remove="ResourceFiles\stream\ScaleformUI\LobbyMenu.gfx" />
     <None Remove="ResourceFiles\stream\ScaleformUI\PauseMenu.gfx" />
     <None Remove="ResourceFiles\stream\ScaleformUI\PauseMenuHeader.gfx" />
@@ -25,7 +29,19 @@
     <Content Include="ResourceFiles\fxmanifest.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ResourceFiles\languages\de.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ResourceFiles\languages\en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\languages\es.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\languages\fr.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\languages\mi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="ResourceFiles\stream\ScaleformUI\LobbyMenu.gfx">
