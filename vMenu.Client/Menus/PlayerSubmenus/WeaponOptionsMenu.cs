@@ -44,8 +44,9 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             weaponOptionsMenu.AddItem(button);
             // Menu Items
 
-            UIMenuItem getAllWeapons = new UIMenuItem("Get All Weapons", "Get all weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem("Unlimited Ammo", UnlimitedAmmo, "Unlimited ammunition supply.")
+            UIMenuItem getAllWeapons = new UIMenuItem(MenuLanguage.Items["GetAllWeaponsItem"].Name ?? "Get All Weapons", MenuLanguage.Items["GetAllWeaponsItem"].Description ?? "Get all weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+
+            UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem(MenuLanguage.Items["UnlimitedAmmoItem"].Name ?? "Unlimited Ammo", UnlimitedAmmo, MenuLanguage.Items["UnlimitedAmmoItem"].Description ?? "Unlimited ammunition supply.")
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -53,16 +54,17 @@ namespace vMenu.Client.Menus.PlayerSubmenus
                 TextColor = MenuSettings.Colours.Items.TextColor
             };
 
-            UIMenuCheckboxItem noReload = new UIMenuCheckboxItem("No Reload", NoReload, "Never reload.")
+            UIMenuCheckboxItem noReload = new UIMenuCheckboxItem(MenuLanguage.Items["NoReloadItem"].Name ?? "No Reload", NoReload, MenuLanguage.Items["NoReloadItem"].Description ?? "Never reload.")
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
                 HighlightedTextColor = MenuSettings.Colours.Items.HighlightedTextColor,
                 TextColor = MenuSettings.Colours.Items.TextColor
             };
-            UIMenuItem setAmmo = new UIMenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            UIMenuItem refillMaxAmmo = new UIMenuItem("Refill All Ammo", "Give all your weapons max ammo.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            UIMenuItem spawnByName = new UIMenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+
+            UIMenuItem setAmmo = new UIMenuItem(MenuLanguage.Items["SetAmmoItem"].Name ?? "Set All Ammo Count", MenuLanguage.Items["SetAmmoItem"].Description ?? "Set the amount of ammo in all your weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem refillMaxAmmo = new UIMenuItem(MenuLanguage.Items["RefillMaxAmmoItem"].Name ?? "Refill All Ammo", MenuLanguage.Items["RefillMaxAmmoItem"].Description ?? "Give all your weapons max ammo.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem spawnByName = new UIMenuItem(MenuLanguage.Items["SpawnByNameItem"].Name ?? "Spawn Weapon By Name", MenuLanguage.Items["SpawnByNameItem"].Description ?? "Enter a weapon mode name to spawn.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
             weaponOptionsMenu.AddItem(getAllWeapons);
             weaponOptionsMenu.AddItem(noReload);
@@ -71,7 +73,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             weaponOptionsMenu.AddItem(spawnByName);
             // Add-on Weapons Menu
 
-            UIMenuItem addonWeaponsBtn = new UIMenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem addonWeaponsBtn = new UIMenuItem(MenuLanguage.Items["AddonWeaponsItem"].Name ?? "Addon Weapons", MenuLanguage.Items["AddonWeaponsItem"].Description ?? "Equip / remove addon weapons available on this server.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             //UIMenu addonWeaponsMenu = new UIMenu("Addon Weapons", "Equip/Remove Addon Weapons");
             addonWeaponsBtn.SetRightLabel("→→→");
             weaponOptionsMenu.AddItem(addonWeaponsBtn);
@@ -81,7 +83,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
 
             // Create Weapon Category Submenus
-            UIMenuSeparatorItem spacer = new UIMenuSeparatorItem("↓ Weapon Categories ↓", true)
+            UIMenuSeparatorItem spacer = new UIMenuSeparatorItem(MenuLanguage.Items["WeaponCategoryItem"].Name ?? "↓ Weapon Categories ↓", true)
             {
                 MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,
@@ -91,7 +93,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             weaponOptionsMenu.AddItem(spacer);
 
             //UIMenu handGuns = new UIMenu("Weapons", "Handguns");
-            UIMenuItem handGunsBtn = new UIMenuItem("Handguns")
+            UIMenuItem handGunsBtn = new UIMenuItem(MenuLanguage.Items["HandGunsItem"].Name ?? "Handguns", MenuLanguage.Items["HandGunsItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -102,7 +104,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
 
 
             //UIMenu rifles = new UIMenu("Weapons", "Assault Rifles");
-            UIMenuItem riflesBtn = new UIMenuItem("Assault Rifles")
+            UIMenuItem riflesBtn = new UIMenuItem(MenuLanguage.Items["RiflesItem"].Name ?? "Assault Rifles", MenuLanguage.Items["RiflesItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -111,7 +113,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
 
             //UIMenu shotguns = new UIMenu("Weapons", "Shotguns");
-            UIMenuItem shotgunsBtn = new UIMenuItem("Shotguns")
+            UIMenuItem shotgunsBtn = new UIMenuItem(MenuLanguage.Items["ShotgunsItem"].Name ?? "Shotguns", MenuLanguage.Items["ShotgunsItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -120,7 +122,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
 
             //UIMenu smgs = new UIMenu("Weapons", "Sub-/Light Machine Guns");
-            UIMenuItem smgsBtn = new UIMenuItem("Sub-/Light Machine Guns")
+            UIMenuItem smgsBtn = new UIMenuItem(MenuLanguage.Items["SmgsItem"].Name ?? "Sub-/Light Machine Guns", MenuLanguage.Items["SmgsItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -129,7 +131,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
 
             //UIMenu throwables = new UIMenu("Weapons", "Throwables");
-            UIMenuItem throwablesBtn = new UIMenuItem("Throwables")
+            UIMenuItem throwablesBtn = new UIMenuItem(MenuLanguage.Items["ThrowablesItem"].Name ?? "Throwables", MenuLanguage.Items["ThrowablesItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -137,7 +139,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
                 TextColor = MenuSettings.Colours.Items.TextColor
             };
             //UIMenu melee = new UIMenu("Weapons", "Melee");
-            UIMenuItem meleeBtn = new UIMenuItem("Melee")
+            UIMenuItem meleeBtn = new UIMenuItem(MenuLanguage.Items["MeleeItem"].Name ?? "Melee", MenuLanguage.Items["MeleeItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -145,7 +147,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
                 TextColor = MenuSettings.Colours.Items.TextColor
             };
             //UIMenu heavy = new UIMenu("Weapons", "Heavy Weapons");
-            UIMenuItem heavyBtn = new UIMenuItem("Heavy Weapons")
+            UIMenuItem heavyBtn = new UIMenuItem(MenuLanguage.Items["HeavyItem"].Name ?? "Heavy Weapons", MenuLanguage.Items["HeavyItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
@@ -153,7 +155,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
                 TextColor = MenuSettings.Colours.Items.TextColor
             };
             //UIMenu snipers = new UIMenu("Weapons", "Sniper Rifles");
-            UIMenuItem snipersBtn = new UIMenuItem("Sniper Rifles")
+            UIMenuItem snipersBtn = new UIMenuItem(MenuLanguage.Items["SnipersItem"].Name ?? "Sniper Rifles", MenuLanguage.Items["SnipersItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
             {
                 MainColor = MenuSettings.Colours.Items.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Items.HighlightColor,
