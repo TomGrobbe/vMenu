@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
+using FxEvents;
+
 using CitizenFX.Core;
 
 using vMenu.Client.Functions;
@@ -18,6 +22,7 @@ namespace vMenu.Client.Events
     {
         private static readonly object _padlock = new();
         private static MenuEvents _instance;
+        public static Dictionary<vMenu.Shared.Enums.PermissionList, bool> Permissions;
 
         public MenuEvents()
         {
@@ -54,10 +59,15 @@ namespace vMenu.Client.Events
             }
         }
 
-        private void OnClientResourceStart(string resource)
+        private async void OnClientResourceStart(string resource)
         {
+
             if (resource == GetCurrentResourceName())
             {
+                string permissions = await EventDispatcher.Get<string>("RequestPermissions");
+                //Debug.WriteLine(permissions);
+                Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.PermissionList, bool>>(permissions);
+                Debug.WriteLine($"{Permissions[Shared.Enums.PermissionList.WRMenu]}");
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;

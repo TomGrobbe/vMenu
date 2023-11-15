@@ -19,7 +19,10 @@ using ScaleformUI.Radio;
 using ScaleformUI.Scaleforms;
 
 using vMenu.Client.Functions;
+using vMenu.Client.Events;
 using vMenu.Client.Settings;
+
+using vMenu.Shared.Enums;
 
 using static CitizenFX.Core.Native.API;
 
@@ -75,7 +78,11 @@ namespace vMenu.Client.Menus
             mainMenu.AddItem(bannedPlayers);
             mainMenu.AddItem(playerRelatedOptions);
             mainMenu.AddItem(vehicleRelatedOptions);
+
+            Debug.WriteLine($"{MenuEvents.Permissions[PermissionList.WRMenu]}");
+            if (MenuEvents.Permissions[PermissionList.WRMenu])
             mainMenu.AddItem(worldRelatedOptions);
+
             mainMenu.AddItem(voiceChatSettings);
             mainMenu.AddItem(recordingOptions);
             mainMenu.AddItem(miscOptions);
