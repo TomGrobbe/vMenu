@@ -30,8 +30,10 @@ namespace vMenu.Client.Menus
             worldRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "World Options").Create();
             
             UIMenuItem TimeOptionsButton = new UIMenuItem(MenuLanguage.Items["TimeOptionsItem"].Name ?? "Time Options", MenuLanguage.Items["TimeOptionsItem"].Description ?? "Change the time, and edit other time related options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            TimeOptionsButton.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             TimeOptionsButton.SetRightLabel(">>>");
             UIMenuItem WeatherOptionsButton = new UIMenuItem(MenuLanguage.Items["WeatherOptionsItem"].Name ?? "Weather Options", MenuLanguage.Items["WeatherOptionsItem"].Description ?? "Change all weather related options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            WeatherOptionsButton.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             WeatherOptionsButton.SetRightLabel(">>>");
 
 

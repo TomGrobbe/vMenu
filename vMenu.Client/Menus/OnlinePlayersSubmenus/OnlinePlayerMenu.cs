@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using CitizenFX.Core;
 
+using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
@@ -43,6 +44,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
             });
 
             UIMenuItem spectatePlayer = new UIMenuItem(MenuLanguage.Items["SpectatePlayerItem"].Name ?? "Spectate Player", MenuLanguage.Items["SpectatePlayerItem"].Description ?? "Click to spectate this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            spectatePlayer.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             onlinePlayerMenu.AddWindow(playerDetails);
             onlinePlayerMenu.AddItem(spectatePlayer);

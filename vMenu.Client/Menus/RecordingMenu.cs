@@ -32,10 +32,15 @@ namespace vMenu.Client.Menus
             recordingMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Rockstar Editor Options").Create();
 
             UIMenuItem takePicture = new UIMenuItem(MenuLanguage.Items["TakePictureItem"].Name ?? "Take Photo", MenuLanguage.Items["TakePictureItem"].Description ?? "Takes a photo and saves it to the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            takePicture.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             UIMenuItem openPmGallery = new UIMenuItem(MenuLanguage.Items["OpenPmGalleryItem"].Name ?? "Open Gallery", MenuLanguage.Items["OpenPmGalleryItem"].Description ?? "Opens the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            openPmGallery.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             UIMenuItem startRecording = new UIMenuItem(MenuLanguage.Items["StartRecordingItem"].Name ?? "Start Recording", MenuLanguage.Items["StartRecordingItem"].Description ?? "Start a new game recording using GTA V's built in recording.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            startRecording.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             UIMenuItem stopRecording = new UIMenuItem(MenuLanguage.Items["StopRecordingItem"].Name ?? "Stop Recording", MenuLanguage.Items["StopRecordingItem"].Description ?? "Stop and save your current recording.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            stopRecording.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             UIMenuItem openRockstarEditor = new UIMenuItem(MenuLanguage.Items["OpenRockstarEditorItem"].Name ?? "Rockstar Editor", MenuLanguage.Items["OpenRockstarEditorItem"].Description ?? "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            
             recordingMenu.AddItem(takePicture);
             recordingMenu.AddItem(openPmGallery);
             recordingMenu.AddItem(startRecording);

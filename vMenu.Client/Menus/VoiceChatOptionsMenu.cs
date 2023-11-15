@@ -36,6 +36,8 @@ namespace vMenu.Client.Menus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
+            button.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+
             voiceChatSettings.AddItem(button);
 
             Main.Menus.Add(voiceChatSettings);

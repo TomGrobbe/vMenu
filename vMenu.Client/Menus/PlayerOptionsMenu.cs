@@ -32,9 +32,11 @@ namespace vMenu.Client.Menus
             playerRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "Player Options").Create();
 
             UIMenuItem WeaponOptionsButton = new UIMenuItem(MenuLanguage.Items["WeaponOptionsItem"].Name ?? "Weapon Options", MenuLanguage.Items["WeaponOptionsItem"].Description ?? "Spawn weapons, refill ammo and more through this menu!", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            WeaponOptionsButton.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             WeaponOptionsButton.SetRightLabel(">>>");
 
             UIMenuItem NoClip = new UIMenuItem(MenuLanguage.Items["NoClipItem"].Name ?? "NoClip Toggle", MenuLanguage.Items["NoClipItem"].Description ?? "Toggle to fly around in NoClip mode.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            NoClip.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             playerRelatedOptions.AddItem(NoClip);
             playerRelatedOptions.AddItem(WeaponOptionsButton);

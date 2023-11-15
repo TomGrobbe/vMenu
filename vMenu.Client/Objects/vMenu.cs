@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +33,7 @@ namespace vMenu.Client.Objects
                 MouseWheelControlEnabled = MenuSettings.MouseWheelControlEnabled,
                 ControlDisablingEnabled = MenuSettings.ControlDisablingEnabled,
                 EnableAnimation = MenuSettings.EnableAnimation,
+                DescriptionFont = new ScaleformUI.Elements.ItemFont(Main.CustomFontName, Main.CustomFontId),
             };
         }
     }
