@@ -10,9 +10,13 @@ namespace vMenu.Shared.Enums
     {
         Everything,
         Staff,
+        WRAll,
         WRMenu,
+        VOAll,
         VOMenu,
+        POAll,
         POMenu,
+        VCAll,
         VCMenu,
     }
 }

@@ -147,7 +147,26 @@ namespace vMenu.Client.Functions
         /// <returns></returns>
         public static bool IsAllowed(vMenu.Shared.Enums.PermissionList permission,  bool checkAnyway = false)
         {
-            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.PermissionList.Everything] || true;
+            var permStr = permission.ToString();
+            bool allvalue = false;
+            if (permStr.Substring(0, 2).ToUpper() == permStr.Substring(0, 2))
+            {
+                if (permStr.Substring(2) is not ("All" or "Menu"))
+                {
+                    string value = (permStr.Substring(0, 2) + "All").ToString();
+                    var enumval = Enum.TryParse(value, false, out vMenu.Shared.Enums.PermissionList perms);
+                    if (enumval)
+                    {
+                        allvalue = MenuEvents.Permissions[perms];
+                    }
+                    else
+                    {
+                        allvalue = false;
+                    }
+                }
+            }
+            Debug.WriteLine($"{allvalue}");
+            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.PermissionList.Everything] || true || allvalue;
         }
 
         public void InitializeAllMenus()
