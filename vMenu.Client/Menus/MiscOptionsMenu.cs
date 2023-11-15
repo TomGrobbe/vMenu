@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
+using vMenu.Shared.Objects;
 
 using static CitizenFX.Core.Native.API;
 
@@ -28,7 +30,9 @@ namespace vMenu.Client.Menus
             miscOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Miscellaneous Options").Create();
 
             UIMenuItem toggleMenuAlign = new UIMenuItem(MenuLanguage.Items["ToggleMenuAlignItem"].Name ?? "Toggle Menu Align", MenuLanguage.Items["ToggleMenuAlignItem"].Description ?? "Change the Menu Alignment (Left | Right)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            toggleMenuAlign.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             toggleMenuAlign.SetRightLabel(Main.MenuAlign.ToString());
+
             miscOptionsMenu.AddItem(toggleMenuAlign);
 
             toggleMenuAlign.Activated += (sender, i) =>

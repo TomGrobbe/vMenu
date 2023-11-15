@@ -36,6 +36,8 @@ namespace vMenu.Client.Menus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
+            button.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+
             bannedPlayersMenu.AddItem(button);
 
             Main.Menus.Add(bannedPlayersMenu);

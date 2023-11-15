@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -13,6 +13,7 @@ using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
+using vMenu.Client.Menus.OnlinePlayersSubmenus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
@@ -39,6 +40,8 @@ namespace vMenu.Client.Menus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
+            noOnlinePlayersSpacer.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+
             onlinePlayersMenu.AddItem(noOnlinePlayersSpacer);
 
             Main.Menus.Add(onlinePlayersMenu);
@@ -64,7 +67,9 @@ namespace vMenu.Client.Menus
                 var playerTexture = player.Value;
 
                 UIMenuItem onlinePlayer = new UIMenuItem(playerData.Player.Name, MenuLanguage.Items["OnlinePlayerItem"].Description ?? "Click to view the options for this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+                onlinePlayer.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
                 onlinePlayer.SetRightLabel($"Server #{playerData.Player.ServerId}");
+                onlinePlayer.RightLabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
                 onlinePlayer.Activated += (sender, e) =>
                 {

@@ -36,6 +36,8 @@ namespace vMenu.Client.Menus.WorldSubmenus
                 TextColor = MenuSettings.Colours.Spacers.TextColor
             };
 
+            button.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+
             timeOptionsMenu.AddItem(button);
 
             Main.Menus.Add(timeOptionsMenu);

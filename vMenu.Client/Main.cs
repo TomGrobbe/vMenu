@@ -39,6 +39,9 @@ namespace vMenu.Client
         private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.jsonc") ?? "{}";
         private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonData);
 
+        public static string CustomFontName = "";
+        public static int CustomFontId = 0;
+
         public static long DuiObject = 0;
         public static MenuBannerObject MenuBanner = new MenuBannerObject()
         {
@@ -58,6 +61,11 @@ namespace vMenu.Client
             PlayerList = Players;
 
             EventDispatcher.Initalize("vMenu:Inbound", "vMenu:Outbound", "vMenu:Signature");
+
+            RegisterFontFile("Quicksand");
+
+            CustomFontId = RegisterFontId("Quicksand");
+            CustomFontName = "Quicksand";
 
             Instance = this;
 

@@ -120,7 +120,7 @@ namespace vMenu.Client.Settings
         public static bool ControlDisablingEnabled = JsonSettings.ControlDisablingEnabled;
         public static bool EnableAnimation = JsonSettings.EnableAnimation;
         public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
-        public static ScrollingType ScrollingType = ScrollingType.ENDLESS;
+        public static ScrollingType ScrollingType = ScrollingType.CLASSIC;
 
         public MenuSettings()
         {
