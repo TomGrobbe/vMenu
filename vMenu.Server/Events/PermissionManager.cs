@@ -52,6 +52,15 @@ namespace vMenu.Server.Events
                 case "WR":
                     prefix += "WorldRelatedOptions";
                     break;
+                case "VO":
+                    prefix += "VehicleOptions";
+                    break;
+                case "PO":
+                    prefix += "PlayerOptions";
+                    break;
+                case "VC":
+                    prefix += "VoiceChat";
+                    break;
                 default:
                     return prefix + name;
             }

@@ -8,6 +8,11 @@ namespace vMenu.Shared.Enums
 {
     public enum PermissionList
     {
+        Everything,
+        Staff,
         WRMenu,
+        VOMenu,
+        POMenu,
+        VCMenu,
     }
 }

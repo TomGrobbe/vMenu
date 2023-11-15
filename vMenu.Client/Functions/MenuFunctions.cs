@@ -18,6 +18,7 @@ using ScaleformUI.Menu;
 using vMenu.Client.Menus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
+using vMenu.Client.Events;
 
 using static CitizenFX.Core.Native.API;
 
@@ -137,6 +138,16 @@ namespace vMenu.Client.Functions
             {
                 return new PointF(970, 20);
             }
+        }
+        /// <summary>
+        /// Public function to check if a permission is allowed.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <param name="checkAnyway">Legacy Support useless now.</param>
+        /// <returns></returns>
+        public static bool IsAllowed(vMenu.Shared.Enums.PermissionList permission,  bool checkAnyway = false)
+        {
+            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.PermissionList.Everything] || true;
         }
 
         public void InitializeAllMenus()
