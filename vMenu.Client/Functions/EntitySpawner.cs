@@ -84,7 +84,7 @@ namespace vMenu.Client.Functions
                 pos += new CitizenFX.Core.Vector3(0f, 0f, 1f);
             }
             float heading = 0;
-            heading = heading == -1 ? GetEntityHeading(Game.PlayerPed.Handle) + (spawnInside ? 0f : 90f) : heading;
+            heading = GetEntityHeading(Game.PlayerPed.Handle) + (spawnInside ? 0f : 90f);
             if (_previousVehicle != null)
             {
                 // And it's actually a vehicle (rather than another random entity type)

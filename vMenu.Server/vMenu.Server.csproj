@@ -79,6 +79,9 @@
     <Content Include="ResourceFiles\config\MenuSettings.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ResourceFiles\config\Default.jsonc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ResourceFiles\config\Permission.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
