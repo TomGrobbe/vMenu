@@ -38,8 +38,8 @@ namespace vMenu.Client.Menus.VehicleSubmenus
             UIMenuItem SpawnByName = new UIMenuItem("Spawn By Name", "Spawn Vehicle By Name.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             SpawnByName.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             SpawnByName.SetRightLabel(">>>");
-            UIMenuCheckboxItem replacevehicle = new UIMenuCheckboxItem("Replace Previous Vehicle", true);
-            UIMenuCheckboxItem spawninside = new UIMenuCheckboxItem("Spawn Inside Vehicle", true);
+            UIMenuCheckboxItem replacevehicle = new UIMenuCheckboxItem("Replace Previous Vehicle", UIMenuCheckboxStyle.Tick, true, "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuCheckboxItem spawninside = new UIMenuCheckboxItem("Spawn Inside Vehicle", UIMenuCheckboxStyle.Tick, true, "This will teleport you into the vehicle when you spawn it.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
 
 
             SpawnByName.Activated += async (sender, i) =>
