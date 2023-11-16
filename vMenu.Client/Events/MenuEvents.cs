@@ -67,7 +67,6 @@ namespace vMenu.Client.Events
                 string permissions = await EventDispatcher.Get<string>("RequestPermissions");
                 //Debug.WriteLine(permissions);
                 Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
-                Debug.WriteLine($"{Permissions[Shared.Enums.Permission.WRMenu]}");
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;

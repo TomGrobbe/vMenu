@@ -61,6 +61,9 @@ namespace vMenu.Server.Events
                 case "VC":
                     prefix += "VoiceChat";
                     break;
+                case "VS":
+                    prefix += "VehicleSpawner";
+                    break;
                 default:
                     return prefix + name;
             }

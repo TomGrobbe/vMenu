@@ -165,7 +165,6 @@ namespace vMenu.Client.Functions
                     }
                 }
             }
-            Debug.WriteLine($"{allvalue}");
             return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.Permission.Everything] || false || allvalue;
         }
 

@@ -34,7 +34,6 @@ namespace vMenu.Client.Functions
         
         public static async Task<int> SpawnVehicle(string vehicleName = "custom", bool spawnInside = false, bool replacePrevious = false)
         {
-            Debug.WriteLine(vehicleName);
         	if (vehicleName == "custom")
         	{
                 // Get the result.
@@ -59,7 +58,6 @@ namespace vMenu.Client.Functions
         }
         public static async Task<int> SpawnVehicle(uint vehicleHash, bool spawnInside, bool replacePrevious)
         {
-            Debug.WriteLine($"{vehicleHash}");
             if (Game.PlayerPed.IsInVehicle())
             {
                 var tmpOldVehicle = GetVehicle();
