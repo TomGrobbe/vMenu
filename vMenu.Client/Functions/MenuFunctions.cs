@@ -176,6 +176,7 @@ namespace vMenu.Client.Functions
             _ = new Menus.WorldSubmenus.TimeOptionsMenu();
             _ = new Menus.PlayerSubmenus.WeaponOptionsMenu();
             _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
+            _ = new Menus.VehicleSubmenus.VehicleSpawner();
 
             // Menus //
             _ = new OnlinePlayersMenu();
@@ -189,5 +190,41 @@ namespace vMenu.Client.Functions
             _ = new AboutMenu();
             _ = new MainMenu();
         }
+        #region GetUserInput
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <param name="defaultText"></param>
+        /// <param name="maxInputLength"></param>
+        /// <returns></returns>
+        public static async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 30)
+        {
+            // Create the window title string.
+            var spacer = "\t";
+            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength} Characters)");
+
+            // Display the input box.
+            DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
+            await BaseScript.Delay(0);
+            // Wait for a result.
+            while (true)
+            {
+                var keyboardStatus = UpdateOnscreenKeyboard();
+
+                switch (keyboardStatus)
+                {
+                    case 3: // not displaying input field anymore somehow
+                    case 2: // cancelled
+                        return null;
+                    case 1: // finished editing
+                        return GetOnscreenKeyboardResult();
+                    default:
+                        await BaseScript.Delay(0);
+                        break;
+                }
+            }
+        }
+        #endregion
     }
 }

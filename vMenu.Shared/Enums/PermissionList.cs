@@ -25,6 +25,37 @@ namespace vMenu.Shared.Enums
         VOMenu,
         #endregion
 
+        #region Vehicle Spawner
+        VSMenu,
+        VSAll,
+        VSDisableReplacePrevious,
+        VSSpawnByName,
+        VSAddon,
+        VSCompacts,
+        VSSedans,
+        VSSUVs,
+        VSCoupes,
+        VSMuscle,
+        VSSportsClassic,
+        VSSports,
+        VSSuper,
+        VSMotorcycles,
+        VSOffRoad,
+        VSIndustrial,
+        VSUtility,
+        VSVans,
+        VSCycles,
+        VSBoats,
+        VSHelicopters,
+        VSPlanes,
+        VSService,
+        VSEmergency,
+        VSMilitary,
+        VSCommercial,
+        VSTrains,
+        VSOpenWheel,
+        #endregion
+
         #region World Related Options
         WRAll,
         WRMenu,
