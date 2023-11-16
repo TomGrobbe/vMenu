@@ -44,7 +44,10 @@ namespace vMenu.Client.Menus.VehicleSubmenus
 
             SpawnByName.Activated += async (sender, i) =>
             {
+                Main.Instance.AttachTick(DisableControls);
                 await EntitySpawner.SpawnVehicle("custom", spawninside.Checked, replacevehicle.Checked);
+                Main.Instance.DetachTick(DisableControls);
+
             };
 
 
@@ -56,6 +59,12 @@ namespace vMenu.Client.Menus.VehicleSubmenus
             VehicleSpawnMenu.AddItem(button);
 
             Main.Menus.Add(VehicleSpawnMenu);
+        }
+
+        private async Task DisableControls()
+        {
+            DisableAllControlActions(0);
+            await Task.FromResult(0);  
         }
 
         public static UIMenu Menu()
