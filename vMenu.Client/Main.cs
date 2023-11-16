@@ -36,7 +36,7 @@ namespace vMenu.Client
 
         public static List<UIMenu> Menus = new List<UIMenu>();
 
-        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.jsonc") ?? "{}";
+        private static string JsonData = LoadResourceFile(GetCurrentResourceName(), "config/MenuSettings.jsonc") ?? "{}";
         private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonData);
 
         public static string CustomFontName = "";

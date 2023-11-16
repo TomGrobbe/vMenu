@@ -8,15 +8,31 @@ namespace vMenu.Shared.Enums
 {
     public enum PermissionList
     {
+        #region Everything else
         Everything,
         Staff,
-        WRAll,
-        WRMenu,
-        VOAll,
-        VOMenu,
+        Open,
+        NoClip,
+        #endregion
+
+        #region Player Options
         POAll,
         POMenu,
+        #endregion
+
+        #region Vehicle Options
+        VOAll,
+        VOMenu,
+        #endregion
+
+        #region World Related Options
+        WRAll,
+        WRMenu,
+        #endregion
+
+        #region Voice Chat
         VCAll,
         VCMenu,
+        #endregion
     }
 }

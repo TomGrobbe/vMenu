@@ -23,5 +23,5 @@ files {
     'Client/FxEvents.Client.dll',	
     'stream/**/*',	
     'languages/*.json',	
-    '*.jsonc'
+    'config/*.jsonc'
 }

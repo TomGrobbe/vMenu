@@ -93,7 +93,7 @@ namespace vMenu.Client.Functions
 
         private RichPresence ()
         {
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), "RichPresence.jsonc") ?? "{}";
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "config/RichPresence.jsonc") ?? "{}";
             Dictionary<string, RichPresenceStruct> JsonRichPresenceObj = JsonConvert.DeserializeObject<Dictionary<string, RichPresenceStruct>>(JsonData);
             JsonRichPresence = JsonRichPresenceObj.FirstOrDefault().Value;
 

@@ -67,16 +67,19 @@
     <Content Include="ResourceFiles\stream\ScaleformUI\scaleformui.gfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\Themes.jsonc">
+    <Content Include="ResourceFiles\config\Themes.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\KeyMapping.jsonc">
+    <Content Include="ResourceFiles\config\KeyMapping.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\RichPresence.jsonc">
+    <Content Include="ResourceFiles\config\RichPresence.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ResourceFiles\MenuSettings.jsonc">
+    <Content Include="ResourceFiles\config\MenuSettings.jsonc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceFiles\config\Permission.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
