@@ -74,7 +74,7 @@ namespace vMenu.Client.KeyMappings
 
         private InputArgument NoClip = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
-            if (IsAllowed(PermissionList.NoClip))
+            if (IsAllowed(Permission.NoClip))
             {
                 NoClipEnabled = !NoClipEnabled;
             }
@@ -88,7 +88,7 @@ namespace vMenu.Client.KeyMappings
             }
             else
             {
-                if (IsAllowed(PermissionList.Open))
+                if (IsAllowed(Permission.Open))
                 {
                     UIMenu Menu = MainMenu.Menu();
                     Menu.Visible = true;

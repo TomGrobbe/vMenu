@@ -145,7 +145,7 @@ namespace vMenu.Client.Functions
         /// <param name="permission"></param>
         /// <param name="checkAnyway">Legacy Support useless now.</param>
         /// <returns></returns>
-        public static bool IsAllowed(vMenu.Shared.Enums.PermissionList permission,  bool checkAnyway = false)
+        public static bool IsAllowed(vMenu.Shared.Enums.Permission permission,  bool checkAnyway = false)
         {
             var permStr = permission.ToString();
             bool allvalue = false;
@@ -154,7 +154,7 @@ namespace vMenu.Client.Functions
                 if (permStr.Substring(2) is not ("All" or "Menu"))
                 {
                     string value = (permStr.Substring(0, 2) + "All").ToString();
-                    var enumval = Enum.TryParse(value, false, out vMenu.Shared.Enums.PermissionList perms);
+                    var enumval = Enum.TryParse(value, false, out vMenu.Shared.Enums.Permission perms);
                     if (enumval)
                     {
                         allvalue = MenuEvents.Permissions[perms];
@@ -166,7 +166,7 @@ namespace vMenu.Client.Functions
                 }
             }
             Debug.WriteLine($"{allvalue}");
-            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.PermissionList.Everything] || false || allvalue;
+            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.Permission.Everything] || false || allvalue;
         }
 
         public void InitializeAllMenus()

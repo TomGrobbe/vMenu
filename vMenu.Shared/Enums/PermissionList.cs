@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vMenu.Shared.Enums
 {
-    public enum PermissionList
+    public enum Permission
     {
         #region Everything else
         Everything,

@@ -77,19 +77,19 @@ namespace vMenu.Client.Menus
 
             mainMenu.AddItem(onlinePlayers);
 
-            if (IsAllowed(PermissionList.Staff))
+            if (IsAllowed(Permission.Staff))
             mainMenu.AddItem(bannedPlayers);
 
-            if (IsAllowed(PermissionList.POMenu))
+            if (IsAllowed(Permission.POMenu))
             mainMenu.AddItem(playerRelatedOptions);
 
-            if (IsAllowed(PermissionList.VOMenu))            
+            if (IsAllowed(Permission.VOMenu))            
             mainMenu.AddItem(vehicleRelatedOptions);
 
-            if (IsAllowed(PermissionList.WRMenu))
+            if (IsAllowed(Permission.WRMenu))
             mainMenu.AddItem(worldRelatedOptions);
 
-            if (IsAllowed(PermissionList.VCMenu))
+            if (IsAllowed(Permission.VCMenu))
             mainMenu.AddItem(voiceChatSettings);
 
             mainMenu.AddItem(recordingOptions);

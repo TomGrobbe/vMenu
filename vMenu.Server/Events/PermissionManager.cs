@@ -29,19 +29,19 @@ namespace vMenu.Server.Events
         }
         private async Task<string> RequestPermissions([FromSource] int source)
         {
-            var perms = new Dictionary<vMenu.Shared.Enums.PermissionList, bool>();
-            foreach (var p in Enum.GetValues(typeof(vMenu.Shared.Enums.PermissionList)))
+            var perms = new Dictionary<vMenu.Shared.Enums.Permission, bool>();
+            foreach (var p in Enum.GetValues(typeof(vMenu.Shared.Enums.Permission)))
             {
-                var permission = GetAceName((vMenu.Shared.Enums.PermissionList)p);
-                if (!perms.ContainsKey((vMenu.Shared.Enums.PermissionList)p))
+                var permission = GetAceName((vMenu.Shared.Enums.Permission)p);
+                if (!perms.ContainsKey((vMenu.Shared.Enums.Permission)p))
                 {
-                    perms.Add((vMenu.Shared.Enums.PermissionList)p, IsPlayerAceAllowed(source.ToString(), permission)); // triggers IsAllowedServer
+                    perms.Add((vMenu.Shared.Enums.Permission)p, IsPlayerAceAllowed(source.ToString(), permission)); // triggers IsAllowedServer
                 }
             }
             await Delay(10);
             return JsonConvert.SerializeObject(perms);;
         }
-        private static string GetAceName(vMenu.Shared.Enums.PermissionList permission)
+        private static string GetAceName(vMenu.Shared.Enums.Permission permission)
         {
             var name = permission.ToString();
 
