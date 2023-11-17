@@ -92,7 +92,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
 
             // Create Weapon Category Submenus
-            UIMenuSeparatorItem spacer = new UIMenuSeparatorItem(MenuLanguage.Items["WeaponCategoryItem"].Name ?? "- Weapon Categories -", true)
+            UIMenuSeparatorItem spacer = new UIMenuSeparatorItem(MenuLanguage.Items["WeaponCategoryItem"].Name ?? "Weapon Categories", true)
             {
                 MainColor = MenuSettings.Colours.Spacers.BackgroundColor,
                 HighlightColor = MenuSettings.Colours.Spacers.HighlightColor,

@@ -19,6 +19,7 @@ using ScaleformUI.Radio;
 using ScaleformUI.Scaleforms;
 
 using vMenu.Client.Functions;
+using static vMenu.Client.Functions.MenuFunctions;
 using vMenu.Client.Events;
 using vMenu.Client.Settings;
 
@@ -75,15 +76,22 @@ namespace vMenu.Client.Menus
             aboutvMenu.SetRightLabel(">>>");
 
             mainMenu.AddItem(onlinePlayers);
+
+            if (IsAllowed(Permission.Staff))
             mainMenu.AddItem(bannedPlayers);
+
+            if (IsAllowed(Permission.POMenu))
             mainMenu.AddItem(playerRelatedOptions);
+
+            if (IsAllowed(Permission.VOMenu))            
             mainMenu.AddItem(vehicleRelatedOptions);
 
-            Debug.WriteLine($"{MenuEvents.Permissions[PermissionList.WRMenu]}");
-            if (MenuEvents.Permissions[PermissionList.WRMenu])
+            if (IsAllowed(Permission.WRMenu))
             mainMenu.AddItem(worldRelatedOptions);
 
+            if (IsAllowed(Permission.VCMenu))
             mainMenu.AddItem(voiceChatSettings);
+
             mainMenu.AddItem(recordingOptions);
             mainMenu.AddItem(miscOptions);
             mainMenu.AddItem(aboutvMenu);

@@ -16,6 +16,9 @@ using ScaleformUI.Menu;
 using vMenu.Client.Events;
 using vMenu.Client.Functions;
 using vMenu.Client.Menus;
+using static vMenu.Client.Functions.MenuFunctions;
+
+using vMenu.Shared.Enums;
 
 using static CitizenFX.Core.Native.API;
 
@@ -44,7 +47,7 @@ namespace vMenu.Client.KeyMappings
 
         private Commands()
         {
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), "KeyMapping.jsonc") ?? "{}";
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "config/KeyMapping.jsonc") ?? "{}";
             var JsonCommand = JsonConvert.DeserializeObject<Dictionary<string, CommandStructure>>(JsonData);
 
             foreach (var CommandData in JsonCommand)
@@ -71,7 +74,10 @@ namespace vMenu.Client.KeyMappings
 
         private InputArgument NoClip = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
-            NoClipEnabled = !NoClipEnabled;
+            if (IsAllowed(Permission.NoClip))
+            {
+                NoClipEnabled = !NoClipEnabled;
+            }
         });
 
         private InputArgument MenuOpen = new Action<int, List<object>, string>((source, args, rawCommand) =>
@@ -82,8 +88,11 @@ namespace vMenu.Client.KeyMappings
             }
             else
             {
-                UIMenu Menu = MainMenu.Menu();
-                Menu.Visible = true;
+                if (IsAllowed(Permission.Open))
+                {
+                    UIMenu Menu = MainMenu.Menu();
+                    Menu.Visible = true;
+                }
             }
         });
     }

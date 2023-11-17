@@ -106,7 +106,7 @@ namespace vMenu.Client.Settings
 
         private static string Themes;
 
-        private static string JsonSettingsData = LoadResourceFile(GetCurrentResourceName(), "MenuSettings.jsonc") ?? "{}";
+        private static string JsonSettingsData = LoadResourceFile(GetCurrentResourceName(), "config/MenuSettings.jsonc") ?? "{}";
         private static vMenu.Client.Settings.MenuSettings.MenuSettingJson JsonSettings = JsonConvert.DeserializeObject<vMenu.Client.Settings.MenuSettings.MenuSettingJson>(JsonSettingsData);
 
         public static int MaxItemsOnScreen = JsonSettings.MaxItemsOnScreen;
@@ -124,7 +124,7 @@ namespace vMenu.Client.Settings
 
         public MenuSettings()
         {
-            string JsonData = LoadResourceFile(GetCurrentResourceName(), "Themes.jsonc") ?? "{}";
+            string JsonData = LoadResourceFile(GetCurrentResourceName(), "config/Themes.jsonc") ?? "{}";
 
             Theme JsonTheme = JsonConvert.DeserializeObject<Theme>(JsonData);
 

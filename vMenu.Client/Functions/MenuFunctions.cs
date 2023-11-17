@@ -18,6 +18,7 @@ using ScaleformUI.Menu;
 using vMenu.Client.Menus;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
+using vMenu.Client.Events;
 
 using static CitizenFX.Core.Native.API;
 
@@ -138,6 +139,34 @@ namespace vMenu.Client.Functions
                 return new PointF(970, 20);
             }
         }
+        /// <summary>
+        /// Public function to check if a permission is allowed.
+        /// </summary>
+        /// <param name="permission"></param>
+        /// <param name="checkAnyway">Legacy Support useless now.</param>
+        /// <returns></returns>
+        public static bool IsAllowed(vMenu.Shared.Enums.Permission permission,  bool checkAnyway = false)
+        {
+            var permStr = permission.ToString();
+            bool allvalue = false;
+            if (permStr.Substring(0, 2).ToUpper() == permStr.Substring(0, 2))
+            {
+                if (permStr.Substring(2) is not ("All" or "Menu"))
+                {
+                    string value = (permStr.Substring(0, 2) + "All").ToString();
+                    var enumval = Enum.TryParse(value, false, out vMenu.Shared.Enums.Permission perms);
+                    if (enumval)
+                    {
+                        allvalue = MenuEvents.Permissions[perms];
+                    }
+                    else
+                    {
+                        allvalue = false;
+                    }
+                }
+            }
+            return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.Permission.Everything] || false || allvalue;
+        }
 
         public void InitializeAllMenus()
         {
@@ -146,6 +175,7 @@ namespace vMenu.Client.Functions
             _ = new Menus.WorldSubmenus.TimeOptionsMenu();
             _ = new Menus.PlayerSubmenus.WeaponOptionsMenu();
             _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
+            _ = new Menus.VehicleSubmenus.VehicleSpawner();
 
             // Menus //
             _ = new OnlinePlayersMenu();
@@ -159,5 +189,41 @@ namespace vMenu.Client.Functions
             _ = new AboutMenu();
             _ = new MainMenu();
         }
+        #region GetUserInput
+        /// <summary>
+        /// Get a user input text string.
+        /// </summary>
+        /// <param name="windowTitle"></param>
+        /// <param name="defaultText"></param>
+        /// <param name="maxInputLength"></param>
+        /// <returns></returns>
+        public static async Task<string> GetUserInput(string windowTitle = null, string defaultText = null, int maxInputLength = 30)
+        {
+            // Create the window title string.
+            var spacer = "\t";
+            AddTextEntry($"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", $"{windowTitle ?? "Enter"}:{spacer}(MAX {maxInputLength} Characters)");
+
+            // Display the input box.
+            DisplayOnscreenKeyboard(1, $"{GetCurrentResourceName().ToUpper()}_WINDOW_TITLE", "", defaultText ?? "", "", "", "", maxInputLength);
+            await BaseScript.Delay(0);
+            // Wait for a result.
+            while (true)
+            {
+                var keyboardStatus = UpdateOnscreenKeyboard();
+
+                switch (keyboardStatus)
+                {
+                    case 3: // not displaying input field anymore somehow
+                    case 2: // cancelled
+                        return null;
+                    case 1: // finished editing
+                        return GetOnscreenKeyboardResult();
+                    default:
+                        await BaseScript.Delay(0);
+                        break;
+                }
+            }
+        }
+        #endregion
     }
 }

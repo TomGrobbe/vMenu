@@ -22,7 +22,7 @@ namespace vMenu.Client.Events
     {
         private static readonly object _padlock = new();
         private static MenuEvents _instance;
-        public static Dictionary<vMenu.Shared.Enums.PermissionList, bool> Permissions;
+        public static Dictionary<vMenu.Shared.Enums.Permission, bool> Permissions;
 
         public MenuEvents()
         {
@@ -66,8 +66,7 @@ namespace vMenu.Client.Events
             {
                 string permissions = await EventDispatcher.Get<string>("RequestPermissions");
                 //Debug.WriteLine(permissions);
-                Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.PermissionList, bool>>(permissions);
-                Debug.WriteLine($"{Permissions[Shared.Enums.PermissionList.WRMenu]}");
+                Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;
