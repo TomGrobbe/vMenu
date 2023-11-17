@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,7 +69,110 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     }
                 }
             }
-
+            var speedValues = new float[23]
+{
+                44.9374657f,
+                50.0000038f,
+                48.862133f,
+                48.1321335f,
+                50.7077942f,
+                51.3333359f,
+                52.3922348f,
+                53.86687f,
+                52.03867f,
+                49.2241631f,
+                39.6176529f,
+                37.5559425f,
+                42.72843f,
+                21.0f,
+                45.0f,
+                65.1952744f,
+                109.764259f,
+                42.72843f,
+                56.5962219f,
+                57.5398865f,
+                43.3140678f,
+                26.66667f,
+                53.0537224f
+};
+            var accelerationValues = new float[23]
+            {
+                0.34f,
+                0.29f,
+                0.335f,
+                0.28f,
+                0.395f,
+                0.39f,
+                0.66f,
+                0.42f,
+                0.425f,
+                0.475f,
+                0.21f,
+                0.3f,
+                0.32f,
+                0.17f,
+                18.0f,
+                5.88f,
+                21.0700016f,
+                0.33f,
+                14.0f,
+                6.86f,
+                0.32f,
+                0.2f,
+                0.76f
+            };
+            var brakingValues = new float[23]
+            {
+                0.72f,
+                0.95f,
+                0.85f,
+                0.9f,
+                1.0f,
+                1.0f,
+                1.3f,
+                1.25f,
+                1.52f,
+                1.1f,
+                0.6f,
+                0.7f,
+                0.8f,
+                3.0f,
+                0.4f,
+                3.5920403f,
+                20.58f,
+                0.9f,
+                2.93960738f,
+                3.9472363f,
+                0.85f,
+                5.0f,
+                1.3f
+            };
+            var tractionValues = new float[23]
+            {
+                2.3f,
+                2.55f,
+                2.3f,
+                2.6f,
+                2.625f,
+                2.65f,
+                2.8f,
+                2.782f,
+                2.9f,
+                2.95f,
+                2.0f,
+                3.3f,
+                2.175f,
+                2.05f,
+                0.0f,
+                1.6f,
+                2.15f,
+                2.55f,
+                2.57f,
+                3.7f,
+                2.05f,
+                2.5f,
+                3.2925f
+            };
             for (var cat = 0; cat < 23; cat++)
             {
                 var categoryMenu = new Objects.vMenu(GetLabelText($"VEH_CLASS_{cat}")).Create();
@@ -103,7 +207,19 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     };   
                     carBtn.SetRightLabel($"({veh.Key})");
 
-                    
+                    UIMenuStatisticsPanel vehstatistics = new UIMenuStatisticsPanel();
+                    carBtn.AddPanel(vehstatistics);
+                    var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(veh.Value), 0f, speedValues[cat], 0f, 1f)*100;
+                    var acceleration = Map(GetVehicleModelAcceleration(veh.Value), 0f, accelerationValues[cat], 0f, 1f)*100;
+                    var maxBraking = Map(GetVehicleModelMaxBraking(veh.Value), 0f, brakingValues[cat], 0f, 1f)*100;
+                    var maxTraction = Map(GetVehicleModelMaxTraction(veh.Value), 0f, tractionValues[cat], 0f, 1f)*100;
+                    vehstatistics.AddStatistics("~b~Top Speed", topSpeed);
+                    vehstatistics.AddStatistics("~y~Acceleration", acceleration);
+                    vehstatistics.AddStatistics("~g~Max Braking", maxBraking);
+                    vehstatistics.AddStatistics("~q~Max Traction", maxTraction);
+
+
+                   
                     carBtn.Activated += async (sender, i) =>
                     {
                         await EntitySpawner.SpawnVehicle(i.ItemData, spawninside.Checked, replacevehicle.Checked);
@@ -148,5 +264,35 @@ namespace vMenu.Client.Menus.VehicleSubmenus
         {
             return VehicleSpawnMenu;
         }
+
+        #region Map (math util) function
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static float Map(float value, float min_in, float max_in, float min_out, float max_out)
+        {
+            return ((value - min_in) * (max_out - min_out) / (max_in - min_in)) + min_out;
+        }
+
+        /// <summary>
+        /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="min_in">The minimum range value of the value.</param>
+        /// <param name="max_in">The max range value of the value.</param>
+        /// <param name="min_out">The min output range value.</param>
+        /// <param name="max_out">The max output range value.</param>
+        /// <returns></returns>
+        public static double Map(double value, double min_in, double max_in, double min_out, double max_out)
+        {
+            return ((value - min_in) * (max_out - min_out) / (max_in - min_in)) + min_out;
+        }
+        #endregion
     }
 }
