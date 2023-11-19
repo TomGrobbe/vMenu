@@ -9,6 +9,8 @@
   "MouseWheelControlEnabled": true,
   "ControlDisablingEnabled": false,
   "EnableAnimation": false,
+  "ResetCursor": false,
+  "LeftClickControl": true,
   "BannerTitle": "vMenu ~y~Revamped",
   "TextureUrl": "https://image.com/image.png",
   "TextureDictionary": "vmenu_textures",

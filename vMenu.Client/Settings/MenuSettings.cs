@@ -35,12 +35,14 @@ namespace vMenu.Client.Settings
             public bool MouseWheelControlEnabled;
             public bool ControlDisablingEnabled;
             public bool EnableAnimation;
+            public bool ResetCursor;
+            public bool LeftClickControl;
             public string BannerTitle;
             public string TextureUrl;
             public string TextureDictionary;
             public string TextureName; 
 
-            public MenuSettingJson(int MaxItemsOnScreen, float FadingTime, bool AlternativeTitle, bool Glare, bool Enabled3DAnimations, bool MouseControlsEnabled, bool MouseEdgeEnabled, bool MouseWheelControlEnabled, bool ControlDisablingEnabled, bool EnableAnimation, string BannerTitle, string TextureUrl, string TextureDictionary, string TextureName)
+            public MenuSettingJson(int MaxItemsOnScreen, float FadingTime, bool AlternativeTitle, bool Glare, bool Enabled3DAnimations, bool MouseControlsEnabled, bool MouseEdgeEnabled, bool MouseWheelControlEnabled, bool ControlDisablingEnabled, bool EnableAnimation, bool ResetCursor, bool LeftClickControl, string BannerTitle, string TextureUrl, string TextureDictionary, string TextureName)
             {
                 this.MaxItemsOnScreen = MaxItemsOnScreen;
                 this.FadingTime = FadingTime;
@@ -52,6 +54,8 @@ namespace vMenu.Client.Settings
                 this.MouseWheelControlEnabled = MouseWheelControlEnabled;
                 this.ControlDisablingEnabled = ControlDisablingEnabled;
                 this.EnableAnimation = EnableAnimation;
+                this.ResetCursor = ResetCursor;
+                this.LeftClickControl = LeftClickControl;
                 this.BannerTitle = BannerTitle;
                 this.TextureUrl = TextureUrl;
                 this.TextureDictionary = TextureDictionary;
@@ -119,6 +123,8 @@ namespace vMenu.Client.Settings
         public static bool MouseWheelControlEnabled = JsonSettings.MouseWheelControlEnabled;
         public static bool ControlDisablingEnabled = JsonSettings.ControlDisablingEnabled;
         public static bool EnableAnimation = JsonSettings.EnableAnimation;
+        public static bool ResetCursor = JsonSettings.ResetCursor;
+        public static bool LeftClickControl = JsonSettings.LeftClickControl;
         public static MenuBuildingAnimation BuildingAnimation = MenuBuildingAnimation.NONE;
         public static ScrollingType ScrollingType = ScrollingType.CLASSIC;
 

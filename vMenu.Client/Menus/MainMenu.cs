@@ -38,6 +38,7 @@ namespace vMenu.Client.Menus
             var MenuLanguage = Languages.Menus["MainMenu"];
 
             mainMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Main Menu").Create();
+            mainMenu.SetMouse(MenuSettings.MouseControlsEnabled, MenuSettings.MouseEdgeEnabled, MenuSettings.MouseWheelControlEnabled, false, true);
 
             UIMenuItem onlinePlayers = new UIMenuItem(MenuLanguage.Items["OnlinePlayersItem"].Name ?? "Online Players", MenuLanguage.Items["OnlinePlayersItem"].Description ?? "All currently connected players.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             onlinePlayers.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
