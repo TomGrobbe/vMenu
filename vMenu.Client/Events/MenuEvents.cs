@@ -71,10 +71,12 @@ namespace vMenu.Client.Events
                 {
                     Notify.Alert("vMenu is set up to ignore permissions, default permissions will be used.");
                 }
+                
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;
                 _ = NoClip.Instance;
+                _ = TimeWeather.Instance;
                 _ = Notify.Instance;
                 _ = Subtitle.Instance;
                 _ = RichPresence.Instance;
