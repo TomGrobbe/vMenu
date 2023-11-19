@@ -18,7 +18,7 @@ using vMenu.Shared.Objects;
 
 using static CitizenFX.Core.Native.API;
 using static CitizenFX.Core.PlayerList;
-
+using vMenu.Shared.Enums;
 namespace vMenu.Server.Events
 {
     public class PermissionManager : BaseScript
@@ -29,19 +29,41 @@ namespace vMenu.Server.Events
         }
         private async Task<string> RequestPermissions([FromSource] int source)
         {
-            var perms = new Dictionary<vMenu.Shared.Enums.Permission, bool>();
-            foreach (var p in Enum.GetValues(typeof(vMenu.Shared.Enums.Permission)))
+            var perms = new Dictionary<Permission, bool>();
+            if (!Convar.GetSettingsBool("vmenu_use_permissions"))
             {
-                var permission = GetAceName((vMenu.Shared.Enums.Permission)p);
-                if (!perms.ContainsKey((vMenu.Shared.Enums.Permission)p))
+                foreach (var p in Enum.GetValues(typeof(Permission)))
                 {
-                    perms.Add((vMenu.Shared.Enums.Permission)p, IsPlayerAceAllowed(source.ToString(), permission)); // triggers IsAllowedServer
+                    var permission = (Permission)p;
+                    switch (permission)
+                    {
+                        // don't allow any of the following permissions if perms are ignored.
+                        case Permission.Everything:
+                        case Permission.Staff:
+                            perms.Add(permission, false);
+                            break;
+                        // do allow the rest
+                        default:
+                            perms.Add(permission, true);
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var p in Enum.GetValues(typeof(Permission)))
+                {
+                    var permission = GetAceName((Permission)p);
+                    if (!perms.ContainsKey((Permission)p))
+                    {
+                        perms.Add((Permission)p, IsPlayerAceAllowed(source.ToString(), permission)); // triggers IsAllowedServer
+                    }
                 }
             }
             await Delay(10);
             return JsonConvert.SerializeObject(perms);;
         }
-        private static string GetAceName(vMenu.Shared.Enums.Permission permission)
+        private static string GetAceName(Permission permission)
         {
             var name = permission.ToString();
 

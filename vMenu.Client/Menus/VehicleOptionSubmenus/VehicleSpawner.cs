@@ -52,25 +52,26 @@ namespace vMenu.Client.Menus.VehicleSubmenus
             VehicleSpawnMenu.AddItem(spawninside);
 
             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/Default.jsonc") ?? "{}";
-            var defaultcars = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
-            var modellist = new Dictionary<string, uint>();
-
+            var defaultcars = JsonConvert.DeserializeObject<Dictionary<string,Dictionary<string, Dictionary<string,string>>>>(jsonData);
+            var modellist = new Dictionary<string, string>();
             if (defaultcars.ContainsKey("vehicles"))
             {
-                foreach (var defaultveh in defaultcars["vehicles"])
+                foreach (var listvalues in defaultcars["vehicles"])
                 {
-                    if (!modellist.ContainsKey(defaultveh))
+                    if (!modellist.ContainsKey(listvalues.Key))
                     {
-                        modellist.Add(defaultveh, (uint)GetHashKey(defaultveh));
+                        modellist.Add(listvalues.Key, listvalues.Value["Name"] == "" ? GetDisplayNameFromVehicleModel((uint)GetHashKey(listvalues.Key)) : listvalues.Value["Name"]);
                     }
                     else
                     {
-                        Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same vehicle name! ({defaultveh}) Please remove duplicate lines!");
+                        Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same vehicle name! ({listvalues.Key}) Please remove duplicate lines!");
                     }
                 }
+
             }
+
             var speedValues = new float[23]
-{
+            {
                 44.9374657f,
                 50.0000038f,
                 48.862133f,
@@ -94,7 +95,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 43.3140678f,
                 26.66667f,
                 53.0537224f
-};
+            };
             var accelerationValues = new float[23]
             {
                 0.34f,
@@ -193,11 +194,12 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     continue;
                 }
                 // Loop through all addon vehicles in this class.
-                foreach (KeyValuePair<string, uint> veh in modellist.Where(v => GetVehicleClassFromName(v.Value) == cat))
+                foreach (KeyValuePair<string, string> veh in modellist.Where(v => GetVehicleClassFromName((uint)GetHashKey(v.Key)) == cat))
                 {
-                    string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
+                    uint vehuint = (uint)GetHashKey(veh.Key);
+                    string localizedName = GetLabelText(GetDisplayNameFromVehicleModel(vehuint));
 
-                    string name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
+                    string name = veh.Value;
 
                     name = name != "CARNOTFOUND" ? name : veh.Key;
 
@@ -209,10 +211,10 @@ namespace vMenu.Client.Menus.VehicleSubmenus
 
                     UIMenuStatisticsPanel vehstatistics = new UIMenuStatisticsPanel();
                     carBtn.AddPanel(vehstatistics);
-                    var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(veh.Value), 0f, speedValues[cat], 0f, 1f)*100;
-                    var acceleration = Map(GetVehicleModelAcceleration(veh.Value), 0f, accelerationValues[cat], 0f, 1f)*100;
-                    var maxBraking = Map(GetVehicleModelMaxBraking(veh.Value), 0f, brakingValues[cat], 0f, 1f)*100;
-                    var maxTraction = Map(GetVehicleModelMaxTraction(veh.Value), 0f, tractionValues[cat], 0f, 1f)*100;
+                    var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(vehuint), 0f, speedValues[cat], 0f, 1f)*100;
+                    var acceleration = Map(GetVehicleModelAcceleration(vehuint), 0f, accelerationValues[cat], 0f, 1f)*100;
+                    var maxBraking = Map(GetVehicleModelMaxBraking(vehuint), 0f, brakingValues[cat], 0f, 1f)*100;
+                    var maxTraction = Map(GetVehicleModelMaxTraction(vehuint), 0f, tractionValues[cat], 0f, 1f)*100;
                     vehstatistics.AddStatistics("~b~Top Speed", topSpeed);
                     vehstatistics.AddStatistics("~y~Acceleration", acceleration);
                     vehstatistics.AddStatistics("~g~Max Braking", maxBraking);
@@ -225,7 +227,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                         await EntitySpawner.SpawnVehicle(i.ItemData, spawninside.Checked, replacevehicle.Checked);
                     };
                     // This should be impossible to be false, but we check it anyway.
-                    if (IsModelInCdimage(veh.Value))
+                    if (IsModelInCdimage(vehuint))
                     {
                         categoryMenu.AddItem(carBtn);
                     }

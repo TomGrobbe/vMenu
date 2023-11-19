@@ -67,10 +67,16 @@ namespace vMenu.Client.Events
                 string permissions = await EventDispatcher.Get<string>("RequestPermissions");
                 //Debug.WriteLine(permissions);
                 Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
+                if (!Convar.GetSettingsBool("vmenu_use_permissions"))
+                {
+                    Notify.Alert("vMenu is set up to ignore permissions, default permissions will be used.");
+                }
+                
                 _ = MenuSettings.Instance;
                 _ = MenuFunctions.Instance;
                 _ = Commands.Instance;
                 _ = NoClip.Instance;
+                _ = TimeWeather.Instance;
                 _ = Notify.Instance;
                 _ = Subtitle.Instance;
                 _ = RichPresence.Instance;
