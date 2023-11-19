@@ -272,6 +272,10 @@
         "ToggleMenuAlignItem": {
           "Name": "Toggle Menu Align",
           "Description": "Change the Menu Alignment (Left | Right)"
+        },
+        "ChangeLanguageSliderItem": {
+          "Name": "Change Menu Language",
+          "Description": "Change the Menu Language"
         }
       }
     },
