@@ -5,7 +5,7 @@
 			"toggle": true /* Disable the vMenu Rich Presence by changing this to `false` */
 		},
 		"RichPresence": {
-			"text": "Playing in amazing FiveM server!"
+			"text": "This server is using vMenu Revamped v%version%%nl%Playing in amazing FiveM server!"
 		},
 		"ButtonOne": {
 			"text": "Discord",
@@ -16,12 +16,21 @@
 			"link": "https://github.com/TomGrobbe/vMenu/tree/revamped"
 		},
 		"SmallImage": {
-			"text": "Snaily",
+			"text": "Gamebuild:%gamebuild%",
 			"image": "https://imgur.com/hvgCIFa.png"
 		},
 		"LargeImage": {
-			"text": "Vespura",
+			"text": "Name:%playername% ID:%playerid%",
 			"image": "https://imgur.com/CFMBy9A.png"
 		}
 	}
 }
+
+/* Substitite values can be used on any text entry
+	%playercount%
+	%playername%
+	%playerid%
+	%version%
+	%gamebuild%
+	%nl% or %newline% you can only use one new line
+*/
