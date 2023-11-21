@@ -117,24 +117,35 @@ namespace vMenu.Client.Functions
                 }
             }
         }
+        public string Substitutes(string text)
+        {
+            text = text.Replace("%playercount%", $"{GetActivePlayers().Count}/{GetConvar("sv_maxClients", "48")}");
+            text = text.Replace("%playername%", $"{Game.Player.Name}"); 
+            text = text.Replace("%playerid%", $"{Game.Player.ServerId}"); 
+            text = text.Replace("%version%", $"{MenuFunctions.Version}");
+            text = text.Replace("%gamebuild%", $"{GetGameBuildNumber()}");
+            text = text.Replace("%nl%", $"\n");
+            text = text.Replace("%newline%", $"\n");
 
+            return text;
+        }
         public async Task DiscordRichPresence()
         {
             SetDiscordAppId(JsonRichPresenceAppId);
 
             if (JsonRichPresence.RichPresence.text != "")
             {
-                SetRichPresence(JsonRichPresence.RichPresence.text);
+                SetRichPresence(Substitutes(JsonRichPresence.RichPresence.text));
             }
 
             if (JsonRichPresence.ButtonOne.link != "" || JsonRichPresence.ButtonOne.text != "")
             {
-                SetDiscordRichPresenceAction(0, JsonRichPresence.ButtonOne.text, JsonRichPresence.ButtonOne.link);
+                SetDiscordRichPresenceAction(0, Substitutes(JsonRichPresence.ButtonOne.text), JsonRichPresence.ButtonOne.link);
             }
 
             if (JsonRichPresence.ButtonTwo.link != "" || JsonRichPresence.ButtonTwo.text != "")
             {
-                SetDiscordRichPresenceAction(1, JsonRichPresence.ButtonTwo.text, JsonRichPresence.ButtonTwo.link);
+                SetDiscordRichPresenceAction(1, Substitutes(JsonRichPresence.ButtonTwo.text), JsonRichPresence.ButtonTwo.link);
             }
 
             if (JsonRichPresence.LargeImage.image != "")
@@ -144,7 +155,7 @@ namespace vMenu.Client.Functions
 
             if (JsonRichPresence.LargeImage.text != "")
             {
-                SetDiscordRichPresenceAssetText(JsonRichPresence.LargeImage.text);
+                SetDiscordRichPresenceAssetText(Substitutes(JsonRichPresence.LargeImage.text));
             }
 
             if (JsonRichPresence.SmallImage.image != "")
@@ -154,7 +165,7 @@ namespace vMenu.Client.Functions
 
             if (JsonRichPresence.SmallImage.text != "")
             {
-                SetDiscordRichPresenceAssetSmallText(JsonRichPresence.SmallImage.text);
+                SetDiscordRichPresenceAssetSmallText(Substitutes(JsonRichPresence.SmallImage.text));
             }
 
             await BaseScript.Delay(5000);

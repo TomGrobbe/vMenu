@@ -59,6 +59,10 @@ namespace vMenu.Shared.Enums
         #region World Related Options
         WRAll,
         WRMenu,
+        WRTimeMenu,
+        WRFreezeTime,
+        WRSetTime,
+        WRWeatherMenu,
         #endregion
 
         #region Voice Chat

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using static vMenu.Client.Functions.MenuFunctions;
+using vMenu.Shared.Enums;
+
 using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
@@ -46,9 +49,15 @@ namespace vMenu.Client.Menus
             {
                 sender.SwitchTo(WorldSubmenus.WeatherOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
-
-            worldRelatedOptions.AddItem(TimeOptionsButton);
-            worldRelatedOptions.AddItem(WeatherOptionsButton);
+            if (IsAllowed(Permission.WRTimeMenu))
+            {
+                worldRelatedOptions.AddItem(TimeOptionsButton);
+            }
+            if (IsAllowed(Permission.WRWeatherMenu))
+            {
+                worldRelatedOptions.AddItem(WeatherOptionsButton);
+            }
+            
 
             Main.Menus.Add(worldRelatedOptions);
         }

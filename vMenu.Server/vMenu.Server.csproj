@@ -85,6 +85,9 @@
     <Content Include="ResourceFiles\config\Permission.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ResourceFiles\config\Settings.cfg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResourceFiles\stream\vmenu_textures.ytd">
