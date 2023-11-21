@@ -11,6 +11,9 @@ using CitizenFX.Core.Native;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
+using static vMenu.Client.Functions.MenuFunctions;
+using vMenu.Shared.Enums;
+
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
 
@@ -25,27 +28,27 @@ namespace vMenu.Client.Menus.WorldSubmenus
 
         public TimeOptionsMenu()
         {
-            var MenuLanguage = Languages.Menus["TimeOptionsMenu"];
+            var MenuLanguage = Languages.Menus["TimeMenu"];
 
             timeOptionsMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Time Options").Create();
 
 
-            freezeTimeToggle = new UIMenuItem("Freeze/Unfreeze Time", "Enable or disable time freezing.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            UIMenuItem earlymorning = new UIMenuItem("Early Morning", "Set the time to 06:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            freezeTimeToggle = new UIMenuItem(MenuLanguage.Items["Freeze"].Name ?? "Freeze/Unfreeze Time", MenuLanguage.Items["Freeze"].Description ?? "Enable or disable time freezing.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem earlymorning = new UIMenuItem(MenuLanguage.Items["EarlyMorningItem"].Name ?? "Early Morning", MenuLanguage.Items["EarlyMorningItem"].Description ?? "Set the time to 06:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             earlymorning.SetRightLabel("06:00");
-            UIMenuItem morning = new UIMenuItem("Morning", "Set the time to 09:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem morning = new UIMenuItem(MenuLanguage.Items["MorningItem"].Name ?? "Morning", MenuLanguage.Items["MorningItem"].Description ?? "Set the time to 09:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             morning.SetRightLabel("09:00");
-            UIMenuItem noon = new UIMenuItem("Noon", "Set the time to 12:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem noon = new UIMenuItem(MenuLanguage.Items["NoonItem"].Name ?? "Noon", MenuLanguage.Items["NoonItem"].Description ?? "Set the time to 12:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             noon.SetRightLabel("12:00");
-            UIMenuItem earlyafternoon = new UIMenuItem("Early Afternoon", "Set the time to 15:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem earlyafternoon = new UIMenuItem(MenuLanguage.Items["EarlyAfternoonItem"].Name ?? "Early Afternoon", MenuLanguage.Items["EarlyAfternoonItem"].Description ?? "Set the time to 15:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             earlyafternoon.SetRightLabel("15:00");
-            UIMenuItem afternoon = new UIMenuItem("Afternoon", "Set the time to 18:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem afternoon = new UIMenuItem(MenuLanguage.Items["AfternoonItem"].Name ?? "Afternoon", MenuLanguage.Items["AfternoonItem"].Description ?? "Set the time to 18:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             afternoon.SetRightLabel("18:00");
-            UIMenuItem evening = new UIMenuItem("Evening", "Set the time to 21:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem evening = new UIMenuItem(MenuLanguage.Items["EveningItem"].Name ?? "Evening", MenuLanguage.Items["EveningItem"].Description ?? "Set the time to 21:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             evening.SetRightLabel("21:00");
-            UIMenuItem midnight = new UIMenuItem("Midnight", "Set the time to 00:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem midnight = new UIMenuItem(MenuLanguage.Items["MidnightItem"].Name ?? "Midnight", MenuLanguage.Items["MidnightItem"].Description ?? "Set the time to 00:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             midnight.SetRightLabel("00:00");
-            UIMenuItem night = new UIMenuItem("Night", "Set the time to 03:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem night = new UIMenuItem(MenuLanguage.Items["NightItem"].Name ?? "Night", MenuLanguage.Items["NightItem"].Description ?? "Set the time to 03:00.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             night.SetRightLabel("03:00");
             
             var hours = new List<dynamic>() { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09" };
@@ -58,8 +61,8 @@ namespace vMenu.Client.Menus.WorldSubmenus
                 }
                 minutes.Add(i.ToString());
             }
-            UIMenuListItem hour = new UIMenuListItem("Hour", hours, 0, "Hour", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-            UIMenuListItem minute = new UIMenuListItem("Minute", minutes, 0, "Minute", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuListItem hour = new UIMenuListItem(MenuLanguage.Items["Hour"].Name ?? "Set Custom Hour", hours, 0, MenuLanguage.Items["Hour"].Name ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuListItem minute = new UIMenuListItem(MenuLanguage.Items["Minute"].Name ?? "Set Custom Minute", minutes, 0, MenuLanguage.Items["Minute"].Name ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             
 
             timeOptionsMenu.OnListSelect += (sender, item, itemIndex) =>
@@ -134,18 +137,31 @@ namespace vMenu.Client.Menus.WorldSubmenus
                 }
                 Debug.WriteLine($"{item}");
             };
+            bool timeallowed = IsAllowed(Permission.WRSetTime);
+            bool freezeallowed = IsAllowed(Permission.WRFreezeTime);
 
-            timeOptionsMenu.AddItem(hour);
-            timeOptionsMenu.AddItem(minute);
-            timeOptionsMenu.AddItem(freezeTimeToggle);
-            timeOptionsMenu.AddItem(earlymorning);
-            timeOptionsMenu.AddItem(morning);
-            timeOptionsMenu.AddItem(noon);
-            timeOptionsMenu.AddItem(earlyafternoon);
-            timeOptionsMenu.AddItem(afternoon);
-            timeOptionsMenu.AddItem(evening);
-            timeOptionsMenu.AddItem(midnight);
-            timeOptionsMenu.AddItem(night);
+            if (timeallowed)
+            {
+                timeOptionsMenu.AddItem(hour);
+                timeOptionsMenu.AddItem(minute);
+            }
+
+            if (freezeallowed)
+            {
+                timeOptionsMenu.AddItem(freezeTimeToggle);
+            }
+
+            if (timeallowed)
+            {
+                timeOptionsMenu.AddItem(earlymorning);
+                timeOptionsMenu.AddItem(morning);
+                timeOptionsMenu.AddItem(noon);
+                timeOptionsMenu.AddItem(earlyafternoon);
+                timeOptionsMenu.AddItem(afternoon);
+                timeOptionsMenu.AddItem(evening);
+                timeOptionsMenu.AddItem(midnight);
+                timeOptionsMenu.AddItem(night);
+            }
             Main.Menus.Add(timeOptionsMenu);
         }
 

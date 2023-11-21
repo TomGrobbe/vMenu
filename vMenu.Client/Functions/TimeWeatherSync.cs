@@ -31,8 +31,11 @@ namespace vMenu.Client.Functions
 
         private TimeWeather()
         {
-            Main.Instance.AttachTick(TimeSync);
-            Debug.WriteLine("TimeWeather Initialized");
+            if (Convar.GetSettingsBool("vmenu_use_time_sync"))
+            {
+                Main.Instance.AttachTick(TimeSync);
+                Debug.WriteLine("TimeWeather Initialized");
+            }
         }
 
         internal static TimeWeather Instance
