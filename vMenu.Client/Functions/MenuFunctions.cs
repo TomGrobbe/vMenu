@@ -167,7 +167,11 @@ namespace vMenu.Client.Functions
             }
             return MenuEvents.Permissions[permission] || MenuEvents.Permissions[vMenu.Shared.Enums.Permission.Everything] || false || allvalue;
         }
-
+        public static readonly int build = 2699;
+        public static bool GameBuildCheck()
+        {
+           return (GetGameBuildNumber() >= build);
+        }
         public void InitializeAllMenus()
         {
             // Submenus //

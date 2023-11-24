@@ -74,25 +74,40 @@ namespace vMenu.Client.KeyMappings
 
         private InputArgument NoClip = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
-            if (IsAllowed(Permission.NoClip))
+            if (MenuFunctions.GameBuildCheck())
             {
-                NoClipEnabled = !NoClipEnabled;
+                if (IsAllowed(Permission.NoClip))
+                {
+                    NoClipEnabled = !NoClipEnabled;
+                }
+            }
+            else
+            {
+                Notify.Error($"vMenu requires Game Build {MenuFunctions.build} or higher");
             }
         });
 
         private InputArgument MenuOpen = new Action<int, List<object>, string>((source, args, rawCommand) =>
         {
-            if (ScaleformUI.MenuHandler.CurrentMenu != null)
+            if (MenuFunctions.GameBuildCheck())
             {
-                ScaleformUI.MenuHandler.CurrentMenu.Visible = false;
+
+                if (ScaleformUI.MenuHandler.CurrentMenu != null)
+                {
+                    ScaleformUI.MenuHandler.CurrentMenu.Visible = false;
+                }
+                else
+                {
+                    if (IsAllowed(Permission.Open))
+                    {
+                        UIMenu Menu = MainMenu.Menu();
+                        Menu.Visible = true;
+                    }
+                }
             }
             else
             {
-                if (IsAllowed(Permission.Open))
-                {
-                    UIMenu Menu = MainMenu.Menu();
-                    Menu.Visible = true;
-                }
+                Notify.Error($"vMenu requires Game Build {MenuFunctions.build} or higher");
             }
         });
     }
