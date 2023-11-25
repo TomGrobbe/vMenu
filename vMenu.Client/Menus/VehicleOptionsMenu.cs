@@ -79,7 +79,7 @@ namespace vMenu.Client.Menus
 
             VehicleSpawnerButton.Activated += (sender, i) =>
             {
-                sender.SwitchTo(VehicleSubmenus.VehicleSpawner.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(VehicleSubmenus.VehicleSpawnerMenu.Menu(), inheritOldMenuParams: true);
             };
 
             Main.Menus.Add(vehicleRelatedOptions);

@@ -172,6 +172,13 @@ namespace vMenu.Client.Functions
         {
            return (GetGameBuildNumber() >= build);
         }
+        public async void MiscSettingsTask()
+        {
+
+            
+            BaseScript.Delay(0);
+            return;
+        }
         public void InitializeAllMenus()
         {
             // Submenus //
@@ -179,7 +186,7 @@ namespace vMenu.Client.Functions
             _ = new Menus.WorldSubmenus.TimeOptionsMenu();
             _ = new Menus.PlayerSubmenus.WeaponOptionsMenu();
             _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
-            _ = new Menus.VehicleSubmenus.VehicleSpawner();
+            _ = new Menus.VehicleSubmenus.VehicleSpawnerMenu();
 
             // Menus //
             _ = new OnlinePlayersMenu();
