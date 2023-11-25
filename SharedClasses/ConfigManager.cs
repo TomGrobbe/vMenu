@@ -61,6 +61,12 @@ namespace vMenuShared
             vmenu_current_hour,
             vmenu_current_minute,
             vmenu_sync_to_machine_time,
+
+            // Voice Chat Settings
+            vmenu_override_voicechat_default_range,
+
+            // Key Mapping
+            vmenu_keymapping_id,
         }
 
         /// <summary>
