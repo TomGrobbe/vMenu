@@ -23,6 +23,7 @@ namespace vMenuClient.menus
         private Menu menu;
         public Menu createCharacterMenu = new("Create Character", "Create A New Character");
         public Menu savedCharactersMenu = new("vMenu", "Manage Saved Characters");
+        public Menu savedCharactersCategoryMenu = new("Category", "I get updated at runtime!");
         public Menu inheritanceMenu = new("vMenu", "Character Inheritance Options");
         public Menu appearanceMenu = new("vMenu", "Character Appearance Options");
         public Menu faceShapeMenu = new("vMenu", "Character Face Shape Options");
@@ -36,6 +37,10 @@ namespace vMenuClient.menus
         internal MenuItem createFemaleBtn = new("Create Female Character", "Create a new female character.") { Label = "→→→" };
         internal MenuItem editPedBtn = new("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
 
+        // Need to be editable from other functions
+        private readonly MenuListItem setCategoryBtn = new("Set Character Category", [], 0, "Sets this character's category. Select to save.");
+        private readonly MenuListItem categoryBtn = new("Character Category", [], 0, "Sets this character's category.");
+
         public static bool DontCloseMenus { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
         public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
         string selectedSavedCharacterManageName = "";
@@ -43,6 +48,7 @@ namespace vMenuClient.menus
         private readonly List<string> facial_expressions = new() { "mood_Normal_1", "mood_Happy_1", "mood_Angry_1", "mood_Aiming_1", "mood_Injured_1", "mood_stressed_1", "mood_smug_1", "mood_sulk_1", };
 
         private MultiplayerPedData currentCharacter = new();
+        private MpCharacterCategory currentCategory = new();
 
 
 
@@ -690,6 +696,17 @@ namespace vMenuClient.menus
             tattoosMenu.AddMenuItem(new MenuItem("Remove All Tattoos", "Click this if you want to remove all tattoos and start over."));
             #endregion
 
+            List<string> categoryNames = GetAllCategoryNames();
+
+            categoryNames.RemoveAt(0);
+
+            List<MenuItem.Icon> categoryIcons = GetCategoryIcons(categoryNames);
+
+            categoryBtn.ItemData = new Tuple<List<string>, List<MenuItem.Icon>>(categoryNames, categoryIcons);
+            categoryBtn.ListItems = categoryNames;
+            categoryBtn.ListIndex = 0;
+            categoryBtn.RightIcon = categoryIcons[categoryBtn.ListIndex];
+
             createCharacterMenu.RefreshIndex();
             appearanceMenu.RefreshIndex();
             inheritanceMenu.RefreshIndex();
@@ -761,6 +778,7 @@ namespace vMenuClient.menus
 
             MenuController.AddMenu(createCharacterMenu);
             MenuController.AddMenu(savedCharactersMenu);
+            MenuController.AddMenu(savedCharactersCategoryMenu);
             MenuController.AddMenu(inheritanceMenu);
             MenuController.AddMenu(appearanceMenu);
             MenuController.AddMenu(faceShapeMenu);
@@ -836,6 +854,7 @@ namespace vMenuClient.menus
             createCharacterMenu.AddMenuItem(clothesButton);
             createCharacterMenu.AddMenuItem(propsButton);
             createCharacterMenu.AddMenuItem(faceExpressionList);
+            createCharacterMenu.AddMenuItem(categoryBtn);
             createCharacterMenu.AddMenuItem(saveButton);
             createCharacterMenu.AddMenuItem(exitNoSave);
 
@@ -1722,6 +1741,13 @@ namespace vMenuClient.menus
                     currentCharacter.FacialExpression = facial_expressions[newListIndex];
                     SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
                 }
+                else if (item == categoryBtn)
+                {
+                    List<string> categoryNames = categoryBtn.ItemData.Item1;
+                    List<MenuItem.Icon> categoryIcons = categoryBtn.ItemData.Item2;
+                    currentCharacter.Category = categoryNames[newListIndex];
+                    categoryBtn.RightIcon = categoryIcons[newListIndex];
+                }
             };
 
             // handle button presses for the createCharacter menu.
@@ -2094,6 +2120,7 @@ namespace vMenuClient.menus
             manageSavedCharacterMenu.AddMenuItem(spawnPed);
             manageSavedCharacterMenu.AddMenuItem(editPedBtn);
             manageSavedCharacterMenu.AddMenuItem(clonePed);
+            manageSavedCharacterMenu.AddMenuItem(setCategoryBtn);
             manageSavedCharacterMenu.AddMenuItem(setAsDefaultPed);
             manageSavedCharacterMenu.AddMenuItem(renameCharacter);
             manageSavedCharacterMenu.AddMenuItem(delPed);
@@ -2136,7 +2163,9 @@ namespace vMenuClient.menus
                             if (StorageManager.SaveJsonData("mp_ped_" + name, JsonConvert.SerializeObject(tmpCharacter), false))
                             {
                                 Notify.Success($"Your character has been cloned. The name of the cloned character is: ~g~<C>{name}</C>~s~.");
+                                MenuController.CloseAllMenus();
                                 UpdateSavedPedsMenu();
+                                savedCharactersMenu.OpenMenu();
                             }
                             else
                             {
@@ -2211,18 +2240,419 @@ namespace vMenuClient.menus
                 }
             };
 
+            // Update category preview icon
+            manageSavedCharacterMenu.OnListIndexChange += (_, listItem, _, newSelectionIndex, _) => listItem.RightIcon = listItem.ItemData[newSelectionIndex];
+
+            // Update character's category
+            manageSavedCharacterMenu.OnListItemSelect += async (_, listItem, listIndex, _) =>
+            {
+                var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
+
+                string name = listItem.ListItems[listIndex];
+
+                if (name == "Create New")
+                {
+                    var newName = await GetUserInput(windowTitle: "Enter a category name.", maxInputLength: 30);
+                    if (string.IsNullOrEmpty(newName) || newName.ToLower() == "uncategorized" || newName.ToLower() == "create new")
+                    {
+                        Notify.Error(CommonErrors.InvalidInput);
+                        return;
+                    }
+                    else
+                    {
+                        var description = await GetUserInput(windowTitle: "Enter a category description (optional).", maxInputLength: 120);
+                        var newCategory = new MpCharacterCategory
+                        {
+                            Name = newName,
+                            Description = description
+                        };
+
+                        if (StorageManager.SaveJsonData("mp_character_category_" + newName, JsonConvert.SerializeObject(newCategory), false))
+                        {
+                            Notify.Success($"Your category (~g~<C>{newName}</C>~s~) has been saved.");
+                            Log($"Saved Category {newName}.");
+                            MenuController.CloseAllMenus();
+                            UpdateSavedPedsMenu();
+                            savedCharactersCategoryMenu.OpenMenu();
+
+                            currentCategory = newCategory;
+                            name = newName;
+                        }
+                        else
+                        {
+                            Notify.Error($"Saving failed, most likely because this name (~y~<C>{newName}</C>~s~) is already in use.");
+                            return;
+                        }
+                    }
+                }
+
+                tmpCharacter.Category = name;
+
+                var json = JsonConvert.SerializeObject(tmpCharacter);
+                if (StorageManager.SaveJsonData(tmpCharacter.SaveName, json, true))
+                {
+                    Notify.Success("Your character was saved successfully.");
+                }
+                else
+                {
+                    Notify.Error("Your character could not be saved. Reason unknown. :(");
+                }
+
+                MenuController.CloseAllMenus();
+                UpdateSavedPedsMenu();
+                savedCharactersMenu.OpenMenu();
+            };
+
             // reset the "are you sure" state.
             manageSavedCharacterMenu.OnMenuClose += (sender) =>
             {
-                manageSavedCharacterMenu.GetMenuItems()[2].Label = "";
+                manageSavedCharacterMenu.GetMenuItems().Last().Label = "";
             };
 
-            savedCharactersMenu.OnItemSelect += (sender, item, index) =>
+            // Load selected category
+            savedCharactersMenu.OnItemSelect += async (sender, item, index) =>
             {
-                selectedSavedCharacterManageName = item.Text;
-                manageSavedCharacterMenu.MenuSubtitle = item.Text;
-                manageSavedCharacterMenu.CounterPreText = $"{(item.Label.Substring(0, 3) == "(M)" ? "(Male) " : "(Female) ")}";
-                manageSavedCharacterMenu.RefreshIndex();
+                // Create new category
+                if (item.ItemData is not MpCharacterCategory)
+                {
+                    var name = await GetUserInput(windowTitle: "Enter a category name.", maxInputLength: 30);
+                    if (string.IsNullOrEmpty(name) || name.ToLower() == "uncategorized" || name.ToLower() == "create new")
+                    {
+                        Notify.Error(CommonErrors.InvalidInput);
+                        return;
+                    }
+                    else
+                    {
+                        var description = await GetUserInput(windowTitle: "Enter a category description (optional).", maxInputLength: 120);
+                        var newCategory = new MpCharacterCategory
+                        {
+                            Name = name,
+                            Description = description
+                        };
+
+                        if (StorageManager.SaveJsonData("mp_character_category_" + name, JsonConvert.SerializeObject(newCategory), false))
+                        {
+                            Notify.Success($"Your category (~g~<C>{name}</C>~s~) has been saved.");
+                            Log($"Saved Category {name}.");
+                            MenuController.CloseAllMenus();
+                            UpdateSavedPedsMenu();
+                            savedCharactersCategoryMenu.OpenMenu();
+
+                            currentCategory = newCategory;
+                        }
+                        else
+                        {
+                            Notify.Error($"Saving failed, most likely because this name (~y~<C>{name}</C>~s~) is already in use.");
+                            return;
+                        }
+                    }
+                }
+                // Select an old category
+                else
+                {
+                    currentCategory = item.ItemData;
+                }
+
+                bool isUncategorized = currentCategory.Name == "Uncategorized";
+
+                savedCharactersCategoryMenu.MenuTitle = currentCategory.Name;
+                savedCharactersCategoryMenu.MenuSubtitle = $"~s~Category: ~y~{currentCategory.Name}";
+                savedCharactersCategoryMenu.ClearMenuItems();
+
+                var iconNames = Enum.GetNames(typeof(MenuItem.Icon)).ToList();
+
+                string ChangeCallback(MenuDynamicListItem item, bool left)
+                {
+                    int currentIndex = iconNames.IndexOf(item.CurrentItem);
+                    int newIndex = left ? currentIndex - 1 : currentIndex + 1;
+
+                    // If going past the start or end of the list
+                    if (iconNames.ElementAtOrDefault(newIndex) == default)
+                    {
+                        if (left)
+                        {
+                            newIndex = iconNames.Count - 1;
+                        }
+                        else
+                        {
+                            newIndex = 0;
+                        }
+                    }
+
+                    item.RightIcon = (MenuItem.Icon)newIndex;
+
+                    return iconNames[newIndex];
+                }
+
+                var renameBtn = new MenuItem("Rename Category", "Rename this category.")
+                {
+                    Enabled = !isUncategorized
+                };
+                var descriptionBtn = new MenuItem("Change Category Description", "Change this category's description.")
+                {
+                    Enabled = !isUncategorized
+                };
+                var iconBtn = new MenuDynamicListItem("Change Category Icon", iconNames[(int)currentCategory.Icon], new MenuDynamicListItem.ChangeItemCallback(ChangeCallback), "Change this category's icon. Select to save.")
+                {
+                    Enabled = !isUncategorized,
+                    RightIcon = currentCategory.Icon
+                };
+                var deleteBtn = new MenuItem("Delete Category", "Delete this category. This can not be undone!")
+                {
+                    RightIcon = MenuItem.Icon.WARNING,
+                    Enabled = !isUncategorized
+                };
+                var deleteCharsBtn = new MenuCheckboxItem("Delete All Characters", "If checked, when \"Delete Category\" is pressed, all the saved characters in this category will be deleted as well. If not checked, saved characters will be moved to \"Uncategorized\".")
+                {
+                    Enabled = !isUncategorized
+                };
+
+                savedCharactersCategoryMenu.AddMenuItem(renameBtn);
+                savedCharactersCategoryMenu.AddMenuItem(descriptionBtn);
+                savedCharactersCategoryMenu.AddMenuItem(iconBtn);
+                savedCharactersCategoryMenu.AddMenuItem(deleteBtn);
+                savedCharactersCategoryMenu.AddMenuItem(deleteCharsBtn);
+
+                var spacer = GetSpacerMenuItem("↓ Characters ↓");
+                savedCharactersCategoryMenu.AddMenuItem(spacer);
+
+                List<string> names = GetAllMpCharacterNames();
+
+                if (names.Count > 0)
+                {
+                    var defaultChar = GetResourceKvpString("vmenu_default_character") ?? "";
+
+                    names.Sort((a, b) => a.ToLower().CompareTo(b.ToLower()));
+                    foreach (var name in names)
+                    {
+                        var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + name);
+
+                        if (string.IsNullOrEmpty(tmpData.Category))
+                        {
+                            if (!isUncategorized)
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            if (tmpData.Category != currentCategory.Name)
+                            {
+                                continue;
+                            }
+                        }
+
+                        var btn = new MenuItem(name, "Click to spawn, edit, clone, rename or delete this saved character.")
+                        {
+                            Label = "→→→",
+                            LeftIcon = tmpData.IsMale ? MenuItem.Icon.MALE : MenuItem.Icon.FEMALE,
+                            ItemData = tmpData.IsMale
+                        };
+                        if (defaultChar == "mp_ped_" + name)
+                        {
+                            btn.LeftIcon = MenuItem.Icon.TICK;
+                            btn.Description += " ~g~This character is currently set as your default character and will be used whenever you (re)spawn.";
+                        }
+                        savedCharactersCategoryMenu.AddMenuItem(btn);
+                        MenuController.BindMenuItem(savedCharactersCategoryMenu, manageSavedCharacterMenu, btn);
+                    }
+                }
+            };
+
+            savedCharactersCategoryMenu.OnItemSelect += async (sender, item, index) =>
+            {
+                switch (index)
+                {
+                    // Rename Category
+                    case 0:
+                        var name = await GetUserInput(windowTitle: "Enter a new category name", defaultText: currentCategory.Name, maxInputLength: 30);
+
+                        if (string.IsNullOrEmpty(name) || name.ToLower() == "uncategorized" || name.ToLower() == "create new")
+                        {
+                            Notify.Error(CommonErrors.InvalidInput);
+                            return;
+                        }
+                        else if (GetAllCategoryNames().Contains(name) || !string.IsNullOrEmpty(GetResourceKvpString("mp_character_category_" + name)))
+                        {
+                            Notify.Error(CommonErrors.SaveNameAlreadyExists);
+                            return;
+                        }
+
+                        string oldName = currentCategory.Name;
+
+                        currentCategory.Name = name;
+
+                        if (StorageManager.SaveJsonData("mp_character_category_" + name, JsonConvert.SerializeObject(currentCategory), false))
+                        {
+                            StorageManager.DeleteSavedStorageItem("mp_character_category_" + oldName);
+
+                            int totalCount = 0;
+                            int updatedCount = 0;
+                            List<string> characterNames = GetAllMpCharacterNames();
+
+                            if (characterNames.Count > 0)
+                            {
+                                foreach (var characterName in characterNames)
+                                {
+                                    var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + characterName);
+
+                                    if (string.IsNullOrEmpty(tmpData.Category))
+                                    {
+                                        continue;
+                                    }
+
+                                    if (tmpData.Category != oldName)
+                                    {
+                                        continue;
+                                    }
+
+                                    totalCount++;
+
+                                    tmpData.Category = name;
+
+                                    if (StorageManager.SaveJsonData(tmpData.SaveName, JsonConvert.SerializeObject(tmpData), true))
+                                    {
+                                        updatedCount++;
+                                        Log($"Updated category for \"{tmpData.SaveName}\"");
+                                    }
+                                    else
+                                    {
+                                        Log($"Something went wrong when updating category for \"{tmpData.SaveName}\"");
+                                    }
+                                }
+                            }
+
+                            Notify.Success($"Your category has been renamed to ~g~<C>{name}</C>~s~. {updatedCount}/{totalCount} characters updated.");
+                            MenuController.CloseAllMenus();
+                            UpdateSavedPedsMenu();
+                            savedCharactersMenu.OpenMenu();
+                        }
+                        else
+                        {
+                            Notify.Error("Something went wrong while renaming your category, your old category will NOT be deleted because of this.");
+                        }
+                        break;
+
+                    // Change Category Description
+                    case 1:
+                        var description = await GetUserInput(windowTitle: "Enter a new category description", defaultText: currentCategory.Description, maxInputLength: 120);
+
+                        currentCategory.Description = description;
+
+                        if (StorageManager.SaveJsonData("mp_character_category_" + currentCategory.Name, JsonConvert.SerializeObject(currentCategory), true))
+                        {
+                            Notify.Success($"Your category description has been changed.");
+                            MenuController.CloseAllMenus();
+                            UpdateSavedPedsMenu();
+                            savedCharactersMenu.OpenMenu();
+                        }
+                        else
+                        {
+                            Notify.Error("Something went wrong while changing your category description.");
+                        }
+                        break;
+
+                    // Delete Category
+                    case 3:
+                        if (item.Label == "Are you sure?")
+                        {
+                            bool deletePeds = (sender.GetMenuItems().ElementAt(4) as MenuCheckboxItem).Checked;
+
+                            item.Label = "";
+                            DeleteResourceKvp("mp_character_category_" + currentCategory.Name);
+
+                            int totalCount = 0;
+                            int updatedCount = 0;
+
+                            List<string> characterNames = GetAllMpCharacterNames();
+
+                            if (characterNames.Count > 0)
+                            {
+                                foreach (var characterName in characterNames)
+                                {
+                                    var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + characterName);
+
+                                    if (string.IsNullOrEmpty(tmpData.Category))
+                                    {
+                                        continue;
+                                    }
+
+                                    if (tmpData.Category != currentCategory.Name)
+                                    {
+                                        continue;
+                                    }
+
+                                    totalCount++;
+
+                                    if (deletePeds)
+                                    {
+                                        updatedCount++;
+
+                                        DeleteResourceKvp("mp_ped_" + tmpData.SaveName);
+                                    }
+                                    else
+                                    {
+                                        tmpData.Category = "Uncategorized";
+
+                                        if (StorageManager.SaveJsonData(tmpData.SaveName, JsonConvert.SerializeObject(tmpData), true))
+                                        {
+                                            updatedCount++;
+                                            Log($"Updated category for \"{tmpData.SaveName}\"");
+                                        }
+                                        else
+                                        {
+                                            Log($"Something went wrong when updating category for \"{tmpData.SaveName}\"");
+                                        }
+                                    }
+                                }
+                            }                            
+
+                            Notify.Success($"Your saved category has been deleted. {updatedCount}/{totalCount} characters {(deletePeds ? "deleted" : "updated")}.");
+                            MenuController.CloseAllMenus();
+                            UpdateSavedPedsMenu();
+                            savedCharactersMenu.OpenMenu();
+                        }
+                        else
+                        {
+                            item.Label = "Are you sure?";
+                        }
+                        break;
+
+                    // Load saved character menu
+                    default:
+                        List<string> categoryNames = GetAllCategoryNames();
+                        List<MenuItem.Icon> categoryIcons = GetCategoryIcons(categoryNames);
+                        int nameIndex = categoryNames.IndexOf(currentCategory.Name);
+
+                        setCategoryBtn.ItemData = categoryIcons;
+                        setCategoryBtn.ListItems = categoryNames;
+                        setCategoryBtn.ListIndex = nameIndex == 1 ? 0 : nameIndex;
+                        setCategoryBtn.RightIcon = categoryIcons[setCategoryBtn.ListIndex];
+                        selectedSavedCharacterManageName = item.Text;
+                        manageSavedCharacterMenu.MenuSubtitle = item.Text;
+                        manageSavedCharacterMenu.CounterPreText = $"{(item.LeftIcon == MenuItem.Icon.MALE ? "(Male)" : "(Female)")} ";
+                        manageSavedCharacterMenu.RefreshIndex();
+                        break;
+                }
+            };
+
+            // Change Category Icon
+            savedCharactersCategoryMenu.OnDynamicListItemSelect += (_, _, currentItem) =>
+            {
+                var iconNames = Enum.GetNames(typeof(MenuItem.Icon)).ToList();
+                int iconIndex = iconNames.IndexOf(currentItem);
+
+                currentCategory.Icon = (MenuItem.Icon)iconIndex;
+
+                if (StorageManager.SaveJsonData("mp_character_category_" + currentCategory.Name, JsonConvert.SerializeObject(currentCategory), true))
+                {
+                    Notify.Success($"Your category icon been changed to ~g~<C>{iconNames[iconIndex]}</C>~s~.");
+                    UpdateSavedPedsMenu();
+                }
+                else
+                {
+                    Notify.Error("Something went wrong while changing your category icon.");
+                }
             };
         }
 
@@ -2231,8 +2661,94 @@ namespace vMenuClient.menus
         /// </summary>
         private void UpdateSavedPedsMenu()
         {
-            var defaultChar = GetResourceKvpString("vmenu_default_character") ?? "";
+            var categories = GetAllCategoryNames();
 
+            savedCharactersMenu.ClearMenuItems();
+
+            var createCategoryBtn = new MenuItem("Create Category", "Create a new character category.")
+            {
+                Label = "→→→"
+            };
+            savedCharactersMenu.AddMenuItem(createCategoryBtn);
+
+            var spacer = GetSpacerMenuItem("↓ Character Categories ↓");
+            savedCharactersMenu.AddMenuItem(spacer);
+
+            var uncategorized = new MpCharacterCategory
+            {
+                Name = "Uncategorized",
+                Description = "All saved MP Characters that have not been assigned to a category."
+            };
+            var uncategorizedBtn = new MenuItem(uncategorized.Name, uncategorized.Description)
+            {
+                Label = "→→→",
+                ItemData = uncategorized
+            };
+            savedCharactersMenu.AddMenuItem(uncategorizedBtn);
+            MenuController.BindMenuItem(savedCharactersMenu, savedCharactersCategoryMenu, uncategorizedBtn);
+
+            // Remove "Create New" and "Uncategorized"
+            categories.RemoveRange(0, 2);
+
+            if (categories.Count > 0)
+            {
+                categories.Sort((a, b) => a.ToLower().CompareTo(b.ToLower()));
+                foreach (var item in categories)
+                {
+                    MpCharacterCategory category = StorageManager.GetSavedMpCharacterCategoryData("mp_character_category_" + item);
+
+                    var btn = new MenuItem(category.Name, category.Description)
+                    {
+                        Label = "→→→",
+                        LeftIcon = category.Icon,
+                        ItemData = category
+                    };
+                    savedCharactersMenu.AddMenuItem(btn);
+                    MenuController.BindMenuItem(savedCharactersMenu, savedCharactersCategoryMenu, btn);
+                }
+            }
+
+            savedCharactersMenu.RefreshIndex();
+        }
+
+        private List<string> GetAllCategoryNames()
+        {
+            var categories = new List<string>();
+            var handle = StartFindKvp("mp_character_category_");
+            while (true)
+            {
+                var foundCategory = FindKvp(handle);
+                if (string.IsNullOrEmpty(foundCategory))
+                {
+                    break;
+                }
+                else
+                {
+                    categories.Add(foundCategory.Substring(22));
+                }
+            }
+            EndFindKvp(handle);
+
+            categories.Insert(0, "Create New");
+            categories.Insert(1, "Uncategorized");
+
+            return categories;
+        }
+
+        private List<MenuItem.Icon> GetCategoryIcons(List<string> categoryNames)
+        {
+            List<MenuItem.Icon> icons = [];
+
+            foreach (var name in categoryNames)
+            {
+                icons.Add(StorageManager.GetSavedMpCharacterCategoryData("mp_character_category_" + name).Icon);
+            }
+
+            return icons;
+        }
+
+        private List<string> GetAllMpCharacterNames()
+        {
             var names = new List<string>();
             var handle = StartFindKvp("mp_ped_");
             while (true)
@@ -2248,27 +2764,8 @@ namespace vMenuClient.menus
                 }
             }
             EndFindKvp(handle);
-            savedCharactersMenu.ClearMenuItems();
-            if (names.Count > 0)
-            {
-                names.Sort((a, b) => { return a.ToLower().CompareTo(b.ToLower()); });
-                foreach (var item in names)
-                {
-                    var tmpData = StorageManager.GetSavedMpCharacterData("mp_ped_" + item);
-                    var btn = new MenuItem(item, "Click to spawn, edit, clone, rename or delete this saved character.")
-                    {
-                        Label = $"({(tmpData.IsMale ? "M" : "F")}) →→→"
-                    };
-                    if (defaultChar == "mp_ped_" + item)
-                    {
-                        btn.LeftIcon = MenuItem.Icon.TICK;
-                        btn.Description += " ~g~This character is currently set as your default character and will be used whenever you (re)spawn.";
-                    }
-                    savedCharactersMenu.AddMenuItem(btn);
-                    MenuController.BindMenuItem(savedCharactersMenu, manageSavedCharacterMenu, btn);
-                }
-            }
-            savedCharactersMenu.RefreshIndex();
+
+            return names;
         }
 
         /// <summary>
@@ -2284,5 +2781,11 @@ namespace vMenuClient.menus
             return menu;
         }
 
+        public struct MpCharacterCategory
+        {
+            public string Name;
+            public string Description;
+            public MenuItem.Icon Icon;
+        }
     }
 }

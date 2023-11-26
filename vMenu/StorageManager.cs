@@ -349,5 +349,34 @@ namespace vMenuClient
             Log(jsonString);
             return output;
         }
+
+        /// <summary>
+        /// Returns a <see cref="MpCharacterCategory"/> struct containing the data of the saved MP Character Category.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static menus.MpPedCustomization.MpCharacterCategory GetSavedMpCharacterCategoryData(string name)
+        {
+            var output = new menus.MpPedCustomization.MpCharacterCategory();
+            if (string.IsNullOrEmpty(name))
+            {
+                return output;
+            }
+            var jsonString = GetResourceKvpString(name.StartsWith("mp_character_category_") ? name : "mp_character_category_" + name);
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return output;
+            }
+            try
+            {
+                output = JsonConvert.DeserializeObject<menus.MpPedCustomization.MpCharacterCategory>(jsonString);
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            Log(jsonString);
+            return output;
+        }
     }
 }
