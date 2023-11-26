@@ -659,19 +659,12 @@ namespace vMenuClient
             if (IsAllowed(Permission.SVMenu))
             {
                 SavedVehiclesMenu = new SavedVehicles();
-                var menu = SavedVehiclesMenu.GetMenu();
+                var menu = SavedVehiclesMenu.GetTypeMenu();
                 var button = new MenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.")
                 {
                     Label = "→→→"
                 };
                 AddMenu(VehicleSubmenu, menu, button);
-                VehicleSubmenu.OnItemSelect += (sender, item, index) =>
-                {
-                    if (item == button)
-                    {
-                        SavedVehiclesMenu.UpdateMenuAvailableCategories();
-                    }
-                };
             }
 
             // Add the Personal Vehicle menu.
