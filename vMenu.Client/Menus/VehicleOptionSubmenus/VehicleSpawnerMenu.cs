@@ -22,11 +22,11 @@ using static CitizenFX.Core.Native.API;
 
 namespace vMenu.Client.Menus.VehicleSubmenus
 {
-    public class VehicleSpawner
+    public class VehicleSpawnerMenu
     {
         private static UIMenu VehicleSpawnMenu = null;
 
-        public VehicleSpawner()
+        public VehicleSpawnerMenu()
         {
             var MenuLanguage = Languages.Menus["TimeOptionsMenu"];
 
