@@ -71,10 +71,18 @@ namespace vMenu.Client.Functions
 
         public void RestartMenu()
         {
-            MenuHandler.CurrentMenu.Visible = false;
-            MenuHandler.CloseAndClearHistory();
-            InitializeAllMenus();
-            MainMenu.Menu().Visible = true;
+            if (MenuHandler.CurrentMenu != null && MenuHandler.CurrentMenu.Visible)
+            {
+                MenuHandler.CurrentMenu.Visible = false;
+                MenuHandler.CloseAndClearHistory();
+                InitializeAllMenus();
+                MenuHandler.CurrentMenu.Visible = true;
+            }
+            else
+            {
+                MenuHandler.CloseAndClearHistory();
+                InitializeAllMenus();
+            }
         }
 
         public async void UpdateOnlinePlayers(UIMenu menu, UIMenuItem item)
