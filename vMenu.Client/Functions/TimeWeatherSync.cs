@@ -45,10 +45,12 @@ namespace vMenu.Client.Functions
                 }
             }
         }
+
         public static int GetServerMinutes => MathUtil.Clamp(Convar.GetSettingsInt("vmenu_current_minute"), 0, 59);
         public static int GetServerHours => MathUtil.Clamp(Convar.GetSettingsInt("vmenu_current_hour"), 0, 23);
         public static int GetServerMinuteDuration => Convar.GetSettingsInt("vmenu_ingame_minute_duration");
         public static bool IsServerTimeFrozen => Convar.GetSettingsBool("vmenu_freeze_time");
+
         //public static bool IsServerTimeSyncedWithMachineTime => Convar.GetSettingsBool("vmenu_sync_to_machine_time");
         /// <summary>
         /// This function will take care of time sync. It'll be called once, and never stop.
@@ -57,6 +59,7 @@ namespace vMenu.Client.Functions
         private async Task TimeSync()
         {
             NetworkOverrideClockTime(GetServerHours, GetServerMinutes, 0);
+
             if (IsServerTimeFrozen)
             {
                 await BaseScript.Delay(5);
