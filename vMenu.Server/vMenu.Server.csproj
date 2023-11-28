@@ -102,7 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Needed_DLLS\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup>

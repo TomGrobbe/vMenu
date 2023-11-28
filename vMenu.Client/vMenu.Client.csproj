@@ -13,12 +13,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CitizenFX.Natives\Newtonsoft\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\vMenu.Shared\vMenu.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +21,11 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="ScaleformUI" Version="4.9.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Needed_DLLS\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y "$(SolutionDir)Build\Client\net452\" "$(SolutionDir)Build\[Resource]\vMenu\Client"
