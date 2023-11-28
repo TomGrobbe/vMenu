@@ -304,6 +304,58 @@
           "Description": "https://vespura.com/"
         }
       }
+    },
+
+    "TimeMenu": {
+      "Subtitle": "Time Options",
+
+      "Items": {
+        "Freeze": {
+          "Name": "Freeze/Unfreeze Time",
+          "Description": "Enable or disable time freezing."
+        },
+        "EarlyMorningItem": {
+          "Name": "Early Morning",
+          "Description": "Set the time to 06:00."
+        },
+        "MorningItem": {
+          "Name": "Morning",
+          "Description": "Set the time to 09:00."
+        },
+        "NoonItem": {
+          "Name": "Noon",
+          "Description": "Set the time to 12:00."
+        },
+        "EarlyAfternoonItem": {
+          "Name": "Early Afternoon",
+          "Description": "Set the time to 15:00."
+        },
+        "AfternoonItem": {
+          "Name": "Afternoon",
+          "Description": "Set the time to 18:00."
+        },
+        "EveningItem": {
+          "Name": "Evening",
+          "Description": "Set the time to 21:00."
+        },
+        "MidnightItem": {
+          "Name": "Midnight",
+          "Description": "Set the time to 00:00."
+        },
+        "NightItem": {
+          "Name": "Night",
+          "Description": "Set the time to 03:00."
+        },
+        "Hour": {
+          "Name": "Set Custom Hour",
+          "Description": ""
+        },
+        "Minute": {
+          "Name": "Set Custom Minute",
+          "Description": ""
+        }
+
+      }
     }
   },
 
