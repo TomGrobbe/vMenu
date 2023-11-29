@@ -26,10 +26,11 @@ namespace vMenu.Shared.Enums
         #endregion
 
         #region Vehicle Spawner
-        VSMenu,
         VSAll,
+        VSMenu,
         VSDisableReplacePrevious,
         VSSpawnByName,
+        VSShowSpawnCode,
         VSAddon,
         VSCompacts,
         VSSedans,

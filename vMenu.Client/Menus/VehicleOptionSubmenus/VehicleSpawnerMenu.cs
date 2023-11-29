@@ -15,6 +15,9 @@ using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
+using static vMenu.Client.Functions.MenuFunctions;
+using vMenu.Shared.Enums;
+
 using vMenu.Client.Functions;
 using vMenu.Client.Settings;
 
@@ -174,6 +177,32 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 2.5f,
                 3.2925f
             };
+            List<bool> allowedCategories = new List<bool>()
+            {
+                IsAllowed(Permission.VSCompacts),
+                IsAllowed(Permission.VSSedans),
+                IsAllowed(Permission.VSSUVs),
+                IsAllowed(Permission.VSCoupes),
+                IsAllowed(Permission.VSMuscle),
+                IsAllowed(Permission.VSSportsClassic),
+                IsAllowed(Permission.VSSports),
+                IsAllowed(Permission.VSSuper),
+                IsAllowed(Permission.VSMotorcycles),
+                IsAllowed(Permission.VSOffRoad),
+                IsAllowed(Permission.VSIndustrial),
+                IsAllowed(Permission.VSUtility),
+                IsAllowed(Permission.VSVans),
+                IsAllowed(Permission.VSCycles),
+                IsAllowed(Permission.VSBoats),
+                IsAllowed(Permission.VSHelicopters),
+                IsAllowed(Permission.VSPlanes),
+                IsAllowed(Permission.VSService),
+                IsAllowed(Permission.VSEmergency),
+                IsAllowed(Permission.VSMilitary),
+                IsAllowed(Permission.VSCommercial),
+                IsAllowed(Permission.VSTrains),
+                IsAllowed(Permission.VSOpenWheel)
+            };
             for (var cat = 0; cat < 23; cat++)
             {
                 var categoryMenu = new Objects.vMenu(GetLabelText($"VEH_CLASS_{cat}")).Create();
@@ -186,7 +215,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     sender.SwitchTo(categoryMenu, inheritOldMenuParams: true);
                 };
 
-                if (!VehicleOptionsMenu.allowedCategories[cat])
+                if (!allowedCategories[cat])
                 {
                     categoryBtn.Description = "This vehicle class is disabled by the server.";
                     categoryBtn.Enabled = false;
@@ -207,8 +236,10 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     {
                         ItemData = veh.Key
                     };   
-                    carBtn.SetRightLabel($"({veh.Key})");
-
+                    if (Convar.GetSettingsBool("vmenu_see_vehicle_spawncode"))
+                    {
+                        carBtn.SetRightLabel($"({veh.Key})");
+                    } 
                     UIMenuStatisticsPanel vehstatistics = new UIMenuStatisticsPanel();
                     carBtn.AddPanel(vehstatistics);
                     var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(vehuint), 0f, speedValues[cat], 0f, 1f)*100;
