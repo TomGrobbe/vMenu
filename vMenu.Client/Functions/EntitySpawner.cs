@@ -63,7 +63,33 @@ namespace vMenu.Client.Functions
                 var tmpOldVehicle = GetVehicle();
             }
             var modelClass = GetVehicleClassFromName(vehicleHash);
-            if (!VehicleOptionsMenu.allowedCategories[modelClass])
+             List<Permission> allowedCategories = new List<Permission>()
+            {
+                Permission.VSCompacts,
+                Permission.VSSedans,
+                Permission.VSSUVs,
+                Permission.VSCoupes,
+                Permission.VSMuscle,
+                Permission.VSSportsClassic,
+                Permission.VSSports,
+                Permission.VSSuper,
+                Permission.VSMotorcycles,
+                Permission.VSOffRoad,
+                Permission.VSIndustrial,
+                Permission.VSUtility,
+                Permission.VSVans,
+                Permission.VSCycles,
+                Permission.VSBoats,
+                Permission.VSHelicopters,
+                Permission.VSPlanes,
+                Permission.VSService,
+                Permission.VSEmergency,
+                Permission.VSMilitary,
+                Permission.VSCommercial,
+                Permission.VSTrains,
+                Permission.VSOpenWheel
+            };
+            if (!IsAllowed(allowedCategories[modelClass]))
             {
                 Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
                 return 0;

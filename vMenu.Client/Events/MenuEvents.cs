@@ -28,6 +28,7 @@ namespace vMenu.Client.Events
         {
             Main.Instance.AddEventHandler("onResourceStop", OnResourceStop);
             Main.Instance.AddEventHandler("onClientResourceStart", OnClientResourceStart);
+            Main.Instance.AddEventHandler("vMenu:RestartMenu", RestartMenu);
             Debug.WriteLine("MenuEvents Initialized");
         }
 
@@ -59,12 +60,26 @@ namespace vMenu.Client.Events
             }
         }
 
+        private async void RestartMenu( )
+        {
+            string permissions = await EventDispatcher.Get<string>("RequestPermissions", Game.Player.ServerId);
+            Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
+            ScaleformUI.MenuHandler.CurrentMenu.Visible = false;
+            Notify.Alert("Rebuilding menu due to your permissions being changed");
+            _ = MenuFunctions.Instance;
+            _ = Commands.Instance;
+            _ = NoClip.Instance;
+            _ = TimeWeather.Instance;
+            MenuFunctions.Instance.RestartMenu();
+            Debug.WriteLine(permissions);
+        }
+
         private async void OnClientResourceStart(string resource)
         {
 
             if (resource == GetCurrentResourceName())
             {
-                string permissions = await EventDispatcher.Get<string>("RequestPermissions");
+                string permissions = await EventDispatcher.Get<string>("RequestPermissions", Game.Player.ServerId);
                 //Debug.WriteLine(permissions);
                 Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
                 if (!Convar.GetSettingsBool("vmenu_use_permissions"))
