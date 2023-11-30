@@ -19,6 +19,7 @@ using vMenu.Client.Functions;
 using vMenu.Client.Settings;
 
 using static CitizenFX.Core.Native.API;
+using vMenu.Client.Objects;
 
 namespace vMenu.Client.Menus
 {
@@ -32,10 +33,11 @@ namespace vMenu.Client.Menus
 
             worldRelatedOptions = new Objects.vMenu(MenuLanguage.Subtitle ?? "World Options").Create();
             
-            UIMenuItem TimeOptionsButton = new UIMenuItem(MenuLanguage.Items["TimeOptionsItem"].Name ?? "Time Options", MenuLanguage.Items["TimeOptionsItem"].Description ?? "Change the time, and edit other time related options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem TimeOptionsButton = new vMenuItem(MenuLanguage.Items["TimeOptionsItem"], "Time Options", "Change the time, and edit other time related options.").Create();
             TimeOptionsButton.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             TimeOptionsButton.SetRightLabel(">>>");
-            UIMenuItem WeatherOptionsButton = new UIMenuItem(MenuLanguage.Items["WeatherOptionsItem"].Name ?? "Weather Options", MenuLanguage.Items["WeatherOptionsItem"].Description ?? "Change all weather related options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+
+            UIMenuItem WeatherOptionsButton = new vMenuItem(MenuLanguage.Items["WeatherOptionsItem"], "Weather Options", "Change all weather related options here.").Create();
             WeatherOptionsButton.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             WeatherOptionsButton.SetRightLabel(">>>");
 
@@ -49,10 +51,12 @@ namespace vMenu.Client.Menus
             {
                 sender.SwitchTo(WorldSubmenus.WeatherOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
+
             if (IsAllowed(Permission.WRTimeMenu))
             {
                 worldRelatedOptions.AddItem(TimeOptionsButton);
             }
+
             if (IsAllowed(Permission.WRWeatherMenu))
             {
                 worldRelatedOptions.AddItem(WeatherOptionsButton);

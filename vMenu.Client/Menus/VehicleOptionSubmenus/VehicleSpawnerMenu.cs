@@ -28,16 +28,16 @@ namespace vMenu.Client.Menus.VehicleSubmenus
 
         public VehicleSpawnerMenu()
         {
-            var MenuLanguage = Languages.Menus["TimeOptionsMenu"];
+            var MenuLanguage = Languages.Menus["VehicleSpawnMenu"];
 
             VehicleSpawnMenu = new Objects.vMenu("Vehicle Spawner").Create();
 
             UIMenuItem SpawnByName = new UIMenuItem("Spawn Vehicle By Model Name", "Enter the name of a vehicle to spawn.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             SpawnByName.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             SpawnByName.SetRightLabel(">>>");
+
             UIMenuCheckboxItem replacevehicle = new UIMenuCheckboxItem("Replace Previous Vehicle", UIMenuCheckboxStyle.Tick, true, "This will automatically delete your previously spawned vehicle when you spawn a new vehicle.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
             UIMenuCheckboxItem spawninside = new UIMenuCheckboxItem("Spawn Inside Vehicle", UIMenuCheckboxStyle.Tick, true, "This will teleport you into the vehicle when you spawn it.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
-
 
             SpawnByName.Activated += async (sender, i) =>
             {
@@ -54,6 +54,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/Default.jsonc") ?? "{}";
             var defaultcars = JsonConvert.DeserializeObject<Dictionary<string,Dictionary<string, Dictionary<string,string>>>>(jsonData);
             var modellist = new Dictionary<string, string>();
+
             if (defaultcars.ContainsKey("vehicles"))
             {
                 foreach (var listvalues in defaultcars["vehicles"])
@@ -96,6 +97,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 26.66667f,
                 53.0537224f
             };
+
             var accelerationValues = new float[23]
             {
                 0.34f,
@@ -122,6 +124,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 0.2f,
                 0.76f
             };
+
             var brakingValues = new float[23]
             {
                 0.72f,
@@ -148,6 +151,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 5.0f,
                 1.3f
             };
+
             var tractionValues = new float[23]
             {
                 2.3f,
@@ -174,13 +178,16 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 2.5f,
                 3.2925f
             };
+
             for (var cat = 0; cat < 23; cat++)
             {
                 var categoryMenu = new Objects.vMenu(GetLabelText($"VEH_CLASS_{cat}")).Create();
 
                 UIMenuItem categoryBtn = new UIMenuItem(GetLabelText($"VEH_CLASS_{cat}"), $"Spawn an addon vehicle from the {GetLabelText($"VEH_CLASS_{cat}")} class.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
                 categoryBtn.SetRightLabel(">>>");
+
                 VehicleSpawnMenu.AddItem(categoryBtn);
+
                 categoryBtn.Activated += (sender, i) =>
                 {
                     sender.SwitchTo(categoryMenu, inheritOldMenuParams: true);
@@ -193,6 +200,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     categoryBtn.SetRightLabel("");
                     continue;
                 }
+
                 // Loop through all addon vehicles in this class.
                 foreach (KeyValuePair<string, string> veh in modellist.Where(v => GetVehicleClassFromName((uint)GetHashKey(v.Key)) == cat))
                 {
@@ -206,15 +214,18 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     var carBtn = new UIMenuItem(name, $"Click to spawn {name}.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
                     {
                         ItemData = veh.Key
-                    };   
+                    };  
+                    
                     carBtn.SetRightLabel($"({veh.Key})");
 
                     UIMenuStatisticsPanel vehstatistics = new UIMenuStatisticsPanel();
                     carBtn.AddPanel(vehstatistics);
+
                     var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(vehuint), 0f, speedValues[cat], 0f, 1f)*100;
                     var acceleration = Map(GetVehicleModelAcceleration(vehuint), 0f, accelerationValues[cat], 0f, 1f)*100;
                     var maxBraking = Map(GetVehicleModelMaxBraking(vehuint), 0f, brakingValues[cat], 0f, 1f)*100;
                     var maxTraction = Map(GetVehicleModelMaxTraction(vehuint), 0f, tractionValues[cat], 0f, 1f)*100;
+
                     vehstatistics.AddStatistics("~b~Top Speed", topSpeed);
                     vehstatistics.AddStatistics("~y~Acceleration", acceleration);
                     vehstatistics.AddStatistics("~g~Max Braking", maxBraking);
@@ -226,6 +237,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                     {
                         await EntitySpawner.SpawnVehicle(i.ItemData, spawninside.Checked, replacevehicle.Checked);
                     };
+
                     // This should be impossible to be false, but we check it anyway.
                     if (IsModelInCdimage(vehuint))
                     {

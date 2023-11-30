@@ -30,14 +30,14 @@ namespace vMenu.Client.Menus
 
             aboutMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "About vMenu").Create();
 
-            UIMenuItem vMenuVersion = new UIMenuItem(MenuLanguage.Items["VMenuVersionItem"].Name ?? "vMenu Version", MenuLanguage.Items["VMenuVersionItem"].Description ?? "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuVersion = new vMenuItem(MenuLanguage.Items["VMenuVersionItem"], "vMenu Version", "").Create();
             vMenuVersion.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             vMenuVersion.SetRightLabel($"~h~v{MenuFunctions.Version}~h~");
-            UIMenuItem vMenuCredits = new UIMenuItem(MenuLanguage.Items["VMenuCreditsItem"].Name ?? "vMenu Credits", MenuLanguage.Items["VMenuCreditsItem"].Description ?? "vMenu Revamped was created by XdGoldenTiger, Ricky, Katt, and the FiveM community", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuCredits = new vMenuItem(MenuLanguage.Items["VMenuCreditsItem"], "vMenu Credits", "vMenu Revamped was created by XdGoldenTiger, Ricky, Katt, Christopher, and the FiveM community").Create();
             vMenuCredits.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem vMenuDevBoard = new UIMenuItem(MenuLanguage.Items["VMenuDevBoardItem"].Name ?? "Dev Board", MenuLanguage.Items["VMenuDevBoardItem"].Description ?? "https://trello.com/b/HpQdFX9J/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuDevBoard = new vMenuItem(MenuLanguage.Items["VMenuDevBoardItem"], "Dev Board", "https://trello.com/b/HpQdFX9J/").Create();
             vMenuDevBoard.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem vMenuFounder = new UIMenuItem(MenuLanguage.Items["VMenuFounderItem"].Name ?? "vMenu Founder", MenuLanguage.Items["VMenuFounderItem"].Description ?? "https://vespura.com/", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vMenuFounder = new vMenuItem(MenuLanguage.Items["VMenuFounderItem"], "vMenu Founder", "https://vespura.com/").Create();
             vMenuFounder.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             aboutMenu.AddItem(vMenuVersion);
