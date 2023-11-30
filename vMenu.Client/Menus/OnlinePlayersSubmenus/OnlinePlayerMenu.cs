@@ -16,6 +16,7 @@ using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
+using vMenu.Client.Objects;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
@@ -25,10 +26,10 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
     {
         private static UIMenu onlinePlayerMenu = null;
 
+        public static Menu MenuLanguage = Languages.Menus["OnlinePlayerMenu"];
+
         public OnlinePlayerMenu()
         {
-            var MenuLanguage = Languages.Menus["OnlinePlayerMenu"];
-
             onlinePlayerMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Online Player").Create();
 
             Main.Menus.Add(onlinePlayerMenu);
@@ -36,8 +37,6 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
 
         public static UIMenu Menu(OnlinePlayersCB player, string texture)
         {
-            var MenuLanguage = Languages.Menus["OnlinePlayerMenu"];
-
             onlinePlayerMenu.Windows.Clear();
             onlinePlayerMenu.MenuItems.Clear();
 
@@ -48,7 +47,7 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
                 Size = new Size(60, 60)
             });
 
-            UIMenuItem spectatePlayer = new UIMenuItem(MenuLanguage.Items["SpectatePlayerItem"].Name ?? "Spectate Player", MenuLanguage.Items["SpectatePlayerItem"].Description ?? "Click to spectate this player", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem spectatePlayer = new vMenuItem(MenuLanguage.Items["SpectatePlayerItem"], "Spectate Player", "Click to spectate this player").Create();
             spectatePlayer.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             UIMenuItem PlayerPermissions = new UIMenuItem("Player Permissions","Click to check/change permissions for this player for this session (will reset if server or script restarts)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);

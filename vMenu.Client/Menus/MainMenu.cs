@@ -26,6 +26,7 @@ using vMenu.Client.Settings;
 using vMenu.Shared.Enums;
 
 using static CitizenFX.Core.Native.API;
+using vMenu.Client.Objects;
 
 namespace vMenu.Client.Menus
 {
@@ -40,39 +41,39 @@ namespace vMenu.Client.Menus
             mainMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Main Menu").Create();
             mainMenu.SetMouse(MenuSettings.MouseControlsEnabled, MenuSettings.MouseEdgeEnabled, MenuSettings.MouseWheelControlEnabled, false, true);
 
-            UIMenuItem onlinePlayers = new UIMenuItem(MenuLanguage.Items["OnlinePlayersItem"].Name ?? "Online Players", MenuLanguage.Items["OnlinePlayersItem"].Description ?? "All currently connected players.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem onlinePlayers = new vMenuItem(MenuLanguage.Items["OnlinePlayersItem"], "Online Players", "All currently connected players.").Create();
             onlinePlayers.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             onlinePlayers.SetRightLabel(">>>");
 
-            UIMenuItem bannedPlayers = new UIMenuItem(MenuLanguage.Items["BannedPlayersItem"].Name ?? "Banned Players", MenuLanguage.Items["BannedPlayersItem"].Description ?? "View and manage all banned players in this menu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem bannedPlayers = new vMenuItem(MenuLanguage.Items["BannedPlayersItem"], "Banned Players", "View and manage all banned players in this menu.").Create();
             bannedPlayers.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             bannedPlayers.SetRightLabel(">>>");
 
-            UIMenuItem playerRelatedOptions = new UIMenuItem(MenuLanguage.Items["PlayerOptionsItem"].Name ?? "Player Options", MenuLanguage.Items["PlayerOptionsItem"].Description ?? "Open this submenu for player related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem playerRelatedOptions = new vMenuItem(MenuLanguage.Items["PlayerOptionsItem"], "Player Options", "Open this submenu for player related subcategories.").Create();
             playerRelatedOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             playerRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem vehicleRelatedOptions = new UIMenuItem(MenuLanguage.Items["VehicleOptionsItem"].Name ?? "Vehicle Options", MenuLanguage.Items["VehicleOptionsItem"].Description ?? "Open this submenu for vehicle related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem vehicleRelatedOptions = new vMenuItem(MenuLanguage.Items["VehicleOptionsItem"], "Vehicle Options", "Open this submenu for vehicle related subcategories.").Create();
             vehicleRelatedOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             vehicleRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem worldRelatedOptions = new UIMenuItem(MenuLanguage.Items["WorldOptionsItem"].Name ?? "World Options", MenuLanguage.Items["WorldOptionsItem"].Description ?? "Open this submenu for world related subcategories.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem worldRelatedOptions = new vMenuItem(MenuLanguage.Items["WorldOptionsItem"], "World Options", "Open this submenu for world related subcategories.").Create();
             worldRelatedOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             worldRelatedOptions.SetRightLabel(">>>");
 
-            UIMenuItem voiceChatSettings = new UIMenuItem(MenuLanguage.Items["VoiceChatOptionsItem"].Name ?? "Voice Chat Options", MenuLanguage.Items["VoiceChatOptionsItem"].Description ?? "Change Voice Chat options here.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem voiceChatSettings = new vMenuItem(MenuLanguage.Items["VoiceChatOptionsItem"], "Voice Chat Options", "Change Voice Chat options here.").Create();
             voiceChatSettings.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             voiceChatSettings.SetRightLabel(">>>");
 
-            UIMenuItem recordingOptions = new UIMenuItem(MenuLanguage.Items["RockstarEditorOptionsItem"].Name ?? "R* Editor Options", MenuLanguage.Items["RockstarEditorOptionsItem"].Description ?? "In-game Rockstar Editor Options.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem recordingOptions = new vMenuItem(MenuLanguage.Items["RockstarEditorOptionsItem"], "R* Editor Options", "In-game Rockstar Editor Options.").Create();
             recordingOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             recordingOptions.SetRightLabel(">>>");
 
-            UIMenuItem miscOptions = new UIMenuItem(MenuLanguage.Items["MiscellaneousOptionsItem"].Name ?? "Miscellaneous Options", MenuLanguage.Items["MiscellaneousOptionsItem"].Description ?? "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem miscOptions = new vMenuItem(MenuLanguage.Items["MiscellaneousOptionsItem"], "Miscellaneous Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu").Create();
             miscOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             miscOptions.SetRightLabel(">>>");
 
-            UIMenuItem aboutvMenu = new UIMenuItem(MenuLanguage.Items["AboutvMenuItem"].Name ?? "About vMenu", MenuLanguage.Items["AboutvMenuItem"].Description ?? "Information about vMenu.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem aboutvMenu = new vMenuItem(MenuLanguage.Items["AboutvMenuItem"], "About vMenu", "Information about vMenu.").Create();
             aboutvMenu.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             aboutvMenu.SetRightLabel(">>>");
 
@@ -100,7 +101,7 @@ namespace vMenu.Client.Menus
             onlinePlayers.Activated += (sender, i) =>
             {
                 i.Label = MenuLanguage.Items["OnlinePlayersLoadingItem"].Name ?? "Loading Online Players";
-                MenuFunctions.Instance.UpdateOnlinePlayers(sender, i);
+                Instance.UpdateOnlinePlayers(sender, i);
             };
 
             bannedPlayers.Activated += (sender, i) =>

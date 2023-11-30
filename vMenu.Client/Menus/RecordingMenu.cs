@@ -12,6 +12,7 @@ using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
+using vMenu.Client.Objects;
 using vMenu.Client.Settings;
 
 using static CitizenFX.Core.Native.API;
@@ -31,15 +32,15 @@ namespace vMenu.Client.Menus
 
             recordingMenu = new Objects.vMenu(MenuLanguage.Subtitle ?? "Rockstar Editor Options").Create();
 
-            UIMenuItem takePicture = new UIMenuItem(MenuLanguage.Items["TakePictureItem"].Name ?? "Take Photo", MenuLanguage.Items["TakePictureItem"].Description ?? "Takes a photo and saves it to the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem takePicture = new vMenuItem(MenuLanguage.Items["TakePictureItem"], "Take Photo", "Takes a photo and saves it to the Pause Menu gallery.").Create();
             takePicture.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem openPmGallery = new UIMenuItem(MenuLanguage.Items["OpenPmGalleryItem"].Name ?? "Open Gallery", MenuLanguage.Items["OpenPmGalleryItem"].Description ?? "Opens the Pause Menu gallery.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem openPmGallery = new vMenuItem(MenuLanguage.Items["OpenPmGalleryItem"], "Open Gallery", "Opens the Pause Menu gallery.").Create();
             openPmGallery.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem startRecording = new UIMenuItem(MenuLanguage.Items["StartRecordingItem"].Name ?? "Start Recording", MenuLanguage.Items["StartRecordingItem"].Description ?? "Start a new game recording using GTA V's built in recording.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem startRecording = new vMenuItem(MenuLanguage.Items["StartRecordingItem"], "Start Recording", "Start a new game recording using GTA V's built in recording.").Create();
             startRecording.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem stopRecording = new UIMenuItem(MenuLanguage.Items["StopRecordingItem"].Name ?? "Stop Recording", MenuLanguage.Items["StopRecordingItem"].Description ?? "Stop and save your current recording.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem stopRecording = new vMenuItem(MenuLanguage.Items["StopRecordingItem"], "Stop Recording", "Stop and save your current recording.").Create();
             stopRecording.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem openRockstarEditor = new UIMenuItem(MenuLanguage.Items["OpenRockstarEditorItem"].Name ?? "Rockstar Editor", MenuLanguage.Items["OpenRockstarEditorItem"].Description ?? "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem openRockstarEditor = new vMenuItem(MenuLanguage.Items["OpenRockstarEditorItem"], "Rockstar Editor", "Open the Rockstar Editor, note you might want to quit the session first before doing this to prevent some issues.").Create();
             
             recordingMenu.AddItem(takePicture);
             recordingMenu.AddItem(openPmGallery);

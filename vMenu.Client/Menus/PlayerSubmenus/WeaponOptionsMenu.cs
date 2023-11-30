@@ -13,6 +13,7 @@ using ScaleformUI.Menu;
 
 using vMenu.Client.Functions;
 using vMenu.Client.Menus.OnlinePlayersSubmenus;
+using vMenu.Client.Objects;
 using vMenu.Client.Settings;
 using vMenu.Shared.Objects;
 
@@ -46,7 +47,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             weaponOptionsMenu.AddItem(button);
             // Menu Items
 
-            UIMenuItem getAllWeapons = new UIMenuItem(MenuLanguage.Items["GetAllWeaponsItem"].Name ?? "Get All Weapons", MenuLanguage.Items["GetAllWeaponsItem"].Description ?? "Get all weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem getAllWeapons = new vMenuItem(MenuLanguage.Items["GetAllWeaponsItem"], "Get All Weapons", "Get all weapons.").Create();
             getAllWeapons.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             UIMenuCheckboxItem unlimitedAmmo = new UIMenuCheckboxItem(MenuLanguage.Items["UnlimitedAmmoItem"].Name ?? "Unlimited Ammo", UnlimitedAmmo, MenuLanguage.Items["UnlimitedAmmoItem"].Description ?? "Unlimited ammunition supply.")
@@ -67,11 +68,11 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             };
             noReload.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
-            UIMenuItem setAmmo = new UIMenuItem(MenuLanguage.Items["SetAmmoItem"].Name ?? "Set All Ammo Count", MenuLanguage.Items["SetAmmoItem"].Description ?? "Set the amount of ammo in all your weapons.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem setAmmo = new vMenuItem(MenuLanguage.Items["SetAmmoItem"], "Set All Ammo Count", "Set the amount of ammo in all your weapons.").Create();
             setAmmo.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem refillMaxAmmo = new UIMenuItem(MenuLanguage.Items["RefillMaxAmmoItem"].Name ?? "Refill All Ammo", MenuLanguage.Items["RefillMaxAmmoItem"].Description ?? "Give all your weapons max ammo.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem refillMaxAmmo = new vMenuItem(MenuLanguage.Items["RefillMaxAmmoItem"], "Refill All Ammo", "Give all your weapons max ammo.").Create();
             refillMaxAmmo.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-            UIMenuItem spawnByName = new UIMenuItem(MenuLanguage.Items["SpawnByNameItem"].Name ?? "Spawn Weapon By Name", MenuLanguage.Items["SpawnByNameItem"].Description ?? "Enter a weapon mode name to spawn.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem spawnByName = new vMenuItem(MenuLanguage.Items["SpawnByNameItem"], "Spawn Weapon By Name", "Enter a weapon mode name to spawn.").Create();
             spawnByName.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
             weaponOptionsMenu.AddItem(getAllWeapons);
@@ -81,7 +82,7 @@ namespace vMenu.Client.Menus.PlayerSubmenus
             weaponOptionsMenu.AddItem(spawnByName);
             // Add-on Weapons Menu
 
-            UIMenuItem addonWeaponsBtn = new UIMenuItem(MenuLanguage.Items["AddonWeaponsItem"].Name ?? "Addon Weapons", MenuLanguage.Items["AddonWeaponsItem"].Description ?? "Equip / remove addon weapons available on this server.", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            UIMenuItem addonWeaponsBtn = new vMenuItem(MenuLanguage.Items["AddonWeaponsItem"], "Addon Weapons", "Equip / remove addon weapons available on this server.").Create();
             addonWeaponsBtn.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             addonWeaponsBtn.SetRightLabel("→→→");
 
