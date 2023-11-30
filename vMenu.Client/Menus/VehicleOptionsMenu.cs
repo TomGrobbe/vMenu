@@ -24,34 +24,6 @@ namespace vMenu.Client.Menus
 {
     public class VehicleOptionsMenu
     {
-
-        public static List<bool> allowedCategories = new List<bool>()
-            {
-                IsAllowed(Permission.VSCompacts),
-                IsAllowed(Permission.VSSedans),
-                IsAllowed(Permission.VSSUVs),
-                IsAllowed(Permission.VSCoupes),
-                IsAllowed(Permission.VSMuscle),
-                IsAllowed(Permission.VSSportsClassic),
-                IsAllowed(Permission.VSSports),
-                IsAllowed(Permission.VSSuper),
-                IsAllowed(Permission.VSMotorcycles),
-                IsAllowed(Permission.VSOffRoad),
-                IsAllowed(Permission.VSIndustrial),
-                IsAllowed(Permission.VSUtility),
-                IsAllowed(Permission.VSVans),
-                IsAllowed(Permission.VSCycles),
-                IsAllowed(Permission.VSBoats),
-                IsAllowed(Permission.VSHelicopters),
-                IsAllowed(Permission.VSPlanes),
-                IsAllowed(Permission.VSService),
-                IsAllowed(Permission.VSEmergency),
-                IsAllowed(Permission.VSMilitary),
-                IsAllowed(Permission.VSCommercial),
-                IsAllowed(Permission.VSTrains),
-                IsAllowed(Permission.VSOpenWheel)
-            };
-
         private static UIMenu vehicleRelatedOptions = null;
 
         public VehicleOptionsMenu()
@@ -72,8 +44,10 @@ namespace vMenu.Client.Menus
             VehicleSpawnerButton.SetRightLabel(">>>");
 
             button.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
-
-            vehicleRelatedOptions.AddItem(VehicleSpawnerButton);
+            if (IsAllowed(Permission.VSMenu))
+            {
+                vehicleRelatedOptions.AddItem(VehicleSpawnerButton);
+            }   
             vehicleRelatedOptions.AddItem(button);
 
 

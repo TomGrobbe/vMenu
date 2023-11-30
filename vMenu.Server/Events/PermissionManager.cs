@@ -27,9 +27,19 @@ namespace vMenu.Server.Events
         {
             EventDispatcher.Mount("RequestPermissions", new Func<int, Task<string>>(RequestPermissions));
         }
-        private async Task<string> RequestPermissions([FromSource] int source)
+        private async Task<string> RequestPermissions(int source)
         {
             var perms = new Dictionary<Permission, bool>();
+
+            string playerstring = source.ToString();
+            string license = GetPlayerIdentifierByType(playerstring, "license");
+            if (Main.UpdatedPerms.Count != 0)
+            {
+                if (Main.UpdatedPerms.TryGetValue(license, out var playerperms))
+                {
+                    return playerperms;
+                }
+            }
             if (!Convar.GetSettingsBool("vmenu_use_permissions"))
             {
                 foreach (var p in Enum.GetValues(typeof(Permission)))
@@ -56,14 +66,14 @@ namespace vMenu.Server.Events
                     var permission = GetAceName((Permission)p);
                     if (!perms.ContainsKey((Permission)p))
                     {
-                        perms.Add((Permission)p, IsPlayerAceAllowed(source.ToString(), permission)); // triggers IsAllowedServer
+                        perms.Add((Permission)p, IsPlayerAceAllowed(playerstring, permission)); // triggers IsAllowedServer
                     }
                 }
             }
             await Delay(10);
             return JsonConvert.SerializeObject(perms);;
         }
-        private static string GetAceName(Permission permission)
+        public static string GetAceName(Permission permission)
         {
             var name = permission.ToString();
 

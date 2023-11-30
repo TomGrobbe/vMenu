@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 using CitizenFX.Core;
 
+using Newtonsoft.Json;
+
+using FxEvents;
+
+using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.Menu;
 
@@ -45,10 +50,70 @@ namespace vMenu.Client.Menus.OnlinePlayersSubmenus
             UIMenuItem spectatePlayer = new vMenuItem(MenuLanguage.Items["SpectatePlayerItem"], "Spectate Player", "Click to spectate this player").Create();
             spectatePlayer.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
 
+            UIMenuItem PlayerPermissions = new UIMenuItem("Player Permissions","Click to check/change permissions for this player for this session (will reset if server or script restarts)", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor);
+            PlayerPermissions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+            PlayerPermissions.Activated += async (sender, i) =>
+            {
+                PlayerPermissions.Label = "Loading Player Permissions";
+                var permsmenu = new Objects.vMenu("Player Permissions").Create();
+                string permissions = await EventDispatcher.Get<string>("RequestPermissions", player.Player.ServerId);
+                Debug.WriteLine(permissions);
+                var Permissions = JsonConvert.DeserializeObject<Dictionary<vMenu.Shared.Enums.Permission, bool>>(permissions);
+                foreach ( var perm in Permissions)
+                {
+                    UIMenuCheckboxItem permbox = new UIMenuCheckboxItem($"{GetAceName(perm.Key)}", UIMenuCheckboxStyle.Tick, perm.Value, "", MenuSettings.Colours.Items.BackgroundColor, MenuSettings.Colours.Items.HighlightColor)
+                    {
+                        ItemData = perm.Key
+                    };
+                    permsmenu.AddItem(permbox);
+                }
+
+                permsmenu.OnCheckboxChange += (_sender, _item, _checked) => 
+                {
+                    Permissions[_item.ItemData] = _checked;
+                    BaseScript.TriggerServerEvent("vMenu:UpdatePerms",  player.Player.ServerId, JsonConvert.SerializeObject(Permissions));
+                };
+                
+                await sender.SwitchTo(permsmenu, inheritOldMenuParams: true);
+                PlayerPermissions.Label = "Player Permissions";
+            };
+
+
+
             onlinePlayerMenu.AddWindow(playerDetails);
             onlinePlayerMenu.AddItem(spectatePlayer);
+            onlinePlayerMenu.AddItem(PlayerPermissions);
 
             return onlinePlayerMenu;
+        }
+        public static string GetAceName(vMenu.Shared.Enums.Permission permission)
+        {
+            var name = permission.ToString();
+
+            var prefix = "";
+
+            switch (name.Substring(0, 2))
+            {
+                case "WR":
+                    prefix += "WorldRelatedOptions";
+                    break;
+                case "VO":
+                    prefix += "VehicleOptions";
+                    break;
+                case "PO":
+                    prefix += "PlayerOptions";
+                    break;
+                case "VC":
+                    prefix += "VoiceChat";
+                    break;
+                case "VS":
+                    prefix += "VehicleSpawner";
+                    break;
+                default:
+                    return prefix + name;
+            }
+
+            return prefix + "." + name.Substring(2);
         }
     }
 }
