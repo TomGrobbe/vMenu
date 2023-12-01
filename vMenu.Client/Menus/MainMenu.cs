@@ -69,6 +69,10 @@ namespace vMenu.Client.Menus
             recordingOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             recordingOptions.SetRightLabel(">>>");
 
+            UIMenuItem hudOptions = new vMenuItem(MenuLanguage.Items["HudOptionsItem"], "Hud Options", "Hud Options Menu.").Create();
+            hudOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
+            hudOptions.SetRightLabel(">>>");
+
             UIMenuItem miscOptions = new vMenuItem(MenuLanguage.Items["MiscellaneousOptionsItem"], "Miscellaneous Options", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu").Create();
             miscOptions.LabelFont = new ItemFont(Main.CustomFontName, Main.CustomFontId);
             miscOptions.SetRightLabel(">>>");
@@ -95,6 +99,7 @@ namespace vMenu.Client.Menus
             mainMenu.AddItem(voiceChatSettings);
 
             mainMenu.AddItem(recordingOptions);
+            mainMenu.AddItem(hudOptions);
             mainMenu.AddItem(miscOptions);
             mainMenu.AddItem(aboutvMenu);
 
@@ -134,9 +139,14 @@ namespace vMenu.Client.Menus
                 sender.SwitchTo(RecordingMenu.Menu(), inheritOldMenuParams: true);
             };
 
-            miscOptions.Activated += (sender, i) =>
+            recordingOptions.Activated += (sender, i) =>
             {
-                sender.SwitchTo(MiscOptionsMenu.Menu(), inheritOldMenuParams: true);
+                sender.SwitchTo(RecordingMenu.Menu(), inheritOldMenuParams: true);
+            };
+
+            hudOptions.Activated += (sender, i) =>
+            {
+                sender.SwitchTo(HudOptionsMenu.Menu(), inheritOldMenuParams: true);
             };
 
             aboutvMenu.Activated += (sender, i) =>

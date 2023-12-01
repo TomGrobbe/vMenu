@@ -31,7 +31,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
 
         public VehicleSpawnerMenu()
         {
-            var MenuLanguage = Languages.Menus["VehicleSpawnMenu"];
+           // var MenuLanguage = Languages.Menus["VehicleSpawnMenu"];
 
             VehicleSpawnMenu = new Objects.vMenu("Vehicle Spawner").Create();
 
@@ -121,7 +121,7 @@ namespace vMenu.Client.Menus.VehicleSubmenus
                 5.88f,
                 21.0700016f,
                 0.33f,
-                14.0f,
+                0.33f,
                 6.86f,
                 0.32f,
                 0.2f,
