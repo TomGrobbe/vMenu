@@ -376,6 +376,7 @@ namespace vMenuClient.data
                 "ASEA",
                 "ASEA2",
                 "ASTEROPE",
+                "ASTEROPE2", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "CINQUEMILA", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "COG55",
                 "COG552",
@@ -388,6 +389,7 @@ namespace vMenuClient.data
                 "FUGITIVE",
                 "GLENDALE",
                 "GLENDALE2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "IMPALER5", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
@@ -416,6 +418,7 @@ namespace vMenuClient.data
             #region SUVs
             public static List<string> SUVs { get; } = new List<string>()
             {
+                "ALEUTIAN", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "ASTRON", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "BALLER",
                 "BALLER2",
@@ -424,10 +427,13 @@ namespace vMenuClient.data
                 "BALLER5",
                 "BALLER6",
                 "BALLER7", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
+                "BALLER8", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "BJXL",
                 "CAVALCADE",
                 "CAVALCADE2",
+                "CAVALCADE3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "CONTENDER",
+                "DORADO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DUBSTA",
                 "DUBSTA2",
                 "FQ2",
@@ -454,6 +460,7 @@ namespace vMenuClient.data
                 "SERRANO",
                 "SQUADDIE", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TOROS",
+                "VIVANITE", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "XLS",
                 "XLS2",
             };
@@ -462,10 +469,12 @@ namespace vMenuClient.data
             public static List<string> Coupes { get; } = new List<string>()
             {
                 "COGCABRIO",
+                "DRIFTFR36", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "EXEMPLAR",
                 "F620",
                 "FELON",
                 "FELON2",
+                "FR36", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "JACKAL",
                 "KANJOSJ", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "ORACLE",
@@ -504,6 +513,8 @@ namespace vMenuClient.data
                 "DOMINATOR6",
                 "DOMINATOR7", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DOMINATOR8", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "DOMINATOR9", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTYOSEMITE", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DUKES",
                 "DUKES2",
                 "DUKES3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
@@ -525,6 +536,7 @@ namespace vMenuClient.data
                 "IMPALER2",
                 "IMPALER3",
                 "IMPALER4",
+                "IMPALER6", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "IMPERATOR",
                 "IMPERATOR2",
                 "IMPERATOR3",
@@ -560,6 +572,7 @@ namespace vMenuClient.data
                 "VAMOS",
                 "VIGERO",
                 "VIGERO2", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "VIGERO3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "VIRGO",
                 "VIRGO2",
                 "VIRGO3",
@@ -646,6 +659,12 @@ namespace vMenuClient.data
                 "COUREUR", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "DRIFTEUROS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTFUTO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTJESTER", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTREMUS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTTAMPA", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTZR350", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "ELEGY",
                 "ELEGY2",
                 "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
@@ -775,6 +794,7 @@ namespace vMenuClient.data
                 "TIGON", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "TORERO2", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "TURISMOR",
+                "TURISMO3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "TYRANT",
                 "TYRUS",
                 "VACCA",
@@ -914,6 +934,7 @@ namespace vMenuClient.data
                 "TECHNICAL",
                 "TECHNICAL2",
                 "TECHNICAL3",
+                "TERMINUS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "TROPHYTRUCK",
                 "TROPHYTRUCK2",
                 "VAGRANT", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
@@ -956,6 +977,8 @@ namespace vMenuClient.data
                 "SLAMTRUCK", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TOWTRUCK",
                 "TOWTRUCK2",
+                "TOWTRUCK3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "TOWTRUCK4", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "TRACTOR", // Tractor (rusted/old)
                 "TRACTOR2", // Fieldmaster
                 "TRACTOR3", // Fieldmaster
@@ -982,7 +1005,9 @@ namespace vMenuClient.data
                 "TRAILERS4", // White Container Trailer
                 "TRAILERS2", // Box Trailer
                 "TRAILERS3", // Ramp Box Trailer
+                "TRAILERS5", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "TVTRAILER", // Fame or Shame Trailer
+                "TVTRAILER2", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "TRAILERLOGS", // Logs Trailer
                 "TANKER", // Ron Oil Tanker Trailer
                 "TANKER2", // Ron Oil Tanker Trailer (Heist Version)
@@ -996,6 +1021,8 @@ namespace vMenuClient.data
 
                 /// Small Trailers
                 "BOATTRAILER", // Small Boat Trailer
+                "BOATTRAILER2", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "BOATTRAILER3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "RAKETRAILER", // Tractor Tow Plow/Rake
                 "TRAILERSMALL", // Small Utility Trailer
             };
@@ -1012,6 +1039,7 @@ namespace vMenuClient.data
                 "BOXVILLE3",
                 "BOXVILLE4",
                 "BOXVILLE5",
+                "BOXVILLE6", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "BURRITO",
                 "BURRITO2",
                 "BURRITO3",
@@ -1199,10 +1227,12 @@ namespace vMenuClient.data
                 "FIRETRUK",
                 "LGUARD",
                 "PBUS",
+                "POLGAUNTLET", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "POLICE",
                 "POLICE2",
                 "POLICE3",
                 "POLICE4",
+                "POLICE5", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "POLICEB",
                 "POLICEOLD1",
                 "POLICEOLD2",
@@ -1242,6 +1272,7 @@ namespace vMenuClient.data
             public static List<string> Commercial { get; } = new List<string>()
             {
                 "BENSON",
+                "BENSON2", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "BIFF",
                 "CERBERUS",
                 "CERBERUS2",
@@ -1257,6 +1288,7 @@ namespace vMenuClient.data
                 "PHANTOM",
                 "PHANTOM2",
                 "PHANTOM3",
+                "PHANTOM4", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "POUNDER",
                 "POUNDER2",
                 "STOCKADE",
@@ -1269,6 +1301,7 @@ namespace vMenuClient.data
             {
                 "CABLECAR",
                 "FREIGHT",
+                "FREIGHT2", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "FREIGHTCAR",
                 "FREIGHTCONT1",
                 "FREIGHTCONT2",
