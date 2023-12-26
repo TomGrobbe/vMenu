@@ -259,6 +259,9 @@ namespace vMenuClient.data
             { "weapon_railgunxm3", GetLabelText("WTD_RAILGUNXM3") },
             // MP2023_01 DLC (V 2944)
             { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
+            // MP2023_02 DLC (V 3095)
+            { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
+            { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -376,6 +379,10 @@ namespace vMenuClient.data
             { "weapon_acidpackage", GetLabelText("WT_ACIDPACKAGE") },
             // MP2023_01 DLC (V 2944)
             { "weapon_tecpistol", GetLabelText("WT_TECPISTOL") },
+            // MP2023_02 DLC (V 3095)
+            { "weapon_battlerifle", GetLabelText("WT_BATTLERIFLE") },
+            { "weapon_snowlauncher", GetLabelText("WT_SNOWLNCHR") },
+            { "weapon_hackingdevice", GetLabelText("WT_HACKDEVICE") },
         };
         #endregion
 
@@ -495,6 +502,10 @@ namespace vMenuClient.data
             ["weapon_acidpackage"] = Permission.WPAcidPackage,
             // MP2023_01 DLC (V 2944)
             ["weapon_tecpistol"] = Permission.WPTecPistol,
+            // MP2023_02 DLC (V 3095)
+            ["weapon_battlerifle"] = Permission.WPBattleRifle,
+            ["weapon_snowlauncher"] = Permission.WPSnowLauncher,
+            ["weapon_hackingdevice"] = Permission.WPHackingDevice,
         };
         #endregion
 
@@ -912,6 +923,12 @@ namespace vMenuClient.data
             ["COMPONENT_MICROSMG_VARMOD_FRN"] = GetLabelText("WCT_MSMGFRN_VAR"),
             ["COMPONENT_CARBINERIFLE_VARMOD_MICH"] = GetLabelText("WCT_CRBNMIC_VAR"),
             ["COMPONENT_RPG_VARMOD_TVR"] = GetLabelText("WCT_RPGTVR_VAR"),
+            // MP2023_02 DLC (V 3095)
+            ["COMPONENT_BATTLERIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_BATTLERIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_COMBATPISTOL_VARMOD_XMAS23"] = GetLabelText("WCT_COMPIST_XM"),
+            ["COMPONENT_SPECIALCARBINE_VARMOD_XMAS23"] = GetLabelText("WCT_SPCR_XM"),
+            ["COMPONENT_HEAVYSNIPER_VARMOD_XMAS23"] = GetLabelText("WCT_HVSP_XM"),
         };
         #endregion
 
