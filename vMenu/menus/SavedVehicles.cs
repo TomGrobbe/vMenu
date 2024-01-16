@@ -31,7 +31,7 @@ namespace vMenuClient.menus
         private SavedVehicleCategory currentCategory;
 
         // Need to be editable from other functions
-        private readonly MenuListItem setCategoryBtn = new("Set Vehicle Category", [], 0, "Sets this Vehicle's category. Select to save.");
+        private readonly MenuListItem setCategoryBtn = new("Set Vehicle Category", new List<string> {}, 0, "Sets this Vehicle's category. Select to save.");
 
         /// <summary>
         /// Creates the menu.
@@ -901,7 +901,7 @@ namespace vMenuClient.menus
 
         private List<MenuItem.Icon> GetCategoryIcons(List<string> categoryNames)
         {
-            List<MenuItem.Icon> icons = [];
+            List<MenuItem.Icon> icons = new List<MenuItem.Icon> {};
 
             foreach (var name in categoryNames)
             {
