@@ -2737,7 +2737,7 @@ namespace vMenuClient.menus
 
         private List<MenuItem.Icon> GetCategoryIcons(List<string> categoryNames)
         {
-            List<MenuItem.Icon> icons = new List<string> {};
+            List<MenuItem.Icon> icons = new List<MenuItem.Icon> {};
 
             foreach (var name in categoryNames)
             {
