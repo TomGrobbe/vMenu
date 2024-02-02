@@ -408,7 +408,7 @@ namespace vMenuClient.menus
             }
 
             // model outlines
-            if (!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_disable_entity_outlines_tool))
+            if ((!vMenuShared.ConfigManager.GetSettingsBool(vMenuShared.ConfigManager.Setting.vmenu_disable_entity_outlines_tool)) && (IsAllowed(Permission.MSDevTools)))
             {
                 developerToolsMenu.AddMenuItem(vehModelDimensions);
                 developerToolsMenu.AddMenuItem(propModelDimensions);
