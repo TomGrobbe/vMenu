@@ -120,10 +120,10 @@ namespace vMenuClient
             }
             #endregion
             #region keymapping
-            string KeyMappingID = String.IsNullOrWhiteSpace(GetSettingsString(Setting.vmenu_keymapping_id)) ? "Default" :  GetSettingsString(Setting.vmenu_keymapping_id);
+            string KeyMappingID = String.IsNullOrWhiteSpace(GetSettingsString(Setting.vmenu_keymapping_id)) ? "Default" : GetSettingsString(Setting.vmenu_keymapping_id);
             RegisterCommand($"vMenu:{KeyMappingID}:NoClip", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
-                if ( IsAllowed(Permission.NoClip) )
+                if (IsAllowed(Permission.NoClip))
                 {
                     if (Game.PlayerPed.IsInVehicle())
                     {
@@ -146,17 +146,17 @@ namespace vMenuClient
             }), false);
             RegisterCommand($"vMenu:{KeyMappingID}:MenuToggle", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
             {
-               if (MenuEnabled)
-               {
-                   if (!MenuController.IsAnyMenuOpen())
-                   {
-                       Menu.OpenMenu();
-                   }
-                   else
-                   {
-                       MenuController.CloseAllMenus();
-                   }
-               }
+                if (MenuEnabled)
+                {
+                    if (!MenuController.IsAnyMenuOpen())
+                    {
+                        Menu.OpenMenu();
+                    }
+                    else
+                    {
+                        MenuController.CloseAllMenus();
+                    }
+                }
             }), false);
 
             if (!(GetSettingsString(Setting.vmenu_noclip_toggle_key) == null))

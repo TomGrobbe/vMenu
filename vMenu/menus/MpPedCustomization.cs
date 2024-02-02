@@ -38,8 +38,8 @@ namespace vMenuClient.menus
         internal MenuItem editPedBtn = new("Edit Saved Character", "This allows you to edit everything about your saved character. The changes will be saved to this character's save file entry once you hit the save button.");
 
         // Need to be editable from other functions
-        private readonly MenuListItem setCategoryBtn = new("Set Character Category", new List<string> {}, 0, "Sets this character's category. Select to save.");
-        private readonly MenuListItem categoryBtn = new("Character Category", new List<string> {}, 0, "Sets this character's category.");
+        private readonly MenuListItem setCategoryBtn = new("Set Character Category", new List<string> { }, 0, "Sets this character's category. Select to save.");
+        private readonly MenuListItem categoryBtn = new("Character Category", new List<string> { }, 0, "Sets this character's category.");
 
         public static bool DontCloseMenus { get { return MenuController.PreventExitingMenu; } set { MenuController.PreventExitingMenu = value; } }
         public static bool DisableBackButton { get { return MenuController.DisableBackButton; } set { MenuController.DisableBackButton = value; } }
@@ -2605,7 +2605,7 @@ namespace vMenuClient.menus
                                         }
                                     }
                                 }
-                            }                            
+                            }
 
                             Notify.Success($"Your saved category has been deleted. {updatedCount}/{totalCount} characters {(deletePeds ? "deleted" : "updated")}.");
                             MenuController.CloseAllMenus();
@@ -2737,7 +2737,7 @@ namespace vMenuClient.menus
 
         private List<MenuItem.Icon> GetCategoryIcons(List<string> categoryNames)
         {
-            List<MenuItem.Icon> icons = new List<MenuItem.Icon> {};
+            List<MenuItem.Icon> icons = new List<MenuItem.Icon> { };
 
             foreach (var name in categoryNames)
             {

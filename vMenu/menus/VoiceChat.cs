@@ -5,10 +5,8 @@ using CitizenFX.Core;
 using MenuAPI;
 
 using static vMenuClient.CommonFunctions;
-
-using static vMenuShared.PermissionsManager;
-
 using static vMenuShared.ConfigManager;
+using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient.menus
 {
@@ -69,7 +67,7 @@ namespace vMenuClient.menus
                 "2 km",
                 "Global",
             };
-            var voiceChatProximity = new MenuItem("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")" ,  "Set the voice chat receiving proximity in meters. Set to 0 for global.");
+            var voiceChatProximity = new MenuItem("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")", "Set the voice chat receiving proximity in meters. Set to 0 for global.");
             var voiceChatChannel = new MenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
 
             if (IsAllowed(Permission.VCEnable))
@@ -121,7 +119,7 @@ namespace vMenuClient.menus
                     {
                         currentProximity = resultfloat;
                         Subtitle.Custom($"New voice chat proximity set to: ~b~{ConvertToMetric(currentProximity)}~s~.");
-                        voiceChatProximity.Text = ("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")" );
+                        voiceChatProximity.Text = ("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")");
                     }
                 }
             };
@@ -145,7 +143,7 @@ namespace vMenuClient.menus
                     val = (input / 1000) + "km";
                 }
             }
-            if (input==0)
+            if (input == 0)
             {
                 val = "global";
             }
