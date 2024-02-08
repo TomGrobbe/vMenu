@@ -52,7 +52,7 @@ namespace vMenu.Server
                 var val = user.Handle == targetPlayer.ToString();
                 if (val)
                 {
-                    TriggerClientEvent(user, "vMenu:RestartMenu");
+                    user.TriggerEvent("vMenu:RestartMenu");
                 }
             }
         }       

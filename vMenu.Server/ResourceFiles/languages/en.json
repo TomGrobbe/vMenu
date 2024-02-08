@@ -44,6 +44,11 @@
           "Description": "In-game Rockstar Editor Options."
         },
 
+        "HudOptionsItem": {
+          "Name": "Hud Options",
+          "Description": "Hud Options Menu."
+        },
+
         "MiscellaneousOptionsItem": {
           "Name": "Miscellaneous Options",
           "Description": "In-game Rockstar Editor Options."
@@ -280,6 +285,28 @@
       }
     },
 
+    "HudOptionsMenu": {
+      "Subtitle": "Hud Options",
+
+      "Items": {
+        "VehicleHudMenu": {
+          "Name": "Vehicle Hud Menu",
+          "Description": "Vehicle Hud Options Menu"
+        },
+      }
+    },
+
+    "VehicleHudMenu": {
+      "Subtitle": "Vehicle Hud Menu",
+
+      "Items": {
+        "VehicleHudMenu": {
+          "Name": "Vehicle Hud Menu",
+          "Description": "Vehicle Hud Options Menu"
+        },
+      }
+    },
+
     "AboutMenu": {
       "Subtitle": "About vMenu",
 
@@ -310,7 +337,7 @@
       "Subtitle": "Time Options",
 
       "Items": {
-        "Freeze": {
+        "FreezeItem": {
           "Name": "Freeze/Unfreeze Time",
           "Description": "Enable or disable time freezing."
         },

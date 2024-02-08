@@ -20,6 +20,7 @@ namespace vMenu.Client.Events
 {
     public class MenuEvents
     {
+        public static bool NoClipEnabled { get { return Functions.NoClip.IsNoclipActive(); } set { Functions.NoClip.SetNoclipActive(value); } }
         private static readonly object _padlock = new();
         private static MenuEvents _instance;
         public static Dictionary<vMenu.Shared.Enums.Permission, bool> Permissions;
@@ -70,6 +71,7 @@ namespace vMenu.Client.Events
             _ = Commands.Instance;
             _ = NoClip.Instance;
             _ = TimeWeather.Instance;
+            NoClipEnabled = false;
             MenuFunctions.Instance.RestartMenu();
             Debug.WriteLine(permissions);
         }

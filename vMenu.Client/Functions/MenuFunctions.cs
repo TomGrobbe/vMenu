@@ -21,6 +21,7 @@ using vMenu.Shared.Objects;
 using vMenu.Client.Events;
 
 using static CitizenFX.Core.Native.API;
+using CitizenFX.Core.UI;
 
 namespace vMenu.Client.Functions
 {
@@ -31,6 +32,7 @@ namespace vMenu.Client.Functions
 
         private MenuFunctions()
         {
+            Main.Instance.AttachTick(HudTick);
             Debug.WriteLine("MenuFunctions Initialized");
         }
 
@@ -180,12 +182,81 @@ namespace vMenu.Client.Functions
         {
            return (GetGameBuildNumber() >= build);
         }
-        public async void MiscSettingsTask()
-        {
 
-            
-            BaseScript.Delay(0);
-            return;
+        public async Task HudTick()
+        {
+            if (Menus.HudSubmenus.VehicleHudMenu.Menu() != null && Game.PlayerPed.IsInVehicle())
+            {
+                int textamount = 0;
+                if (ScaleformUI.MenuHandler.CurrentMenu != null)
+                {
+                    textamount++;
+                }
+                if (Menus.HudSubmenus.VehicleHudMenu.SpeedOMeter.Checked)
+                {
+                    if (ShouldUseMetricMeasurements())
+                    {
+                        DrawTextOnScreen($"{Math.Round(GetEntitySpeed(GetVehicle().Handle) * 3.6f)} KPH", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);
+                        textamount ++;
+                    }
+                    else
+                    {
+                        DrawTextOnScreen($"{Math.Round(GetEntitySpeed(GetVehicle().Handle) * 2.236936f)} MPH", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);  
+                        textamount ++;
+                    }
+                }
+                if (Menus.HudSubmenus.VehicleHudMenu.VehicleHealth.Checked)
+                {
+                    DrawTextOnScreen($"Body Health: {Math.Round(GetVehicleBodyHealth(GetVehicle().Handle))}", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);
+                    textamount ++;
+                    DrawTextOnScreen($"Engine Health: {Math.Round(GetVehicleEngineHealth(GetVehicle().Handle))}", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);
+                    textamount ++;
+                }
+                if (Menus.HudSubmenus.VehicleHudMenu.Vehiclefuel.Checked)
+                {
+                    DrawTextOnScreen($"Fuel: {Math.Round(GetVehicleFuelLevel(GetVehicle().Handle))}", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);
+                    textamount ++;
+                }
+                if (Menus.HudSubmenus.VehicleHudMenu.VehicleTurbo.Checked)
+                {
+                    DrawTextOnScreen($"Turbo Pressure: {GetVehicleTurboPressure(GetVehicle().Handle)}", 0.995f, (float)(0.955f - (0.035 * textamount)), 0.7f, Alignment.Right);
+                    textamount ++;
+                }
+
+            }
+            await Task.FromResult(0);
+        }
+        public static void DrawTextOnScreen(string text = "Default", float xPosition = 0.0f, float yPosition = 0.0f, float size = 0.5f, CitizenFX.Core.UI.Alignment justification = Alignment.Center, int font = 6, bool disableTextOutline = false)
+        {
+            if (IsHudPreferenceSwitchedOn() && !IsPlayerSwitchInProgress() && IsScreenFadedIn() && !IsPauseMenuActive() && !IsFrontendFading() && !IsPauseMenuRestarting() && !IsHudHidden())
+            {
+                SetTextFont(font);
+                SetTextScale(1.0f, size);
+                if (justification == CitizenFX.Core.UI.Alignment.Right)
+                {
+                    SetTextWrap(0f, xPosition);
+                }
+                SetTextJustification((int)justification);
+                if (!disableTextOutline) { SetTextOutline(); }
+                BeginTextCommandDisplayText("STRING");
+                AddTextComponentSubstringPlayerName(text);
+                EndTextCommandDisplayText(xPosition, yPosition);
+            }
+        }
+        public static Vehicle GetVehicle(bool lastVehicle = false)
+        {
+            if (lastVehicle)
+            {
+                return Game.PlayerPed.LastVehicle;
+            }
+            else
+            {
+                if (Game.PlayerPed.IsInVehicle())
+                {
+                    return Game.PlayerPed.CurrentVehicle;
+                }
+            }
+            return null;
         }
         public void InitializeAllMenus()
         {
@@ -195,6 +266,7 @@ namespace vMenu.Client.Functions
             _ = new Menus.PlayerSubmenus.WeaponOptionsMenu();
             _ = new Menus.OnlinePlayersSubmenus.OnlinePlayerMenu();
             _ = new Menus.VehicleSubmenus.VehicleSpawnerMenu();
+            _ = new Menus.HudSubmenus.VehicleHudMenu();
 
             // Menus //
             _ = new OnlinePlayersMenu();
@@ -204,6 +276,7 @@ namespace vMenu.Client.Functions
             _ = new WorldOptionsMenu();
             _ = new VoiceChatOptionsMenu();
             _ = new RecordingMenu();
+            _ = new HudOptionsMenu();
             _ = new MiscOptionsMenu();
             _ = new AboutMenu();
             _ = new MainMenu();
