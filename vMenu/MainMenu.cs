@@ -176,9 +176,10 @@ namespace vMenuClient
             {
                 MenuToggleKey = "M";
             }
-
+            MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
             RegisterKeyMapping($"vMenu:{KeyMappingID}:NoClip", "vMenu NoClip Toggle Button", "keyboard", NoClipKey);
             RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu Toggle Button", "keyboard", MenuToggleKey);
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu Toggle Button Controller", "pad_digitalbuttonany", "start_index");
             #endregion
             if (EnableExperimentalFeatures)
             {
