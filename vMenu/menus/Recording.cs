@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
-using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class Recording
     {
@@ -21,12 +15,20 @@ namespace vMenuClient
 
         private void CreateMenu()
         {
+            AddTextEntryByHash(0x86F10CE6, "Upload To Cfx.re Forum"); // Replace the "Upload To Social Club" button in gallery
+            AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
+
             // Create the menu.
             menu = new Menu("Recording", "Recording Options");
 
-            MenuItem startRec = new MenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
-            MenuItem stopRec = new MenuItem("Stop Recording", "Stop and save your current recording.");
-            MenuItem openEditor = new MenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
+            var takePic = new MenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.");
+            var openPmGallery = new MenuItem("Open Gallery", "Opens the Pause Menu gallery.");
+            var startRec = new MenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
+            var stopRec = new MenuItem("Stop Recording", "Stop and save your current recording.");
+            var openEditor = new MenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
+
+            menu.AddMenuItem(takePic);
+            menu.AddMenuItem(openPmGallery);
             menu.AddMenuItem(startRec);
             menu.AddMenuItem(stopRec);
             menu.AddMenuItem(openEditor);
@@ -43,6 +45,16 @@ namespace vMenuClient
                     {
                         StartRecording(1);
                     }
+                }
+                else if (item == openPmGallery)
+                {
+                    ActivateFrontendMenu((uint)GetHashKey("FE_MENU_VERSION_MP_PAUSE"), true, 3);
+                }
+                else if (item == takePic)
+                {
+                    BeginTakeHighQualityPhoto();
+                    SaveHighQualityPhoto(-1);
+                    FreeMemoryForHighQualityPhoto();
                 }
                 else if (item == stopRec)
                 {

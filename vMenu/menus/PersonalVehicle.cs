@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using MenuAPI;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class PersonalVehicle
     {
@@ -35,23 +33,24 @@ namespace vMenuClient
             // Menu
             menu = new Menu(GetSafePlayerName(Game.Player.Name), "Personal Vehicle Options");
 
-            // menu items
-            MenuItem setVehice = new MenuItem("Set Vehicle", "Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.") { Label = "Current Vehicle: None" };
-            MenuItem toggleEngine = new MenuItem("Toggle Engine", "Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle.");
-            MenuListItem toggleLights = new MenuListItem("Set Vehicle Lights", new List<string>() { "Force On", "Force Off", "Reset" }, 0, "This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work.");
-            MenuListItem toggleStance = new MenuListItem("Vehicle Stance", new List<string>() { "Default", "Lowered" }, 0, "Select stance for your Personal Vehicle.");
-            MenuItem kickAllPassengers = new MenuItem("Kick Passengers", "This will remove all passengers from your personal vehicle.");
+            // menu itemsß
+            var setVehice = new MenuItem("Set Vehicle", "Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.") { Label = "Current Vehicle: None" };
+            var toggleEngine = new MenuItem("Toggle Engine", "Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle.");
+            var toggleLights = new MenuListItem("Set Vehicle Lights", new List<string>() { "Force On", "Force Off", "Reset" }, 0, "This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work.");
+            var toggleStance = new MenuListItem("Vehicle Stance", new List<string>() { "Default", "Lowered" }, 0, "Select stance for your Personal Vehicle.");
+            var kickAllPassengers = new MenuItem("Kick Passengers", "This will remove all passengers from your personal vehicle.");
+
             //MenuItem
-            MenuItem lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
-            MenuItem unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
-            MenuItem doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
+            var lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
+            var unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
+            var doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
             {
                 Label = "→→→"
             };
-            MenuItem soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
-            MenuItem toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
-            MenuCheckboxItem enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
-            MenuCheckboxItem exclusiveDriver = new MenuCheckboxItem("Exclusive Driver", "If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            var soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
+            var toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
+            var enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            var exclusiveDriver = new MenuCheckboxItem("Exclusive Driver", "If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
             //submenu
             VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
             MenuController.AddSubmenu(menu, VehicleDoorsMenu);
@@ -93,7 +92,7 @@ namespace vMenuClient
                 menu.AddMenuItem(unlockDoors);
             }
 
-            if(IsAllowed(Permission.PVDoors))
+            if (IsAllowed(Permission.PVDoors))
             {
                 menu.AddMenuItem(doorsMenuBtn);
             }
@@ -311,7 +310,7 @@ namespace vMenuClient
                         else if (item == lockDoors || item == unlockDoors)
                         {
                             PressKeyFob(CurrentPersonalVehicle);
-                            bool _lock = item == lockDoors;
+                            var _lock = item == lockDoors;
                             LockOrUnlockDoors(CurrentPersonalVehicle, _lock);
                         }
 
@@ -335,20 +334,20 @@ namespace vMenuClient
             };
 
             #region Doors submenu 
-            MenuItem openAll = new MenuItem("Open All Doors", "Open all vehicle doors.");
-            MenuItem closeAll = new MenuItem("Close All Doors", "Close all vehicle doors.");
-            MenuItem LF = new MenuItem("Left Front Door", "Open/close the left front door.");
-            MenuItem RF = new MenuItem("Right Front Door", "Open/close the right front door.");
-            MenuItem LR = new MenuItem("Left Rear Door", "Open/close the left rear door.");
-            MenuItem RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
-            MenuItem HD = new MenuItem("Hood", "Open/close the hood.");
-            MenuItem TR = new MenuItem("Trunk", "Open/close the trunk.");
-            MenuItem E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
-            MenuItem E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
-            MenuItem BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
+            var openAll = new MenuItem("Open All Doors", "Open all vehicle doors.");
+            var closeAll = new MenuItem("Close All Doors", "Close all vehicle doors.");
+            var LF = new MenuItem("Left Front Door", "Open/close the left front door.");
+            var RF = new MenuItem("Right Front Door", "Open/close the right front door.");
+            var LR = new MenuItem("Left Rear Door", "Open/close the left rear door.");
+            var RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
+            var HD = new MenuItem("Hood", "Open/close the hood.");
+            var TR = new MenuItem("Trunk", "Open/close the trunk.");
+            var E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
+            var E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
+            var BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
             var doors = new List<string>() { "Front Left", "Front Right", "Rear Left", "Rear Right", "Hood", "Trunk", "Extra 1", "Extra 2", "Bomb Bay" };
-            MenuListItem removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
-            MenuCheckboxItem deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
+            var removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
+            var deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -366,8 +365,8 @@ namespace vMenuClient
 
             VehicleDoorsMenu.OnListItemSelect += (sender, item, index, itemIndex) =>
             {
-                Vehicle veh = CurrentPersonalVehicle;
-                if(veh != null && veh.Exists())
+                var veh = CurrentPersonalVehicle;
+                if (veh != null && veh.Exists())
                 {
                     if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
                     {
@@ -378,7 +377,7 @@ namespace vMenuClient
                         }
                     }
 
-                    if(item == removeDoorList)
+                    if (item == removeDoorList)
                     {
                         PressKeyFob(veh);
                         SetVehicleDoorBroken(veh.Handle, index, deleteDoors.Checked);
@@ -388,8 +387,8 @@ namespace vMenuClient
 
             VehicleDoorsMenu.OnItemSelect += (sender, item, index) =>
             {
-                Vehicle veh = CurrentPersonalVehicle;
-                if(veh != null && veh.Exists() && !veh.IsDead)
+                var veh = CurrentPersonalVehicle;
+                if (veh != null && veh.Exists() && !veh.IsDead)
                 {
                     if (!NetworkHasControlOfEntity(CurrentPersonalVehicle.Handle))
                     {
@@ -402,41 +401,47 @@ namespace vMenuClient
 
                     if (index < 8)
                     {
-                        bool open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f;
+                        var open = GetVehicleDoorAngleRatio(veh.Handle, index) > 0.1f;
                         PressKeyFob(veh);
-                        if(open)
+                        if (open)
                         {
                             SetVehicleDoorShut(veh.Handle, index, false);
-                        } else
+                        }
+                        else
                         {
                             SetVehicleDoorOpen(veh.Handle, index, false, false);
                         }
-                    } else if(item == openAll)
+                    }
+                    else if (item == openAll)
                     {
                         PressKeyFob(veh);
-                        for(var door = 0; door < 8; door++)
+                        for (var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorOpen(veh.Handle, door, false, false);
                         }
-                    } else if(item == closeAll)
+                    }
+                    else if (item == closeAll)
                     {
                         PressKeyFob(veh);
-                        for(var door = 0; door < 8; door++)
+                        for (var door = 0; door < 8; door++)
                         {
                             SetVehicleDoorShut(veh.Handle, door, false);
                         }
-                    } else if(item == BB && veh.HasBombBay)
+                    }
+                    else if (item == BB && veh.HasBombBay)
                     {
                         PressKeyFob(veh);
-                        bool bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
-                        if(bombBayOpen)
+                        var bombBayOpen = AreBombBayDoorsOpen(veh.Handle);
+                        if (bombBayOpen)
                         {
                             veh.CloseBombBay();
-                        } else
+                        }
+                        else
                         {
                             veh.OpenBombBay();
                         }
-                    } else
+                    }
+                    else
                     {
                         Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
                     }
@@ -451,7 +456,7 @@ namespace vMenuClient
         {
             if (veh != null && veh.Exists())
             {
-                int timer = GetGameTimer();
+                var timer = GetGameTimer();
                 while (GetGameTimer() - timer < 1000)
                 {
                     SoundVehicleHornThisFrame(veh.Handle);

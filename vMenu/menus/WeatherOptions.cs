@@ -1,18 +1,15 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
-using static vMenuShared.PermissionsManager;
+
+using MenuAPI;
+
 using vMenuShared;
 
-namespace vMenuClient
+using static vMenuClient.CommonFunctions;
+using static vMenuShared.PermissionsManager;
+
+namespace vMenuClient.menus
 {
     public class WeatherOptions
     {
@@ -21,7 +18,7 @@ namespace vMenuClient
         public MenuCheckboxItem dynamicWeatherEnabled;
         public MenuCheckboxItem blackout;
         public MenuCheckboxItem snowEnabled;
-        public static readonly List<string> weatherTypes = new List<string>()
+        public static readonly List<string> weatherTypes = new()
         {
             "EXTRASUNNY",
             "CLEAR",
@@ -48,23 +45,23 @@ namespace vMenuClient
             dynamicWeatherEnabled = new MenuCheckboxItem("Toggle Dynamic Weather", "Enable or disable dynamic weather changes.", EventManager.DynamicWeatherEnabled);
             blackout = new MenuCheckboxItem("Toggle Blackout", "This disables or enables all lights across the map.", EventManager.IsBlackoutEnabled);
             snowEnabled = new MenuCheckboxItem("Enable Snow Effects", "This will force snow to appear on the ground and enable snow particle effects for peds and vehicles. Combine with X-MAS or Light Snow weather for best results.", ConfigManager.GetSettingsBool(ConfigManager.Setting.vmenu_enable_snow));
-            MenuItem extrasunny = new MenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!") { ItemData = "EXTRASUNNY" };
-            MenuItem clear = new MenuItem("Clear", "Set the weather to ~y~clear~s~!") { ItemData = "CLEAR" };
-            MenuItem neutral = new MenuItem("Neutral", "Set the weather to ~y~neutral~s~!") { ItemData = "NEUTRAL" };
-            MenuItem smog = new MenuItem("Smog", "Set the weather to ~y~smog~s~!") { ItemData = "SMOG" };
-            MenuItem foggy = new MenuItem("Foggy", "Set the weather to ~y~foggy~s~!") { ItemData = "FOGGY" };
-            MenuItem clouds = new MenuItem("Cloudy", "Set the weather to ~y~clouds~s~!") { ItemData = "CLOUDS" };
-            MenuItem overcast = new MenuItem("Overcast", "Set the weather to ~y~overcast~s~!") { ItemData = "OVERCAST" };
-            MenuItem clearing = new MenuItem("Clearing", "Set the weather to ~y~clearing~s~!") { ItemData = "CLEARING" };
-            MenuItem rain = new MenuItem("Rainy", "Set the weather to ~y~rain~s~!") { ItemData = "RAIN" };
-            MenuItem thunder = new MenuItem("Thunder", "Set the weather to ~y~thunder~s~!") { ItemData = "THUNDER" };
-            MenuItem blizzard = new MenuItem("Blizzard", "Set the weather to ~y~blizzard~s~!") { ItemData = "BLIZZARD" };
-            MenuItem snow = new MenuItem("Snow", "Set the weather to ~y~snow~s~!") { ItemData = "SNOW" };
-            MenuItem snowlight = new MenuItem("Light Snow", "Set the weather to ~y~light snow~s~!") { ItemData = "SNOWLIGHT" };
-            MenuItem xmas = new MenuItem("X-MAS Snow", "Set the weather to ~y~x-mas~s~!") { ItemData = "XMAS" };
-            MenuItem halloween = new MenuItem("Halloween", "Set the weather to ~y~halloween~s~!") { ItemData = "HALLOWEEN" };
-            MenuItem removeclouds = new MenuItem("Remove All Clouds", "Remove all clouds from the sky!");
-            MenuItem randomizeclouds = new MenuItem("Randomize Clouds", "Add random clouds to the sky!");
+            var extrasunny = new MenuItem("Extra Sunny", "Set the weather to ~y~extra sunny~s~!") { ItemData = "EXTRASUNNY" };
+            var clear = new MenuItem("Clear", "Set the weather to ~y~clear~s~!") { ItemData = "CLEAR" };
+            var neutral = new MenuItem("Neutral", "Set the weather to ~y~neutral~s~!") { ItemData = "NEUTRAL" };
+            var smog = new MenuItem("Smog", "Set the weather to ~y~smog~s~!") { ItemData = "SMOG" };
+            var foggy = new MenuItem("Foggy", "Set the weather to ~y~foggy~s~!") { ItemData = "FOGGY" };
+            var clouds = new MenuItem("Cloudy", "Set the weather to ~y~clouds~s~!") { ItemData = "CLOUDS" };
+            var overcast = new MenuItem("Overcast", "Set the weather to ~y~overcast~s~!") { ItemData = "OVERCAST" };
+            var clearing = new MenuItem("Clearing", "Set the weather to ~y~clearing~s~!") { ItemData = "CLEARING" };
+            var rain = new MenuItem("Rainy", "Set the weather to ~y~rain~s~!") { ItemData = "RAIN" };
+            var thunder = new MenuItem("Thunder", "Set the weather to ~y~thunder~s~!") { ItemData = "THUNDER" };
+            var blizzard = new MenuItem("Blizzard", "Set the weather to ~y~blizzard~s~!") { ItemData = "BLIZZARD" };
+            var snow = new MenuItem("Snow", "Set the weather to ~y~snow~s~!") { ItemData = "SNOW" };
+            var snowlight = new MenuItem("Light Snow", "Set the weather to ~y~light snow~s~!") { ItemData = "SNOWLIGHT" };
+            var xmas = new MenuItem("X-MAS Snow", "Set the weather to ~y~x-mas~s~!") { ItemData = "XMAS" };
+            var halloween = new MenuItem("Halloween", "Set the weather to ~y~halloween~s~!") { ItemData = "HALLOWEEN" };
+            var removeclouds = new MenuItem("Remove All Clouds", "Remove all clouds from the sky!");
+            var randomizeclouds = new MenuItem("Randomize Clouds", "Add random clouds to the sky!");
 
             if (IsAllowed(Permission.WODynamic))
             {

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace vMenuClient
+namespace vMenuClient.data
 {
     class PedScenarios
     {
-        public static List<string> PositionBasedScenarios = new List<string>()
+        public static List<string> PositionBasedScenarios = new()
         {
             "PROP_HUMAN_SEAT_ARMCHAIR",
             "PROP_HUMAN_SEAT_BAR",
@@ -32,7 +28,7 @@ namespace vMenuClient
         /// <summary>
         /// All scenario names (readable version) linked to the actual scenario strings (code names).
         /// </summary>
-        public static Dictionary<string, string> ScenarioNames = new Dictionary<string, string>
+        public static Dictionary<string, string> ScenarioNames = new()
         {
             ["AA Drink Coffee"] = "WORLD_HUMAN_AA_COFFEE",
             ["AA Smoke Cig"] = "WORLD_HUMAN_AA_SMOKE",
@@ -130,7 +126,7 @@ namespace vMenuClient
         /// <summary>
         /// A list containing all readable strings.
         /// </summary>
-        public static List<string> Scenarios = new List<string>
+        public static List<string> Scenarios = new()
         {
             "AA Drink Coffee",
             "AA Smoke Cig",

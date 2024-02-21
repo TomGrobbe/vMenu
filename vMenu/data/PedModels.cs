@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CitizenFX.Core;
+﻿using System.Collections.Generic;
+
 using static CitizenFX.Core.Native.API;
 
 namespace vMenuClient.data
 {
     public static class PedModels
     {
-        public static List<uint> AnimalHashes = new List<uint>()
+        public static List<uint> AnimalHashes = new()
         {
             (uint)GetHashKey("a_c_boar"),
             (uint)GetHashKey("a_c_boar_02"), // mp2023_01
             (uint)GetHashKey("a_c_cat_01"),
             (uint)GetHashKey("a_c_chickenhawk"),
             (uint)GetHashKey("a_c_chimp"),
+            (uint)GetHashKey("a_c_chimp_02"), // mpchristmas3
             (uint)GetHashKey("a_c_chop"),
+            (uint)GetHashKey("a_c_chop_02"), // mpsecurity
             (uint)GetHashKey("a_c_cormorant"),
             (uint)GetHashKey("a_c_cow"),
             (uint)GetHashKey("a_c_coyote"),
@@ -40,6 +38,7 @@ namespace vMenuClient.data
             (uint)GetHashKey("a_c_pug"),
             (uint)GetHashKey("a_c_pug_02"), // mp2023_01
             (uint)GetHashKey("a_c_rabbit_01"),
+            (uint)GetHashKey("a_c_rabbit_02"), // mpchristmas3
             (uint)GetHashKey("a_c_rat"),
             (uint)GetHashKey("a_c_retriever"),
             (uint)GetHashKey("a_c_rhesus"),

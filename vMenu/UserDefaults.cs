@@ -2,6 +2,8 @@
 
 using Newtonsoft.Json;
 
+using vMenuClient.menus;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 
@@ -146,6 +148,12 @@ namespace vMenuClient
         {
             get { return GetSettingsBool("vehicleDisablePlaneTurbulence"); }
             set { SetSavedSettingsBool("vehicleDisablePlaneTurbulence", value); }
+        }
+
+        public static bool VehicleDisableHelicopterTurbulence
+        {
+            get { return GetSettingsBool("vehicleDisableHelicopterTurbulence"); }
+            set { SetSavedSettingsBool("vehicleDisableHelicopterTurbulence", value); }
         }
 
         public static bool VehicleBikeSeatbelt
@@ -394,32 +402,32 @@ namespace vMenuClient
         private static bool GetSettingsBool(string kvpString)
         {
             // Get the current value.
-            string savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
+            var savedValue = GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}");
             // Check if it exists.
-            bool exists = !string.IsNullOrEmpty(savedValue);
+            var exists = !string.IsNullOrEmpty(savedValue);
             // If not, create it and save the new default value of false.
             if (!exists)
             {
                 // Some options should be enabled by default:
                 if (
-                    kvpString == "unlimitedStamina" ||
-                    kvpString == "miscDeathNotifications" ||
-                    kvpString == "miscJoinQuitNotifications" ||
-                    kvpString == "vehicleSpawnerSpawnInside" ||
-                    kvpString == "vehicleSpawnerReplacePrevious" ||
-                    kvpString == "neverWanted" ||
-                    kvpString == "voiceChatShowSpeaker" ||
-                    kvpString == "voiceChatEnabled" ||
-                    kvpString == "autoEquipParachuteWhenInPlane" ||
-                    kvpString == "miscRestorePlayerAppearance" ||
-                    kvpString == "miscRestorePlayerWeapons" ||
-                    kvpString == "miscRightAlignMenu" ||
-                    kvpString == "miscRespawnDefaultCharacter" ||
-                    kvpString == "vehicleGodInvincible" ||
-                    kvpString == "vehicleGodEngine" ||
-                    kvpString == "vehicleGodVisual" ||
-                    kvpString == "vehicleGodStrongWheels" ||
-                    kvpString == "vehicleGodRamp"
+                    kvpString is "unlimitedStamina" or
+                    "miscDeathNotifications" or
+                    "miscJoinQuitNotifications" or
+                    "vehicleSpawnerSpawnInside" or
+                    "vehicleSpawnerReplacePrevious" or
+                    "neverWanted" or
+                    "voiceChatShowSpeaker" or
+                    "voiceChatEnabled" or
+                    "autoEquipParachuteWhenInPlane" or
+                    "miscRestorePlayerAppearance" or
+                    "miscRestorePlayerWeapons" or
+                    "miscRightAlignMenu" or
+                    "miscRespawnDefaultCharacter" or
+                    "vehicleGodInvincible" or
+                    "vehicleGodEngine" or
+                    "vehicleGodVisual" or
+                    "vehicleGodStrongWheels" or
+                    "vehicleGodRamp"
                     )
                 {
                     SetSavedSettingsBool(kvpString, true);
@@ -435,7 +443,7 @@ namespace vMenuClient
             else
             {
                 // Return the (new) value.
-                return (GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}").ToLower() == "true");
+                return GetResourceKvpString($"{SETTINGS_PREFIX}{kvpString}").ToLower() == "true";
             }
         }
 
@@ -451,7 +459,7 @@ namespace vMenuClient
 
         private static float GetSettingsFloat(string kvpString)
         {
-            float savedValue = GetResourceKvpFloat(SETTINGS_PREFIX + kvpString);
+            var savedValue = GetResourceKvpFloat(SETTINGS_PREFIX + kvpString);
             if (savedValue.ToString() != null) // this can still become null for some reason, so that's why we check it.
             {
                 if (savedValue.GetType() == typeof(float))
@@ -479,7 +487,7 @@ namespace vMenuClient
         private static int GetSettingsInt(string kvpString)
         {
             // Get the current value.
-            int savedValue = GetResourceKvpInt($"{SETTINGS_PREFIX}{kvpString}");
+            var savedValue = GetResourceKvpInt($"{SETTINGS_PREFIX}{kvpString}");
             return savedValue;
         }
 
@@ -495,7 +503,7 @@ namespace vMenuClient
         /// </summary>
         public static void SaveSettings()
         {
-            Dictionary<string, dynamic> prefs = new Dictionary<string, dynamic>();
+            var prefs = new Dictionary<string, dynamic>();
             if (MainMenu.PlayerOptionsMenu != null)
             {
                 EveryoneIgnorePlayer = MainMenu.PlayerOptionsMenu.PlayerIsIgnored;
@@ -624,6 +632,9 @@ namespace vMenuClient
 
                 VehicleDisablePlaneTurbulence = MainMenu.VehicleOptionsMenu.DisablePlaneTurbulence;
                 prefs.Add("vehicleDisablePlaneTurbulence", VehicleDisablePlaneTurbulence);
+
+                VehicleDisableHelicopterTurbulence = MainMenu.VehicleOptionsMenu.DisableHelicopterTurbulence;
+                prefs.Add("vehicleDisableHelicopterTurbulence", VehicleDisableHelicopterTurbulence);
 
                 VehicleBikeSeatbelt = MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
                 prefs.Add("vehicleBikeSeatbelt", VehicleBikeSeatbelt);

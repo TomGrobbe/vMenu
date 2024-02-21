@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
+
+using Newtonsoft.Json;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.data
 {
     public struct ValidWeapon
     {
@@ -20,18 +17,48 @@ namespace vMenuClient
         public Dictionary<string, uint> Components;
         public Permission Perm;
         public string SpawnName;
-        public int GetMaxAmmo { get { int ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, this.Hash, ref ammo); return ammo; } }
+        public readonly int GetMaxAmmo
+        {
+            get
+            {
+                var ammo = 0; GetMaxAmmo(Game.PlayerPed.Handle, Hash, ref ammo); return ammo;
+            }
+        }
         public int CurrentAmmo;
         public int CurrentTint;
-        public float Accuracy { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudAccuracy; } }
-        public float Damage { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage; } }
-        public float Range { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange; } }
-        public float Speed { get { Game.WeaponHudStats stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed; } }
+        public readonly float Accuracy
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudAccuracy;
+            }
+        }
+        public readonly float Damage
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudDamage;
+            }
+        }
+        public readonly float Range
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudRange;
+            }
+        }
+        public readonly float Speed
+        {
+            get
+            {
+                var stats = new Game.WeaponHudStats(); Game.GetWeaponHudStats(Hash, ref stats); return stats.hudSpeed;
+            }
+        }
     }
 
     public static class ValidWeapons
     {
-        private static List<ValidWeapon> _weaponsList = new List<ValidWeapon>();
+        private static readonly List<ValidWeapon> _weaponsList = new();
 
         public static List<ValidWeapon> WeaponList
         {
@@ -47,12 +74,12 @@ namespace vMenuClient
         }
 
 
-        private static Dictionary<string, string> _components = new Dictionary<string, string>();
+        private static Dictionary<string, string> _components = new();
         public static Dictionary<string, string> GetWeaponComponents()
         {
             if (_components.Count == 0)
             {
-                string addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
+                var addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 _components = weaponComponentNames;
                 try
                 {
@@ -61,9 +88,9 @@ namespace vMenuClient
                     {
                         foreach (var item in addonsFile["weapon_components"])
                         {
-                            string name = item;
-                            string displayName = GetLabelText(name) ?? name;
-                            int unused = 0;
+                            var name = item;
+                            var displayName = GetLabelText(name) ?? name;
+                            var unused = 0;
                             if (GetWeaponComponentHudStats((uint)GetHashKey(name), ref unused))
                             {
                                 _components.Add(name, displayName);
@@ -84,12 +111,12 @@ namespace vMenuClient
             _weaponsList.Clear();
             foreach (var weapon in weaponNames)
             {
-                string realName = weapon.Key;
-                string localizedName = weapon.Value;
+                var realName = weapon.Key;
+                var localizedName = weapon.Value;
                 if (realName != "weapon_unarmed")
                 {
-                    uint hash = (uint)GetHashKey(weapon.Key);
-                    Dictionary<string, uint> componentHashes = new Dictionary<string, uint>();
+                    var hash = (uint)GetHashKey(weapon.Key);
+                    var componentHashes = new Dictionary<string, uint>();
                     foreach (var comp in GetWeaponComponents().Keys)
                     {
                         if (DoesWeaponTakeWeaponComponent(hash, (uint)GetHashKey(comp)))
@@ -100,7 +127,7 @@ namespace vMenuClient
                             }
                         }
                     }
-                    ValidWeapon vw = new ValidWeapon()
+                    var vw = new ValidWeapon()
                     {
                         Hash = hash,
                         SpawnName = realName,
@@ -118,7 +145,7 @@ namespace vMenuClient
 
         #region Weapon names, hashes and localized names (+ all components & tints).
         #region weapon descriptions & names
-        public static readonly Dictionary<string, string> weaponDescriptions = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> weaponDescriptions = new()
         {
             { "weapon_advancedrifle", GetLabelText("WTD_RIFLE_ADV") },
             { "weapon_appistol", GetLabelText("WTD_PIST_AP") },
@@ -206,16 +233,14 @@ namespace vMenuClient
             { "weapon_unarmed", GetLabelText("WTD_UNARMED") },
             { "weapon_vintagepistol", GetLabelText("WTD_VPISTOL") },
             { "weapon_wrench", GetLabelText("WTD_WRENCH") },
-            // DLC CHRISTMAS2018 (v 1604)
             { "weapon_raypistol", GetLabelText("WTD_RAYPISTOL") },
             { "weapon_raycarbine", GetLabelText("WTD_RAYCARBINE") },
             { "weapon_rayminigun", GetLabelText("WTD_RAYMINIGUN") },
             { "weapon_stone_hatchet", GetLabelText("WTD_SHATCHET") },
-            // DLC CHRISTMAS2019 (v 1868)
+            // MPHEIST3 DLC (v 1868)
             { "weapon_ceramicpistol", GetLabelText("WTD_CERPST") },
             { "weapon_navyrevolver", GetLabelText("WTD_REV_NV") },
-            { "weapon_hazardcan", "Hazard Can" }, // Does not have label text
-            // DLC CHRISTMAS2020 (v 2189)
+            { "weapon_hazardcan", GetLabelText("WTD_HAZARDCAN") },            // MPHEIST4 DLC (v 2189)
             { "weapon_gadgetpistol", GetLabelText("WTD_GDGTPST") },
             { "weapon_militaryrifle", GetLabelText("WTD_MLTRYRFL") },
             { "weapon_combatshotgun", GetLabelText("WTD_CMBSHGN") },
@@ -223,8 +248,7 @@ namespace vMenuClient
             { "weapon_emplauncher", GetLabelText("WTD_EMPL") },
             { "weapon_heavyrifle", GetLabelText("WTD_HEAVYRIFLE") },
             { "weapon_fertilizercan", GetLabelText("WTD_FERTILIZERCAN") },
-            { "weapon_stungun_mp", GetLabelText("WTD_STNGUNMP") },
-            //MPSUM2 DLC (V 2699)
+            { "weapon_stungun_mp", GetLabelText("WTD_STNGUNMP") }, //MPSUM2 DLC (V 2699)
             { "weapon_tacticalrifle", GetLabelText("WTD_TACRIFLE") },
             { "weapon_precisionrifle", GetLabelText("WTD_PRCSRIFLE") },
             // MPCHRISTMAS3 DLC (V 2802)
@@ -233,8 +257,8 @@ namespace vMenuClient
             { "weapon_railgunxm3", GetLabelText("WTD_RAILGUNXM3") },
             // MP2023_01 DLC (V 2944)
             { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
-
-
+          
+          
             // CUSTOM WEAPONS
 
             // FM
@@ -287,9 +311,14 @@ namespace vMenuClient
             // Misc
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
             { "weapon_flashbang", "Flashbang Grenade" }
+          
+          
+            // MP2023_02 DLC (V 3095)
+            { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
+            { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
         };
 
-        public static readonly Dictionary<string, string> weaponNames = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> weaponNames = new()
         {
             { "weapon_advancedrifle", GetLabelText("WT_RIFLE_ADV") },
             { "weapon_appistol", GetLabelText("WT_PIST_AP") },
@@ -377,16 +406,15 @@ namespace vMenuClient
             { "weapon_unarmed", GetLabelText("WT_UNARMED") },
             { "weapon_vintagepistol", GetLabelText("WT_VPISTOL") },
             { "weapon_wrench", GetLabelText("WT_WRENCH") },
-            // DLC CHRISTMAS2018 (v 1604)
             { "weapon_raypistol", GetLabelText("WT_RAYPISTOL") },
             { "weapon_raycarbine", GetLabelText("WT_RAYCARBINE") },
             { "weapon_rayminigun", GetLabelText("WT_RAYMINIGUN") },
             { "weapon_stone_hatchet", GetLabelText("WT_SHATCHET") },
-            // DLC CHRISTMAS2019 (v 1868)
+            // MPHEIST3 DLC (v 1868)
             { "weapon_ceramicpistol", GetLabelText("WT_CERPST") },
             { "weapon_navyrevolver", GetLabelText("WT_REV_NV") },
-            { "weapon_hazardcan", "Hazard Can" }, // Does not have label text
-            // DLC CHRISTMAS2020 (v 2189)
+            { "weapon_hazardcan", GetLabelText("WT_HAZARDCAN") },
+            // MPHEIST4 DLC (v 2189)
             { "weapon_gadgetpistol", GetLabelText("WT_GDGTPST") },
             { "weapon_militaryrifle", GetLabelText("WT_MLTRYRFL") },
             { "weapon_combatshotgun", GetLabelText("WT_CMBSHGN") },
@@ -395,7 +423,7 @@ namespace vMenuClient
             { "weapon_heavyrifle", GetLabelText("WT_HEAVYRIFLE") },
             { "weapon_fertilizercan", GetLabelText("WT_FERTILIZERCAN") },
             { "weapon_stungun_mp", GetLabelText("WT_STNGUNMP") },
-            //MPSUM2 DLC (V 2699)
+            // MPSUM2 DLC (V 2699)
             { "weapon_tacticalrifle", GetLabelText("WT_TACRIFLE") },
             { "weapon_precisionrifle", GetLabelText("WT_PRCSRIFLE") },
             // MPCHRISTMAS3 DLC (V 2802)
@@ -404,9 +432,13 @@ namespace vMenuClient
             { "weapon_railgunxm3", GetLabelText("WT_RAILGUNXM3") },
             // MP2023_01 DLC (V 2944)
             { "weapon_tecpistol", GetLabelText("WT_TECPISTOL") },
-
-
-            // CUSTOM WEAPONS
+            // MP2023_02 DLC (V 3095)
+            { "weapon_battlerifle", GetLabelText("WT_BATTLERIFLE") },
+            { "weapon_snowlauncher", GetLabelText("WT_SNOWLNCHR") },
+            { "weapon_hackingdevice", GetLabelText("WT_HACKDEVICE") },
+          
+          
+          // CUSTOM WEAPONS
 
             // FM
             { "weapon_akm", "AKM" },
@@ -458,11 +490,12 @@ namespace vMenuClient
             // Misc
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
             { "weapon_flashbang", "Flashbang Grenade" }
+            { "weapon_acidpackage", GetLabelText("WT_ACIDPACKAGE") },
         };
         #endregion
 
         #region weapon permissions
-        public static readonly Dictionary<string, Permission> weaponPermissions = new Dictionary<string, Permission>()
+        public static readonly Dictionary<string, Permission> weaponPermissions = new()
         {
             ["weapon_advancedrifle"] = Permission.WPAdvancedRifle,
             ["weapon_appistol"] = Permission.WPAPPistol,
@@ -550,16 +583,15 @@ namespace vMenuClient
             ["weapon_unarmed"] = Permission.WPUnarmed,
             ["weapon_vintagepistol"] = Permission.WPVintagePistol,
             ["weapon_wrench"] = Permission.WPWrench,
-            // DLC CHRISTMAS2018 (v 1604)
             ["weapon_raypistol"] = Permission.WPPlasmaPistol,
             ["weapon_raycarbine"] = Permission.WPPlasmaCarbine,
             ["weapon_rayminigun"] = Permission.WPPlasmaMinigun,
             ["weapon_stone_hatchet"] = Permission.WPStoneHatchet,
-            // DLC CHRISTMAS2019 (v 1868)
+            // MPHEIST3 DLC (v 1868)
             ["weapon_ceramicpistol"] = Permission.WPCeramicPistol,
             ["weapon_navyrevolver"] = Permission.WPNavyRevolver,
-            ["weapon_hazardcan"] = Permission.WPHazardCan, // Does not have label text)
-            // DLC CHRISTMAS2020 (v 2189)
+            ["weapon_hazardcan"] = Permission.WPHazardCan,
+            // MPHEIST4 DLC (v 2189)
             ["weapon_gadgetpistol"] = Permission.WPPericoPistol,
             ["weapon_militaryrifle"] = Permission.WPMilitaryRifle,
             ["weapon_combatshotgun"] = Permission.WPCombatShotgun,
@@ -568,7 +600,7 @@ namespace vMenuClient
             ["weapon_heavyrifle"] = Permission.WPHeavyRifle,
             ["weapon_fertilizercan"] = Permission.WPFertilizerCan,
             ["weapon_stungun_mp"] = Permission.WPStunGunMP,
-            //MPSUM2 DLC (V 2699)
+            // MPSUM2 DLC (V 2699)
             ["weapon_tacticalrifle"] = Permission.WPTacticalRifle,
             ["weapon_precisionrifle"] = Permission.WPPrecisionRifle,
             // MPCHRISTMAS3 DLC (V 2802)
@@ -578,8 +610,10 @@ namespace vMenuClient
             ["weapon_acidpackage"] = Permission.WPAcidPackage,
             // MP2023_01 DLC (V 2944)
             ["weapon_tecpistol"] = Permission.WPTecPistol,
-
-
+            // MP2023_02 DLC (V 3095)
+            ["weapon_battlerifle"] = Permission.WPBattleRifle,
+            ["weapon_snowlauncher"] = Permission.WPSnowLauncher,
+            ["weapon_hackingdevice"] = Permission.WPHackingDevice,
 
             // CUSTOM WEAPONS
 
@@ -640,7 +674,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon component names
-        private static readonly Dictionary<string, string> weaponComponentNames = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> weaponComponentNames = new()
         {
             ["COMPONENT_ADVANCEDRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_ADVANCEDRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
@@ -1016,7 +1050,7 @@ namespace vMenuClient
             ["COMPONENT_HEAVYRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_HEAVYRIFLE_SIGHT_01"] = GetLabelText("WCT_HVYRFLE_SIG"),
             ["COMPONENT_HEAVYRIFLE_CAMO1"] = GetLabelText("WCT_VAR_FAM"),
-            //MPSUM2 DLC (V 2699)
+            // MPSUM2 DLC (V 2699)
             ["COMPONENT_TACTICALRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_TACTICALRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
             ["COMPONENT_PRECISIONRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
@@ -1054,14 +1088,20 @@ namespace vMenuClient
             ["COMPONENT_MICROSMG_VARMOD_FRN"] = GetLabelText("WCT_MSMGFRN_VAR"),
             ["COMPONENT_CARBINERIFLE_VARMOD_MICH"] = GetLabelText("WCT_CRBNMIC_VAR"),
             ["COMPONENT_RPG_VARMOD_TVR"] = GetLabelText("WCT_RPGTVR_VAR"),
+            // MP2023_02 DLC (V 3095)
+            ["COMPONENT_BATTLERIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_BATTLERIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_COMBATPISTOL_VARMOD_XMAS23"] = GetLabelText("WCT_COMPIST_XM"),
+            ["COMPONENT_SPECIALCARBINE_VARMOD_XMAS23"] = GetLabelText("WCT_SPCR_XM"),
+            ["COMPONENT_HEAVYSNIPER_VARMOD_XMAS23"] = GetLabelText("WCT_HVSP_XM"),
 
-
-
+          
+          
             // CUSTOM WEAPONS
 
             ["COMPONENT_AT_LESSLETHAL_FLSH"] = "Flashlight",
 
-
+          
             // FM
 
             // AKM
@@ -2152,7 +2192,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon tints
-        public static readonly Dictionary<string, int> WeaponTints = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> WeaponTints = new()
         {
             ["Black"] = 0,
             ["Green"] = 1,
@@ -2166,7 +2206,7 @@ namespace vMenuClient
         #endregion
 
         #region weapon mk2 tints
-        public static readonly Dictionary<string, int> WeaponTintsMkII = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> WeaponTintsMkII = new()
         {
             ["Classic Black"] = 0,
             ["Classic Gray"] = 1,

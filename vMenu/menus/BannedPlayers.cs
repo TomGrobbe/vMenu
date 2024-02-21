@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuAPI;
-using Newtonsoft.Json;
+
 using CitizenFX.Core;
-using static CitizenFX.Core.UI.Screen;
-using static CitizenFX.Core.Native.API;
+
+using MenuAPI;
+
+using Newtonsoft.Json;
+
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
-namespace vMenuClient
+namespace vMenuClient.menus
 {
     public class BannedPlayers
     {
@@ -31,11 +30,11 @@ namespace vMenuClient
             public string uuid;
         }
 
-        BanRecord currentRecord = new BanRecord();
+        BanRecord currentRecord = new();
 
-        public List<BanRecord> banlist = new List<BanRecord>();
+        public List<BanRecord> banlist = new();
 
-        Menu bannedPlayer = new Menu("Banned Player", "Ban Record: ");
+        readonly Menu bannedPlayer = new("Banned Player", "Ban Record: ");
 
         /// <summary>
         /// Creates the menu.
@@ -49,7 +48,7 @@ namespace vMenuClient
             {
                 if (banlist.Count > 1)
                 {
-                    string filterText = await GetUserInput("Filter username or ban id (leave this empty to reset the filter)");
+                    var filterText = await GetUserInput("Filter username or ban id (leave this empty to reset the filter)");
                     if (string.IsNullOrEmpty(filterText))
                     {
                         Subtitle.Custom("Filters have been cleared.");
@@ -78,7 +77,7 @@ namespace vMenuClient
             bannedPlayer.AddMenuItem(new MenuItem("~r~Unban", "~r~Warning, unbanning the player can NOT be undone. You will NOT be able to ban them again until they re-join the server. Are you absolutely sure you want to unban this player? ~s~Tip: Tempbanned players will automatically get unbanned if they log on to the server after their ban date has expired."));
 
             // should be enough for now to cover all possible identifiers.
-            List<string> colors = new List<string>() { "~r~", "~g~", "~b~", "~o~", "~y~", "~p~", "~s~", "~t~", };
+            var colors = new List<string>() { "~r~", "~g~", "~b~", "~o~", "~y~", "~p~", "~s~", "~t~", };
 
             bannedPlayer.OnMenuClose += (sender) =>
             {
@@ -136,14 +135,19 @@ namespace vMenuClient
                 bannedByItem.Label = currentRecord.bannedBy;
                 bannedByItem.Description = "Player banned by: ~y~" + currentRecord.bannedBy;
                 if (currentRecord.bannedUntil.Date.Year == 3000)
+                {
                     bannedUntilItem.Label = "Forever";
+                }
                 else
+                {
                     bannedUntilItem.Label = currentRecord.bannedUntil.Date.ToString();
+                }
+
                 bannedUntilItem.Description = "This player is banned until: " + currentRecord.bannedUntil.Date.ToString();
                 playerIdentifiersItem.Description = "";
 
-                int i = 0;
-                foreach (string id in currentRecord.identifiers)
+                var i = 0;
+                foreach (var id in currentRecord.identifiers)
                 {
                     // only (admins) people that can unban players are allowed to view IP's.
                     // this is just a slight 'safety' feature in case someone who doesn't know what they're doing
@@ -183,9 +187,9 @@ namespace vMenuClient
             menu.ResetFilter();
             menu.ClearMenuItems();
 
-            foreach (BanRecord ban in banlist)
+            foreach (var ban in banlist)
             {
-                MenuItem recordBtn = new MenuItem(ban.playerName, $"~y~{ban.playerName}~s~ was banned by ~y~{ban.bannedBy}~s~ until ~y~{ban.bannedUntil}~s~ for ~y~{ban.banReason}~s~.")
+                var recordBtn = new MenuItem(ban.playerName, $"~y~{ban.playerName}~s~ was banned by ~y~{ban.bannedBy}~s~ until ~y~{ban.bannedUntil}~s~ for ~y~{ban.banReason}~s~.")
                 {
                     Label = "→→→",
                     ItemData = ban
@@ -228,7 +232,7 @@ namespace vMenuClient
         /// <param name="index"></param>
         private void UnbanPlayer(int index)
         {
-            BanRecord record = banlist[index];
+            var record = banlist[index];
             banlist.Remove(record);
             BaseScript.TriggerServerEvent("vMenu:RequestPlayerUnban", record.uuid);
         }
@@ -243,7 +247,7 @@ namespace vMenuClient
             var newBr = new BanRecord();
             foreach (Newtonsoft.Json.Linq.JProperty brValue in banRecordJsonObject)
             {
-                string key = brValue.Name.ToString();
+                var key = brValue.Name.ToString();
                 var value = brValue.Value;
                 if (key == "playerName")
                 {
@@ -252,9 +256,9 @@ namespace vMenuClient
                 else if (key == "identifiers")
                 {
                     var tmpList = new List<string>();
-                    foreach (string identifier in value)
+                    foreach (var identifier in value)
                     {
-                        tmpList.Add(identifier);
+                        tmpList.Add(identifier.ToString());
                     }
                     newBr.identifiers = tmpList;
                 }

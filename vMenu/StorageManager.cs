@@ -27,7 +27,7 @@ namespace vMenuClient
             {
                 // Get the json string from the dictionary.
                 //string jsonString = CommonFunctions.DictionaryToJson(data);
-                string jsonString = JsonConvert.SerializeObject(data);
+                var jsonString = JsonConvert.SerializeObject(data);
                 Log($"Saving: [name: {saveName}, json:{jsonString}]");
 
                 // Save the kvp.
@@ -49,12 +49,12 @@ namespace vMenuClient
         /// <returns></returns>
         public static Dictionary<string, PedInfo> GetSavedPeds()
         {
-            Dictionary<string, PedInfo> savedPeds = new Dictionary<string, PedInfo>();
+            var savedPeds = new Dictionary<string, PedInfo>();
 
-            int handle = StartFindKvp("ped_");
+            var handle = StartFindKvp("ped_");
             while (true)
             {
-                string kvp = FindKvp(handle);
+                var kvp = FindKvp(handle);
                 if (string.IsNullOrEmpty(kvp))
                 {
                     break;
@@ -94,11 +94,11 @@ namespace vMenuClient
 
         public static List<MpPedDataManager.MultiplayerPedData> GetSavedMpPeds()
         {
-            List<MpPedDataManager.MultiplayerPedData> peds = new List<MpPedDataManager.MultiplayerPedData>();
+            var peds = new List<MpPedDataManager.MultiplayerPedData>();
             var handle = StartFindKvp("mp_ped_");
             while (true)
             {
-                string foundName = FindKvp(handle);
+                var foundName = FindKvp(handle);
                 if (string.IsNullOrEmpty(foundName))
                 {
                     break;
@@ -136,7 +136,7 @@ namespace vMenuClient
                 if (!string.IsNullOrEmpty(saveName) && saveName.Length > 4)
                 {
                     // convert
-                    string json = JsonConvert.SerializeObject(vehicleInfo);
+                    var json = JsonConvert.SerializeObject(vehicleInfo);
 
                     // log
                     Log($"[vMenu] Saving!\nName: {saveName}\nVehicle Data: {json}\n");
@@ -159,7 +159,7 @@ namespace vMenuClient
         /// <returns></returns>
         public static VehicleInfo GetSavedVehicleInfo(string saveName)
         {
-            string json = GetResourceKvpString(saveName);
+            var json = GetResourceKvpString(saveName);
             return JsonConvert.DeserializeObject<VehicleInfo>(json);
             //var vi = new VehicleInfo() { };
             //dynamic data = JsonConvert.DeserializeObject(json);
@@ -282,7 +282,7 @@ namespace vMenuClient
         {
             if (!string.IsNullOrEmpty(saveName) && !string.IsNullOrEmpty(jsonData))
             {
-                string existingData = GetResourceKvpString(saveName); // check for existing data.
+                var existingData = GetResourceKvpString(saveName); // check for existing data.
 
                 if (!string.IsNullOrEmpty(existingData)) // data already exists for this save name.
                 {
@@ -311,7 +311,7 @@ namespace vMenuClient
             if (!string.IsNullOrEmpty(saveName))
             {
                 //Debug.WriteLine("not null");
-                string data = GetResourceKvpString(saveName);
+                var data = GetResourceKvpString(saveName);
                 //Debug.Write(data + "\n");
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -333,7 +333,7 @@ namespace vMenuClient
             {
                 return output;
             }
-            string jsonString = GetResourceKvpString(name.StartsWith("mp_ped_") ? name : "mp_ped_" + name);
+            var jsonString = GetResourceKvpString(name.StartsWith("mp_ped_") ? name : "mp_ped_" + name);
             if (string.IsNullOrEmpty(jsonString))
             {
                 return output;
@@ -341,6 +341,64 @@ namespace vMenuClient
             try
             {
                 output = JsonConvert.DeserializeObject<MpPedDataManager.MultiplayerPedData>(jsonString);
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            Log(jsonString);
+            return output;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="MpCharacterCategory"/> struct containing the data of the saved MP Character Category.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static menus.MpPedCustomization.MpCharacterCategory GetSavedMpCharacterCategoryData(string name)
+        {
+            var output = new menus.MpPedCustomization.MpCharacterCategory();
+            if (string.IsNullOrEmpty(name))
+            {
+                return output;
+            }
+            var jsonString = GetResourceKvpString(name.StartsWith("mp_character_category_") ? name : "mp_character_category_" + name);
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return output;
+            }
+            try
+            {
+                output = JsonConvert.DeserializeObject<menus.MpPedCustomization.MpCharacterCategory>(jsonString);
+            }
+            catch (JsonException e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            Log(jsonString);
+            return output;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="SavedVehicleCategory"/> struct containing the data of the saved Vehicle Category.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static menus.SavedVehicles.SavedVehicleCategory GetSavedVehicleCategoryData(string name)
+        {
+            var output = new menus.SavedVehicles.SavedVehicleCategory();
+            if (string.IsNullOrEmpty(name))
+            {
+                return output;
+            }
+            var jsonString = GetResourceKvpString(name.StartsWith("saved_veh_category_") ? name : "saved_veh_category_" + name);
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return output;
+            }
+            try
+            {
+                output = JsonConvert.DeserializeObject<menus.SavedVehicles.SavedVehicleCategory>(jsonString);
             }
             catch (JsonException e)
             {

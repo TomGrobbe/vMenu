@@ -115,6 +115,7 @@ namespace vMenuClient
             public int Version;
             public string WalkingStyle;
             public string FacialExpression;
+            public string Category;
         }
     }
 }
