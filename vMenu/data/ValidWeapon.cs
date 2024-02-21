@@ -310,7 +310,7 @@ namespace vMenuClient.data
 
             // Misc
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
-            { "weapon_flashbang", "Flashbang Grenade" }
+            { "weapon_flashbang", "Flashbang Grenade" },
           
           
             // MP2023_02 DLC (V 3095)
@@ -489,7 +489,7 @@ namespace vMenuClient.data
 
             // Misc
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
-            { "weapon_flashbang", "Flashbang Grenade" }
+            { "weapon_flashbang", "Flashbang Grenade" },
             { "weapon_acidpackage", GetLabelText("WT_ACIDPACKAGE") },
         };
         #endregion

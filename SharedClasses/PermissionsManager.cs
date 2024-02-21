@@ -317,7 +317,6 @@ namespace vMenuShared
             WPCandyCane,
             WPRailgunXM3,
             WPAcidPackage,
-            WPTecPistol,
 
             // MP2023_01 DLC (V 2944)
             WPTecPistol,
