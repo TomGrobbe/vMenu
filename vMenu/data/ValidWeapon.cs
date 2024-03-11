@@ -316,6 +316,19 @@ namespace vMenuClient.data
             // MP2023_02 DLC (V 3095)
             { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
             { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
+
+            //TLS
+            {"weapon_dd11_b", "DDM4V7 11.5 Black" },
+            {"weapon_dd11_od", "DDM4V7 11.5 OD" },
+            {"weapon_dd11_c", "DDM4V7 11.5 Coyote" },
+            {"weapon_dd14_b", "DDM4V7 14.5 Black" },
+            {"weapon_dd14_od", "DDM4V7 14.5 OD" },
+            {"weapon_dd14_c", "DDM4V7 14.5 Coyote" },
+            {"weapon_dd16_b", "DDM4V7 16 Black" },
+            {"weapon_dd16_od", "DDM4V7 16 OD" },
+            {"weapon_dd16_c", "DDM4V7 16 Coyote" },
+
+            {"weapon_safetypistol","Safety Pistol" },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -491,6 +504,19 @@ namespace vMenuClient.data
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
             { "weapon_flashbang", "Flashbang Grenade" },
             { "weapon_acidpackage", GetLabelText("WT_ACIDPACKAGE") },
+
+            //TLS
+            {"weapon_dd11_b", "DDM4V7 11.5 Black" },
+            {"weapon_dd11_od", "DDM4V7 11.5 OD" },
+            {"weapon_dd11_c", "DDM4V7 11.5 Coyote" },
+            {"weapon_dd14_b", "DDM4V7 14.5 Black" },
+            {"weapon_dd14_od", "DDM4V7 14.5 OD" },
+            {"weapon_dd14_c", "DDM4V7 14.5 Coyote" },
+            {"weapon_dd16_b", "DDM4V7 16 Black" },
+            {"weapon_dd16_od", "DDM4V7 16 OD" },
+            {"weapon_dd16_c", "DDM4V7 16 Coyote" },
+
+            {"weapon_safetypistol","Safety Pistol" },
         };
         #endregion
 
@@ -670,6 +696,19 @@ namespace vMenuClient.data
             // Misc Weapons
             ["weapon_grenadelauncher_smoke"] = Permission.WPGrenadeLauncherSmoke,
             ["weapon_flashbang"] = Permission.WPFlashBang,
+
+            //TLS
+            ["weapon_dd11_b"] = Permission.WPDDM4V7,
+            ["weapon_dd11_od"] = Permission.WPDDM4V7,
+            ["weapon_dd11_c"] = Permission.WPDDM4V7,
+            ["weapon_dd14_b"] = Permission.WPDDM4V7,
+            ["weapon_dd14_od"] = Permission.WPDDM4V7,
+            ["weapon_dd14_c"] = Permission.WPDDM4V7,
+            ["weapon_dd16_b"] = Permission.WPDDM4V7,
+            ["weapon_dd16_od"] = Permission.WPDDM4V7,
+            ["weapon_dd16_c"] = Permission.WPDDM4V7,
+
+            ["weapon_safetypistol"] = Permission.WPCombatPistol,
         };
         #endregion
 
@@ -2187,7 +2226,45 @@ namespace vMenuClient.data
             ["COMPONENT_HK417_CLIP_01"] = "Standard Magazine",
             ["COMPONENT_HK417_CLIP_02"] = "Extended Magazine",
             ["COMPONENT_HK417_FLSH"] = "Laser-Light-Module",
-            ["COMPONENT_HK417_SCOPE_MEDIUM"] = "Scope"
+            ["COMPONENT_HK417_SCOPE_MEDIUM"] = "Scope",
+
+            //TLS
+            ["COMPONENT_PRO_B"] = "Aimpoint Pro RDS - BLK",
+            ["COMPONENT_PRO_OD"] = "Aimpoint Pro RDS - OD",
+            ["COMPONENT_PRO_C"] = "Aimpoint Pro RDS - COY",
+            ["COMPONENT_EXPS34_B"] = "EXPS3-4 Holo Sight - BLK",
+            ["COMPONENT_EXPS34_C"] = "EXPS3-4 Holo Sight - COY",
+            ["COMPONENT_HHSVO_B"] = "HHS V w/ Magnifier Open (BLK)",
+            ["COMPONENT_HHSVO_C"] = "HHS V w/ Magnifier Open (C)",
+            ["COMPONENT_HHSVC_B"] = "HHS V w/ Magnifier Closed (BLK)",
+            ["COMPONENT_HHSVC_C"] = "HHS V w/ Magnifier Closed (C)",
+            ["COMPONENT_VUDU_1X"] = "EOTech Vudu 1x",
+            ["COMPONENT_PMAG30_B"] = "PMAG 30r - BLK",
+            ["COMPONENT_PMAG30_C"] = "PMAG 30r - COY",
+            ["COMPONENT_PMAG40_B"] = "PMAG 40r - BLK",
+            ["COMPONENT_PMAGRANGER_B"] = "PMAG 30r w/ Rangerplate - BLK",
+            ["COMPONENT_PMAGLINK_B"] = "PMAG 60r Maglinked - BLK",
+            ["COMPONENT_PMAGLINK_C"] = "PMAG 60r Maglinked - COY",
+            ["COMPONENT_BCM_B"] = "BCM Vertical Grip Mod 3 - BLK",
+            ["COMPONENT_BCM_OD"] = "BCM Vertical Grip Mod 3 - OD",
+            ["COMPONENT_BCM_C"] = "BCM Vertical Grip Mod 3 - COY",
+            ["COMPONENT_SFS11_B"] = "SF ScoutLight w/ Single Switch",
+            ["COMPONENT_SFS14_B"] = "SF ScoutLight w/ Single Switch",
+            ["COMPONENT_SFS16_B"] = "SF ScoutLight w/ Single Switch",
+            ["COMPONENT_PEQ11_B"] = "SF ScoutLight & PEQ-15A w/ Double Switch - BLK",
+            ["COMPONENT_PEQ11_C"] = "SF ScoutLight & PEQ-15A w/ Double Switch - COY",
+            ["COMPONENT_PEQ14_B"] = "SF ScoutLight & PEQ-15A w/ Double Switch - BLK",
+            ["COMPONENT_PEQ14_C"] = "SF ScoutLight & PEQ-15A w/ Double Switch - COY",
+            ["COMPONENT_PEQ16_B"] = "SF ScoutLight & PEQ-15A w/ Double Switch - BLK",
+            ["COMPONENT_PEQ16_C"] = "SF ScoutLight & PEQ-15A w/ Double Switch - COY",
+            ["COMPONENT_SOCOMSUP11_B"] = "SOCOM556-RC2 Suppressor",
+            ["COMPONENT_SOCOMSUP14_B"] = "SOCOM556-RC2 Suppressor",
+            ["COMPONENT_SOCOMSUP16_B"] = "SOCOM556-RC2 Suppressor",
+
+            //Safety Pistol
+            ["COMPONENT_SAFETYPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_AT_PI_SAFETYPISTOL_RDS"] = "Red-Dot Sight",
+
         };
         #endregion
 

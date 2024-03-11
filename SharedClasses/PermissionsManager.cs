@@ -369,6 +369,7 @@ namespace vMenuShared
             WPSKX26G,
             WPSKBEANBAG,
             WPFlashBang,
+            WPDDM4V7,
             #endregion
 
             // Weapon Loadouts Menu
