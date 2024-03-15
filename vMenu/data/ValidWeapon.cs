@@ -329,6 +329,25 @@ namespace vMenuClient.data
             {"weapon_dd16_c", "DDM4V7 16 Coyote" },
 
             {"weapon_safetypistol","Safety Pistol" },
+            {"weapon_vp9", "VP-9" },
+            {"weapon_pdp", "Walther PDP" },
+            {"weapon_rubbergun", "Rubber Gun" },
+            {"weapon_colbaton", "Telescopic Nightstick" },
+            {"weapon_pocketlight", "Pocket Flashlight" },
+            {"weapon_beanbag", "Beanbag Shotgun" },
+            {"weapon_riotshotgun", "Riot Shotgun" },
+            {"weapon_heavyshotgun_mk2", "Heavy Shotgun Mk II" },
+            {"weapon_thermalcharge", "Thermal Charge" },
+            // {"weapon_israelirifle", "Galil" },
+            // {"weapon_stampedrifle", GetLabelText("WT_RIFLE_STMP") },
+            // {"weapon_combatrifle", GetLabelText("WT_RIFLE_COMR") },
+            // {"weapon_protorifle", GetLabelText("WT_PROTORFL") },
+            // {"weapon_servicecarbine", GetLabelText("WT_CRBN_SRVC") },
+            {"weapon_stealthcarbine", GetLabelText("WT_RIFLE_STLTH") },
+            // {"weapon_navycarbine", GetLabelText("WT_NVYCARBINE") },
+            // {"weapon_precisioncarbine", GetLabelText("WT_PRECISIONCRBN") },
+            // {"weapon_militarycarbine", GetLabelText("WT_RIFLE_MTLCBN") },
+            // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -517,6 +536,25 @@ namespace vMenuClient.data
             {"weapon_dd16_c", "DDM4V7 16 Coyote" },
 
             {"weapon_safetypistol","Safety Pistol" },
+            {"weapon_vp9", "VP-9" },
+            {"weapon_pdp", "Walther PDP" },
+            {"weapon_rubbergun", "Rubber Gun" },
+            {"weapon_colbaton", "Telescopic Nightstick" },
+            {"weapon_pocketlight", "Pocket Flashlight" },
+            {"weapon_beanbag", "Beanbag Shotgun" },
+            {"weapon_riotshotgun", "Riot Shotgun" },
+            {"weapon_heavyshotgun_mk2", "Heavy Shotgun Mk II" },
+            {"weapon_thermalcharge", "Thermal Charge" },
+            // {"weapon_israelirifle", "Galil" },
+            // {"weapon_stampedrifle", GetLabelText("WT_RIFLE_STMP") },
+            // {"weapon_combatrifle", GetLabelText("WT_RIFLE_COMR") },
+            // {"weapon_protorifle", GetLabelText("WT_PROTORFL") },
+            // {"weapon_servicecarbine", GetLabelText("WT_CRBN_SRVC") },
+            {"weapon_stealthcarbine", GetLabelText("WT_RIFLE_STLTH") },
+            // {"weapon_navycarbine", GetLabelText("WT_NVYCARBINE") },
+            // {"weapon_precisioncarbine", GetLabelText("WT_PRECISIONCRBN") },
+            // {"weapon_militarycarbine", GetLabelText("WT_RIFLE_MTLCBN") },
+            // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
         };
         #endregion
 
@@ -709,6 +747,25 @@ namespace vMenuClient.data
             ["weapon_dd16_c"] = Permission.WPDDM4V7,
 
             ["weapon_safetypistol"] = Permission.WPCombatPistol,
+            ["weapon_vp9"] = Permission.WPCombatPistol,
+            ["weapon_pdp"] = Permission.WPCombatPistol,
+            ["weapon_rubbergun"] = Permission.WPStunGun,
+            ["weapon_colbaton"] = Permission.WPNightstick,
+            ["weapon_pocketlight"] = Permission.WPFlashlight,
+            ["weapon_beanbag"] = Permission.WPPumpShotgun,
+            ["weapon_riotshotgun"] = Permission.WPPumpShotgun,
+            ["weapon_heavyshotgun_mk2"] = Permission.WPHeavyShotgun,
+            ["weapon_thermalcharge"] = Permission.WPStickyBomb,
+            // ["weapon_israelirifle"] = Permission.WPAssaultRifle,
+            // ["weapon_stampedrifle"] = Permission.WPAssaultRifle,
+            // ["weapon_combatrifle"] = Permission.WPCarbineRifle,
+            // ["weapon_protorifle"] = Permission.WPSpecialCarbine,
+            // ["weapon_servicecarbine"] = Permission.WPCarbineRifle,
+            ["weapon_stealthcarbine"] = Permission.WPSpecialCarbine,
+            // ["weapon_navycarbine"] = Permission.WPCarbineRifleMk2,
+            // ["weapon_precisioncarbine"] = Permission.WPMarksmanRifle,
+            // ["weapon_militarycarbine"] = Permission.WPMilitaryRifle,
+            // ["weapon_tacticalcarbine"] = Permission.WPCarbineRifle,
         };
         #endregion
 
@@ -1134,13 +1191,13 @@ namespace vMenuClient.data
             ["COMPONENT_SPECIALCARBINE_VARMOD_XMAS23"] = GetLabelText("WCT_SPCR_XM"),
             ["COMPONENT_HEAVYSNIPER_VARMOD_XMAS23"] = GetLabelText("WCT_HVSP_XM"),
 
-          
-          
+
+
             // CUSTOM WEAPONS
 
             ["COMPONENT_AT_LESSLETHAL_FLSH"] = "Flashlight",
 
-          
+
             // FM
 
             // AKM
@@ -2265,6 +2322,105 @@ namespace vMenuClient.data
             ["COMPONENT_SAFETYPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_AT_PI_SAFETYPISTOL_RDS"] = "Red-Dot Sight",
 
+            ["COMPONENT_AT_VP9_FLSH"] = GetLabelText("WCT_FLASH"),
+
+            ["COMPONENT_PDP_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_PDP_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_AT_PDP_FLSH"] = GetLabelText("WCT_FLASH"),
+            ["COMPONENT_PDP_SUPP"] = GetLabelText("WCT_SUPP"),
+
+            ["COMPONENT_COLBATON_GRIP_01"] = "Grip",
+
+            // //Pocket Light
+            ["COMPONENT_PLIGHT_W"] = "Light Cone (White)",
+            ["COMPONENT_PLIGHT_UV"] = "Light Cone (UV)",
+            ["COMPONENT_PLIGHT_RED"] = "Light Cone (Red)",
+            ["COMPONENT_PLIGHT_WAND_W"] = "Light Wand (White)",
+            ["COMPONENT_PLIGHT_WAND_R"] = "Light Wand (Red)",
+            ["COMPONENT_PLIGHT_WAND_A"] = "Light Wand (White)",
+            ["COMPONENT_PLIGHT_WAND_G"] = "Light Wand (White)",
+            ["COMPONENT_PLIGHT_PS"] = "Light Wand (White)",
+            ["COMPONENT_PLIGHT_CAMO_01"] = "Camo #1",
+            ["COMPONENT_PLIGHT_CAMO_02"] = "Camo #2",
+            ["COMPONENT_PLIGHT_CAMO_03"] = "Camo #3",
+            ["COMPONENT_PLIGHT_CAMO_04"] = "Camo #4",
+
+            // //Isreali Rifle
+            // ["COMPONENT_ISRAELIRIFLE_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            // ["COMPONENT_ISRAELIRIFLE_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            // ["COMPONENT_ISRAELIRIFLE_CLIP_03"] = GetLabelText("WCT_CLIP_DRM"),
+            // ["COMPONENT_ISRAELIRIFLE_SIDERAILS"] = "Side Rails",
+            // ["COMPONENT_ISRAELIRIFLE_DOVERAIL"] = "Dovetail Rail",
+            //["COMPONENT_ISRAELIRIFLE_VARMOD_LUXE"] = GetLabelText("WCT_VAR_GOLD"), //Don't enable this one, breaks it for some reason
+
+            //Riot Shotgun
+            ["COMPONENT_RIOTSHOTGUN_CLIP_DEFAULT"] = GetLabelText("WCT_SHELL"),
+            ["COMPONENT_RIOTSHOTGUN_CLIP_SLUG"] = "Slug Rounds",
+
+            // //Heavy Shotgun Mk2
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_03"] = "Magazine #3",
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_ARMORPIERCING"] = GetLabelText("WCT_SHELL_AP"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_EXPLOSIVE"] = GetLabelText("WCT_SHELL_EX"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_HOLLOWPOINT"] = GetLabelText("WCT_SHELL_HP"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_INCENDIARY"] = GetLabelText("WCT_SHELL_INC"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_MUZZLE_SUPP"] = GetLabelText("WCT_SUPP"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_MUZZLE_1"] = "Muzzle #1",
+            ["COMPONENT_HEAVYSHOTGUN_MK2_BARREL_01"] = GetLabelText("WCT_BARR"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_BARREL_02"] = GetLabelText("WCT_BARR2"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO"] = GetLabelText("WCT_CAMO_1"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_02"] = GetLabelText("WCT_CAMO_2"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_03"] = GetLabelText("WCT_CAMO_3"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_04"] = GetLabelText("WCT_CAMO_4"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_05"] = GetLabelText("WCT_CAMO_5"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_06"] = GetLabelText("WCT_CAMO_6"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_07"] = GetLabelText("WCT_CAMO_7"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_08"] = GetLabelText("WCT_CAMO_8"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_09"] = GetLabelText("WCT_CAMO_9"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_10"] = GetLabelText("WCT_CAMO_10"),
+            ["COMPONENT_HEAVYSHOTGUN_MK2_CAMO_IND_01"] = GetLabelText("WCT_CAMO_IND"),
+
+            //Addon Weapon Components
+            ["COMPONENT_VIETNAM_CLIP_01"] = GetLabelText("WCT_CLIPVIET"),
+            ["COMPONENT_VIETNAM_CLIP_02"] = GetLabelText("WCT_CLIPVIET2"),
+            ["COMPONENT_COMP_CLIP_01"] = GetLabelText("WCT_CLIPCOMP"),
+            ["COMPONENT_COMP_CLIP_02"] = GetLabelText("WCT_CLIPCOMP2"),
+            ["COMPONENT_MILITARY_CLIP_01"] = GetLabelText("WCT_CLIP_MIL"),
+            ["COMPONENT_MILITARY_CLIP_02"] = GetLabelText("WCT_CLIP_MIL2"),
+            ["COMPONENT_OMEGA_CLIP_01"] = GetLabelText("WCT_CLIP_OMEGA"),
+            ["COMPONENT_SOVIET_CLIP_01"] = GetLabelText("WCT_CLIP_SOVVIE1"),
+            ["COMPONENT_SOVIET_CLIP_02"] = GetLabelText("WCT_CLIP_SOVVIE2"),
+            ["COMPONENT_AT_MUZZLE_CR"] = GetLabelText("WCT_MUZCR"),
+            ["COMPONENT_AT_MUZZLE_BRD"] = GetLabelText("WCT_MUZBRD"),
+            ["COMPONENT_AT_MUZZLE_KM"] = GetLabelText("WCT_MUZKM"),
+            ["COMPONENT_IRON_SIGHT_01"] = GetLabelText("WCT_IRON_SIGHT"),
+            ["COMPONENT_IRON_SIGHT_02"] = GetLabelText("WCT_IRON_SIGHT"),
+            ["COMPONENT_AT_SCOPE_SMALLR"] = GetLabelText("WCT_SCOPE_SMLR"),
+            ["COMPONENT_AT_KALASH_STOCK_01"] = GetLabelText("WCT_KS1"),
+            ["COMPONENT_AT_KALASH_STOCK_02"] = GetLabelText("WCT_KS2"),
+            ["COMPONENT_AT_KALASH_STOCK_03"] = GetLabelText("WCT_KS3"),
+            ["COMPONENT_AT_KALASH_STOCK_04"] = GetLabelText("WCT_KS4"),
+            ["COMPONENT_AT_DOVERAIL"] = GetLabelText("WCT_DR"),
+
+            // ["COMPONENT_PROTORIFLE_SIGHT_01"] = GetLabelText("WCT_IRON_SIGHT"),
+            // ["COMPONENT_AT_SCOPE_SERVICE"] = GetLabelText("WCT_SCOPE_SRVC"),
+            // ["COMPONENT_AT_MUZZLE_MOD"] = GetLabelText("WCT_MUZMOD"),
+            ["COMPONENT_AT_STEALTHCARBINE_SIGHT"] = GetLabelText("WCT_IRON_SIGHT_STEALTH"),
+            ["COMPONENT_AT_AR_SUPP_03"] = GetLabelText("WCT_SUPP_STH"),
+            ["COMPONENT_AT_RAILCOVER_STEALTH"] = GetLabelText("WCT_RAIL_STH"),
+            // ["COMPONENT_NAVYCARBINE_SIGHT_01"] = GetLabelText("WCT_NAVYCARBINEIRON_SIGHT"),
+            // ["COMPONENT_AT_STOCK_01"] = GetLabelText("WCT_S1"),
+            // ["COMPONENT_AT_STOCK_02"] = GetLabelText("WCT_S2"),
+            // ["COMPONENT_AT_STOCK_03"] = GetLabelText("WCT_S3"),
+            // ["COMPONENT_AT_STOCK_04"] = GetLabelText("WCT_S4"),
+            // ["COMPONENT_AT_STOCK_05"] = GetLabelText("WCT_S5"),
+            // ["COMPONENT_AT_MUZZLE_PRC"] = GetLabelText("WCT_MUZZ"),
+            // ["COMPONENT_AT_PRC_STOCK"] = GetLabelText("WCT_PRC_STOCK"),
+            // ["COMPONENT_AT_PRC_STOCK_COLLAPSED"] = GetLabelText("WCT_PRC_STOCK_CLP"),
+            // ["COMPONENT_AT_RAIL"] = GetLabelText("WCT_PRC_RAIL"),
+            // ["COMPONENT_MILITARYCARBINE_CARRYHANDLE"] = GetLabelText("WCT_MILITARYCARBINE_CARRYHANDLE"),
+            // ["COMPONENT_CARBINE_SIGHT_01"] = GetLabelText("WCT_IRON_SIGHT"),
         };
         #endregion
 
