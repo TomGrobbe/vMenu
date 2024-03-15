@@ -328,7 +328,7 @@ namespace vMenuClient.data
             {"weapon_dd16_od", "DDM4V7 16 OD" },
             {"weapon_dd16_c", "DDM4V7 16 Coyote" },
 
-            {"weapon_safetypistol","Safety Pistol" },
+            {"weapon_safetypistol", GetLabelText("WTD_PIST_SFT") },
             {"weapon_vp9", "VP-9" },
             {"weapon_pdp", "Walther PDP" },
             {"weapon_rubbergun", "Rubber Gun" },
@@ -535,7 +535,7 @@ namespace vMenuClient.data
             {"weapon_dd16_od", "DDM4V7 16 OD" },
             {"weapon_dd16_c", "DDM4V7 16 Coyote" },
 
-            {"weapon_safetypistol","Safety Pistol" },
+            {"weapon_safetypistol", GetLabelText("WT_PIST_SFT") },
             {"weapon_vp9", "VP-9" },
             {"weapon_pdp", "Walther PDP" },
             {"weapon_rubbergun", "Rubber Gun" },
@@ -2320,7 +2320,7 @@ namespace vMenuClient.data
 
             //Safety Pistol
             ["COMPONENT_SAFETYPISTOL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
-            ["COMPONENT_AT_PI_SAFETYPISTOL_RDS"] = "Red-Dot Sight",
+            ["COMPONENT_AT_PI_SAFETYPISTOL_RDS"] = GetLabelText("WCT_SCOPE_PI"),
 
             ["COMPONENT_AT_VP9_FLSH"] = GetLabelText("WCT_FLASH"),
 
@@ -2355,7 +2355,7 @@ namespace vMenuClient.data
 
             //Riot Shotgun
             ["COMPONENT_RIOTSHOTGUN_CLIP_DEFAULT"] = GetLabelText("WCT_SHELL"),
-            ["COMPONENT_RIOTSHOTGUN_CLIP_SLUG"] = "Slug Rounds",
+            ["COMPONENT_RIOTSHOTGUN_CLIP_SLUG"] = "Slug Shells",
 
             // //Heavy Shotgun Mk2
             ["COMPONENT_HEAVYSHOTGUN_MK2_CLIP_01"] = GetLabelText("WCT_CLIP1"),
