@@ -2475,6 +2475,63 @@ namespace vMenuClient.data
             ["Metallic Red & Yellow"] = 31
         };
         #endregion
+
+        #region addon-weapon tints
+        public static readonly Dictionary<string, int> WeaponTintsRiotShotgun = new()
+        {
+            ["LTL Orange"] = 0,
+            ["LTL Orange Alt"] = 1,
+            ["LTL Green"] = 2,
+            ["LTL Green Alt"] = 3,
+            ["LTL Yellow"] = 4,
+            ["LTL Yellow Alt"] = 5,
+            ["LTL Blue"] = 5,
+            ["LTL Blue Alt"] = 6,
+            ["LTL White"] = 7,
+            ["LTL White Alt"] = 8,
+            ["Basic Blue"] = 9,
+            ["Basic Red"] = 10,
+            ["Street Lethal"] = 11,
+        };
+        public static readonly Dictionary<string, int> WeaponTintsRubberGun = new()
+        {
+            ["Blue"] = 0,
+            ["Green"] = 1,
+            ["Red"] = 2,
+            ["Yellow"] = 3,
+            ["Orange"] = 4,
+            ["Pink"] = 5,
+            ["Purple"] = 6,
+            ["White"] = 7,
+        };
+        public static readonly Dictionary<string, int> WeaponTintsColBaton = new()
+        {
+            ["Base"] = 0,
+            ["Green"] = 1,
+            ["Gold"] = 2,
+            ["Pink"] = 3,
+            ["Army"] = 4,
+            ["LSPD"] = 5,
+            ["Orange"] = 6,
+            ["Platinum"] = 7,
+            ["Training Blue"] = 8,
+            ["Wine"] = 9,
+        };
+        public static readonly Dictionary<string, int> WeaponTintsPocketlight = new()
+        {
+            ["Base"] = 0,
+            ["Green"] = 1,
+            ["Gold"] = 2,
+            ["Pink"] = 3,
+            ["Army"] = 4,
+            ["LSPD"] = 5,
+            ["Orange"] = 6,
+            ["Platinum"] = 7,
+            ["Blue"] = 8,
+            ["Yellow Utility"] = 9,
+        };
+        #endregion
+
         #endregion
     }
 }

@@ -404,6 +404,34 @@ namespace vMenuClient.menus
                             tints.Add(tint.Key);
                         }
                     }
+                    else if(weapon.Name.Contains("Riot Shotgun"))
+                    {
+                        foreach (var tint in ValidWeapons.WeaponTintsRiotShotgun)
+                        {
+                            tints.Add(tint.Key);
+                        }
+                    }
+                    else if (weapon.Name.Contains("Rubber Gun"))
+                    {
+                        foreach (var tint in ValidWeapons.WeaponTintsRubberGun)
+                        {
+                            tints.Add(tint.Key);
+                        }
+                    }
+                    else if (weapon.Name.Contains("Telescopic "))
+                    {
+                        foreach (var tint in ValidWeapons.WeaponTintsColBaton)
+                        {
+                            tints.Add(tint.Key);
+                        }
+                    }
+                    else if (weapon.Name.Contains("Pocket "))
+                    {
+                        foreach (var tint in ValidWeapons.WeaponTintsPocketlight)
+                        {
+                            tints.Add(tint.Key);
+                        }
+                    }
                     else
                     {
                         foreach (var tint in ValidWeapons.WeaponTints)
