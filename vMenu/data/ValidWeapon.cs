@@ -2298,8 +2298,8 @@ namespace vMenuClient.data
             ["COMPONENT_VUDU_1X"] = "EOTech Vudu 1x",
             ["COMPONENT_PMAG30_B"] = "PMAG 30r - BLK",
             ["COMPONENT_PMAG30_C"] = "PMAG 30r - COY",
-            ["COMPONENT_PMAG40_B"] = "PMAG 40r - BLK",
             ["COMPONENT_PMAGRANGER_B"] = "PMAG 30r w/ Rangerplate - BLK",
+            ["COMPONENT_PMAG40_B"] = "PMAG 40r - BLK",
             ["COMPONENT_PMAGLINK_B"] = "PMAG 60r Maglinked - BLK",
             ["COMPONENT_PMAGLINK_C"] = "PMAG 60r Maglinked - COY",
             ["COMPONENT_BCM_B"] = "BCM Vertical Grip Mod 3 - BLK",
@@ -2476,7 +2476,7 @@ namespace vMenuClient.data
         };
         #endregion
 
-        #region addon-weapon tints
+        #region addon weapon tints
         public static readonly Dictionary<string, int> WeaponTintsRiotShotgun = new()
         {
             ["LTL Orange"] = 0,
