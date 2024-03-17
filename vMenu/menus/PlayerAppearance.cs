@@ -1504,6 +1504,7 @@ namespace vMenuClient.menus
             ["csb_golfer_b"] = "GolferBCutscene", // mpsecurity
             ["csb_groom"] = "GroomCutscene",
             ["csb_grove_str_dlr"] = "GroveStrDlrCutscene",
+            ["csb_g"] = "GCutscene",
             ["csb_gustavo"] = "GustavoCutscene", // mpheist4
             ["csb_hao"] = "HaoCutscene",
             ["csb_hao_02"] = "Hao02Cutscene", // patchday26ng
@@ -1588,6 +1589,8 @@ namespace vMenuClient.menus
             ["g_m_m_armboss_01"] = "ArmBoss01GMM",
             ["g_m_m_armgoon_01"] = "ArmGoon01GMM",
             ["g_m_m_armlieut_01"] = "ArmLieut01GMM",
+            ["g_m_m_cartelguards_01"] = "CarterGuards01GMM", // mpheist4
+            ["g_m_m_cartelguards_02"] = "CarterGuards02GMM", // mpheist4
             ["g_m_m_cartelgoons_01"] = "CartelGoons01GMM", // mp2023_02
             ["g_m_m_cartelguards_01"] = "CartelGuards01GMM", // mpheist4
             ["g_m_m_cartelguards_02"] = "CartelGuards02GMM", // mpheist4
@@ -1751,6 +1754,7 @@ namespace vMenuClient.menus
             ["ig_johnnyklebitz"] = "JohnnyKlebitz",
             ["ig_josef"] = "Josef",
             ["ig_josh"] = "Josh",
+            ["ig_kerrymcintosh"] = "KerryMcintosh",
             ["ig_juanstrickler"] = "JuanStrickler", // mpheist4
             ["ig_karen_daniels"] = "KarenDaniels",
             ["ig_kaylee"] = "Kaylee", // mpheist4
