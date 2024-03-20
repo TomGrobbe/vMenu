@@ -29,11 +29,7 @@ Click [here](https://github.com/TomGrobbe/vMenu/releases) to go to the releases 
 Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/installation)
 
 ## ZAP-Hosting
-If you're using ZAP-Hosting, you may find that moving the `permissions.cfg` file to the same folder as your `server.cfg` file may not work correctly (it could get reset every time you restart your server).
-
-If this is the case, leave your `permissions.cfg` file here: `/resources/vMenu/config/permissions.cfg` and add the following to the very top of your server.cfg file: `exec resources/vMenu/config/permissions.cfg` (instead of `exec permissions.cfg`).
-
-You can also use ZAP-Hosting's one-click installer for vMenu. Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura) and make sure to use `Vespura` at checkout.
+You can use ZAP-Hosting's one-click installer for vMenu. Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura) and make sure to use `Vespura` at checkout.
 
 --------
 
