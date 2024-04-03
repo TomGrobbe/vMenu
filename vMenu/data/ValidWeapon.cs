@@ -348,6 +348,8 @@ namespace vMenuClient.data
             // {"weapon_precisioncarbine", GetLabelText("WT_PRECISIONCRBN") },
             // {"weapon_militarycarbine", GetLabelText("WT_RIFLE_MTLCBN") },
             // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
+            {"weapon_fgm_148_javelin", GetLabelText("WT_FGMJAV") },
+            {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -555,6 +557,8 @@ namespace vMenuClient.data
             // {"weapon_precisioncarbine", GetLabelText("WT_PRECISIONCRBN") },
             // {"weapon_militarycarbine", GetLabelText("WT_RIFLE_MTLCBN") },
             // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
+            {"weapon_fgm_148_javelin", GetLabelText("WT_FGMJAV") },
+            {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
         };
         #endregion
 
@@ -766,6 +770,8 @@ namespace vMenuClient.data
             // ["weapon_precisioncarbine"] = Permission.WPMarksmanRifle,
             // ["weapon_militarycarbine"] = Permission.WPMilitaryRifle,
             // ["weapon_tacticalcarbine"] = Permission.WPCarbineRifle,
+            ["weapon_fgm_148_javelin"] = Permission.WPHomingLauncher,
+            ["weapon_bullpupshotgunext"] = Permission.WPBullpupShotgun,
         };
         #endregion
 
@@ -2421,6 +2427,7 @@ namespace vMenuClient.data
             // ["COMPONENT_AT_RAIL"] = GetLabelText("WCT_PRC_RAIL"),
             // ["COMPONENT_MILITARYCARBINE_CARRYHANDLE"] = GetLabelText("WCT_MILITARYCARBINE_CARRYHANDLE"),
             // ["COMPONENT_CARBINE_SIGHT_01"] = GetLabelText("WCT_IRON_SIGHT"),
+            ["COMPONENT_AT_CLU_NV"] = GetLabelText("WCT_SCOPE_NV"),
         };
         #endregion
 
