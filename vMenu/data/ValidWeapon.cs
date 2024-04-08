@@ -350,6 +350,8 @@ namespace vMenuClient.data
             // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
             {"weapon_fgm_148_javelin", GetLabelText("WT_FGMJAV") },
             {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
+            {"weapon_extendedsmg", GetLabelText("WT_SMG_EXTND") },
+            {"weapon_goldsmg", GetLabelText("WT_SMG_GOLD") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -559,6 +561,8 @@ namespace vMenuClient.data
             // {"weapon_tacticalcarbine", GetLabelText("WT_RIFLE_TCT") },
             {"weapon_fgm_148_javelin", GetLabelText("WT_FGMJAV") },
             {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
+            {"weapon_extendedsmg", GetLabelText("WT_SMG_EXTND") },
+            {"weapon_goldsmg", GetLabelText("WT_SMG_GOLD") },
         };
         #endregion
 
@@ -772,6 +776,8 @@ namespace vMenuClient.data
             // ["weapon_tacticalcarbine"] = Permission.WPCarbineRifle,
             ["weapon_fgm_148_javelin"] = Permission.WPHomingLauncher,
             ["weapon_bullpupshotgunext"] = Permission.WPBullpupShotgun,
+            ["weapon_extendedsmg"] = Permission.WPMicroSMG,
+            ["weapon_goldsmg"] = Permission.WPMicroSMG,
         };
         #endregion
 
@@ -2428,6 +2434,17 @@ namespace vMenuClient.data
             // ["COMPONENT_MILITARYCARBINE_CARRYHANDLE"] = GetLabelText("WCT_MILITARYCARBINE_CARRYHANDLE"),
             // ["COMPONENT_CARBINE_SIGHT_01"] = GetLabelText("WCT_IRON_SIGHT"),
             ["COMPONENT_AT_CLU_NV"] = GetLabelText("WCT_SCOPE_NV"),
+
+            ["COMPONENT_EXTENDEDSMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_EXTENDEDSMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_GOLDSMG_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_GOLDSMG_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_EXTENDEDSMG_STOCK1"] = GetLabelText("AT_SMG_EXTND_STOCK1"),
+            ["COMPONENT_EXTENDEDSMG_STOCK2"] = GetLabelText("AT_SMG_EXTND_STOCK2"),
+            ["COMPONENT_EXTENDEDSMG_STOCK3"] = GetLabelText("AT_SMG_EXTND_STOCK3"),
+            ["COMPONENT_EXTENDEDSMG_BARREL"] = GetLabelText("AT_SMG_EXTND_BARREL1"),
+            ["COMPONENT_EXTENDEDSMG_SUPPRESSOR"] = GetLabelText("AT_SMG_EXTND_BARREL2"),
+            // ["COMPONENT_GOLDSMG_VARMOD_GOLD"] = GetLabelText("WCT_VAR_METAL"),
         };
         #endregion
 
