@@ -354,6 +354,8 @@ namespace vMenuClient.data
             {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
             {"weapon_extendedsmg", GetLabelText("WT_SMG_EXTND") },
             {"weapon_goldsmg", GetLabelText("WT_SMG_GOLD") },
+            {"weapon_vp897", GetLabelText("WT_PI_VP897") },
+            {"weapon_gl06ll", "BT GL-06 Less-Lethal" },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -567,6 +569,8 @@ namespace vMenuClient.data
             {"weapon_bullpupshotgunext", GetLabelText("WT_SG_BLPEXT") },
             {"weapon_extendedsmg", GetLabelText("WT_SMG_EXTND") },
             {"weapon_goldsmg", GetLabelText("WT_SMG_GOLD") },
+            {"weapon_vp897", GetLabelText("WT_PI_VP897") },
+            {"weapon_gl06ll", "BT GL-06 Less-Lethal" },
         };
         #endregion
 
@@ -784,6 +788,8 @@ namespace vMenuClient.data
             ["weapon_goldsmg"] = Permission.WPMicroSMG,
             ["weapon_fm1_hk416"] = Permission.WPCarbineRifleMk2,
             ["weapon_fm2_hk416"] = Permission.WPCarbineRifleMk2,
+            ["weapon_vp897"] = Permission.WPHeavyPistol,
+            ["weapon_gl06ll"] = Permission.WPStunGun,
         };
         #endregion
 
@@ -2649,6 +2655,16 @@ namespace vMenuClient.data
             ["COMPONENT_EXTENDEDSMG_BARREL"] = GetLabelText("AT_SMG_EXTND_BARREL1"),
             ["COMPONENT_EXTENDEDSMG_SUPPRESSOR"] = GetLabelText("AT_SMG_EXTND_BARREL2"),
             // ["COMPONENT_GOLDSMG_VARMOD_GOLD"] = GetLabelText("WCT_VAR_METAL"),
+
+            ["COMPONENT_VP897_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_VP897_CLIP_02"] = GetLabelText("WCT_CLIP2"),
+            ["COMPONENT_AT_VP897_SUPP"] = GetLabelText("WCT_SUPP"),
+
+
+            ["COMPONENT_GL06LL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
+            ["COMPONENT_GL06LL_GRIP_01"] = GetLabelText("WCT_GRIP"),
+            ["COMPONENT_GL06LL_SCOPE_01"] = GetLabelText("WCT_SCOPE_SML"),
+
         };
         #endregion
 
