@@ -1520,6 +1520,7 @@ namespace vMenuClient.menus
             ["csb_jackhowitzer"] = "JackHowitzerCutscene",
             ["csb_jamalamir"] = "JamalAmirCutscene", // mp2023_02
             ["csb_janitor"] = "JanitorCutscene",
+            ["csb_jenettee"] = "JenetteECutscene", // mp2024_01
             ["csb_jio"] = "JIOCutscene", // mpheist4
             ["csb_jio_02"] = "JIO02Cutscene", // mpsecurity
             ["csb_johnny_guns"] = "JohnnyGunsCutscene", // mpsecurity
@@ -1527,6 +1528,7 @@ namespace vMenuClient.menus
             ["csb_labrat"] = "LabratCutscene", // mpchristmas3
             ["csb_luchadora"] = "LuchadoraCutscene", // mpchristmas3
             ["csb_maude"] = "MaudeCutscene",
+            ["csb_maude_02"] = "Maude02Cutscene", // mp2024_01
             ["csb_miguelmadrazo"] = "MiguelMadrazoCutscene", // mpheist4
             ["csb_mimi"] = "MimiCutscene", // mptuner
             ["csb_mjo"] = "MJOCutscene", // mpheist4
@@ -1607,6 +1609,9 @@ namespace vMenuClient.menus
             ["g_m_m_mexboss_02"] = "MexBoss02GMM",
             ["g_m_m_prisoners_01"] = "Prisoners01GMM", // mptuner
             ["g_m_m_slasher_01"] = "Shalsher01GMM", // patchday27ng
+            ["g_m_m_zombie_01"] = "Zombie01GMM", // mp2024_01
+            ["g_m_m_zombie_02"] = "Zombie02GMM", // mp2024_01
+            ["g_m_m_zombie_03"] = "Zombie03GMM", // mp2024_01
             ["g_m_y_armgoon_02"] = "ArmGoon02GMY",
             ["g_m_y_azteca_01"] = "Azteca01GMY",
             ["g_m_y_ballaeast_01"] = "BallaEast01GMY",
@@ -1660,6 +1665,12 @@ namespace vMenuClient.menus
             ["ig_bestmen"] = "Bestmen",
             ["ig_beverly"] = "Beverly",
             ["ig_billionaire"] = "Billionaire", // mpsecurity
+            ["ig_bountytarget_01"] = "BountyTarget01", // mp2024_01
+            ["ig_bountytarget_02"] = "BountyTarget02", // mp2024_01
+            ["ig_bountytarget_03"] = "BountyTarget03", // mp2024_01
+            ["ig_bountytarget_04"] = "BountyTarget04", // mp2024_01
+            ["ig_bountytarget_05"] = "BountyTarget05", // mp2024_01
+            ["ig_bountytarget_06"] = "BountyTarget06", // mp2024_01
             ["ig_brad"] = "Brad",
             ["ig_bride"] = "Bride",
             ["ig_brucie2"] = "Brucie2", // patchday22ng
@@ -1739,6 +1750,7 @@ namespace vMenuClient.menus
             ["ig_janet"] = "Janet",
             ["ig_jay_norris"] = "JayNorris",
             ["ig_jaywalker"] = "JayWalker", // mp2023_02
+            ["ig_jenettee"] = "JenetteE", // mp2024_01
             ["ig_jewelass"] = "Jewelass",
             ["ig_jimmyboston"] = "JimmyBoston",
             ["ig_jimmyboston_02"] = "JimmyBoston02",
@@ -1776,8 +1788,10 @@ namespace vMenuClient.menus
             ["ig_maryann"] = "MaryAnn",
             ["ig_mason_duggan"] = "MasonDuggan", // mpsum2
             ["ig_maude"] = "Maude",
+            ["ig_maudebf"] = "MaudeBF", // mp2024_01
             ["ig_mechanic_01"] = "Mechanic01", // mp2023_02
             ["ig_mechanic_02"] = "Mechanic02", // mp2023_02
+            ["ig_mechanic_03"] = "Mechanic03", // mp2024_01
             ["ig_michelle"] = "Michelle",
             ["ig_miguelmadrazo"] = "MiguelMadrazo", // mpheist4
             ["ig_milton"] = "Milton",
@@ -1941,6 +1955,7 @@ namespace vMenuClient.menus
             ["s_m_m_autoshop_01"] = "Autoshop01SMM",
             ["s_m_m_autoshop_02"] = "Autoshop02SMM",
             ["s_m_m_autoshop_03"] = "Autoshop03SMM", // mptuner
+            ["s_m_m_bailoffice_01"] = "BailOffice01SMM", // mp2024_01
             ["s_m_m_bouncer_01"] = "Bouncer01SMM",
             ["s_m_m_bouncer_02"] = "Bouncer02SMM", // mpheist4
             ["s_m_m_ccrew_01"] = "CCrew01SMM",
