@@ -214,7 +214,7 @@ namespace vMenuClient.menus
             {
                 if (item == quitGame)
                 {
-                    QuitGame();
+                    CommonFunctions.QuitGame();
                 }
                 else if (item == quitSession)
                 {
