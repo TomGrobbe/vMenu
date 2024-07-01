@@ -1496,7 +1496,7 @@ namespace vMenuClient
         /// <summary>
         /// Saves the vehicle the player is currently in to the client's kvp storage.
         /// </summary>
-        public static async void SaveVehicle(string updateExistingSavedVehicleName = null)
+        public static async void SaveVehicle(string updateExistingSavedVehicleName = null, string existingCatergory = null)
         {
             // Only continue if the player is in a vehicle.
             if (Game.PlayerPed.IsInVehicle())
@@ -1584,7 +1584,7 @@ namespace vMenuClient
                         bulletProofTires = !veh.CanTiresBurst,
                         headlightColor = VehicleOptions.GetHeadlightsColorForVehicle(veh),
                         enveffScale = GetVehicleEnveffScale(veh.Handle),
-                        Category = "Uncategorized"
+                        Category = string.IsNullOrEmpty(existingCatergory) ? "Uncategorized" : existingCatergory
                     };
 
                     #endregion
