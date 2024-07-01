@@ -1147,6 +1147,7 @@ namespace vMenuClient.menus
                             }
                         }
 
+                        ClearVehicleCustomPrimaryColour(veh.Handle);
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == secondaryColorsMenu)
@@ -1173,6 +1174,8 @@ namespace vMenuClient.menus
                                 secondaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
+                        
+                        ClearVehicleCustomSecondaryColour(veh.Handle);
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == VehicleColorsMenu)
@@ -1212,8 +1215,38 @@ namespace vMenuClient.menus
                 }
             }
 
+            async void HandleItemSelect(Menu menu, MenuItem menuItem, int itemIndex)
+            {
+                Vehicle veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    string rawRValue = await GetUserInput("Custom RGB - R Value (number from 0-255)", "0", 3);
+                    string rawGValue = await GetUserInput("Custom RGB - G Value (number from 0-255)", "0", 3);
+                    string rawBValue = await GetUserInput("Custom RGB - B Value (number from 0-255)", "0", 3);
+                    int rValue;
+                    int gValue;
+                    int bValue;
+
+                    if (!int.TryParse(rawRValue, out rValue) || !int.TryParse(rawGValue, out gValue) || !int.TryParse(rawBValue, out bValue))
+                    {
+                        Notify.Error("An invalid RGB value was entered, ensure you enter numbers between 0 and 255");
+                        return;
+                    }
+
+                    if (menu == primaryColorsMenu)
+                    {
+                        SetVehicleCustomPrimaryColour(veh.Handle, rValue, gValue, bValue);
+                    }
+                    else if (menu == secondaryColorsMenu)
+                    {
+                        SetVehicleCustomSecondaryColour(veh.Handle, rValue, gValue, bValue);
+                    }
+                }
+            }
+
             for (var i = 0; i < 2; i++)
             {
+                var customColour = new MenuItem("Custom RGB") { Label = ">>>" };
                 var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
                 var classicList = new MenuListItem("Classic", classic, 0);
                 var metallicList = new MenuListItem("Metallic", classic, 0);
@@ -1224,6 +1257,7 @@ namespace vMenuClient.menus
 
                 if (i == 0)
                 {
+                    primaryColorsMenu.AddMenuItem(customColour);
                     primaryColorsMenu.AddMenuItem(classicList);
                     primaryColorsMenu.AddMenuItem(metallicList);
                     primaryColorsMenu.AddMenuItem(matteList);
@@ -1239,9 +1273,11 @@ namespace vMenuClient.menus
                     }
 
                     primaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                    primaryColorsMenu.OnItemSelect += HandleItemSelect;
                 }
                 else
                 {
+                    secondaryColorsMenu.AddMenuItem(customColour);
                     secondaryColorsMenu.AddMenuItem(pearlescentList);
                     secondaryColorsMenu.AddMenuItem(classicList);
                     secondaryColorsMenu.AddMenuItem(metallicList);
@@ -1251,6 +1287,7 @@ namespace vMenuClient.menus
                     secondaryColorsMenu.AddMenuItem(wornList);
 
                     secondaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                    secondaryColorsMenu.OnItemSelect += HandleItemSelect;
                 }
             }
             #endregion
