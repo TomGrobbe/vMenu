@@ -499,7 +499,7 @@ namespace vMenuClient.menus
                         {
                             replaceButtonPressedCount = 0;
                             item.Label = "";
-                            SaveVehicle(currentlySelectedVehicle.Key.Substring(4));
+                            SaveVehicle(currentlySelectedVehicle.Key.Substring(4), currentlySelectedVehicle.Value.Category);
                             selectedVehicleMenu.GoBack();
                             Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
                         }
