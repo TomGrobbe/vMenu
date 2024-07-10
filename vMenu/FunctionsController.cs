@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
 using CitizenFX.Core.UI;
 
 using MenuAPI;
@@ -496,6 +497,22 @@ namespace vMenuClient
                             else
                             {
                                 SetHeliTurbulenceScalar(veh.Handle, 1.0f);
+                            }
+                        }
+
+                        if (veh.Model.IsBoat)
+                        {
+                            if (MainMenu.VehicleOptionsMenu.AnchorBoat && IsAllowed(Permission.VOAnchorBoat) && CanAnchorBoatHere(veh.Handle))
+                            {
+                                SetBoatAnchor(veh.Handle, true);
+                                SetBoatFrozenWhenAnchored(veh.Handle, true);
+                                SetForcedBoatLocationWhenAnchored(veh.Handle, true);
+                            }
+                            else
+                            {
+                                SetBoatAnchor(veh.Handle, false);
+                                SetBoatFrozenWhenAnchored(veh.Handle, false);
+                                SetForcedBoatLocationWhenAnchored(veh.Handle, false);
                             }
                         }
                     }
