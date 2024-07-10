@@ -1107,7 +1107,7 @@ namespace vMenuClient.menus
 
                     if (sender == primaryColorsMenu)
                     {
-                        if (itemIndex == 1)
+                        if (itemIndex == 2)
                         {
                             pearlColor = VehicleData.ClassicColors[newIndex].id;
                         }
@@ -1119,26 +1119,27 @@ namespace vMenuClient.menus
                         switch (itemIndex)
                         {
                             case 0:
-                            case 1:
+                            case 1:    
+                            case 2:
                                 primaryColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 2:
+                            case 3:
                                 primaryColor = VehicleData.MatteColors[newIndex].id;
                                 break;
-                            case 3:
+                            case 4:
                                 primaryColor = VehicleData.MetalColors[newIndex].id;
                                 break;
-                            case 4:
+                            case 5:
                                 primaryColor = VehicleData.UtilColors[newIndex].id;
                                 break;
-                            case 5:
+                            case 6:
                                 primaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
 
                         if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
                         {
-                            if (itemIndex == 6)
+                            if (itemIndex == 7)
                             {
                                 primaryColor = VehicleData.ChameleonColors[newIndex].id;
                                 secondaryColor = VehicleData.ChameleonColors[newIndex].id;
@@ -1155,22 +1156,23 @@ namespace vMenuClient.menus
                         switch (itemIndex)
                         {
                             case 0:
+                            case 1:
                                 pearlColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 1:
                             case 2:
+                            case 3:
                                 secondaryColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 3:
+                            case 4:
                                 secondaryColor = VehicleData.MatteColors[newIndex].id;
                                 break;
-                            case 4:
+                            case 5:
                                 secondaryColor = VehicleData.MetalColors[newIndex].id;
                                 break;
-                            case 5:
+                            case 6:
                                 secondaryColor = VehicleData.UtilColors[newIndex].id;
                                 break;
-                            case 6:
+                            case 7:
                                 secondaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
