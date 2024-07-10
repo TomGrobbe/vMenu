@@ -224,7 +224,7 @@ namespace vMenuClient
         /// <returns></returns>
         public static bool IsPedPointing(int handle)
         {
-            return N_0x921ce12c489c4c41(handle);
+            return IsTaskMoveNetworkActive(handle);
         }
 
         /// <summary>
