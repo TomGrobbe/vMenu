@@ -324,6 +324,8 @@ namespace vMenuShared
             WPBattleRifle,
             WPSnowLauncher,
             WPHackingDevice,
+            // MP2024_01 DLC (V 3258)
+            WPStunRod,
           
           
             // Custom

@@ -257,6 +257,11 @@ namespace vMenuClient.data
             { "weapon_railgunxm3", GetLabelText("WTD_RAILGUNXM3") },
             // MP2023_01 DLC (V 2944)
             { "weapon_tecpistol", GetLabelText("WTD_TECPISTOL") },
+            // MP2023_02 DLC (V 3095)
+            { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
+            { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
+            // MP2024_01 DLC (V 3258)
+            { "weapon_stunrod", GetLabelText("WTD_STUNROD") },
           
           
             // CUSTOM WEAPONS
@@ -314,10 +319,7 @@ namespace vMenuClient.data
             { "weapon_grenadelauncher_smoke", "Grenadelauncher (Smoke)" },
             { "weapon_flashbang", "Flashbang Grenade" },
           
-          
-            // MP2023_02 DLC (V 3095)
-            { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
-            { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
+         
 
             //TLS
             {"weapon_dd11_b", "DDM4V7 11.5 Black" },
@@ -476,6 +478,8 @@ namespace vMenuClient.data
             { "weapon_battlerifle", GetLabelText("WT_BATTLERIFLE") },
             { "weapon_snowlauncher", GetLabelText("WT_SNOWLNCHR") },
             { "weapon_hackingdevice", GetLabelText("WT_HACKDEVICE") },
+            // MP2024_01 DLC (V 3258)
+            { "weapon_stunrod", GetLabelText("WT_STUNROD") },
           
           
           // CUSTOM WEAPONS
@@ -694,6 +698,8 @@ namespace vMenuClient.data
             ["weapon_battlerifle"] = Permission.WPBattleRifle,
             ["weapon_snowlauncher"] = Permission.WPSnowLauncher,
             ["weapon_hackingdevice"] = Permission.WPHackingDevice,
+            // MP2024_01 DLC (V 3258)
+            ["weapon_stunrod"] = Permission.WPStunRod,
 
             // CUSTOM WEAPONS
 
@@ -1214,6 +1220,8 @@ namespace vMenuClient.data
             ["COMPONENT_COMBATPISTOL_VARMOD_XMAS23"] = GetLabelText("WCT_COMPIST_XM"),
             ["COMPONENT_SPECIALCARBINE_VARMOD_XMAS23"] = GetLabelText("WCT_SPCR_XM"),
             ["COMPONENT_HEAVYSNIPER_VARMOD_XMAS23"] = GetLabelText("WCT_HVSP_XM"),
+            // MP2024_01 DLC (V 3258)
+            ["COMPONENT_STUNGUN_VARMOD_BAIL"] = GetLabelText("WCT_STNGN_BAIL"),
 
 
 
@@ -2664,7 +2672,6 @@ namespace vMenuClient.data
             ["COMPONENT_GL06LL_CLIP_01"] = GetLabelText("WCT_CLIP1"),
             ["COMPONENT_GL06LL_GRIP_01"] = GetLabelText("WCT_GRIP"),
             ["COMPONENT_GL06LL_SCOPE_01"] = GetLabelText("WCT_SCOPE_SML"),
-
         };
         #endregion
 

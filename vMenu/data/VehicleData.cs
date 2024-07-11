@@ -383,6 +383,7 @@ namespace vMenuClient.data
                 "COGNOSCENTI",
                 "COGNOSCENTI2",
                 "DEITY", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
+                "DRIFTVORSCHLAG", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "EMPEROR",
                 "EMPEROR2",
                 "EMPEROR3",
@@ -410,6 +411,7 @@ namespace vMenuClient.data
                 "SURGE",
                 "TAILGATER",
                 "TAILGATER2", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "VORSCHLAGHAMMER", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "WARRENER",
                 "WARRENER2", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "WASHINGTON",
@@ -429,6 +431,7 @@ namespace vMenuClient.data
                 "BALLER7", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "BALLER8", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "BJXL",
+                "CASTIGATOR", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "CAVALCADE",
                 "CAVALCADE2",
                 "CAVALCADE3", // CHOP SHOP (MP2023_02) DLC - Requires b3095
@@ -470,6 +473,7 @@ namespace vMenuClient.data
             {
                 "COGCABRIO",
                 "DRIFTFR36", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "EUROSX32", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "EXEMPLAR",
                 "F620",
                 "FELON",
@@ -506,6 +510,7 @@ namespace vMenuClient.data
                 "COQUETTE3",
                 "DEVIANT",
                 "DOMINATOR",
+                "DOMINATOR10", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DOMINATOR2",
                 "DOMINATOR3",
                 "DOMINATOR4",
@@ -594,7 +599,9 @@ namespace vMenuClient.data
                 "CHEBUREK",
                 "CHEETAH2",
                 "COQUETTE2",
+                "COQUETTE5", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DELUXO",
+                "DRIFTNEBULA", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DYNASTY", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "FAGALOA",
                 "FELTZER3", // Stirling GT
@@ -658,15 +665,18 @@ namespace vMenuClient.data
                 "CORSITA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "COUREUR", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "DRIFTCYPHER", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "DRIFTEUROS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTFUTO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTJESTER", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTREMUS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTSENTINEL", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DRIFTTAMPA", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTZR350", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "ELEGY",
                 "ELEGY2",
+                "ENVISAGE", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "EUROS", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "EVERON2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "FELTZER2",
@@ -699,11 +709,13 @@ namespace vMenuClient.data
                 "NEON",
                 "NINEF",
                 "NINEF2",
+                "NIOBE", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "OMNIS",
                 "OMNISEGT", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "PANTHERE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "PARAGON", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "PARAGON2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "PARAGON3", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "PARIAH",
                 "PENUMBRA",
                 "PENUMBRA2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
@@ -779,6 +791,7 @@ namespace vMenuClient.data
                 "OSIRIS",
                 "PENETRATOR",
                 "PFISTER811",
+                "PIPISTRELLO", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "PROTOTIPO",
                 "REAPER",
                 "S80", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
@@ -852,6 +865,7 @@ namespace vMenuClient.data
                 "OPPRESSOR",
                 "OPPRESSOR2",
                 "PCJ",
+                "PIZZABOY", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POWERSURGE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "RATBIKE",
                 "REEVER", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
@@ -940,6 +954,7 @@ namespace vMenuClient.data
                 "VAGRANT", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "VERUS", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "WINKY", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
+                "YOSEMITE1500", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "YOSEMITE3", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
                 "ZHABA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
             };
@@ -1227,7 +1242,10 @@ namespace vMenuClient.data
                 "FIRETRUK",
                 "LGUARD",
                 "PBUS",
+                "POLDOMINATOR10", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
+                "POLDORADO", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLGAUNTLET", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "POLGREENWOOD", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLICE",
                 "POLICE2",
                 "POLICE3",
@@ -1237,6 +1255,9 @@ namespace vMenuClient.data
                 "POLICEOLD1",
                 "POLICEOLD2",
                 "POLICET",
+                "POLICET3", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
+                "POLIMPALER5", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
+                "POLIMPALER6", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLMAV",
                 "PRANGER",
                 "PREDATOR",
