@@ -262,6 +262,8 @@ namespace vMenuClient.data
             // MP2023_02 DLC (V 3095)
             { "weapon_battlerifle", GetLabelText("WTD_BATTLERIFLE") },
             { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
+            // MP2024_01 DLC (V 3258)
+            { "weapon_stunrod", GetLabelText("WTD_STUNROD") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -383,6 +385,8 @@ namespace vMenuClient.data
             { "weapon_battlerifle", GetLabelText("WT_BATTLERIFLE") },
             { "weapon_snowlauncher", GetLabelText("WT_SNOWLNCHR") },
             { "weapon_hackingdevice", GetLabelText("WT_HACKDEVICE") },
+            // MP2024_01 DLC (V 3258)
+            { "weapon_stunrod", GetLabelText("WT_STUNROD") },
         };
         #endregion
 
@@ -506,6 +510,8 @@ namespace vMenuClient.data
             ["weapon_battlerifle"] = Permission.WPBattleRifle,
             ["weapon_snowlauncher"] = Permission.WPSnowLauncher,
             ["weapon_hackingdevice"] = Permission.WPHackingDevice,
+            // MP2024_01 DLC (V 3258)
+            ["weapon_stunrod"] = Permission.WPStunRod,
         };
         #endregion
 
@@ -929,6 +935,8 @@ namespace vMenuClient.data
             ["COMPONENT_COMBATPISTOL_VARMOD_XMAS23"] = GetLabelText("WCT_COMPIST_XM"),
             ["COMPONENT_SPECIALCARBINE_VARMOD_XMAS23"] = GetLabelText("WCT_SPCR_XM"),
             ["COMPONENT_HEAVYSNIPER_VARMOD_XMAS23"] = GetLabelText("WCT_HVSP_XM"),
+            // MP2024_01 DLC (V 3258)
+            ["COMPONENT_STUNGUN_VARMOD_BAIL"] = GetLabelText("WCT_STNGN_BAIL"),
         };
         #endregion
 
