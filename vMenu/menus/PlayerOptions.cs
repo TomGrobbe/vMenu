@@ -439,7 +439,6 @@ namespace vMenuClient.menus
                 // Set blood level
                 else if (listItem == setBloodLevel)
                 {
-                    Debug.WriteLine($"Set blood level: Item - {listItem} / List Index - {listIndex} / Item Index - {itemIndex}");
                     ApplyPedDamagePack(Game.PlayerPed.Handle, bloodList[listIndex], 100, 100);
                 }
                 // Player Scenarios 
