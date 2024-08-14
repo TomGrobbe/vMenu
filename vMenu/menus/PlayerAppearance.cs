@@ -1818,7 +1818,7 @@ namespace vMenuClient.menus
             ["ig_orleans"] = "Orleans",
             ["ig_ortega"] = "Ortega",
             ["ig_paige"] = "Paige",
-            ["ig_parnell_moss"] = "ParnellMoss", // mp2023_01
+            ["ig_pernell_moss"] = "PernellMoss", // mp2023_01
             ["ig_paper"] = "Paper",
             ["ig_party_promo"] = "PartyPromo", // mpsecurity
             ["ig_patricia"] = "Patricia",
