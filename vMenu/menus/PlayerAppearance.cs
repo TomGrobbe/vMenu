@@ -550,7 +550,7 @@ namespace vMenuClient.menus
                         var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                         var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                         var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor. 
+                        if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor. 
                         {
                             if (!IsHelpMessageBeingDisplayed())
                             {

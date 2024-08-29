@@ -2240,7 +2240,7 @@ namespace vMenuClient
                                         // sets the blip category to 7, which makes the blips group under "Other Players:"
                                         SetBlipCategory(blip, 7);
 
-                                        //N_0x75a16c3da34f1245(blip, false); // unknown
+                                        // ShowHeightOnBlip(blip, false); // See if we need this or not
 
                                         // display on minimap and main map.
                                         SetBlipDisplay(blip, 6);
@@ -2921,7 +2921,7 @@ namespace vMenuClient
                 var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                 var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                 var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
+                if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor.
                 {
                     var newHelmet = component;
                     var newHelmetTexture = texture;
