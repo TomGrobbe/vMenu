@@ -156,6 +156,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("vehicleDisableHelicopterTurbulence", value); }
         }
 
+        public static bool VehicleAnchorBoat
+        {
+            get { return GetSettingsBool("vehicleAnchorBoat"); }
+            set { SetSavedSettingsBool("vehicleAnchorBoat", value); }
+        }
+
         public static bool VehicleBikeSeatbelt
         {
             get { return GetSettingsBool("vehicleBikeSeatbelt"); }
@@ -635,6 +641,9 @@ namespace vMenuClient
 
                 VehicleDisableHelicopterTurbulence = MainMenu.VehicleOptionsMenu.DisableHelicopterTurbulence;
                 prefs.Add("vehicleDisableHelicopterTurbulence", VehicleDisableHelicopterTurbulence);
+
+                VehicleAnchorBoat = MainMenu.VehicleOptionsMenu.AnchorBoat;
+                prefs.Add("vehicleAnchorBoat", VehicleAnchorBoat);
 
                 VehicleBikeSeatbelt = MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
                 prefs.Add("vehicleBikeSeatbelt", VehicleBikeSeatbelt);

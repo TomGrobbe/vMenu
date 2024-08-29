@@ -47,6 +47,7 @@ namespace vMenuClient.menus
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool DisableHelicopterTurbulence { get; private set; } = UserDefaults.VehicleDisableHelicopterTurbulence;
+        public bool AnchorBoat { get; private set; } = UserDefaults.VehicleAnchorBoat;
         public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
         public bool VehicleInfiniteFuel { get; private set; } = false;
         public bool VehicleShowHealth { get; private set; } = false;
@@ -81,6 +82,7 @@ namespace vMenuClient.menus
             var vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
             var vehicleNoTurbulence = new MenuCheckboxItem("Disable Plane Turbulence", "Disables the turbulence for all planes.", DisablePlaneTurbulence);
             var vehicleNoTurbulenceHeli = new MenuCheckboxItem("Disable Helicopter Turbulence", "Disables the turbulence for all helicopters.", DisableHelicopterTurbulence);
+            var vehicleSetAnchor = new MenuCheckboxItem("Anchor Boat", "Only works if the current vehicle is a boat and its position is valid for anchoring", AnchorBoat);
             var vehicleNoSiren = new MenuCheckboxItem("Disable Siren", "Disables your vehicle's siren. Only works if your vehicle actually has a siren.", VehicleNoSiren);
             var vehicleNoBikeHelmet = new MenuCheckboxItem("No Bike Helmet", "No longer auto-equip a helmet when getting on a bike or quad.", VehicleNoBikeHelemet);
             var vehicleFreeze = new MenuCheckboxItem("Freeze Vehicle", "Freeze your vehicle's position.", VehicleFrozen);
@@ -353,6 +355,10 @@ namespace vMenuClient.menus
             {
                 menu.AddMenuItem(vehicleNoTurbulence);
                 menu.AddMenuItem(vehicleNoTurbulenceHeli);
+            }
+            if (IsAllowed(Permission.VOAnchorBoat))
+            {
+                menu.AddMenuItem(vehicleSetAnchor);
             }
             if (IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
             {
@@ -655,6 +661,25 @@ namespace vMenuClient.menus
                         else
                         {
                             SetHeliTurbulenceScalar(vehicle.Handle, 1f);
+                        }
+                    }
+                }
+                else if (item == vehicleSetAnchor)
+                {
+                    AnchorBoat = _checked;
+                    if (vehicle != null && vehicle.Exists() && vehicle.Model.IsBoat && CanAnchorBoatHere(vehicle.Handle))
+                    {
+                        if (MainMenu.VehicleOptionsMenu.AnchorBoat)
+                        {
+                            SetBoatAnchor(vehicle.Handle, true);
+                            SetBoatFrozenWhenAnchored(vehicle.Handle, true);
+                            SetForcedBoatLocationWhenAnchored(vehicle.Handle, true);
+                        }
+                        else
+                        {
+                            SetBoatAnchor(vehicle.Handle, false);
+                            SetBoatFrozenWhenAnchored(vehicle.Handle, false);
+                            SetForcedBoatLocationWhenAnchored(vehicle.Handle, false);
                         }
                     }
                 }
