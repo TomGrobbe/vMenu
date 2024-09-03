@@ -47,6 +47,7 @@ namespace vMenuClient.menus
         public bool FlashHighbeamsOnHonk { get; private set; } = UserDefaults.VehicleHighbeamsOnHonk;
         public bool DisablePlaneTurbulence { get; private set; } = UserDefaults.VehicleDisablePlaneTurbulence;
         public bool DisableHelicopterTurbulence { get; private set; } = UserDefaults.VehicleDisableHelicopterTurbulence;
+        public bool AnchorBoat { get; private set; } = UserDefaults.VehicleAnchorBoat;
         public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
         public bool VehicleInfiniteFuel { get; private set; } = false;
         public bool VehicleShowHealth { get; private set; } = false;
@@ -81,6 +82,7 @@ namespace vMenuClient.menus
             var vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
             var vehicleNoTurbulence = new MenuCheckboxItem("Disable Plane Turbulence", "Disables the turbulence for all planes.", DisablePlaneTurbulence);
             var vehicleNoTurbulenceHeli = new MenuCheckboxItem("Disable Helicopter Turbulence", "Disables the turbulence for all helicopters.", DisableHelicopterTurbulence);
+            var vehicleSetAnchor = new MenuCheckboxItem("Anchor Boat", "Only works if the current vehicle is a boat and its position is valid for anchoring", AnchorBoat);
             var vehicleNoSiren = new MenuCheckboxItem("Disable Siren", "Disables your vehicle's siren. Only works if your vehicle actually has a siren.", VehicleNoSiren);
             var vehicleNoBikeHelmet = new MenuCheckboxItem("No Bike Helmet", "No longer auto-equip a helmet when getting on a bike or quad.", VehicleNoBikeHelemet);
             var vehicleFreeze = new MenuCheckboxItem("Freeze Vehicle", "Freeze your vehicle's position.", VehicleFrozen);
@@ -353,6 +355,10 @@ namespace vMenuClient.menus
             {
                 menu.AddMenuItem(vehicleNoTurbulence);
                 menu.AddMenuItem(vehicleNoTurbulenceHeli);
+            }
+            if (IsAllowed(Permission.VOAnchorBoat))
+            {
+                menu.AddMenuItem(vehicleSetAnchor);
             }
             if (IsAllowed(Permission.VOFlip)) // FLIP VEHICLE
             {
@@ -655,6 +661,25 @@ namespace vMenuClient.menus
                         else
                         {
                             SetHeliTurbulenceScalar(vehicle.Handle, 1f);
+                        }
+                    }
+                }
+                else if (item == vehicleSetAnchor)
+                {
+                    AnchorBoat = _checked;
+                    if (vehicle != null && vehicle.Exists() && vehicle.Model.IsBoat && CanAnchorBoatHere(vehicle.Handle))
+                    {
+                        if (MainMenu.VehicleOptionsMenu.AnchorBoat)
+                        {
+                            SetBoatAnchor(vehicle.Handle, true);
+                            SetBoatFrozenWhenAnchored(vehicle.Handle, true);
+                            SetForcedBoatLocationWhenAnchored(vehicle.Handle, true);
+                        }
+                        else
+                        {
+                            SetBoatAnchor(vehicle.Handle, false);
+                            SetBoatFrozenWhenAnchored(vehicle.Handle, false);
+                            SetForcedBoatLocationWhenAnchored(vehicle.Handle, false);
                         }
                     }
                 }
@@ -1107,7 +1132,7 @@ namespace vMenuClient.menus
 
                     if (sender == primaryColorsMenu)
                     {
-                        if (itemIndex == 1)
+                        if (itemIndex == 2)
                         {
                             pearlColor = VehicleData.ClassicColors[newIndex].id;
                         }
@@ -1119,26 +1144,27 @@ namespace vMenuClient.menus
                         switch (itemIndex)
                         {
                             case 0:
-                            case 1:
+                            case 1:    
+                            case 2:
                                 primaryColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 2:
+                            case 3:
                                 primaryColor = VehicleData.MatteColors[newIndex].id;
                                 break;
-                            case 3:
+                            case 4:
                                 primaryColor = VehicleData.MetalColors[newIndex].id;
                                 break;
-                            case 4:
+                            case 5:
                                 primaryColor = VehicleData.UtilColors[newIndex].id;
                                 break;
-                            case 5:
+                            case 6:
                                 primaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
 
                         if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
                         {
-                            if (itemIndex == 6)
+                            if (itemIndex == 7)
                             {
                                 primaryColor = VehicleData.ChameleonColors[newIndex].id;
                                 secondaryColor = VehicleData.ChameleonColors[newIndex].id;
@@ -1147,6 +1173,7 @@ namespace vMenuClient.menus
                             }
                         }
 
+                        ClearVehicleCustomPrimaryColour(veh.Handle);
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == secondaryColorsMenu)
@@ -1154,25 +1181,28 @@ namespace vMenuClient.menus
                         switch (itemIndex)
                         {
                             case 0:
+                            case 1:
                                 pearlColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 1:
                             case 2:
+                            case 3:
                                 secondaryColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
-                            case 3:
+                            case 4:
                                 secondaryColor = VehicleData.MatteColors[newIndex].id;
                                 break;
-                            case 4:
+                            case 5:
                                 secondaryColor = VehicleData.MetalColors[newIndex].id;
                                 break;
-                            case 5:
+                            case 6:
                                 secondaryColor = VehicleData.UtilColors[newIndex].id;
                                 break;
-                            case 6:
+                            case 7:
                                 secondaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
+                        
+                        ClearVehicleCustomSecondaryColour(veh.Handle);
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
                     else if (sender == VehicleColorsMenu)
@@ -1212,8 +1242,38 @@ namespace vMenuClient.menus
                 }
             }
 
+            async void HandleItemSelect(Menu menu, MenuItem menuItem, int itemIndex)
+            {
+                Vehicle veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    string rawRValue = await GetUserInput("Custom RGB - R Value (number from 0-255)", "0", 3);
+                    string rawGValue = await GetUserInput("Custom RGB - G Value (number from 0-255)", "0", 3);
+                    string rawBValue = await GetUserInput("Custom RGB - B Value (number from 0-255)", "0", 3);
+                    int rValue;
+                    int gValue;
+                    int bValue;
+
+                    if (!int.TryParse(rawRValue, out rValue) || !int.TryParse(rawGValue, out gValue) || !int.TryParse(rawBValue, out bValue))
+                    {
+                        Notify.Error("An invalid RGB value was entered, ensure you enter numbers between 0 and 255");
+                        return;
+                    }
+
+                    if (menu == primaryColorsMenu)
+                    {
+                        SetVehicleCustomPrimaryColour(veh.Handle, rValue, gValue, bValue);
+                    }
+                    else if (menu == secondaryColorsMenu)
+                    {
+                        SetVehicleCustomSecondaryColour(veh.Handle, rValue, gValue, bValue);
+                    }
+                }
+            }
+
             for (var i = 0; i < 2; i++)
             {
+                var customColour = new MenuItem("Custom RGB") { Label = ">>>" };
                 var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
                 var classicList = new MenuListItem("Classic", classic, 0);
                 var metallicList = new MenuListItem("Metallic", classic, 0);
@@ -1224,6 +1284,7 @@ namespace vMenuClient.menus
 
                 if (i == 0)
                 {
+                    primaryColorsMenu.AddMenuItem(customColour);
                     primaryColorsMenu.AddMenuItem(classicList);
                     primaryColorsMenu.AddMenuItem(metallicList);
                     primaryColorsMenu.AddMenuItem(matteList);
@@ -1239,9 +1300,11 @@ namespace vMenuClient.menus
                     }
 
                     primaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                    primaryColorsMenu.OnItemSelect += HandleItemSelect;
                 }
                 else
                 {
+                    secondaryColorsMenu.AddMenuItem(customColour);
                     secondaryColorsMenu.AddMenuItem(pearlescentList);
                     secondaryColorsMenu.AddMenuItem(classicList);
                     secondaryColorsMenu.AddMenuItem(metallicList);
@@ -1251,6 +1314,7 @@ namespace vMenuClient.menus
                     secondaryColorsMenu.AddMenuItem(wornList);
 
                     secondaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
+                    secondaryColorsMenu.OnItemSelect += HandleItemSelect;
                 }
             }
             #endregion
@@ -1892,8 +1956,7 @@ namespace vMenuClient.menus
                 var xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
                 var turbo = new MenuCheckboxItem("Turbo", "Enable or disable the ~y~turbo~s~ for this vehicle.", IsToggleModOn(veh.Handle, 18));
                 var bulletProofTires = new MenuCheckboxItem("Bullet Proof Tires", "Enable or disable ~y~bullet proof tires~s~ for this vehicle.", !GetVehicleTyresCanBurst(veh.Handle));
-                var lowGripTires = new MenuCheckboxItem("Low Grip Tires", "Enable or disable ~y~low grip tires~s~ for this vehicle.", GetDriftTyresEnabled(veh.Handle));
-
+                
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
                 VehicleModMenu.AddMenuItem(xenonHeadlights);
@@ -1906,7 +1969,14 @@ namespace vMenuClient.menus
                 VehicleModMenu.AddMenuItem(headlightColor);
                 VehicleModMenu.AddMenuItem(turbo);
                 VehicleModMenu.AddMenuItem(bulletProofTires);
-                VehicleModMenu.AddMenuItem(lowGripTires);
+
+                bool isLowGripAvailable = GetGameBuildNumber() >= 2372;
+                var lowGripTires = new MenuCheckboxItem("Low Grip Tires", "Enable or disable ~y~low grip tires~s~ for this vehicle.", isLowGripAvailable ? GetDriftTyresEnabled(veh.Handle) : false);
+                if (isLowGripAvailable)
+                {
+                    VehicleModMenu.AddMenuItem(lowGripTires);
+                }
+
                 // Create a list of tire smoke options.
                 var tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                 var tireSmokeColors = new Dictionary<string, int[]>()

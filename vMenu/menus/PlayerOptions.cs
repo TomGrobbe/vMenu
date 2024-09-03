@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
 
 using MenuAPI;
 
@@ -31,6 +32,9 @@ namespace vMenuClient.menus
         public bool PlayerIsIgnored { get; private set; } = UserDefaults.EveryoneIgnorePlayer;
         public bool PlayerStayInVehicle { get; private set; } = UserDefaults.PlayerStayInVehicle;
         public bool PlayerFrozen { get; private set; } = false;
+
+        public int PlayerBlood { get; private set; } = 0;
+
         private readonly Menu CustomDrivingStyleMenu = new("Driving Style", "Custom Driving Style");
 
         /// <summary>
@@ -61,6 +65,11 @@ namespace vMenuClient.menus
             var wantedLevelList = new List<string> { "No Wanted Level", "1", "2", "3", "4", "5" };
             var setWantedLevel = new MenuListItem("Set Wanted Level", wantedLevelList, GetPlayerWantedLevel(Game.Player.Handle), "Set your wanted level by selecting a value, and pressing enter.");
             var setArmorItem = new MenuListItem("Set Armor Type", new List<string> { "No Armor", GetLabelText("WT_BA_0"), GetLabelText("WT_BA_1"), GetLabelText("WT_BA_2"), GetLabelText("WT_BA_3"), GetLabelText("WT_BA_4"), }, 0, "Set the armor level/type for your player.");
+
+            // Blood level options
+            var clearBloodBtn = new MenuItem("Clear Blood", "Clear the blood off your player.");
+            var bloodList = new List<string> { "BigHitByVehicle", "SCR_Torture", "SCR_TrevorTreeBang", "HOSPITAL_0", "HOSPITAL_1", "HOSPITAL_2", "HOSPITAL_3", "HOSPITAL_4", "HOSPITAL_5", "HOSPITAL_6", "HOSPITAL_7", "HOSPITAL_8", "HOSPITAL_9", "Explosion_Med", "Skin_Melee_0", "Explosion_Large", "Car_Crash_Light", "Car_Crash_Heavy", "Fall_Low", "Fall", "HitByVehicle", "BigRunOverByVehicle", "RunOverByVehicle", "TD_KNIFE_FRONT", "TD_KNIFE_FRONT_VA", "TD_KNIFE_FRONT_VB", "TD_KNIFE_REAR", "TD_KNIFE_REAR_VA", "TD_KNIFE_REAR_VB", "TD_KNIFE_STEALTH", "TD_MELEE_FRONT", "TD_MELEE_REAR", "TD_MELEE_STEALTH", "TD_MELEE_BATWAIST", "TD_melee_face_l", "MTD_melee_face_r", "MTD_melee_face_jaw", "TD_PISTOL_FRONT", "TD_PISTOL_FRONT_KILL", "TD_PISTOL_REAR", "TD_PISTOL_REAR_KILL", "TD_RIFLE_FRONT_KILL", "TD_RIFLE_NONLETHAL_FRONT", "TD_RIFLE_NONLETHAL_REAR", "TD_SHOTGUN_FRONT_KILL", "TD_SHOTGUN_REAR_KILL" };
+            var setBloodLevel = new MenuListItem("Set Blood Level", bloodList, PlayerBlood, "Sets your players blood level.");
 
             var healPlayerBtn = new MenuItem("Heal Player", "Give the player max health.");
             var cleanPlayerBtn = new MenuItem("Clean Player Clothes", "Clean your player clothes.");
@@ -122,6 +131,14 @@ namespace vMenuClient.menus
             if (IsAllowed(Permission.POSetWanted))
             {
                 menu.AddMenuItem(setWantedLevel);
+            }
+            if (IsAllowed(Permission.POClearBlood))
+            {
+                menu.AddMenuItem(clearBloodBtn);
+            }
+            if (IsAllowed(Permission.POSetBlood))
+            {
+                menu.AddMenuItem(setBloodLevel);
             }
             if (IsAllowed(Permission.POIgnored))
             {
@@ -419,6 +436,11 @@ namespace vMenuClient.menus
                     SetPlayerWantedLevel(Game.Player.Handle, listIndex, false);
                     SetPlayerWantedLevelNow(Game.Player.Handle, false);
                 }
+                // Set blood level
+                else if (listItem == setBloodLevel)
+                {
+                    ApplyPedDamagePack(Game.PlayerPed.Handle, bloodList[listIndex], 100, 100);
+                }
                 // Player Scenarios 
                 else if (listItem == playerScenarios)
                 {
@@ -439,6 +461,19 @@ namespace vMenuClient.menus
                     // Play a new scenario named "forcestop" (this scenario doesn't exist, but the "Play" function checks
                     // for the string "forcestop", if that's provided as th scenario name then it will forcefully clear the player task.
                     PlayScenario("forcestop");
+                }
+                else if (item == clearBloodBtn)
+                {
+                    Game.PlayerPed.ClearBloodDamage();
+                    Game.PlayerPed.ResetVisibleDamage();
+                    // not ideal for removing visible bruises & scars, may have some sync issues but could not find an alternative method, anyone who does feel free to update
+
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 0, "ALL");
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 1, "ALL");
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 2, "ALL");
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 3, "ALL");
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 4, "ALL");
+                    ClearPedDamageDecalByZone(Game.PlayerPed.Handle, 5, "ALL");
                 }
                 else if (item == healPlayerBtn)
                 {

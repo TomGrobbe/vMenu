@@ -107,7 +107,7 @@ namespace vMenuClient.menus
             var spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
             var cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
             var renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
-            var replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            var replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Replace this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
             var deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
 
             if (!IsAllowed(Permission.PASpawnSaved))
@@ -550,7 +550,7 @@ namespace vMenuClient.menus
                         var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                         var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                         var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor. 
+                        if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor. 
                         {
                             if (!IsHelpMessageBeingDisplayed())
                             {
@@ -1818,7 +1818,7 @@ namespace vMenuClient.menus
             ["ig_orleans"] = "Orleans",
             ["ig_ortega"] = "Ortega",
             ["ig_paige"] = "Paige",
-            ["ig_parnell_moss"] = "ParnellMoss", // mp2023_01
+            ["ig_pernell_moss"] = "PernellMoss", // mp2023_01
             ["ig_paper"] = "Paper",
             ["ig_party_promo"] = "PartyPromo", // mpsecurity
             ["ig_patricia"] = "Patricia",
