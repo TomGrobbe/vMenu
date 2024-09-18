@@ -28,6 +28,7 @@ namespace vMenuClient.menus
         private Dictionary<Menu, ValidWeapon> weaponInfo;
         private Dictionary<Menu, ValidAddonWeapon> addonWeaponInfo;
         private Dictionary<MenuItem, string> weaponComponents;
+        private Dictionary<MenuItem, string> addonWeaponComponents;
 
         #region Create Menu
         /// <summary>
@@ -39,6 +40,7 @@ namespace vMenuClient.menus
             weaponInfo = new Dictionary<Menu, ValidWeapon>();
             addonWeaponInfo = new Dictionary<Menu, ValidAddonWeapon>();
             weaponComponents = new Dictionary<MenuItem, string>();
+            addonWeaponComponents = new Dictionary<MenuItem, string>();
 
             #region create main weapon options menu and add items
             // Create the menu.
@@ -200,63 +202,63 @@ namespace vMenuClient.menus
                         }
                     };
                     #endregion
-
-                    #region load components
-                    if (addonWeapon.Components != null)
+                    #region load AddonComponents
+                    if (addonWeapon.AddonComponents?.Count > 0)
                     {
-                        if (addonWeapon.Components.Count > 0)
+                        foreach (var comp in addonWeapon.AddonComponents)
                         {
-                            foreach (var comp in addonWeapon.Components)
-                            {
-                                //Log($"{weapon.Name} : {comp.Key}");
-                                var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
-                                weaponComponents.Add(compItem, comp.Key);
-                                addonWeaponMenu.AddMenuItem(compItem);
+                            var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
+                            addonWeaponComponents.Add(compItem, comp.Key);
+                            addonWeaponMenu.AddMenuItem(compItem);
 
-                                #region Handle component button presses
-                                addonWeaponMenu.OnItemSelect += (sender, item, index) =>
+                            #region Handle component button presses
+                            addonWeaponMenu.OnItemSelect += (sender, item, index) =>
+                            {
+                                if (item != compItem) return;
+
+                                var weapon = addonWeaponInfo[sender];
+                                var componentHash = weapon.AddonComponents[addonWeaponComponents[item]];
+
+                                if (HasPedGotWeapon(Game.PlayerPed.Handle, weapon.Hash, false))
                                 {
-                                    if (item == compItem)
+                                    SetCurrentPedWeapon(Game.PlayerPed.Handle, weapon.Hash, true);
+
+                                    if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, weapon.Hash, componentHash))
                                     {
-                                        var addonWeapon = addonWeaponInfo[sender];
-                                        var componentHash = addonWeapon.Components[weaponComponents[item]];
-                                        if (HasPedGotWeapon(Game.PlayerPed.Handle, addonWeapon.Hash, false))
-                                        {
-                                            SetCurrentPedWeapon(Game.PlayerPed.Handle, addonWeapon.Hash, true);
-                                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, addonWeapon.Hash, componentHash))
-                                            {
-                                                RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, addonWeapon.Hash, componentHash);
-                                                Subtitle.Custom("Component removed.");
-                                            }
-                                            else
-                                            {
-                                                var ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, addonWeapon.Hash);
-                                                var clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, addonWeapon.Hash, false);
-                                                GetAmmoInClip(Game.PlayerPed.Handle, addonWeapon.Hash, ref clipAmmo);
-                                                GiveWeaponComponentToPed(Game.PlayerPed.Handle, addonWeapon.Hash, componentHash);
-                                                SetAmmoInClip(Game.PlayerPed.Handle, addonWeapon.Hash, clipAmmo);
-                                                SetPedAmmo(Game.PlayerPed.Handle, addonWeapon.Hash, ammo);
-                                                Subtitle.Custom("Component equiped.");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Notify.Error("You need to get the weapon first before you can modify it.");
-                                        }
+                                        RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, weapon.Hash, componentHash);
+                                        Subtitle.Custom("Component removed.");
                                     }
-                                };
-                                #endregion
-                            }
+                                    else
+                                    {
+                                        EquipWeaponComponent(weapon.Hash, componentHash);
+                                        Subtitle.Custom("Component equipped.");
+                                    }
+                                }
+                                else
+                                {
+                                    Notify.Error("You need to get the weapon first before you can modify it.");
+                                }
+                            };
+                            #endregion
                         }
                     }
+                    void EquipWeaponComponent(uint weaponHash, uint componentHash)
+                    {
+                        var ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, weaponHash);
+                        var clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, weaponHash, false);
+                        GetAmmoInClip(Game.PlayerPed.Handle, weaponHash, ref clipAmmo);
+
+                        GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                        SetAmmoInClip(Game.PlayerPed.Handle, weaponHash, clipAmmo);
+                        SetPedAmmo(Game.PlayerPed.Handle, weaponHash, ammo);
+                    }
                     #endregion
-
-                    // refresh and add to menu.
+                    #region refresh and add to menu.
                     addonWeaponMenu.RefreshIndex();
-
                     MenuController.AddSubmenu(addonWeaponsMenu, addonWeaponMenu);
                     MenuController.BindMenuItem(addonWeaponsMenu, addonWeaponMenu, addonWeaponItem);
                     addonWeaponsMenu.AddMenuItem(addonWeaponItem);
+                    #endregion
                 }
             }
             #endregion
@@ -617,63 +619,56 @@ namespace vMenuClient.menus
                     #endregion
 
                     #region load components
-                    if (weapon.Components != null)
+                    if (weapon.Components?.Count > 0)
                     {
-                        if (weapon.Components.Count > 0)
+                        foreach (var comp in weapon.Components)
                         {
-                            foreach (var comp in weapon.Components)
+                            var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
+                            weaponComponents.Add(compItem, comp.Key);
+                            weaponMenu.AddMenuItem(compItem);
+
+                            #region Handle component button presses
+                            weaponMenu.OnItemSelect += (sender, item, index) =>
                             {
-                                //Log($"{weapon.Name} : {comp.Key}");
-                                var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
-                                weaponComponents.Add(compItem, comp.Key);
-                                weaponMenu.AddMenuItem(compItem);
-
-                                #region Handle component button presses
-                                weaponMenu.OnItemSelect += (sender, item, index) =>
+                                if (item != compItem) return;
+                                var weaponData = weaponInfo[sender];
+                                var componentHash = weaponData.Components[weaponComponents[item]];
+                                if (HasPedGotWeapon(Game.PlayerPed.Handle, weaponData.Hash, false))
                                 {
-                                    if (item == compItem)
+                                    SetCurrentPedWeapon(Game.PlayerPed.Handle, weaponData.Hash, true);
+
+                                    if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, weaponData.Hash, componentHash))
                                     {
-                                        var Weapon = weaponInfo[sender];
-                                        var componentHash = Weapon.Components[weaponComponents[item]];
-                                        if (HasPedGotWeapon(Game.PlayerPed.Handle, Weapon.Hash, false))
-                                        {
-                                            SetCurrentPedWeapon(Game.PlayerPed.Handle, Weapon.Hash, true);
-                                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, Weapon.Hash, componentHash))
-                                            {
-                                                RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
-
-                                                Subtitle.Custom("Component removed.");
-                                            }
-                                            else
-                                            {
-                                                var ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, Weapon.Hash);
-
-                                                var clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, false);
-                                                GetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, ref clipAmmo);
-
-                                                GiveWeaponComponentToPed(Game.PlayerPed.Handle, Weapon.Hash, componentHash);
-
-                                                SetAmmoInClip(Game.PlayerPed.Handle, Weapon.Hash, clipAmmo);
-
-                                                SetPedAmmo(Game.PlayerPed.Handle, Weapon.Hash, ammo);
-                                                Subtitle.Custom("Component equiped.");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Notify.Error("You need to get the weapon first before you can modify it.");
-                                        }
+                                        RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, weaponData.Hash, componentHash);
+                                        Subtitle.Custom("Component removed.");
                                     }
-                                };
-                                #endregion
-                            }
+                                    else
+                                    {
+                                        EquipWeaponComponent(weaponData.Hash, componentHash);
+                                        Subtitle.Custom("Component equipped.");
+                                    }
+                                }
+                                else
+                                {
+                                    Notify.Error("You need to get the weapon first before you can modify it.");
+                                }
+                            };
+                            #endregion
                         }
                     }
+                    void EquipWeaponComponent(uint weaponHash, uint componentHash)
+                    {
+                        var ammo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, weaponHash);
+                        var clipAmmo = GetMaxAmmoInClip(Game.PlayerPed.Handle, weaponHash, false);
+                        GetAmmoInClip(Game.PlayerPed.Handle, weaponHash, ref clipAmmo);
+
+                        GiveWeaponComponentToPed(Game.PlayerPed.Handle, weaponHash, componentHash);
+                        SetAmmoInClip(Game.PlayerPed.Handle, weaponHash, clipAmmo);
+                        SetPedAmmo(Game.PlayerPed.Handle, weaponHash, ammo);
+                    }
                     #endregion
-
-                    // refresh and add to menu.
+                    #region refresh and add to menu.
                     weaponMenu.RefreshIndex();
-
                     if (cat == 970310034) // 970310034 rifles
                     {
                         MenuController.AddSubmenu(rifles, weaponMenu);
@@ -722,6 +717,7 @@ namespace vMenuClient.menus
                         MenuController.BindMenuItem(snipers, weaponMenu, weaponItem);
                         snipers.AddMenuItem(weaponItem);
                     }
+                    #endregion
                 }
             }
             #endregion
