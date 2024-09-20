@@ -16,7 +16,7 @@ after_build:
   - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta-%APPVEYOR_REPO_COMMIT:~0,7%)
   - ps: (gc 'build\net452\fxmanifest.lua') -replace 'versiongoeshere', $env:VERSION_NAME | Out-File -encoding ASCII 'build\net452\fxmanifest.lua'
   - cmd: cd build/ && mkdir vMenu && cd .. 
-  - cmd: xcopy build\net452\ build\vMenu\ /s /e /h /y && xcopy build\net462\ build\vMenu\ /s /e /h /y
+  - cmd: xcopy "build\net452\" "build\vMenu\" /s /e /h /y && xcopy "build\net462\" "build\vMenu\" /s /e /h /y
   - cmd: cd build\net452\ && 7z a "..\..\vMenu\vMenu-%VERSION_NAME%.zip" -r * && cd ..\..\vMenu\
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
 deploy:
