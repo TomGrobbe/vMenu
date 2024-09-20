@@ -5,7 +5,7 @@
     <Configurations>Release;Debug</Configurations>
     <AssemblyName>vMenuServer.net</AssemblyName>
     <TargetName>$(AssemblyName)</TargetName>
-    <OutputPath>..\build\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>SERVER</DefineConstants>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
