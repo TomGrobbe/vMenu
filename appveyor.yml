@@ -10,12 +10,12 @@ build:
   include_nuget_references: true
   verbosity: minimal
 after_build:
-  - cmd: copy README.md ..\build\net452\README.md
-  - cmd: copy LICENSE.md ..\build\net452\LICENSE.md
-  - ps: Invoke-WebRequest -OutFile '..\build\net452\fxmanifest.lua' https://vespura.com/vmenu/fxmanifest.lua
+  - cmd: copy README.md build\vMenu\README.md
+  - cmd: copy LICENSE.md build\vMenu\LICENSE.md
+  - ps: Invoke-WebRequest -OutFile 'build\vMenu\fxmanifest.lua' https://vespura.com/vmenu/fxmanifest.lua
   - cmd: if %APPVEYOR_REPO_TAG%==true (appveyor SetVariable -Name VERSION_NAME -Value %APPVEYOR_REPO_TAG_NAME%) else (appveyor SetVariable -Name VERSION_NAME -Value beta-%APPVEYOR_REPO_COMMIT:~0,7%)
-  - ps: (gc '..\build\net452\fxmanifest.lua') -replace 'versiongoeshere', $env:VERSION_NAME | Out-File -encoding ASCII '..\build\net452\fxmanifest.lua'
-  - cmd: cd ..\build\net452\ && 7z a "..\..\vMenu\vMenu-%VERSION_NAME%.zip" -r * && cd ..\..\vMenu\
+  - ps: (gc 'build\vMenu\fxmanifest.lua') -replace 'versiongoeshere', $env:VERSION_NAME | Out-File -encoding ASCII 'build\vMenu\fxmanifest.lua'
+  - cmd: cd build\vMenu\ && 7z a "..\..\vMenu\vMenu-%VERSION_NAME%.zip" -r * && cd ..\..\vMenu\
   - cmd: appveyor PushArtifact vMenu-%VERSION_NAME%.zip
 deploy:
   - provider: GitHub
