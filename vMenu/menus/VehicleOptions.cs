@@ -1946,7 +1946,7 @@ namespace vMenuClient.menus
                     "Street",       // 11
                     "Track"         // 12    
                 };
-                var vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 11), $"Choose a ~y~wheel type~s~ for your vehicle.");
+                var vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 12), $"Choose a ~y~wheel type~s~ for your vehicle.");
                 if (!veh.Model.IsBoat && !veh.Model.IsHelicopter && !veh.Model.IsPlane && !veh.Model.IsBicycle && !veh.Model.IsTrain)
                 {
                     VehicleModMenu.AddMenuItem(vehicleWheelType);
