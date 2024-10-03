@@ -433,20 +433,41 @@ namespace vMenuClient
                                 case LicensePlateStyle.BlueOnWhite1:
                                     listItem.ListIndex = 0;
                                     break;
-                                case LicensePlateStyle.BlueOnWhite2:
+                                case LicensePlateStyle.YellowOnBlack:
                                     listItem.ListIndex = 1;
                                     break;
-                                case LicensePlateStyle.BlueOnWhite3:
+                                case LicensePlateStyle.YellowOnBlue:
                                     listItem.ListIndex = 2;
                                     break;
-                                case LicensePlateStyle.YellowOnBlue:
+                                case LicensePlateStyle.BlueOnWhite2:
                                     listItem.ListIndex = 3;
                                     break;
-                                case LicensePlateStyle.YellowOnBlack:
+                                case LicensePlateStyle.BlueOnWhite3:
                                     listItem.ListIndex = 4;
                                     break;
                                 case LicensePlateStyle.NorthYankton:
                                     listItem.ListIndex = 5;
+                                    break;
+                                case LicensePlateStyle.ECola:
+                                    listItem.ListIndex = 6;
+                                    break;
+                                case LicensePlateStyle.LasVenturas:
+                                    listItem.ListIndex = 7;
+                                    break;
+                                case LicensePlateStyle.LibertyCity:
+                                    listItem.ListIndex = 8;
+                                    break;
+                                case LicensePlateStyle.LSCarMeet:
+                                    listItem.ListIndex = 9;
+                                    break;
+                                case LicensePlateStyle.LSPanic:
+                                    listItem.ListIndex = 10;
+                                    break;
+                                case LicensePlateStyle.LSPounders:
+                                    listItem.ListIndex = 11;
+                                    break;
+                                case LicensePlateStyle.Sprunk:
+                                    listItem.ListIndex = 12;
                                     break;
                                 default:
                                     break;
