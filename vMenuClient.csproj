@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <DebugType>embedded</DebugType>
+    <Configurations>Release;Debug</Configurations>
+    <AssemblyName>vMenuClient.net</AssemblyName>
+    <TargetName>$(AssemblyName)</TargetName>
+    <OutputPath>..\build\vMenu\</OutputPath>
+    <DefineConstants>CLIENT</DefineConstants>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
+    <Compile Include="..\SharedClasses\PermissionsManager.cs" Link="PermissionsManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MenuAPI.FiveM" Version="3.2.2" />
+
+    <Reference Include="Microsoft.CSharp" />
+    
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10188">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="data\overlays.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Runtime.Serialization">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
