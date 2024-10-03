@@ -178,8 +178,21 @@ namespace vMenuClient.menus
             var dirtlevel = new List<string> { "No Dirt", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
             var setDirtLevel = new MenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ " +
                 "to apply the selected level.");
-            var licensePlates = new List<string> { GetLabelText("CMOD_PLA_0"), GetLabelText("CMOD_PLA_1"), GetLabelText("CMOD_PLA_2"), GetLabelText("CMOD_PLA_3"),
-                GetLabelText("CMOD_PLA_4"), "North Yankton" };
+            var licensePlates = new List<string> {
+                GetLabelText("CMOD_PLA_0"), // Plate Index 0 // BlueOnWhite1
+                GetLabelText("CMOD_PLA_1"), // Plate Index 1 // YellowOnBlack
+                GetLabelText("CMOD_PLA_2"), // Plate Index 2 // YellowOnBlue
+                GetLabelText("CMOD_PLA_3"), // Plate Index 3 // BlueOnWhite2
+                GetLabelText("CMOD_PLA_4"), // Plate Index 4 // BlueOnWhite3
+                "North Yankton", // Plate Index 5 // NorthYankton
+                GetLabelText("CMOD_PLA_6"), // Plate Index 6 // ECola
+                GetLabelText("CMOD_PLA_7"), // Plate Index 7 // LasVenturas
+                GetLabelText("CMOD_PLA_8"), // Plate Index 8 // LibertyCity
+                GetLabelText("CMOD_PLA_9"), // Plate Index 9 // LSCarMeet
+                GetLabelText("CMOD_PLA_10"), // Plate Index 10 // LSPanic
+                GetLabelText("CMOD_PLA_11"), // Plate Index 11 // LSPounders
+                GetLabelText("CMOD_PLA_12"), // Plate Index 12 // Sprunk
+            };
             var setLicensePlateType = new MenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply " +
                 "it to your vehicle.");
             var torqueMultiplierList = new List<string> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
@@ -734,19 +747,40 @@ namespace vMenuClient.menus
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite1;
                                 break;
                             case 1:
-                                veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite2;
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlack;
                                 break;
                             case 2:
-                                veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite3;
-                                break;
-                            case 3:
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlue;
                                 break;
+                            case 3:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite2;
+                                break;
                             case 4:
-                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlack;
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite3;
                                 break;
                             case 5:
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.NorthYankton;
+                                break;
+                            case 6:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.ECola;
+                                break;
+                            case 7:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.LasVenturas;
+                                break;
+                            case 8:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.LibertyCity;
+                                break;
+                            case 9:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.LSCarMeet;
+                                break;
+                            case 10:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.LSPanic;
+                                break;
+                            case 11:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.LSPounders;
+                                break;
+                            case 12:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.Sprunk;
                                 break;
                             default:
                                 break;
@@ -1805,20 +1839,41 @@ namespace vMenuClient.menus
                             case LicensePlateStyle.BlueOnWhite1:
                                 listItem.ListIndex = 0;
                                 break;
-                            case LicensePlateStyle.BlueOnWhite2:
+                            case LicensePlateStyle.YellowOnBlack:
                                 listItem.ListIndex = 1;
                                 break;
-                            case LicensePlateStyle.BlueOnWhite3:
+                            case LicensePlateStyle.YellowOnBlue:
                                 listItem.ListIndex = 2;
                                 break;
-                            case LicensePlateStyle.YellowOnBlue:
+                            case LicensePlateStyle.BlueOnWhite2:
                                 listItem.ListIndex = 3;
                                 break;
-                            case LicensePlateStyle.YellowOnBlack:
+                            case LicensePlateStyle.BlueOnWhite3:
                                 listItem.ListIndex = 4;
                                 break;
                             case LicensePlateStyle.NorthYankton:
                                 listItem.ListIndex = 5;
+                                break;
+                            case LicensePlateStyle.ECola:
+                                listItem.ListIndex = 6;
+                                break;
+                            case LicensePlateStyle.LasVenturas:
+                                listItem.ListIndex = 7;
+                                break;
+                            case LicensePlateStyle.LibertyCity:
+                                listItem.ListIndex = 8;
+                                break;
+                            case LicensePlateStyle.LSCarMeet:
+                                listItem.ListIndex = 9;
+                                break;
+                            case LicensePlateStyle.LSPanic:
+                                listItem.ListIndex = 10;
+                                break;
+                            case LicensePlateStyle.LSPounders:
+                                listItem.ListIndex = 11;
+                                break;
+                            case LicensePlateStyle.Sprunk:
+                                listItem.ListIndex = 12;
                                 break;
                             default:
                                 break;
