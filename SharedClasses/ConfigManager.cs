@@ -1,72 +1,56 @@
 using System;
 using System.Collections.Generic;
-
 using CitizenFX.Core;
-
 using Newtonsoft.Json;
-
-
 using static CitizenFX.Core.Native.API;
 
-namespace vMenuShared
+namespace redMenuShared
 {
     public static class ConfigManager
     {
         public enum Setting
         {
             // General settings
-            vmenu_use_permissions,
-            vmenu_menu_staff_only,
-            vmenu_menu_toggle_key,
-            vmenu_noclip_toggle_key,
-            vmenu_keep_spawned_vehicles_persistent,
-            vmenu_use_els_compatibility_mode,
-            vmenu_handle_invisibility,
-            vmenu_quit_session_in_rockstar_editor,
-            vmenu_server_info_message,
-            vmenu_server_info_website_url,
-            vmenu_teleport_to_wp_keybind_key,
-            vmenu_disable_spawning_as_default_character,
-            vmenu_enable_animals_spawn_menu,
-            vmenu_pvp_mode,
-            keep_player_head_props,
-            vmenu_disable_server_info_convars,
-            vmenu_player_names_distance,
-            vmenu_disable_entity_outlines_tool,
-            vmenu_disable_player_stats_setup,
-
-            // Vehicle Chameleon Colours
-            vmenu_using_chameleon_colours,
+            redmenu_use_permissions,
+            redmenu_menu_staff_only,
+            redmenu_menu_toggle_key,
+            redmenu_noclip_toggle_key,
+            redmenu_server_info_message,
+            redmenu_server_info_website_url,
+            redmenu_teleport_to_wp_keybind_key,
+            redmenu_pvp_mode,
+            redmenu_disable_server_info_convars,
+            redmenu_player_names_distance,
+            redmenu_disable_entity_outlines_tool,
+            redmenu_disable_player_stats_setup,
 
             // Kick & ban settings
-            vmenu_default_ban_message_information,
-            vmenu_auto_ban_cheaters,
-            vmenu_auto_ban_cheaters_ban_message,
-            vmenu_log_ban_actions,
-            vmenu_log_kick_actions,
+            redmenu_default_ban_message_information,
+            redmenu_auto_ban_cheaters,
+            redmenu_auto_ban_cheaters_ban_message,
+            redmenu_log_ban_actions,
+            redmenu_log_kick_actions,
 
             // Weather settings
-            vmenu_enable_weather_sync,
-            vmenu_enable_dynamic_weather,
-            vmenu_dynamic_weather_timer,
-            vmenu_current_weather,
-            vmenu_blackout_enabled,
-            vmenu_weather_change_duration,
-            vmenu_enable_snow,
+            redmenu_enable_weather_sync,
+            redmenu_current_weather,
+            redmenu_blackout_enabled,
+            redmenu_weather_change_duration,
+            redmenu_enable_snow,
 
             // Time settings
-            vmenu_enable_time_sync,
-            vmenu_freeze_time,
-            vmenu_ingame_minute_duration,
-            vmenu_current_hour,
-            vmenu_current_minute,
-            vmenu_sync_to_machine_time,
+            redmenu_enable_time_sync,
+            redmenu_freeze_time,
+            redmenu_ingame_minute_duration,
+            redmenu_current_hour,
+            redmenu_current_minute,
+            redmenu_sync_to_machine_time,
 
             // Voice Chat Settings
-            vmenu_override_voicechat_default_range,
+            redmenu_override_voicechat_default_range,
 
             // Key Mapping
-            vmenu_keymapping_id,
+            redmenu_keymapping_id,
         }
 
         /// <summary>
@@ -137,7 +121,7 @@ namespace vMenuShared
         /// <returns></returns>
         public static bool IsServerDebugModeEnabled()
         {
-            return GetResourceMetadata("vMenu", "server_debug_mode", 0).ToLower() == "true";
+            return GetResourceMetadata("redMenu", "server_debug_mode", 0).ToLower() == "true";
         }
 
         /// <summary>
@@ -146,7 +130,7 @@ namespace vMenuShared
         /// <returns></returns>
         public static bool IsClientDebugModeEnabled()
         {
-            return GetResourceMetadata("vMenu", "client_debug_mode", 0).ToLower() == "true";
+            return GetResourceMetadata("redMenu", "client_debug_mode", 0).ToLower() == "true";
         }
 
         #region Get saved locations from the locations.json
@@ -164,10 +148,10 @@ namespace vMenuShared
                 if (string.IsNullOrEmpty(jsonFile))
                 {
 #if CLIENT
-                    vMenuClient.Notify.Error("The locations.json file is empty or does not exist, please tell the server owner to fix this.");
+                    redMenuClient.Notify.Error("The locations.json file is empty or does not exist, please tell the server owner to fix this.");
 #endif
 #if SERVER
-                    vMenuServer.DebugLog.Log("The locations.json file is empty or does not exist, please fix this.", vMenuServer.DebugLog.LogLevel.error);
+                    redMenuServer.DebugLog.Log("The locations.json file is empty or does not exist, please fix this.", redMenuServer.DebugLog.LogLevel.error);
 #endif
                 }
                 else
@@ -178,9 +162,9 @@ namespace vMenuShared
             catch (Exception e)
             {
 #if CLIENT
-                vMenuClient.Notify.Error("An error occurred while processing the locations.json file. Teleport Locations and Location Blips will be unavailable. Please correct any errors in the locations.json file.");
+                    redMenuClient.Notify.Error("An error occurred while processing the locations.json file. Teleport Locations and Location Blips will be unavailable. Please correct any errors in the locations.json file.");
 #endif
-                Debug.WriteLine($"[vMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
+                Debug.WriteLine($"[redMenu] json exception details: {e.Message}\nStackTrace:\n{e.StackTrace}");
             }
 
             return data;
@@ -250,8 +234,4 @@ namespace vMenuShared
         }
         #endregion
     }
-
-
-
-
 }
