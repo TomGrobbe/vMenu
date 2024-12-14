@@ -1342,7 +1342,8 @@ namespace vMenuClient
                 vehicle.IsEngineRunning = true;
 
                 // Set the ped into the vehicle.
-                new Ped(Game.PlayerPed.Handle).SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                Game.PlayerPed.SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                
 
                 // If the vehicle is a helicopter and the player is in the air, set the blades to be full speed.
                 if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 10.0f)
