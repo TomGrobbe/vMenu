@@ -24,7 +24,6 @@ namespace vMenuClient.menus
         private readonly Menu unavailableVehiclesMenu = new("Missing Vehicles", "Unavailable Saved Vehicles");
         private Dictionary<string, VehicleInfo> savedVehicles = new();
         private readonly List<Menu> subMenus = new();
-        private Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>> svMenuItems = new();
         private KeyValuePair<string, VehicleInfo> currentlySelectedVehicle = new();
         private int deleteButtonPressedCount = 0;
         private int replaceButtonPressedCount = 0;
@@ -712,12 +711,13 @@ namespace vMenuClient.menus
         /// <returns>A bool, true if successfull, false if unsuccessfull</returns>
         private bool UpdateSelectedVehicleMenu(MenuItem selectedItem, Menu parentMenu = null)
         {
-            if (!svMenuItems.ContainsKey(selectedItem))
-            {
-                Notify.Error("In some very strange way, you've managed to select a button, that does not exist according to this list. So your vehicle could not be loaded. :( Maybe your save files are broken?");
-                return false;
-            }
-            var vehInfo = svMenuItems[selectedItem];
+            var vehInfo = selectedItem.ItemData;
+            List<string> categoryNames = GetAllCategoryNames();
+            List<MenuItem.Icon> categoryIcons = GetCategoryIcons(categoryNames);
+            setCategoryBtn.ItemData = categoryIcons;
+            setCategoryBtn.ListItems = categoryNames;
+            setCategoryBtn.ListIndex = 0;
+            setCategoryBtn.RightIcon = categoryIcons[0];
             selectedVehicleMenu.MenuSubtitle = $"{vehInfo.Key.Substring(4)} ({vehInfo.Value.name})";
             currentlySelectedVehicle = vehInfo;
             MenuController.CloseAllMenus();
@@ -736,7 +736,6 @@ namespace vMenuClient.menus
         public void UpdateMenuAvailableCategories()
         {
             savedVehicles = GetSavedVehicles();
-            svMenuItems = new Dictionary<MenuItem, KeyValuePair<string, VehicleInfo>>();
 
             for (var i = 0; i < GetClassMenu().Size - 1; i++)
             {
@@ -790,11 +789,10 @@ namespace vMenuClient.menus
 
                     var savedVehicleBtn = new MenuItem(sv.Key.Substring(4), $"Manage this saved vehicle.")
                     {
-                        Label = $"({sv.Value.name}) →→→"
+                        Label = $"({sv.Value.name}) →→→",
+                        ItemData = sv
                     };
                     menu.AddMenuItem(savedVehicleBtn);
-
-                    svMenuItems.Add(savedVehicleBtn, sv);
                 }
                 else
                 {
