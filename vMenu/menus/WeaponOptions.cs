@@ -129,7 +129,7 @@ namespace vMenuClient.menus
                     addonWeaponMenu.AddMenuItem(fillAmmo);
 
                     var tints = new List<string>();
-                    if (addonWeapon.Name.Contains(" Mk II"))
+                    if (addonWeapon.Name.Contains(" Mk II") || addonWeapon.SpawnName.Contains("MK_II"))
                     {
                         foreach (var tint in ValidWeapons.WeaponTintsMkII)
                         {
