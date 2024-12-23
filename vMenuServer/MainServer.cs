@@ -660,8 +660,13 @@ namespace vMenuServer
         /// <param name="blackoutNew"></param>
         /// <param name="dynamicWeatherNew"></param>
         [EventHandler("vMenu:UpdateServerWeather")]
-        internal void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew, bool enableSnow)
+        internal void UpdateWeather([FromSource] Player source, string newWeather, bool blackoutNew, bool dynamicWeatherNew, bool enableSnow)
         {
+            if (source != null && !IsPlayerAceAllowed(source.Handle, "vMenu.WeatherOptions.Menu") && !IsPlayerAceAllowed(source.Handle, "vMenu.WeatherOptions.All"))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
 
             // Automatically enable snow effects whenever one of the snow weather types is selected.
             if (newWeather is "XMAS" or "SNOWLIGHT" or "SNOW" or "BLIZZARD")
@@ -684,8 +689,14 @@ namespace vMenuServer
         /// </summary>
         /// <param name="removeClouds"></param>
         [EventHandler("vMenu:UpdateServerWeatherCloudsType")]
-        internal void UpdateWeatherCloudsType(bool removeClouds)
+        internal void UpdateWeatherCloudsType([FromSource] Player source, bool removeClouds)
         {
+            if (source != null && !IsPlayerAceAllowed(source.Handle, "vMenu.WeatherOptions.RemoveClouds") && !IsPlayerAceAllowed(source.Handle, "vMenu.WeatherOptions.RandomizeClouds"))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
             if (removeClouds)
             {
                 TriggerClientEvent("vMenu:SetClouds", 0f, "removed");
@@ -705,8 +716,14 @@ namespace vMenuServer
         /// <param name="newMinutes"></param>
         /// <param name="freezeTimeNew"></param>
         [EventHandler("vMenu:UpdateServerTime")]
-        internal void UpdateTime(int newHours, int newMinutes, bool freezeTimeNew)
+        internal void UpdateTime([FromSource] Player source, int newHours, int newMinutes, bool freezeTimeNew)
         {
+            if (source != null && !IsPlayerAceAllowed(source.Handle, "vMenu.TimeOptions.Menu") && !IsPlayerAceAllowed(source.Handle, "vMenu.TimeOptions.All"))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
             CurrentHours = newHours;
             CurrentMinutes = newMinutes;
             FreezeTime = freezeTimeNew;
