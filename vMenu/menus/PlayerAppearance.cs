@@ -1306,6 +1306,7 @@ namespace vMenuClient.menus
             ["a_m_y_business_02"] = "Business02AMY",
             ["a_m_y_business_03"] = "Business03AMY",
             ["a_m_y_carclub_01"] = "CarClub01AMY", // mptuner
+            ["a_m_y_carclub_02"] = "CarClub02AMY", // mp2024_02
             ["a_m_y_clubcust_01"] = "ClubCust01AMY",
             ["a_m_y_clubcust_02"] = "ClubCust02AMY",
             ["a_m_y_clubcust_03"] = "ClubCust03AMY",
@@ -1413,6 +1414,7 @@ namespace vMenuClient.menus
             ["a_f_y_business_03"] = "Business03AFY",
             ["a_f_y_business_04"] = "Business04AFY",
             ["a_f_y_carclub_01"] = "CarClub01AFY", // mptuner
+            ["a_f_y_carclub_02"] = "CarClub02AFY", // mp2024_02
             ["a_f_y_clubcust_01"] = "ClubCust01AFY",
             ["a_f_y_clubcust_02"] = "ClubCust02AFY",
             ["a_f_y_clubcust_03"] = "ClubCust03AFY",
@@ -1508,6 +1510,7 @@ namespace vMenuClient.menus
             ["csb_hao"] = "HaoCutscene",
             ["csb_hao_02"] = "Hao02Cutscene", // patchday26ng
             ["csb_helmsmanpavel"] = "HelmsmanPavelCutscene", // mpheist4
+            ["csb_helmsmanpavel_02"] = "HelmsmanPavel02Cutscene", // mp2024_02
             ["csb_huang"] = "HuangCutscene", // mpheist3
             ["csb_hugh"] = "HughCutscene",
             ["csb_imani"] = "ImaniCutscene", // mpsecurity
@@ -1523,6 +1526,7 @@ namespace vMenuClient.menus
             ["csb_jenettee"] = "JenetteECutscene", // mp2024_01
             ["csb_jio"] = "JIOCutscene", // mpheist4
             ["csb_jio_02"] = "JIO02Cutscene", // mpsecurity
+            ["csb_jodimarshall"] = "JodiMarshallCutscene", // mp2024_02
             ["csb_johnny_guns"] = "JohnnyGunsCutscene", // mpsecurity
             ["csb_juanstrickler"] = "JuanStricklerCutscene", // mpheist4
             ["csb_labrat"] = "LabratCutscene", // mpchristmas3
@@ -1541,6 +1545,7 @@ namespace vMenuClient.menus
             ["csb_mweather"] = "MerryWeatherCutscene",
             ["csb_ortega"] = "OrtegaCutscene",
             ["csb_oscar"] = "OscarCutscene",
+            ["csb_oscar_02"] = "Oscar02Cutscene", // mp2024_02
             ["csb_paige"] = "PaigeCutscene",
             ["csb_party_promo"] = "PartyPromoCutscene", // mpsecurity
             ["csb_popov"] = "PopovCutscene",
@@ -1649,6 +1654,7 @@ namespace vMenuClient.menus
             ["ig_ahronward"] = "AhronWard", // mp2023_02
             ["ig_amandatownley"] = "AmandaTownley",
             ["ig_andreas"] = "Andreas",
+            ["ig_armsmanufac_01"] = "ArmsManufac01", // mp2024_02
             ["ig_ary"] = "ARY", // mpheist4
             ["ig_ary_02"] = "ARY02", // mpsecurity
             ["ig_ashley"] = "Ashley",
@@ -1728,11 +1734,13 @@ namespace vMenuClient.menus
             ["ig_golfer_a"] = "GolferA", // mpsecurity
             ["ig_golfer_b"] = "GolferB", // mpsecurity
             ["ig_groom"] = "Groom",
+            ["ig_guadalope"] = "Guadalope", // mp2024_02
             ["ig_gunvanseller"] = "GunVanSeller", // mpchristmas3
             ["ig_gustavo"] = "Gustavo", // mpheist4
             ["ig_hao"] = "Hao",
             ["ig_hao_02"] = "Hao02", // patchday26ng
             ["ig_helmsmanpavel"] = "HelmsmanPavel", // mpheist4
+            ["ig_helmsmanpavel_02"] = "HelmsmanPavel02", // mp2024_02
             ["ig_hippyleader"] = "HippyLeader", // mpchristmas3
             ["ig_huang"] = "Huang", // mpheist3
             ["ig_hunter"] = "Hunter",
@@ -1758,6 +1766,7 @@ namespace vMenuClient.menus
             ["ig_jimmydisanto2"] = "JimmyDisanto2", // mpheist3
             ["ig_jio"] = "JIO", // mpheist4
             ["ig_jio_02"] = "JIO02", // mpsecurity
+            ["ig_jodimarshall"] = "JodiMarshall", // mp2024_02
             ["ig_joeminuteman"] = "JoeMinuteman",
             ["ig_johnny_guns"] = "JohnnyGuns", // mpsecurity
             ["ig_johnnyklebitz"] = "JohnnyKlebitz",
@@ -1817,6 +1826,7 @@ namespace vMenuClient.menus
             ["ig_oneil"] = "ONeil",
             ["ig_orleans"] = "Orleans",
             ["ig_ortega"] = "Ortega",
+            ["ig_oscar_02"] = "Oscar02", // mp2024_02
             ["ig_paige"] = "Paige",
             ["ig_pernell_moss"] = "PernellMoss", // mp2023_01
             ["ig_paper"] = "Paper",
