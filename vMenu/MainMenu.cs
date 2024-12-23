@@ -325,6 +325,8 @@ namespace vMenuClient
                 }
             }), false);
 
+            this.Exports.Add("ToggleResource", new Action<bool>(this.ToggleResource));
+
             if (GetCurrentResourceName() != "vMenu")
             {
                 MenuController.MainMenu = null;
@@ -900,5 +902,19 @@ namespace vMenuClient
             }
         }
         #endregion
+
+        private void ToggleResource(bool toggle)
+        {
+            if (!toggle)
+            {
+                MenuController.DontOpenAnyMenu = true;
+                MenuController.DisableMenuButtons = true;
+            }
+            else
+            {
+                MenuController.DontOpenAnyMenu = false;
+                MenuController.DisableMenuButtons = false;
+            }
+        }
     }
 }
