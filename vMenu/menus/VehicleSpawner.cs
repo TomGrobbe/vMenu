@@ -81,17 +81,17 @@ namespace vMenuClient.menus
                             // Loop through all addon vehicles in this class.
                             foreach (var veh in AddonVehicles.Where(v => GetVehicleClassFromName(v.Value) == cat))
                             {
-                                var localizedName = GetLabelText(GetDisplayNameFromVehicleModel(veh.Value));
-
-                                var name = localizedName != "NULL" ? localizedName : GetDisplayNameFromVehicleModel(veh.Value);
+                                var localizedName = GetLabelText(GetMakeNameFromVehicleModel(veh.Value));
+                            
+                                var name = localizedName != "NULL" ? localizedName : GetMakeNameFromVehicleModel(veh.Value);
                                 name = name != "CARNOTFOUND" ? name : veh.Key;
-
+                            
                                 var carBtn = new MenuItem(name, $"Click to spawn {name}.")
                                 {
                                     Label = $"({veh.Key})",
                                     ItemData = veh.Key // store the model name in the button data.
                                 };
-
+                            
                                 // This should be impossible to be false, but we check it anyway.
                                 if (IsModelInCdimage(veh.Value))
                                 {
@@ -105,7 +105,6 @@ namespace vMenuClient.menus
                                     unavailableCars.AddMenuItem(carBtn);
                                 }
                             }
-
                             //if (AddonVehicles.Count(av => GetVehicleClassFromName(av.Value) == cat && IsModelInCdimage(av.Value)) > 0)
                             if (categoryMenu.Size > 0)
                             {
