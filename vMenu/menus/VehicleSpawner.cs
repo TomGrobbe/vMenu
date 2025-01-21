@@ -83,36 +83,44 @@ namespace vMenuClient.menus
                             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/vehicles.json") ?? "{}";
                             Debug.WriteLine(jsonData);
                             var vehicleNames = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-                            Debug.WriteLine(vehicleNames.Count);
+                            Debug.WriteLine($"Number of vehicle names: {vehicleNames.Count}");
 
                             // Loop through all addon vehicles in this class.
                             foreach (var veh in AddonVehicles.Where(v => GetVehicleClassFromName(v.Value) == cat))
-                            {
-                                // Try to get the name from the JSON file
-                                Debug.WriteLine(veh.Key);
-
-                                var name = vehicleNames.TryGetValue(veh.Key);
-                                name = name != "CARNOTFOUND" ? name : veh.Key;
-
-                                var carBtn = new MenuItem(name, $"Click to spawn {name}.")
+                                foreach (var veh in AddonVehicles.Where(v => GetVehicleClassFromName(v.Value) == cat))
                                 {
-                                    Label = $"({veh.Key})",
-                                    ItemData = veh.Key // store the model name in the button data.
-                                };
+                                    Debug.WriteLine($"Checking vehicle key: {veh.Key}");
 
-                                // This should be impossible to be false, but we check it anyway.
-                                if (IsModelInCdimage(veh.Value))
-                                {
-                                    categoryMenu.AddMenuItem(carBtn);
+                                    // Proper TryGetValue usage
+                                    string nameFromJson;
+                                    if (!vehicleNames.TryGetValue(veh.Key, out nameFromJson))
+                                    {
+                                        // If not found
+                                        nameFromJson = "CARNOTFOUND";
+                                    }
+
+                                    // If the name is "CARNOTFOUND", use the dictionary key
+                                    var finalName = (nameFromJson != "CARNOTFOUND") ? nameFromJson : veh.Key;
+
+                                    var carBtn = new MenuItem(finalName, $"Click to spawn {finalName}.")
+                                    {
+                                        Label = $"({veh.Key})",
+                                        ItemData = veh.Key // store the model name in the button data.
+                                    };
+
+                                    // Check if the model is in the client’s game files (should normally be true).
+                                    if (IsModelInCdimage(veh.Value))
+                                    {
+                                        categoryMenu.AddMenuItem(carBtn);
+                                    }
+                                    else
+                                    {
+                                        carBtn.Enabled = false;
+                                        carBtn.Description = "Not currently streamed or model not found.";
+                                        carBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                        unavailableCars.AddMenuItem(carBtn);
+                                    }
                                 }
-                                else
-                                {
-                                    carBtn.Enabled = false;
-                                    carBtn.Description = "This vehicle is not available. Please ask the server owner to check if the vehicle is being streamed correctly.";
-                                    carBtn.LeftIcon = MenuItem.Icon.LOCK;
-                                    unavailableCars.AddMenuItem(carBtn);
-                                }
-                            }
 
                             //if (AddonVehicles.Count(av => GetVehicleClassFromName(av.Value) == cat && IsModelInCdimage(av.Value)) > 0)
                             if (categoryMenu.Size > 0)
