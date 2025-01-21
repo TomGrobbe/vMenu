@@ -35,6 +35,9 @@
     <None Update="config\addons.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="config\vehicles.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="config\locations.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
