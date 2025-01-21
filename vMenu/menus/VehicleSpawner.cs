@@ -48,7 +48,10 @@ namespace vMenuClient.menus
             #region addon cars menu
             // Vehicle Addons List
             var addonCarsMenu = new Menu("Addon Vehicles", "Spawn An Addon Vehicle");
-            var addonCarsBtn = new MenuItem("Addon Vehicles", "A list of addon vehicles available on this server.") { Label = "→→→" };
+            var addonCarsBtn = new MenuItem("Addon Vehicles", "A list of addon vehicles available on this server.")
+            {
+                Label = "→→→"
+            };
 
             menu.AddMenuItem(addonCarsBtn);
 
@@ -182,13 +185,6 @@ namespace vMenuClient.menus
                 addonCarsBtn.Enabled = false;
                 addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 addonCarsBtn.Description = "The list containing all addon cars could not be loaded, or access is restricted.";
-            }
-
-            else
-            {
-                addonCarsBtn.Enabled = false;
-                addonCarsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                addonCarsBtn.Description = "Access to this list has been restricted by the server owner.";
             }
             #endregion
 
@@ -334,45 +330,42 @@ namespace vMenuClient.menus
                 // Loop through all the vehicles in the vehicle class.
                 foreach (var veh in VehicleData.Vehicles.VehicleClasses[className])
                 {
-                    // Convert the model name to start with a Capital letter, converting the other characters to lowercase. 
+                    // Convert the model name to start with a Capital letter, converting the rest to lowercase.
                     var properCasedModelName = veh[0].ToString().ToUpper() + veh.ToLower().Substring(1);
 
-                    // Get the localized vehicle name, if it's "NULL" (no label found) then use the "properCasedModelName" created above.
-                    var vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
+                    // Get the localized vehicle name; if it's "NULL", use 'properCasedModelName'.
+                    var localizedName = GetVehDisplayNameFromModel(veh);
+                    var vehName = (localizedName != "NULL") ? localizedName : properCasedModelName;
+
                     var vehModelName = veh;
                     var model = (uint)GetHashKey(vehModelName);
 
+                    // Generate approximate stats for top speed, acceleration, braking, traction
                     var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(model), 0f, speedValues[vehClass], 0f, 1f);
                     var acceleration = Map(GetVehicleModelAcceleration(model), 0f, accelerationValues[vehClass], 0f, 1f);
                     var maxBraking = Map(GetVehicleModelMaxBraking(model), 0f, brakingValues[vehClass], 0f, 1f);
                     var maxTraction = Map(GetVehicleModelMaxTraction(model), 0f, tractionValues[vehClass], 0f, 1f);
 
-                    // Loop through all the menu items and check each item's title/text and see if it matches the current vehicle (display) name.
+                    // Check for duplicates in this vehicle menu
                     var duplicate = false;
                     for (var itemIndex = 0; itemIndex < vehicleClassMenu.Size; itemIndex++)
                     {
-                        // If it matches...
-                        if (vehicleClassMenu.GetMenuItems()[itemIndex].Text.ToString() == vehName)
+                        var existingItem = vehicleClassMenu.GetMenuItems()[itemIndex];
+                        if (existingItem.Text == vehName)
                         {
-
-                            // Check if the model was marked as duplicate before.
-                            if (duplicateVehNames.Keys.Contains(vehName))
+                            // We've already encountered a vehicle with this same display name
+                            if (duplicateVehNames.ContainsKey(vehName))
                             {
-                                // If so, add 1 to the duplicate counter for this model name.
                                 duplicateVehNames[vehName]++;
                             }
-
-                            // If this is the first duplicate, then set it to 2.
                             else
                             {
                                 duplicateVehNames[vehName] = 2;
                             }
 
-                            // The model name is a duplicate, so get the modelname and add the duplicate amount for this model name to the end of the vehicle name.
                             vehName += $" ({duplicateVehNames[vehName]})";
 
-                            // Then create and add a new button for this vehicle.
-
+                            // Add the new "duplicate" name
                             if (DoesModelExist(veh))
                             {
                                 var vehBtn = new MenuItem(vehName)
@@ -385,23 +378,24 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.")
+                                var vehBtn = new MenuItem(
+                                    vehName,
+                                    "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it."
+                                )
                                 {
                                     Enabled = false,
                                     Label = $"({vehModelName.ToLower()})",
                                     ItemData = new float[4] { 0f, 0f, 0f, 0f }
                                 };
-                                vehicleClassMenu.AddMenuItem(vehBtn);
                                 vehBtn.RightIcon = MenuItem.Icon.LOCK;
+                                vehicleClassMenu.AddMenuItem(vehBtn);
                             }
-
-                            // Mark duplicate as true and break from the loop because we already found the duplicate.
                             duplicate = true;
                             break;
                         }
                     }
 
-                    // If it's not a duplicate, add the model name.
+                    // If this vehicle name wasn't a duplicate, add it normally
                     if (!duplicate)
                     {
                         if (DoesModelExist(veh))
@@ -416,14 +410,17 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            var vehBtn = new MenuItem(vehName, "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it.")
+                            var vehBtn = new MenuItem(
+                                vehName,
+                                "This vehicle is not available because the model could not be found in your game files. If this is a DLC vehicle, make sure the server is streaming it."
+                            )
                             {
                                 Enabled = false,
                                 Label = $"({vehModelName.ToLower()})",
                                 ItemData = new float[4] { 0f, 0f, 0f, 0f }
                             };
-                            vehicleClassMenu.AddMenuItem(vehBtn);
                             vehBtn.RightIcon = MenuItem.Icon.LOCK;
+                            vehicleClassMenu.AddMenuItem(vehBtn);
                         }
                     }
                 }
@@ -431,26 +428,24 @@ namespace vMenuClient.menus
 
                 vehicleClassMenu.ShowVehicleStatsPanel = true;
 
-                // Handle button presses
+                // Handle button presses: spawn the selected vehicle
                 vehicleClassMenu.OnItemSelect += async (sender2, item2, index2) =>
                 {
                     await SpawnVehicle(VehicleData.Vehicles.VehicleClasses[className][index2], SpawnInVehicle, ReplaceVehicle);
                 };
 
+                // Function to update the stats panel
                 static void HandleStatsPanel(Menu openedMenu, MenuItem currentItem)
                 {
-                    if (currentItem != null)
+                    if (currentItem?.ItemData is float[] data)
                     {
-                        if (currentItem.ItemData is float[] data)
-                        {
-                            openedMenu.ShowVehicleStatsPanel = true;
-                            openedMenu.SetVehicleStats(data[0], data[1], data[2], data[3]);
-                            openedMenu.SetVehicleUpgradeStats(0f, 0f, 0f, 0f);
-                        }
-                        else
-                        {
-                            openedMenu.ShowVehicleStatsPanel = false;
-                        }
+                        openedMenu.ShowVehicleStatsPanel = true;
+                        openedMenu.SetVehicleStats(data[0], data[1], data[2], data[3]);
+                        openedMenu.SetVehicleUpgradeStats(0f, 0f, 0f, 0f);
+                    }
+                    else
+                    {
+                        openedMenu.ShowVehicleStatsPanel = false;
                     }
                 }
 
@@ -467,17 +462,17 @@ namespace vMenuClient.menus
             #endregion
 
             #region handle events
-            // Handle button presses.
+            // Handle the "Spawn By Model Name" button press
             menu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == spawnByName)
                 {
-                    // Passing "custom" as the vehicle name, will ask the user for input.
+                    // Passing "custom" as the vehicle name will ask the user for a custom input
                     await SpawnVehicle("custom", SpawnInVehicle, ReplaceVehicle);
                 }
             };
 
-            // Handle checkbox changes.
+            // Handle checkbox changes
             menu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
                 if (item == spawnInVeh)
@@ -493,9 +488,8 @@ namespace vMenuClient.menus
         }
 
         /// <summary>
-        /// Create the menu if it doesn't exist, and then returns it.
+        /// Create the menu if it doesn't exist, then return it.
         /// </summary>
-        /// <returns>The Menu</returns>
         public Menu GetMenu()
         {
             if (menu == null)
