@@ -81,13 +81,17 @@ namespace vMenuClient.menus
                             }
 
                             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/vehicles.json") ?? "{}";
+                            Debug.WriteLine(jsonData);
                             var vehicleNames = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+                            Debug.WriteLine(vehicleNames.Count);
 
                             // Loop through all addon vehicles in this class.
                             foreach (var veh in AddonVehicles.Where(v => GetVehicleClassFromName(v.Value) == cat))
                             {
                                 // Try to get the name from the JSON file
-                                var name = vehicleNames.TryGetValue(veh.Key, out var displayName) ? displayName : GetMakeNameFromVehicleModel(veh.Value);
+                                Debug.WriteLine(veh.Key);
+
+                                var name = vehicleNames.TryGetValue(veh.Key);
                                 name = name != "CARNOTFOUND" ? name : veh.Key;
 
                                 var carBtn = new MenuItem(name, $"Click to spawn {name}.")
