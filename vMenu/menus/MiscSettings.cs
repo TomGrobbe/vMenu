@@ -12,6 +12,7 @@ using vMenuClient.data;
 
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
+using static vMenuShared.ConfigManager;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient.menus
@@ -34,6 +35,7 @@ namespace vMenuClient.menus
         public bool JoinQuitNotifications { get; private set; } = UserDefaults.MiscJoinQuitNotifications;
         public bool LockCameraX { get; private set; } = false;
         public bool LockCameraY { get; private set; } = false;
+        public bool MPPedPreviews { get; private set; } = UserDefaults.MPPedPreviews;
         public bool ShowLocationBlips { get; private set; } = UserDefaults.MiscLocationBlips;
         public bool ShowPlayerBlips { get; private set; } = UserDefaults.MiscShowPlayerBlips;
         public bool MiscShowOverheadNames { get; private set; } = UserDefaults.MiscShowOverheadNames;
@@ -141,6 +143,8 @@ namespace vMenuClient.menus
             var clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
             var lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
             var lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
+
+            var mpPedPreview = new MenuCheckboxItem("3D MP Ped Preview", "Shows a 3D Ped preview when viewing saved MP Peds.", MPPedPreviews);
 
             // Entity spawner
             var spawnNewEntity = new MenuItem("Spawn New Entity", "Spawns entity into the world and lets you set its position and rotation");
@@ -645,6 +649,13 @@ namespace vMenuClient.menus
             menu.AddMenuItem(hideHud);
             menu.AddMenuItem(lockCamX);
             menu.AddMenuItem(lockCamY);
+
+            // If disabled at a server level, don't show the option to players
+            if (GetSettingsBool(Setting.vmenu_mp_ped_preview))
+            {
+                menu.AddMenuItem(mpPedPreview);
+            }
+
             if (MainMenu.EnableExperimentalFeatures)
             {
                 menu.AddMenuItem(exportData);
@@ -732,6 +743,10 @@ namespace vMenuClient.menus
                 else if (item == lockCamY)
                 {
                     LockCameraY = _checked;
+                }
+                else if (item == mpPedPreview)
+                {
+                    MPPedPreviews = _checked;
                 }
                 else if (item == locationBlips)
                 {
