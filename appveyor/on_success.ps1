@@ -17,7 +17,41 @@ if ($env:WEBHOOK_URL) {
 }
 
 if ($env:DISCORD_FILE_WEBHOOK) {
-    Invoke-RestMethod -Uri $env:DISCORD_FILE_WEBHOOK -Method Post -InFile "..\vMenu-$env:VERSION_NAME.zip" -ContentType "multipart/form-data"
+    # filepath to file to upload
+    $filePath = "vMenu-$env:VERSION_NAME.zip"
+
+    # Check if file exists
+    if (-Not (Test-Path $filePath)) {
+        Write-Host "File not found: $filePath"
+        exit 1
+    }
+
+    # make a multipart-formdata request
+    $boundary = [System.Guid]::NewGuid().ToString()
+    $LF = "`r`n"
+
+    # Headers
+    $headers = @{
+        "Content-Type" = "multipart/form-data; boundary=$boundary"
+    }
+
+    # multipart body
+    $body = (
+        "--$boundary",
+        "Content-Disposition: form-data; name=`"file`"; filename=`"$([System.IO.Path]::GetFileName($filePath))`"",
+        "Content-Type: application/octet-stream",
+        "",
+        [System.IO.File]::ReadAllText($filePath),
+        "--$boundary--",
+        ""
+    ) -join $LF
+
+    # Send HTTP POST-request
+    $response = Invoke-WebRequest -Uri $env:DISCORD_FILE_WEBHOOK -Method Post -Headers $headers -Body $body
+
+    # Show response
+    Write-Host "Response: $($response.StatusCode) - $($response.StatusDescription)"
+
     Write-Output "File webhook sent."
 } else {
     Write-Output "No file webhook URL defined, skipping file webhook."
