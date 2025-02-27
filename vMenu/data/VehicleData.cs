@@ -1256,7 +1256,7 @@ namespace vMenuClient.data
                 "LGUARD",
                 "PBUS",
                 "POLCARACARA", // AGENTS OF SABOTAGE (MP2024_02) DLC - Requires b3407
-                "POLCOQUETTE5", // AGENTS OF SABOTAGE (MP2024_02) DLC - Requires b3407
+                "POLCOQUETTE4", // AGENTS OF SABOTAGE (MP2024_02) DLC - Requires b3407
                 "POLDOMINATOR10", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLDORADO", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLFACTION2", // AGENTS OF SABOTAGE (MP2024_02) DLC - Requires b3407
