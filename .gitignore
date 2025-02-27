@@ -265,3 +265,6 @@ external/
 
 *.cmd
 *.cmd.bak
+
+# VS Build Output
+build/

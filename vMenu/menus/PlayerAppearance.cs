@@ -107,7 +107,7 @@ namespace vMenuClient.menus
             var spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
             var cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
             var renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
-            var replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Repalce this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            var replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Replace this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
             var deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
 
             if (!IsAllowed(Permission.PASpawnSaved))
@@ -550,7 +550,7 @@ namespace vMenuClient.menus
                         var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                         var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                         var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor. 
+                        if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor. 
                         {
                             if (!IsHelpMessageBeingDisplayed())
                             {
@@ -1187,6 +1187,7 @@ namespace vMenuClient.menus
         private readonly Dictionary<string, string> animalModels = new()
         {
             ["a_c_boar"] = "Boar",
+            ["a_c_boar_02"] = "Boar 2", // mp2023_01
             ["a_c_cat_01"] = "Cat",
             ["a_c_chickenhawk"] = "ChickenHawk",
             ["a_c_chimp"] = "Chimp",
@@ -1196,8 +1197,10 @@ namespace vMenuClient.menus
             ["a_c_cormorant"] = "Cormorant",
             ["a_c_cow"] = "Cow",
             ["a_c_coyote"] = "Coyote",
+            ["a_c_coyote_02"] = "Coyote 2", // mp2023_01
             ["a_c_crow"] = "Crow",
             ["a_c_deer"] = "Deer",
+            ["a_c_deer_02"] = "Deer 2", // mp2023_01
             ["a_c_dolphin"] = "Dolphin",
             ["a_c_fish"] = "Fish",
             ["a_c_hen"] = "Hen",
@@ -1205,11 +1208,13 @@ namespace vMenuClient.menus
             ["a_c_husky"] = "Husky",
             ["a_c_killerwhale"] = "KillerWhale",
             ["a_c_mtlion"] = "MountainLion",
+            ["a_c_mtlion_02"] = "MountainLion 2", // mp2023_01
             ["a_c_panther"] = "Panther", // mpheist4
             ["a_c_pig"] = "Pig",
             ["a_c_pigeon"] = "Pigeon",
             ["a_c_poodle"] = "Poodle",
             ["a_c_pug"] = "Pug",
+            ["a_c_pug_02"] = "Pug 2", // mp2023_01
             ["a_c_rabbit_01"] = "Rabbit",
             ["a_c_rabbit_02"] = "Rabbit 2", // mpchristmas3
             ["a_c_rat"] = "Rat",
@@ -1301,6 +1306,7 @@ namespace vMenuClient.menus
             ["a_m_y_business_02"] = "Business02AMY",
             ["a_m_y_business_03"] = "Business03AMY",
             ["a_m_y_carclub_01"] = "CarClub01AMY", // mptuner
+            ["a_m_y_carclub_02"] = "CarClub02AMY", // mp2024_02
             ["a_m_y_clubcust_01"] = "ClubCust01AMY",
             ["a_m_y_clubcust_02"] = "ClubCust02AMY",
             ["a_m_y_clubcust_03"] = "ClubCust03AMY",
@@ -1408,6 +1414,7 @@ namespace vMenuClient.menus
             ["a_f_y_business_03"] = "Business03AFY",
             ["a_f_y_business_04"] = "Business04AFY",
             ["a_f_y_carclub_01"] = "CarClub01AFY", // mptuner
+            ["a_f_y_carclub_02"] = "CarClub02AFY", // mp2024_02
             ["a_f_y_clubcust_01"] = "ClubCust01AFY",
             ["a_f_y_clubcust_02"] = "ClubCust02AFY",
             ["a_f_y_clubcust_03"] = "ClubCust03AFY",
@@ -1472,6 +1479,8 @@ namespace vMenuClient.menus
             ["csb_brucie2"] = "Brucie2Cutscene", // patchday22ng
             ["csb_bryony"] = "BryonyCutscene",
             ["csb_burgerdrug"] = "BurgerDrugCutscene",
+            ["csb_callgirl_01"] = "CallGirl01Cutscene", // mp2023_02
+            ["csb_callgirl_02"] = "CallGirl02Cutscene", // mp2023_02
             ["csb_car3guy1"] = "Car3Guy1Cutscene",
             ["csb_car3guy2"] = "Car3Guy2Cutscene",
             ["csb_celeb_01"] = "Celeb01Cutscene", // mpheist3
@@ -1501,6 +1510,7 @@ namespace vMenuClient.menus
             ["csb_hao"] = "HaoCutscene",
             ["csb_hao_02"] = "Hao02Cutscene", // patchday26ng
             ["csb_helmsmanpavel"] = "HelmsmanPavelCutscene", // mpheist4
+            ["csb_helmsmanpavel_02"] = "HelmsmanPavel02Cutscene", // mp2024_02
             ["csb_huang"] = "HuangCutscene", // mpheist3
             ["csb_hugh"] = "HughCutscene",
             ["csb_imani"] = "ImaniCutscene", // mpsecurity
@@ -1511,14 +1521,18 @@ namespace vMenuClient.menus
             ["csb_isldj_03"] = "IslDJ03Cutscene", // mpheist4
             ["csb_isldj_04"] = "IslDJ04Cutscene", // mpheist4
             ["csb_jackhowitzer"] = "JackHowitzerCutscene",
+            ["csb_jamalamir"] = "JamalAmirCutscene", // mp2023_02
             ["csb_janitor"] = "JanitorCutscene",
+            ["csb_jenettee"] = "JenetteECutscene", // mp2024_01
             ["csb_jio"] = "JIOCutscene", // mpheist4
             ["csb_jio_02"] = "JIO02Cutscene", // mpsecurity
+            ["csb_jodimarshall"] = "JodiMarshallCutscene", // mp2024_02
             ["csb_johnny_guns"] = "JohnnyGunsCutscene", // mpsecurity
             ["csb_juanstrickler"] = "JuanStricklerCutscene", // mpheist4
             ["csb_labrat"] = "LabratCutscene", // mpchristmas3
             ["csb_luchadora"] = "LuchadoraCutscene", // mpchristmas3
             ["csb_maude"] = "MaudeCutscene",
+            ["csb_maude_02"] = "Maude02Cutscene", // mp2024_01
             ["csb_miguelmadrazo"] = "MiguelMadrazoCutscene", // mpheist4
             ["csb_mimi"] = "MimiCutscene", // mptuner
             ["csb_mjo"] = "MJOCutscene", // mpheist4
@@ -1531,6 +1545,7 @@ namespace vMenuClient.menus
             ["csb_mweather"] = "MerryWeatherCutscene",
             ["csb_ortega"] = "OrtegaCutscene",
             ["csb_oscar"] = "OscarCutscene",
+            ["csb_oscar_02"] = "Oscar02Cutscene", // mp2024_02
             ["csb_paige"] = "PaigeCutscene",
             ["csb_party_promo"] = "PartyPromoCutscene", // mpsecurity
             ["csb_popov"] = "PopovCutscene",
@@ -1567,6 +1582,8 @@ namespace vMenuClient.menus
             ["csb_vernon"] = "VernonCutscene", // mpsecurity
             ["csb_vincent"] = "VincentCutscene", // mpvinewood
             ["csb_vincent_2"] = "Vincent2Cutscene", // mpheist3
+            ["csb_vincent_4"] = "Vincent4Cutscene", // mp2023_02
+            ["csb_yusufamir"] = "YusufAmirCuscene", // mp2023_02
             ["csb_wendy"] = "WendyCutscene", // mpheist3
             ["g_f_importexport_01"] = "ImportExport01GF",
             ["g_f_m_fooliganz_01"] = "Fooliganz01GFM", // mpchristmas3
@@ -1578,8 +1595,9 @@ namespace vMenuClient.menus
             ["g_m_m_armboss_01"] = "ArmBoss01GMM",
             ["g_m_m_armgoon_01"] = "ArmGoon01GMM",
             ["g_m_m_armlieut_01"] = "ArmLieut01GMM",
-            ["g_m_m_cartelguards_01"] = "CarterGuards01GMM", // mpheist4
-            ["g_m_m_cartelguards_02"] = "CarterGuards02GMM", // mpheist4
+            ["g_m_m_cartelgoons_01"] = "CartelGoons01GMM", // mp2023_02
+            ["g_m_m_cartelguards_01"] = "CartelGuards01GMM", // mpheist4
+            ["g_m_m_cartelguards_02"] = "CartelGuards02GMM", // mpheist4
             ["g_m_m_casrn_01"] = "CasRN01MM", // mpvinewood
             ["g_m_m_chemwork_01"] = "ChemWork01GMM",
             ["g_m_m_chiboss_01"] = "ChiBoss01GMM",
@@ -1591,10 +1609,14 @@ namespace vMenuClient.menus
             ["g_m_m_genthug_01"] = "GenThug01GMM", // mpsum2
             ["g_m_m_goons_01"] = "Goons01GMM", // mpsecurity
             ["g_m_m_korboss_01"] = "KorBoss01GMM",
+            ["g_m_m_maragrande_01"] = "MaraGrande01GMM", // mp2023_02
             ["g_m_m_mexboss_01"] = "MexBoss01GMM",
             ["g_m_m_mexboss_02"] = "MexBoss02GMM",
             ["g_m_m_prisoners_01"] = "Prisoners01GMM", // mptuner
             ["g_m_m_slasher_01"] = "Shalsher01GMM", // patchday27ng
+            ["g_m_m_zombie_01"] = "Zombie01GMM", // mp2024_01
+            ["g_m_m_zombie_02"] = "Zombie02GMM", // mp2024_01
+            ["g_m_m_zombie_03"] = "Zombie03GMM", // mp2024_01
             ["g_m_y_armgoon_02"] = "ArmGoon02GMY",
             ["g_m_y_azteca_01"] = "Azteca01GMY",
             ["g_m_y_ballaeast_01"] = "BallaEast01GMY",
@@ -1629,8 +1651,10 @@ namespace vMenuClient.menus
             ["ig_agatha"] = "Agatha", // mpvinewood
             ["ig_agent"] = "Agent",
             ["ig_agent_02"] = "Agent02", //mpsum2
+            ["ig_ahronward"] = "AhronWard", // mp2023_02
             ["ig_amandatownley"] = "AmandaTownley",
             ["ig_andreas"] = "Andreas",
+            ["ig_armsmanufac_01"] = "ArmsManufac01", // mp2024_02
             ["ig_ary"] = "ARY", // mpheist4
             ["ig_ary_02"] = "ARY02", // mpsecurity
             ["ig_ashley"] = "Ashley",
@@ -1647,9 +1671,17 @@ namespace vMenuClient.menus
             ["ig_bestmen"] = "Bestmen",
             ["ig_beverly"] = "Beverly",
             ["ig_billionaire"] = "Billionaire", // mpsecurity
+            ["ig_bountytarget_01"] = "BountyTarget01", // mp2024_01
+            ["ig_bountytarget_02"] = "BountyTarget02", // mp2024_01
+            ["ig_bountytarget_03"] = "BountyTarget03", // mp2024_01
+            ["ig_bountytarget_04"] = "BountyTarget04", // mp2024_01
+            ["ig_bountytarget_05"] = "BountyTarget05", // mp2024_01
+            ["ig_bountytarget_06"] = "BountyTarget06", // mp2024_01
             ["ig_brad"] = "Brad",
             ["ig_bride"] = "Bride",
             ["ig_brucie2"] = "Brucie2", // patchday22ng
+            ["ig_callgirl_01"] = "CallGirl01", // mp2023_02
+            ["ig_callgirl_02"] = "CallGirl02", // mp2023_02
             ["ig_car3guy1"] = "Car3Guy1",
             ["ig_car3guy2"] = "Car3Guy2",
             ["ig_casey"] = "Casey",
@@ -1702,11 +1734,13 @@ namespace vMenuClient.menus
             ["ig_golfer_a"] = "GolferA", // mpsecurity
             ["ig_golfer_b"] = "GolferB", // mpsecurity
             ["ig_groom"] = "Groom",
+            ["ig_guadalope"] = "Guadalope", // mp2024_02
             ["ig_gunvanseller"] = "GunVanSeller", // mpchristmas3
             ["ig_gustavo"] = "Gustavo", // mpheist4
             ["ig_hao"] = "Hao",
             ["ig_hao_02"] = "Hao02", // patchday26ng
             ["ig_helmsmanpavel"] = "HelmsmanPavel", // mpheist4
+            ["ig_helmsmanpavel_02"] = "HelmsmanPavel02", // mp2024_02
             ["ig_hippyleader"] = "HippyLeader", // mpchristmas3
             ["ig_huang"] = "Huang", // mpheist3
             ["ig_hunter"] = "Hunter",
@@ -1720,8 +1754,11 @@ namespace vMenuClient.menus
             ["ig_isldj_04_d_02"] = "ISLDJ04D02", // mpheist4
             ["ig_isldj_04_e_01"] = "ISLDJ04E01", // mpheist4
             ["ig_jackie"] = "Jackie", // mpheist4
+            ["ig_jamalamir"] = "JamalAmir", // mp2023_02
             ["ig_janet"] = "Janet",
             ["ig_jay_norris"] = "JayNorris",
+            ["ig_jaywalker"] = "JayWalker", // mp2023_02
+            ["ig_jenettee"] = "JenetteE", // mp2024_01
             ["ig_jewelass"] = "Jewelass",
             ["ig_jimmyboston"] = "JimmyBoston",
             ["ig_jimmyboston_02"] = "JimmyBoston02",
@@ -1729,6 +1766,7 @@ namespace vMenuClient.menus
             ["ig_jimmydisanto2"] = "JimmyDisanto2", // mpheist3
             ["ig_jio"] = "JIO", // mpheist4
             ["ig_jio_02"] = "JIO02", // mpsecurity
+            ["ig_jodimarshall"] = "JodiMarshall", // mp2024_02
             ["ig_joeminuteman"] = "JoeMinuteman",
             ["ig_johnny_guns"] = "JohnnyGuns", // mpsecurity
             ["ig_johnnyklebitz"] = "JohnnyKlebitz",
@@ -1759,6 +1797,10 @@ namespace vMenuClient.menus
             ["ig_maryann"] = "MaryAnn",
             ["ig_mason_duggan"] = "MasonDuggan", // mpsum2
             ["ig_maude"] = "Maude",
+            ["ig_maudebf"] = "MaudeBF", // mp2024_01
+            ["ig_mechanic_01"] = "Mechanic01", // mp2023_02
+            ["ig_mechanic_02"] = "Mechanic02", // mp2023_02
+            ["ig_mechanic_03"] = "Mechanic03", // mp2024_01
             ["ig_michelle"] = "Michelle",
             ["ig_miguelmadrazo"] = "MiguelMadrazo", // mpheist4
             ["ig_milton"] = "Milton",
@@ -1784,13 +1826,15 @@ namespace vMenuClient.menus
             ["ig_oneil"] = "ONeil",
             ["ig_orleans"] = "Orleans",
             ["ig_ortega"] = "Ortega",
+            ["ig_oscar_02"] = "Oscar02", // mp2024_02
             ["ig_paige"] = "Paige",
-            ["ig_parnell_moss"] = "ParnellMoss", // mp2023_01
+            ["ig_pernell_moss"] = "PernellMoss", // mp2023_01
             ["ig_paper"] = "Paper",
             ["ig_party_promo"] = "PartyPromo", // mpsecurity
             ["ig_patricia"] = "Patricia",
             ["ig_patricia_02"] = "Patricia02", // mpheist4
             ["ig_pilot"] = "Pilot", // mpheist4
+            ["ig_pilot_02"] = "Pilot02", // mp2023_02
             ["ig_popov"] = "Popov",
             ["ig_priest"] = "Priest",
             ["ig_prolsec_02"] = "PrologueSec02",
@@ -1814,6 +1858,7 @@ namespace vMenuClient.menus
             ["ig_sss"] = "SSS", // mpheist4
             ["ig_stevehains"] = "SteveHains",
             ["ig_stretch"] = "Stretch",
+            ["ig_subcrewhead"] = "SubCrewHead", // mp2023_02
             ["ig_talcc"] = "TalCC",
             ["ig_talina"] = "Talina",
             ["ig_talmm"] = "TalMM",
@@ -1839,9 +1884,11 @@ namespace vMenuClient.menus
             ["ig_vincent"] = "Vincent", // mpvinewood
             ["ig_vincent_2"] = "Vincent2", // mpheist3
             ["ig_vincent_3"] = "Vincent3", // mpsecurity
+            ["ig_vincent_4"] = "Vincent4", // mp2023_02
             ["ig_wade"] = "Wade",
             ["ig_warehouseboss"] = "WarehouseBoss", // mpsum2
             ["ig_wendy"] = "Wendy", // mpheist3
+            ["ig_yusufamir"] = "YusufAmir", // mp2023_02
             ["ig_zimbor"] = "Zimbor",
             ["mp_f_bennymech_01"] = "BennyMechanic01",
             ["mp_f_boatstaff_01"] = "MBoatStaff01",
@@ -1918,13 +1965,16 @@ namespace vMenuClient.menus
             ["s_m_m_autoshop_01"] = "Autoshop01SMM",
             ["s_m_m_autoshop_02"] = "Autoshop02SMM",
             ["s_m_m_autoshop_03"] = "Autoshop03SMM", // mptuner
+            ["s_m_m_bailoffice_01"] = "BailOffice01SMM", // mp2024_01
             ["s_m_m_bouncer_01"] = "Bouncer01SMM",
             ["s_m_m_bouncer_02"] = "Bouncer02SMM", // mpheist4
             ["s_m_m_ccrew_01"] = "CCrew01SMM",
             ["s_m_m_ccrew_02"] = "CCrew02SMM", // mp2023_01
+            ["s_m_m_ccrew_03"] = "CCrew03SMM", // mp2023_02
             ["s_m_m_chemsec_01"] = "ChemSec01SMM",
             ["s_m_m_ciasec_01"] = "CiaSec01SMM",
             ["s_m_m_cntrybar_01"] = "Cntrybar01SMM",
+            ["s_m_m_cop_01"] = "Cop01SMM", // mp2023_02
             ["s_m_m_dockwork_01"] = "Dockwork01SMM",
             ["s_m_m_doctor_01"] = "Doctor01SMM",
             ["s_m_m_drugprocess_01"] = "DrugProcess01SMM", // mpheist4
@@ -1970,6 +2020,7 @@ namespace vMenuClient.menus
             ["s_m_m_studioassist_02"] = "StudioAssist02SMM", // mpsecurity
             ["s_m_m_studioprod_01"] = "StudioProd01SMM", // mpsecurity
             ["s_m_m_studiosoueng_02"] = "StudioSouEng02SMM", // mpsecurity
+            ["s_m_m_subcrew_01"] = "SubCrew01SMM", // mp2023_02
             ["s_m_m_tattoo_01"] = "Tattoo01SMM", // mptuner
             ["s_m_m_trucker_01"] = "Trucker01SMM",
             ["s_m_m_ups_01"] = "Ups01SMM",
@@ -2080,6 +2131,7 @@ namespace vMenuClient.menus
             ["u_m_m_streetart_01"] = "StreetArt01",
             ["u_m_m_vince"] = "Vince", // mpvinewood
             ["u_m_m_willyfist"] = "WillyFist",
+            ["u_m_m_yeti"] = "Yeti", // mp2023_02
             ["u_m_m_yulemonster"] = "YuleMonster", // mpchristmas3
             ["u_m_o_dean"] = "Dean", // mpvinewood
             ["u_m_o_finguru_01"] = "Finguru01",

@@ -1,13 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net452</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <DebugType>embedded</DebugType>
     <Configurations>Release;Debug</Configurations>
     <AssemblyName>vMenuClient.net</AssemblyName>
     <TargetName>$(AssemblyName)</TargetName>
-    <OutputPath>..\..\build\</OutputPath>
+    <OutputPath>..\build\vMenu\</OutputPath>
     <DefineConstants>CLIENT</DefineConstants>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>12.0</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
@@ -19,7 +20,7 @@
 
     <Reference Include="Microsoft.CSharp" />
     
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.6370">
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10188">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     
@@ -59,5 +60,11 @@
 
   <ItemGroup>
     <None Include="D:\tomgr\Documents\GitHub-Repos\vMenu\vMenu\vMenu\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Runtime.Serialization">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 </Project>

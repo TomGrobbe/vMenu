@@ -51,6 +51,8 @@ namespace vMenuShared
             PONoRagdoll,
             PONeverWanted,
             POSetWanted,
+            POClearBlood,
+            POSetBlood,
             POIgnored,
             POStayInVehicle,
             POMaxHealth,
@@ -99,6 +101,7 @@ namespace vMenuShared
             VOUnderglow,
             VOFlashHighbeamsOnHonk,
             VODisableTurbulence,
+            VOAnchorBoat,
             VOInfiniteFuel,
             VOFlares,
             VOPlaneBombs,
@@ -317,7 +320,14 @@ namespace vMenuShared
             WPCandyCane,
             WPRailgunXM3,
             WPAcidPackage,
+            // MP2023_01 DLC (V 2944)
             WPTecPistol,
+            // MP2023_02 DLC (V 3095)
+            WPBattleRifle,
+            WPSnowLauncher,
+            WPHackingDevice,
+            // MP2024_01 DLC (V 3258)
+            WPStunRod,
             #endregion
 
             // Weapon Loadouts Menu
@@ -350,6 +360,7 @@ namespace vMenuShared
             MSRestoreWeapons,
             MSDriftMode,
             MSEntitySpawner,
+            MSDevTools,
             #endregion
 
             // Voice Chat

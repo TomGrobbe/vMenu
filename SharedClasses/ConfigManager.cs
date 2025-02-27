@@ -38,6 +38,9 @@ namespace vMenuShared
             // Vehicle Chameleon Colours
             vmenu_using_chameleon_colours,
 
+            // MP Ped preview setting,
+            vmenu_mp_ped_preview,
+
             // Kick & ban settings
             vmenu_default_ban_message_information,
             vmenu_auto_ban_cheaters,
@@ -61,6 +64,12 @@ namespace vMenuShared
             vmenu_current_hour,
             vmenu_current_minute,
             vmenu_sync_to_machine_time,
+
+            // Voice Chat Settings
+            vmenu_override_voicechat_default_range,
+
+            // Key Mapping
+            vmenu_keymapping_id,
         }
 
         /// <summary>

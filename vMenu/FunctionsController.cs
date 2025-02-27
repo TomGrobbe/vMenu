@@ -433,20 +433,41 @@ namespace vMenuClient
                                 case LicensePlateStyle.BlueOnWhite1:
                                     listItem.ListIndex = 0;
                                     break;
-                                case LicensePlateStyle.BlueOnWhite2:
+                                case LicensePlateStyle.YellowOnBlack:
                                     listItem.ListIndex = 1;
                                     break;
-                                case LicensePlateStyle.BlueOnWhite3:
+                                case LicensePlateStyle.YellowOnBlue:
                                     listItem.ListIndex = 2;
                                     break;
-                                case LicensePlateStyle.YellowOnBlue:
+                                case LicensePlateStyle.BlueOnWhite2:
                                     listItem.ListIndex = 3;
                                     break;
-                                case LicensePlateStyle.YellowOnBlack:
+                                case LicensePlateStyle.BlueOnWhite3:
                                     listItem.ListIndex = 4;
                                     break;
                                 case LicensePlateStyle.NorthYankton:
                                     listItem.ListIndex = 5;
+                                    break;
+                                case LicensePlateStyle.ECola:
+                                    listItem.ListIndex = 6;
+                                    break;
+                                case LicensePlateStyle.LasVenturas:
+                                    listItem.ListIndex = 7;
+                                    break;
+                                case LicensePlateStyle.LibertyCity:
+                                    listItem.ListIndex = 8;
+                                    break;
+                                case LicensePlateStyle.LSCarMeet:
+                                    listItem.ListIndex = 9;
+                                    break;
+                                case LicensePlateStyle.LSPanic:
+                                    listItem.ListIndex = 10;
+                                    break;
+                                case LicensePlateStyle.LSPounders:
+                                    listItem.ListIndex = 11;
+                                    break;
+                                case LicensePlateStyle.Sprunk:
+                                    listItem.ListIndex = 12;
                                     break;
                                 default:
                                     break;
@@ -496,6 +517,22 @@ namespace vMenuClient
                             else
                             {
                                 SetHeliTurbulenceScalar(veh.Handle, 1.0f);
+                            }
+                        }
+
+                        if (veh.Model.IsBoat)
+                        {
+                            if (MainMenu.VehicleOptionsMenu.AnchorBoat && IsAllowed(Permission.VOAnchorBoat) && CanAnchorBoatHere(veh.Handle))
+                            {
+                                SetBoatAnchor(veh.Handle, true);
+                                SetBoatFrozenWhenAnchored(veh.Handle, true);
+                                SetForcedBoatLocationWhenAnchored(veh.Handle, true);
+                            }
+                            else
+                            {
+                                SetBoatAnchor(veh.Handle, false);
+                                SetBoatFrozenWhenAnchored(veh.Handle, false);
+                                SetForcedBoatLocationWhenAnchored(veh.Handle, false);
                             }
                         }
                     }
@@ -1063,7 +1100,7 @@ namespace vMenuClient
                 {
                     if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
                     {
-                        var recordKey = MainMenu.MenuToggleKey == Control.ReplayStartStopRecording ? Control.SaveReplayClip : Control.ReplayStartStopRecording;
+                        var recordKey = 0 == Control.ReplayStartStopRecording ? Control.SaveReplayClip : Control.ReplayStartStopRecording;
                         if (!IsRecording())
                         {
                             if (Game.IsControlJustReleased(0, recordKey))
@@ -2240,7 +2277,7 @@ namespace vMenuClient
                                         // sets the blip category to 7, which makes the blips group under "Other Players:"
                                         SetBlipCategory(blip, 7);
 
-                                        //N_0x75a16c3da34f1245(blip, false); // unknown
+                                        // ShowHeightOnBlip(blip, false); // See if we need this or not
 
                                         // display on minimap and main map.
                                         SetBlipDisplay(blip, 6);
@@ -2921,7 +2958,7 @@ namespace vMenuClient
                 var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
                 var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
                 var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                if (N_0xd40aac51e8e4c663((uint)compHash) > 0) // helmet has visor.
+                if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor.
                 {
                     var newHelmet = component;
                     var newHelmetTexture = texture;

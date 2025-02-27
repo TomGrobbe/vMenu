@@ -156,6 +156,12 @@ namespace vMenuClient
             set { SetSavedSettingsBool("vehicleDisableHelicopterTurbulence", value); }
         }
 
+        public static bool VehicleAnchorBoat
+        {
+            get { return GetSettingsBool("vehicleAnchorBoat"); }
+            set { SetSavedSettingsBool("vehicleAnchorBoat", value); }
+        }
+
         public static bool VehicleBikeSeatbelt
         {
             get { return GetSettingsBool("vehicleBikeSeatbelt"); }
@@ -312,6 +318,12 @@ namespace vMenuClient
             set { SetSavedSettingsInt("miscLastTimeCycleModifierStrength", value); }
         }
 
+        public static bool MPPedPreviews
+        {
+            get { return GetSettingsBool("mpPedPreviews"); }
+            set { SetSavedSettingsBool("mpPedPreviews", value); }
+        }
+
         #region keybind menu
         public static bool KbTpToWaypoint
         {
@@ -427,7 +439,8 @@ namespace vMenuClient
                     "vehicleGodEngine" or
                     "vehicleGodVisual" or
                     "vehicleGodStrongWheels" or
-                    "vehicleGodRamp"
+                    "vehicleGodRamp" or
+                    "mpPedPreviews"
                     )
                 {
                     SetSavedSettingsBool(kvpString, true);
@@ -635,6 +648,9 @@ namespace vMenuClient
 
                 VehicleDisableHelicopterTurbulence = MainMenu.VehicleOptionsMenu.DisableHelicopterTurbulence;
                 prefs.Add("vehicleDisableHelicopterTurbulence", VehicleDisableHelicopterTurbulence);
+
+                VehicleAnchorBoat = MainMenu.VehicleOptionsMenu.AnchorBoat;
+                prefs.Add("vehicleAnchorBoat", VehicleAnchorBoat);
 
                 VehicleBikeSeatbelt = MainMenu.VehicleOptionsMenu.VehicleBikeSeatbelt;
                 prefs.Add("vehicleBikeSeatbelt", VehicleBikeSeatbelt);
