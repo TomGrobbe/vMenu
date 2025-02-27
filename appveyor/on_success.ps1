@@ -18,7 +18,7 @@ if ($env:WEBHOOK_URL) {
 
 if ($env:DISCORD_FILE_WEBHOOK) {
     # filepath to file to upload
-    $filePath = "vMenu-$env:VERSION_NAME.zip"
+    $filePath = "$env:APPVEYOR_BUILD_FOLDER\vMenu\vMenu-$env:VERSION_NAME.zip"
 
     # Check if file exists
     if (-Not (Test-Path $filePath)) {
