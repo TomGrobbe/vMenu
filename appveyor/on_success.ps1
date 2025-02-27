@@ -17,7 +17,7 @@ if ($env:WEBHOOK_URL) {
 }
 
 if ($env:DISCORD_FILE_WEBHOOK) {
-    Invoke-RestMethod -Uri $env:DISCORD_FILE_WEBHOOK -Method Post -InFile "vMenu-$env:VERSION_NAME.zip" -ContentType "multipart/form-data"
+    Invoke-RestMethod -Uri $env:DISCORD_FILE_WEBHOOK -Method Post -InFile "..\vMenu-$env:VERSION_NAME.zip" -ContentType "multipart/form-data"
     Write-Output "File webhook sent."
 } else {
     Write-Output "No file webhook URL defined, skipping file webhook."
