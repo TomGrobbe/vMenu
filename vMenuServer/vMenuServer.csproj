@@ -7,7 +7,7 @@
     <TargetName>$(AssemblyName)</TargetName>
     <OutputPath>..\build\vMenu\</OutputPath>
     <DefineConstants>SERVER</DefineConstants>
-	  <LangVersion>latest</LangVersion>
+	  <LangVersion>12.0</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
