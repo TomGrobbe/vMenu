@@ -17,6 +17,8 @@ namespace vMenuClient.menus
         private Menu menu;
 
         private Menu pedCustomizationMenu;
+        private Menu pedCollectionsMenu;
+        private Menu pedCollectionsCustomizationMenu;
         private Menu savedPedsMenu;
         private Menu spawnPedsMenu;
         private Menu addonPedsMenu;
@@ -30,8 +32,8 @@ namespace vMenuClient.menus
 
         public static int ClothingAnimationType { get; set; } = UserDefaults.PAClothingAnimationType;
 
-        private readonly Dictionary<MenuListItem, int> drawablesMenuListItems = new();
-        private readonly Dictionary<MenuListItem, int> propsMenuListItems = new();
+        private readonly Dictionary<MenuListItem, int> drawablesMenuListItems = [];
+        private readonly Dictionary<MenuListItem, int> propsMenuListItems = [];
 
         #region create the menu
         /// <summary>
@@ -43,12 +45,16 @@ namespace vMenuClient.menus
             menu = new Menu(Game.Player.Name, "Player Appearance");
             savedPedsMenu = new Menu(Game.Player.Name, "Saved Peds");
             pedCustomizationMenu = new Menu(Game.Player.Name, "Customize Saved Ped");
+            pedCollectionsMenu = new Menu(Game.Player.Name, "Ped Collections");
+            pedCollectionsCustomizationMenu = new Menu(Game.Player.Name, "I get updated at runtime!");
             spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
 
 
             // Add the (submenus) to the menu pool.
             MenuController.AddSubmenu(menu, pedCustomizationMenu);
+            MenuController.AddSubmenu(menu, pedCollectionsMenu);
+            MenuController.AddSubmenu(pedCollectionsMenu, pedCollectionsCustomizationMenu);
             MenuController.AddSubmenu(menu, savedPedsMenu);
             MenuController.AddSubmenu(menu, spawnPedsMenu);
             MenuController.AddSubmenu(spawnPedsMenu, addonPedsMenu);
@@ -60,6 +66,7 @@ namespace vMenuClient.menus
 
             // Create the menu items.
             var pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") { Label = "→→→" };
+            var pedCollections = new MenuItem("Ped Collections", "Modify your ped's appearance using collections, such as from the Base Game, Offical DLCs, and Custom Collections.") { Label = "→→→" };
             var saveCurrentPed = new MenuItem("Save Ped", "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
             var savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") { Label = "→→→" };
             var spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.") { Label = "→→→" };
@@ -82,6 +89,7 @@ namespace vMenuClient.menus
 
             // Add items to the menu.
             menu.AddMenuItem(pedCustomization);
+            menu.AddMenuItem(pedCollections);
             menu.AddMenuItem(saveCurrentPed);
             menu.AddMenuItem(savedPedsBtn);
             menu.AddMenuItem(spawnPedsBtn);
@@ -92,10 +100,12 @@ namespace vMenuClient.menus
             if (IsAllowed(Permission.PACustomize))
             {
                 MenuController.BindMenuItem(menu, pedCustomizationMenu, pedCustomization);
+                MenuController.BindMenuItem(menu, pedCollectionsMenu, pedCollections);
             }
             else
             {
                 menu.RemoveMenuItem(pedCustomization);
+                menu.RemoveMenuItem(pedCollections);
             }
 
             // always allowed
@@ -510,6 +520,10 @@ namespace vMenuClient.menus
                 {
                     RefreshCustomizationMenu();
                 }
+                if (item == pedCollections)
+                {
+                    RefreshCollectionsMenu();
+                }
                 else if (item == saveCurrentPed)
                 {
                     if (await SavePed())
@@ -547,19 +561,7 @@ namespace vMenuClient.menus
                     }
                     if (propID == 0)
                     {
-                        var component = GetPedPropIndex(Game.PlayerPed.Handle, 0);      // helmet index
-                        var texture = GetPedPropTextureIndex(Game.PlayerPed.Handle, 0); // texture
-                        var compHash = GetHashNameForProp(Game.PlayerPed.Handle, 0, component, texture); // prop combination hash
-                        if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor. 
-                        {
-                            if (!IsHelpMessageBeingDisplayed())
-                            {
-                                BeginTextCommandDisplayHelp("TWOSTRINGS");
-                                AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
-                                AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
-                                EndTextCommandDisplayHelp(0, false, true, 6000);
-                            }
-                        }
+                        ShowVisorText(Game.PlayerPed.Handle);
                     }
 
                 }
@@ -596,6 +598,107 @@ namespace vMenuClient.menus
             };
             #endregion
 
+            pedCollectionsCustomizationMenu.OnListIndexChange += (_, item, oldListIndex, newListIndex, ___) =>
+            {
+                string collectionName = item.ItemData;
+                int pedHandle = Game.PlayerPed.Handle;
+
+                if (drawablesMenuListItems.ContainsKey(item))
+                {
+                    int currentDrawableID = drawablesMenuListItems[item];
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, newListIndex, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, newListIndex);
+
+                    if (isValid)
+                    {
+                        int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, newListIndex);
+
+                        SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, newListIndex, 0, 0);
+
+                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedTextureVariation(pedHandle, currentDrawableID) + 1} (of {maxDrawableTextures}).";
+                    }
+                    else
+                    {
+                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selection is invalid (broken, Gen9, etc.)";
+                    }
+
+                    if (item.ListItems[oldListIndex].StartsWith("None"))
+                    {
+                        item.ListItems.RemoveAt(oldListIndex);
+                    }
+                }
+                else if (propsMenuListItems.ContainsKey(item))
+                {
+                    int propID = propsMenuListItems[item];
+
+                    if (newListIndex == 0)
+                    {
+                        SetPedPropIndex(pedHandle, propID, -1, 0, false);
+                        ClearPedProp(pedHandle, propID);
+
+                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures.";
+                    }
+                    else
+                    {
+                        int maxDrawableTextures = GetNumberOfPedCollectionPropTextureVariations(pedHandle, propID, collectionName, newListIndex - 1);
+
+                        SetPedCollectionPropIndex(pedHandle, propID, collectionName, newListIndex - 1, 0, true);
+
+                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedPropTextureIndex(pedHandle, propID) + 1} (of {maxDrawableTextures}).";
+                    }
+
+                    if (propID == 0)
+                    {
+                        ShowVisorText(pedHandle);
+                    }
+                }
+            };
+
+            pedCollectionsCustomizationMenu.OnListItemSelect += (_, item, listIndex, __) =>
+            {
+                int pedHandle = Game.PlayerPed.Handle;
+                string collectionName = item.ItemData;
+
+                if (drawablesMenuListItems.ContainsKey(item))
+                {                    
+                    int currentDrawableID = drawablesMenuListItems[item];
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, listIndex, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, listIndex);
+
+                    if (!isValid)
+                    {
+                        return;
+                    }
+
+                    int currentTextureIndex = GetPedTextureVariation(pedHandle, currentDrawableID);
+                    int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, listIndex) - 1;
+
+                    if (currentTextureIndex == -1)
+                    {
+                        currentTextureIndex = 0;
+                    }
+
+                    int newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
+
+                    SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, listIndex, newTexture, 0);
+
+                    item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{newTexture + 1} (of {maxDrawableTextures + 1}).";
+                }
+                else if (propsMenuListItems.ContainsKey(item))
+                {
+                    int currentPropID = propsMenuListItems[item];
+                    int currentPropTextureVariation = GetPedPropTextureIndex(pedHandle, currentPropID);
+                    int maxPropTextureVariations = GetNumberOfPedCollectionPropTextureVariations(pedHandle, currentPropID, collectionName, listIndex - 1);
+                    int newPropTextureVariationIndex = currentPropTextureVariation + 1 < maxPropTextureVariations ? currentPropTextureVariation + 1 : 0;
+
+                    SetPedCollectionPropIndex(pedHandle, currentPropID, collectionName, listIndex - 1, newPropTextureVariationIndex, true);
+
+                    item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{newPropTextureVariationIndex + 1} (of {maxPropTextureVariations}).";
+                }
+            };
+
+            pedCollectionsMenu.OnItemSelect += (_, menuItem, ___) =>
+            {
+                RefreshCollectionsDrawables(menuItem.ItemData);
+            };
         }
 
 
@@ -677,6 +780,135 @@ namespace vMenuClient.menus
             }
             pedCustomizationMenu.RefreshIndex();
             #endregion
+        }
+
+        ///// <summary>
+        ///// Refresh/create the ped collections menu.
+        ///// </summary>
+        private void RefreshCollectionsMenu()
+        {
+            drawablesMenuListItems.Clear();
+            propsMenuListItems.Clear();
+            pedCollectionsMenu.ClearMenuItems();
+
+            int pedHandle = Game.PlayerPed.Handle;
+            int collectionsCount = GetPedCollectionsCount(pedHandle);
+
+            // In reverse so newest are at the top
+            for (int i = collectionsCount - 1; i > -1; i--)
+            {
+                string collectionName = i == 0 ? "Base Collection" : GetPedCollectionName(pedHandle, i);
+                MenuItem collectionItem = new(collectionName, $"Customize your ped using the \"{collectionName}\" collection.")
+                {
+                    ItemData = collectionName,
+                    Label = $"(#{i})"
+                };
+
+                pedCollectionsMenu.AddMenuItem(collectionItem);
+
+                MenuController.BindMenuItem(pedCollectionsMenu, pedCollectionsCustomizationMenu, collectionItem);
+            }
+
+            pedCollectionsMenu.RefreshIndex();
+        }
+
+        private void RefreshCollectionsDrawables(string collectionName)
+        {
+            pedCollectionsCustomizationMenu.ClearMenuItems();
+            pedCollectionsCustomizationMenu.MenuSubtitle = collectionName;
+
+            int pedHandle = Game.PlayerPed.Handle;
+
+            if (collectionName == "Base Collection")
+            {
+                collectionName = "";
+            }
+
+            for (int drawable = 0; drawable < 12; drawable++)
+            {               
+                int totalVariations = GetNumberOfPedCollectionDrawableVariations(pedHandle, drawable, collectionName);
+
+                if (totalVariations == 0)
+                {
+                    continue;
+                }
+
+                string suffixText;
+                int currentLocalIndex;
+                List<string> drawableTexturesList = [];
+                int currentDrawableGlobalId = GetPedDrawableVariation(pedHandle, drawable);
+                string currentCollection = GetPedCollectionNameFromDrawable(pedHandle, drawable, currentDrawableGlobalId);
+
+                for (int i = 0; i < totalVariations; i++)
+                {
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, drawable, collectionName, i, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, drawable, collectionName, i);
+
+                    drawableTexturesList.Add($"Drawable #{i + 1}{(!isValid ? " (Invalid)" : "")} (of {totalVariations})");
+                }
+
+                if (currentCollection == collectionName)
+                {
+                    currentLocalIndex = GetPedCollectionLocalIndexFromDrawable(pedHandle, drawable, currentDrawableGlobalId);
+                    suffixText = $"Selected texture: #{GetPedTextureVariation(pedHandle, drawable) + 1} (of {GetNumberOfPedCollectionTextureVariations(pedHandle, drawable, collectionName, currentLocalIndex)}).";
+                }
+                else
+                {
+                    drawableTexturesList.Add($"None Selected (of {totalVariations})");
+                    currentLocalIndex = drawableTexturesList.Count - 1;
+                    suffixText = "Current selection not part collection.";
+                }
+
+                MenuListItem item = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentLocalIndex, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
+                {
+                    ItemData = collectionName
+                };
+
+                drawablesMenuListItems.Add(item, drawable);
+                pedCollectionsCustomizationMenu.AddMenuItem(item);
+            }
+
+            for (int tmpProp = 0; tmpProp < 5; tmpProp++)
+            {
+                int realProp = tmpProp > 2 ? tmpProp + 3 : tmpProp;
+                int totalVariations = GetNumberOfPedCollectionPropDrawableVariations(pedHandle, realProp, collectionName);
+
+                if (totalVariations == 0)
+                {
+                    continue;
+                }
+
+                string suffixText;
+                int currentLocalIndex;
+                int currentPropGlobalId = GetPedPropIndex(pedHandle, realProp);
+                List<string> propTexturesList = [$"None Selected (of {totalVariations})"];
+                string currentCollection = GetPedCollectionNameFromProp(pedHandle, realProp, currentPropGlobalId);
+
+                for (int i = 0; i < totalVariations; i++)
+                {
+                    propTexturesList.Add($"Prop #{i + 1} (of {totalVariations})");
+                }
+
+                if (currentCollection == collectionName)
+                {
+                    currentLocalIndex = GetPedCollectionLocalIndexFromProp(pedHandle, realProp, currentPropGlobalId);
+                    suffixText = $"Selected texture: #{GetPedPropTextureIndex(pedHandle, realProp) + 1} (of {GetNumberOfPedCollectionPropTextureVariations(pedHandle, realProp, collectionName, currentLocalIndex)}).";
+                }
+                else
+                {
+                    currentLocalIndex = -1;
+                    suffixText = "Current selection not part collection.";
+                }
+
+                MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentLocalIndex + 1, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
+                {
+                    ItemData = collectionName
+                };
+
+                propsMenuListItems.Add(propTextures, realProp);
+                pedCollectionsCustomizationMenu.AddMenuItem(propTextures);
+            }
+
+            pedCollectionsCustomizationMenu.RefreshIndex();
         }
 
         #region Textures & Props
@@ -2178,5 +2410,21 @@ namespace vMenuClient.menus
 
         #endregion
 
+        private void ShowVisorText(int pedHandle)
+        {
+            var component = GetPedPropIndex(pedHandle, 0);      // helmet index
+            var texture = GetPedPropTextureIndex(pedHandle, 0); // texture
+            var compHash = GetHashNameForProp(pedHandle, 0, component, texture); // prop combination hash
+            if (GetShopPedApparelVariantPropCount((uint)compHash) > 0) // helmet has visor. 
+            {
+                if (!IsHelpMessageBeingDisplayed())
+                {
+                    BeginTextCommandDisplayHelp("TWOSTRINGS");
+                    AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
+                    AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
+                    EndTextCommandDisplayHelp(0, false, true, 6000);
+                }
+            }
+        }
     }
 }
