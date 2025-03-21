@@ -186,6 +186,7 @@ namespace vMenuShared
             WOAll,
             WODynamic,
             WOBlackout,
+            WOVehBlackout,
             WOSetWeather,
             WORemoveClouds,
             WORandomizeClouds,

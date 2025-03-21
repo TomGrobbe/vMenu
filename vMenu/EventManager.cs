@@ -18,6 +18,7 @@ namespace vMenuClient
 {
     public class EventManager : BaseScript
     {
+        public static WeatherOptions WeatherOptionsMenu { get; private set; }
         public static bool IsSnowEnabled => GetSettingsBool(Setting.vmenu_enable_snow);
         public static int GetServerMinutes => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_current_minute), 0, 59);
         public static int GetServerHours => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_current_hour), 0, 23);
@@ -283,8 +284,17 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
+            if (MainMenu.WeatherOptionsMenu == null)
+            {
+                return;
+            }
+
+            bool isEnabled = MainMenu.WeatherOptionsMenu.IsVehicleLightsEnabled;
+
             await UpdateWeatherParticles();
             SetArtificialLightsState(IsBlackoutEnabled);
+            SetArtificialLightsStateAffectsVehicles(!isEnabled);
+
             if (GetNextWeatherType() != GetHashKey(GetServerWeather))
             {
                 SetWeatherTypeOvertimePersist(GetServerWeather, (float)WeatherChangeTime);
@@ -292,8 +302,10 @@ namespace vMenuClient
 
                 TriggerEvent("vMenu:WeatherChangeComplete", GetServerWeather);
             }
+
             await Delay(1000);
         }
+
 
         /// <summary>
         /// This function will take care of time sync. It'll be called once, and never stop.
