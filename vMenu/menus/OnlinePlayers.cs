@@ -23,7 +23,7 @@ namespace vMenuClient.menus
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
 
-        readonly Menu playerMenu = new("Online Players", "Player:");
+        readonly Menu playerMenu = new("Active Players", "Player:");
         IPlayer currentPlayer = new NativePlayer(Game.Player);
 
 
@@ -33,7 +33,7 @@ namespace vMenuClient.menus
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Online Players")
+            menu = new Menu(Game.Player.Name, "Active Players")
             {
                 CounterPreText = "Players: "
             };
