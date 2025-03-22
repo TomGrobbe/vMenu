@@ -6,7 +6,6 @@ using CitizenFX.Core;
 using Newtonsoft.Json;
 
 using static CitizenFX.Core.Native.API;
-using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient.data

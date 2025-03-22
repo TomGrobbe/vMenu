@@ -20,6 +20,7 @@ namespace vMenuClient.menus
         #region Variables
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
+        public static Dictionary<uint, Dictionary<int, string>> VehicleExtras;
 
         // Submenus
         public Menu VehicleModMenu { get; private set; }
@@ -499,7 +500,7 @@ namespace vMenuClient.menus
                     var vehicle = GetVehicle();
 
                     // Check if the player is the driver of the vehicle, if so, continue.
-                    if (vehicle.GetPedOnSeat(VehicleSeat.Driver) == new Ped(Game.PlayerPed.Handle))
+                    if (vehicle.GetPedOnSeat(VehicleSeat.Driver) == Game.PlayerPed)
                     {
                         // Repair vehicle.
                         if (item == fixVehicle)
@@ -1178,7 +1179,7 @@ namespace vMenuClient.menus
                         switch (itemIndex)
                         {
                             case 0:
-                            case 1:    
+                            case 1:
                             case 2:
                                 primaryColor = VehicleData.ClassicColors[newIndex].id;
                                 break;
@@ -1235,7 +1236,7 @@ namespace vMenuClient.menus
                                 secondaryColor = VehicleData.WornColors[newIndex].id;
                                 break;
                         }
-                        
+
                         ClearVehicleCustomSecondaryColour(veh.Handle);
                         SetVehicleColours(veh.Handle, primaryColor, secondaryColor);
                     }
@@ -1632,6 +1633,12 @@ namespace vMenuClient.menus
                     // Check if the vehicle exists, it's actually a vehicle, it's not dead/broken and the player is in the drivers seat.
                     if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                     {
+                        Dictionary<int, string> extraLabels;
+                        if (!VehicleExtras.TryGetValue((uint)veh.Model.Hash, out extraLabels))
+                        {
+                            extraLabels = new Dictionary<int, string>();
+                        }
+                      
                         //List<int> extraIds = new List<int>();
                         // Loop through all possible extra ID's (AFAIK: 0-14).
                         for (var extra = 0; extra < 14; extra++)
@@ -1642,8 +1649,12 @@ namespace vMenuClient.menus
                                 // Add it's ID to the list.
                                 //extraIds.Add(extra);
 
+                                // Create the checkbox label
+                                string extraLabel;
+                                if (!extraLabels.TryGetValue(extra, out extraLabel))
+                                    extraLabel = $"Extra #{extra}";
                                 // Create a checkbox for it.
-                                var extraCheckbox = new MenuCheckboxItem($"Extra #{extra}", extra.ToString(), veh.IsExtraOn(extra));
+                                var extraCheckbox = new MenuCheckboxItem(extraLabel, extra.ToString(), veh.IsExtraOn(extra));
                                 // Add the checkbox to the menu.
                                 VehicleComponentsMenu.AddMenuItem(extraCheckbox);
 
@@ -2012,7 +2023,7 @@ namespace vMenuClient.menus
                 var xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
                 var turbo = new MenuCheckboxItem("Turbo", "Enable or disable the ~y~turbo~s~ for this vehicle.", IsToggleModOn(veh.Handle, 18));
                 var bulletProofTires = new MenuCheckboxItem("Bullet Proof Tires", "Enable or disable ~y~bullet proof tires~s~ for this vehicle.", !GetVehicleTyresCanBurst(veh.Handle));
-                
+
                 // Add the checkboxes to the menu.
                 VehicleModMenu.AddMenuItem(toggleCustomWheels);
                 VehicleModMenu.AddMenuItem(xenonHeadlights);

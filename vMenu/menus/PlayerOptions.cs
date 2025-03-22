@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
 
 using MenuAPI;
 
@@ -188,25 +187,30 @@ namespace vMenuClient.menus
                 MenuController.BindMenuItem(vehicleAutoPilot, CustomDrivingStyleMenu, customDrivingStyle);
                 var knownNames = new Dictionary<int, string>()
                 {
-                    { 0, "Stop before vehicles" },
-                    { 1, "Stop before peds" },
-                    { 2, "Avoid vehicles" },
-                    { 3, "Avoid empty vehicles" },
-                    { 4, "Avoid peds" },
-                    { 5, "Avoid objects" },
-
-                    { 7, "Stop at traffic lights" },
-                    { 8, "Use blinkers" },
-                    { 9, "Allow going wrong way" },
-                    { 10, "Go in reverse gear" },
-
-                    { 18, "Use shortest path" },
-
-                    { 22, "Ignore roads" },
-
-                    { 24, "Ignore all pathing" },
-
-                    { 29, "Avoid highways (if possible)" },
+                    { 0, "Stop for vehicles" },  // The driver will stop to avoid hitting vehicles.
+                    { 1, "Stop for pedestrians" },  // The driver will stop to avoid hitting pedestrians.
+                    { 2, "Swerve around all vehicles" },  // The driver will swerve to avoid moving vehicles.
+                    { 3, "Steer around stationary vehicles" },  // The driver will steer around parked or stationary vehicles.
+                    { 4, "Steer around pedestrians" },  // The driver will steer to avoid pedestrians.
+                    { 5, "Steer around objects" },  // The driver will steer to avoid objects on the road.
+                    { 6, "Don't steer around player pedestrian" },  // The driver will not avoid the player's character on foot.
+                    { 7, "Stop at traffic lights" },  // The driver will obey traffic signals.
+                    { 8, "Go off-road when avoiding" },  // The driver may go off-road to avoid obstacles.
+                    { 9, "Allow going wrong way" },  // The driver is allowed to drive against traffic.
+                    { 10, "Go in reverse gear" },  // The driver can reverse the vehicle.
+                    { 11, "Use wander fallback instead of straight line" },  // The driver uses wandering paths if straight paths fail.
+                    { 12, "Avoid restricted areas" },  // The driver avoids areas marked as restricted.
+                    { 13, "Prevent background pathfinding" },  // The driver will not perform background pathfinding.
+                    { 14, "Adjust cruise speed based on road speed" },  // The driver adjusts speed to match road conditions.
+                    { 18, "Use shortcut links (Use shortest path)" },  // The driver uses shortcuts to reach the destination faster.
+                    { 19, "Change lanes around obstructions" },  // The driver changes lanes to avoid obstructions.
+                    { 21, "Use switched-off nodes" },  // The driver can use nodes that are typically disabled.
+                    { 22, "Prefer navmesh route" },  // The driver prefers routes defined in the navigation mesh.
+                    { 23, "Plane taxi mode" },  // The driver operates as if taxiing an aircraft.
+                    { 24, "Force straight line" },  // The driver attempts to drive in a straight line.
+                    { 25, "Use string pulling at junctions" },  // The driver uses string pulling for smoother turns at junctions.
+                    { 29, "Avoid highways (if possible)" },  // The driver avoids using highways.
+                    { 30, "Force join in road direction" },  // The driver joins roads in the correct direction.
                 };
                 for (var i = 0; i < 31; i++)
                 {

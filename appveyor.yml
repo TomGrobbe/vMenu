@@ -1,6 +1,6 @@
 pull_requests:
   do_not_increment_build_number: false
-image: Visual Studio 2019
+image: Visual Studio 2022
 configuration: Release
 before_build:
   - nuget restore
@@ -29,6 +29,7 @@ deploy:
       APPVEYOR_REPO_TAG: true
     description: "vMenu version $(VERSION_NAME)."
 on_success:
+  - ps: Invoke-Expression -Command (Resolve-Path ../appveyor/on_success.ps1)
   - cmd: appveyor/on_success.bat
 on_failure:
   - cmd: appveyor/on_failure.bat

@@ -1,0 +1,20 @@
+{
+  "policecharger": {
+    "1": "1: Push Bar",
+    "2": "2: Push Bar Wrap",
+    "3": "3: Light Bar",
+    "4": "4: Visor Lights",
+    "5": "5: Antennas",
+    "9": "9: Rear Deck Lights"
+  },
+  "policecvpi": {
+    "1": "Push Bar",
+    "2": "Push Bar Wrap",
+    "3": "Light Bar",
+    "4": "Visor Lights",
+    "11": "Cage",
+    "12": "Trunk Modem/Antennas",
+    "5": "Antennas",
+    "7": "Rear Deck Lights"
+  }
+}
