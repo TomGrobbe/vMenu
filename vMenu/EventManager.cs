@@ -289,11 +289,9 @@ namespace vMenuClient
                 return;
             }
 
-            bool isEnabled = MainMenu.WeatherOptionsMenu.IsVehicleLightsEnabled;
-
             await UpdateWeatherParticles();
             SetArtificialLightsState(IsBlackoutEnabled);
-            SetArtificialLightsStateAffectsVehicles(!isEnabled);
+            SetArtificialLightsStateAffectsVehicles(!IsVehicleLightsEnabled);
 
             if (GetNextWeatherType() != GetHashKey(GetServerWeather))
             {
