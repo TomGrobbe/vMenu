@@ -384,6 +384,8 @@ namespace vMenuClient.data
                 "COGNOSCENTI",
                 "COGNOSCENTI2",
                 "DEITY", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
+                "DRIFTCHAVOSV6", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
+                "DRIFTHARDY", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "DRIFTVORSCHLAG", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "EMPEROR",
                 "EMPEROR2",
@@ -391,10 +393,12 @@ namespace vMenuClient.data
                 "FUGITIVE",
                 "GLENDALE",
                 "GLENDALE2", // SUMMER SPECIAL (MPSUM) DLC - Requires b2060
+                "HARDY", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "IMPALER5", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
+                "MINIMUS", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "PREMIER",
                 "PRIMO",
                 "PRIMO2",
@@ -440,6 +444,7 @@ namespace vMenuClient.data
                 "DORADO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DUBSTA",
                 "DUBSTA2",
+                "EVERON3", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "FQ2",
                 "GRANGER",
                 "GRANGER2", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
@@ -465,6 +470,7 @@ namespace vMenuClient.data
                 "SQUADDIE", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TOROS",
                 "VIVANITE", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "WOODLANDER", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "XLS",
                 "XLS2",
             };
@@ -520,6 +526,8 @@ namespace vMenuClient.data
                 "DOMINATOR7", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DOMINATOR8", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DOMINATOR9", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTDOMINATOR10", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
+                "DRIFTGAUNTLET4", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "DRIFTYOSEMITE", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DUKES",
                 "DUKES2",
@@ -573,6 +581,7 @@ namespace vMenuClient.data
                 "TAHOMA", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "TAMPA",
                 "TAMPA3",
+                "TAMPA4", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "TULIP",
                 "TULIP2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "VAMOS",
@@ -599,6 +608,7 @@ namespace vMenuClient.data
                 "CASCO",
                 "CHEBUREK",
                 "CHEETAH2",
+                "CHEETAH3", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "COQUETTE2",
                 "COQUETTE5", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DELUXO",
@@ -731,6 +741,7 @@ namespace vMenuClient.data
                 "RAIDEN",
                 "RAPIDGT",
                 "RAPIDGT2",
+                "RAPIDGT4", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "RAPTOR",
                 "REMUS", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "REVOLTER",
@@ -744,6 +755,7 @@ namespace vMenuClient.data
                 "SCHWARZER",
                 "SENTINEL3",
                 "SENTINEL4", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "SENTINEL5", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "SEVEN70",
                 "SM722", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "SPECTER",
@@ -807,6 +819,7 @@ namespace vMenuClient.data
                 "SCRAMJET",
                 "SHEAVA", // ETR1
                 "SULTANRS",
+                "SUZUME", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "T20",
                 "TAIPAN",
                 "TEMPESTA",
@@ -918,6 +931,7 @@ namespace vMenuClient.data
                 "CARACARA2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "DLOADER",
                 "DRAUGUR", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "DRIFTL352", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "DUBSTA3",
                 "DUNE",
                 "DUNE2",
@@ -934,6 +948,7 @@ namespace vMenuClient.data
                 "INSURGENT3",
                 "KALAHARI",
                 "KAMACHO",
+                "L352", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "MARSHALL",
                 "MENACER",
                 "MESA3",
@@ -975,6 +990,7 @@ namespace vMenuClient.data
                 "CUTTER",
                 "DUMP",
                 "FLATBED",
+                "FLATBED2", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "GUARDIAN",
                 "HANDLER",
                 "MIXER",
@@ -1162,6 +1178,7 @@ namespace vMenuClient.data
                 "HAVOK",
                 "HUNTER",
                 "MAVERICK",
+                "MAVERICK2", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "POLMAV",
                 "SAVAGE",
                 "SEASPARROW",
@@ -1268,6 +1285,7 @@ namespace vMenuClient.data
                 "POLICE4",
                 "POLICE5", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "POLICEB",
+                "POLICEB2", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "POLICEOLD1",
                 "POLICEOLD2",
                 "POLICET",
@@ -1331,6 +1349,7 @@ namespace vMenuClient.data
                 "POUNDER2",
                 "STOCKADE",
                 "STOCKADE3",
+                "STOCKADE4", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "TERBYTE",
             };
             #endregion
