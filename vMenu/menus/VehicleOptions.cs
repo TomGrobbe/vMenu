@@ -181,10 +181,10 @@ namespace vMenuClient.menus
                 "to apply the selected level.");
             var licensePlates = new List<string> {
                 GetLabelText("CMOD_PLA_0"), // Plate Index 0 // BlueOnWhite1
-                GetLabelText("CMOD_PLA_1"), // Plate Index 1 // YellowOnBlack
-                GetLabelText("CMOD_PLA_2"), // Plate Index 2 // YellowOnBlue
-                GetLabelText("CMOD_PLA_3"), // Plate Index 3 // BlueOnWhite2
-                GetLabelText("CMOD_PLA_4"), // Plate Index 4 // BlueOnWhite3
+                GetLabelText("CMOD_PLA_4"), // Plate Index 1 // YellowOnBlack
+                GetLabelText("CMOD_PLA_3"), // Plate Index 2 // YellowOnBlue
+                GetLabelText("CMOD_PLA_1"), // Plate Index 3 // BlueOnWhite2
+                GetLabelText("CMOD_PLA_2"), // Plate Index 4 // BlueOnWhite3
                 "North Yankton", // Plate Index 5 // NorthYankton
                 GetLabelText("CMOD_PLA_6"), // Plate Index 6 // ECola
                 GetLabelText("CMOD_PLA_7"), // Plate Index 7 // LasVenturas
