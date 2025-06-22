@@ -2194,6 +2194,10 @@ namespace vMenuClient.menus
             var clonePed = new MenuItem("Clone Saved Character", "This will make a clone of your saved character. It will ask you to provide a name for that character. If that name is already taken the action will be canceled.");
             var setAsDefaultPed = new MenuItem("Set As Default Character", "If you set this character as your default character, and you enable the 'Respawn As Default MP Character' option in the Misc Settings menu, then you will be set as this character whenever you (re)spawn.");
             var renameCharacter = new MenuItem("Rename Saved Character", "You can rename this saved character. If the name is already taken then the action will be canceled.");
+            var saveCurrentPedAsCharacter = new MenuItem("Update Character Clothing", "This applies your current clothing to this saved ped. ~r~This will overwrite this saved ped's clothing.~w~ Only clothing is updated, no other appearance features.")
+            {
+                LeftIcon = MenuItem.Icon.WARNING
+            };
             var delPed = new MenuItem("Delete Saved Character", "Deletes the selected saved character. This can not be undone!")
             {
                 LeftIcon = MenuItem.Icon.WARNING
@@ -2204,6 +2208,7 @@ namespace vMenuClient.menus
             manageSavedCharacterMenu.AddMenuItem(setCategoryBtn);
             manageSavedCharacterMenu.AddMenuItem(setAsDefaultPed);
             manageSavedCharacterMenu.AddMenuItem(renameCharacter);
+            manageSavedCharacterMenu.AddMenuItem(saveCurrentPedAsCharacter);
             manageSavedCharacterMenu.AddMenuItem(delPed);
 
             MenuController.BindMenuItem(manageSavedCharacterMenu, createCharacterMenu, editPedBtn);
@@ -2290,6 +2295,30 @@ namespace vMenuClient.menus
                         }
                     }
                 }
+                else if (item == saveCurrentPedAsCharacter)
+                {
+                    if (saveCurrentPedAsCharacter.Label == "Are you sure?")
+                    {
+                        saveCurrentPedAsCharacter.Label = "";
+                        var tmpCharacter = StorageManager.GetSavedMpCharacterData("mp_ped_" + selectedSavedCharacterManageName);
+
+                        tmpCharacter = ReplacePedDataClothing(tmpCharacter);
+
+                        if (StorageManager.SaveJsonData(tmpCharacter.SaveName, JsonConvert.SerializeObject(tmpCharacter), true))
+                        {
+                            Notify.Success($"This character's clothing has been updated!");
+                            UpdateSavedPedsMenu();
+                        }
+                        else
+                        {
+                            Notify.Error("Unable to update this character's clothing. The reason is unknown.");
+                        }
+                    }
+                    else
+                    {
+                        saveCurrentPedAsCharacter.Label = "Are you sure?";
+                    }
+                }
                 else if (item == delPed)
                 {
                     if (delPed.Label == "Are you sure?")
@@ -2317,6 +2346,14 @@ namespace vMenuClient.menus
                     if (delPed.Label == "Are you sure?")
                     {
                         delPed.Label = "";
+                    }
+                }
+
+                if (item != saveCurrentPedAsCharacter)
+                {
+                    if (saveCurrentPedAsCharacter.Label == "Are you sure?")
+                    {
+                        saveCurrentPedAsCharacter.Label = "";
                     }
                 }
             };
@@ -2387,7 +2424,13 @@ namespace vMenuClient.menus
             // reset the "are you sure" state.
             manageSavedCharacterMenu.OnMenuClose += (sender) =>
             {
-                manageSavedCharacterMenu.GetMenuItems().Last().Label = "";
+                foreach (MenuItem item in manageSavedCharacterMenu.GetMenuItems())
+                {
+                    if (item.Label == "Are you sure?")
+                    {
+                        item.Label = "";
+                    }
+                }
             };
 
             // Load selected category
@@ -2928,6 +2971,28 @@ namespace vMenuClient.menus
             EndFindKvp(handle);
 
             return names;
+        }
+
+        private MultiplayerPedData ReplacePedDataClothing(MultiplayerPedData character)
+        {
+            int handle = Game.PlayerPed.Handle;
+
+            // Drawables
+            for (int i = 0; i < 12; i++)
+            {
+                int drawable = GetPedDrawableVariation(handle, i);
+                int texture = GetPedTextureVariation(handle, i);
+                character.DrawableVariations.clothes[i] = new KeyValuePair<int, int>(drawable, texture);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                int prop = GetPedPropIndex(handle, i);
+                int texture = GetPedPropTextureIndex(handle, i);
+                character.PropVariations.props[i] = new KeyValuePair<int, int>(prop, texture);
+            }
+
+            return character;
         }
 
         internal void SetHeadBlend()

@@ -181,10 +181,10 @@ namespace vMenuClient.menus
                 "to apply the selected level.");
             var licensePlates = new List<string> {
                 GetLabelText("CMOD_PLA_0"), // Plate Index 0 // BlueOnWhite1
-                GetLabelText("CMOD_PLA_1"), // Plate Index 1 // YellowOnBlack
-                GetLabelText("CMOD_PLA_2"), // Plate Index 2 // YellowOnBlue
-                GetLabelText("CMOD_PLA_3"), // Plate Index 3 // BlueOnWhite2
-                GetLabelText("CMOD_PLA_4"), // Plate Index 4 // BlueOnWhite3
+                GetLabelText("CMOD_PLA_1"), // Plate Index 1 // BlueOnWhite2
+                GetLabelText("CMOD_PLA_2"), // Plate Index 2 // BlueOnWhite3
+                GetLabelText("CMOD_PLA_3"), // Plate Index 3 // YellowOnBlue
+                GetLabelText("CMOD_PLA_4"), // Plate Index 4 // YellowOnBlack
                 "North Yankton", // Plate Index 5 // NorthYankton
                 GetLabelText("CMOD_PLA_6"), // Plate Index 6 // ECola
                 GetLabelText("CMOD_PLA_7"), // Plate Index 7 // LasVenturas
@@ -708,6 +708,7 @@ namespace vMenuClient.menus
                 else if (item == infiniteFuel)
                 {
                     VehicleInfiniteFuel = _checked;
+                    TriggerEvent("vMenu:InfiniteFuelToggled", _checked);
                 }
             };
             #endregion
@@ -748,16 +749,16 @@ namespace vMenuClient.menus
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite1;
                                 break;
                             case 1:
-                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlack;
-                                break;
-                            case 2:
-                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlue;
-                                break;
-                            case 3:
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite2;
                                 break;
-                            case 4:
+                            case 2:
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.BlueOnWhite3;
+                                break;
+                            case 3:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlue;
+                                break;
+                            case 4:
+                                veh.Mods.LicensePlateStyle = LicensePlateStyle.YellowOnBlack;
                                 break;
                             case 5:
                                 veh.Mods.LicensePlateStyle = LicensePlateStyle.NorthYankton;
@@ -1850,16 +1851,16 @@ namespace vMenuClient.menus
                             case LicensePlateStyle.BlueOnWhite1:
                                 listItem.ListIndex = 0;
                                 break;
-                            case LicensePlateStyle.YellowOnBlack:
+                            case LicensePlateStyle.BlueOnWhite2:
                                 listItem.ListIndex = 1;
                                 break;
-                            case LicensePlateStyle.YellowOnBlue:
+                            case LicensePlateStyle.BlueOnWhite3:
                                 listItem.ListIndex = 2;
                                 break;
-                            case LicensePlateStyle.BlueOnWhite2:
+                            case LicensePlateStyle.YellowOnBlue:
                                 listItem.ListIndex = 3;
                                 break;
-                            case LicensePlateStyle.BlueOnWhite3:
+                            case LicensePlateStyle.YellowOnBlack:
                                 listItem.ListIndex = 4;
                                 break;
                             case LicensePlateStyle.NorthYankton:

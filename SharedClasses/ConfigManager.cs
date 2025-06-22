@@ -54,6 +54,7 @@ namespace vMenuShared
             vmenu_dynamic_weather_timer,
             vmenu_current_weather,
             vmenu_blackout_enabled,
+            vmenu_vehicle_blackout_enabled,
             vmenu_weather_change_duration,
             vmenu_enable_snow,
 
