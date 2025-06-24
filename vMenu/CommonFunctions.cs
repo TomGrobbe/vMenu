@@ -2173,7 +2173,7 @@ namespace vMenuClient
             {
                 if (keepWeapons)
                 {
-                    SaveWeaponLoadout("vmenu_temp_weapons_loadout_before_respawn");
+                    SaveWeaponLoadout("vmenu_temp_weapon_loadout_before_respawn");
                     Log("saved from SetPlayerSkin()");
                 }
                 RequestModel(modelHash);
@@ -2262,7 +2262,7 @@ namespace vMenuClient
                 }
                 if (keepWeapons)
                 {
-                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapons_loadout_before_respawn", false, true, false);
+                    await SpawnWeaponLoadoutAsync("vmenu_temp_weapon_loadout_before_respawn", false, true, false);
                 }
                 if (modelHash == (uint)GetHashKey("mp_f_freemode_01") || modelHash == (uint)GetHashKey("mp_m_freemode_01"))
                 {
@@ -2650,9 +2650,25 @@ namespace vMenuClient
         /// <returns></returns>
         public static List<ValidWeapon> GetSavedWeaponLoadout(string saveName)
         {
-            if (saveName == "vmenu_temp_weapons_loadout_before_respawn")
+            if (saveName == "vmenu_temp_weapon_loadout_before_respawn")
             {
-                return JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn") ?? "{}");
+                var currentLoadout = new List<ValidWeapon>();
+                currentLoadout.AddRange(JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn") ?? "{}"));
+               
+
+                //create json of addon weapons
+                var addonJson = GetResourceKvpString("vmenu_temp_addon_weapon_loadout_before_respawn");
+                //only run if addon weapons exist
+                if (!string.IsNullOrEmpty(addonJson))
+                {
+                    var addon = JsonConvert.DeserializeObject<List<ValidAddonWeapon>>(addonJson);
+                    if (addon != null)
+                    {
+                        currentLoadout.AddRange(addon.Select(ConvertToValidWeapon));
+                    }
+                }
+
+                return currentLoadout;
             }
             else
             {
@@ -2673,6 +2689,7 @@ namespace vMenuClient
         public static async Task SpawnWeaponLoadoutAsync(string saveName, bool appendWeapons, bool ignoreSettingsAndPerms, bool dontNotify)
         {
             var loadout = new List<ValidWeapon>();
+            var addonLoadout = new List<ValidAddonWeapon>();
 
             string addonSaveName = saveName.Replace("weapon_loadout_", "addon_weapon_loadout_");
 
@@ -2695,38 +2712,56 @@ namespace vMenuClient
                 }
             }
 
-            if (!ignoreSettingsAndPerms && saveName == "vmenu_temp_weapons_loadout_before_respawn")
+            if (!ignoreSettingsAndPerms && saveName == "vmenu_temp_weapon_loadout_before_respawn")
             {
                 var name = GetResourceKvpString("vmenu_string_default_loadout") ?? saveName;
-                var kvp = GetResourceKvpString(name) ?? GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
-
+                var kvp = GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn");
+                // if not allowed to use loadouts, fall back to normal restoring of weapons.
                 if (MainMenu.WeaponLoadoutsMenu == null || !MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn || !IsAllowed(Permission.WLEquipOnRespawn))
                 {
-                    kvp = GetResourceKvpString("vmenu_temp_weapons_loadout_before_respawn");
+                    kvp = GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn");
 
                     if (!MainMenu.MiscSettingsMenu.RestorePlayerWeapons || !IsAllowed(Permission.MSRestoreWeapons))
                     {
+                        // return because normal weapon restoring is not enabled or not allowed.
                         loadout = new List<ValidWeapon>();
                     }
                 }
-
-                if (!string.IsNullOrEmpty(kvp))
+                if (string.IsNullOrEmpty(kvp))
+                {
+                    loadout = new List<ValidWeapon>();
+                }
+                else
                 {
                     loadout = JsonConvert.DeserializeObject<List<ValidWeapon>>(kvp);
+                }
+
+                // always load addon weapons if they exist, even if the loadout is empty.
+                var addonKVP = GetResourceKvpString("vmenu_temp_addon_weapon_loadout_before_respawn");
+                if (!string.IsNullOrEmpty(addonKVP))
+                {
+                    var addonList = JsonConvert.DeserializeObject<List<ValidAddonWeapon>>(addonKVP);
+                    if (addonList != null && addonList.Count > 0)
+                    {
+                        var converted = addonList.Select(ConvertToValidWeapon).ToList();
+                        loadout.AddRange(converted);
+                    }
                 }
             }
 
             Log(JsonConvert.SerializeObject(loadout));
             if (loadout.Count > 0)
             {
+                // Remove all current weapons if we're not supposed to append this loadout.
                 if (!appendWeapons)
                 {
                     Game.PlayerPed.Weapons.RemoveAll();
                 }
 
+                // Check if any weapon is not allowed.
                 if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
                 {
-                    Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
+                   Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
                 }
 
                 foreach (var w in loadout)
@@ -2735,24 +2770,30 @@ namespace vMenuClient
                     {
                         GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo : w.GetMaxAmmo, false, false);
 
-                        if (w.Components.Count > 0)
+                        // Add components
+                        if (w.Components != null && w.Components.Count > 0)
                         {
                             foreach (var wc in w.Components)
                             {
                                 if (DoesWeaponTakeWeaponComponent(w.Hash, wc.Value))
                                 {
+                                    // Give the weapon
                                     GiveWeaponComponentToPed(Game.PlayerPed.Handle, w.Hash, wc.Value);
                                     var timer = GetGameTimer();
                                     while (!HasPedGotWeaponComponent(Game.PlayerPed.Handle, w.Hash, wc.Value))
                                     {
                                         await Delay(0);
                                         if (GetGameTimer() - timer > 1000)
+                                        {
+                                            // took too long
                                             break;
+                                        }
                                     }
                                 }
                             }
                         }
 
+                        // Set tint
                         SetPedWeaponTintIndex(Game.PlayerPed.Handle, w.Hash, w.CurrentTint);
 
                         if (w.CurrentAmmo > 0)
@@ -2770,16 +2811,17 @@ namespace vMenuClient
                                 var ammoInClip = GetMaxAmmoInClip(Game.PlayerPed.Handle, w.Hash, false);
                                 SetAmmoInClip(Game.PlayerPed.Handle, w.Hash, Math.Min(ammoInClip, ammo));
                                 SetPedAmmo(Game.PlayerPed.Handle, w.Hash, ammo > -1 ? ammo : w.GetMaxAmmo);
-
+                                Log($"waiting for ammo in {w.Name}");
                                 await Delay(0);
                             }
                         }
                     }
                 }
 
+                // Set the current weapon to 'unarmed'.
                 SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
 
-                if (!(saveName == "vmenu_temp_weapons_loadout_before_respawn" || dontNotify))
+                if (!(saveName == "vmenu_temp_weapon_loadout_before_respawn" || dontNotify))
                 {
                     Notify.Success("Weapon loadout spawned.");
                 }
@@ -2808,6 +2850,7 @@ namespace vMenuClient
         /// <returns>A bool indicating if the save was successful</returns>
         public static bool SaveWeaponLoadout(string saveName)
         {
+            // Stop if the savename is invalid.
             if (string.IsNullOrEmpty(saveName))
             {
                 return false;
@@ -2816,11 +2859,13 @@ namespace vMenuClient
             var pedWeapons = new List<ValidWeapon>();
             var addonWeapons = new List<ValidAddonWeapon>();
 
-            // Regular weapons
+            // Loop through all base game weapons.
             foreach (var vw in ValidWeapons.WeaponList)
             {
+                // Check if the ped has that specific weapon.
                 if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
                 {
+                    // Create the weapon data with basic info.
                     var weapon = new ValidWeapon
                     {
                         Hash = vw.Hash,
@@ -2832,6 +2877,7 @@ namespace vMenuClient
                         CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash)
                     };
 
+                    // Check for and add components if applicable.
                     foreach (var comp in vw.Components)
                     {
                         if (DoesWeaponTakeWeaponComponent(weapon.Hash, comp.Value) &&
@@ -2841,23 +2887,29 @@ namespace vMenuClient
                         }
                     }
 
+                    // Add the weapon info to the list.
                     pedWeapons.Add(weapon);
                 }
             }
 
-            // Addon weapons
-            foreach (var avw in ValidAddonWeapons.AddonWeaponsList) // replace with your _addonWeaponsList ref if needed
+            // Loop through all addon weapons.
+            foreach (var avw in ValidAddonWeapons.AddonWeaponsList)
             {
+                // Check if the ped has that specific weapon.
                 if (HasPedGotWeapon(Game.PlayerPed.Handle, avw.Hash, false))
                 {
+                    // Create the weapon data with basic info.
                     var addon = new ValidAddonWeapon
                     {
                         Hash = avw.Hash,
                         Name = avw.Name,
+                        Perm = avw.Perm,
                         SpawnName = avw.SpawnName,
-                        AddonComponents = new Dictionary<string, uint>()
+                        AddonComponents = new Dictionary<string, uint>(),
+                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, avw.Hash)
                     };
 
+                    // Check for and add components if applicable.
                     foreach (var comp in avw.AddonComponents)
                     {
                         if (DoesWeaponTakeWeaponComponent(addon.Hash, comp.Value) &&
@@ -2867,18 +2919,20 @@ namespace vMenuClient
                         }
                     }
 
+                    // Add the weapon info to the list.
                     addonWeapons.Add(addon);
                 }
             }
 
-            // Save both sets
+            // Convert the weapons lists to json string.
             var weaponJson = JsonConvert.SerializeObject(pedWeapons);
             var addonJson = JsonConvert.SerializeObject(addonWeapons);
 
+            // Save it.
             SetResourceKvp(saveName, weaponJson);
             SetResourceKvp(saveName.Replace("weapon_loadout_", "addon_weapon_loadout_"), addonJson);
 
-            // Basic confirmation
+            // If the saved value is the same as the string we just provided, then the save was successful.
             var success = (GetResourceKvpString(saveName) ?? "") == weaponJson &&
                           (GetResourceKvpString(saveName.Replace("weapon_loadout_", "addon_weapon_loadout_")) ?? "") == addonJson;
 
@@ -2888,6 +2942,7 @@ namespace vMenuClient
                 return true;
             }
 
+            // Save was unsuccessful.
             return false;
         }
         #endregion

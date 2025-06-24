@@ -88,9 +88,13 @@ namespace vMenuClient.menus
             #endregion
 
             #region addonweapons buttons
+
+            if (IsAllowed(Permission.WPAddonWeapons))
+            {
             addonWeaponsBtn.Label = "→→→";
             menu.AddMenuItem(addonWeaponsBtn);
             MenuController.BindMenuItem(menu, addonWeaponsMenu, addonWeaponsBtn);
+            }   
             #endregion
 
             #region manage creating and accessing addon weapons menu
