@@ -2653,7 +2653,7 @@ namespace vMenuClient
             if (saveName == "vmenu_temp_weapon_loadout_before_respawn")
             {
                 var currentLoadout = new List<ValidWeapon>();
-                currentLoadout.AddRange(JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn") ?? "{}"));
+                currentLoadout = (JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn") ?? "{}"));
                
 
                 //create json of addon weapons
@@ -2715,7 +2715,7 @@ namespace vMenuClient
             if (!ignoreSettingsAndPerms && saveName == "vmenu_temp_weapon_loadout_before_respawn")
             {
                 var name = GetResourceKvpString("vmenu_string_default_loadout") ?? saveName;
-                var kvp = GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn");
+                var kvp = GetResourceKvpString(name) ?? GetResourceKvpString("vmenu_temp_weapon_loadout_before_respawn");
                 // if not allowed to use loadouts, fall back to normal restoring of weapons.
                 if (MainMenu.WeaponLoadoutsMenu == null || !MainMenu.WeaponLoadoutsMenu.WeaponLoadoutsSetLoadoutOnRespawn || !IsAllowed(Permission.WLEquipOnRespawn))
                 {
@@ -2759,7 +2759,9 @@ namespace vMenuClient
                 }
 
                 // Check if any weapon is not allowed.
-                if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
+                if (
+                    (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm))) ||
+                    (!ignoreSettingsAndPerms && addonLoadout.Any((awp) => !IsAllowed(awp.Perm))))
                 {
                    Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
                 }
@@ -2837,12 +2839,12 @@ namespace vMenuClient
                 Name = addon.Name,
                 Components = addon.AddonComponents,
                 Perm = addon.Perm,
-                CurrentAmmo = -1,
-                CurrentTint = 0
+                CurrentAmmo = addon.CurrentAmmo,
+                CurrentTint = addon.CurrentTint
             };
         }
 
-
+        
 
         /// <summary>
         /// Saves all current weapons the ped has. It does not check if the save already exists!
@@ -2874,7 +2876,11 @@ namespace vMenuClient
                         Perm = vw.Perm,
                         SpawnName = vw.SpawnName,
                         Components = new Dictionary<string, uint>(),
-                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash)
+                        //setting UnlimitedAmmo to true will normally would make GetAmmoInPedWeapon return -1
+                        //default to max addon if unlimited ammo is used, otherwise get the current ammo in the weapon
+                        CurrentAmmo = UserDefaults.WeaponsUnlimitedAmmo
+                            ? vw.GetMaxAmmo
+                            : GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash)
                     };
 
                     // Check for and add components if applicable.
@@ -2902,11 +2908,14 @@ namespace vMenuClient
                     var addon = new ValidAddonWeapon
                     {
                         Hash = avw.Hash,
+                        CurrentTint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, avw.Hash),
                         Name = avw.Name,
                         Perm = avw.Perm,
                         SpawnName = avw.SpawnName,
                         AddonComponents = new Dictionary<string, uint>(),
-                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, avw.Hash)
+                        CurrentAmmo = UserDefaults.WeaponsUnlimitedAmmo
+                            ? avw.GetMaxAmmo
+                            : GetAmmoInPedWeapon(Game.PlayerPed.Handle, avw.Hash)
                     };
 
                     // Check for and add components if applicable.
