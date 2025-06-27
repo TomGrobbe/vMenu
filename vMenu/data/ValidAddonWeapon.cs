@@ -110,7 +110,7 @@ namespace vMenuClient.data
                         SpawnName = realName,
                         Name = localizedName,
                         AddonComponents = componentHashes,
-                        Perm = weaponPermissions["AddonWeapons"]
+                        Perm = Permission.WPAddonWeapons
                     };
                     if (!_addonWeaponsList.Contains(avw))
                     {
@@ -119,12 +119,6 @@ namespace vMenuClient.data
                 }
             }
         }
-        #region addon weapon permissions
-        public static readonly Dictionary<string, Permission> weaponPermissions = new()
-        {
-            ["AddonWeapons"] = Permission.WPAddonWeapons,
-        };
-        #endregion
     }
 }
 
