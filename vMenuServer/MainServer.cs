@@ -912,19 +912,15 @@ namespace vMenuServer
         }
 
         [EventHandler("vMenu:GetPlayerCoords")]
-        internal void GetPlayerCoords([FromSource] Player source, int playerId, NetworkCallbackDelegate callback)
+        internal void GetPlayerCoords([FromSource] Player source, long rpcId, int playerId, NetworkCallbackDelegate callback)
         {
+            var coords = Vector3.Zero;
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Teleport") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                var coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
-
-                _ = callback(coords);
-
-                return;
+                coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
             }
-
-            _ = callback(Vector3.Zero);
+            source.TriggerEvent("vMenu:GetPlayerCoords:reply", rpcId, coords);
         }
         #endregion
 

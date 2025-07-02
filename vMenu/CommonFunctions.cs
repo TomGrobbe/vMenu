@@ -423,6 +423,11 @@ namespace vMenuClient
                 else
                 {
                     playerPos = await MainMenu.RequestPlayerCoordinates(player.ServerId);
+                    if (playerPos == Vector3.Zero)
+                    {
+                        Notify.Error("Could not retrieve the coordinates of the specified player. Teleport cancelled.");
+                        return;
+                    }
                     wasActive = false;
                 }
 

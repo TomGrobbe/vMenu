@@ -369,25 +369,45 @@ namespace vMenuClient
             PlayersList?.ReceivedPlayerList(players);
         }
 
+        struct RPCData
+        {
+            public bool IsCompleted { get; set; }
+            public Vector3 Coords { get; set; }
+        }
+
+        private static Dictionary<long, RPCData> rpcQueue = new Dictionary<long, RPCData>();
+        private static long rpcIdCounter = 0;
+
+        [EventHandler("vMenu:GetPlayerCoords:reply")]
+        public static void PlayerCoordinatesReceived(long rpcId, Vector3 coords)
+        {
+            if (rpcQueue.ContainsKey(rpcId))
+            {
+                var rpcItem = rpcQueue[rpcId];
+                rpcItem.IsCompleted = true;
+                rpcItem.Coords = coords;
+                rpcQueue[rpcId] = rpcItem;
+            }
+            else
+            {
+                Debug.WriteLine($"[vMenu] Warning: Received player coordinates for unknown RPC ID: {rpcId}");
+            }
+        }
+
         public static async Task<Vector3> RequestPlayerCoordinates(int serverId)
         {
-            var coords = Vector3.Zero;
-            var completed = false;
+            long rpcId = rpcIdCounter++;
+            rpcQueue.Add(rpcId, new RPCData { IsCompleted = false, Coords = Vector3.Zero });
 
-            // TODO: replace with client<->server RPC once implemented in CitizenFX!
-            Func<Vector3, bool> CallbackFunction = (data) =>
-            {
-                coords = data;
-                completed = true;
-                return true;
-            };
+            TriggerServerEvent("vMenu:GetPlayerCoords", rpcId, serverId);
 
-            TriggerServerEvent("vMenu:GetPlayerCoords", serverId, CallbackFunction);
-
-            while (!completed)
+            while (!rpcQueue[rpcId].IsCompleted)
             {
                 await Delay(0);
             }
+
+            Vector3 coords = rpcQueue[rpcId].Coords;
+            rpcQueue.Remove(rpcId);
 
             return coords;
         }
