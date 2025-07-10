@@ -185,7 +185,7 @@ namespace vMenuClient.menus
                 GetLabelText("CMOD_PLA_2"), // Plate Index 2 // BlueOnWhite3
                 GetLabelText("CMOD_PLA_3"), // Plate Index 3 // YellowOnBlue
                 GetLabelText("CMOD_PLA_4"), // Plate Index 4 // YellowOnBlack
-                "North Yankton", // Plate Index 5 // NorthYankton
+                GetLabelText("PROL"), // Plate Index 5 // NorthYankton
                 GetLabelText("CMOD_PLA_6"), // Plate Index 6 // ECola
                 GetLabelText("CMOD_PLA_7"), // Plate Index 7 // LasVenturas
                 GetLabelText("CMOD_PLA_8"), // Plate Index 8 // LibertyCity
@@ -1028,6 +1028,14 @@ namespace vMenuClient.menus
             #endregion
 
             #region Vehicle Colors Submenu Stuff
+            // presets menu
+            var presetColorsMenu = new Menu("Vehicle Colors", "Preset Colors");
+            MenuController.AddSubmenu(VehicleColorsMenu, presetColorsMenu);
+
+            var presetColorsBtn = new MenuItem("Preset Colors") { Label = "→→→" };
+            VehicleColorsMenu.AddMenuItem(presetColorsBtn);
+            MenuController.BindMenuItem(VehicleColorsMenu, presetColorsMenu, presetColorsBtn);
+
             // primary menu
             var primaryColorsMenu = new Menu("Vehicle Colors", "Primary Colors");
             MenuController.AddSubmenu(VehicleColorsMenu, primaryColorsMenu);
@@ -1309,7 +1317,7 @@ namespace vMenuClient.menus
 
             for (var i = 0; i < 2; i++)
             {
-                var customColour = new MenuItem("Custom RGB") { Label = ">>>" };
+                var customColour = new MenuItem("Custom RGB") { Label = "→→→" };
                 var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
                 var classicList = new MenuListItem("Classic", classic, 0);
                 var metallicList = new MenuListItem("Metallic", classic, 0);
@@ -1353,6 +1361,44 @@ namespace vMenuClient.menus
                     secondaryColorsMenu.OnItemSelect += HandleItemSelect;
                 }
             }
+
+            VehicleColorsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                // When the color presets submenu is openend, update preset color items.
+                if (item == presetColorsBtn)
+                {
+                    if (Game.PlayerPed.IsInVehicle())
+                    {
+                        presetColorsMenu.ClearMenuItems();
+                        var veh = GetVehicle();
+                        var VehicleColorCombinationsCount = GetNumberOfVehicleColours(veh.Handle);
+
+                        for (int i = 0; i < VehicleColorCombinationsCount; i++)
+                        {
+                            var presetColor = new MenuItem($"Preset {i + 1}");
+                            presetColorsMenu.AddMenuItem(presetColor);
+                        }
+                    }
+                    else
+                    {
+                        VehicleColorsMenu.CloseMenu();
+                        menu.OpenMenu();
+                    }
+                }
+            };
+
+            presetColorsMenu.OnItemSelect += (sender, item, index) =>
+            {
+                var veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    SetVehicleColourCombination(veh.Handle, index);
+                }
+                else
+                {
+                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
+                }
+            };
             #endregion
 
             #region Vehicle Doors Submenu Stuff
