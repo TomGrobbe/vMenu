@@ -3131,13 +3131,14 @@ namespace vMenuClient.menus
                 {
                     drawable = GetPedDrawableVariation(handle, i);
                     collectionName = "base";
+                    character.DrawableVariations.clothes[i] = new KeyValuePair<int, int>(drawable, texture);
                 }
                 else
                 {
                     drawable = GetPedDrawableVariationCollectionLocalIndex(handle, i);
+                    character.DrawableVariations.clothes[i] = new KeyValuePair<int, int>(GetPedDrawableGlobalIndexFromCollection(handle, i, collectionName, drawable), texture);
                 }
 
-                character.DrawableVariations.clothes[i] = new KeyValuePair<int, int>(drawable, texture);
                 character.DrawableVariations.clothesWithCollection[i] = new CharacterClothingData
                 {
                     ComponentIndex = i,
@@ -3158,10 +3159,12 @@ namespace vMenuClient.menus
                 {
                     drawable = GetPedPropIndex(handle, i);
                     collectionName = "base";
+                    character.PropVariations.props[i] = new KeyValuePair<int, int>(drawable, texture);
                 }
                 else
                 {
                     drawable = GetPedCollectionLocalIndexFromProp(handle, i, GetPedPropIndex(handle, i));
+                    character.PropVariations.props[i] = new KeyValuePair<int, int>(GetPedPropGlobalIndexFromCollection(handle, i, collectionName, drawable), texture);
                 }
 
 
@@ -3178,7 +3181,6 @@ namespace vMenuClient.menus
                     continue;
                 }
 
-                character.PropVariations.props[i] = new KeyValuePair<int, int>(drawable, texture);
                 character.PropVariations.propsWithCollection[i] = new CharacterPropData
                 {
                     PropIndex = i,
