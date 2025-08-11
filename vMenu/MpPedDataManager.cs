@@ -8,12 +8,32 @@ namespace vMenuClient
     {
         public struct DrawableVariations
         {
-            public Dictionary<int, KeyValuePair<int, int>> clothes;
+            public Dictionary<int, KeyValuePair<int, int>> clothes; // legacy
+            public Dictionary<int, CharacterClothingData> clothesWithCollection; // new
+        }
+        public class CharacterClothingData
+        {
+            public int ComponentIndex { get; set; }
+            public int Drawable { get; set; }
+            public int Texture { get; set; }
+            public string Collection { get; set; }
+        }
+        public static class ClothingCollections
+        {
+            public const string BaseGame = "base";
         }
 
         public struct PropVariations
         {
-            public Dictionary<int, KeyValuePair<int, int>> props;
+            public Dictionary<int, KeyValuePair<int, int>> props; // legacy
+            public Dictionary<int, CharacterPropData> propsWithCollection; // new
+        }
+        public class CharacterPropData
+        {
+            public int PropIndex { get; set; }
+            public int Drawable { get; set; }
+            public int Texture { get; set; }
+            public string Collection { get; set; }
         }
 
         public struct FaceShapeFeatures
@@ -109,6 +129,8 @@ namespace vMenuClient
             public PedAppearance PedAppearance;
             public PedTattoos PedTatttoos;
             public PedFacePaints PedFacePaints;
+            public Dictionary<int, CharacterClothingData> clothesWithCollection;
+            public Dictionary<int, CharacterPropData> propsWithCollection;
             public bool IsMale;
             public uint ModelHash;
             public string SaveName;
