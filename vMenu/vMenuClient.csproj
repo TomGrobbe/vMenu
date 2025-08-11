@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10230" />
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10230">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="MenuAPI.FiveM" Version="3.2.2" />
 
     <Reference Include="Microsoft.CSharp" />
