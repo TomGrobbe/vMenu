@@ -284,7 +284,6 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-
             await UpdateWeatherParticles();
             SetArtificialLightsState(IsBlackoutEnabled);
             SetArtificialLightsStateAffectsVehicles(!IsVehicleLightsEnabled);
