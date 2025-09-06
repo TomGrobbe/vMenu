@@ -284,10 +284,6 @@ namespace vMenuClient
         /// <returns></returns>
         private async Task WeatherSync()
         {
-            if (MainMenu.WeatherOptionsMenu == null)
-            {
-                return;
-            }
 
             await UpdateWeatherParticles();
             SetArtificialLightsState(IsBlackoutEnabled);
