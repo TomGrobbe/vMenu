@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using CitizenFX.Core.UI;
 
 using MenuAPI;
 
@@ -1702,7 +1704,25 @@ namespace vMenuClient.menus
                 if (vehicleExtras.TryGetValue(item, out var extra))
                 {
                     var veh = GetVehicle();
-                    veh.ToggleExtra(extra, _checked);
+                    if (veh != null && veh.Exists())
+                    {
+                        // If vmenu_prevent_extras_when_damaged is enabled, check vehicle engine and body health
+                        if (GetSettingsBool(Setting.vmenu_prevent_extras_when_damaged) && 
+                        (API.GetVehicleBodyHealth(veh.Handle) < GetSettingsInt(Setting.vmenu_prevent_extras_engine_damage) || 
+                        API.GetVehicleEngineHealth(veh.Handle) < GetSettingsInt(Setting.vmenu_prevent_extras_body_damage)))
+                        {
+                            if (GetSettingsBool(Setting.vmenu_prevent_extras_notification_enabled))
+                            {
+                                Screen.ShowNotification(GetSettingsString(Setting.vmenu_prevent_extras_notification_text));
+                            }
+                           
+                            // Revert checkbox back to original state
+                            ((MenuCheckboxItem)item).Checked = veh.IsExtraOn(extra);
+                            return;
+                        }
+
+                        veh.ToggleExtra(extra, _checked);
+                    }
                 }
             };
             #endregion
