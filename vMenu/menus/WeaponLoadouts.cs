@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using CitizenFX.Core;
 
@@ -21,24 +22,55 @@ namespace vMenuClient.menus
         private readonly Menu SavedLoadoutsMenu = new("Saved Loadouts", "saved weapon loadouts list");
         private readonly Menu ManageLoadoutMenu = new("Mange Loadout", "Manage saved weapon loadout");
         public bool WeaponLoadoutsSetLoadoutOnRespawn { get; private set; } = UserDefaults.WeaponLoadoutsSetLoadoutOnRespawn;
-
-        private readonly Dictionary<string, List<ValidWeapon>> SavedWeapons = new();
-
+        public readonly Dictionary<string, List<ValidWeapon>> SavedWeapons = new();
         public static Dictionary<string, List<ValidWeapon>> GetSavedWeapons()
         {
             var handle = StartFindKvp("vmenu_string_saved_weapon_loadout_");
             var saves = new Dictionary<string, List<ValidWeapon>>();
+
             while (true)
             {
                 var kvp = FindKvp(handle);
                 if (string.IsNullOrEmpty(kvp))
-                {
                     break;
+
+                var savedList = JsonConvert
+                    .DeserializeObject<List<ValidWeapon>>(GetResourceKvpString(kvp))
+                    ?? new List<ValidWeapon>();
+
+                // Derive matching addon KVP key
+                var addonKvpKey = kvp.Replace("weapon_loadout_", "addon_weapon_loadout_");
+                var addonJson = GetResourceKvpString(addonKvpKey);
+                if (!string.IsNullOrEmpty(addonJson))
+                {
+                    var addonList = JsonConvert
+                        .DeserializeObject<List<ValidAddonWeapon>>(addonJson);
+                    if (addonList?.Any() == true)
+                    {
+                        savedList.AddRange(addonList.Select(ConvertToValidWeapon));
+                    }
                 }
-                saves.Add(kvp, JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString(kvp)));
+
+                saves[kvp] = savedList;
             }
+
             EndFindKvp(handle);
             return saves;
+        }
+
+        //Convert ValidAddonWeapon list into ValidWeapon to make
+        private static ValidWeapon ConvertToValidWeapon(ValidAddonWeapon addon)
+        {
+            return new ValidWeapon
+            {
+                Hash = addon.Hash,
+                SpawnName = addon.SpawnName,
+                Name = addon.Name,
+                Components = addon.AddonComponents,
+                Perm = addon.Perm,
+                CurrentAmmo = -1,
+                CurrentTint = 0
+            };
         }
 
         private string SelectedSavedLoadoutName { get; set; } = "";
@@ -71,7 +103,22 @@ namespace vMenuClient.menus
 
             foreach (var save in saves)
             {
-                SavedWeapons.Add(save, JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString(save)));
+                var savedList = JsonConvert.DeserializeObject<List<ValidWeapon>>(GetResourceKvpString(save))
+                                ?? new List<ValidWeapon>();
+
+                // Look for matching addon weapons using the save name
+                var addonKey = save.Replace("weapon_loadout_", "addon_weapon_loadout_");
+                var addonJson = GetResourceKvpString(addonKey);
+                if (!string.IsNullOrEmpty(addonJson))
+                {
+                    var addonWeapons = JsonConvert.DeserializeObject<List<ValidAddonWeapon>>(addonJson);
+                    if (addonWeapons?.Any() == true)
+                    {
+                        savedList.AddRange(addonWeapons.Select(ConvertToValidWeapon));
+                    }
+                }
+
+                SavedWeapons.Add(save, savedList);
             }
 
             return SavedWeapons;
