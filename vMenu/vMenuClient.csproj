@@ -16,13 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10230">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="MenuAPI.FiveM" Version="3.2.2" />
 
     <Reference Include="Microsoft.CSharp" />
-    
-    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.10188">
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
     
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\dependencies\shared\Newtonsoft.Json.dll</HintPath>
