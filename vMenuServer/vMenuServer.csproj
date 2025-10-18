@@ -32,13 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="config\addons.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="config\locations.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="config\permissions.cfg">
+    <None Update="config\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="storage.html">

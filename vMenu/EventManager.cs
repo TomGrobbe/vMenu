@@ -28,7 +28,7 @@ namespace vMenuClient
         public static string GetServerWeather => GetSettingsString(Setting.vmenu_current_weather, "CLEAR");
         public static bool DynamicWeatherEnabled => GetSettingsBool(Setting.vmenu_enable_dynamic_weather);
         public static bool IsBlackoutEnabled => GetSettingsBool(Setting.vmenu_blackout_enabled);
-        public static bool IsVehicleLightsEnabled { get; set; } = GetSettingsBool(Setting.vmenu_vehicle_blackout_enabled);
+        public static bool IsVehicleLightsEnabled => GetSettingsBool(Setting.vmenu_vehicle_blackout_enabled);
         public static int WeatherChangeTime => MathUtil.Clamp(GetSettingsInt(Setting.vmenu_weather_change_duration), 0, 45);
 
         /// <summary>

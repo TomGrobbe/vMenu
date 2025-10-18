@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -187,6 +187,9 @@ namespace vMenuClient.menus
 
                 if (savedVehicles.Count > 0)
                 {
+                    List<MenuItem> spawnableVehicles = [];   
+                    List<MenuItem> unspawnableVehicles = [];   
+
                     foreach (var kvp in savedVehicles)
                     {
                         string name = kvp.Key;
@@ -207,17 +210,37 @@ namespace vMenuClient.menus
                             }
                         }
 
+                        string buttonName = name.Substring(4);
                         bool canUse = IsModelInCdimage(vehicle.model);
+                        string buttonDescription = "Manage this saved vehicle.";
 
-                        var btn = new MenuItem(name.Substring(4), canUse ? "Manage this saved vehicle." : "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.")
+                        if (!canUse)
+                        {
+                            buttonName = $"~italic~{buttonName}~italic~";
+                            buttonDescription += "\n\n~r~NOTE~w~~s~: This model could not be found, and so cannot be spawned.";
+                        }
+
+                        var btn = new MenuItem(buttonName, buttonDescription)
                         {
                             Label = $"({vehicle.name}) →→→",
-                            Enabled = canUse,
                             LeftIcon = canUse ? MenuItem.Icon.NONE : MenuItem.Icon.LOCK,
                             ItemData = kvp,
                         };
 
-                        savedVehiclesCategoryMenu.AddMenuItem(btn);
+                        if (canUse)
+                        {
+                            spawnableVehicles.Add(btn);
+                        }
+                        else
+                        {
+                            unspawnableVehicles.Add(btn);
+                        }
+                    }
+
+                    // Menu order: Category buttons -> Spawnable vehs -> Unspawnable vehs
+                    foreach (MenuItem menuItem in spawnableVehicles.Concat(unspawnableVehicles))
+                    {
+                        savedVehiclesCategoryMenu.AddMenuItem(menuItem);
                     }
                 }
             };
@@ -420,7 +443,7 @@ namespace vMenuClient.menus
                 }
             };
 
-            var spawnVehicle = new MenuItem("Spawn Vehicle", "Spawn this saved vehicle.");
+            var spawnVehicle = new MenuItem("Spawn Vehicle");
             var renameVehicle = new MenuItem("Rename Vehicle", "Rename your saved vehicle.");
             var replaceVehicle = new MenuItem("~r~Replace Vehicle", "Your saved vehicle will be replaced with the vehicle you are currently sitting in. ~r~Warning: this can NOT be undone!");
             var deleteVehicle = new MenuItem("~r~Delete Vehicle", "~r~This will delete your saved vehicle. Warning: this can NOT be undone!");
@@ -432,6 +455,11 @@ namespace vMenuClient.menus
 
             selectedVehicleMenu.OnMenuOpen += (sender) =>
             {
+                bool vehicleModelExists = IsModelInCdimage(currentlySelectedVehicle.Value.model);
+
+                spawnVehicle.Enabled = vehicleModelExists;
+                spawnVehicle.Description = vehicleModelExists ? "Spawn this saved vehicle." : "This model could not be found in the game files. Most likely because this is an addon vehicle and it's currently not streamed by the server.";
+
                 spawnVehicle.Label = "(" + GetDisplayNameFromVehicleModel(currentlySelectedVehicle.Value.model).ToLower() + ")";
             };
 
@@ -499,7 +527,7 @@ namespace vMenuClient.menus
                             replaceButtonPressedCount = 0;
                             item.Label = "";
                             SaveVehicle(currentlySelectedVehicle.Key.Substring(4), currentlySelectedVehicle.Value.Category);
-                            selectedVehicleMenu.GoBack();
+                            selectedVehicleMenu.CloseMenu();
                             Notify.Success("Your saved vehicle has been replaced with your current vehicle.");
                         }
                     }
