@@ -125,6 +125,9 @@ namespace vMenuClient
 
             // Notifications
             Exports.Add("Notify", new Action<string, string>(notifExp));
+
+            // Menu Information
+            Exports.Add("GetAllMenuIds", new Func<string[]>(GetAllMenuIds));
         }
         #endregion
 
@@ -1151,26 +1154,14 @@ namespace vMenuClient
         /// <returns>Menu instance if found and permitted, null otherwise</returns>
         private Menu GetMenu(string menuId)
         {
-            // Handle core menu shortcuts first
-            switch (menuId.ToLower())
+            // Search all registered menus (built-in and dynamic) - find first matching unique menu
+            var uniqueMenus = MenuController.Menus.GroupBy(m => m.MenuSubtitle ?? m.MenuTitle).Select(g => g.First()).ToList();
+            foreach (var menu in uniqueMenus)
             {
-                case "main": return Menu;
-                case "player": return PlayerSubmenu;
-                case "vehicle": return VehicleSubmenu;
-                case "world":
-                    return ((IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync)) ||
-                            (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync))) ? WorldSubmenu : null;
-            }
-
-            // Dynamically search all registered menus
-            foreach (var menu in MenuController.Menus)
-            {
-                // Skip if this is a dynamic menu (user-created)
-                if (DynamicMenus.ContainsValue(menu)) continue;
-
-                // Try to match by menu title (converted to lowercase, spaces removed)
-                var normalizedTitle = menu.MenuTitle.ToLower().Replace(" ", "").Replace("-", "");
-                var normalizedId = menuId.ToLower().Replace(" ", "").Replace("-", "");
+                // Try to match by menu subtitle (or title if subtitle is null)
+                var menuIdentifier = menu.MenuSubtitle ?? menu.MenuTitle ?? "";
+                var normalizedTitle = menuIdentifier.ToLower().Replace(" ", "-");
+                var normalizedId = menuId.ToLower().Replace(" ", "-");
 
                 if (normalizedTitle.Contains(normalizedId) || normalizedId.Contains(normalizedTitle))
                 {
@@ -1186,6 +1177,40 @@ namespace vMenuClient
         }
 
         /// <summary>
+        /// Export function to get all available menu IDs
+        /// </summary>
+        /// <returns>Array of menu IDs that can be accessed through GetMenu</returns>
+        private string[] GetAllMenuIds()
+        {
+            var menuIds = new List<string>();
+
+            // Add dynamic menu IDs
+            foreach (var kvp in DynamicMenus)
+            {
+                menuIds.Add(kvp.Key);
+            }
+
+            // Add built-in menu IDs based on their subtitles (avoid duplicates)
+            var uniqueMenus = MenuController.Menus.GroupBy(m => m.MenuSubtitle ?? m.MenuTitle).Select(g => g.First()).ToList();
+            foreach (var menu in uniqueMenus)
+            {
+                // Skip dynamic menus (already added above)
+                if (DynamicMenus.ContainsValue(menu)) continue;
+
+                // Check if menu is permitted
+                var menuIdentifier = menu.MenuSubtitle ?? menu.MenuTitle ?? "";
+                var normalizedTitle = menuIdentifier.ToLower().Replace(" ", "-");
+                if (IsMenuPermitted(menu, normalizedTitle))
+                {
+                    menuIds.Add(normalizedTitle);
+                }
+            }
+
+            // Remove duplicates and sort
+            return menuIds.Distinct().OrderBy(id => id).ToArray();
+        }
+
+        /// <summary>
         /// Checks if a menu is permitted based on vMenu permissions
         /// </summary>
         /// <param name="menu">Menu to check</param>
@@ -1196,22 +1221,24 @@ namespace vMenuClient
             // Common permission patterns based on menu titles/IDs
             return menuId switch
             {
-                var id when id.Contains("player") && id.Contains("option") => IsAllowed(Permission.POMenu),
-                var id when id.Contains("online") && id.Contains("player") => IsAllowed(Permission.OPMenu),
-                var id when id.Contains("banned") => IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers),
-                var id when id.Contains("personal") && id.Contains("vehicle") => IsAllowed(Permission.PVMenu),
-                var id when id.Contains("vehicle") && id.Contains("option") => IsAllowed(Permission.VOMenu),
-                var id when id.Contains("vehicle") && id.Contains("spawn") => IsAllowed(Permission.VSMenu),
+                "player-options" => IsAllowed(Permission.POMenu),
+                "online-players" => IsAllowed(Permission.OPMenu),
+                var id when id.Contains("banned-players") => IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers),
+                "personal-vehicle-options" => IsAllowed(Permission.PVMenu),
+                "vehicle-options" => IsAllowed(Permission.VOMenu),
+                "vehicle-spawner" => IsAllowed(Permission.VSMenu),
                 var id when id.Contains("saved") && id.Contains("vehicle") => IsAllowed(Permission.SVMenu),
-                var id when id.Contains("player") && id.Contains("appearance") => IsAllowed(Permission.PAMenu),
-                var id when id.Contains("ped") && id.Contains("customization") => IsAllowed(Permission.PAMenu),
+                "player-appearance" or "character-appearance-options" => IsAllowed(Permission.PAMenu),
+                "mp-ped-customization" => IsAllowed(Permission.PAMenu),
                 var id when id.Contains("time") => IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync),
                 var id when id.Contains("weather") => IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync),
-                var id when id.Contains("weapon") && id.Contains("option") => IsAllowed(Permission.WPMenu),
-                var id when id.Contains("weapon") && id.Contains("loadout") => IsAllowed(Permission.WLMenu),
-                var id when id.Contains("voice") => IsAllowed(Permission.VCMenu),
+                var id when id == "world" || id.Contains("world") => (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync)) ||
+                                                                     (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync)),
+                "weapon-options" => IsAllowed(Permission.WPMenu),
+                var id when id.Contains("weapon-loadouts") => IsAllowed(Permission.WLMenu),
+                "voice-chat-settings" => IsAllowed(Permission.VCMenu),
                 // Allow access to menus without specific restrictions
-                var id when id.Contains("recording") || id.Contains("misc") || id.Contains("about") => true,
+                var id when id.Contains("recording-options") || id.Contains("misc-settings") || id.Contains("about-vmenu") => true,
                 // Default to allowing access for unrecognized menus
                 _ => true
             };
