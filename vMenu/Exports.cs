@@ -4,8 +4,6 @@ using System.Linq;
 using CitizenFX.Core;
 using MenuAPI;
 using Newtonsoft.Json;
-using static vMenuShared.PermissionsManager;
-using static vMenuShared.ConfigManager;
 
 namespace vMenuClient
 {
@@ -401,7 +399,6 @@ namespace vMenuClient
             // Menu Information
             Exports.Add("GetAllMenuIds", new Func<string[]>(GetAllMenuIds));
             Exports.Add("GetMenu", new Func<string, object>(GetMenuExport));
-            Exports.Add("IsMenuPermitted", new Func<string, bool>(IsMenuPermittedExport));
 
             // Ready State Management
             Exports.Add("OnReady", new Action<object>(OnReadyExport));
@@ -1036,30 +1033,6 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Export function to check if a menu is permitted based on vMenu permissions
-        /// </summary>
-        /// <param name="menuId">Menu identifier</param>
-        /// <returns>True if permitted, false otherwise</returns>
-        private bool IsMenuPermittedExport(string menuId)
-        {
-            if (string.IsNullOrEmpty(menuId))
-            {
-                return false;
-            }
-
-            var normalizedId = menuId.ToLower().Replace(" ", "-");
-
-            // Get the menu to check if it exists
-            var menu = GetMenu(normalizedId);
-            if (menu == null)
-            {
-                return false;
-            }
-
-            return IsMenuPermitted(menu, normalizedId);
-        }
-
-        /// <summary>
         /// Registers a callback to be invoked when vMenu is ready
         /// If vMenu is already ready, the callback is invoked immediately
         /// Note: Callbacks that perform asynchronous work (menu modifications, waits, etc.)
@@ -1117,165 +1090,6 @@ namespace vMenuClient
 
             // Clear the callbacks list
             ReadyCallbacks.Clear();
-        }
-
-        /// <summary>
-        /// Checks if a menu is permitted based on vMenu permissions
-        /// </summary>
-        /// <param name="menu">Menu to check</param>
-        /// <param name="menuId">Menu identifier</param>
-        /// <returns>True if permitted, false otherwise</returns>
-        private bool IsMenuPermitted(Menu menu, string menuId)
-        {
-            // Check direct menu mappings first
-            if (IsDirectMenuMapping(menuId, out bool permitted))
-            {
-                return permitted;
-            }
-
-            // Check pattern-based menus
-            if (IsPatternBasedMenu(menuId, out permitted))
-            {
-                return permitted;
-            }
-
-            // Check unrestricted menus
-            if (IsUnrestrictedMenu(menuId))
-            {
-                return true;
-            }
-
-            // Default to allowing access for unrecognized menus
-            return true;
-        }
-
-        /// <summary>
-        /// Checks direct menu ID mappings to permissions
-        /// </summary>
-        private bool IsDirectMenuMapping(string menuId, out bool permitted)
-        {
-            permitted = false;
-
-            switch (menuId)
-            {
-                case "player-options":
-                    permitted = IsAllowed(Permission.POMenu);
-                    return true;
-                case "online-players":
-                    permitted = IsAllowed(Permission.OPMenu);
-                    return true;
-                case "personal-vehicle-options":
-                    permitted = IsAllowed(Permission.PVMenu);
-                    return true;
-                case "vehicle-options":
-                    permitted = IsAllowed(Permission.VOMenu);
-                    return true;
-                case "vehicle-spawner":
-                    permitted = IsAllowed(Permission.VSMenu);
-                    return true;
-                case "weapon-options":
-                    permitted = IsAllowed(Permission.WPMenu);
-                    return true;
-                case "voice-chat-settings":
-                    permitted = IsAllowed(Permission.VCMenu);
-                    return true;
-                case "player-appearance":
-                case "character-appearance-options":
-                case "mp-ped-customization":
-                    permitted = IsAllowed(Permission.PAMenu);
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        /// Checks pattern-based menu permissions (menus with dynamic IDs)
-        /// </summary>
-        private bool IsPatternBasedMenu(string menuId, out bool permitted)
-        {
-            permitted = false;
-
-            if (menuId.Contains("banned-players"))
-            {
-                permitted = IsBannedPlayersMenuPermitted();
-                return true;
-            }
-
-            if (menuId.Contains("saved") && menuId.Contains("vehicle"))
-            {
-                permitted = IsAllowed(Permission.SVMenu);
-                return true;
-            }
-
-            if (menuId.Contains("weapon-loadouts"))
-            {
-                permitted = IsAllowed(Permission.WLMenu);
-                return true;
-            }
-
-            if (menuId.Contains("time"))
-            {
-                permitted = IsTimeMenuPermitted();
-                return true;
-            }
-
-            if (menuId.Contains("weather"))
-            {
-                permitted = IsWeatherMenuPermitted();
-                return true;
-            }
-
-            if (menuId == "world" || menuId.Contains("world"))
-            {
-                permitted = IsWorldMenuPermitted();
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Checks if a menu is unrestricted (always accessible)
-        /// </summary>
-        private bool IsUnrestrictedMenu(string menuId)
-        {
-            return menuId.Contains("recording-options") ||
-                   menuId.Contains("misc-settings") ||
-                   menuId.Contains("about-vmenu");
-        }
-
-        /// <summary>
-        /// Checks if the banned players menu is permitted
-        /// </summary>
-        private bool IsBannedPlayersMenuPermitted()
-        {
-            return IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers);
-        }
-
-        /// <summary>
-        /// Checks if the time menu is permitted
-        /// </summary>
-        private bool IsTimeMenuPermitted()
-        {
-            return IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync);
-        }
-
-        /// <summary>
-        /// Checks if the weather menu is permitted
-        /// </summary>
-        private bool IsWeatherMenuPermitted()
-        {
-            return IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync);
-        }
-
-        /// <summary>
-        /// Checks if the world menu is permitted (requires time or weather permissions)
-        /// </summary>
-        private bool IsWorldMenuPermitted()
-        {
-            return (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync)) ||
-                   (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync));
         }
 
         #endregion
