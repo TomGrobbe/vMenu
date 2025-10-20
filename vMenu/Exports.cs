@@ -548,6 +548,7 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for list changes</param>
         private void AddList(string menuId, string listId, string listLabel, object options, int defaultIndex, string description, object callbackObj = null)
         {
+            // Validate parameters
             if (!ValidateParameter(listId, "listId", "AddList")) return;
             if (HasIdConflict(listId, "AddList")) return;
 
@@ -557,48 +558,32 @@ namespace vMenuClient
             if (HasItemConflict(menu, listId, "AddList")) return;
 
             // Apply defaults for optional parameters
-            if (string.IsNullOrEmpty(listLabel))
-                listLabel = "List";
-            if (string.IsNullOrEmpty(description))
-                description = "";
+            listLabel = string.IsNullOrEmpty(listLabel) ? "List" : listLabel;
+            description = string.IsNullOrEmpty(description) ? "" : description;
 
-            List<string> optionsList;
+            // Parse options based on input type
+            List<string> optionsList = options switch
+            {
+                string jsonString => ParseJsonOptions(jsonString, listId),
+                object[] objectArray => objectArray.Select(o => o?.ToString() ?? "").ToList(),
+                List<object> objectList => objectList.Select(o => o?.ToString() ?? "").ToList(),
+                _ => null
+            };
 
-            // Handle different option input types
-            if (options is string jsonString)
+            if (optionsList == null)
             {
-                // Legacy support for JSON string
-                optionsList = JsonConvert.DeserializeObject<List<string>>(jsonString);
-            }
-            else if (options is object[] objectArray)
-            {
-                // Convert object array to string list
-                optionsList = objectArray.Select(o => o?.ToString() ?? "").ToList();
-            }
-            else if (options is List<object> objectList)
-            {
-                // Convert object list to string list
-                optionsList = objectList.Select(o => o?.ToString() ?? "").ToList();
-            }
-            else if (options == null)
-            {
-                // Provide default empty list if options is null
-                optionsList = new List<string> { "Option 1", "Option 2" };
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] No options provided for list {listId}, using default options.");
-            }
-            else
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Invalid options type for list {listId}. Expected array or JSON string.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] No valid options provided for list {listId}. List item will not be added.");
                 return;
             }
 
-            // Validate defaultIndex
+            // Validate and normalize defaultIndex
             if (defaultIndex < 0 || defaultIndex >= optionsList.Count)
             {
                 CitizenFX.Core.Debug.WriteLine($"[vMenu] Invalid defaultIndex {defaultIndex} for list {listId}. Using 0 instead.");
                 defaultIndex = 0;
             }
 
+            // Create and add the list item
             var menuListItem = new MenuListItem(listLabel, optionsList, defaultIndex, description)
             {
                 ItemData = listId
@@ -607,6 +592,22 @@ namespace vMenuClient
             AttachListCallbacks(menu, menuListItem, optionsList, callbackObj, listId);
             menu.AddMenuItem(menuListItem);
             menu.RefreshIndex();
+        }
+
+        /// <summary>
+        /// Parses JSON string options into a list
+        /// </summary>
+        private List<string> ParseJsonOptions(string jsonString, string listId)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<List<string>>(jsonString);
+            }
+            catch (JsonException ex)
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Failed to parse JSON options for list {listId}: {ex.Message}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -1129,27 +1130,39 @@ namespace vMenuClient
             // Common permission patterns based on menu titles/IDs
             return menuId switch
             {
+                // Direct menu mappings
                 "player-options" => IsAllowed(Permission.POMenu),
                 "online-players" => IsAllowed(Permission.OPMenu),
-                var id when id.Contains("banned-players") => IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers),
                 "personal-vehicle-options" => IsAllowed(Permission.PVMenu),
                 "vehicle-options" => IsAllowed(Permission.VOMenu),
                 "vehicle-spawner" => IsAllowed(Permission.VSMenu),
+                "weapon-options" => IsAllowed(Permission.WPMenu),
+                "voice-chat-settings" => IsAllowed(Permission.VCMenu),
+                "player-appearance" or "character-appearance-options" or "mp-ped-customization" => IsAllowed(Permission.PAMenu),
+
+                // Pattern-based menu checks
+                var id when id.Contains("banned-players") => IsAllowed(Permission.OPUnban) || IsAllowed(Permission.OPViewBannedPlayers),
                 var id when id.Contains("saved") && id.Contains("vehicle") => IsAllowed(Permission.SVMenu),
-                "player-appearance" or "character-appearance-options" => IsAllowed(Permission.PAMenu),
-                "mp-ped-customization" => IsAllowed(Permission.PAMenu),
+                var id when id.Contains("weapon-loadouts") => IsAllowed(Permission.WLMenu),
                 var id when id.Contains("time") => IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync),
                 var id when id.Contains("weather") => IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync),
-                var id when id == "world" || id.Contains("world") => (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync)) ||
-                                                                     (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync)),
-                "weapon-options" => IsAllowed(Permission.WPMenu),
-                var id when id.Contains("weapon-loadouts") => IsAllowed(Permission.WLMenu),
-                "voice-chat-settings" => IsAllowed(Permission.VCMenu),
-                // Allow access to menus without specific restrictions
+                var id when id == "world" || id.Contains("world") => IsWorldMenuPermitted(),
+
+                // Unrestricted menus
                 var id when id.Contains("recording-options") || id.Contains("misc-settings") || id.Contains("about-vmenu") => true,
+
                 // Default to allowing access for unrecognized menus
                 _ => true
             };
+        }
+
+        /// <summary>
+        /// Checks if the world menu is permitted (requires time or weather permissions)
+        /// </summary>
+        private bool IsWorldMenuPermitted()
+        {
+            return (IsAllowed(Permission.TOMenu) && GetSettingsBool(Setting.vmenu_enable_time_sync)) ||
+                   (IsAllowed(Permission.WOMenu) && GetSettingsBool(Setting.vmenu_enable_weather_sync));
         }
 
         #endregion
