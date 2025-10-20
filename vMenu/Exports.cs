@@ -26,6 +26,8 @@ namespace vMenuClient
         /// </summary>
         private static Dictionary<string, Menu> DynamicMenus = new Dictionary<string, Menu>();
 
+        #region Helper Methods
+
         /// <summary>
         /// Checks if an ID conflicts with any existing menu or item
         /// </summary>
@@ -102,7 +104,227 @@ namespace vMenuClient
             return false;
         }
 
+        /// <summary>
+        /// Validates a string parameter is not null or empty
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <param name="paramName">Parameter name for error message</param>
+        /// <param name="context">Context for error messages</param>
+        /// <returns>True if valid, false otherwise</returns>
+        private bool ValidateParameter(string value, string paramName, string context)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] {context}: {paramName} cannot be null or empty.");
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves a menu by ID from dynamic or built-in menus
+        /// </summary>
+        /// <param name="menuId">Menu identifier</param>
+        /// <returns>Menu instance if found, null otherwise</returns>
+        private Menu RetrieveMenu(string menuId)
+        {
+            if (DynamicMenus.TryGetValue(menuId, out Menu menu))
+            {
+                return menu;
+            }
+            return GetMenu(menuId);
+        }
+
+        /// <summary>
+        /// Safely invokes a callback with exception handling
+        /// </summary>
+        /// <param name="callbackObj">Callback object to invoke</param>
+        /// <param name="itemId">Item identifier for error logging</param>
+        /// <param name="args">Arguments to pass to callback</param>
+        private void SafeInvokeCallback(object callbackObj, string itemId, params object[] args)
+        {
+            try
+            {
+                if (callbackObj == null) return;
+
+                if (callbackObj is CallbackDelegate callback)
+                {
+                    callback.Invoke(args);
+                }
+                else if (callbackObj is Func<object> luaCallback)
+                {
+                    luaCallback.Invoke();
+                }
+                else
+                {
+                    dynamic dynamicCallback = callbackObj;
+                    // Dynamic invocation handles variable arguments automatically
+                    switch (args?.Length ?? 0)
+                    {
+                        case 0:
+                            dynamicCallback();
+                            break;
+                        case 1:
+                            dynamicCallback(args[0]);
+                            break;
+                        case 2:
+                            dynamicCallback(args[0], args[1]);
+                            break;
+                        case 3:
+                            dynamicCallback(args[0], args[1], args[2]);
+                            break;
+                        case 4:
+                            dynamicCallback(args[0], args[1], args[2], args[3]);
+                            break;
+                        default:
+                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Callback for {itemId} has unsupported number of arguments: {args.Length}");
+                            break;
+                    }
+                }
+            }
+            catch (System.IO.EndOfStreamException)
+            {
+                // Silently ignore - callback was deleted/garbage collected
+            }
+            catch (Exception ex)
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for {itemId}: {ex.GetType().Name} - {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Attaches a callback to a menu item selection event
+        /// </summary>
+        private void AttachItemSelectCallback(Menu menu, MenuItem item, object callbackObj, string itemId)
+        {
+            if (callbackObj == null) return;
+
+            if (callbackObj is CallbackDelegate callback)
+            {
+                menu.OnItemSelect += async (sender, menuItem, index) =>
+                {
+                    if (menuItem == item)
+                    {
+                        await BaseScript.Delay(0);
+                        SafeInvokeCallback(callback, itemId);
+                    }
+                };
+            }
+            else
+            {
+                menu.OnItemSelect += async (sender, menuItem, index) =>
+                {
+                    if (menuItem == item)
+                    {
+                        await BaseScript.Delay(0);
+                        SafeInvokeCallback(callbackObj, itemId);
+                    }
+                };
+            }
+        }
+
+        /// <summary>
+        /// Attaches a callback to a checkbox change event
+        /// </summary>
+        private void AttachCheckboxCallback(Menu menu, MenuCheckboxItem item, object callbackObj, string itemId)
+        {
+            if (callbackObj == null) return;
+
+            menu.OnCheckboxChange += (sender, menuItem, index, _checked) =>
+            {
+                if (menuItem == item)
+                {
+                    SafeInvokeCallback(callbackObj, itemId, _checked);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Attaches callbacks to a list item events
+        /// </summary>
+        private void AttachListCallbacks(Menu menu, MenuListItem item, List<string> options, object callbackObj, string itemId)
+        {
+            if (callbackObj == null) return;
+
+            // Listen for index changes (browsing through list)
+            menu.OnListIndexChange += (sender, menuItem, oldIndex, newIndex, itemIndex) =>
+            {
+                if (menuItem == item)
+                {
+                    var currentValue = options[newIndex];
+                    SafeInvokeCallback(callbackObj, itemId, false, currentValue, newIndex, oldIndex);
+                }
+            };
+
+            // Listen for item selection (pressing enter/select)
+            menu.OnListItemSelect += (sender, menuItem, listIndex, itemIndex) =>
+            {
+                if (menuItem == item)
+                {
+                    var selectedValue = options[listIndex];
+                    SafeInvokeCallback(callbackObj, itemId, true, selectedValue, listIndex, listIndex);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Attaches a callback to a slider position change event
+        /// </summary>
+        private void AttachSliderCallback(Menu menu, MenuSliderItem item, object callbackObj, string itemId)
+        {
+            if (callbackObj == null) return;
+
+            menu.OnSliderPositionChange += (sender, menuItem, oldPosition, newPosition, itemIndex) =>
+            {
+                if (menuItem == item)
+                {
+                    SafeInvokeCallback(callbackObj, itemId, oldPosition, newPosition);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Attaches a callback to a menu open event
+        /// </summary>
+        private void AttachMenuOpenCallback(Menu menu, object callbackObj, string menuId)
+        {
+            if (callbackObj == null) return;
+
+            if (callbackObj is CallbackDelegate callback)
+            {
+                menu.OnMenuOpen += (sender) =>
+                {
+                    try
+                    {
+                        BaseScript.TriggerEvent("vMenu:DelayedCallback", new Action(() => callback.Invoke()));
+                    }
+                    catch (System.IO.EndOfStreamException)
+                    {
+                        // Silently ignore - callback was deleted/garbage collected
+                    }
+                    catch (Exception ex)
+                    {
+                        CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking menu open callback for {menuId}: {ex.Message}");
+                        if (ex.InnerException != null)
+                        {
+                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Inner exception: {ex.InnerException.Message}");
+                        }
+                    }
+                };
+            }
+            else
+            {
+                menu.OnMenuOpen += (sender) =>
+                {
+                    SafeInvokeCallback(callbackObj, null, menuId);
+                };
+            }
+        }
+
+        #endregion
+
         #region Export Registration and Initialization
+
         /// <summary>
         /// Initialize dynamic menu exports for plugin usage
         /// </summary>
@@ -142,7 +364,10 @@ namespace vMenuClient
 
             // Menu Information
             Exports.Add("GetAllMenuIds", new Func<string[]>(GetAllMenuIds));
+            Exports.Add("GetMenu", new Func<string, object>(GetMenuExport));
+            Exports.Add("IsMenuPermitted", new Func<string, bool>(IsMenuPermittedExport));
         }
+
         #endregion
 
         #region Export Implementation Methods
@@ -156,18 +381,8 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for menu open events</param>
         private void CreateMenu(string menuId, string menuTitle, string menuDescription, object callbackObj)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] CreateMenu: menuId cannot be null or empty.");
-                return;
-            }
-
-            // Check for any ID conflicts
-            if (HasIdConflict(menuId, "CreateMenu"))
-            {
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "CreateMenu")) return;
+            if (HasIdConflict(menuId, "CreateMenu")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(menuTitle))
@@ -184,63 +399,7 @@ namespace vMenuClient
             MenuController.AddMenu(newMenu);
             DynamicMenus[menuId] = newMenu;
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    newMenu.OnMenuOpen += (sender) =>
-                    {
-                        try
-                        {
-                            BaseScript.TriggerEvent("vMenu:DelayedCallback", new Action(() => callback.Invoke()));
-                        }
-                        catch (System.IO.EndOfStreamException)
-                        {
-                            // Silently ignore - callback was deleted/garbage collected
-                        }
-                        catch (Exception ex)
-                        {
-                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking menu open callback for {menuId}: {ex.Message}");
-                            if (ex.InnerException != null)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Inner exception: {ex.InnerException.Message}");
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    // Handle Lua functions and dynamic callbacks
-                    newMenu.OnMenuOpen += (sender) =>
-                    {
-                        try
-                        {
-                            // Validate callback before invoking
-                            if (callbackObj == null)
-                            {
-                                return;
-                            }
-
-                            dynamic dynamicCallback = callbackObj;
-                            dynamicCallback();
-                        }
-                        catch (System.IO.EndOfStreamException)
-                        {
-                            // Silently ignore - callback was deleted/garbage collected
-                        }
-                        catch (Exception ex)
-                        {
-                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking menu open callback for {menuId}: {ex.GetType().Name} - {ex.Message}");
-                            if (ex.InnerException != null)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Inner exception: {ex.InnerException.GetType().Name} - {ex.InnerException.Message}");
-                            }
-                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Stack trace: {ex.StackTrace}");
-                        }
-                    };
-                }
-            }
+            AttachMenuOpenCallback(newMenu, callbackObj, menuId);
         }
 
         /// <summary>
@@ -250,21 +409,20 @@ namespace vMenuClient
         /// <param name="type">Notification type (error, info, success, or default)</param>
         private void notifExp(string message, string type)
         {
-            if (type == "error")
+            switch (type)
             {
-                Notify.Error(message);
-            }
-            else if (type == "info")
-            {
-                Notify.Info(message);
-            }
-            else if (type == "success")
-            {
-                Notify.Success(message);
-            }
-            else
-            {
-                Notify.Alert(message);
+                case "error":
+                    Notify.Error(message);
+                    break;
+                case "info":
+                    Notify.Info(message);
+                    break;
+                case "success":
+                    Notify.Success(message);
+                    break;
+                default:
+                    Notify.Alert(message);
+                    break;
             }
         }
 
@@ -274,18 +432,9 @@ namespace vMenuClient
         /// <param name="menuId">Menu identifier</param>
         private void OpenMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] OpenMenu: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "OpenMenu")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
+            Menu menu = RetrieveMenu(menuId);
 
             if (menu == null)
             {
@@ -326,36 +475,18 @@ namespace vMenuClient
                 // Old signature: AddButton(menuId, buttonId, label, desc, callback)
                 callbackObj = param5;
             }
-            // Validate required parameters
-            if (string.IsNullOrEmpty(buttonId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddButton: buttonId cannot be null or empty.");
-                return;
-            }
 
-            // Check for ID conflicts (menu names, other items)
-            if (HasIdConflict(buttonId, "AddButton"))
-            {
-                return;
-            }
+            if (!ValidateParameter(buttonId, "buttonId", "AddButton")) return;
+            if (HasIdConflict(buttonId, "AddButton")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddButton: Menu with ID {menuId} not found.");
                 return;
             }
 
-            // Check for item conflicts within this menu
-            if (HasItemConflict(menu, buttonId, "AddButton"))
-            {
-                return;
-            }
+            if (HasItemConflict(menu, buttonId, "AddButton")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(buttonLabel))
@@ -369,68 +500,7 @@ namespace vMenuClient
                 Label = rightLabel ?? ""
             };
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    menu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == menuItem)
-                        {
-                            await BaseScript.Delay(0);
-                            callback.Invoke();
-                        }
-                    };
-                }
-                else if (callbackObj is Func<object> luaCallback)
-                {
-                    menu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == menuItem)
-                        {
-                            await BaseScript.Delay(0);
-                            try
-                            {
-                                luaCallback.Invoke();
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for button {buttonId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    // Try to invoke as dynamic for other callback types
-                    menu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == menuItem)
-                        {
-                            await BaseScript.Delay(0);
-                            try
-                            {
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback();
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking dynamic callback for button {buttonId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-            }
-
+            AttachItemSelectCallback(menu, menuItem, callbackObj, buttonId);
             menu.AddMenuItem(menuItem);
             menu.RefreshIndex();
         }
@@ -447,36 +517,17 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for list changes</param>
         private void AddList(string menuId, string listId, string listLabel, object options, int defaultIndex, string description, object callbackObj = null)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(listId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddList: listId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(listId, "listId", "AddList")) return;
+            if (HasIdConflict(listId, "AddList")) return;
 
-            // Check for ID conflicts (menu names, other items)
-            if (HasIdConflict(listId, "AddList"))
-            {
-                return;
-            }
-
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddList: Menu with ID {menuId} not found.");
                 return;
             }
 
-            // Check for item conflicts within this menu
-            if (HasItemConflict(menu, listId, "AddList"))
-            {
-                return;
-            }
+            if (HasItemConflict(menu, listId, "AddList")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(listLabel))
@@ -526,80 +577,7 @@ namespace vMenuClient
                 ItemData = listId
             };
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    // Listen for index changes (browsing through list)
-                    menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
-                    {
-                        if (item == menuListItem)
-                        {
-                            var currentValue = optionsList[newIndex];
-                            var oldValue = optionsList[oldIndex];
-                            callback.Invoke(false, currentValue, newIndex, oldIndex);
-                        }
-                    };
-
-                    // Listen for item selection (pressing enter/select)
-                    menu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
-                    {
-                        if (item == menuListItem)
-                        {
-                            var selectedValue = optionsList[listIndex];
-                            callback.Invoke(true, selectedValue, listIndex, listIndex);
-                        }
-                    };
-                }
-                else
-                {
-                    // Handle Lua functions and dynamic callbacks
-                    menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
-                    {
-                        if (item == menuListItem)
-                        {
-                            try
-                            {
-                                var currentValue = optionsList[newIndex];
-                                var oldValue = optionsList[oldIndex];
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback(false, currentValue, newIndex, oldIndex);
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for list {listId}: {ex.Message}");
-                            }
-                        }
-                    };
-
-                    menu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
-                    {
-                        if (item == menuListItem)
-                        {
-                            try
-                            {
-                                var selectedValue = optionsList[listIndex];
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback(true, selectedValue, listIndex, listIndex);
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for list {listId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-            }
-
+            AttachListCallbacks(menu, menuListItem, optionsList, callbackObj, listId);
             menu.AddMenuItem(menuListItem);
             menu.RefreshIndex();
         }
@@ -615,41 +593,18 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for checkbox changes</param>
         private void AddCheckbox(string menuId, string checkboxId, string checkboxLabel, string description, bool defaultValue, object callbackObj = null)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddCheckbox: menuId cannot be null or empty.");
-                return;
-            }
-            if (string.IsNullOrEmpty(checkboxId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddCheckbox: checkboxId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "AddCheckbox")) return;
+            if (!ValidateParameter(checkboxId, "checkboxId", "AddCheckbox")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddCheckbox: Menu with ID {menuId} not found.");
                 return;
             }
 
-            // Check for ID conflicts (menu names, other items)
-            if (HasIdConflict(checkboxId, "AddCheckbox"))
-            {
-                return;
-            }
-
-            // Check for item conflicts within this menu
-            if (HasItemConflict(menu, checkboxId, "AddCheckbox"))
-            {
-                return;
-            }
+            if (HasIdConflict(checkboxId, "AddCheckbox")) return;
+            if (HasItemConflict(menu, checkboxId, "AddCheckbox")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(checkboxLabel))
@@ -662,66 +617,7 @@ namespace vMenuClient
                 ItemData = checkboxId
             };
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    menu.OnCheckboxChange += (sender, item, index, _checked) =>
-                    {
-                        if (item == menuCheckboxItem)
-                        {
-                            callback.Invoke(_checked);
-                        }
-                    };
-                }
-                else if (callbackObj is Func<object> luaCallback)
-                {
-                    menu.OnCheckboxChange += (sender, item, index, _checked) =>
-                    {
-                        if (item == menuCheckboxItem)
-                        {
-                            try
-                            {
-                                dynamic dynamicCallback = luaCallback;
-                                dynamicCallback(_checked);
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for checkbox {checkboxId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    // Try to invoke as dynamic for other callback types
-                    menu.OnCheckboxChange += (sender, item, index, _checked) =>
-                    {
-                        if (item == menuCheckboxItem)
-                        {
-                            try
-                            {
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback(_checked);
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking dynamic callback for checkbox {checkboxId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-            }
-
+            AttachCheckboxCallback(menu, menuCheckboxItem, callbackObj, checkboxId);
             menu.AddMenuItem(menuCheckboxItem);
             menu.RefreshIndex();
         }
@@ -737,41 +633,18 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for slider changes</param>
         private void AddSlider(string menuId, string sliderId, string sliderLabel, string description, int defaultValue, object callbackObj = null)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSlider: menuId cannot be null or empty.");
-                return;
-            }
-            if (string.IsNullOrEmpty(sliderId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSlider: sliderId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "AddSlider")) return;
+            if (!ValidateParameter(sliderId, "sliderId", "AddSlider")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSlider: Menu with ID {menuId} not found.");
                 return;
             }
 
-            // Check for ID conflicts (menu names, other items)
-            if (HasIdConflict(sliderId, "AddSlider"))
-            {
-                return;
-            }
-
-            // Check for item conflicts within this menu
-            if (HasItemConflict(menu, sliderId, "AddSlider"))
-            {
-                return;
-            }
+            if (HasIdConflict(sliderId, "AddSlider")) return;
+            if (HasItemConflict(menu, sliderId, "AddSlider")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(sliderLabel))
@@ -791,45 +664,7 @@ namespace vMenuClient
                 ItemData = sliderId
             };
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    // Listen for position changes
-                    menu.OnSliderPositionChange += (sender, item, oldPosition, newPosition, itemIndex) =>
-                    {
-                        if (item == menuSliderItem)
-                        {
-                            callback.Invoke(oldPosition, newPosition);
-                        }
-                    };
-                }
-                else
-                {
-                    // Handle Lua functions and dynamic callbacks
-                    menu.OnSliderPositionChange += (sender, item, oldPosition, newPosition, itemIndex) =>
-                    {
-                        if (item == menuSliderItem)
-                        {
-                            try
-                            {
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback(oldPosition, newPosition);
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for slider {sliderId}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-            }
-
+            AttachSliderCallback(menu, menuSliderItem, callbackObj, sliderId);
             menu.AddMenuItem(menuSliderItem);
             menu.RefreshIndex();
         }
@@ -843,41 +678,18 @@ namespace vMenuClient
         /// <param name="description">Optional spacer description</param>
         private void AddSpacer(string menuId, string spacerId, string spacerText, string description)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSpacer: menuId cannot be null or empty.");
-                return;
-            }
-            if (string.IsNullOrEmpty(spacerId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSpacer: spacerId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "AddSpacer")) return;
+            if (!ValidateParameter(spacerId, "spacerId", "AddSpacer")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSpacer: Menu with ID {menuId} not found.");
                 return;
             }
 
-            // Check for ID conflicts (menu names, other items)
-            if (HasIdConflict(spacerId, "AddSpacer"))
-            {
-                return;
-            }
-
-            // Check for item conflicts within this menu
-            if (HasItemConflict(menu, spacerId, "AddSpacer"))
-            {
-                return;
-            }
+            if (HasIdConflict(spacerId, "AddSpacer")) return;
+            if (HasItemConflict(menu, spacerId, "AddSpacer")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(spacerText))
@@ -896,22 +708,12 @@ namespace vMenuClient
         /// <param name="menuId">Target menu ID</param>
         private void RefreshMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] RefreshMenu: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "RefreshMenu")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] RefreshMenu: Menu with ID {menuId} not found.");
                 return;
             }
 
@@ -932,22 +734,12 @@ namespace vMenuClient
         /// <param name="menuId">Menu ID to close</param>
         private void CloseMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] CloseMenu: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "CloseMenu")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] CloseMenu: Menu with ID {menuId} not found.");
                 return;
             }
 
@@ -968,31 +760,11 @@ namespace vMenuClient
         /// <param name="callbackObj">Optional callback for button selection</param>
         private void AddSubmenuButton(string parentMenuId, string buttonId, string submenuId, string buttonLabel, string buttonDescription, object callbackObj = null)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(parentMenuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: parentMenuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(parentMenuId, "parentMenuId", "AddSubmenuButton")) return;
+            if (!ValidateParameter(buttonId, "buttonId", "AddSubmenuButton")) return;
+            if (!ValidateParameter(submenuId, "submenuId", "AddSubmenuButton")) return;
 
-
-
-            if (string.IsNullOrEmpty(buttonId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: buttonId cannot be null or empty.");
-                return;
-            }
-            if (string.IsNullOrEmpty(submenuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: submenuId cannot be null or empty.");
-                return;
-            }
-
-            // Check for ID conflicts for buttonId
-            if (HasIdConflict(buttonId, "AddSubmenuButton"))
-            {
-                return;
-            }
+            if (HasIdConflict(buttonId, "AddSubmenuButton")) return;
 
             // Verify submenu exists (either dynamic or built-in)
             if (!DynamicMenus.ContainsKey(submenuId) && GetMenu(submenuId) == null)
@@ -1001,36 +773,22 @@ namespace vMenuClient
                 return;
             }
 
-
-            Menu parentMenu = null;
-            if (!DynamicMenus.TryGetValue(parentMenuId, out parentMenu))
-            {
-                parentMenu = GetMenu(parentMenuId);
-            }
-
-            Menu submenu = null;
-            if (!DynamicMenus.TryGetValue(submenuId, out submenu))
-            {
-                submenu = GetMenu(submenuId);
-            }
+            Menu parentMenu = RetrieveMenu(parentMenuId);
+            Menu submenu = RetrieveMenu(submenuId);
 
             if (parentMenu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Parent menu {parentMenuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: Parent menu {parentMenuId} not found.");
                 return;
             }
 
             if (submenu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Submenu {submenuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: Submenu {submenuId} not found.");
                 return;
             }
 
-            // Check for item conflicts within parent menu
-            if (HasItemConflict(parentMenu, buttonId, "AddSubmenuButton"))
-            {
-                return;
-            }
+            if (HasItemConflict(parentMenu, buttonId, "AddSubmenuButton")) return;
 
             // Apply defaults for optional parameters
             if (string.IsNullOrEmpty(buttonLabel))
@@ -1049,68 +807,7 @@ namespace vMenuClient
             MenuController.BindMenuItem(parentMenu, submenu, submenuButton);
             submenu.RefreshIndex();
 
-            if (callbackObj != null)
-            {
-                // Handle both C# delegates and Lua functions
-                if (callbackObj is CallbackDelegate callback)
-                {
-                    parentMenu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == submenuButton)
-                        {
-                            await BaseScript.Delay(0);
-                            callback.Invoke();
-                        }
-                    };
-                }
-                else if (callbackObj is Func<object> luaCallback)
-                {
-                    parentMenu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == submenuButton)
-                        {
-                            await BaseScript.Delay(0);
-                            try
-                            {
-                                luaCallback.Invoke();
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking callback for submenu button {buttonLabel}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    // Try to invoke as dynamic for other callback types
-                    parentMenu.OnItemSelect += async (sender, item, index) =>
-                    {
-                        if (item == submenuButton)
-                        {
-                            await BaseScript.Delay(0);
-                            try
-                            {
-                                dynamic dynamicCallback = callbackObj;
-                                dynamicCallback();
-                            }
-                            catch (System.IO.EndOfStreamException)
-                            {
-                                // Silently ignore - callback was deleted/garbage collected
-                            }
-                            catch (Exception ex)
-                            {
-                                CitizenFX.Core.Debug.WriteLine($"[vMenu] Error invoking dynamic callback for submenu button {buttonLabel}: {ex.Message}");
-                            }
-                        }
-                    };
-                }
-            }
-
+            AttachItemSelectCallback(parentMenu, submenuButton, callbackObj, buttonId);
             parentMenu.RefreshIndex();
         }
 
@@ -1121,27 +818,18 @@ namespace vMenuClient
         /// <param name="itemIdOrIndex">Item identifier (string) or index (int) to remove</param>
         private void RemoveItem(string menuId, object itemIdOrIndex)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] RemoveItem: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "RemoveItem")) return;
+
             if (itemIdOrIndex == null)
             {
                 CitizenFX.Core.Debug.WriteLine($"[vMenu] RemoveItem: itemIdOrIndex cannot be null.");
                 return;
             }
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] RemoveItem: Menu with ID {menuId} not found.");
                 return;
             }
 
@@ -1175,7 +863,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    CitizenFX.Core.Debug.WriteLine($"[vMenu] Item with ID {itemId} not found in menu {menuId}.");
+                    CitizenFX.Core.Debug.WriteLine($"[vMenu] RemoveItem: Item with ID {itemId} not found in menu {menuId}.");
                 }
             }
             else
@@ -1190,25 +878,9 @@ namespace vMenuClient
         /// <param name="menuId">Target menu ID</param>
         private void ClearMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] ClearMenu: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "ClearMenu")) return;
 
-            Menu menu = null;
-
-            // First check dynamic menus
-            if (DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu.ClearMenuItems();
-                return;
-            }
-
-            // Then check built-in menus using GetMenu
-            menu = GetMenu(menuId);
-
+            Menu menu = RetrieveMenu(menuId);
             if (menu == null)
             {
                 CitizenFX.Core.Debug.WriteLine($"[vMenu] ClearMenu: Menu with ID '{menuId}' not found. Available menus: {string.Join(", ", GetAllMenuIds())}");
@@ -1225,24 +897,10 @@ namespace vMenuClient
         /// <returns>True if menu exists, false otherwise</returns>
         private bool CheckMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] CheckMenu: menuId cannot be null or empty.");
-                return false;
-            }
+            if (!ValidateParameter(menuId, "menuId", "CheckMenu")) return false;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
-            {
-                menu = GetMenu(menuId);
-            }
-
-            if (menu == null)
-            {
-                return false;
-            }
-            return true;
+            Menu menu = RetrieveMenu(menuId);
+            return menu != null;
         }
 
         /// <summary>
@@ -1251,17 +909,11 @@ namespace vMenuClient
         /// <param name="menuId">Menu ID to delete</param>
         private void DeleteMenu(string menuId)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(menuId))
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] DeleteMenu: menuId cannot be null or empty.");
-                return;
-            }
+            if (!ValidateParameter(menuId, "menuId", "DeleteMenu")) return;
 
-            Menu menu = null;
-            if (!DynamicMenus.TryGetValue(menuId, out menu))
+            if (!DynamicMenus.TryGetValue(menuId, out Menu menu))
             {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] Menu with ID {menuId} not found.");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] DeleteMenu: Menu with ID {menuId} not found.");
                 return;
             }
 
@@ -1287,12 +939,11 @@ namespace vMenuClient
             menu = null;
         }
 
-
         /// <summary>
-        /// Dynamically finds built-in vMenu menus by ID with permission checking
+        /// Dynamically finds built-in vMenu menus by ID (without permission filtering)
         /// </summary>
         /// <param name="menuId">Menu identifier string</param>
-        /// <returns>Menu instance if found and permitted, null otherwise</returns>
+        /// <returns>Menu instance if found, null otherwise</returns>
         private Menu GetMenu(string menuId)
         {
             // First check dynamic menus by exact ID
@@ -1317,11 +968,7 @@ namespace vMenuClient
                 // Exact match only
                 if (normalizedTitle == normalizedId)
                 {
-                    // Basic permission check for known menu patterns
-                    if (IsMenuPermitted(menu, menuId.ToLower()))
-                    {
-                        return menu;
-                    }
+                    return menu;
                 }
             }
 
@@ -1329,9 +976,19 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Export function to get all available menu IDs
+        /// Export wrapper for GetMenu that returns an object (for export compatibility)
         /// </summary>
-        /// <returns>Array of menu IDs that can be accessed through GetMenu</returns>
+        /// <param name="menuId">Menu identifier</param>
+        /// <returns>Menu instance as object if found, null otherwise</returns>
+        private object GetMenuExport(string menuId)
+        {
+            return GetMenu(menuId);
+        }
+
+        /// <summary>
+        /// Export function to get all available menu IDs (without permission filtering)
+        /// </summary>
+        /// <returns>Array of all menu IDs that exist</returns>
         private string[] GetAllMenuIds()
         {
             var menuIds = new List<string>();
@@ -1349,17 +1006,37 @@ namespace vMenuClient
                 // Skip dynamic menus (already added above)
                 if (DynamicMenus.ContainsValue(menu)) continue;
 
-                // Check if menu is permitted
                 var menuIdentifier = menu.MenuSubtitle ?? menu.MenuTitle ?? "";
                 var normalizedTitle = menuIdentifier.ToLower().Replace(" ", "-");
-                if (IsMenuPermitted(menu, normalizedTitle))
-                {
-                    menuIds.Add(normalizedTitle);
-                }
+                menuIds.Add(normalizedTitle);
             }
 
             // Remove duplicates and sort
             return menuIds.Distinct().OrderBy(id => id).ToArray();
+        }
+
+        /// <summary>
+        /// Export function to check if a menu is permitted based on vMenu permissions
+        /// </summary>
+        /// <param name="menuId">Menu identifier</param>
+        /// <returns>True if permitted, false otherwise</returns>
+        private bool IsMenuPermittedExport(string menuId)
+        {
+            if (string.IsNullOrEmpty(menuId))
+            {
+                return false;
+            }
+
+            var normalizedId = menuId.ToLower().Replace(" ", "-");
+
+            // Get the menu to check if it exists
+            var menu = GetMenu(normalizedId);
+            if (menu == null)
+            {
+                return false;
+            }
+
+            return IsMenuPermitted(menu, normalizedId);
         }
 
         /// <summary>
