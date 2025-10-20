@@ -26,6 +26,16 @@ namespace vMenuClient
         /// </summary>
         private static Dictionary<string, Menu> DynamicMenus = new Dictionary<string, Menu>();
 
+        /// <summary>
+        /// List to store callbacks waiting for vMenu to be ready
+        /// </summary>
+        private static List<object> ReadyCallbacks = new List<object>();
+
+        /// <summary>
+        /// Flag indicating if vMenu is ready for external interactions
+        /// </summary>
+        private static bool IsVMenuReady = false;
+
         #region Helper Methods
 
         /// <summary>
@@ -125,14 +135,23 @@ namespace vMenuClient
         /// Retrieves a menu by ID from dynamic or built-in menus
         /// </summary>
         /// <param name="menuId">Menu identifier</param>
+        /// <param name="context">Error context</param>
         /// <returns>Menu instance if found, null otherwise</returns>
-        private Menu RetrieveMenu(string menuId)
+        private Menu RetrieveMenu(string menuId, string context = null)
         {
             if (DynamicMenus.TryGetValue(menuId, out Menu menu))
             {
                 return menu;
             }
-            return GetMenu(menuId);
+
+            menu = GetMenu(menuId);
+
+            if (menu == null && !string.IsNullOrEmpty(context))
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] {context}: Menu with ID '{menuId}' not found.");
+            }
+
+            return menu;
         }
 
         /// <summary>
@@ -175,9 +194,6 @@ namespace vMenuClient
                             break;
                         case 4:
                             dynamicCallback(args[0], args[1], args[2], args[3]);
-                            break;
-                        default:
-                            CitizenFX.Core.Debug.WriteLine($"[vMenu] Callback for {itemId} has unsupported number of arguments: {args.Length}");
                             break;
                     }
                 }
@@ -251,8 +267,12 @@ namespace vMenuClient
             {
                 if (menuItem == item)
                 {
-                    var currentValue = options[newIndex];
-                    SafeInvokeCallback(callbackObj, itemId, false, currentValue, newIndex, oldIndex);
+                    // Bounds check to prevent ArgumentOutOfRangeException
+                    if (newIndex >= 0 && newIndex < options.Count && oldIndex >= 0 && oldIndex < options.Count)
+                    {
+                        var currentValue = options[newIndex];
+                        SafeInvokeCallback(callbackObj, itemId, false, currentValue, newIndex, oldIndex);
+                    }
                 }
             };
 
@@ -261,8 +281,12 @@ namespace vMenuClient
             {
                 if (menuItem == item)
                 {
-                    var selectedValue = options[listIndex];
-                    SafeInvokeCallback(callbackObj, itemId, true, selectedValue, listIndex, listIndex);
+                    // Bounds check to prevent ArgumentOutOfRangeException
+                    if (listIndex >= 0 && listIndex < options.Count)
+                    {
+                        var selectedValue = options[listIndex];
+                        SafeInvokeCallback(callbackObj, itemId, true, selectedValue, listIndex, listIndex);
+                    }
                 }
             };
         }
@@ -331,6 +355,19 @@ namespace vMenuClient
         public void InitializeDynamicMenuExports()
         {
             RegisterDynamicMenuExports();
+            RegisterReadyEventHandler();
+        }
+
+        /// <summary>
+        /// Registers event handler to listen for vMenu ready state
+        /// </summary>
+        private void RegisterReadyEventHandler()
+        {
+            // Listen for vMenu initialization complete
+            EventHandlers["vMenu:SetupTickFunctions"] += new Action(() =>
+            {
+                TriggerReady();
+            });
         }
 
         /// <summary>
@@ -366,6 +403,10 @@ namespace vMenuClient
             Exports.Add("GetAllMenuIds", new Func<string[]>(GetAllMenuIds));
             Exports.Add("GetMenu", new Func<string, object>(GetMenuExport));
             Exports.Add("IsMenuPermitted", new Func<string, bool>(IsMenuPermittedExport));
+
+            // Ready State Management
+            Exports.Add("OnReady", new Action<object>(OnReadyExport));
+            Exports.Add("IsReady", new Func<bool>(IsReadyExport));
         }
 
         #endregion
@@ -434,13 +475,8 @@ namespace vMenuClient
         {
             if (!ValidateParameter(menuId, "menuId", "OpenMenu")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] OpenMenu: Menu with ID '{menuId}' not found. Available menus: {string.Join(", ", GetAllMenuIds())}");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "OpenMenu");
+            if (menu == null) return;
 
             // Close all currently open menus before opening the new one
             MenuController.CloseAllMenus();
@@ -479,12 +515,8 @@ namespace vMenuClient
             if (!ValidateParameter(buttonId, "buttonId", "AddButton")) return;
             if (HasIdConflict(buttonId, "AddButton")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddButton: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "AddButton");
+            if (menu == null) return;
 
             if (HasItemConflict(menu, buttonId, "AddButton")) return;
 
@@ -520,12 +552,8 @@ namespace vMenuClient
             if (!ValidateParameter(listId, "listId", "AddList")) return;
             if (HasIdConflict(listId, "AddList")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddList: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "AddList");
+            if (menu == null) return;
 
             if (HasItemConflict(menu, listId, "AddList")) return;
 
@@ -596,12 +624,8 @@ namespace vMenuClient
             if (!ValidateParameter(menuId, "menuId", "AddCheckbox")) return;
             if (!ValidateParameter(checkboxId, "checkboxId", "AddCheckbox")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddCheckbox: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "AddCheckbox");
+            if (menu == null) return;
 
             if (HasIdConflict(checkboxId, "AddCheckbox")) return;
             if (HasItemConflict(menu, checkboxId, "AddCheckbox")) return;
@@ -636,12 +660,8 @@ namespace vMenuClient
             if (!ValidateParameter(menuId, "menuId", "AddSlider")) return;
             if (!ValidateParameter(sliderId, "sliderId", "AddSlider")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSlider: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "AddSlider");
+            if (menu == null) return;
 
             if (HasIdConflict(sliderId, "AddSlider")) return;
             if (HasItemConflict(menu, sliderId, "AddSlider")) return;
@@ -681,12 +701,8 @@ namespace vMenuClient
             if (!ValidateParameter(menuId, "menuId", "AddSpacer")) return;
             if (!ValidateParameter(spacerId, "spacerId", "AddSpacer")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSpacer: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "AddSpacer");
+            if (menu == null) return;
 
             if (HasIdConflict(spacerId, "AddSpacer")) return;
             if (HasItemConflict(menu, spacerId, "AddSpacer")) return;
@@ -710,12 +726,8 @@ namespace vMenuClient
         {
             if (!ValidateParameter(menuId, "menuId", "RefreshMenu")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] RefreshMenu: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "RefreshMenu");
+            if (menu == null) return;
 
             menu.RefreshIndex();
         }
@@ -736,12 +748,8 @@ namespace vMenuClient
         {
             if (!ValidateParameter(menuId, "menuId", "CloseMenu")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] CloseMenu: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "CloseMenu");
+            if (menu == null) return;
 
             if (menu.Visible)
             {
@@ -773,20 +781,11 @@ namespace vMenuClient
                 return;
             }
 
-            Menu parentMenu = RetrieveMenu(parentMenuId);
-            Menu submenu = RetrieveMenu(submenuId);
+            Menu parentMenu = RetrieveMenu(parentMenuId, "AddSubmenuButton (parent)");
+            if (parentMenu == null) return;
 
-            if (parentMenu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: Parent menu {parentMenuId} not found.");
-                return;
-            }
-
-            if (submenu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] AddSubmenuButton: Submenu {submenuId} not found.");
-                return;
-            }
+            Menu submenu = RetrieveMenu(submenuId, "AddSubmenuButton (submenu)");
+            if (submenu == null) return;
 
             if (HasItemConflict(parentMenu, buttonId, "AddSubmenuButton")) return;
 
@@ -826,12 +825,8 @@ namespace vMenuClient
                 return;
             }
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] RemoveItem: Menu with ID {menuId} not found.");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "RemoveItem");
+            if (menu == null) return;
 
             var items = menu.GetMenuItems();
 
@@ -843,7 +838,17 @@ namespace vMenuClient
                     // Silent fail for out of range index (used for clearing menus in loops)
                     return;
                 }
-                menu.RemoveMenuItem(items[index]);
+                try
+                {
+                    menu.RemoveMenuItem(items[index]);
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    CitizenFX.Core.Debug.WriteLine($"[vMenu] ArgumentOutOfRangeException in RemoveItem for menu {menuId}, index {index}:");
+                    CitizenFX.Core.Debug.WriteLine($"[vMenu] Items count: {items.Count}");
+                    CitizenFX.Core.Debug.WriteLine($"[vMenu] Message: {ex.Message}");
+                    CitizenFX.Core.Debug.WriteLine($"[vMenu] Stack trace: {ex.StackTrace}");
+                }
             }
             // Otherwise treat as string (ID-based removal)
             else if (itemIdOrIndex is string itemId)
@@ -880,12 +885,8 @@ namespace vMenuClient
         {
             if (!ValidateParameter(menuId, "menuId", "ClearMenu")) return;
 
-            Menu menu = RetrieveMenu(menuId);
-            if (menu == null)
-            {
-                CitizenFX.Core.Debug.WriteLine($"[vMenu] ClearMenu: Menu with ID '{menuId}' not found. Available menus: {string.Join(", ", GetAllMenuIds())}");
-                return;
-            }
+            Menu menu = RetrieveMenu(menuId, "ClearMenu");
+            if (menu == null) return;
 
             menu.ClearMenuItems();
         }
@@ -982,7 +983,17 @@ namespace vMenuClient
         /// <returns>Menu instance as object if found, null otherwise</returns>
         private object GetMenuExport(string menuId)
         {
-            return GetMenu(menuId);
+            try
+            {
+                return GetMenu(menuId);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] ArgumentOutOfRangeException in GetMenuExport for {menuId}:");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Message: {ex.Message}");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Stack trace: {ex.StackTrace}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -1000,15 +1011,24 @@ namespace vMenuClient
             }
 
             // Add built-in menu IDs based on their subtitles (avoid duplicates)
-            var uniqueMenus = MenuController.Menus.GroupBy(m => m.MenuSubtitle ?? m.MenuTitle).Select(g => g.First()).ToList();
-            foreach (var menu in uniqueMenus)
+            try
             {
-                // Skip dynamic menus (already added above)
-                if (DynamicMenus.ContainsValue(menu)) continue;
+                var uniqueMenus = MenuController.Menus.GroupBy(m => m.MenuSubtitle ?? m.MenuTitle).Select(g => g.First()).ToList();
+                foreach (var menu in uniqueMenus)
+                {
+                    // Skip dynamic menus (already added above)
+                    if (DynamicMenus.ContainsValue(menu)) continue;
 
-                var menuIdentifier = menu.MenuSubtitle ?? menu.MenuTitle ?? "";
-                var normalizedTitle = menuIdentifier.ToLower().Replace(" ", "-");
-                menuIds.Add(normalizedTitle);
+                    var menuIdentifier = menu.MenuSubtitle ?? menu.MenuTitle ?? "";
+                    var normalizedTitle = menuIdentifier.ToLower().Replace(" ", "-");
+                    menuIds.Add(normalizedTitle);
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] ArgumentOutOfRangeException in GetAllMenuIds:");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Message: {ex.Message}");
+                CitizenFX.Core.Debug.WriteLine($"[vMenu] Stack trace: {ex.StackTrace}");
             }
 
             // Remove duplicates and sort
@@ -1037,6 +1057,66 @@ namespace vMenuClient
             }
 
             return IsMenuPermitted(menu, normalizedId);
+        }
+
+        /// <summary>
+        /// Registers a callback to be invoked when vMenu is ready
+        /// If vMenu is already ready, the callback is invoked immediately
+        /// Note: Callbacks that perform asynchronous work (menu modifications, waits, etc.)
+        /// should wrap their logic in Citizen.CreateThread() to prevent serialization errors
+        /// Example: exports.vMenu:OnReady(function() Citizen.CreateThread(setupMenu) end)
+        /// </summary>
+        /// <param name="callbackObj">Callback function to invoke</param>
+        private void OnReadyExport(object callbackObj)
+        {
+            if (callbackObj == null)
+            {
+                CitizenFX.Core.Debug.WriteLine("[vMenu] OnReady: callback cannot be null.");
+                return;
+            }
+
+            if (IsVMenuReady)
+            {
+                // vMenu is already ready, invoke callback immediately
+                SafeInvokeCallback(callbackObj, "OnReady");
+            }
+            else
+            {
+                // vMenu not ready yet, queue the callback
+                ReadyCallbacks.Add(callbackObj);
+            }
+        }
+
+        /// <summary>
+        /// Checks if vMenu is ready for external interactions
+        /// </summary>
+        /// <returns>True if ready, false otherwise</returns>
+        private bool IsReadyExport()
+        {
+            return IsVMenuReady;
+        }
+
+        /// <summary>
+        /// Marks vMenu as ready and invokes all queued callbacks
+        /// This should be called when vMenu initialization is complete
+        /// </summary>
+        public void TriggerReady()
+        {
+            if (IsVMenuReady)
+            {
+                return; // Already triggered
+            }
+
+            IsVMenuReady = true;
+
+            // Invoke all queued callbacks
+            foreach (var callbackObj in ReadyCallbacks)
+            {
+                SafeInvokeCallback(callbackObj, "OnReady");
+            }
+
+            // Clear the callbacks list
+            ReadyCallbacks.Clear();
         }
 
         /// <summary>
