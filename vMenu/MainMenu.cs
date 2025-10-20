@@ -17,7 +17,7 @@ using static vMenuShared.PermissionsManager;
 
 namespace vMenuClient
 {
-    public class MainMenu : BaseScript
+    public partial class MainMenu : BaseScript
     {
         #region Variables
 
@@ -345,6 +345,9 @@ namespace vMenuClient
 
             // Request server state from the server.
             TriggerServerEvent("vMenu:RequestServerState");
+
+            // Initialize dynamic menu exports
+            InitializeDynamicMenuExports();
         }
 
         #region Infinity bits
