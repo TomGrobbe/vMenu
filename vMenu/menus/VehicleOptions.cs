@@ -1694,6 +1694,52 @@ namespace vMenuClient.menus
                     }
                 }
             };
+
+            // Disable all extra options if vehicle is too damaged
+            VehicleComponentsMenu.OnMenuOpen += (menu) =>
+            {
+                Vehicle vehicle;
+                bool checkDamageBeforeChangingExtras = GetSettingsBool(Setting.vmenu_prevent_extras_when_damaged) && !IsAllowed(Permission.VOBypassExtraDamage);
+
+                if (!checkDamageBeforeChangingExtras || !Entity.Exists(vehicle = GetVehicle()))
+                {
+                    return;
+                }
+
+                List<MenuItem> menuItems = menu.GetMenuItems();
+                bool isTooDamaged = IsVehicleTooDamagedToChangeExtras(vehicle);
+
+                menu.ClearMenuItems();
+
+                if (isTooDamaged && !menuItems.Exists(i => i.Text.Contains("too damaged")))
+                {
+                    MenuItem spacer = GetSpacerMenuItem("Vehicle too damaged!", "Vehicle is too damaged to change extras, repair it first!");
+
+                    // Place at the start of the menu
+                    menuItems.Insert(0, spacer);
+                }
+
+                foreach (MenuItem item in menuItems)
+                {
+                    // Check for spacer
+                    if (item.Text.Contains("too damaged"))
+                    {
+                        if (!isTooDamaged)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (item.Text != "Go Back")
+                    {
+                        item.Enabled = !isTooDamaged;
+                    }
+
+                    menu.AddMenuItem(item);
+                }
+
+                menu.RefreshIndex();
+            };
+
             // when a checkbox in the components menu changes
             VehicleComponentsMenu.OnCheckboxChange += (sender, item, index, _checked) =>
             {
@@ -1702,6 +1748,30 @@ namespace vMenuClient.menus
                 if (vehicleExtras.TryGetValue(item, out var extra))
                 {
                     var veh = GetVehicle();
+
+                    if (!Entity.Exists(veh))
+                    {
+                        Notify.Error(CommonErrors.NoVehicle);
+                        return;
+                    }
+
+                    bool checkDamageBeforeChangingExtras = GetSettingsBool(Setting.vmenu_prevent_extras_when_damaged) && !IsAllowed(Permission.VOBypassExtraDamage);
+
+                    if (checkDamageBeforeChangingExtras)
+                    {
+                        bool isTooDamaged = IsVehicleTooDamagedToChangeExtras(veh);
+
+                        if (isTooDamaged)
+                        {
+                            // Send message to player when extra change is denied
+                            Notify.Alert("Vehicle is too damaged to change extra, repair it first!", true, false);
+
+                            // Send to previous menu
+                            VehicleComponentsMenu.GoBack();
+                            return;
+                        }
+                    }
+
                     veh.ToggleExtra(extra, _checked);
                 }
             };
@@ -1946,7 +2016,7 @@ namespace vMenuClient.menus
                 SetVehicleModKit(veh.Handle, 0);
 
                 // Get all mods available on this vehicle.
-                var mods = veh.Mods.GetAllMods();
+                var mods = GetAllVehicleMods(veh);
 
                 // Loop through all the mods.
                 foreach (var mod in mods)
@@ -2426,5 +2496,15 @@ namespace vMenuClient.menus
             return 0;
         }
         #endregion
+
+        private bool IsVehicleTooDamagedToChangeExtras(Vehicle vehicle)
+        {
+            float bodyHealth = vehicle.BodyHealth;
+            float engineHealth = vehicle.EngineHealth;
+            float allowedBodyHealth = GetSettingsInt(Setting.vmenu_allowed_body_damage_for_extra_change);
+            float allowedEngineHealth = GetSettingsInt(Setting.vmenu_allowed_engine_damage_for_extra_change);
+
+            return bodyHealth < allowedBodyHealth || engineHealth < allowedEngineHealth;
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace vMenuClient.menus
                 if (item == freezeTimeToggle)
                 {
                     Subtitle.Info($"Time will now {(EventManager.IsServerTimeFrozen ? "~y~continue" : "~o~freeze")}~s~.", prefix: "Info:");
-                    UpdateServerTime(EventManager.GetServerHours, EventManager.GetServerMinutes, !EventManager.IsServerTimeFrozen);
+                    FreezeServerTime(!EventManager.IsServerTimeFrozen);
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace vMenuClient.menus
                     var newMinute = 0;
                     Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour}" : newHour.ToString())}~s~:~y~" +
                         $"{(newMinute < 10 ? $"0{newMinute}" : newMinute.ToString())}~s~.", prefix: "Info:");
-                    UpdateServerTime(newHour, newMinute, EventManager.IsServerTimeFrozen);
+                    UpdateServerTime(newHour, newMinute);
                 }
 
             };
@@ -137,7 +137,7 @@ namespace vMenuClient.menus
 
                 Subtitle.Info($"Time set to ~y~{(newHour < 10 ? $"0{newHour}" : newHour.ToString())}~s~:~y~" +
                         $"{(newMinute < 10 ? $"0{newMinute}" : newMinute.ToString())}~s~.", prefix: "Info:");
-                UpdateServerTime(newHour, newMinute, EventManager.IsServerTimeFrozen);
+                UpdateServerTime(newHour, newMinute);
             };
         }
 

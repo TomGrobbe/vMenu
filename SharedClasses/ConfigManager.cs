@@ -38,6 +38,11 @@ namespace vMenuShared
             // Vehicle Chameleon Colours
             vmenu_using_chameleon_colours,
 
+            // Prevent Extras Abuse
+            vmenu_prevent_extras_when_damaged,
+            vmenu_allowed_engine_damage_for_extra_change,
+            vmenu_allowed_body_damage_for_extra_change,
+
             // MP Ped preview setting,
             vmenu_mp_ped_preview,
 

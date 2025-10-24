@@ -133,6 +133,11 @@ namespace vMenuServer
             get { return GetSettingsBool(Setting.vmenu_blackout_enabled); }
             set { SetConvarReplicated(Setting.vmenu_blackout_enabled.ToString(), value.ToString().ToLower()); }
         }
+        private bool VehicleBlackoutEnabled
+        {
+            get { return GetSettingsBool(Setting.vmenu_vehicle_blackout_enabled); }
+            set { SetConvarReplicated(Setting.vmenu_vehicle_blackout_enabled.ToString(), value.ToString().ToLower()); }
+        }
         private int DynamicWeatherMinutes
         {
             get { return Math.Max(GetSettingsInt(Setting.vmenu_dynamic_weather_timer), 1); }
@@ -321,7 +326,7 @@ namespace vMenuServer
                             var wtype = args[1].ToString().ToUpper();
                             if (WeatherTypes.Contains(wtype))
                             {
-                                TriggerEvent("vMenu:UpdateServerWeather", wtype, BlackoutEnabled, DynamicWeatherEnabled, ManualSnowEnabled);
+                                TriggerEvent("vMenu:UpdateServerWeather", wtype, DynamicWeatherEnabled, ManualSnowEnabled);
                                 Debug.WriteLine($"[vMenu] Weather is now set to: {wtype}");
                             }
                             else if (wtype.ToLower() == "dynamic")
@@ -330,12 +335,12 @@ namespace vMenuServer
                                 {
                                     if ((args[2].ToString().ToLower() ?? $"{DynamicWeatherEnabled}") == "true")
                                     {
-                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, true, ManualSnowEnabled);
+                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, true, ManualSnowEnabled);
                                         Debug.WriteLine("[vMenu] Dynamic weather is now turned on.");
                                     }
                                     else if ((args[2].ToString().ToLower() ?? $"{DynamicWeatherEnabled}") == "false")
                                     {
-                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, BlackoutEnabled, false, ManualSnowEnabled);
+                                        TriggerEvent("vMenu:UpdateServerWeather", CurrentWeather, false, ManualSnowEnabled);
                                         Debug.WriteLine("[vMenu] Dynamic weather is now turned off.");
                                     }
                                     else
@@ -669,11 +674,15 @@ namespace vMenuServer
         /// Update the weather for all clients.
         /// </summary>
         /// <param name="newWeather"></param>
-        /// <param name="blackoutNew"></param>
         /// <param name="dynamicWeatherNew"></param>
         [EventHandler("vMenu:UpdateServerWeather")]
-        internal void UpdateWeather(string newWeather, bool blackoutNew, bool dynamicWeatherNew, bool enableSnow)
+        internal void UpdateWeather([FromSource] Player source, string newWeather, bool dynamicWeatherNew, bool enableSnow)
         {
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOSetWeather, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
 
             // Automatically enable snow effects whenever one of the snow weather types is selected.
             if (newWeather is "XMAS" or "SNOWLIGHT" or "SNOW" or "BLIZZARD")
@@ -683,7 +692,6 @@ namespace vMenuServer
 
             // Update the new weather related variables.
             CurrentWeather = newWeather;
-            BlackoutEnabled = blackoutNew;
             DynamicWeatherEnabled = dynamicWeatherNew;
             ManualSnowEnabled = enableSnow;
 
@@ -691,19 +699,57 @@ namespace vMenuServer
             lastWeatherChange = GetGameTimer();
         }
 
+        [EventHandler("vMenu:UpdateServerBlackout")]
+        internal void UpdateBlackout([FromSource] Player source, bool value)
+        {
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOBlackout, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
+            BlackoutEnabled = value;
+        }
+
+        [EventHandler("vMenu:UpdateServerVehicleBlackout")]
+        internal void UpdateVehicleBlackout([FromSource] Player source, bool value)
+        {
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOVehBlackout, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
+            VehicleBlackoutEnabled = value;
+        }
+
         /// <summary>
         /// Set a new random clouds type and opacity for all clients.
         /// </summary>
         /// <param name="removeClouds"></param>
         [EventHandler("vMenu:UpdateServerWeatherCloudsType")]
-        internal void UpdateWeatherCloudsType(bool removeClouds)
+        internal void UpdateWeatherCloudsType([FromSource] Player source, bool removeClouds)
         {
+            bool allWOPermissions = PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source);
+
             if (removeClouds)
             {
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORemoveClouds, source) && !allWOPermissions)
+                {
+                    BanManager.BanCheater(source);
+                    return;
+                }
+
                 TriggerClientEvent("vMenu:SetClouds", 0f, "removed");
             }
             else
             {
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORandomizeClouds, source) && !allWOPermissions)
+                {
+                    BanManager.BanCheater(source);
+                    return;
+                }
+
                 var opacity = float.Parse(new Random().NextDouble().ToString());
                 var type = CloudTypes[new Random().Next(0, CloudTypes.Count)];
                 TriggerClientEvent("vMenu:SetClouds", opacity, type);
@@ -715,13 +761,34 @@ namespace vMenuServer
         /// </summary>
         /// <param name="newHours"></param>
         /// <param name="newMinutes"></param>
-        /// <param name="freezeTimeNew"></param>
         [EventHandler("vMenu:UpdateServerTime")]
-        internal void UpdateTime(int newHours, int newMinutes, bool freezeTimeNew)
+        internal void UpdateTime([FromSource] Player source, int newHours, int newMinutes)
         {
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOSetTime, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.TOAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
             CurrentHours = newHours;
             CurrentMinutes = newMinutes;
-            FreezeTime = freezeTimeNew;
+        }
+
+        /// <summary>
+        /// Set and sync if time is frozen for all clients.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="freezeTime"></param>
+        [EventHandler("vMenu:FreezeServerTime")]
+        internal void FreezeServerTime([FromSource] Player source, bool freezeTime)
+        {
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOFreezeTime, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.TOAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
+            FreezeTime = freezeTime;
         }
         #endregion
 
@@ -912,19 +979,15 @@ namespace vMenuServer
         }
 
         [EventHandler("vMenu:GetPlayerCoords")]
-        internal void GetPlayerCoords([FromSource] Player source, int playerId, NetworkCallbackDelegate callback)
+        internal void GetPlayerCoords([FromSource] Player source, long rpcId, int playerId, NetworkCallbackDelegate callback)
         {
+            var coords = Vector3.Zero;
             if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Teleport") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
                 IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
             {
-                var coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
-
-                _ = callback(coords);
-
-                return;
+                coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
             }
-
-            _ = callback(Vector3.Zero);
+            source.TriggerEvent("vMenu:GetPlayerCoords:reply", rpcId, coords);
         }
         #endregion
 
