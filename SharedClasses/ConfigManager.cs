@@ -30,7 +30,6 @@ namespace vMenuShared
             vmenu_enable_animals_spawn_menu,
             vmenu_pvp_mode,
             keep_player_head_props,
-            vmenu_disable_server_info_convars,
             vmenu_player_names_distance,
             vmenu_disable_entity_outlines_tool,
             vmenu_disable_player_stats_setup,

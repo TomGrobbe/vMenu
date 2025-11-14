@@ -143,6 +143,12 @@ namespace vMenuClient.menus
                 }
                 else if (item == snowEnabled)
                 {
+                    if (EventManager.GetServerWeather is "XMAS" or "SNOWLIGHT" or "SNOW" or "BLIZZARD")
+                    {
+                        Notify.Custom($"Snow effects cannot be disabled when weather is ~y~{EventManager.GetServerWeather}~s~.");
+                        return;
+                    }
+
                     Notify.Custom($"Snow effects will now be forced {(_checked ? "~g~enabled" : "~r~disabled")}~s~.");
                     UpdateServerWeather(EventManager.GetServerWeather, EventManager.DynamicWeatherEnabled, _checked);
                 }

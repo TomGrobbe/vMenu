@@ -40,16 +40,14 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetAddons", new Action(SetConfigOptions)); // DEPRECATED: Backwards-compatible event handler; use 'vMenu:SetConfigOptions' instead
             EventHandlers.Add("vMenu:SetConfigOptions", new Action(SetConfigOptions));
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
-            EventHandlers.Add("vMenu:GoToPlayer", new Action<string>(SummonPlayer));
             EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
             EventHandlers.Add("vMenu:GoodBye", new Action(GoodBye));
             EventHandlers.Add("vMenu:SetBanList", new Action<string>(UpdateBanList));
-            EventHandlers.Add("vMenu:ClearArea", new Action<float, float, float>(ClearAreaNearPos));
+            EventHandlers.Add("vMenu:ClearArea", new Action<Vector3>(ClearAreaNearPos));
             EventHandlers.Add("vMenu:updatePedDecors", new Action(UpdatePedDecors));
             EventHandlers.Add("playerSpawned", new Action(SetAppearanceOnFirstSpawn));
-            EventHandlers.Add("vMenu:GetOutOfCar", new Action<int, int>(GetOutOfCar));
             EventHandlers.Add("vMenu:PrivateMessage", new Action<string, string>(PrivateMessage));
             EventHandlers.Add("vMenu:UpdateTeleportLocations", new Action<string>(UpdateTeleportLocations));
 
@@ -354,91 +352,13 @@ namespace vMenuClient
         }
 
         /// <summary>
-        /// Teleport to the specified player.
-        /// </summary>
-        /// <param name="targetPlayer"></param>
-        private async void SummonPlayer(string targetPlayer)
-        {
-            // ensure the player list is requested in case of Infinity
-            MainMenu.PlayersList.RequestPlayerList();
-            await MainMenu.PlayersList.WaitRequested();
-
-            var player = MainMenu.PlayersList.FirstOrDefault(a => a.ServerId == int.Parse(targetPlayer));
-
-            if (player != null)
-            {
-                _ = TeleportToPlayer(player);
-            }
-        }
-
-        /// <summary>
         /// Clear the area around the provided x, y, z coordinates. Clears everything like (destroyed) objects, peds, (ai) vehicles, etc.
         /// Also restores broken streetlights, etc.
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        private void ClearAreaNearPos(float x, float y, float z)
-        {
-            ClearAreaOfEverything(x, y, z, 100f, false, false, false, false);
-        }
-
-        /// <summary>
-        /// Kicks the current player from the specified vehicle if they're inside and don't own the vehicle themselves.
-        /// </summary>
-        /// <param name="vehNetId"></param>
-        /// <param name="vehicleOwnedBy"></param>
-        private async void GetOutOfCar(int vehNetId, int vehicleOwnedBy)
-        {
-            if (NetworkDoesNetworkIdExist(vehNetId))
-            {
-                var veh = NetToVeh(vehNetId);
-                if (DoesEntityExist(veh))
-                {
-                    var vehicle = new Vehicle(veh);
-
-                    if (vehicle == null || !vehicle.Exists())
-                    {
-                        return;
-                    }
-
-                    if (Game.PlayerPed.IsInVehicle(vehicle) && vehicleOwnedBy != Game.Player.ServerId)
-                    {
-                        if (!vehicle.IsStopped)
-                        {
-                            Notify.Alert("The owner of this vehicle is reclaiming their personal vehicle. You will be kicked from this vehicle in about 10 seconds. Stop the vehicle now to avoid taking damage.", false, true);
-                        }
-
-                        // Wait for the vehicle to come to a stop, or 10 seconds, whichever is faster.
-                        var timer = GetGameTimer();
-                        while (vehicle != null && vehicle.Exists() && !vehicle.IsStopped)
-                        {
-                            await Delay(0);
-                            if (GetGameTimer() - timer > (10 * 1000)) // 10 second timeout
-                            {
-                                break;
-                            }
-                        }
-
-                        // just to make sure they're actually still inside the vehicle and the vehicle still exists.
-                        if (vehicle != null && vehicle.Exists() && Game.PlayerPed.IsInVehicle(vehicle))
-                        {
-                            // Make the ped jump out because the car isn't stopped yet.
-                            if (!vehicle.IsStopped)
-                            {
-                                Notify.Info("You were warned, now you'll have to suffer the consequences!");
-                                TaskLeaveVehicle(Game.PlayerPed.Handle, vehicle.Handle, 4160);
-                            }
-                            // Make the ped exit gently.
-                            else
-                            {
-                                TaskLeaveVehicle(Game.PlayerPed.Handle, vehicle.Handle, 0);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        private void ClearAreaNearPos(Vector3 position) => ClearAreaOfEverything(position.X, position.Y, position.Z, 100f, false, false, false, false);
 
         /// <summary>
         /// Updates ped decorators for the clothing animation when players have joined.

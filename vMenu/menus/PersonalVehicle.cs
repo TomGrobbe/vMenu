@@ -280,10 +280,11 @@ namespace vMenuClient.menus
                 {
                     if (item == kickAllPassengers)
                     {
-                        if (CurrentPersonalVehicle.Occupants.Count() > 0 && CurrentPersonalVehicle.Occupants.Any(p => p != Game.PlayerPed))
+                        Ped[] occupants = CurrentPersonalVehicle.Occupants;
+
+                        if (occupants.Count() > 0 && occupants.Any(p => p != Game.PlayerPed && p.IsPlayer))
                         {
-                            var netId = VehToNet(CurrentPersonalVehicle.Handle);
-                            TriggerServerEvent("vMenu:GetOutOfCar", netId, Game.Player.ServerId);
+                            TriggerServerEvent("vMenu:GetOutOfCar", CurrentPersonalVehicle.NetworkId);
                         }
                         else
                         {

@@ -50,7 +50,16 @@ namespace vMenuClient.menus
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
-        public bool MiscDisablePrivateMessages { get; private set; } = UserDefaults.MiscDisablePrivateMessages;
+        private bool _disablePrivateMessages;
+        public bool MiscDisablePrivateMessages
+        {
+            get => _disablePrivateMessages;
+            set
+            {
+                _disablePrivateMessages = value;
+                Game.Player.State.Set("vmenu_pms_disabled", value, true);
+            }
+        }
         public bool MiscDisableControllerSupport { get; private set; } = UserDefaults.MiscDisableControllerSupport;
 
         internal bool TimecycleEnabled { get; private set; } = false;
@@ -69,6 +78,12 @@ namespace vMenuClient.menus
         public bool KbPointKeys { get; private set; } = UserDefaults.KbPointKeys;
 
         internal static List<vMenuShared.ConfigManager.TeleportLocation> TpLocations = new();
+
+        public MiscSettings()
+        {
+            // Sets statebag when resource starts
+            MiscDisablePrivateMessages = UserDefaults.MiscDisablePrivateMessages;
+        }
 
         /// <summary>
         /// Creates the menu.
@@ -469,8 +484,7 @@ namespace vMenuClient.menus
             {
                 if (item == clearArea)
                 {
-                    var pos = Game.PlayerPed.Position;
-                    BaseScript.TriggerServerEvent("vMenu:ClearArea", pos.X, pos.Y, pos.Z);
+                    BaseScript.TriggerServerEvent("vMenu:ClearArea");
                 }
             };
 

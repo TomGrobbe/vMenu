@@ -185,7 +185,7 @@ namespace vMenuClient.menus
                 GetLabelText("CMOD_PLA_2"), // Plate Index 2 // BlueOnWhite3
                 GetLabelText("CMOD_PLA_3"), // Plate Index 3 // YellowOnBlue
                 GetLabelText("CMOD_PLA_4"), // Plate Index 4 // YellowOnBlack
-                "North Yankton", // Plate Index 5 // NorthYankton
+                GetLabelText("PROL"), // Plate Index 5 // NorthYankton
                 GetLabelText("CMOD_PLA_6"), // Plate Index 6 // ECola
                 GetLabelText("CMOD_PLA_7"), // Plate Index 7 // LasVenturas
                 GetLabelText("CMOD_PLA_8"), // Plate Index 8 // LibertyCity
@@ -1028,21 +1028,35 @@ namespace vMenuClient.menus
             #endregion
 
             #region Vehicle Colors Submenu Stuff
+            // color customization menu
+            var customizeColorMenu = new Menu("Vehicle Colors", "Customize Colors");
+            MenuController.AddSubmenu(VehicleColorsMenu, customizeColorMenu);
+
+            var colorsCustomizationBtn = new MenuItem("Customize Colors") { Label = "→→→" };
+            VehicleColorsMenu.AddMenuItem(colorsCustomizationBtn);
+            MenuController.BindMenuItem(VehicleColorsMenu, customizeColorMenu, colorsCustomizationBtn);
+
             // primary menu
             var primaryColorsMenu = new Menu("Vehicle Colors", "Primary Colors");
-            MenuController.AddSubmenu(VehicleColorsMenu, primaryColorsMenu);
+            MenuController.AddSubmenu(customizeColorMenu, primaryColorsMenu);
 
             var primaryColorsBtn = new MenuItem("Primary Color") { Label = "→→→" };
-            VehicleColorsMenu.AddMenuItem(primaryColorsBtn);
-            MenuController.BindMenuItem(VehicleColorsMenu, primaryColorsMenu, primaryColorsBtn);
+            customizeColorMenu.AddMenuItem(primaryColorsBtn);
+            MenuController.BindMenuItem(customizeColorMenu, primaryColorsMenu, primaryColorsBtn);
 
             // secondary menu
             var secondaryColorsMenu = new Menu("Vehicle Colors", "Secondary Colors");
-            MenuController.AddSubmenu(VehicleColorsMenu, secondaryColorsMenu);
+            MenuController.AddSubmenu(customizeColorMenu, secondaryColorsMenu);
 
             var secondaryColorsBtn = new MenuItem("Secondary Color") { Label = "→→→" };
-            VehicleColorsMenu.AddMenuItem(secondaryColorsBtn);
-            MenuController.BindMenuItem(VehicleColorsMenu, secondaryColorsMenu, secondaryColorsBtn);
+            customizeColorMenu.AddMenuItem(secondaryColorsBtn);
+            MenuController.BindMenuItem(customizeColorMenu, secondaryColorsMenu, secondaryColorsBtn);
+
+            var presetColorsBtn = new MenuListItem("Preset Colors", [], 0);
+            customizeColorMenu.AddMenuItem(presetColorsBtn);
+
+            var chrome = new MenuItem("Chrome");
+            customizeColorMenu.AddMenuItem(chrome);
 
             // color lists
             var classic = new List<string>();
@@ -1108,25 +1122,8 @@ namespace vMenuClient.menus
             var intColorList = new MenuListItem("Interior / Trim Color", classic, 0);
             var vehicleEnveffScale = new MenuSliderItem("Vehicle Enveff Scale", "This works on certain vehicles only, like the besra for example. It 'fades' certain paint layers.", 0, 20, 10, true);
 
-            var chrome = new MenuItem("Chrome");
-            VehicleColorsMenu.AddMenuItem(chrome);
             VehicleColorsMenu.AddMenuItem(vehicleEnveffScale);
 
-            VehicleColorsMenu.OnItemSelect += (sender, item, index) =>
-            {
-                var veh = GetVehicle();
-                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
-                {
-                    if (item == chrome)
-                    {
-                        SetVehicleColours(veh.Handle, 120, 120); // chrome is index 120
-                    }
-                }
-                else
-                {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
-                }
-            };
             VehicleColorsMenu.OnSliderPositionChange += (m, sliderItem, oldPosition, newPosition, itemIndex) =>
             {
                 var veh = GetVehicle();
@@ -1309,7 +1306,7 @@ namespace vMenuClient.menus
 
             for (var i = 0; i < 2; i++)
             {
-                var customColour = new MenuItem("Custom RGB") { Label = ">>>" };
+                var customColour = new MenuItem("Custom RGB") { Label = "→→→" };
                 var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
                 var classicList = new MenuListItem("Classic", classic, 0);
                 var metallicList = new MenuListItem("Metallic", classic, 0);
@@ -1351,6 +1348,66 @@ namespace vMenuClient.menus
 
                     secondaryColorsMenu.OnListIndexChange += HandleListIndexChanges;
                     secondaryColorsMenu.OnItemSelect += HandleItemSelect;
+                }
+            }
+
+            customizeColorMenu.OnMenuOpen += (_) =>
+            {
+                int numVehColors = GetNumberOfVehicleColours(GetVehicle().Handle);
+
+                if (numVehColors == 0)
+                {
+                    presetColorsBtn.Enabled = false;
+                    presetColorsBtn.ListItems = ["No Preset Colors"];
+                    presetColorsBtn.ListIndex = 0;
+                    return;
+                }
+
+                List<string> colorOptions = [];
+
+                presetColorsBtn.Enabled = true;
+
+                for (int i = 0; i < numVehColors; i++)
+                {
+                    colorOptions.Add($"Preset Color #{i + 1}");
+                }
+
+                int currentColor = GetVehicleColourCombination(GetVehicle().Handle);
+
+                presetColorsBtn.ListItems = colorOptions;
+                presetColorsBtn.ListIndex = currentColor < 0 ? 0 : currentColor;
+            };
+
+            customizeColorMenu.OnItemSelect += (_, item, _) =>
+            {
+                var veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    if (item == chrome)
+                    {
+                        SetVehicleColours(veh.Handle, 120, 120); // chrome is index 120
+                    }
+                }
+                else
+                {
+                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
+                }
+            };
+
+            customizeColorMenu.OnListItemSelect += (_, _, index, _) => ChangeVehiclePresetColor(index);
+
+            customizeColorMenu.OnListIndexChange += (_, _, _, index, _) => ChangeVehiclePresetColor(index);
+
+            void ChangeVehiclePresetColor(int index)
+            {
+                var veh = GetVehicle();
+                if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
+                {
+                    SetVehicleColourCombination(veh.Handle, index);
+                }
+                else
+                {
+                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
                 }
             }
             #endregion

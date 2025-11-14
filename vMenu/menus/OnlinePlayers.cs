@@ -52,9 +52,10 @@ namespace vMenuClient.menus
             var ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
             var tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
 
-            // always allowed
-            playerMenu.AddMenuItem(sendMessage);
-            // permissions specific
+            if (IsAllowed(Permission.OPSendMessage))
+            {
+                playerMenu.AddMenuItem(sendMessage);
+            }
             if (IsAllowed(Permission.OPTeleport))
             {
                 playerMenu.AddMenuItem(teleport);
@@ -111,6 +112,12 @@ namespace vMenuClient.menus
                 // send message
                 if (item == sendMessage)
                 {
+                    if (currentPlayer.Handle == Game.Player.Handle)
+                    {
+                        Notify.Error("You cannot message yourself!");
+                        return;
+                    }
+
                     if (MainMenu.MiscSettingsMenu != null && !MainMenu.MiscSettingsMenu.MiscDisablePrivateMessages)
                     {
                         var message = await GetUserInput($"Private Message To {currentPlayer.Name}", 200);
@@ -245,6 +252,7 @@ namespace vMenuClient.menus
                 }
                 else if (item == printIdentifiers)
                 {
+                    // TODO: Replace callback function
                     Func<string, string> CallbackFunction = (data) =>
                     {
                         Debug.WriteLine(data);

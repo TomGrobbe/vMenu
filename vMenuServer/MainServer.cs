@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -222,8 +222,6 @@ namespace vMenuServer
                     });
                     CallbackFunction(JsonConvert.SerializeObject(data));
                 }));
-                EventHandlers.Add("vMenu:RequestPermissions", new Action<Player>(PermissionsManager.SetPermissionsForPlayer));
-                EventHandlers.Add("vMenu:RequestServerState", new Action<Player>(RequestServerStateFromPlayer));
 
                 // check addons file for errors
                 var addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
@@ -267,6 +265,8 @@ namespace vMenuServer
                 {
                     Tick += TimeLoop;
                 }
+
+                GlobalState.Set("vmenu_onesync", GetConvar("onesync", "off") == "on", true);
             }
         }
         #endregion
@@ -525,17 +525,46 @@ namespace vMenuServer
         /// </summary>
         /// <param name="source"></param>
         /// <param name="vehicleNetId"></param>
-        /// <param name="playerOwner"></param>
         [EventHandler("vMenu:GetOutOfCar")]
-        internal void GetOutOfCar([FromSource] Player source, int vehicleNetId, int playerOwner)
+        internal void GetOutOfCar([FromSource] Player source, int vehicleNetId)
         {
-            if (source != null)
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.PVKickPassengers, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.PVAll, source))
             {
-                if (vMenuShared.PermissionsManager.GetPermissionAndParentPermissions(vMenuShared.PermissionsManager.Permission.PVKickPassengers).Any(perm => vMenuShared.PermissionsManager.IsAllowed(perm, source)))
+                BanManager.BanCheater(source);
+                return;
+            }
+
+            Entity vehicle = Entity.FromNetworkId(vehicleNetId);
+
+            if (vehicle is null)
+            {
+                return;
+            }
+
+            int vehicleHandle = vehicle.Handle;
+
+            for (int i = -1; i < 15; i++)
+            {
+                int pedHandle = GetPedInVehicleSeat(vehicleHandle, i);
+
+                if (pedHandle == 0 || !IsPedAPlayer(pedHandle))
                 {
-                    TriggerClientEvent("vMenu:GetOutOfCar", vehicleNetId, playerOwner);
-                    source.TriggerEvent("vMenu:Notify", "All passengers will be kicked out as soon as the vehicle stops moving, or after 10 seconds if they refuse to stop the vehicle.");
+                    continue;
                 }
+
+                int playerHandle = NetworkGetEntityOwner(pedHandle);
+                Player player = GetPlayerFromServerId(playerHandle);
+
+                if (player is null || player == source)
+                {
+                    continue;
+                }
+
+                int warpOutFlag = 16;
+
+                TaskLeaveVehicle(pedHandle, vehicleHandle, warpOutFlag);
+
+                player.TriggerEvent("vMenu:Notify", "The owner of the vehicle has kicked you out.");
             }
         }
         #endregion
@@ -544,13 +573,13 @@ namespace vMenuServer
         /// <summary>
         /// Clear the area near this point for all players.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
         [EventHandler("vMenu:ClearArea")]
-        internal void ClearAreaNearPos(float x, float y, float z)
+        internal void ClearAreaNearPos([FromSource] Player source)
         {
-            TriggerClientEvent("vMenu:ClearArea", x, y, z);
+            Ped ped = source.Character;
+            Vector3 position = ped.Position;
+
+            TriggerClientEvent("vMenu:ClearArea", position);
         }
         #endregion
 
@@ -802,34 +831,31 @@ namespace vMenuServer
         [EventHandler("vMenu:KickPlayer")]
         internal void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kick") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
-                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
-            {
-                // If the player is allowed to be kicked.
-                var targetPlayer = Players[target];
-                if (targetPlayer != null)
-                {
-                    if (!IsPlayerAceAllowed(targetPlayer.Handle, "vMenu.DontKickMe"))
-                    {
-                        TriggerEvent("vMenu:KickSuccessful", source.Name, kickReason, targetPlayer.Name);
-
-                        KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
-                        TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
-
-                        // Kick the player from the server using the specified reason.
-                        DropPlayer(targetPlayer.Handle, kickReason);
-                        return;
-                    }
-                    // Trigger the client event on the source player to let them know that kicking this player is not allowed.
-                    TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "Sorry, this player can ~r~not ~w~be kicked.");
-                    return;
-                }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
-            }
-            else
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKick, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
             {
                 BanManager.BanCheater(source);
+                return;
             }
+
+            Player targetPlayer = GetPlayerFromServerId(target);
+
+            if (targetPlayer is null)
+            {
+                source.TriggerEvent("vMenu:Notify", "Failed to kick target, because the target could not be found. Did they already leave?");
+                return;
+            }
+
+            if (PermissionsManager.IsAllowed(PermissionsManager.Permission.DontKickMe, targetPlayer))
+            {
+                source.TriggerEvent("vMenu:Notify", "Sorry, this player can ~r~not ~w~be kicked.");
+                return;
+            }
+
+            KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
+
+            source.TriggerEvent("vMenu:Notify", $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
+
+            targetPlayer.Drop(kickReason);
         }
 
         /// <summary>
@@ -840,22 +866,20 @@ namespace vMenuServer
         [EventHandler("vMenu:KillPlayer")]
         internal void KillPlayer([FromSource] Player source, int target)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Kill") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
-                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
-            {
-                var targetPlayer = Players[target];
-                if (targetPlayer != null)
-                {
-                    // Trigger the client event on the target player to make them kill themselves. R.I.P.
-                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:KillMe", args: source.Name);
-                    return;
-                }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
-            }
-            else
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKill, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
             {
                 BanManager.BanCheater(source);
+                return;
             }
+
+            Player targetPlayer = GetPlayerFromServerId(target);
+
+            if (targetPlayer is null)
+            {
+                return;
+            }
+
+            targetPlayer.TriggerEvent("vMenu:KillMe", source.Name);
         }
 
         /// <summary>
@@ -864,52 +888,129 @@ namespace vMenuServer
         /// <param name="source"></param>
         /// <param name="target"></param>
         [EventHandler("vMenu:SummonPlayer")]
-        internal void SummonPlayer([FromSource] Player source, int target)
+        internal async void SummonPlayer([FromSource] Player source, int target, int numberOfSeats)
         {
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Summon") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
-                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
-            {
-                // Trigger the client event on the target player to make them teleport to the source player.
-                var targetPlayer = Players[target];
-                if (targetPlayer != null)
-                {
-                    TriggerClientEvent(player: targetPlayer, eventName: "vMenu:GoToPlayer", args: source.Handle);
-                    return;
-                }
-                TriggerClientEvent(player: source, eventName: "vMenu:Notify", args: "An unknown error occurred. Report it here: vespura.com/vmenu");
-            }
-            else
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSummon, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
             {
                 BanManager.BanCheater(source);
+                return;
+            }
+
+            Player targetPlayer = GetPlayerFromServerId(target);
+
+            if (targetPlayer is null)
+            {
+                return;
+            }
+
+            int targetPedHandle;
+            Ped targetPed = targetPlayer.Character;
+
+            if (targetPed is null || !DoesEntityExist(targetPedHandle = targetPed.Handle))
+            {
+                return;
+            }
+
+            bool lastVehicle = false;
+            Ped sourcePed = source.Character;
+            int sourcePedHandle = sourcePed.Handle;
+            int sourcePedVehicle = GetVehiclePedIsIn(sourcePedHandle, lastVehicle);
+
+            if (sourcePedVehicle == 0)
+            {
+                targetPed.Position = sourcePed.Position;
+                return;
+            }
+
+            bool seatFound = false;
+
+            // Seat indices start at `-1`
+            numberOfSeats -= 1;
+
+            for (int i = -1; i < numberOfSeats; i++)
+            {
+                bool seatFree = GetPedInVehicleSeat(sourcePedVehicle, i) == 0;
+
+                if (!seatFree)
+                {
+                    continue;
+                }
+
+                Vector3 checkPosition;
+                long timeout = GetGameTimer() + 1_500;
+                Vector3 priorPosition = targetPed.Position;
+                Vector3 newPosition = sourcePed.Position + new Vector3(0f, 0f, 5f);
+
+                seatFound = true;
+                targetPed.Position = newPosition;
+
+                while (timeout > GetGameTimer() && priorPosition.DistanceToSquared(checkPosition = targetPed.Position) < newPosition.DistanceToSquared(checkPosition))
+                {
+                    await Delay(100);
+                }
+
+                if (timeout < GetGameTimer())
+                {
+                    source.TriggerEvent("vMenu:Notify", "Failed to teleport player.");
+                    break;
+                }
+
+                SetPedIntoVehicle(targetPedHandle, sourcePedVehicle, i);
+                break;
+            }
+
+            if (!seatFound)
+            {
+                source.TriggerEvent("vMenu:Notify", "No free seats in your vehicle for summoned player.");
             }
         }
 
         [EventHandler("vMenu:SendMessageToPlayer")]
-        internal void SendPrivateMessage([FromSource] Player source, int targetServerId, string message)
+        internal void SendPrivateMessage([FromSource] Player source, int target, string message)
         {
-            var targetPlayer = Players[targetServerId];
-            if (targetPlayer != null)
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSendMessage, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
             {
-                targetPlayer.TriggerEvent("vMenu:PrivateMessage", source.Handle, message);
-
-                foreach (var p in Players)
-                {
-                    if (p != source && p != targetPlayer)
-                    {
-                        if (vMenuShared.PermissionsManager.IsAllowed(vMenuShared.PermissionsManager.Permission.OPSeePrivateMessages, p))
-                        {
-                            p.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
-                        }
-                    }
-                }
+                BanManager.BanCheater(source);
+                return;
             }
-        }
 
-        [EventHandler("vMenu:PmsDisabled")]
-        internal void NotifySenderThatDmsAreDisabled([FromSource] Player source, string senderServerId)
-        {
-            var p = Players[int.Parse(senderServerId)];
-            p?.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they disabled private messages.");
+            bool sourcePmsDisabled = source.State.Get("vmenu_pms_disabled") ?? false;
+
+            if (sourcePmsDisabled)
+            {
+                source.TriggerEvent("vMenu:Notify", "You can't send a private message if you have private messages disabled yourself. Enable them in the Misc Settings menu and try again.");
+                return;
+            }
+
+            Player targetPlayer = GetPlayerFromServerId(target);
+
+            if (targetPlayer is null)
+            {
+                source.TriggerEvent("vMenu:Notify", "Failed to send message because the target could not be found. Did they disconnect?");
+                return;
+            }
+
+            bool targetPmsDisabled = targetPlayer.State.Get("vmenu_pms_disabled") ?? false;
+
+            if (targetPmsDisabled)
+            {
+                source.TriggerEvent("vMenu:Notify", $"Sorry, your private message to <C>{source.Name}</C>~s~ could not be delivered because they have private messages disabled.");
+                return;
+            }
+
+            targetPlayer.TriggerEvent("vMenu:PrivateMessage", source.Handle, message);
+
+            foreach (string playerHandle in joinedPlayers)
+            {
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSeePrivateMessages, playerHandle) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, playerHandle))
+                {
+                    continue;
+                }
+
+                Player player = GetPlayerFromServerId(playerHandle);
+
+                player?.TriggerEvent("vMenu:Notify", $"[vMenu Staff Log] <C>{source.Name}</C>~s~ sent a PM to <C>{targetPlayer.Name}</C>~s~: {message}");
+            }
         }
         #endregion
 
@@ -941,16 +1042,33 @@ namespace vMenuServer
 
         #region Add teleport location
         [EventHandler("vMenu:SaveTeleportLocation")]
-        internal void AddTeleportLocation([FromSource] Player _, string locationJson)
+        internal void AddTeleportLocation([FromSource] Player source, string locationJson)
         {
-            var location = JsonConvert.DeserializeObject<TeleportLocation>(locationJson);
-            if (GetTeleportLocationsData().Any(loc => loc.name == location.name))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSTeleportSaveLocation, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.MSAll, source))
+            {
+                BanManager.BanCheater(source);
+                return;
+            }
+
+            TeleportLocation teleportLocation;
+
+            try
+            {
+                teleportLocation = JsonConvert.DeserializeObject<TeleportLocation>(locationJson);
+            }
+            catch
+            {
+                Log("Teleport location could not be deserialized, location was not saved.", LogLevel.error);
+                return;
+            }
+
+            if (GetTeleportLocationsData().Exists(loc => loc.name == teleportLocation.name))
             {
                 Log("A teleport location with this name already exists, location was not saved.", LogLevel.error);
                 return;
             }
             var locs = GetLocations();
-            locs.teleports.Add(location);
+            locs.teleports.Add(teleportLocation);
             if (!SaveResourceFile(GetCurrentResourceName(), "config/locations.json", JsonConvert.SerializeObject(locs, Formatting.Indented), -1))
             {
                 Log("Could not save locations.json file, reason unknown.", LogLevel.error);
@@ -960,14 +1078,7 @@ namespace vMenuServer
         #endregion
 
         #region Infinity bits
-        private void RequestServerStateFromPlayer([FromSource] Player player)
-        {
-            player.TriggerEvent("vMenu:SetServerState", new
-            {
-                IsInfinity = GetConvar("onesync_enableInfinity", "false") == "true"
-            });
-        }
-
+        // TODO: Replace this logic and all child logic with statebags (server set, client read)
         [EventHandler("vMenu:RequestPlayerList")]
         internal void RequestPlayerListFromPlayer([FromSource] Player player)
         {
@@ -982,11 +1093,22 @@ namespace vMenuServer
         internal void GetPlayerCoords([FromSource] Player source, long rpcId, int playerId, NetworkCallbackDelegate callback)
         {
             var coords = Vector3.Zero;
-            if (IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.Teleport") || IsPlayerAceAllowed(source.Handle, "vMenu.Everything") ||
-                IsPlayerAceAllowed(source.Handle, "vMenu.OnlinePlayers.All"))
+
+            if (PermissionsManager.IsAllowed(PermissionsManager.Permission.OPTeleport, source) || PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
             {
-                coords = Players[playerId]?.Character?.Position ?? Vector3.Zero;
+                Player targetPlayer = GetPlayerFromServerId(playerId);
+
+                if (targetPlayer is not null)
+                {
+                    Ped targetPed = targetPlayer.Character;
+
+                    if (targetPed is not null && DoesEntityExist(targetPed.Handle))
+                    {
+                        coords = targetPed.Position;
+                    }
+                }
             }
+
             source.TriggerEvent("vMenu:GetPlayerCoords:reply", rpcId, coords);
         }
         #endregion
@@ -994,16 +1116,41 @@ namespace vMenuServer
         #region Player join/quit
         private readonly HashSet<string> joinedPlayers = new();
 
-        private Task PlayersFirstTick()
+        private IEnumerable<Player> GetJoinQuitNotifPlayers()
+        {
+            List<Player> players = [];
+
+            foreach (string playerHandle in joinedPlayers)
+            {
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSJoinQuitNotifs, playerHandle) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.MSAll, playerHandle))
+                {
+                    continue;
+                }
+
+                Player player = GetPlayerFromServerId(playerHandle);
+
+                if (player is not null)
+                {
+                    players.Add(player);
+                }
+            }
+
+            return players;
+        }
+
+        private async Task PlayersFirstTick()
         {
             Tick -= PlayersFirstTick;
+
+            // Allow plenty of time for the connected clients to restart their client scripts
+            await Delay(3_000);
 
             foreach (var player in Players)
             {
                 joinedPlayers.Add(player.Handle);
-            }
 
-            return Task.FromResult(0);
+                PermissionsManager.SetPermissionsForPlayer(player);
+            }
         }
 
         [EventHandler("playerJoining")]
@@ -1011,13 +1158,13 @@ namespace vMenuServer
         {
             joinedPlayers.Add(sourcePlayer.Handle);
 
-            foreach (var player in Players)
+            PermissionsManager.SetPermissionsForPlayer(sourcePlayer);
+
+            string sourcePlayerName = sourcePlayer.Name;
+
+            foreach (Player notifPlayer in GetJoinQuitNotifPlayers())
             {
-                if (IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.JoinQuitNotifs") ||
-                    IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.All"))
-                {
-                    player.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayer.Name, null);
-                }
+                notifPlayer.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayerName, null);
             }
         }
 
@@ -1031,14 +1178,36 @@ namespace vMenuServer
 
             joinedPlayers.Remove(sourcePlayer.Handle);
 
-            foreach (var player in Players)
+            string sourcePlayerName = sourcePlayer.Name;
+            
+            foreach (Player notifPlayer in GetJoinQuitNotifPlayers())
             {
-                if (IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.JoinQuitNotifs") ||
-                    IsPlayerAceAllowed(player.Handle, "vMenu.MiscSettings.All"))
-                {
-                    player.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayer.Name, reason);
-                }
+                notifPlayer.TriggerEvent("vMenu:PlayerJoinQuit", sourcePlayerName, reason);
             }
+        }
+        #endregion
+
+        #region Utilities
+        private Player GetPlayerFromServerId(string serverId)
+        {
+            if (!int.TryParse(serverId, out int serverIdInt))
+            {
+                return null;
+            }
+
+            return GetPlayerFromServerId(serverIdInt);
+        }
+
+        private Player GetPlayerFromServerId(int serverId)
+        {
+            string serverIdString = serverId.ToString();
+
+            if (serverId <= 0 || !DoesPlayerExist(serverIdString))
+            {
+                return null;
+            }
+
+            return Players[serverId];
         }
         #endregion
     }
