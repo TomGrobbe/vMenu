@@ -202,15 +202,23 @@ namespace vMenuClient.menus
                     { 12, "Avoid restricted areas" },  // The driver avoids areas marked as restricted.
                     { 13, "Prevent background pathfinding" },  // The driver will not perform background pathfinding.
                     { 14, "Adjust cruise speed based on road speed" },  // The driver adjusts speed to match road conditions.
+                    { 15, "Prevent join in road direction when moving" },  // The driver avoids joining roads in the direction of traffic when moving.
+                    { 16, "Don't avoid target" },  // The driver does not avoid the target destination.
+                    { 17, "Target position overrides entity" },  // The target position takes precedence over the target entity.
                     { 18, "Use shortcut links (Use shortest path)" },  // The driver uses shortcuts to reach the destination faster.
                     { 19, "Change lanes around obstructions" },  // The driver changes lanes to avoid obstructions.
+                    { 20, "Avoid target coords" },  // The driver pathfind away from instead of towards the target coordinates.
                     { 21, "Use switched-off nodes" },  // The driver can use nodes that are typically disabled.
                     { 22, "Prefer navmesh route" },  // The driver prefers routes defined in the navigation mesh.
                     { 23, "Plane taxi mode" },  // The driver operates as if taxiing an aircraft.
                     { 24, "Force straight line" },  // The driver attempts to drive in a straight line.
                     { 25, "Use string pulling at junctions" },  // The driver uses string pulling for smoother turns at junctions.
+                    { 26, "Avoid Adverse Conditions" },  // The driver avoids "adverse conditions" (shocking events, etc.) when cruising.
+                    { 27, "Avoid turns" },  // The driver avoids turns when cruising.
+                    { 28, "Extend route with wander results" },  // The driver extends the route using wandering paths.
                     { 29, "Avoid highways (if possible)" },  // The driver avoids using highways.
                     { 30, "Force join in road direction" },  // The driver joins roads in the correct direction.
+                    { 31, "Don't terminate task when achieved" },  // The driver will not terminate the driving task upon reaching the destination.
                 };
                 for (var i = 0; i < 31; i++)
                 {
