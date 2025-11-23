@@ -220,7 +220,7 @@ namespace vMenuClient.menus
                     { 30, "Force join in road direction" },  // The driver joins roads in the correct direction.
                     { 31, "Don't terminate task when achieved" },  // The driver will not terminate the driving task upon reaching the destination.
                 };
-                for (var i = 0; i < 31; i++)
+                for (var i = 0; i < 32; i++)
                 {
                     var name = "~r~Unknown Flag";
                     if (knownNames.ContainsKey(i))
