@@ -196,7 +196,7 @@ namespace vMenuClient.menus
                     { 6, "Don't steer around Player" },  // Using this flag will prevent the driver trying steer around an pedestrian if that pedestrian is the player
                     { 7, "Stop at lights" },  // Using this flag will cause the driver to stop at traffic lights when appropriate.
                     { 8, "Go off road when avoiding" },  // Using this flag will allow the driver to deliberately go off-road when trying to avoid something.
-                    { 9, "Drive into oncoming traffic" },  // Using this flag will allow the driver to deliberately drive into oncoming traffic, whe certain conditions are met. Such as avoiding or swerving, or overtaking.
+                    { 9, "Drive into oncoming traffic" },  // Using this flag will allow the driver to deliberately drive into oncoming traffic, when certain conditions are met. Such as avoiding or swerving, or overtaking.
                     { 10, "Drive in reverse" },  // Using this flag will tell the driver that they should drive in reverse.
                     { 11, "Use wander fallback instead of straight line" },  // Using this flag will make the driver use wander pathfinding instead of straight line pathfinding when no route is found.
                     { 12, "Avoid restricted areas" },  // Using this flag will tell the driver that they should avoid areas considered restricted. This includes areas like the Army Base, Prison, Airport, or any other areas that might give the Player a Wanted Level for driving through.
