@@ -190,7 +190,7 @@ namespace vMenuClient.menus
                     { 0, "Stop for vehicles" },  // Using this flag will allow the driver to stop for other vehicles when appropriate, instead of hitting them.
                     { 1, "Stop for pedestrians" },  // Using this flag will allow the driver to stop for pedestrians when appropriate, instead of hitting them.
                     { 2, "Swerve around all vehicles" },  // Using this flag will allow the driver to stop for other vehicles when appropriate, instead of hitting them.
-                    { 3, "Steer around stationary vehicles" },  // Using this flag will allow the drive to steer around a vehicle in order to avoird them when driving.
+                    { 3, "Steer around stationary vehicles" },  // Using this flag will allow the driver to steer around a vehicle in order to avoid them when driving.
                     { 4, "Steer around pedestrians" },  // Using this flag will allow the drive to steer around an pedestrian in order to avoid them when driving.
                     { 5, "Steer around objects" },  // Using this flag will allow the driver to steer around objects in order to avoid them when driving.
                     { 6, "Don't steer around Player" },  // Using this flag will prevent the driver trying steer around an pedestrian if that pedestrian is the player
