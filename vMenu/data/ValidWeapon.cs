@@ -260,6 +260,8 @@ namespace vMenuClient.data
             { "weapon_snowlauncher", GetLabelText("WTD_SNOWLNCHR") },
             // MP2024_01 DLC (V 3258)
             { "weapon_stunrod", GetLabelText("WTD_STUNROD") },
+            // MP2025_02 DLC (V 3717)
+            { "weapon_newspaper", GetLabelText("WTD_NEWSPAPER") },
         };
 
         public static readonly Dictionary<string, string> weaponNames = new()
@@ -383,6 +385,8 @@ namespace vMenuClient.data
             { "weapon_hackingdevice", GetLabelText("WT_HACKDEVICE") },
             // MP2024_01 DLC (V 3258)
             { "weapon_stunrod", GetLabelText("WT_STUNROD") },
+            // MP2025_02 DLC (V 3717)
+            { "weapon_newspaper", GetLabelText("WT_NEWSPAPER") },
         };
         #endregion
 

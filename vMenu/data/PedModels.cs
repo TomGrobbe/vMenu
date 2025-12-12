@@ -11,6 +11,7 @@ namespace vMenuClient.data
             (uint)GetHashKey("a_c_boar"),
             (uint)GetHashKey("a_c_boar_02"), // mp2023_01
             (uint)GetHashKey("a_c_cat_01"),
+            (uint)GetHashKey("a_c_cat_02"), // mp2025_02
             (uint)GetHashKey("a_c_chickenhawk"),
             (uint)GetHashKey("a_c_chimp"),
             (uint)GetHashKey("a_c_chimp_02"), // mpchristmas3
