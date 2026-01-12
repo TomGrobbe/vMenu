@@ -502,6 +502,7 @@ namespace vMenuClient.menus
             #region Loop through all weapons, create menus for them and add all menu items and handle events.
             foreach (var weapon in ValidWeapons.WeaponList)
             {
+                if (!ValidWeapons.weaponNames.ContainsKey(weapon.SpawnName)) continue;
                 var cat = (uint)GetWeapontypeGroup(weapon.Hash);
                 if (!string.IsNullOrEmpty(weapon.Name) && IsAllowed(weapon.Perm))
                 {
