@@ -1417,6 +1417,37 @@ namespace vMenuClient.menus
                 currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(listIndex, newTextureIndex);
                 listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxTextures}).";
             };
+            
+            // Add instructional button and handler for jumping to specific clothing number
+            clothesMenu.InstructionalButtons.Add(Control.SelectWeapon, "Jump to Number");
+            clothesMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.SelectWeapon, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (m, c) =>
+            {
+                var currentItem = m.GetCurrentMenuItem();
+                if (currentItem is MenuListItem listItem)
+                {
+                    var currentIndex = m.CurrentIndex;
+                    var realIndex = currentIndex;
+                    var componentIndex = realIndex + 1;
+                    if (realIndex > 0)
+                    {
+                        componentIndex += 1;
+                    }
+                    
+                    var maxDrawables = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, componentIndex);
+                    var input = await GetUserInput($"Enter drawable number (0-{maxDrawables - 1})", listItem.ListIndex.ToString(), 4);
+                    
+                    if (int.TryParse(input, out int drawableNum) && drawableNum >= 0 && drawableNum < maxDrawables)
+                    {
+                        listItem.ListIndex = drawableNum;
+                        SetPedComponentVariation(Game.PlayerPed.Handle, componentIndex, drawableNum, 0, 0);
+                        currentCharacter.DrawableVariations.clothes ??= new Dictionary<int, KeyValuePair<int, int>>();
+                        currentCharacter.DrawableVariations.clothes[componentIndex] = new KeyValuePair<int, int>(drawableNum, 0);
+                        
+                        var maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, componentIndex, drawableNum);
+                        listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #1 (of {maxTextures}).";
+                    }
+                }
+            }), true));
             #endregion
 
             #region props
@@ -1497,6 +1528,40 @@ namespace vMenuClient.menus
                 }
                 //propsMenu.UpdateScaleform();
             };
+            
+            // Add instructional button and handler for jumping to specific prop number
+            propsMenu.InstructionalButtons.Add(Control.SelectWeapon, "Jump to Number");
+            propsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.SelectWeapon, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (m, c) =>
+            {
+                var currentItem = m.GetCurrentMenuItem();
+                if (currentItem is MenuListItem listItem)
+                {
+                    var currentIndex = m.CurrentIndex;
+                    var propIndex = currentIndex;
+                    if (currentIndex == 3)
+                    {
+                        propIndex = 6;
+                    }
+                    if (currentIndex == 4)
+                    {
+                        propIndex = 7;
+                    }
+                    
+                    var maxProps = GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propIndex);
+                    var input = await GetUserInput($"Enter prop number (0-{maxProps - 1})", listItem.ListIndex.ToString(), 4);
+                    
+                    if (int.TryParse(input, out int propNum) && propNum >= 0 && propNum < maxProps)
+                    {
+                        listItem.ListIndex = propNum;
+                        SetPedPropIndex(Game.PlayerPed.Handle, propIndex, propNum, 0, true);
+                        currentCharacter.PropVariations.props ??= new Dictionary<int, KeyValuePair<int, int>>();
+                        currentCharacter.PropVariations.props[propIndex] = new KeyValuePair<int, int>(propNum, 0);
+                        
+                        var maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propIndex, propNum);
+                        listItem.Description = $"Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #1 (of {maxPropTextures}).";
+                    }
+                }
+            }), true));
             #endregion
 
             #region face shape data
@@ -2417,9 +2482,12 @@ namespace vMenuClient.menus
                         delPed.Label = "";
                         DeleteResourceKvp("mp_ped_" + selectedSavedCharacterManageName);
                         Notify.Success("Your saved character has been deleted.");
-                        manageSavedCharacterMenu.GoBack();
+                        
+                        // Instantly refresh the category menu
                         UpdateSavedPedsMenu();
-                        manageSavedCharacterMenu.RefreshIndex();
+                        savedCharactersCategoryMenu.RefreshIndex();
+                        
+                        manageSavedCharacterMenu.GoBack();
                     }
                     else
                     {

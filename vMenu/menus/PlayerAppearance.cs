@@ -780,6 +780,49 @@ namespace vMenuClient.menus
             }
             pedCustomizationMenu.RefreshIndex();
             #endregion
+            
+            // Add instructional button and handler for jumping to specific item number
+            pedCustomizationMenu.InstructionalButtons.Add(Control.SelectWeapon, "Jump to Number");
+            pedCustomizationMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.SelectWeapon, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (m, c) =>
+            {
+                var currentItem = m.GetCurrentMenuItem();
+                if (currentItem is MenuListItem listItem)
+                {
+                    // Check if this is a drawable or prop item
+                    if (drawablesMenuListItems.ContainsKey(listItem))
+                    {
+                        var drawableId = drawablesMenuListItems[listItem];
+                        var maxVariations = GetNumberOfPedDrawableVariations(Game.PlayerPed.Handle, drawableId);
+                        var input = await GetUserInput($"Enter drawable number (0-{maxVariations - 1})", listItem.ListIndex.ToString(), 4);
+                        
+                        if (int.TryParse(input, out int drawableNum) && drawableNum >= 0 && drawableNum < maxVariations)
+                        {
+                            listItem.ListIndex = drawableNum;
+                            SetPedComponentVariation(Game.PlayerPed.Handle, drawableId, drawableNum, 0, 0);
+                        }
+                    }
+                    else if (propsMenuListItems.ContainsKey(listItem))
+                    {
+                        var propId = propsMenuListItems[listItem];
+                        var maxProps = GetNumberOfPedPropDrawableVariations(Game.PlayerPed.Handle, propId) + 1;
+                        var input = await GetUserInput($"Enter prop number (0-{maxProps - 1}, 0=none)", listItem.ListIndex.ToString(), 4);
+                        
+                        if (int.TryParse(input, out int propNum) && propNum >= 0 && propNum < maxProps)
+                        {
+                            listItem.ListIndex = propNum;
+                            if (propNum == 0)
+                            {
+                                SetPedPropIndex(Game.PlayerPed.Handle, propId, -1, 0, false);
+                                ClearPedProp(Game.PlayerPed.Handle, propId);
+                            }
+                            else
+                            {
+                                SetPedPropIndex(Game.PlayerPed.Handle, propId, propNum - 1, 0, true);
+                            }
+                        }
+                    }
+                }
+            }), true));
         }
 
         ///// <summary>
