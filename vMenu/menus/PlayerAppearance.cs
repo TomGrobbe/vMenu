@@ -780,8 +780,7 @@ namespace vMenuClient.menus
             }
             pedCustomizationMenu.RefreshIndex();
             #endregion
-            
-            // Add instructional button and handler for jumping to specific item number
+
             pedCustomizationMenu.InstructionalButtons.Add(Control.SelectWeapon, "Jump to Number");
             pedCustomizationMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.SelectWeapon, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (m, c) =>
             {
@@ -2487,3 +2486,4 @@ namespace vMenuClient.menus
         }
     }
 }
+
