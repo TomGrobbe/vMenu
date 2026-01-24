@@ -50,7 +50,6 @@ namespace vMenuClient.menus
             spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
 
-
             // Add the (submenus) to the menu pool.
             MenuController.AddSubmenu(menu, pedCustomizationMenu);
             MenuController.AddSubmenu(menu, pedCollectionsMenu);
@@ -70,7 +69,6 @@ namespace vMenuClient.menus
             var saveCurrentPed = new MenuItem("Save Ped", "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
             var savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") { Label = "→→→" };
             var spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.") { Label = "→→→" };
-
 
             var spawnByNameBtn = new MenuItem("Spawn By Name", "Spawn a ped by entering it's name manually.");
             var addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") { Label = "→→→" };
@@ -244,7 +242,6 @@ namespace vMenuClient.menus
 
             selectedSavedPedMenu.OnIndexChange += (menu, newItem, oldItem, oldIndex, newIndex) => ResetSavedPedsMenu(false);
             selectedSavedPedMenu.OnMenuOpen += (menu) => ResetSavedPedsMenu(true);
-
 
             void UpdateSavedPedsMenu()
             {
@@ -428,7 +425,6 @@ namespace vMenuClient.menus
                 femalePedsMenu.InstructionalButtons.Add(Control.Jump, "Filter List");
                 femalePedsMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(FilterMenu), true));
 
-
                 async void SpawnPed(Menu m, MenuItem item, int index)
                 {
 
@@ -498,7 +494,6 @@ namespace vMenuClient.menus
                 };
             }
 
-
             // Handle list selections.
             menu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
             {
@@ -536,7 +531,6 @@ namespace vMenuClient.menus
                     }
                 }
             };
-
 
             #region ped drawable list changes
             // Manage list changes.
@@ -701,7 +695,6 @@ namespace vMenuClient.menus
             };
         }
 
-
         #endregion
 
         #region get the menu
@@ -770,7 +763,6 @@ namespace vMenuClient.menus
                     {
                         propTexturesList.Add($"Prop #{i + 2} (of {maxPropVariations + 1})");
                     }
-
 
                     var propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
                     propsMenuListItems.Add(propTextures, realProp);
@@ -2465,7 +2457,6 @@ namespace vMenuClient.menus
             ["u_m_y_zombie_01"] = "Zombie01",
         };
 
-
         #endregion
 
         private void ShowVisorText(int pedHandle)
@@ -2486,4 +2477,5 @@ namespace vMenuClient.menus
         }
     }
 }
+
 
