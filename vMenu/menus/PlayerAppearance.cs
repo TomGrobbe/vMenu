@@ -49,7 +49,6 @@ namespace vMenuClient.menus
             pedCollectionsCustomizationMenu = new Menu(Game.Player.Name, "I get updated at runtime!");
             spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
             addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
-
             // Add the (submenus) to the menu pool.
             MenuController.AddSubmenu(menu, pedCustomizationMenu);
             MenuController.AddSubmenu(menu, pedCollectionsMenu);
@@ -2477,5 +2476,6 @@ namespace vMenuClient.menus
         }
     }
 }
+
 
 
