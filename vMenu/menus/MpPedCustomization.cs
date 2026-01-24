@@ -1418,7 +1418,6 @@ namespace vMenuClient.menus
                 listItem.Description = $"Select a drawable using the arrow keys and press ~o~enter~s~ to cycle through all available textures. Currently selected texture: #{newTextureIndex + 1} (of {maxTextures}).";
             };
             
-            // Add instructional button and handler for jumping to specific clothing number
             clothesMenu.InstructionalButtons.Add(Control.SelectWeapon, "Jump to Number");
             clothesMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.SelectWeapon, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>(async (m, c) =>
             {
@@ -3478,3 +3477,4 @@ namespace vMenuClient.menus
         }
     }
 }
+
