@@ -114,7 +114,6 @@ namespace vMenuClient.menus
         private readonly List<string> chestHairStyleList = [];
         private readonly List<string> bodyBlemishesList = [];
 
-
         private readonly Random _random = new Random();
         private int _dadSelection;
         private int _mumSelection;
@@ -280,7 +279,6 @@ namespace vMenuClient.menus
             12              Add Body Blemishes    0 - 1,    255  
             
             */
-
 
             // hair
             var currentHairStyle = editPed ? currentCharacter.PedAppearance.hairStyle : GetPedDrawableVariation(Game.PlayerPed.Handle, 2);
@@ -532,7 +530,6 @@ namespace vMenuClient.menus
                 beardColor.LeftIcon = MenuItem.Icon.LOCK;
                 beardColor.Description = "This is not available for female characters.";
 
-
                 chestHairStyle.Enabled = false;
                 chestHairStyle.LeftIcon = MenuItem.Icon.LOCK;
                 chestHairStyle.Description = "This is not available for female characters.";
@@ -593,7 +590,6 @@ namespace vMenuClient.menus
                 }
                 propsList.Add("No Prop");
 
-
                 if (GetPedPropIndex(Game.PlayerPed.Handle, propId) != -1)
                 {
                     var maxPropTextures = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, propId, currentProp);
@@ -605,7 +601,6 @@ namespace vMenuClient.menus
                     var propListItem = new MenuListItem($"{propNames[x]}", propsList, currentProp, "Select a prop using the arrow keys and press ~o~enter~s~ to cycle through all available textures.");
                     propsMenu.AddMenuItem(propListItem);
                 }
-
 
             }
             #endregion
@@ -974,7 +969,6 @@ namespace vMenuClient.menus
             tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
             propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-
 
             var randomizeButton = new MenuItem("Randomize Character", "Randomize character appearance.");
             var inheritanceButton = new MenuItem("Character Inheritance", "Character inheritance options.");
@@ -1886,7 +1880,6 @@ namespace vMenuClient.menus
 
             #endregion
             #endregion
-
 
             // handle list changes in the character creator menu.
             createCharacterMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) =>
@@ -2812,7 +2805,6 @@ namespace vMenuClient.menus
                 }
             };
 
-
             savedCharactersCategoryMenu.OnItemSelect += async (sender, item, index) =>
             {
                 switch (index)
@@ -3477,4 +3469,5 @@ namespace vMenuClient.menus
         }
     }
 }
+
 
