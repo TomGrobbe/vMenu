@@ -540,7 +540,61 @@ namespace vMenuClient.menus
 
             #region ped drawable list changes
             // Manage list changes.
-            pedCustomizationMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) =>
+            pedCustomizationMenu.OnListIndexChange += (sender, item, oldListIndex, newListIndex, itemIndex) => ChangeListItem(item, newListIndex);
+
+            // Manage list selections.
+            pedCustomizationMenu.OnListItemSelect += async (sender, item, listIndex, itemIndex) =>
+            {
+                int controlIndex = 0;
+                bool isDrawable = drawablesMenuListItems.ContainsKey(item);
+                bool isCtrlPressed = Game.IsControlPressed(controlIndex, Control.Duck);
+
+                if (isCtrlPressed)
+                {
+                    string userInput = await GetUserInput($"Enter {(isDrawable ? "Drawable" : "Prop")} ID", 5);
+
+                    if (string.IsNullOrEmpty(userInput) || !int.TryParse(userInput, out int drawableId) || drawableId < 1 || drawableId > item.ItemsCount)
+                    {
+                        Notify.Error("Invalid input");
+                        return;
+                    }
+
+                    drawableId--;
+
+                    item.ListIndex = drawableId;
+
+                    ChangeListItem(item, drawableId);
+                    return;
+                }
+
+                if (isDrawable)
+                {
+                    var currentDrawableID = drawablesMenuListItems[item];
+                    var currentTextureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, currentDrawableID);
+                    var maxDrawableTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, currentDrawableID, listIndex) - 1;
+
+                    if (currentTextureIndex == -1)
+                    {
+                        currentTextureIndex = 0;
+                    }
+
+                    var newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
+
+                    SetPedComponentVariation(Game.PlayerPed.Handle, currentDrawableID, listIndex, newTexture, 0);
+                }
+                else // prop
+                {
+                    var currentPropIndex = propsMenuListItems[item];
+                    var currentPropVariationIndex = GetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex);
+                    var currentPropTextureVariation = GetPedPropTextureIndex(Game.PlayerPed.Handle, currentPropIndex);
+                    var maxPropTextureVariations = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex) - 1;
+
+                    var newPropTextureVariationIndex = currentPropTextureVariation < maxPropTextureVariations ? currentPropTextureVariation + 1 : 0;
+                    SetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
+                }
+            };
+
+            void ChangeListItem(MenuListItem item, int newListIndex)
             {
                 if (drawablesMenuListItems.ContainsKey(item))
                 {
@@ -563,39 +617,8 @@ namespace vMenuClient.menus
                     {
                         ShowVisorText(Game.PlayerPed.Handle);
                     }
-
                 }
-            };
-
-            // Manage list selections.
-            pedCustomizationMenu.OnListItemSelect += (sender, item, listIndex, itemIndex) =>
-            {
-                if (drawablesMenuListItems.ContainsKey(item)) // drawable
-                {
-                    var currentDrawableID = drawablesMenuListItems[item];
-                    var currentTextureIndex = GetPedTextureVariation(Game.PlayerPed.Handle, currentDrawableID);
-                    var maxDrawableTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, currentDrawableID, listIndex) - 1;
-
-                    if (currentTextureIndex == -1)
-                    {
-                        currentTextureIndex = 0;
-                    }
-
-                    var newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
-
-                    SetPedComponentVariation(Game.PlayerPed.Handle, currentDrawableID, listIndex, newTexture, 0);
-                }
-                else if (propsMenuListItems.ContainsKey(item)) // prop
-                {
-                    var currentPropIndex = propsMenuListItems[item];
-                    var currentPropVariationIndex = GetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex);
-                    var currentPropTextureVariation = GetPedPropTextureIndex(Game.PlayerPed.Handle, currentPropIndex);
-                    var maxPropTextureVariations = GetNumberOfPedPropTextureVariations(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex) - 1;
-
-                    var newPropTextureVariationIndex = currentPropTextureVariation < maxPropTextureVariations ? currentPropTextureVariation + 1 : 0;
-                    SetPedPropIndex(Game.PlayerPed.Handle, currentPropIndex, currentPropVariationIndex, newPropTextureVariationIndex, true);
-                }
-            };
+            }
             #endregion
 
             pedCollectionsCustomizationMenu.OnListIndexChange += (_, item, oldListIndex, newListIndex, ___) =>
