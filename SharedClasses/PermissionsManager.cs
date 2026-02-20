@@ -331,6 +331,8 @@ namespace vMenuShared
             WPHackingDevice,
             // MP2024_01 DLC (V 3258)
             WPStunRod,
+            // MP2025_02 DLC (V 3717)
+            WPNewspaper,
             #endregion
 
             // Weapon Loadouts Menu

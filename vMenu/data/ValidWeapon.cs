@@ -512,6 +512,8 @@ namespace vMenuClient.data
             ["weapon_hackingdevice"] = Permission.WPHackingDevice,
             // MP2024_01 DLC (V 3258)
             ["weapon_stunrod"] = Permission.WPStunRod,
+            // MP2025_02 DLC (V 3717)
+            ["weapon_newspaper"] = Permission.WPNewspaper,
         };
         #endregion
 
