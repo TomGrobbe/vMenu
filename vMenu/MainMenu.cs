@@ -326,7 +326,7 @@ namespace vMenuClient
             // Clear all previous pause menu info/brief messages on resource start.
             ClearBrief();
 
-            if (GlobalState.Get("vmenu_onesync") ?? false)
+            if (GlobalState.Get("vmenu_onesync") is bool value && value)
             {
                 PlayersList = new InfinityPlayerList(Players);
             }
