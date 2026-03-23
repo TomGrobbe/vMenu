@@ -606,24 +606,30 @@ namespace vMenuClient.menus
                 if (drawablesMenuListItems.ContainsKey(item))
                 {
                     int currentDrawableID = drawablesMenuListItems[item];
-                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, newListIndex, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, newListIndex);
+
+                    if (newListIndex == 0)
+                    {
+                        SetPedComponentVariation(pedHandle, currentDrawableID, 0, 0, 0);
+                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. None selected.";
+                        return;
+                    }
+
+                    int actualDrawableIndex = newListIndex - 1;
+
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, actualDrawableIndex, 0)
+                        && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, actualDrawableIndex);
 
                     if (isValid)
                     {
-                        int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, newListIndex);
+                        int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, actualDrawableIndex);
 
-                        SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, newListIndex, 0, 0);
+                        SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, actualDrawableIndex, 0, 0);
 
                         item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedTextureVariation(pedHandle, currentDrawableID) + 1} (of {maxDrawableTextures}).";
                     }
                     else
                     {
                         item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selection is invalid (broken, Gen9, etc.)";
-                    }
-
-                    if (item.ListItems[oldListIndex].StartsWith("None"))
-                    {
-                        item.ListItems.RemoveAt(oldListIndex);
                     }
                 }
                 else if (propsMenuListItems.ContainsKey(item))
@@ -659,9 +665,18 @@ namespace vMenuClient.menus
                 string collectionName = item.ItemData;
 
                 if (drawablesMenuListItems.ContainsKey(item))
-                {                    
+                {
                     int currentDrawableID = drawablesMenuListItems[item];
-                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, listIndex, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, listIndex);
+
+                    if (listIndex == 0)
+                    {
+                        return;
+                    }
+
+                    int actualDrawableIndex = listIndex - 1;
+
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, actualDrawableIndex, 0)
+                        && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, actualDrawableIndex);
 
                     if (!isValid)
                     {
@@ -669,7 +684,7 @@ namespace vMenuClient.menus
                     }
 
                     int currentTextureIndex = GetPedTextureVariation(pedHandle, currentDrawableID);
-                    int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, listIndex) - 1;
+                    int maxDrawableTextures = GetNumberOfPedCollectionTextureVariations(pedHandle, currentDrawableID, collectionName, actualDrawableIndex) - 1;
 
                     if (currentTextureIndex == -1)
                     {
@@ -678,7 +693,7 @@ namespace vMenuClient.menus
 
                     int newTexture = currentTextureIndex < maxDrawableTextures ? currentTextureIndex + 1 : 0;
 
-                    SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, listIndex, newTexture, 0);
+                    SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, actualDrawableIndex, newTexture, 0);
 
                     item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{newTexture + 1} (of {maxDrawableTextures + 1}).";
                 }
@@ -835,27 +850,27 @@ namespace vMenuClient.menus
 
                 string suffixText;
                 int currentLocalIndex;
-                List<string> drawableTexturesList = [];
+                List<string> drawableTexturesList = new() { $"None Selected (of {totalVariations})" };
                 int currentDrawableGlobalId = GetPedDrawableVariation(pedHandle, drawable);
                 string currentCollection = GetPedCollectionNameFromDrawable(pedHandle, drawable, currentDrawableGlobalId);
 
                 for (int i = 0; i < totalVariations; i++)
                 {
-                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, drawable, collectionName, i, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, drawable, collectionName, i);
+                    bool isValid = IsPedCollectionComponentVariationValid(pedHandle, drawable, collectionName, i, 0)
+                        && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, drawable, collectionName, i);
 
                     drawableTexturesList.Add($"Drawable #{i + 1}{(!isValid ? " (Invalid)" : "")} (of {totalVariations})");
                 }
 
                 if (currentCollection == collectionName)
                 {
-                    currentLocalIndex = GetPedCollectionLocalIndexFromDrawable(pedHandle, drawable, currentDrawableGlobalId);
-                    suffixText = $"Selected texture: #{GetPedTextureVariation(pedHandle, drawable) + 1} (of {GetNumberOfPedCollectionTextureVariations(pedHandle, drawable, collectionName, currentLocalIndex)}).";
+                    currentLocalIndex = GetPedCollectionLocalIndexFromDrawable(pedHandle, drawable, currentDrawableGlobalId) + 1;
+                    suffixText = $"Selected texture: #{GetPedTextureVariation(pedHandle, drawable) + 1} (of {GetNumberOfPedCollectionTextureVariations(pedHandle, drawable, collectionName, currentLocalIndex - 1)}).";
                 }
                 else
                 {
-                    drawableTexturesList.Add($"None Selected (of {totalVariations})");
-                    currentLocalIndex = drawableTexturesList.Count - 1;
-                    suffixText = "Current selection not part collection.";
+                    currentLocalIndex = 0;
+                    suffixText = $"None selected (of {totalVariations}).";
                 }
 
                 MenuListItem item = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentLocalIndex, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
