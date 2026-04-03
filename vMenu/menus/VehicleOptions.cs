@@ -52,6 +52,7 @@ namespace vMenuClient.menus
         public bool VehicleBikeSeatbelt { get; private set; } = UserDefaults.VehicleBikeSeatbelt;
         public bool VehicleInfiniteFuel { get; private set; } = false;
         public bool VehicleShowHealth { get; private set; } = false;
+        public bool VehicleRadioOverride { get; private set; } = UserDefaults.VehicleDefaultRadio >= 0;
         public bool VehicleFrozen { get; private set; } = false;
         public bool VehicleTorqueMultiplier { get; private set; } = false;
         public bool VehiclePowerMultiplier { get; private set; } = false;
@@ -92,6 +93,7 @@ namespace vMenuClient.menus
             var highbeamsOnHonk = new MenuCheckboxItem("Flash Highbeams On Honk", "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
             var showHealth = new MenuCheckboxItem("Show Vehicle Health", "Shows the vehicle health on the screen.", VehicleShowHealth);
             var infiniteFuel = new MenuCheckboxItem("Infinite Fuel", "Enables or disables infinite fuel for this vehicle, only works if FRFuel is installed.", VehicleInfiniteFuel);
+            var vehicleRadioOverride = new MenuCheckboxItem("Enable Default Radio Station", "Enables or disables overriding default radio channel in all vehicles", VehicleRadioOverride);
 
             // Create buttons.
             var fixVehicle = new MenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
@@ -156,8 +158,15 @@ namespace vMenuClient.menus
                 var index = Array.IndexOf(stations, RadioStation.RadioOff);
                 radioIndex = index;
             }
+            else if (radioIndex < 0)
+            {
+                radioIndex = 0;
+            }
 
-            var radioStations = new MenuListItem("Default radio station", stationNames, radioIndex, "Select a defalut radio station to be set when spawning new car");
+            var radioStations = new MenuListItem("Set Default Radio Station", stationNames, radioIndex, "Select a default radio station for all spawned cars")
+            {
+                Enabled = VehicleRadioOverride
+            };
 
             var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
             var vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
@@ -418,6 +427,7 @@ namespace vMenuClient.menus
             menu.AddMenuItem(showHealth); // SHOW VEHICLE HEALTH
 
             // I don't really see why would you want to disable this so I will not add useless permissions
+            menu.AddMenuItem(vehicleRadioOverride);
             menu.AddMenuItem(radioStations);
 
             if (IsAllowed(Permission.VONoSiren) && !GetSettingsBool(Setting.vmenu_use_els_compatibility_mode)) // DISABLE SIREN
@@ -632,6 +642,18 @@ namespace vMenuClient.menus
                 {
                     VehicleShowHealth = _checked;
                 }
+                else if (item == vehicleRadioOverride)
+                {
+                    int overrideDisabled = -1;
+                    int starterChannel = (int)RadioStation.LosSantosRockRadio;
+
+                    VehicleRadioOverride = _checked;
+
+                    UserDefaults.VehicleDefaultRadio = _checked ? starterChannel : overrideDisabled;
+
+                    radioStations.ListIndex = starterChannel;
+                    radioStations.Enabled = _checked;
+                }
                 else if (item == vehicleNoSiren) // Disable Siren Toggled
                 {
                     VehicleNoSiren = _checked;
@@ -717,9 +739,11 @@ namespace vMenuClient.menus
             // Handle list changes.
             menu.OnListIndexChange += (sender, item, oldIndex, newIndex, itemIndex) =>
             {
-                if (GetVehicle() != null && GetVehicle().Exists())
+                Vehicle veh = GetVehicle();
+                bool vehExists = veh != null && veh.Exists();
+
+                if (vehExists)
                 {
-                    var veh = GetVehicle();
                     // If the torque multiplier changed. Change the torque multiplier to the new value.
                     if (item == torqueMultiplier)
                     {
@@ -788,6 +812,18 @@ namespace vMenuClient.menus
                                 break;
                         }
                     }
+                }
+
+                if (item == radioStations)
+                {
+                    var newStation = (RadioStation)Enum.GetValues(typeof(RadioStation)).GetValue(newIndex);
+
+                    if (vehExists)
+                    {
+                        veh.RadioStation = newStation;
+                    }
+
+                    UserDefaults.VehicleDefaultRadio = (int)newStation;
                 }
             };
             #endregion
@@ -1011,18 +1047,6 @@ namespace vMenuClient.menus
                     {
                         Notify.Error(CommonErrors.NoVehicle);
                     }
-                }
-                else if (item == radioStations)
-                {
-                    var newStation = (RadioStation)Enum.GetValues(typeof(RadioStation)).GetValue(listIndex);
-
-                    var veh = GetVehicle();
-                    if (veh != null && veh.Exists())
-                    {
-                        veh.RadioStation = newStation;
-                    }
-
-                    UserDefaults.VehicleDefaultRadio = (int)newStation;
                 }
             };
             #endregion
