@@ -163,7 +163,7 @@ namespace vMenuClient.menus
                 radioIndex = 0;
             }
 
-            var radioStations = new MenuListItem("Set Default Radio Station", stationNames, radioIndex, "Select a default radio station for all spawned cars")
+            var radioStations = new MenuListItem("Set Default Radio Station", stationNames, radioIndex, "Select a default radio station for all cars you spawn")
             {
                 Enabled = VehicleRadioOverride
             };
@@ -818,7 +818,7 @@ namespace vMenuClient.menus
                 {
                     var newStation = (RadioStation)Enum.GetValues(typeof(RadioStation)).GetValue(newIndex);
 
-                    if (vehExists)
+                    if (vehExists && DoesPlayerVehHaveRadio())
                     {
                         veh.RadioStation = newStation;
                     }
