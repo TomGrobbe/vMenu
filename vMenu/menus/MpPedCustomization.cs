@@ -562,7 +562,7 @@ namespace vMenuClient.menus
                     var items = new List<string>();
                     for (var x = 0; x < maxDrawables; x++)
                     {
-                        items.Add($"Drawable #{x} (of {maxDrawables})");
+                        items.Add($"Drawable #{x + 1} (of {maxDrawables})");
                     }
 
                     var maxTextures = GetNumberOfPedTextureVariations(Game.PlayerPed.Handle, i, currentVariationIndex);
