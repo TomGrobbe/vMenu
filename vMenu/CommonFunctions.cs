@@ -1386,9 +1386,14 @@ namespace vMenuClient
 
             int vehicleDefaultRadio = UserDefaults.VehicleDefaultRadio;
 
-            if (vehicleDefaultRadio >= 0)
+            await Delay(1); // Mandatory delay - without it veh radio check will always return `false`
+
+            if (vehicleDefaultRadio >= 0 && DoesPlayerVehHaveRadio())
             {
-                await Delay(1); // Mandatory delay - without it radio station will not set properly
+                while (IsRadioRetuning())
+                {
+                    await Delay(10);
+                }
 
                 // Set the radio station to default set by player in Vehicle Menu
                 vehicle.RadioStation = (RadioStation)vehicleDefaultRadio;
