@@ -122,7 +122,12 @@ namespace vMenuClient.menus
 
             menu.OnItemSelect += (sender, item, index) =>
             {
-                currentRecord = item.ItemData;
+                if (item.ItemData is not BanRecord banRecord)
+                {
+                    return;
+                }
+
+                currentRecord = banRecord;
 
                 bannedPlayer.MenuSubtitle = "Ban Record: ~y~" + currentRecord.playerName;
                 var nameItem = bannedPlayer.GetMenuItems()[0];

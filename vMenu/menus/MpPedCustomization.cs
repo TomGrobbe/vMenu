@@ -1131,8 +1131,13 @@ namespace vMenuClient.menus
 
             inheritanceMenu.OnSliderPositionChange += (sender, item, oldPosition, newPosition, itemIndex) =>
             {
+                if (item.ItemData is not string sliderType)
+                {
+                    return;
+                }
+
                 // Chris: We can't call `.Position` on the slider items here because it returns the value *prior* to the change
-                switch (item.ItemData)
+                switch (sliderType)
                 {
                     case "shape_mix":
                         _shapeMixValue = newPosition / 10f;
@@ -1900,10 +1905,10 @@ namespace vMenuClient.menus
                     currentCharacter.FacialExpression = facial_expressions[newListIndex];
                     SetFacialIdleAnimOverride(Game.PlayerPed.Handle, currentCharacter.FacialExpression ?? facial_expressions[0], null);
                 }
-                else if (item == categoryBtn)
+                else if (item == categoryBtn && categoryBtn.ItemData is Tuple<List<string>, List<MenuItem.Icon>> categoryData)
                 {
-                    List<string> categoryNames = categoryBtn.ItemData.Item1;
-                    List<MenuItem.Icon> categoryIcons = categoryBtn.ItemData.Item2;
+                    List<string> categoryNames = categoryData.Item1;
+                    List<MenuItem.Icon> categoryIcons = categoryData.Item2;
                     currentCharacter.Category = categoryNames[newListIndex];
                     categoryBtn.RightIcon = categoryIcons[newListIndex];
                 }
@@ -2518,7 +2523,13 @@ namespace vMenuClient.menus
             };
 
             // Update category preview icon
-            manageSavedCharacterMenu.OnListIndexChange += (_, listItem, _, newSelectionIndex, _) => listItem.RightIcon = listItem.ItemData[newSelectionIndex];
+            manageSavedCharacterMenu.OnListIndexChange += (_, listItem, _, newSelectionIndex, _) =>
+            {
+                if (listItem.ItemData is List<MenuItem.Icon> icons)
+                {
+                    listItem.RightIcon = icons[newSelectionIndex];
+                }
+            };
 
             // Update character's category
             manageSavedCharacterMenu.OnListItemSelect += async (_, listItem, listIndex, _) =>
@@ -2596,7 +2607,7 @@ namespace vMenuClient.menus
             savedCharactersMenu.OnItemSelect += async (sender, item, index) =>
             {
                 // Create new category
-                if (item.ItemData is not MpCharacterCategory)
+                if (item.ItemData is not MpCharacterCategory mpCharacterCategory)
                 {
                     var name = await GetUserInput(windowTitle: "Enter a category name.", maxInputLength: 30);
                     if (string.IsNullOrEmpty(name) || name.ToLower() == "uncategorized" || name.ToLower() == "create new")
@@ -2633,7 +2644,7 @@ namespace vMenuClient.menus
                 // Select an old category
                 else
                 {
-                    currentCategory = item.ItemData;
+                    currentCategory = mpCharacterCategory;
                 }
 
                 bool isUncategorized = currentCategory.Name == "Uncategorized";
@@ -2755,7 +2766,7 @@ namespace vMenuClient.menus
                 }
 
                 // Only show preview for ped items, not menu items
-                if (newItem.ItemData == null)
+                if (newItem.ItemData is not bool)
                 {
                     return;
                 }

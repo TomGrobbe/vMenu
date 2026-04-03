@@ -254,7 +254,15 @@ namespace vMenuClient.menus
 
                 foreach (var ped in savedPeds)
                 {
-                    if (size < 1 || !savedPedsMenu.GetMenuItems().Any(e => ped.Key == e.ItemData.Key))
+                    if (size < 1 || !savedPedsMenu.GetMenuItems().Exists(e =>
+                    {
+                        if (e.ItemData is not KeyValuePair<string, PedInfo> kvp)
+                        {
+                            return true;
+                        }
+
+                        return ped.Key == kvp.Key;
+                    }))
                     {
                         var btn = new MenuItem(ped.Key.Substring(4), "Click to manage this saved ped.") { Label = "→→→", ItemData = ped };
                         savedPedsMenu.AddMenuItem(btn);
@@ -266,14 +274,19 @@ namespace vMenuClient.menus
                 {
                     foreach (var d in savedPedsMenu.GetMenuItems())
                     {
-                        if (!savedPeds.ContainsKey(d.ItemData.Key))
+                        if (d.ItemData is not KeyValuePair<string, PedInfo> kvp)
+                        {
+                            continue;
+                        }
+
+                        if (!savedPeds.ContainsKey(kvp.Key))
                         {
                             savedPedsMenu.RemoveMenuItem(d);
                         }
                         else
                         {
                             // Make sure the saved ped data is actually correct and up to date for this item.
-                            var p = savedPeds.First(e => e.Key == d.ItemData.Key);
+                            var p = savedPeds.First(e => e.Key == kvp.Key);
                             if (!string.IsNullOrEmpty(p.Key))
                             {
                                 d.ItemData = p;
@@ -301,7 +314,12 @@ namespace vMenuClient.menus
 
             savedPedsMenu.OnItemSelect += (_, item, __) =>
             {
-                savedPed = item.ItemData;
+                if (item.ItemData is not KeyValuePair<string, PedInfo> kvp)
+                {
+                    return;
+                }
+
+                savedPed = kvp;
                 selectedSavedPedMenu.MenuSubtitle = item.Text;
             };
 
@@ -623,7 +641,12 @@ namespace vMenuClient.menus
 
             pedCollectionsCustomizationMenu.OnListIndexChange += (_, item, oldListIndex, newListIndex, ___) =>
             {
-                string collectionName = item.ItemData;
+                if (item.ItemData is not string collName)
+                {
+                    return;
+                }
+
+                string collectionName = collName;
                 int pedHandle = Game.PlayerPed.Handle;
 
                 if (drawablesMenuListItems.ContainsKey(item))
@@ -678,8 +701,13 @@ namespace vMenuClient.menus
 
             pedCollectionsCustomizationMenu.OnListItemSelect += (_, item, listIndex, __) =>
             {
+                if (item.ItemData is not string collName)
+                {
+                    return;
+                }
+
                 int pedHandle = Game.PlayerPed.Handle;
-                string collectionName = item.ItemData;
+                string collectionName = collName;
 
                 if (drawablesMenuListItems.ContainsKey(item))
                 {                    
@@ -718,9 +746,14 @@ namespace vMenuClient.menus
                 }
             };
 
-            pedCollectionsMenu.OnItemSelect += (_, menuItem, ___) =>
+            pedCollectionsMenu.OnItemSelect += (_, item, ___) =>
             {
-                RefreshCollectionsDrawables(menuItem.ItemData);
+                if (item.ItemData is not string collName)
+                {
+                    return;
+                }
+
+                RefreshCollectionsDrawables(collName);
             };
         }
 
