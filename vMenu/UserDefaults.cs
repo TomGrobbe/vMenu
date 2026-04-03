@@ -608,6 +608,9 @@ namespace vMenuClient
 
                 KbPointKeys = MainMenu.MiscSettingsMenu.KbPointKeys;
                 prefs.Add("kbPointKeys", KbPointKeys);
+
+                MPPedPreviews = MainMenu.MiscSettingsMenu.MPPedPreviews;
+                prefs.Add("mpPedPreviews", MPPedPreviews);
             }
 
             if (MainMenu.VehicleOptionsMenu != null)
