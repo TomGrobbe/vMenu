@@ -47,6 +47,7 @@ namespace vMenuClient.data
 
     internal static class MaleTattoosCollection
     {
+        internal static List<Tattoo> HAIR = new();
         internal static List<Tattoo> TORSO = new();
         internal static List<Tattoo> HEAD = new();
         internal static List<Tattoo> LEFT_ARM = new();
@@ -58,6 +59,7 @@ namespace vMenuClient.data
 
     internal struct FemaleTattoosCollection
     {
+        internal static List<Tattoo> HAIR = new();
         internal static List<Tattoo> TORSO = new();
         internal static List<Tattoo> HEAD = new();
         internal static List<Tattoo> LEFT_ARM = new();
@@ -83,7 +85,18 @@ namespace vMenuClient.data
             {
                 if (!string.IsNullOrEmpty(tattoo.name))
                 {
-                    if (tattoo.type == "TYPE_TATTOO" && !tattoo.name.ToLower().Contains("hair_"))
+                    if (tattoo.name.ToLower().Contains("hair_"))
+                    {
+                        if (tattoo.gender is 0 or 2)
+                        {
+                            MaleTattoosCollection.HAIR.Add(tattoo);
+                        }
+                        if (tattoo.gender is 1 or 2)
+                        {
+                            FemaleTattoosCollection.HAIR.Add(tattoo);
+                        }
+                    }
+                    else if (tattoo.type == "TYPE_TATTOO")
                     {
                         switch (tattoo.zoneId)
                         {
@@ -151,7 +164,7 @@ namespace vMenuClient.data
                                 break;
                         }
                     }
-                    else if (tattoo.type == "TYPE_BADGE" && !tattoo.name.ToLower().Contains("hair_"))
+                    else if (tattoo.type == "TYPE_BADGE")
                     {
                         if (tattoo.gender is 0 or 2)
                         {
@@ -161,18 +174,7 @@ namespace vMenuClient.data
                         {
                             FemaleTattoosCollection.BADGES.Add(tattoo);
                         }
-                    }
-                    else if (tattoo.name.ToLower().Contains("hair_"))
-                    {
-                        if (tattoo.gender is 0 or 2)
-                        {
-
-                        }
-                        if (tattoo.gender is 1 or 2)
-                        {
-
-                        }
-                    }
+                    } 
                 }
             }
 

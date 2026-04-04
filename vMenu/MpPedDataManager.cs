@@ -23,6 +23,7 @@ namespace vMenuClient
 
         public struct PedTattoos
         {
+            public List<KeyValuePair<string, string>> HairTattoos;
             public List<KeyValuePair<string, string>> TorsoTattoos;
             public List<KeyValuePair<string, string>> HeadTattoos;
             public List<KeyValuePair<string, string>> LeftArmTattoos;
@@ -107,7 +108,7 @@ namespace vMenuClient
             public PropVariations PropVariations;
             public FaceShapeFeatures FaceShapeFeatures;
             public PedAppearance PedAppearance;
-            public PedTattoos PedTatttoos;
+            public PedTattoos PedTattoos;
             public PedFacePaints PedFacePaints;
             public bool IsMale;
             public uint ModelHash;
