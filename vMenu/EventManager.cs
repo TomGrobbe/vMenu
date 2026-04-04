@@ -7,6 +7,7 @@ using CitizenFX.Core;
 
 using Newtonsoft.Json;
 
+using vMenuClient.data;
 using vMenuClient.menus;
 
 using static CitizenFX.Core.Native.API;
@@ -117,6 +118,7 @@ namespace vMenuClient
         {
             SetAddons();
             SetExtras();
+            SetTattoos();
 
             MainMenu.ConfigOptionsSetupComplete = true;
         }
@@ -246,6 +248,33 @@ namespace vMenuClient
             catch (JsonReaderException ex)
             {
                 Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your extras.json file contains a problem! Error details: {ex.Message}\n\n");
+            }
+        }
+
+        private void SetTattoos()
+        {
+            TattoosData.Addons = [];
+
+            var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/tattoos.json") ?? "[]";
+            try
+            {
+                List<Tattoo> addons = JsonConvert.DeserializeObject<List<Tattoo>>(jsonData);
+
+                foreach (Tattoo tattoo in addons)
+                {
+                    if (!TattoosData.Addons.Exists(i => i.collectionName == tattoo.collectionName && i.name == tattoo.name))
+                    {
+                        TattoosData.Addons.Add(tattoo);
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[vMenu] [Error] Your tattoos.json file contains 2 or more entries with the same collection and tattoo names! ({tattoo.collectionName} & {tattoo.name}) Please remove duplicate lines!");
+                    }
+                }
+            }
+            catch (JsonReaderException ex)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your tattoos.json file contains a problem! Error details: {ex.Message}\n\n");
             }
         }
 

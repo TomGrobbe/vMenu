@@ -662,6 +662,7 @@ namespace vMenuClient.menus
             var leftLegTattoosList = new List<string>();
             var rightLegTattoosList = new List<string>();
             var badgeTattoosList = new List<string>();
+            var addonTattoosList = new List<string>();
 
             TattoosData.GenerateTattoosData();
             if (male)
@@ -712,6 +713,12 @@ namespace vMenuClient.menus
                 foreach (var tattoo in MaleTattoosCollection.BADGES)
                 {
                     badgeTattoosList.Add($"Badge #{counter} (of {MaleTattoosCollection.BADGES.Count})");
+                    counter++;
+                }
+                counter = 1;
+                foreach (var tattoo in MaleTattoosCollection.ADDONS)
+                {
+                    addonTattoosList.Add($"Addon Tattoo #{counter} (of {MaleTattoosCollection.ADDONS.Count})");
                     counter++;
                 }
             }
@@ -765,6 +772,12 @@ namespace vMenuClient.menus
                     badgeTattoosList.Add($"Badge #{counter} (of {FemaleTattoosCollection.BADGES.Count})");
                     counter++;
                 }
+                counter = 1;
+                foreach (var tattoo in FemaleTattoosCollection.ADDONS)
+                {
+                    addonTattoosList.Add($"Addon Tattoo #{counter} (of {FemaleTattoosCollection.ADDONS.Count})");
+                    counter++;
+                }
             }
 
             const string tatDesc = "Cycle through to preview tattoos, press enter to toggle specific tattoo.";
@@ -776,6 +789,7 @@ namespace vMenuClient.menus
             var leftLegTatts = new MenuListItem("Left Leg Tattoos", leftLegTattoosList, 0, tatDesc);
             var rightLegTatts = new MenuListItem("Right Leg Tattoos", rightLegTattoosList, 0, tatDesc);
             var badgeTatts = new MenuListItem("Badge Overlays", badgeTattoosList, 0, "Cycle through to preview badges, press enter to toggle specific badge. NOTE: Badges require a shirt or they will not appear!");
+            var addonTatts = new MenuListItem("Addon Tattoos", addonTattoosList, 0, tatDesc);
 
             tattoosMenu.AddMenuItem(hairTatts);
             tattoosMenu.AddMenuItem(headTatts);
@@ -785,6 +799,10 @@ namespace vMenuClient.menus
             tattoosMenu.AddMenuItem(leftLegTatts);
             tattoosMenu.AddMenuItem(rightLegTatts);
             tattoosMenu.AddMenuItem(badgeTatts);
+            if (addonTattoosList.Count > 0)
+            {
+                tattoosMenu.AddMenuItem(addonTatts);
+            }
             tattoosMenu.AddMenuItem(new MenuItem("Remove All Tattoos & Badges", "Click this if you want to remove all tattoos and start over."));
             #endregion
 
@@ -1617,6 +1635,7 @@ namespace vMenuClient.menus
                 currentCharacter.PedTattoos.LeftLegTattoos ??= [];
                 currentCharacter.PedTattoos.RightLegTattoos ??= [];
                 currentCharacter.PedTattoos.BadgeTattoos ??= [];
+                currentCharacter.PedTattoos.AddonTattoos ??= [];
             }
 
             void ApplySavedTattoos()
@@ -1631,7 +1650,8 @@ namespace vMenuClient.menus
                     .Concat(currentCharacter.PedTattoos.RightArmTattoos)
                     .Concat(currentCharacter.PedTattoos.LeftLegTattoos)
                     .Concat(currentCharacter.PedTattoos.RightLegTattoos)
-                    .Concat(currentCharacter.PedTattoos.BadgeTattoos);
+                    .Concat(currentCharacter.PedTattoos.BadgeTattoos)
+                    .Concat(currentCharacter.PedTattoos.AddonTattoos);
 
                 foreach (var tattoo in allTattoos)
                 {
@@ -1724,6 +1744,15 @@ namespace vMenuClient.menus
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.BADGES.ElementAt(tattooIndex) : FemaleTattoosCollection.BADGES.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTattoos.BadgeTattoos.Contains(tat))
+                    {
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                    }
+                }
+                else if (menuIndex == 8) // addon
+                {
+                    var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.ADDONS.ElementAt(tattooIndex) : FemaleTattoosCollection.ADDONS.ElementAt(tattooIndex);
+                    var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (!currentCharacter.PedTattoos.AddonTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1875,6 +1904,21 @@ namespace vMenuClient.menus
                         currentCharacter.PedTattoos.BadgeTattoos.Add(tat);
                     }
                 }
+                else if (menuIndex == 8) // addon
+                {
+                    var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.ADDONS.ElementAt(tattooIndex) : FemaleTattoosCollection.ADDONS.ElementAt(tattooIndex);
+                    var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
+                    if (currentCharacter.PedTattoos.AddonTattoos.Contains(tat))
+                    {
+                        Subtitle.Custom($"Addon Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
+                        currentCharacter.PedTattoos.AddonTattoos.Remove(tat);
+                    }
+                    else
+                    {
+                        Subtitle.Custom($"Addon Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
+                        currentCharacter.PedTattoos.AddonTattoos.Add(tat);
+                    }
+                }
 
                 ApplySavedTattoos();
 
@@ -1892,6 +1936,7 @@ namespace vMenuClient.menus
                 currentCharacter.PedTattoos.LeftLegTattoos.Clear();
                 currentCharacter.PedTattoos.RightLegTattoos.Clear();
                 currentCharacter.PedTattoos.BadgeTattoos.Clear();
+                currentCharacter.PedTattoos.AddonTattoos.Clear();
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
@@ -3432,68 +3477,27 @@ namespace vMenuClient.menus
 
             #region Tattoos
 
-            if (character.PedTattoos.HairTattoos == null)
-            {
-                character.PedTattoos.HairTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.HeadTattoos == null)
-            {
-                character.PedTattoos.HeadTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.TorsoTattoos == null)
-            {
-                character.PedTattoos.TorsoTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.LeftArmTattoos == null)
-            {
-                character.PedTattoos.LeftArmTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.RightArmTattoos == null)
-            {
-                character.PedTattoos.RightArmTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.LeftLegTattoos == null)
-            {
-                character.PedTattoos.LeftLegTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.RightLegTattoos == null)
-            {
-                character.PedTattoos.RightLegTattoos = new List<KeyValuePair<string, string>>();
-            }
-            if (character.PedTattoos.BadgeTattoos == null)
-            {
-                character.PedTattoos.BadgeTattoos = new List<KeyValuePair<string, string>>();
-            }
+            character.PedTattoos.HairTattoos ??= [];
+            character.PedTattoos.HeadTattoos ??= [];
+            character.PedTattoos.TorsoTattoos ??= [];
+            character.PedTattoos.LeftArmTattoos ??= [];
+            character.PedTattoos.RightArmTattoos ??= [];
+            character.PedTattoos.LeftLegTattoos ??= [];
+            character.PedTattoos.RightLegTattoos ??= [];
+            character.PedTattoos.BadgeTattoos ??= [];
+            character.PedTattoos.AddonTattoos ??= [];
 
-            foreach (var tattoo in character.PedTattoos.HairTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.HeadTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.TorsoTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.LeftArmTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.RightArmTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.LeftLegTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.RightLegTattoos)
-            {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
-            }
-            foreach (var tattoo in character.PedTattoos.BadgeTattoos)
+            IEnumerable<KeyValuePair<string, string>> allTattoos = character.PedTattoos.HairTattoos
+                .Concat(character.PedTattoos.HeadTattoos)
+                .Concat(character.PedTattoos.TorsoTattoos)
+                .Concat(character.PedTattoos.LeftArmTattoos)
+                .Concat(character.PedTattoos.RightArmTattoos)
+                .Concat(character.PedTattoos.LeftLegTattoos)
+                .Concat(character.PedTattoos.RightLegTattoos)
+                .Concat(character.PedTattoos.BadgeTattoos)
+                .Concat(character.PedTattoos.AddonTattoos);
+
+            foreach (var tattoo in allTattoos)
             {
                 AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
             }
