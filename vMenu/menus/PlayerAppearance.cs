@@ -641,12 +641,14 @@ namespace vMenuClient.menus
 
             pedCollectionsCustomizationMenu.OnListIndexChange += (_, item, oldListIndex, newListIndex, ___) =>
             {
-                if (item.ItemData is not string collName)
+                if (item.ItemData is not Tuple<int, int, string> data)
                 {
                     return;
                 }
 
-                string collectionName = collName;
+                int originalItemId = data.Item1;
+                int originalTextureId = data.Item2;
+                string collectionName = data.Item3;
                 int pedHandle = Game.PlayerPed.Handle;
 
                 if (drawablesMenuListItems.ContainsKey(item))
@@ -662,26 +664,26 @@ namespace vMenuClient.menus
 
                         item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedTextureVariation(pedHandle, currentDrawableID) + 1} (of {maxDrawableTextures}).";
                     }
+                    else if (item.ListItems[newListIndex].StartsWith("None"))
+                    {
+                        SetPedComponentVariation(pedHandle, currentDrawableID, originalItemId, originalTextureId, paletteId: 0);
+
+                        item.Description = "← & → to select, ~r~enter~s~ to cycle textures. Current selection not part collection.";
+                    }
                     else
                     {
                         item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selection is invalid (broken, Gen9, etc.)";
-                    }
-
-                    if (item.ListItems[oldListIndex].StartsWith("None"))
-                    {
-                        item.ListItems.RemoveAt(oldListIndex);
                     }
                 }
                 else if (propsMenuListItems.ContainsKey(item))
                 {
                     int propID = propsMenuListItems[item];
 
-                    if (newListIndex == 0)
+                    if (item.ListItems[newListIndex].StartsWith("None"))
                     {
-                        SetPedPropIndex(pedHandle, propID, -1, 0, false);
-                        ClearPedProp(pedHandle, propID);
+                        SetPedPropIndex(pedHandle, propID, originalItemId, originalTextureId, attach: false);
 
-                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures.";
+                        item.Description = "← & → to select, ~r~enter~s~ to cycle textures. Current selection not part collection.";
                     }
                     else
                     {
@@ -701,16 +703,16 @@ namespace vMenuClient.menus
 
             pedCollectionsCustomizationMenu.OnListItemSelect += (_, item, listIndex, __) =>
             {
-                if (item.ItemData is not string collName)
+                if (item.ItemData is not Tuple<int, int, string> data || item.ListItems[listIndex].StartsWith("None"))
                 {
                     return;
                 }
 
+                string collectionName = data.Item3;
                 int pedHandle = Game.PlayerPed.Handle;
-                string collectionName = collName;
 
                 if (drawablesMenuListItems.ContainsKey(item))
-                {                    
+                {
                     int currentDrawableID = drawablesMenuListItems[item];
                     bool isValid = IsPedCollectionComponentVariationValid(pedHandle, currentDrawableID, collectionName, listIndex, 0) && !IsPedCollectionComponentVariationGen9Exclusive(pedHandle, currentDrawableID, collectionName, listIndex);
 
@@ -748,12 +750,14 @@ namespace vMenuClient.menus
 
             pedCollectionsMenu.OnItemSelect += (_, item, ___) =>
             {
-                if (item.ItemData is not string collName)
+                if (item.ItemData is not Tuple<int, int, string> data)
                 {
                     return;
                 }
 
-                RefreshCollectionsDrawables(collName);
+                string collectionName = data.Item3;
+
+                RefreshCollectionsDrawables(collectionName);
             };
         }
 
@@ -902,10 +906,12 @@ namespace vMenuClient.menus
                     drawableTexturesList.Add($"Drawable #{i + 1}{(!isValid ? " (Invalid)" : "")} (of {totalVariations})");
                 }
 
+                int currentTextureId = GetPedTextureVariation(pedHandle, drawable);
+
                 if (currentCollection == collectionName)
                 {
                     currentLocalIndex = GetPedCollectionLocalIndexFromDrawable(pedHandle, drawable, currentDrawableGlobalId);
-                    suffixText = $"Selected texture: #{GetPedTextureVariation(pedHandle, drawable) + 1} (of {GetNumberOfPedCollectionTextureVariations(pedHandle, drawable, collectionName, currentLocalIndex)}).";
+                    suffixText = $"Selected texture: #{currentTextureId + 1} (of {GetNumberOfPedCollectionTextureVariations(pedHandle, drawable, collectionName, currentLocalIndex)}).";
                 }
                 else
                 {
@@ -916,7 +922,7 @@ namespace vMenuClient.menus
 
                 MenuListItem item = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentLocalIndex, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
                 {
-                    ItemData = collectionName
+                    ItemData = new Tuple<int, int, string>(currentDrawableGlobalId, currentTextureId, collectionName)
                 };
 
                 drawablesMenuListItems.Add(item, drawable);
@@ -944,10 +950,12 @@ namespace vMenuClient.menus
                     propTexturesList.Add($"Prop #{i + 1} (of {totalVariations})");
                 }
 
+                int currentTextureId = GetPedPropTextureIndex(pedHandle, realProp);
+
                 if (currentCollection == collectionName)
                 {
                     currentLocalIndex = GetPedCollectionLocalIndexFromProp(pedHandle, realProp, currentPropGlobalId);
-                    suffixText = $"Selected texture: #{GetPedPropTextureIndex(pedHandle, realProp) + 1} (of {GetNumberOfPedCollectionPropTextureVariations(pedHandle, realProp, collectionName, currentLocalIndex)}).";
+                    suffixText = $"Selected texture: #{currentTextureId + 1} (of {GetNumberOfPedCollectionPropTextureVariations(pedHandle, realProp, collectionName, currentLocalIndex)}).";
                 }
                 else
                 {
@@ -957,7 +965,7 @@ namespace vMenuClient.menus
 
                 MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentLocalIndex + 1, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
                 {
-                    ItemData = collectionName
+                    ItemData = new Tuple<int, int, string>(currentPropGlobalId, currentTextureId, collectionName)
                 };
 
                 propsMenuListItems.Add(propTextures, realProp);
