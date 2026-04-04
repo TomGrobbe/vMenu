@@ -130,6 +130,7 @@ namespace vMenuClient
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
             PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
+            MpPedCustomization.ExtraBlendableFaces = [];
 
             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
             try
@@ -181,6 +182,21 @@ namespace vMenuClient
                         else
                         {
                             Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same ped name! ({addon}) Please remove duplicate lines!");
+                        }
+                    }
+                }
+
+                if (addons.ContainsKey("extra_blendable_faces"))
+                {
+                    foreach (var addon in addons["extra_blendable_faces"])
+                    {
+                        if (!MpPedCustomization.ExtraBlendableFaces.Contains(addon))
+                        {
+                            MpPedCustomization.ExtraBlendableFaces.Add(addon);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same extra blendable face name! ({addon}) Please remove duplicate lines!");
                         }
                     }
                 }
