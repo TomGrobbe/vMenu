@@ -1627,15 +1627,15 @@ namespace vMenuClient.menus
             #region tattoos
             void CreateListsIfNull()
             {
-                currentCharacter.PedTattoos.HairTattoos ??= [];
-                currentCharacter.PedTattoos.HeadTattoos ??= [];
-                currentCharacter.PedTattoos.TorsoTattoos ??= [];
-                currentCharacter.PedTattoos.LeftArmTattoos ??= [];
-                currentCharacter.PedTattoos.RightArmTattoos ??= [];
-                currentCharacter.PedTattoos.LeftLegTattoos ??= [];
-                currentCharacter.PedTattoos.RightLegTattoos ??= [];
-                currentCharacter.PedTattoos.BadgeTattoos ??= [];
-                currentCharacter.PedTattoos.AddonTattoos ??= [];
+                currentCharacter.PedTatttoos.HairTattoos ??= [];
+                currentCharacter.PedTatttoos.HeadTattoos ??= [];
+                currentCharacter.PedTatttoos.TorsoTattoos ??= [];
+                currentCharacter.PedTatttoos.LeftArmTattoos ??= [];
+                currentCharacter.PedTatttoos.RightArmTattoos ??= [];
+                currentCharacter.PedTatttoos.LeftLegTattoos ??= [];
+                currentCharacter.PedTatttoos.RightLegTattoos ??= [];
+                currentCharacter.PedTatttoos.BadgeTattoos ??= [];
+                currentCharacter.PedTatttoos.AddonTattoos ??= [];
             }
 
             void ApplySavedTattoos()
@@ -1643,15 +1643,15 @@ namespace vMenuClient.menus
                 // remove all decorations, and then manually re-add them all. what a retarded way of doing this R*....
                 ClearPedDecorations(Game.PlayerPed.Handle);
 
-                IEnumerable<KeyValuePair<string, string>> allTattoos = currentCharacter.PedTattoos.HairTattoos
-                    .Concat(currentCharacter.PedTattoos.HeadTattoos)
-                    .Concat(currentCharacter.PedTattoos.TorsoTattoos)
-                    .Concat(currentCharacter.PedTattoos.LeftArmTattoos)
-                    .Concat(currentCharacter.PedTattoos.RightArmTattoos)
-                    .Concat(currentCharacter.PedTattoos.LeftLegTattoos)
-                    .Concat(currentCharacter.PedTattoos.RightLegTattoos)
-                    .Concat(currentCharacter.PedTattoos.BadgeTattoos)
-                    .Concat(currentCharacter.PedTattoos.AddonTattoos);
+                IEnumerable<KeyValuePair<string, string>> allTattoos = currentCharacter.PedTatttoos.HairTattoos
+                    .Concat(currentCharacter.PedTatttoos.HeadTattoos)
+                    .Concat(currentCharacter.PedTatttoos.TorsoTattoos)
+                    .Concat(currentCharacter.PedTatttoos.LeftArmTattoos)
+                    .Concat(currentCharacter.PedTatttoos.RightArmTattoos)
+                    .Concat(currentCharacter.PedTatttoos.LeftLegTattoos)
+                    .Concat(currentCharacter.PedTatttoos.RightLegTattoos)
+                    .Concat(currentCharacter.PedTatttoos.BadgeTattoos)
+                    .Concat(currentCharacter.PedTatttoos.AddonTattoos);
 
                 foreach (var tattoo in allTattoos)
                 {
@@ -1680,7 +1680,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.HAIR.ElementAt(tattooIndex) : FemaleTattoosCollection.HAIR.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.HairTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.HairTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1689,7 +1689,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.HEAD.ElementAt(tattooIndex) : FemaleTattoosCollection.HEAD.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.HeadTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.HeadTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1698,7 +1698,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.TORSO.ElementAt(tattooIndex) : FemaleTattoosCollection.TORSO.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.TorsoTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.TorsoTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1707,7 +1707,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.LEFT_ARM.ElementAt(tattooIndex) : FemaleTattoosCollection.LEFT_ARM.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.LeftArmTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.LeftArmTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1716,7 +1716,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.RIGHT_ARM.ElementAt(tattooIndex) : FemaleTattoosCollection.RIGHT_ARM.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.RightArmTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.RightArmTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1725,7 +1725,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.LEFT_LEG.ElementAt(tattooIndex) : FemaleTattoosCollection.LEFT_LEG.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.LeftLegTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.LeftLegTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1734,7 +1734,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.RIGHT_LEG.ElementAt(tattooIndex) : FemaleTattoosCollection.RIGHT_LEG.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.RightLegTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.RightLegTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1743,7 +1743,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.BADGES.ElementAt(tattooIndex) : FemaleTattoosCollection.BADGES.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.BadgeTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.BadgeTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1752,7 +1752,7 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.ADDONS.ElementAt(tattooIndex) : FemaleTattoosCollection.ADDONS.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (!currentCharacter.PedTattoos.AddonTattoos.Contains(tat))
+                    if (!currentCharacter.PedTatttoos.AddonTattoos.Contains(tat))
                     {
                         AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
                     }
@@ -1788,135 +1788,135 @@ namespace vMenuClient.menus
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.HAIR.ElementAt(tattooIndex) : FemaleTattoosCollection.HAIR.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.HairTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.HairTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Hair Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.HairTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.HairTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"hair Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.HairTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.HairTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 1) // head
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.HEAD.ElementAt(tattooIndex) : FemaleTattoosCollection.HEAD.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.HeadTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.HeadTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Head Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.HeadTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.HeadTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Head Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.HeadTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.HeadTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 2) // torso
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.TORSO.ElementAt(tattooIndex) : FemaleTattoosCollection.TORSO.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.TorsoTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.TorsoTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Torso Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.TorsoTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.TorsoTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Torso Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.TorsoTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.TorsoTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 3) // left arm
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.LEFT_ARM.ElementAt(tattooIndex) : FemaleTattoosCollection.LEFT_ARM.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.LeftArmTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.LeftArmTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Left Arm Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.LeftArmTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.LeftArmTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Left Arm Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.LeftArmTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.LeftArmTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 4) // right arm
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.RIGHT_ARM.ElementAt(tattooIndex) : FemaleTattoosCollection.RIGHT_ARM.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.RightArmTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.RightArmTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Right Arm Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.RightArmTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.RightArmTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Right Arm Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.RightArmTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.RightArmTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 5) // left leg
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.LEFT_LEG.ElementAt(tattooIndex) : FemaleTattoosCollection.LEFT_LEG.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.LeftLegTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.LeftLegTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Left Leg Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.LeftLegTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.LeftLegTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Left Leg Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.LeftLegTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.LeftLegTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 6) // right leg
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.RIGHT_LEG.ElementAt(tattooIndex) : FemaleTattoosCollection.RIGHT_LEG.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.RightLegTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.RightLegTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Right Leg Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.RightLegTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.RightLegTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Right Leg Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.RightLegTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.RightLegTattoos.Add(tat);
                     }
                 }
                 else if (isBadgesItem)
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.BADGES.ElementAt(tattooIndex) : FemaleTattoosCollection.BADGES.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.BadgeTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.BadgeTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Badge #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.BadgeTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.BadgeTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Badge #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.BadgeTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.BadgeTattoos.Add(tat);
                     }
                 }
                 else if (menuIndex == 8) // addon
                 {
                     var Tattoo = currentCharacter.IsMale ? MaleTattoosCollection.ADDONS.ElementAt(tattooIndex) : FemaleTattoosCollection.ADDONS.ElementAt(tattooIndex);
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
-                    if (currentCharacter.PedTattoos.AddonTattoos.Contains(tat))
+                    if (currentCharacter.PedTatttoos.AddonTattoos.Contains(tat))
                     {
                         Subtitle.Custom($"Addon Tattoo #{tattooIndex + 1} has been ~r~removed~s~.");
-                        currentCharacter.PedTattoos.AddonTattoos.Remove(tat);
+                        currentCharacter.PedTatttoos.AddonTattoos.Remove(tat);
                     }
                     else
                     {
                         Subtitle.Custom($"Addon Tattoo #{tattooIndex + 1} has been ~g~added~s~.");
-                        currentCharacter.PedTattoos.AddonTattoos.Add(tat);
+                        currentCharacter.PedTatttoos.AddonTattoos.Add(tat);
                     }
                 }
 
@@ -1928,15 +1928,15 @@ namespace vMenuClient.menus
             tattoosMenu.OnItemSelect += (sender, item, index) =>
             {
                 Notify.Success("All tattoos have been removed.");
-                currentCharacter.PedTattoos.HairTattoos.Clear();
-                currentCharacter.PedTattoos.HeadTattoos.Clear();
-                currentCharacter.PedTattoos.TorsoTattoos.Clear();
-                currentCharacter.PedTattoos.LeftArmTattoos.Clear();
-                currentCharacter.PedTattoos.RightArmTattoos.Clear();
-                currentCharacter.PedTattoos.LeftLegTattoos.Clear();
-                currentCharacter.PedTattoos.RightLegTattoos.Clear();
-                currentCharacter.PedTattoos.BadgeTattoos.Clear();
-                currentCharacter.PedTattoos.AddonTattoos.Clear();
+                currentCharacter.PedTatttoos.HairTattoos.Clear();
+                currentCharacter.PedTatttoos.HeadTattoos.Clear();
+                currentCharacter.PedTatttoos.TorsoTattoos.Clear();
+                currentCharacter.PedTatttoos.LeftArmTattoos.Clear();
+                currentCharacter.PedTatttoos.RightArmTattoos.Clear();
+                currentCharacter.PedTatttoos.LeftLegTattoos.Clear();
+                currentCharacter.PedTatttoos.RightLegTattoos.Clear();
+                currentCharacter.PedTatttoos.BadgeTattoos.Clear();
+                currentCharacter.PedTatttoos.AddonTattoos.Clear();
                 ClearPedDecorations(Game.PlayerPed.Handle);
             };
 
@@ -3477,25 +3477,25 @@ namespace vMenuClient.menus
 
             #region Tattoos
 
-            character.PedTattoos.HairTattoos ??= [];
-            character.PedTattoos.HeadTattoos ??= [];
-            character.PedTattoos.TorsoTattoos ??= [];
-            character.PedTattoos.LeftArmTattoos ??= [];
-            character.PedTattoos.RightArmTattoos ??= [];
-            character.PedTattoos.LeftLegTattoos ??= [];
-            character.PedTattoos.RightLegTattoos ??= [];
-            character.PedTattoos.BadgeTattoos ??= [];
-            character.PedTattoos.AddonTattoos ??= [];
+            character.PedTatttoos.HairTattoos ??= [];
+            character.PedTatttoos.HeadTattoos ??= [];
+            character.PedTatttoos.TorsoTattoos ??= [];
+            character.PedTatttoos.LeftArmTattoos ??= [];
+            character.PedTatttoos.RightArmTattoos ??= [];
+            character.PedTatttoos.LeftLegTattoos ??= [];
+            character.PedTatttoos.RightLegTattoos ??= [];
+            character.PedTatttoos.BadgeTattoos ??= [];
+            character.PedTatttoos.AddonTattoos ??= [];
 
-            IEnumerable<KeyValuePair<string, string>> allTattoos = character.PedTattoos.HairTattoos
-                .Concat(character.PedTattoos.HeadTattoos)
-                .Concat(character.PedTattoos.TorsoTattoos)
-                .Concat(character.PedTattoos.LeftArmTattoos)
-                .Concat(character.PedTattoos.RightArmTattoos)
-                .Concat(character.PedTattoos.LeftLegTattoos)
-                .Concat(character.PedTattoos.RightLegTattoos)
-                .Concat(character.PedTattoos.BadgeTattoos)
-                .Concat(character.PedTattoos.AddonTattoos);
+            IEnumerable<KeyValuePair<string, string>> allTattoos = character.PedTatttoos.HairTattoos
+                .Concat(character.PedTatttoos.HeadTattoos)
+                .Concat(character.PedTatttoos.TorsoTattoos)
+                .Concat(character.PedTatttoos.LeftArmTattoos)
+                .Concat(character.PedTatttoos.RightArmTattoos)
+                .Concat(character.PedTatttoos.LeftLegTattoos)
+                .Concat(character.PedTatttoos.RightLegTattoos)
+                .Concat(character.PedTatttoos.BadgeTattoos)
+                .Concat(character.PedTatttoos.AddonTattoos);
 
             foreach (var tattoo in allTattoos)
             {

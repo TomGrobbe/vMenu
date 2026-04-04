@@ -89,7 +89,7 @@ namespace vMenuClient.data
             {
                 if (string.IsNullOrEmpty(tattoo.name))
                 {
-                    return;
+                    continue;
                 }
 
                 if (tattoo.name.ToLower().Contains("hair_"))

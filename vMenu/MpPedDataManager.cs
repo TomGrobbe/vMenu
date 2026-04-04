@@ -109,7 +109,8 @@ namespace vMenuClient
             public PropVariations PropVariations;
             public FaceShapeFeatures FaceShapeFeatures;
             public PedAppearance PedAppearance;
-            public PedTattoos PedTattoos;
+            // DO NOT RENAME - 7+ years of existing saved data will stop working otherwise
+            public PedTattoos PedTatttoos;
             public PedFacePaints PedFacePaints;
             public bool IsMale;
             public uint ModelHash;
