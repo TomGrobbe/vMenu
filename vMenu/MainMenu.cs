@@ -185,11 +185,6 @@ namespace vMenuClient
                         Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
                     }
                 }), false);
-
-                RegisterCommand("clearfocus", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
-                {
-                    SetNuiFocus(false, false);
-                }), false);
             }
 
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
