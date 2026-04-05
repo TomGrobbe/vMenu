@@ -30,11 +30,11 @@ jobs:
     runs-on: windows-latest
 
     outputs:
-      semver:        ${{ steps.version.outputs.semver }}
-      assembly_ver:  ${{ steps.version.outputs.assembly_ver }}
-      tag:           ${{ steps.version.outputs.tag }}
+      semver: ${{ steps.version.outputs.semver }}
+      assembly_ver: ${{ steps.version.outputs.assembly_ver }}
+      tag: ${{ steps.version.outputs.tag }}
       is_prerelease: ${{ steps.version.outputs.is_prerelease }}
-      zip_name:      ${{ steps.version.outputs.zip_name }}
+      zip_name: ${{ steps.version.outputs.zip_name }}
 
     steps:
       - name: Checkout
