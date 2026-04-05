@@ -1354,7 +1354,7 @@ namespace vMenuClient
 
                 // Set the ped into the vehicle.
                 Game.PlayerPed.SetIntoVehicle(vehicle, VehicleSeat.Driver);
-                
+
 
                 // If the vehicle is a helicopter and the player is in the air, set the blades to be full speed.
                 if (vehicle.ClassType == VehicleClass.Helicopters && GetEntityHeightAboveGround(Game.PlayerPed.Handle) > 10.0f)
@@ -1600,7 +1600,7 @@ namespace vMenuClient
                     {
                         GetVehicleCustomPrimaryColour(veh.Handle, ref customPrimaryR, ref customPrimaryG, ref customPrimaryB);
                     }
-                    
+
                     colors.Add("customPrimaryR", customPrimaryR);
                     colors.Add("customPrimaryG", customPrimaryG);
                     colors.Add("customPrimaryB", customPrimaryB);
@@ -1743,7 +1743,7 @@ namespace vMenuClient
             // Create a Dictionary to store all vehicle information in.
             //var vehiclesList = new Dictionary<string, Dictionary<string, string>>();
             var vehiclesList = new Dictionary<string, VehicleInfo>();
-            // Loop through all save names (keys) from the list above, convert the string into a dictionary 
+            // Loop through all save names (keys) from the list above, convert the string into a dictionary
             // and add it to the dictionary above, with the vehicle save name as the key.
             foreach (var saveName in savedVehicleNames)
             {
@@ -1963,7 +1963,7 @@ namespace vMenuClient
                 ClearPedTasks(Game.PlayerPed.Handle);
 
                 var canPlay = true;
-                // Check if the player CAN play a scenario... 
+                // Check if the player CAN play a scenario...
                 if (IsPedRunning(Game.PlayerPed.Handle))
                 {
                     Notify.Alert("You can't start a scenario when you are running.", true, false);
@@ -2764,6 +2764,14 @@ namespace vMenuClient
 
                 foreach (var w in loadout)
                 {
+                    // Skip weapons whose model isn't present in the current game files
+                    // (e.g. an addon resource that has since been removed from the server).
+                    if (!IsWeaponValid(w.Hash))
+                    {
+                        Debug.WriteLine($"[vMenu] Skipping weapon {w.SpawnName} (0x{w.Hash:X8}) — not valid in current game files.");
+                        continue;
+                    }
+
                     if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
                     {
                         // Give the weapon
@@ -2879,6 +2887,38 @@ namespace vMenuClient
                     }
 
                     // Add the weapon info to the list.
+                    pedWeapons.Add(weapon);
+                }
+            }
+
+            // Loop through addon weapons and save any that the ped currently has.
+            foreach (var avw in ValidAddonWeapons.AddonWeaponsList)
+            {
+                if (HasPedGotWeapon(Game.PlayerPed.Handle, avw.Hash, false))
+                {
+                    var weapon = new ValidWeapon
+                    {
+                        Hash = avw.Hash,
+                        CurrentTint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, avw.Hash),
+                        Name = avw.Name,
+                        Perm = avw.Perm,
+                        SpawnName = avw.SpawnName,
+                        Components = new Dictionary<string, uint>(),
+                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, avw.Hash)
+                    };
+
+                    // AddonComponents is the equivalent of Components on ValidAddonWeapon.
+                    foreach (var comp in avw.AddonComponents)
+                    {
+                        if (DoesWeaponTakeWeaponComponent(weapon.Hash, comp.Value))
+                        {
+                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, avw.Hash, comp.Value))
+                            {
+                                weapon.Components.Add(comp.Key, comp.Value);
+                            }
+                        }
+                    }
+
                     pedWeapons.Add(weapon);
                 }
             }

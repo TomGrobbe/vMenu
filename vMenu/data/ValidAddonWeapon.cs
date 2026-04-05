@@ -110,6 +110,7 @@ namespace vMenuClient.data
                         SpawnName = realName,
                         Name = localizedName,
                         AddonComponents = componentHashes,
+                        Perm = Permission.WPSpawn
                     };
                     if (!_addonWeaponsList.Contains(avw))
                     {
@@ -120,4 +121,3 @@ namespace vMenuClient.data
         }
     }
 }
-
