@@ -2768,7 +2768,7 @@ namespace vMenuClient
                     // (e.g. an addon resource that has since been removed from the server).
                     if (!IsWeaponValid(w.Hash))
                     {
-                        Debug.WriteLine($"[vMenu] Skipping weapon {w.SpawnName} (0x{w.Hash:X8}) — not valid in current game files.");
+                        Debug.WriteLine($"[vMenu] Skipping weapon {w.SpawnName} ({w.Hash}) - not valid in current game files.");
                         continue;
                     }
 
