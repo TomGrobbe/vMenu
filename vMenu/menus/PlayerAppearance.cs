@@ -1485,7 +1485,7 @@ namespace vMenuClient.menus
             ["a_c_boar"] = "Boar",
             ["a_c_boar_02"] = "Boar 2", // mp2023_01
             ["a_c_cat_01"] = "Cat",
-            ["a_c_cat_02"] = "Cat", // mp2025_02
+            ["a_c_cat_02"] = "Cat 2", // mp2025_02
             ["a_c_chickenhawk"] = "ChickenHawk",
             ["a_c_chimp"] = "Chimp",
             ["a_c_chimp_02"] = "Chimp 2", // mpchristmas3
