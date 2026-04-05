@@ -142,7 +142,6 @@ namespace vMenuClient.menus
             {
                 RightIcon = MenuItem.Icon.TICK
             };
-            var exportData = new MenuItem("Export/Import Data", "Coming soon (TM): the ability to import and export your saved data.");
             var joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
             var deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
             var nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
@@ -670,10 +669,6 @@ namespace vMenuClient.menus
                 menu.AddMenuItem(mpPedPreview);
             }
 
-            if (MainMenu.EnableExperimentalFeatures)
-            {
-                menu.AddMenuItem(exportData);
-            }
             menu.AddMenuItem(saveSettings);
 
             // Handle checkbox changes.
@@ -793,26 +788,7 @@ namespace vMenuClient.menus
             // Handle button presses.
             menu.OnItemSelect += (sender, item, index) =>
             {
-                // export data
-                if (item == exportData)
-                {
-                    MenuController.CloseAllMenus();
-                    var vehicles = GetSavedVehicles();
-                    var normalPeds = StorageManager.GetSavedPeds();
-                    var mpPeds = StorageManager.GetSavedMpPeds();
-                    var weaponLoadouts = WeaponLoadouts.GetSavedWeapons();
-                    var data = JsonConvert.SerializeObject(new
-                    {
-                        saved_vehicles = vehicles,
-                        normal_peds = normalPeds,
-                        mp_characters = mpPeds,
-                        weapon_loadouts = weaponLoadouts
-                    });
-                    SendNuiMessage(data);
-                    SetNuiFocus(true, true);
-                }
-                // save settings
-                else if (item == saveSettings)
+                if (item == saveSettings)
                 {
                     UserDefaults.SaveSettings();
                 }

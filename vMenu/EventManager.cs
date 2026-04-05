@@ -7,6 +7,7 @@ using CitizenFX.Core;
 
 using Newtonsoft.Json;
 
+using vMenuClient.data;
 using vMenuClient.menus;
 
 using static CitizenFX.Core.Native.API;
@@ -60,25 +61,6 @@ namespace vMenuClient
             {
                 Tick += TimeSync;
             }
-
-            RegisterNuiCallbackType("disableImportExportNUI");
-            RegisterNuiCallbackType("importData");
-        }
-
-        [EventHandler("__cfx_nui:importData")]
-        internal void ImportData(IDictionary<string, object> data, CallbackDelegate cb)
-        {
-            SetNuiFocus(false, false);
-            Notify.Info("Debug info: This feature is not yet available, check back later.");
-            cb(JsonConvert.SerializeObject(new { ok = true }));
-        }
-
-        [EventHandler("__cfx_nui:disableImportExportNUI")]
-        internal void DisableImportExportNUI(IDictionary<string, object> data, CallbackDelegate cb)
-        {
-            SetNuiFocus(false, false);
-            Notify.Info("Debug info: Closing import/export NUI window.");
-            cb(JsonConvert.SerializeObject(new { ok = true }));
         }
 
         private bool firstSpawn = true;
@@ -117,6 +99,7 @@ namespace vMenuClient
         {
             SetAddons();
             SetExtras();
+            SetTattoos();
 
             MainMenu.ConfigOptionsSetupComplete = true;
         }
@@ -130,6 +113,7 @@ namespace vMenuClient
             VehicleSpawner.AddonVehicles = new Dictionary<string, uint>();
             WeaponOptions.AddonWeapons = new Dictionary<string, uint>();
             PlayerAppearance.AddonPeds = new Dictionary<string, uint>();
+            MpPedCustomization.ExtraBlendableFaces = [];
 
             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
             try
@@ -184,6 +168,21 @@ namespace vMenuClient
                         }
                     }
                 }
+
+                if (addons.ContainsKey("extra_blendable_faces"))
+                {
+                    foreach (var addon in addons["extra_blendable_faces"])
+                    {
+                        if (!MpPedCustomization.ExtraBlendableFaces.Contains(addon))
+                        {
+                            MpPedCustomization.ExtraBlendableFaces.Add(addon);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your addons.json file contains 2 or more entries with the same extra blendable face name! ({addon}) Please remove duplicate lines!");
+                        }
+                    }
+                }
             }
             catch (JsonReaderException ex)
             {
@@ -230,6 +229,33 @@ namespace vMenuClient
             catch (JsonReaderException ex)
             {
                 Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your extras.json file contains a problem! Error details: {ex.Message}\n\n");
+            }
+        }
+
+        private void SetTattoos()
+        {
+            TattoosData.Addons = [];
+
+            var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/tattoos.json") ?? "[]";
+            try
+            {
+                List<Tattoo> addons = JsonConvert.DeserializeObject<List<Tattoo>>(jsonData);
+
+                foreach (Tattoo tattoo in addons)
+                {
+                    if (!TattoosData.Addons.Exists(i => i.collectionName == tattoo.collectionName && i.name == tattoo.name))
+                    {
+                        TattoosData.Addons.Add(tattoo);
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[vMenu] [Error] Your tattoos.json file contains 2 or more entries with the same collection and tattoo names! ({tattoo.collectionName} & {tattoo.name}) Please remove duplicate lines!");
+                    }
+                }
+            }
+            catch (JsonReaderException ex)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your tattoos.json file contains a problem! Error details: {ex.Message}\n\n");
             }
         }
 

@@ -35,9 +35,6 @@
     <None Update="config\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="storage.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="System.Numerics.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1384,10 +1384,20 @@ namespace vMenuClient
             }
             vehicle.CurrentRPM = rpm;
 
-            await Delay(1); // Mandatory delay - without it radio station will not set properly
+            int vehicleDefaultRadio = UserDefaults.VehicleDefaultRadio;
 
-            // Set the radio station to default set by player in Vehicle Menu
-            vehicle.RadioStation = (RadioStation)UserDefaults.VehicleDefaultRadio;
+            await Delay(1); // Mandatory delay - without it veh radio check will always return `false`
+
+            if (vehicleDefaultRadio >= 0 && DoesPlayerVehHaveRadio())
+            {
+                while (IsRadioRetuning())
+                {
+                    await Delay(10);
+                }
+
+                // Set the radio station to default set by player in Vehicle Menu
+                vehicle.RadioStation = (RadioStation)vehicleDefaultRadio;
+            }
 
             // Discard the model.
             SetModelAsNoLongerNeeded(vehicleHash);

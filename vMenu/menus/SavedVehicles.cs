@@ -82,7 +82,7 @@ namespace vMenuClient.menus
             vehicleCategoryMenu.OnItemSelect += async (sender, item, index) =>
             {
                 // Create new category
-                if (item.ItemData is not SavedVehicleCategory)
+                if (item.ItemData is not SavedVehicleCategory savedVehicleCategory)
                 {
                     var name = await GetUserInput(windowTitle: "Enter a category name.", maxInputLength: 30);
                     if (string.IsNullOrEmpty(name) || name.ToLower() == "uncategorized" || name.ToLower() == "create new")
@@ -119,7 +119,7 @@ namespace vMenuClient.menus
                 // Select an old category
                 else
                 {
-                    currentCategory = item.ItemData;
+                    currentCategory = savedVehicleCategory;
                 }
 
                 bool isUncategorized = currentCategory.Name == "Uncategorized";
@@ -405,6 +405,11 @@ namespace vMenuClient.menus
 
                     // Load saved vehicle menu
                     default:
+                        if (item.ItemData is not KeyValuePair<string, VehicleInfo> vehicleInfo)
+                        {
+                            break;
+                        }
+
                         List<string> categoryNames = GetAllCategoryNames();
                         List<MenuItem.Icon> categoryIcons = GetCategoryIcons(categoryNames);
                         int nameIndex = categoryNames.IndexOf(currentCategory.Name);
@@ -414,9 +419,8 @@ namespace vMenuClient.menus
                         setCategoryBtn.ListIndex = nameIndex == 1 ? 0 : nameIndex;
                         setCategoryBtn.RightIcon = categoryIcons[setCategoryBtn.ListIndex];
 
-                        var vehInfo = item.ItemData;
-                        selectedVehicleMenu.MenuSubtitle = $"{vehInfo.Key.Substring(4)} ({vehInfo.Value.name})";
-                        currentlySelectedVehicle = vehInfo;
+                        selectedVehicleMenu.MenuSubtitle = $"{vehicleInfo.Key.Substring(4)} ({vehicleInfo.Value.name})";
+                        currentlySelectedVehicle = vehicleInfo;
                         MenuController.CloseAllMenus();
                         selectedVehicleMenu.OpenMenu();
                         MenuController.AddSubmenu(savedVehiclesCategoryMenu, selectedVehicleMenu);
@@ -567,7 +571,13 @@ namespace vMenuClient.menus
             };
 
             // Update category preview icon
-            selectedVehicleMenu.OnListIndexChange += (_, listItem, _, newSelectionIndex, _) => listItem.RightIcon = listItem.ItemData[newSelectionIndex];
+            selectedVehicleMenu.OnListIndexChange += (_, listItem, _, newSelectionIndex, _) =>
+            {
+                if (listItem.ItemData is List<MenuItem.Icon> icons)
+                {
+                    listItem.RightIcon = icons[newSelectionIndex];
+                }
+            };
 
             // Update vehicle's category
             selectedVehicleMenu.OnListItemSelect += async (_, listItem, listIndex, _) =>
@@ -739,15 +749,19 @@ namespace vMenuClient.menus
         /// <returns>A bool, true if successfull, false if unsuccessfull</returns>
         private bool UpdateSelectedVehicleMenu(MenuItem selectedItem, Menu parentMenu = null)
         {
-            var vehInfo = selectedItem.ItemData;
+            if (selectedItem.ItemData is not KeyValuePair<string, VehicleInfo> vehicleInfo)
+            {
+                return false;
+            }
+
             List<string> categoryNames = GetAllCategoryNames();
             List<MenuItem.Icon> categoryIcons = GetCategoryIcons(categoryNames);
             setCategoryBtn.ItemData = categoryIcons;
             setCategoryBtn.ListItems = categoryNames;
             setCategoryBtn.ListIndex = 0;
             setCategoryBtn.RightIcon = categoryIcons[0];
-            selectedVehicleMenu.MenuSubtitle = $"{vehInfo.Key.Substring(4)} ({vehInfo.Value.name})";
-            currentlySelectedVehicle = vehInfo;
+            selectedVehicleMenu.MenuSubtitle = $"{vehicleInfo.Key.Substring(4)} ({vehicleInfo.Value.name})";
+            currentlySelectedVehicle = vehicleInfo;
             MenuController.CloseAllMenus();
             selectedVehicleMenu.OpenMenu();
             if (parentMenu != null)

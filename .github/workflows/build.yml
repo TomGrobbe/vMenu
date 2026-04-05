@@ -1,0 +1,315 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: write
+
+# Cancel any in-progress run on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # ============================================================
+  # VERSION — calculates the shared version number once
+  #   master      → 3.8.6          tag: v3.8.6
+  #   development → 3.8.6-dev-abc1234  tag: dev-v3.8.6-dev-abc1234
+  #   other       → (empty, zip uses dev-N)
+  # ============================================================
+  version:
+    name: Calculate Version
+    runs-on: windows-latest
+
+    outputs:
+      semver:        ${{ steps.version.outputs.semver }}
+      assembly_ver:  ${{ steps.version.outputs.assembly_ver }}
+      tag:           ${{ steps.version.outputs.tag }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+      zip_name:      ${{ steps.version.outputs.zip_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development'
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: "5.x"
+
+      - name: Execute GitVersion
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development'
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3.0.0
+
+      - name: Set version outputs
+        id: version
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF" = "refs/heads/master" ]; then
+            SEMVER="${{ steps.gitversion.outputs.semVer }}"
+            ASSEMBLY_VER="${{ steps.gitversion.outputs.assemblySemVer }}"
+            TAG="v$SEMVER"
+            IS_PRERELEASE="false"
+          elif [ "$GITHUB_REF" = "refs/heads/development" ]; then
+            MMP="${{ steps.gitversion.outputs.majorMinorPatch }}"
+            SHORT_SHA="${{ steps.gitversion.outputs.shortSha }}"
+            SEMVER="${MMP}-dev-${{ github.run_number }}-${SHORT_SHA}"
+            ASSEMBLY_VER="${{ steps.gitversion.outputs.assemblySemVer }}"
+            TAG="dev-v${SEMVER}"
+            IS_PRERELEASE="true"
+          else
+            SEMVER=""
+            ASSEMBLY_VER=""
+            TAG=""
+            IS_PRERELEASE="false"
+          fi
+          ZIP_NAME="vMenu-${SEMVER:-dev-${{ github.run_number }}}.zip"
+          echo "semver=$SEMVER"               >> "$GITHUB_OUTPUT"
+          echo "assembly_ver=$ASSEMBLY_VER"   >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG"                     >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "zip_name=$ZIP_NAME"           >> "$GITHUB_OUTPUT"
+
+  # ============================================================
+  # BUILD — runs on every branch
+  # ============================================================
+  build:
+    name: Build
+    needs: version
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore NuGet packages
+        run: dotnet restore vMenu.sln
+
+      - name: Build
+        shell: bash
+        run: |
+          SEMVER="${{ needs.version.outputs.semver }}"
+          ASSEMBLY_VER="${{ needs.version.outputs.assembly_ver }}"
+          if [ -n "$SEMVER" ] && [ -n "$ASSEMBLY_VER" ]; then
+            dotnet build vMenu.sln -c Release --no-restore \
+              -p:Version="$SEMVER" \
+              -p:AssemblyVersion="$ASSEMBLY_VER" \
+              -p:FileVersion="$ASSEMBLY_VER"
+          else
+            dotnet build vMenu.sln -c Release --no-restore
+          fi
+
+      - name: Copy fxmanifest.lua
+        shell: pwsh
+        run: Copy-Item 'assets/fxmanifest.lua' 'build/vMenu/fxmanifest.lua' -Force
+
+      - name: Inject version into fxmanifest.lua
+        shell: pwsh
+        run: |
+          $version = '${{ needs.version.outputs.semver }}'
+          if (-not $version) { $version = 'dev-${{ github.run_number }}' }
+          (Get-Content 'build/vMenu/fxmanifest.lua') -replace 'versiongoeshere', $version |
+            Set-Content -Encoding ASCII 'build/vMenu/fxmanifest.lua'
+
+      - name: Copy README and LICENSE
+        shell: pwsh
+        run: |
+          Copy-Item README.md  build/vMenu/README.md  -Force
+          Copy-Item LICENSE.md build/vMenu/LICENSE.md -Force
+
+      - name: Package zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'build/vMenu/*' -DestinationPath '${{ needs.version.outputs.zip_name }}' -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vmenu-zip
+          path: ${{ needs.version.outputs.zip_name }}
+
+  # ============================================================
+  # RELEASE — master (full release) and development (pre-release)
+  # ============================================================
+  release:
+    name: Release
+    needs: [version, build]
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development'
+    runs-on: windows-latest
+
+    outputs:
+      release_url: ${{ steps.create_release.outputs.release_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vmenu-zip
+          path: release-assets
+
+      # Changelog always uses the last stable (non-dev) tag as the base,
+      # so development pre-releases show everything since the last release.
+      - name: Generate changelog
+        shell: bash
+        run: |
+          LAST_TAG=$(git tag --sort=-version:refname | grep -v '^dev-' | head -n 1)
+          if [ -n "$LAST_TAG" ]; then
+            git log "$LAST_TAG..HEAD" --pretty=format:'- `%h` (%an) %s' > changelog.txt
+          else
+            git log --pretty=format:'- `%h` (%an) %s' > changelog.txt
+          fi
+          echo "Changelog since: ${LAST_TAG:-<beginning>}"
+          cat changelog.txt
+
+      - name: Create and push git tag
+        shell: bash
+        run: |
+          TAG="${{ needs.version.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release
+        id: create_release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.version.outputs.semver }}"
+          TAG="${{ needs.version.outputs.tag }}"
+          IS_PRERELEASE="${{ needs.version.outputs.is_prerelease }}"
+
+          if [ "$IS_PRERELEASE" = "true" ]; then
+            {
+              echo "vMenu pre-release v${VERSION}."
+              echo ""
+              echo "<details><summary>Changes since last full version release</summary>"
+              echo ""
+              cat changelog.txt
+              echo ""
+              echo "</details>"
+            } > release_notes.md
+          else
+            {
+              echo "vMenu release v${VERSION}."
+              echo ""
+              echo "## Changes"
+              cat changelog.txt
+            } > release_notes.md
+          fi
+
+          PRERELEASE_FLAG=""
+          if [ "$IS_PRERELEASE" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          RELEASE_URL=$(gh release create "$TAG" \
+            --title "vMenu $VERSION" \
+            --notes-file release_notes.md \
+            $PRERELEASE_FLAG \
+            "release-assets/${{ needs.version.outputs.zip_name }}")
+
+          echo "release_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+
+  # ============================================================
+  # DISCORD NOTIFICATION — always runs
+  # ============================================================
+  notify:
+    name: Discord Notification
+    needs: [version, build, release]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification
+        shell: bash
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "DISCORD_WEBHOOK_URL not configured, skipping."
+            exit 0
+          fi
+
+          BUILD_RESULT="${{ needs.build.result }}"
+          RELEASE_RESULT="${{ needs.release.result }}"
+          VERSION="${{ needs.version.outputs.semver }}"
+
+          # ── Status colour & label ──────────────────────────────────────────
+          if [ "$BUILD_RESULT" = "cancelled" ] || [ "$RELEASE_RESULT" = "cancelled" ]; then
+            COLOR=16776960
+            STATUS_TEXT="Build cancelled."
+          elif [ "$BUILD_RESULT" = "success" ] && \
+               { [ "$RELEASE_RESULT" = "success" ] || [ "$RELEASE_RESULT" = "skipped" ]; }; then
+            COLOR=4502298
+            STATUS_TEXT="Build passed!"
+          else
+            COLOR=13632027
+            STATUS_TEXT="Build FAILED!"
+          fi
+
+          # ── Link field ─────────────────────────────────────────────────────
+          RELEASE_URL="${{ needs.release.outputs.release_url }}"
+          if [ -n "$RELEASE_URL" ] && [ "$RELEASE_RESULT" = "success" ]; then
+            LINK_NAME="GitHub Release"
+            LINK_URL="$RELEASE_URL"
+          else
+            LINK_NAME="Build Run"
+            LINK_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+
+          DISPLAY_VERSION="${VERSION:-dev-${{ github.run_number }}}"
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:7}"
+
+          PAYLOAD=$(jq -n \
+            --arg  title       "vMenu (v${DISPLAY_VERSION})" \
+            --arg  desc        "$STATUS_TEXT" \
+            --argjson color    "$COLOR" \
+            --arg  actor       "${{ github.actor }}" \
+            --arg  actor_url   "https://github.com/${{ github.actor }}" \
+            --arg  branch      "${{ github.ref_name }}" \
+            --arg  link_name   "$LINK_NAME" \
+            --arg  link_url    "$LINK_URL" \
+            --arg  short_sha   "$SHORT_SHA" \
+            --arg  commit_url  "https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
+            --arg  commit_msg  "${{ github.event.head_commit.message }}" \
+            '{
+              embeds: [{
+                title:       $title,
+                description: $desc,
+                color:       $color,
+                author: {
+                  name: ("Committed by " + $actor),
+                  url:  $actor_url
+                },
+                fields: [
+                  { name: "Branch",   value: $branch,                                        inline: true  },
+                  { name: $link_name, value: ("[Link](" + $link_url + ")"),                  inline: true  },
+                  { name: "Commit",   value: ("[`" + $short_sha + "`](" + $commit_url + ") — " + $commit_msg), inline: false }
+                ]
+              }]
+            }')
+
+          curl -fsSL -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL"

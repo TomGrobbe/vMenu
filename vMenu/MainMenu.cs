@@ -185,11 +185,6 @@ namespace vMenuClient
                         Debug.Write(JsonConvert.SerializeObject(d, Formatting.Indented) + "\n");
                     }
                 }), false);
-
-                RegisterCommand("clearfocus", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
-                {
-                    SetNuiFocus(false, false);
-                }), false);
             }
 
             RegisterCommand("vmenuclient", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
@@ -326,7 +321,7 @@ namespace vMenuClient
             // Clear all previous pause menu info/brief messages on resource start.
             ClearBrief();
 
-            if (GlobalState.Get("vmenu_onesync") ?? false)
+            if (GlobalState.Get("vmenu_onesync") is bool value && value)
             {
                 PlayersList = new InfinityPlayerList(Players);
             }

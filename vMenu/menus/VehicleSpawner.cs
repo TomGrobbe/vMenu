@@ -112,9 +112,12 @@ namespace vMenuClient.menus
                                 MenuController.AddSubmenu(addonCarsMenu, categoryMenu);
                                 MenuController.BindMenuItem(addonCarsMenu, categoryMenu, categoryBtn);
 
-                                categoryMenu.OnItemSelect += (sender, item, index) =>
+                                categoryMenu.OnItemSelect += async (sender, item, index) =>
                                 {
-                                    SpawnVehicle(item.ItemData.ToString(), SpawnInVehicle, ReplaceVehicle);
+                                    if (item.ItemData is string modelName)
+                                    {
+                                        await SpawnVehicle(modelName, SpawnInVehicle, ReplaceVehicle);
+                                    }
                                 };
                             }
                             else

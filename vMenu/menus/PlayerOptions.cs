@@ -187,32 +187,40 @@ namespace vMenuClient.menus
                 MenuController.BindMenuItem(vehicleAutoPilot, CustomDrivingStyleMenu, customDrivingStyle);
                 var knownNames = new Dictionary<int, string>()
                 {
-                    { 0, "Stop for vehicles" },  // The driver will stop to avoid hitting vehicles.
-                    { 1, "Stop for pedestrians" },  // The driver will stop to avoid hitting pedestrians.
-                    { 2, "Swerve around all vehicles" },  // The driver will swerve to avoid moving vehicles.
-                    { 3, "Steer around stationary vehicles" },  // The driver will steer around parked or stationary vehicles.
-                    { 4, "Steer around pedestrians" },  // The driver will steer to avoid pedestrians.
-                    { 5, "Steer around objects" },  // The driver will steer to avoid objects on the road.
-                    { 6, "Don't steer around player pedestrian" },  // The driver will not avoid the player's character on foot.
-                    { 7, "Stop at traffic lights" },  // The driver will obey traffic signals.
-                    { 8, "Go off-road when avoiding" },  // The driver may go off-road to avoid obstacles.
-                    { 9, "Allow going wrong way" },  // The driver is allowed to drive against traffic.
-                    { 10, "Go in reverse gear" },  // The driver can reverse the vehicle.
-                    { 11, "Use wander fallback instead of straight line" },  // The driver uses wandering paths if straight paths fail.
-                    { 12, "Avoid restricted areas" },  // The driver avoids areas marked as restricted.
+                    { 0, "Stop for vehicles" },  // Using this flag will allow the driver to stop for other vehicles when appropriate, instead of hitting them.
+                    { 1, "Stop for pedestrians" },  // Using this flag will allow the driver to stop for pedestrians when appropriate, instead of hitting them.
+                    { 2, "Swerve around all vehicles" },  // Using this flag will allow the driver to stop for other vehicles when appropriate, instead of hitting them.
+                    { 3, "Steer around stationary vehicles" },  // Using this flag will allow the driver to steer around a vehicle in order to avoid them when driving.
+                    { 4, "Steer around pedestrians" },  // Using this flag will allow the driver to steer around a pedestrian in order to avoid them when driving.
+                    { 5, "Steer around objects" },  // Using this flag will allow the driver to steer around objects in order to avoid them when driving.
+                    { 6, "Don't steer around Player" },  // Using this flag will prevent the driver trying steer around an pedestrian if that pedestrian is the player
+                    { 7, "Stop at lights" },  // Using this flag will cause the driver to stop at traffic lights when appropriate.
+                    { 8, "Go off road when avoiding" },  // Using this flag will allow the driver to deliberately go off-road when trying to avoid something.
+                    { 9, "Drive into oncoming traffic" },  // Using this flag will allow the driver to deliberately drive into oncoming traffic, when certain conditions are met. Such as avoiding or swerving, or overtaking.
+                    { 10, "Drive in reverse" },  // Using this flag will tell the driver that they should drive in reverse.
+                    { 11, "Use wander fallback instead of straight line" },  // Using this flag will make the driver use wander pathfinding instead of straight line pathfinding when no route is found.
+                    { 12, "Avoid restricted areas" },  // Using this flag will tell the driver that they should avoid areas considered restricted. This includes areas like the Army Base, Prison, Airport, or any other areas that might give the Player a Wanted Level for driving through.
                     { 13, "Prevent background pathfinding" },  // The driver will not perform background pathfinding.
-                    { 14, "Adjust cruise speed based on road speed" },  // The driver adjusts speed to match road conditions.
-                    { 18, "Use shortcut links (Use shortest path)" },  // The driver uses shortcuts to reach the destination faster.
-                    { 19, "Change lanes around obstructions" },  // The driver changes lanes to avoid obstructions.
-                    { 21, "Use switched-off nodes" },  // The driver can use nodes that are typically disabled.
-                    { 22, "Prefer navmesh route" },  // The driver prefers routes defined in the navigation mesh.
+                    { 14, "Adjust speed for current road" },  // Using this flag will tell the driver that they should match their speed to the road that they are driving on. Highways use a faster speed than main roads.
+                    { 15, "Prevent join in road direction when moving" },  // The driver avoids joining roads in the direction of traffic when moving.
+                    { 16, "Don't avoid target" },  // The driver does not avoid the target destination.
+                    { 17, "Target position overrides entity" },  // The target position takes precedence over the target entity.
+                    { 18, "Use shortcut links (Use shortest path)" },  // Using this flag will tell the driver that they should try to use Road Nodes flagged as shortcuts. This may divert them down side streets, or through oncoming traffic, if this behavior is not restricted.
+                    { 19, "Change lanes around obstructions" },  // Using this flag allows the Driver to change lanes to avoid an obstruction.
+                    { 20, "Avoid target coords" },  // The driver pathfind away from instead of towards the target coordinates.
+                    { 21, "Use switched-off nodes" },  // Using this flag allows the Driver to use Road Nodes that have been disabled by Zones.
+                    { 22, "Prefer navmesh route" },  // Using this flag allows the Driver to use the Navmesh to find a path to their destination instead of the Road Nodes system. This is useful for off-road driving.
                     { 23, "Plane taxi mode" },  // The driver operates as if taxiing an aircraft.
-                    { 24, "Force straight line" },  // The driver attempts to drive in a straight line.
+                    { 24, "Force straight line" },  // Using this flag forces the Driver to drive in a straight line to their next destination, ignoring the Navmesh or the Road Nodes system.
                     { 25, "Use string pulling at junctions" },  // The driver uses string pulling for smoother turns at junctions.
-                    { 29, "Avoid highways (if possible)" },  // The driver avoids using highways.
-                    { 30, "Force join in road direction" },  // The driver joins roads in the correct direction.
+                    { 26, "Avoid Adverse Conditions" },  // The driver avoids "adverse conditions" (shocking events, etc.) when cruising.
+                    { 27, "Avoid turns" },  // The driver avoids turns when cruising.
+                    { 28, "Extend route with wander results" },  // The driver extends the route using wandering paths.
+                    { 29, "Avoid highways (if possible)" },  // Using this flag prevents the Driver from using a highway when possible.
+                    { 30, "Force join in road direction" },  // The driver joins roads in direction of the flow of traffic only.
+                    { 31, "Don't terminate task when achieved" },  // The driver will not terminate the driving task upon reaching the destination.
                 };
-                for (var i = 0; i < 31; i++)
+                for (var i = 0; i < 32; i++)
                 {
                     var name = "~r~Unknown Flag";
                     if (knownNames.ContainsKey(i))

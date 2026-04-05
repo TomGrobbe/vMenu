@@ -1901,22 +1901,25 @@ namespace vMenuClient
                 {
                     return menu.CurrentIndex switch
                     {
-                        // 0 = head
+                        // 0 = hair
                         0 => 1,
 
-                        // 1 = torso
-                        1 => 2,
+                        // 1 = head
+                        1 => 1,
 
-                        // 2 = left arm
-                        // 3 = right arm
-                        2 or 3 => 6,
+                        // 2 = torso
+                        2 => 2,
 
-                        // 4 = left leg 
-                        // 5 = right leg
-                        4 or 5 => 3,
+                        // 3 = left arm
+                        // 4 = right arm
+                        3 or 4 => 6,
 
-                        // 6 = badges
-                        6 => 2,
+                        // 5 = left leg 
+                        // 6 = right leg
+                        5 or 6 => 3,
+
+                        // 7 = badges
+                        7 => 2,
 
                         _ => 0,
                     };
