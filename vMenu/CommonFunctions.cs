@@ -2855,35 +2855,37 @@ namespace vMenuClient
 
             var pedWeapons = new List<ValidWeapon>();
 
+            var pedHandle = Game.PlayerPed.Handle;
+
             // Loop through all possible weapons.
             foreach (var vw in ValidWeapons.WeaponList)
             {
                 // Check if the ped has that specific weapon.
-                if (HasPedGotWeapon(Game.PlayerPed.Handle, vw.Hash, false))
+                if (HasPedGotWeapon(pedHandle, vw.Hash, false))
                 {
                     // Create the weapon data with basic info.
                     var weapon = new ValidWeapon
                     {
                         Hash = vw.Hash,
-                        CurrentTint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, vw.Hash),
+                        CurrentTint = GetPedWeaponTintIndex(pedHandle, vw.Hash),
                         Name = vw.Name,
                         Perm = vw.Perm,
                         SpawnName = vw.SpawnName,
-                        Components = new Dictionary<string, uint>(),
-                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, vw.Hash)
+                        Components = [],
+                        CurrentAmmo = GetAmmoInPedWeapon(pedHandle, vw.Hash)
                     };
 
 
                     // Check for and add components if applicable.
-                    foreach (var comp in vw.Components)
+                    var equippedComponents = vw.Components.Where(
+                        component =>
+                            DoesWeaponTakeWeaponComponent(weapon.Hash, component.Value)
+                            && HasPedGotWeaponComponent(pedHandle, vw.Hash, component.Value)
+                        );
+
+                    foreach (var comp in equippedComponents)
                     {
-                        if (DoesWeaponTakeWeaponComponent(weapon.Hash, comp.Value))
-                        {
-                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, vw.Hash, comp.Value))
-                            {
-                                weapon.Components.Add(comp.Key, comp.Value);
-                            }
-                        }
+                        weapon.Components.Add(comp.Key, comp.Value);
                     }
 
                     // Add the weapon info to the list.
@@ -2894,29 +2896,29 @@ namespace vMenuClient
             // Loop through addon weapons and save any that the ped currently has.
             foreach (var avw in ValidAddonWeapons.AddonWeaponsList)
             {
-                if (HasPedGotWeapon(Game.PlayerPed.Handle, avw.Hash, false))
+                if (HasPedGotWeapon(pedHandle, avw.Hash, false))
                 {
                     var weapon = new ValidWeapon
                     {
                         Hash = avw.Hash,
-                        CurrentTint = GetPedWeaponTintIndex(Game.PlayerPed.Handle, avw.Hash),
+                        CurrentTint = GetPedWeaponTintIndex(pedHandle, avw.Hash),
                         Name = avw.Name,
                         Perm = avw.Perm,
                         SpawnName = avw.SpawnName,
-                        Components = new Dictionary<string, uint>(),
-                        CurrentAmmo = GetAmmoInPedWeapon(Game.PlayerPed.Handle, avw.Hash)
+                        Components = [],
+                        CurrentAmmo = GetAmmoInPedWeapon(pedHandle, avw.Hash)
                     };
 
                     // AddonComponents is the equivalent of Components on ValidAddonWeapon.
-                    foreach (var comp in avw.AddonComponents)
+                    var equippedComponents = avw.AddonComponents.Where(
+                        component =>
+                            DoesWeaponTakeWeaponComponent(weapon.Hash, component.Value)
+                            && HasPedGotWeaponComponent(pedHandle, avw.Hash, component.Value)
+                        );
+
+                    foreach (var comp in equippedComponents)
                     {
-                        if (DoesWeaponTakeWeaponComponent(weapon.Hash, comp.Value))
-                        {
-                            if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, avw.Hash, comp.Value))
-                            {
-                                weapon.Components.Add(comp.Key, comp.Value);
-                            }
-                        }
+                        weapon.Components.Add(comp.Key, comp.Value);
                     }
 
                     pedWeapons.Add(weapon);
