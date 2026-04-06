@@ -2723,9 +2723,10 @@ namespace vMenuClient.menus
                     {
                         if (IsToggleModOn(vehicle.Handle, 22))
                         {
-                            r = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][0];
-                            g = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][1];
-                            b = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][2]; 
+                            int headlight = GetHeadlightsColorForVehicle(vehicle) < 0 ? 0 : GetHeadlightsColorForVehicle(vehicle);
+                            r = VehicleData.NeonLightColors[headlight][0];
+                            g = VehicleData.NeonLightColors[headlight][1];
+                            b = VehicleData.NeonLightColors[headlight][2]; 
                         }
                     }
 
@@ -2828,10 +2829,10 @@ namespace vMenuClient.menus
                 }
                 else if (type == RGBType.headlight)
                 {
-                    
-                    int red = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][0];
-                    int green = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][1];
-                    int blue = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][2];
+                    int headlight = GetHeadlightsColorForVehicle(vehicle) < 0 ? 0 : GetHeadlightsColorForVehicle(vehicle);
+                    int red = VehicleData.NeonLightColors[headlight][0];
+                    int green = VehicleData.NeonLightColors[headlight][1];
+                    int blue = VehicleData.NeonLightColors[headlight][2];
                     
 
                     redColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
