@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 using CitizenFX.Core;
@@ -2541,7 +2542,7 @@ namespace vMenuClient.menus
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private System.Drawing.Color GetColorFromIndex(int index)
+        private static System.Drawing.Color GetColorFromIndex(int index)
         {
             if (index is >= 0 and < 13)
             {
@@ -2807,9 +2808,10 @@ namespace vMenuClient.menus
                 }
                 else if (type == RGBType.underglow)
                 {
-                    int red = vehicle.Mods.TireSmokeColor.R;
-                    int green = vehicle.Mods.NeonLightsColor.G;
-                    int blue = vehicle.Mods.NeonLightsColor.B; 
+                    Color underglow = GetColorFromIndex(newIndex);
+                    int red = underglow.R;
+                    int green = underglow.G;
+                    int blue = underglow.B;
                     
                     redColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
