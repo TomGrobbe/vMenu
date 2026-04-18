@@ -23,6 +23,7 @@ namespace vMenuClient.menus
         public bool UnlimitedParachutes { get; private set; } = UserDefaults.WeaponsUnlimitedParachutes;
 
         public static Dictionary<string, uint> AddonWeapons = new();
+        public static Dictionary<string, uint> WeaponWhitelist = new();
 
         private Dictionary<Menu, ValidWeapon> weaponInfo;
         private Dictionary<Menu, ValidAddonWeapon> addonWeaponInfo;

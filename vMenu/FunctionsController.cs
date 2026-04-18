@@ -76,6 +76,7 @@ namespace vMenuClient
             Tick += MiscSettings;
             Tick += GeneralTasks;
             Tick += GcTick;
+            Tick += ControllerTick;
 
             if (GetSettingsBool(Setting.keep_player_head_props))
             {
@@ -211,6 +212,36 @@ namespace vMenuClient
 
             }
             await Delay(1000);
+        }
+        #endregion
+
+        #region Controller tick and functions
+        private async Task ControllerTick()
+        {
+            if (!Game.IsPaused && !IsPauseMenuRestarting() && IsScreenFadedIn() && !IsPlayerSwitchInProgress() && !Game.Player.IsDead && !MenuController.DisableMenuButtons)
+            {
+                if (Game.CurrentInputMode == InputMode.GamePad)
+                {
+                    await HandleMenuToggleKeyForController();
+                }
+            }
+            await Task.FromResult(0);
+        }
+        private async Task HandleMenuToggleKeyForController()
+        {
+            int tmpTimer = GetGameTimer();
+            while ((Game.IsControlPressed(0, Control.InteractionMenu) || Game.IsDisabledControlPressed(0, Control.InteractionMenu)) && !Game.IsPaused && IsScreenFadedIn() && !Game.Player.IsDead && !IsPlayerSwitchInProgress() && !MenuController.DontOpenAnyMenu)
+            {
+                if (GetGameTimer() - tmpTimer > 400)
+                {
+                    if (MainMenu.Menu != null)
+                    {
+                        MainMenu.Menu.OpenMenu();
+                    }
+                    break;
+                }
+                await Delay(0);
+            }
         }
         #endregion
 

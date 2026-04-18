@@ -200,6 +200,7 @@ namespace vMenuClient
             // reset addons
             VehicleSpawner.WhitelistVehicles = new Dictionary<string, uint>();
             PlayerAppearance.WhitelistedPeds = new Dictionary<string, uint>();
+            WeaponOptions.WeaponWhitelist = new Dictionary<string, uint>();
 
             var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/model-whitelists.json") ?? "{}";
             try
@@ -231,6 +232,22 @@ namespace vMenuClient
                         if (!PlayerAppearance.WhitelistedPeds.ContainsKey(whitelist))
                         {
                             PlayerAppearance.WhitelistedPeds.Add(whitelist, Game.GenerateHashASCII(whitelist));
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your model-whitelists.json file contains 2 or more entries with the same ped name! ({whitelist}) Please remove duplicate lines!");
+                        }
+                    }
+                }
+
+                // load whitelisted weapon.
+                if (whitelists.ContainsKey("whitelistedweapons"))
+                {
+                    foreach (var whitelist in whitelists["whitelistedweapons"])
+                    {
+                        if (!WeaponOptions.WeaponWhitelist.ContainsKey(whitelist))
+                        {
+                            WeaponOptions.WeaponWhitelist.Add(whitelist, Game.GenerateHashASCII(whitelist));
                         }
                         else
                         {

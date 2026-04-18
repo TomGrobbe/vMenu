@@ -1213,11 +1213,11 @@ namespace vMenuServer
         {
             if (whitelists.ContainsKey("whitelistedweapons"))
             {
-                foreach (var addon in whitelists["whitelistedweapons"])
+                foreach (var whitelist in whitelists["whitelistedweapons"])
                 {
-                    if (!SupplementaryPermissionManager.Permission.Contains("WW" + addon.ToLower().Replace("weapon_", "")))
+                    if (!SupplementaryPermissionManager.Permission.Contains("WW" + whitelist.ToLower().Replace("weapon_", "")))
                     {
-                        SupplementaryPermissionManager.Permission.Add("WW" + addon.ToLower().Replace("weapon_", ""));
+                        SupplementaryPermissionManager.Permission.Add("WW" + whitelist.ToLower().Replace("weapon_", ""));
                     }
                 }
             }
