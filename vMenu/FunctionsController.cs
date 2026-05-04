@@ -621,7 +621,6 @@ namespace vMenuClient
 
                 var subMenus = new List<Menu>()
                     {
-                        MainMenu.VehicleOptionsMenu.DeleteConfirmMenu,
                         MainMenu.VehicleOptionsMenu.VehicleColorsMenu,
                         MainMenu.VehicleOptionsMenu.VehicleComponentsMenu,
                         MainMenu.VehicleOptionsMenu.VehicleDoorsMenu,
