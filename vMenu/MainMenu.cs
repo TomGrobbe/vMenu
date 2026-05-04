@@ -148,77 +148,11 @@ namespace vMenuClient
                 }
             }), false);
             
-            RegisterCommand("vMenu:DV", new Action<dynamic, List<dynamic>, string>(async (source, args, rawCommand) =>
+            RegisterCommand("vMenu:DV", new Action<dynamic, List<dynamic>, string>((source, args, rawCommand) =>
             {
                 if (IsAllowed(Permission.VODelete))
                 {
-                    var player = Game.PlayerPed;
-
-                    if (!player.IsAlive)
-                        return;
-
-                    if (player.IsInVehicle())
-                    {
-                        var veh = GetVehicle();
-
-                        if (veh != null && veh.Exists() && veh.Driver == player)
-                        {
-                            SetVehicleHasBeenOwnedByPlayer(veh.Handle, false);
-                            SetEntityAsMissionEntity(veh.Handle, false, false);
-                            veh.Delete();
-                        }
-                        else
-                        {
-                            Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to delete it!");
-                        }
-
-                        return;
-                    }
-
-                    float distance = GetSettingsFloat(Setting.vmenu_delete_vehicle_distance, 5.0f);
-                    int maxDeleteTries = 5;
-                    int maxHitTries = 5;
-
-                    var forward = GetOffsetFromEntityInWorldCoords(player.Handle, 0f, distance, 0f);
-                    var ray = StartShapeTestCapsule(player.Position.X, player.Position.Y, player.Position.Z, forward.X, forward.Y, forward.Z, 5f, 10, player.Handle, 7);
-
-                    bool hit = false;
-                    Vector3 endCoords = Vector3.Zero;
-                    Vector3 surfaceNormal = Vector3.Zero;
-                    int entity = 0;
-
-                    for (int i = 0; i < maxHitTries; i++)
-                    {
-                        GetShapeTestResult(ray, ref hit, ref endCoords, ref surfaceNormal, ref entity);
-                        if (hit) break;
-                        await Task.FromResult(0);
-                    }
-
-                    if (!hit || !DoesEntityExist(entity) || !IsEntityAVehicle(entity))
-                    {
-                        Notify.Error("No vehicle found in front of you to delete!");
-                        return;
-                    }
-
-                    var hitVeh = new Vehicle(entity);
-
-                    for (int i = 0; i <= maxDeleteTries && DoesEntityExist(entity); i++)
-                    {
-                        NetworkRequestControlOfEntity(entity);
-                        SetVehicleHasBeenOwnedByPlayer(entity, false);
-                        SetEntityAsMissionEntity(entity, false, false);
-                        hitVeh.Delete();
-                        await Task.FromResult(0);
-                    }
-
-                    if (DoesEntityExist(entity))
-                    {
-                        Notify.Error("Failed to delete the vehicle in front of you. Try again or ask an admin for help.");
-                    }
-                    else
-                    {
-                        Notify.Success("Vehicle deleted successfully.");
-                    }
+                    DeleteVehicle();
                 }
             }), false);
 

@@ -1227,7 +1227,7 @@ namespace vMenuClient
 
         #region Main Spawn Vehicle Function
         public static int lastSpawnTime = 0;
-        public static int spawnTime = ConfigManager.GetSettingsInt(ConfigManager.Setting.vmenu_vehicle_spawn_delay, 5) * 1000; // make convar
+        public static int spawnTime = ConfigManager.GetSettingsInt(ConfigManager.Setting.vmenu_vehicle_spawn_delay, 5) * 1000;
         /// <summary>
         /// Spawns a vehicle.
         /// </summary>
@@ -1395,6 +1395,7 @@ namespace vMenuClient
                     // workaround of retarded feature above:
                     SetVehicleForwardSpeed(vehicle.Handle, speed);
                 }
+                vehicle.CurrentRPM = rpm;
             }
 
             // If mod info about the vehicle was specified, check if it's not null.
@@ -1405,8 +1406,6 @@ namespace vMenuClient
 
             // Set the previous vehicle to the new vehicle.
             _previousVehicle = vehicle;
-            //vehicle.Speed = speed; // retarded feature that randomly breaks for no fucking reason
-            vehicle.CurrentRPM = rpm;
 
             int vehicleDefaultRadio = UserDefaults.VehicleDefaultRadio;
 
@@ -3629,6 +3628,82 @@ namespace vMenuClient
                     .Select(modType => vehicle.Mods[(VehicleModType)modType])
             ];
         }
+        #endregion
+
+        #region  Delete vehicle function
+
+        public async static void DeleteVehicle()
+        { 
+            var player = Game.PlayerPed;
+
+            if (!player.IsAlive)
+                return;
+
+            if (player.IsInVehicle())
+            {
+                var veh = GetVehicle();
+
+                if (veh != null && veh.Exists() && veh.Driver == player)
+                {
+                    SetVehicleHasBeenOwnedByPlayer(veh.Handle, false);
+                    SetEntityAsMissionEntity(veh.Handle, false, false);
+                    veh.Delete();
+                }
+                else
+                {
+                    Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to delete it!");
+                }
+
+                return;
+            }
+
+            float distance = ConfigManager.GetSettingsFloat(ConfigManager.Setting.vmenu_delete_vehicle_distance, 5.0f);
+            int maxDeleteTries = 5;
+            int maxHitTries = 5;
+
+            var forward = GetOffsetFromEntityInWorldCoords(player.Handle, 0f, distance, 0f);
+            var ray = StartShapeTestCapsule(player.Position.X, player.Position.Y, player.Position.Z, forward.X, forward.Y, forward.Z, 5f, 10, player.Handle, 7);
+
+            bool hit = false;
+            Vector3 endCoords = Vector3.Zero;
+            Vector3 surfaceNormal = Vector3.Zero;
+            int entity = 0;
+
+            for (int i = 0; i < maxHitTries; i++)
+            {
+                GetShapeTestResult(ray, ref hit, ref endCoords, ref surfaceNormal, ref entity);
+                if (hit) break;
+                await Task.FromResult(0);
+            }
+
+            if (!hit || !DoesEntityExist(entity) || !IsEntityAVehicle(entity))
+            {
+                Notify.Error("No vehicle found in front of you to delete!");
+                return;
+            }
+
+            var hitVeh = new Vehicle(entity);
+
+            for (int i = 0; i <= maxDeleteTries && DoesEntityExist(entity); i++)
+            {
+                NetworkRequestControlOfEntity(entity);
+                SetVehicleHasBeenOwnedByPlayer(entity, false);
+                SetEntityAsMissionEntity(entity, false, false);
+                hitVeh.Delete();
+                await Task.FromResult(0);
+            }
+
+            if (DoesEntityExist(entity))
+            {
+                Notify.Error("Failed to delete the vehicle in front of you. Try again or ask an admin for help.");
+            }
+            else
+            {
+                Notify.Success("Vehicle deleted successfully.");
+            }
+        }
+        
+
         #endregion
     }
 }
