@@ -222,17 +222,40 @@ namespace vMenuClient.menus
                 var veh = GetVehicle();
                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
                 {
-                    var open = GetVehicleDoorAngleRatio(veh.Handle, 0) < 0.1f;
-                    if (open)
+                    bool anyOpen = false;
+
+                    // Check if any non-broken door is open
+                    for (int i = 0; i < 8; i++)
                     {
-                        for (var i = 0; i < 8; i++)
+                        if (!IsVehicleDoorDamaged(veh.Handle, i) &&
+                            GetVehicleDoorAngleRatio(veh.Handle, i) > 0.1f)
                         {
-                            SetVehicleDoorOpen(veh.Handle, i, false, false);
+                            anyOpen = true;
+                            break;
+                        }
+                    }
+
+                    if (anyOpen)
+                    {
+                        // Close all valid doors
+                        for (int i = 0; i < 8; i++)
+                        {
+                            if (!IsVehicleDoorDamaged(veh.Handle, i))
+                            {
+                                SetVehicleDoorShut(veh.Handle, i, false);
+                            }
                         }
                     }
                     else
                     {
-                        SetVehicleDoorsShut(veh.Handle, false);
+                        // Open all valid doors
+                        for (int i = 0; i < 8; i++)
+                        {
+                            if (!IsVehicleDoorDamaged(veh.Handle, i))
+                            {
+                                SetVehicleDoorOpen(veh.Handle, i, false, false);
+                            }
+                        }
                     }
                 }
             }), false));
