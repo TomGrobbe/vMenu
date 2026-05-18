@@ -2086,7 +2086,10 @@ namespace vMenuClient.menus
                     veh = GetVehicle();
 
                     // Get the proper localized mod type (suspension, armor, etc) name.
-                    var typeName = mod.LocalizedModTypeName;
+                    var rawLabel = GetModSlotName(veh.Handle, (int)mod.ModType);
+                    var resolvedLabel = !string.IsNullOrEmpty(rawLabel) ? GetLabelText(rawLabel) : null;
+                    if (resolvedLabel == "NULL") { resolvedLabel = null; }
+                    var typeName = resolvedLabel ?? mod.LocalizedModTypeName ?? rawLabel;
 
                     // Create a list to all available upgrades for this modtype.
                     var modlist = new List<string>();
