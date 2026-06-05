@@ -7,6 +7,8 @@ using MenuAPI;
 
 using vMenuClient.data;
 
+using vMenuShared;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.PermissionsManager;
@@ -18,6 +20,7 @@ namespace vMenuClient.menus
         // Variables
         private Menu menu;
         public static Dictionary<string, uint> AddonVehicles;
+        public static Dictionary<string, uint> WhitelistVehicles;
 
         public bool SpawnInVehicle { get; private set; } = UserDefaults.VehicleSpawnerSpawnInside;
         public bool ReplaceVehicle { get; private set; } = UserDefaults.VehicleSpawnerReplacePrevious;
@@ -91,6 +94,13 @@ namespace vMenuClient.menus
                                     Label = $"({veh.Key})",
                                     ItemData = veh.Key // store the model name in the button data.
                                 };
+                                
+                                if (!SupplementaryPermissionManager.IsAllowed("VW" + veh.Key))
+                                {
+                                    carBtn.Enabled = false;
+                                    carBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                    carBtn.Description = "Access to this has been restricted by the server owner.";
+                                }
 
                                 // This should be impossible to be false, but we check it anyway.
                                 if (IsModelInCdimage(veh.Value))
@@ -305,7 +315,7 @@ namespace vMenuClient.menus
                     // Get the localized vehicle name, if it's "NULL" (no label found) then use the "properCasedModelName" created above.
                     var vehName = GetVehDisplayNameFromModel(veh) != "NULL" ? GetVehDisplayNameFromModel(veh) : properCasedModelName;
                     var vehModelName = veh;
-                    var model = (uint)GetHashKey(vehModelName);
+                    var model = Game.GenerateHashASCII(vehModelName);
 
                     var topSpeed = Map(GetVehicleModelEstimatedMaxSpeed(model), 0f, speedValues[vehClass], 0f, 1f);
                     var acceleration = Map(GetVehicleModelAcceleration(model), 0f, accelerationValues[vehClass], 0f, 1f);
@@ -347,6 +357,16 @@ namespace vMenuClient.menus
                                     ItemData = new float[4] { topSpeed, acceleration, maxBraking, maxTraction }
                                 };
                                 vehicleClassMenu.AddMenuItem(vehBtn);
+                                
+                                if (WhitelistVehicles.ContainsKey(veh.ToLower()))
+                                {
+                                    if (!SupplementaryPermissionManager.IsAllowed("VW" + veh.ToLower()))
+                                    {
+                                        vehBtn.Enabled = false;
+                                        vehBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                        vehBtn.Description = "Access to this has been restricted by the server owner.";
+                                    }
+                                }
                             }
                             else
                             {
@@ -359,7 +379,7 @@ namespace vMenuClient.menus
                                 vehicleClassMenu.AddMenuItem(vehBtn);
                                 vehBtn.RightIcon = MenuItem.Icon.LOCK;
                             }
-
+                            
                             // Mark duplicate as true and break from the loop because we already found the duplicate.
                             duplicate = true;
                             break;
@@ -378,6 +398,16 @@ namespace vMenuClient.menus
                                 ItemData = new float[4] { topSpeed, acceleration, maxBraking, maxTraction }
                             };
                             vehicleClassMenu.AddMenuItem(vehBtn);
+                            
+                            if (WhitelistVehicles.ContainsKey(veh.ToLower()))
+                            {
+                                if (!SupplementaryPermissionManager.IsAllowed("VW" + veh.ToLower()))
+                                {
+                                    vehBtn.Enabled = false;
+                                    vehBtn.LeftIcon = MenuItem.Icon.LOCK;
+                                    vehBtn.Description = "Access to this has been restricted by the server owner.";
+                                }
+                            }
                         }
                         else
                         {

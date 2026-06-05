@@ -1,0 +1,23 @@
+{
+  // Any model you list here will have a permission generated that you can use
+  // inside the permissions.cfg file to give people access to use that model.
+  //
+  // After entering the model names here and starting vMenu, the
+  // config/templates/SupplementaryPermissionTemplate.cfg file will be updated to show you which
+  // permissions are available, and provides an example usage.
+  //
+  // Copy those entries to your permissions.cfg to start configuring them
+  // for the groups that you want.
+  "whitelistedvehicle": [
+    "whitelistedvehiclename1",
+    "whitelistedvehiclename2"
+  ],
+  "whitelistedpeds": [
+    "whitelistedpedname1",
+    "whitelistedpedname2"
+  ],
+  "whitelistedweapons": [
+    "whitelistedweaponname1",
+    "whitelistedweaponname2"
+  ]
+}

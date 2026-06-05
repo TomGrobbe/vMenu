@@ -48,7 +48,7 @@ namespace vMenuClient.menus
                 }
                 else if (item == openPmGallery)
                 {
-                    ActivateFrontendMenu((uint)GetHashKey("FE_MENU_VERSION_MP_PAUSE"), true, 3);
+                    ActivateFrontendMenu(Game.GenerateHashASCII("FE_MENU_VERSION_MP_PAUSE"), true, 3);
                 }
                 else if (item == takePic)
                 {

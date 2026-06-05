@@ -41,6 +41,7 @@ namespace vMenuClient
             EventHandlers.Add("vMenu:SetAddons", new Action(SetConfigOptions)); // DEPRECATED: Backwards-compatible event handler; use 'vMenu:SetConfigOptions' instead
             EventHandlers.Add("vMenu:SetConfigOptions", new Action(SetConfigOptions));
             EventHandlers.Add("vMenu:SetPermissions", new Action<string>(MainMenu.SetPermissions));
+            EventHandlers.Add("vMenu:SetSupplementaryPermissions", new Action<string>(MainMenu.SetSupplementaryPermissions));
             EventHandlers.Add("vMenu:KillMe", new Action<string>(KillMe));
             EventHandlers.Add("vMenu:Notify", new Action<string>(NotifyPlayer));
             EventHandlers.Add("vMenu:SetClouds", new Action<float, string>(SetClouds));
@@ -98,6 +99,7 @@ namespace vMenuClient
         private void SetConfigOptions()
         {
             SetAddons();
+            SetWhiteLists();
             SetExtras();
             SetTattoos();
 
@@ -128,7 +130,7 @@ namespace vMenuClient
                     {
                         if (!VehicleSpawner.AddonVehicles.ContainsKey(addon))
                         {
-                            VehicleSpawner.AddonVehicles.Add(addon, (uint)GetHashKey(addon));
+                            VehicleSpawner.AddonVehicles.Add(addon, Game.GenerateHashASCII(addon));
                         }
                         else
                         {
@@ -144,7 +146,7 @@ namespace vMenuClient
                     {
                         if (!WeaponOptions.AddonWeapons.ContainsKey(addon))
                         {
-                            WeaponOptions.AddonWeapons.Add(addon, (uint)GetHashKey(addon));
+                            WeaponOptions.AddonWeapons.Add(addon, Game.GenerateHashASCII(addon));
                         }
                         else
                         {
@@ -160,7 +162,7 @@ namespace vMenuClient
                     {
                         if (!PlayerAppearance.AddonPeds.ContainsKey(addon))
                         {
-                            PlayerAppearance.AddonPeds.Add(addon, (uint)GetHashKey(addon));
+                            PlayerAppearance.AddonPeds.Add(addon, Game.GenerateHashASCII(addon));
                         }
                         else
                         {
@@ -191,6 +193,75 @@ namespace vMenuClient
         }
 
         /// <summary>
+        /// Sets the addon models from the addons.json file.
+        /// </summary>
+        private void SetWhiteLists()
+        {
+            // reset addons
+            VehicleSpawner.WhitelistVehicles = new Dictionary<string, uint>();
+            PlayerAppearance.WhitelistedPeds = new Dictionary<string, uint>();
+            WeaponOptions.WeaponWhitelist = new Dictionary<string, uint>();
+
+            var jsonData = LoadResourceFile(GetCurrentResourceName(), "config/model-whitelists.json") ?? "{}";
+            try
+            {
+                // load new addons.
+                var whitelists = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(jsonData);
+
+                // load whitelist vehicles
+                if (whitelists.ContainsKey("whitelistedvehicle"))
+                {
+                    foreach (var whitelist in whitelists["whitelistedvehicle"])
+                    {
+                        if (!VehicleSpawner.WhitelistVehicles.ContainsKey(whitelist))
+                        {
+                            VehicleSpawner.WhitelistVehicles.Add(whitelist, Game.GenerateHashASCII(whitelist));
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your model-whitelists.json file contains 2 or more entries with the same vehicle name! ({whitelist}) Please remove duplicate lines!");
+                        }
+                    }
+                }
+
+                // load whitelisted peds.
+                if (whitelists.ContainsKey("whitelistedpeds"))
+                {
+                    foreach (var whitelist in whitelists["whitelistedpeds"])
+                    {
+                        if (!PlayerAppearance.WhitelistedPeds.ContainsKey(whitelist))
+                        {
+                            PlayerAppearance.WhitelistedPeds.Add(whitelist, Game.GenerateHashASCII(whitelist));
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your model-whitelists.json file contains 2 or more entries with the same ped name! ({whitelist}) Please remove duplicate lines!");
+                        }
+                    }
+                }
+
+                // load whitelisted weapon.
+                if (whitelists.ContainsKey("whitelistedweapons"))
+                {
+                    foreach (var whitelist in whitelists["whitelistedweapons"])
+                    {
+                        if (!WeaponOptions.WeaponWhitelist.ContainsKey(whitelist))
+                        {
+                            WeaponOptions.WeaponWhitelist.Add(whitelist, Game.GenerateHashASCII(whitelist));
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"[vMenu] [Error] Your model-whitelists.json file contains 2 or more entries with the same ped name! ({whitelist}) Please remove duplicate lines!");
+                        }
+                    }
+                }
+            }
+            catch (JsonReaderException ex)
+            {
+                Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your model-whitelists.json file contains a problem! Error details: {ex.Message}\n\n");
+            }
+        }
+        /// <summary>
         /// Sets the extras labels from the extras.json file.
         /// </summary>
         private void SetExtras()
@@ -207,7 +278,7 @@ namespace vMenuClient
 
                 foreach (string model in extras.Keys)
                 {
-                    uint modelHash = (uint)GetHashKey(model);
+                    uint modelHash = Game.GenerateHashASCII(model);
 
                     if (extras[model] != null && extras[model].Count > 0)
                     {

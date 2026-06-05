@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 
 using vMenuClient.menus;
 
+using vMenuShared;
+
 using static CitizenFX.Core.Native.API;
 using static vMenuClient.CommonFunctions;
 using static vMenuShared.ConfigManager;
@@ -23,6 +25,7 @@ namespace vMenuClient
 
         public static bool PermissionsSetupComplete => ArePermissionsSetup;
         public static bool ConfigOptionsSetupComplete = false;
+        public static bool AddonPermissionSetup = false;
 
         public static string MenuToggleKey { get; private set; } = "M"; // M by default
         public static string NoClipKey { get; private set; } = "F2"; // F2 by default 
@@ -142,6 +145,14 @@ namespace vMenuClient
                     {
                         NoClipEnabled = !NoClipEnabled;
                     }
+                }
+            }), false);
+            
+            RegisterCommand("vMenu:DV", new Action<dynamic, List<dynamic>, string>((source, args, rawCommand) =>
+            {
+                if (IsAllowed(Permission.VODelete))
+                {
+                    DeleteVehicle();
                 }
             }), false);
 
@@ -377,7 +388,19 @@ namespace vMenuClient
             return coords;
         }
         #endregion
+        #region Set Permissions function
+        /// <summary>
+        /// Set the permissions for this client.
+        /// </summary>
+        /// <param name="dict"></param>
+        public static void SetSupplementaryPermissions(string permissionsList)
+        {
+            vMenuShared.SupplementaryPermissionManager.SetPermissions(permissionsList);
 
+            AddonPermissionSetup = true;
+            SupplementaryPermissionManager.ArePermissionsSetup = true;
+        }
+        #endregion
         #region Set Permissions function
         /// <summary>
         /// Set the permissions for this client.
@@ -414,7 +437,7 @@ namespace vMenuClient
                 IsAllowed(Permission.VSOpenWheel, checkAnyway: true)
             };
             ArePermissionsSetup = true;
-            while (!ConfigOptionsSetupComplete)
+            while (!ConfigOptionsSetupComplete && !AddonPermissionSetup)
             {
                 await Delay(100);
             }
@@ -488,21 +511,21 @@ namespace vMenuClient
                 // Manage Stamina
                 if (PlayerOptionsMenu != null && PlayerOptionsMenu.PlayerStamina && IsAllowed(Permission.POUnlimitedStamina))
                 {
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 100, true);
+                    StatSetInt(Game.GenerateHashASCII("MP0_STAMINA"), 100, true);
                 }
                 else
                 {
-                    StatSetInt((uint)GetHashKey("MP0_STAMINA"), 0, true);
+                    StatSetInt(Game.GenerateHashASCII("MP0_STAMINA"), 0, true);
                 }
 
                 // Manage other stats, in order of appearance in the pause menu (stats) page.
-                StatSetInt((uint)GetHashKey("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
-                StatSetInt((uint)GetHashKey("MP0_STRENGTH"), 100, true);                // Strength
-                StatSetInt((uint)GetHashKey("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
-                StatSetInt((uint)GetHashKey("MP0_FLYING_ABILITY"), 100, true);          // Flying
-                StatSetInt((uint)GetHashKey("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
-                StatSetInt((uint)GetHashKey("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
-                StatSetFloat((uint)GetHashKey("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
+                StatSetInt(Game.GenerateHashASCII("MP0_SHOOTING_ABILITY"), 100, true);        // Shooting
+                StatSetInt(Game.GenerateHashASCII("MP0_STRENGTH"), 100, true);                // Strength
+                StatSetInt(Game.GenerateHashASCII("MP0_STEALTH_ABILITY"), 100, true);         // Stealth
+                StatSetInt(Game.GenerateHashASCII("MP0_FLYING_ABILITY"), 100, true);          // Flying
+                StatSetInt(Game.GenerateHashASCII("MP0_WHEELIE_ABILITY"), 100, true);         // Driving
+                StatSetInt(Game.GenerateHashASCII("MP0_LUNG_CAPACITY"), 100, true);           // Lung Capacity
+                StatSetFloat(Game.GenerateHashASCII("MP0_PLAYER_MENTAL_STATE"), 0f, true);    // Mental State
             }
 
             RegisterCommand($"vMenu:{GetKeyMappingId()}:MenuToggle", new Action<dynamic, List<dynamic>, string>((dynamic source, List<dynamic> args, string rawCommand) =>
