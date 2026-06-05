@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'" Command="if exist &quot;$(SolutionDir)postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
   </Target>
 
   <ItemGroup>

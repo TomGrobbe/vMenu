@@ -147,6 +147,14 @@ namespace vMenuClient
                     }
                 }
             }), false);
+            
+            RegisterCommand("vMenu:DV", new Action<dynamic, List<dynamic>, string>((source, args, rawCommand) =>
+            {
+                if (IsAllowed(Permission.VODelete))
+                {
+                    DeleteVehicle();
+                }
+            }), false);
 
             if (!(GetSettingsString(Setting.vmenu_noclip_toggle_key) == null))
             {
