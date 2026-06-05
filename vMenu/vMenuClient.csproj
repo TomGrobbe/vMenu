@@ -11,8 +11,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\SharedClasses\ConfigManager.cs" Link="ConfigManager.cs" />
-    <Compile Include="..\SharedClasses\PermissionsManager.cs" Link="PermissionsManager.cs" />
+    <Compile Include="..\SharedClasses\*.cs" Link="*.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,7 +50,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist &quot;$(SolutionDir)\postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'" Command="if exist &quot;$(SolutionDir)postbuild.cmd&quot; &quot;$(SolutionDir)postbuild.cmd&quot;" />
   </Target>
 
   <ItemGroup>

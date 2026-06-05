@@ -51,7 +51,7 @@ namespace vMenuClient
 
         private const string snowball_anim_dict = "anim@mp_snowball";
         private const string snowball_anim_name = "pickup_snowball";
-        private readonly uint snowball_hash = (uint)GetHashKey("weapon_snowball");
+        private readonly uint snowball_hash = Game.GenerateHashASCII("weapon_snowball");
         private bool showSnowballInfo = false;
 
         private bool stopPropsLoop = false;
@@ -76,6 +76,7 @@ namespace vMenuClient
             Tick += MiscSettings;
             Tick += GeneralTasks;
             Tick += GcTick;
+            Tick += ControllerTick;
 
             if (GetSettingsBool(Setting.keep_player_head_props))
             {
@@ -211,6 +212,36 @@ namespace vMenuClient
 
             }
             await Delay(1000);
+        }
+        #endregion
+
+        #region Controller tick and functions
+        private async Task ControllerTick()
+        {
+            if (!Game.IsPaused && !IsPauseMenuRestarting() && IsScreenFadedIn() && !IsPlayerSwitchInProgress() && !Game.Player.IsDead && !MenuController.DisableMenuButtons)
+            {
+                if (Game.CurrentInputMode == InputMode.GamePad)
+                {
+                    await HandleMenuToggleKeyForController();
+                }
+            }
+            await Task.FromResult(0);
+        }
+        private async Task HandleMenuToggleKeyForController()
+        {
+            int tmpTimer = GetGameTimer();
+            while ((Game.IsControlPressed(0, Control.InteractionMenu) || Game.IsDisabledControlPressed(0, Control.InteractionMenu)) && !Game.IsPaused && IsScreenFadedIn() && !Game.Player.IsDead && !IsPlayerSwitchInProgress() && !MenuController.DontOpenAnyMenu)
+            {
+                if (GetGameTimer() - tmpTimer > 400)
+                {
+                    if (MainMenu.Menu != null)
+                    {
+                        MainMenu.Menu.OpenMenu();
+                    }
+                    break;
+                }
+                await Delay(0);
+            }
         }
         #endregion
 
@@ -590,7 +621,6 @@ namespace vMenuClient
 
                 var subMenus = new List<Menu>()
                     {
-                        MainMenu.VehicleOptionsMenu.DeleteConfirmMenu,
                         MainMenu.VehicleOptionsMenu.VehicleColorsMenu,
                         MainMenu.VehicleOptionsMenu.VehicleComponentsMenu,
                         MainMenu.VehicleOptionsMenu.VehicleDoorsMenu,
@@ -1462,9 +1492,9 @@ namespace vMenuClient
 
             if (MainMenu.WeaponOptionsMenu.UnlimitedParachutes)
             {
-                if (!HasPedGotWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), false))
+                if (!HasPedGotWeapon(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), false))
                 {
-                    GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), 0, false, false);
+                    GiveWeaponToPed(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), 0, false, false);
                 }
 
                 if (!GetPlayerHasReserveParachute(Game.Player.Handle))
@@ -2460,38 +2490,38 @@ namespace vMenuClient
         /*
         private readonly List<uint> flareVehicles = new List<uint>()
         {
-            (uint)GetHashKey("mogul"),
-            (uint)GetHashKey("rogue"),
-            (uint)GetHashKey("starling"),
-            (uint)GetHashKey("seabreeze"),
-            (uint)GetHashKey("tula"),
-            (uint)GetHashKey("bombushka"),
-            (uint)GetHashKey("hunter"),
-            (uint)GetHashKey("nokota"),
-            (uint)GetHashKey("pyro"),
-            (uint)GetHashKey("molotok"),
-            (uint)GetHashKey("havok"),
-            (uint)GetHashKey("alphaz1"),
-            (uint)GetHashKey("microlight"),
-            (uint)GetHashKey("howard"),
-            (uint)GetHashKey("avenger"),
-            (uint)GetHashKey("thruster"),
-            (uint)GetHashKey("volatol")
+            Game.GenerateHashASCII("mogul"),
+            Game.GenerateHashASCII("rogue"),
+            Game.GenerateHashASCII("starling"),
+            Game.GenerateHashASCII("seabreeze"),
+            Game.GenerateHashASCII("tula"),
+            Game.GenerateHashASCII("bombushka"),
+            Game.GenerateHashASCII("hunter"),
+            Game.GenerateHashASCII("nokota"),
+            Game.GenerateHashASCII("pyro"),
+            Game.GenerateHashASCII("molotok"),
+            Game.GenerateHashASCII("havok"),
+            Game.GenerateHashASCII("alphaz1"),
+            Game.GenerateHashASCII("microlight"),
+            Game.GenerateHashASCII("howard"),
+            Game.GenerateHashASCII("avenger"),
+            Game.GenerateHashASCII("thruster"),
+            Game.GenerateHashASCII("volatol")
         };
 
         private readonly List<uint> bombVehicles = new List<uint>()
         {
-            (uint)GetHashKey("cuban800"),
-            (uint)GetHashKey("mogul"),
-            (uint)GetHashKey("rogue"),
-            (uint)GetHashKey("starling"),
-            (uint)GetHashKey("seabreeze"),
-            (uint)GetHashKey("tula"),
-            (uint)GetHashKey("bombushka"),
-            (uint)GetHashKey("hunter"),
-            (uint)GetHashKey("avenger"),
-            (uint)GetHashKey("akula"),
-            (uint)GetHashKey("volatol")
+            Game.GenerateHashASCII("cuban800"),
+            Game.GenerateHashASCII("mogul"),
+            Game.GenerateHashASCII("rogue"),
+            Game.GenerateHashASCII("starling"),
+            Game.GenerateHashASCII("seabreeze"),
+            Game.GenerateHashASCII("tula"),
+            Game.GenerateHashASCII("bombushka"),
+            Game.GenerateHashASCII("hunter"),
+            Game.GenerateHashASCII("avenger"),
+            Game.GenerateHashASCII("akula"),
+            Game.GenerateHashASCII("volatol")
         };
 
         /// Returns true if the player can currently fire flares.
@@ -3031,67 +3061,67 @@ namespace vMenuClient
                             {
                                 var sportBikes = new List<uint>()
                                 {
-                                    (uint)GetHashKey("AKUMA"),
-                                    (uint)GetHashKey("BATI"),
-                                    (uint)GetHashKey("BATI2"),
-                                    (uint)GetHashKey("CARBONRS"),
-                                    (uint)GetHashKey("DEFILER"),
-                                    (uint)GetHashKey("DIABLOUS2"),
-                                    (uint)GetHashKey("DOUBLE"),
-                                    (uint)GetHashKey("FCR"),
-                                    (uint)GetHashKey("FCR2"),
-                                    (uint)GetHashKey("HAKUCHOU"),
-                                    (uint)GetHashKey("HAKUCHOU2"),
-                                    (uint)GetHashKey("LECTRO"),
-                                    (uint)GetHashKey("NEMESIS"),
-                                    (uint)GetHashKey("OPPRESSOR"),
-                                    (uint)GetHashKey("OPPRESSOR2"),
-                                    (uint)GetHashKey("PCJ"),
-                                    (uint)GetHashKey("RUFFIAN"),
-                                    (uint)GetHashKey("SHOTARO"),
-                                    (uint)GetHashKey("VADER"),
-                                    (uint)GetHashKey("VORTEX"),
+                                    Game.GenerateHashASCII("AKUMA"),
+                                    Game.GenerateHashASCII("BATI"),
+                                    Game.GenerateHashASCII("BATI2"),
+                                    Game.GenerateHashASCII("CARBONRS"),
+                                    Game.GenerateHashASCII("DEFILER"),
+                                    Game.GenerateHashASCII("DIABLOUS2"),
+                                    Game.GenerateHashASCII("DOUBLE"),
+                                    Game.GenerateHashASCII("FCR"),
+                                    Game.GenerateHashASCII("FCR2"),
+                                    Game.GenerateHashASCII("HAKUCHOU"),
+                                    Game.GenerateHashASCII("HAKUCHOU2"),
+                                    Game.GenerateHashASCII("LECTRO"),
+                                    Game.GenerateHashASCII("NEMESIS"),
+                                    Game.GenerateHashASCII("OPPRESSOR"),
+                                    Game.GenerateHashASCII("OPPRESSOR2"),
+                                    Game.GenerateHashASCII("PCJ"),
+                                    Game.GenerateHashASCII("RUFFIAN"),
+                                    Game.GenerateHashASCII("SHOTARO"),
+                                    Game.GenerateHashASCII("VADER"),
+                                    Game.GenerateHashASCII("VORTEX"),
                                 };
                                 var chopperBikes = new List<uint>()
                                 {
-                                    (uint)GetHashKey("SANCTUS"),
-                                    (uint)GetHashKey("ZOMBIEA"),
-                                    (uint)GetHashKey("ZOMBIEB"),
+                                    Game.GenerateHashASCII("SANCTUS"),
+                                    Game.GenerateHashASCII("ZOMBIEA"),
+                                    Game.GenerateHashASCII("ZOMBIEB"),
                                 };
                                 var dirtBikes = new List<uint>()
                                 {
-                                    (uint)GetHashKey("BF400"),
-                                    (uint)GetHashKey("ENDURO"),
-                                    (uint)GetHashKey("MANCHEZ"),
-                                    (uint)GetHashKey("SANCHEZ"),
-                                    (uint)GetHashKey("SANCHEZ2"),
-                                    (uint)GetHashKey("ESSKEY"),
+                                    Game.GenerateHashASCII("BF400"),
+                                    Game.GenerateHashASCII("ENDURO"),
+                                    Game.GenerateHashASCII("MANCHEZ"),
+                                    Game.GenerateHashASCII("SANCHEZ"),
+                                    Game.GenerateHashASCII("SANCHEZ2"),
+                                    Game.GenerateHashASCII("ESSKEY"),
                                 };
                                 var scooters = new List<uint>()
                                 {
-                                    (uint)GetHashKey("FAGGIO"),
-                                    (uint)GetHashKey("FAGGIO2"),
-                                    (uint)GetHashKey("FAGGIO3"),
-                                    (uint)GetHashKey("CLIFFHANGER"),
-                                    (uint)GetHashKey("BAGGER"),
+                                    Game.GenerateHashASCII("FAGGIO"),
+                                    Game.GenerateHashASCII("FAGGIO2"),
+                                    Game.GenerateHashASCII("FAGGIO3"),
+                                    Game.GenerateHashASCII("CLIFFHANGER"),
+                                    Game.GenerateHashASCII("BAGGER"),
                                 };
                                 var policeb = new List<uint>()
                                 {
-                                    (uint)GetHashKey("AVARUS"),
-                                    (uint)GetHashKey("CHIMERA"),
-                                    (uint)GetHashKey("POLICEB"),
-                                    (uint)GetHashKey("SOVEREIGN"),
-                                    (uint)GetHashKey("HEXER"),
-                                    (uint)GetHashKey("INNOVATION"),
-                                    (uint)GetHashKey("NIGHTBLADE"),
-                                    (uint)GetHashKey("RATBIKE"),
-                                    (uint)GetHashKey("DAEMON"),
-                                    (uint)GetHashKey("DAEMON2"),
-                                    (uint)GetHashKey("DIABLOUS"),
-                                    (uint)GetHashKey("GARGOYLE"),
-                                    (uint)GetHashKey("THRUST"),
-                                    (uint)GetHashKey("VINDICATOR"),
-                                    (uint)GetHashKey("WOLFSBANE"),
+                                    Game.GenerateHashASCII("AVARUS"),
+                                    Game.GenerateHashASCII("CHIMERA"),
+                                    Game.GenerateHashASCII("POLICEB"),
+                                    Game.GenerateHashASCII("SOVEREIGN"),
+                                    Game.GenerateHashASCII("HEXER"),
+                                    Game.GenerateHashASCII("INNOVATION"),
+                                    Game.GenerateHashASCII("NIGHTBLADE"),
+                                    Game.GenerateHashASCII("RATBIKE"),
+                                    Game.GenerateHashASCII("DAEMON"),
+                                    Game.GenerateHashASCII("DAEMON2"),
+                                    Game.GenerateHashASCII("DIABLOUS"),
+                                    Game.GenerateHashASCII("GARGOYLE"),
+                                    Game.GenerateHashASCII("THRUST"),
+                                    Game.GenerateHashASCII("VINDICATOR"),
+                                    Game.GenerateHashASCII("WOLFSBANE"),
                                 };
 
                                 if (policeb.Contains((uint)veh.Model.Hash))
@@ -3205,7 +3235,7 @@ namespace vMenuClient
                         await Delay(0);
                         if (!fired)
                         {
-                            if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("CreateObject")))
+                            if (HasAnimEventFired(Game.PlayerPed.Handle, Game.GenerateHashASCII("CreateObject")))
                             {
                                 AddAmmoToPed(Game.PlayerPed.Handle, snowball_hash, 2);
                                 GiveWeaponToPed(Game.PlayerPed.Handle, snowball_hash, 0, true, true);
@@ -3215,12 +3245,12 @@ namespace vMenuClient
                                 }
                                 fired = true;
                             }
-                            else if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                            else if (HasAnimEventFired(Game.PlayerPed.Handle, Game.GenerateHashASCII("Interrupt")))
                             {
                                 break;
                             }
                         }
-                        else if (HasAnimEventFired(Game.PlayerPed.Handle, (uint)GetHashKey("Interrupt")))
+                        else if (HasAnimEventFired(Game.PlayerPed.Handle, Game.GenerateHashASCII("Interrupt")))
                         {
                             break;
                         }

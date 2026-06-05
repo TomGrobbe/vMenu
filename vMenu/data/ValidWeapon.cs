@@ -108,13 +108,13 @@ namespace vMenuClient.data
                 var realName = weapon.Key;
                 var localizedName = weapon.Value;
                 if (realName == "weapon_unarmed") continue;
-                var hash = (uint)GetHashKey(realName);
+                var hash = Game.GenerateHashASCII(realName);
                 var componentHashes = new Dictionary<string, uint>();
                 var weaponComponents = GetWeaponComponents();
                 var weaponComponentKeys = weaponComponents.Keys;
                 foreach (var comp in weaponComponentKeys)
                 {
-                    var componentHash = (uint)GetHashKey(comp);
+                    var componentHash = Game.GenerateHashASCII(comp);
                     if (DoesWeaponTakeWeaponComponent(hash, componentHash))
                     {
                         var componentName = weaponComponents[comp];

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using static CitizenFX.Core.Native.API;
+using  CitizenFX.Core;
 
 namespace vMenuClient.data
 {
@@ -11,69 +12,69 @@ namespace vMenuClient.data
             var model = (uint)GetEntityModel(vehicle);
             var sprites = new Dictionary<uint, int>()
             {
-                { (uint)GetHashKey("taxi"), 56 },
+                { Game.GenerateHashASCII("taxi"), 56 },
                 //
-                { (uint)GetHashKey("nightshark"), 225 },
+                { Game.GenerateHashASCII("nightshark"), 225 },
                 //
-                { (uint)GetHashKey("rhino"), 421 },
+                { Game.GenerateHashASCII("rhino"), 421 },
                 //
-                { (uint)GetHashKey("lazer"), 424 },
-                { (uint)GetHashKey("besra"), 424 },
-                { (uint)GetHashKey("hydra"), 424 },
+                { Game.GenerateHashASCII("lazer"), 424 },
+                { Game.GenerateHashASCII("besra"), 424 },
+                { Game.GenerateHashASCII("hydra"), 424 },
                 //
-                { (uint)GetHashKey("insurgent"), 426 },
-                { (uint)GetHashKey("insurgent2"), 426 },
-                { (uint)GetHashKey("insurgent3"), 426 },
+                { Game.GenerateHashASCII("insurgent"), 426 },
+                { Game.GenerateHashASCII("insurgent2"), 426 },
+                { Game.GenerateHashASCII("insurgent3"), 426 },
                 //
-                { (uint)GetHashKey("limo2"), 460 },
+                { Game.GenerateHashASCII("limo2"), 460 },
                 //
-                { (uint)GetHashKey("blazer5"), 512 },
+                { Game.GenerateHashASCII("blazer5"), 512 },
                 //
-                { (uint)GetHashKey("phantom2"), 528 },
-                { (uint)GetHashKey("boxville5"), 529 },
-                { (uint)GetHashKey("ruiner2"), 530 },
-                { (uint)GetHashKey("dune4"), 531 },
-                { (uint)GetHashKey("dune5"), 531 },
-                { (uint)GetHashKey("wastelander"), 532 },
-                { (uint)GetHashKey("voltic2"), 533 },
-                { (uint)GetHashKey("technical2"), 534 },
-                { (uint)GetHashKey("technical3"), 534 },
-                { (uint)GetHashKey("technical"), 534 },
+                { Game.GenerateHashASCII("phantom2"), 528 },
+                { Game.GenerateHashASCII("boxville5"), 529 },
+                { Game.GenerateHashASCII("ruiner2"), 530 },
+                { Game.GenerateHashASCII("dune4"), 531 },
+                { Game.GenerateHashASCII("dune5"), 531 },
+                { Game.GenerateHashASCII("wastelander"), 532 },
+                { Game.GenerateHashASCII("voltic2"), 533 },
+                { Game.GenerateHashASCII("technical2"), 534 },
+                { Game.GenerateHashASCII("technical3"), 534 },
+                { Game.GenerateHashASCII("technical"), 534 },
                 //
-                { (uint)GetHashKey("apc"), 558 },
-                { (uint)GetHashKey("oppressor"), 559 },
-                { (uint)GetHashKey("oppressor2"), 559 },
-                { (uint)GetHashKey("halftrack"), 560 },
-                { (uint)GetHashKey("dune3"), 561 },
-                { (uint)GetHashKey("tampa3"), 562 },
-                { (uint)GetHashKey("trailersmall2"), 563 },
+                { Game.GenerateHashASCII("apc"), 558 },
+                { Game.GenerateHashASCII("oppressor"), 559 },
+                { Game.GenerateHashASCII("oppressor2"), 559 },
+                { Game.GenerateHashASCII("halftrack"), 560 },
+                { Game.GenerateHashASCII("dune3"), 561 },
+                { Game.GenerateHashASCII("tampa3"), 562 },
+                { Game.GenerateHashASCII("trailersmall2"), 563 },
                 //
-                { (uint)GetHashKey("alphaz1"), 572 },
-                { (uint)GetHashKey("bombushka"), 573 },
-                { (uint)GetHashKey("havok"), 574 },
-                { (uint)GetHashKey("howard"), 575 },
-                { (uint)GetHashKey("hunter"), 576 },
-                { (uint)GetHashKey("microlight"), 577 },
-                { (uint)GetHashKey("mogul"), 578 },
-                { (uint)GetHashKey("molotok"), 579 },
-                { (uint)GetHashKey("nokota"), 580 },
-                { (uint)GetHashKey("pyro"), 581 },
-                { (uint)GetHashKey("rogue"), 582 },
-                { (uint)GetHashKey("starling"), 583 },
-                { (uint)GetHashKey("seabreeze"), 584 },
-                { (uint)GetHashKey("tula"), 585 },
+                { Game.GenerateHashASCII("alphaz1"), 572 },
+                { Game.GenerateHashASCII("bombushka"), 573 },
+                { Game.GenerateHashASCII("havok"), 574 },
+                { Game.GenerateHashASCII("howard"), 575 },
+                { Game.GenerateHashASCII("hunter"), 576 },
+                { Game.GenerateHashASCII("microlight"), 577 },
+                { Game.GenerateHashASCII("mogul"), 578 },
+                { Game.GenerateHashASCII("molotok"), 579 },
+                { Game.GenerateHashASCII("nokota"), 580 },
+                { Game.GenerateHashASCII("pyro"), 581 },
+                { Game.GenerateHashASCII("rogue"), 582 },
+                { Game.GenerateHashASCII("starling"), 583 },
+                { Game.GenerateHashASCII("seabreeze"), 584 },
+                { Game.GenerateHashASCII("tula"), 585 },
                 //
-                { (uint)GetHashKey("avenger"), 589 },
+                { Game.GenerateHashASCII("avenger"), 589 },
                 //
-                { (uint)GetHashKey("stromberg"), 595 },
-                { (uint)GetHashKey("deluxo"), 596 },
-                { (uint)GetHashKey("thruster"), 597 },
-                { (uint)GetHashKey("khanjali"), 598 },
-                { (uint)GetHashKey("riot2"), 599 },
-                { (uint)GetHashKey("volatol"), 600 },
-                { (uint)GetHashKey("barrage"), 601 },
-                { (uint)GetHashKey("akula"), 602 },
-                { (uint)GetHashKey("chernobog"), 603 },
+                { Game.GenerateHashASCII("stromberg"), 595 },
+                { Game.GenerateHashASCII("deluxo"), 596 },
+                { Game.GenerateHashASCII("thruster"), 597 },
+                { Game.GenerateHashASCII("khanjali"), 598 },
+                { Game.GenerateHashASCII("riot2"), 599 },
+                { Game.GenerateHashASCII("volatol"), 600 },
+                { Game.GenerateHashASCII("barrage"), 601 },
+                { Game.GenerateHashASCII("akula"), 602 },
+                { Game.GenerateHashASCII("chernobog"), 603 },
             };
 
             if (sprites.ContainsKey(model))

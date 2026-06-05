@@ -461,27 +461,8 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    var veh = GetVehicle();
-                    if (veh != null && veh.Exists() && GetVehicle().Driver == Game.PlayerPed)
-                    {
-                        SetVehicleHasBeenOwnedByPlayer(veh.Handle, false);
-                        SetEntityAsMissionEntity(veh.Handle, false, false);
-                        veh.Delete();
-                    }
-                    else
-                    {
-                        if (!Game.PlayerPed.IsInVehicle())
-                        {
-                            Notify.Alert(CommonErrors.NoVehicle);
-                        }
-                        else
-                        {
-                            Notify.Alert("You need to be in the driver's seat if you want to delete a vehicle.");
-                        }
-
-                    }
+                    DeleteVehicle();
                     DeleteConfirmMenu.GoBack();
-                    menu.GoBack();
                 }
             };
             #endregion
