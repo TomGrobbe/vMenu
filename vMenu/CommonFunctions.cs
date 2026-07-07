@@ -1460,13 +1460,12 @@ namespace vMenuClient
                 SetVehicleLivery(vehicle.Handle, vehicleInfo.livery);
 
                 bool useCustomRgbPrimary = vehicleInfo.colors.ContainsKey("customPrimaryR") && vehicleInfo.colors.ContainsKey("customPrimaryG") && vehicleInfo.colors.ContainsKey("customPrimaryB");
+                
+                vehicle.Mods.PrimaryColor = (VehicleColor)vehicleInfo.colors["primary"];
+                
                 if (useCustomRgbPrimary && vehicleInfo.colors["customPrimaryR"] > 0 && vehicleInfo.colors["customPrimaryG"] > 0 && vehicleInfo.colors["customPrimaryB"] > 0)
                 {
                     vehicle.Mods.CustomPrimaryColor = System.Drawing.Color.FromArgb(255, vehicleInfo.colors["customPrimaryR"], vehicleInfo.colors["customPrimaryG"], vehicleInfo.colors["customPrimaryB"]);
-                }
-                else
-                {
-                    vehicle.Mods.PrimaryColor = (VehicleColor)vehicleInfo.colors["primary"];
                 }
                 if (vehicleInfo.colors.ContainsKey("PrimaryPaintFinish"))
                 {
@@ -1478,13 +1477,12 @@ namespace vMenuClient
                 }
 
                 bool useCustomRgbSecondary = vehicleInfo.colors.ContainsKey("customSecondaryR") && vehicleInfo.colors.ContainsKey("customSecondaryG") && vehicleInfo.colors.ContainsKey("customSecondaryB");
+                
+                vehicle.Mods.SecondaryColor = (VehicleColor)vehicleInfo.colors["secondary"];
+                
                 if (useCustomRgbSecondary && vehicleInfo.colors["customSecondaryR"] > 0 && vehicleInfo.colors["customSecondaryG"] > 0 && vehicleInfo.colors["customSecondaryB"] > 0)
                 {
                     vehicle.Mods.CustomSecondaryColor = System.Drawing.Color.FromArgb(255, vehicleInfo.colors["customSecondaryR"], vehicleInfo.colors["customSecondaryR"], vehicleInfo.colors["customSecondaryB"]);
-                }
-                else
-                {
-                    vehicle.Mods.SecondaryColor = (VehicleColor)vehicleInfo.colors["secondary"];
                 }
                 if (vehicleInfo.colors.ContainsKey("SecondaryPaintFinish"))
                 {
