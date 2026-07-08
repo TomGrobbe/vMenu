@@ -2823,9 +2823,14 @@ namespace vMenuClient
                 {
                     Game.PlayerPed.Weapons.RemoveAll();
                 }
+                
+                // Resolve permission by weapon name instead of using the saved Perm value.
+                // Permission enum values change as new weapons are added, so an old saved loadout can deserialize to the wrong permission.
+                Permission ResolveCurrentPerm(ValidWeapon wp) =>
+                    ValidWeapons.weaponPermissions.TryGetValue(wp.SpawnName, out var p) ? p : Permission.WPSpawn;
 
                 // Check if any weapon is not allowed.
-                if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
+                if (loadout.Any((wp) => !IsAllowed(ResolveCurrentPerm(wp))))
                 {
                     Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
                 }
@@ -2840,7 +2845,7 @@ namespace vMenuClient
                         continue;
                     }
 
-                    if (ignoreSettingsAndPerms || IsAllowed(w.Perm))
+                    if (IsAllowed(ResolveCurrentPerm(w)))
                     {
                         // Give the weapon
                         GiveWeaponToPed(Game.PlayerPed.Handle, w.Hash, w.CurrentAmmo > -1 ? w.CurrentAmmo : w.GetMaxAmmo, false, false);
