@@ -44,15 +44,15 @@ namespace vMenuClient.menus
 
             #region create main weapon options menu and add items
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Weapon Options");
+            menu = new Menu(Game.Player.Name, "武器功能选项");
 
-            var getAllWeapons = new MenuItem("Get All Weapons", "Get all weapons.");
-            var removeAllWeapons = new MenuItem("Remove All Weapons", "Removes all weapons in your inventory.");
-            var unlimitedAmmo = new MenuCheckboxItem("Unlimited Ammo", "Unlimited ammunition supply.", UnlimitedAmmo);
-            var noReload = new MenuCheckboxItem("No Reload", "Never reload.", NoReload);
-            var setAmmo = new MenuItem("Set All Ammo Count", "Set the amount of ammo in all your weapons.");
-            var refillMaxAmmo = new MenuItem("Refill All Ammo", "Give all your weapons max ammo.");
-            var spawnByName = new MenuItem("Spawn Weapon By Name", "Enter a weapon mode name to spawn.");
+            var getAllWeapons = new MenuItem("获取全部武器", "获取所有武器。");
+            var removeAllWeapons = new MenuItem("移除全部武器", "移除库存中的所有武器。");
+            var unlimitedAmmo = new MenuCheckboxItem("无限弹药", "提供无限弹药。", UnlimitedAmmo);
+            var noReload = new MenuCheckboxItem("无需换弹", "无需换弹。", NoReload);
+            var setAmmo = new MenuItem("设置全部弹药数量", "设置所有武器的弹药数量。");
+            var refillMaxAmmo = new MenuItem("补满全部弹药", "将所有武器的弹药补满。");
+            var spawnByName = new MenuItem("按名称生成武器", "输入要生成的武器模型名称。");
 
             // Add items based on permissions
             if (IsAllowed(Permission.WPGetAll))
@@ -83,8 +83,8 @@ namespace vMenuClient.menus
             #endregion
 
             #region addonweapons submenu
-            var addonWeaponsBtn = new MenuItem("Addon Weapons", "Equip / remove addon weapons available on this server.");
-            var addonWeaponsMenu = new Menu("Addon Weapons", "Equip/Remove Addon Weapons");
+            var addonWeaponsBtn = new MenuItem("添加式武器", "装备/移除本服务器提供的添加式武器.");
+            var addonWeaponsMenu = new Menu("添加式武器", "装备/移除添加式武器");
             MenuController.AddSubmenu(menu, addonWeaponsMenu);
             #endregion
 
@@ -99,7 +99,7 @@ namespace vMenuClient.menus
             {
                 if (IsAllowed(Permission.WPSpawn) && !string.IsNullOrEmpty(addonWeapon.Name) && AddonWeapons.Count > 0)
                 {
-                    var addonWeaponMenu = new Menu("Weapon Options", addonWeapon.Name)
+                    var addonWeaponMenu = new Menu("武器功能选项", addonWeapon.Name)
                     #region Create menu for this weapon and add buttons
                     {
                         ShowWeaponStatsPanel = true
@@ -107,7 +107,7 @@ namespace vMenuClient.menus
                     var stats = new Game.WeaponHudStats();
                     Game.GetWeaponHudStats(addonWeapon.Hash, ref stats);
                     addonWeaponMenu.SetWeaponStats(stats.hudDamage / 100f, stats.hudSpeed / 100f, stats.hudAccuracy / 100f, stats.hudRange / 100f);
-                    var addonWeaponItem = new MenuItem(addonWeapon.Name, $"Open the options for ~y~{addonWeapon.Name}~s~.")
+                    var addonWeaponItem = new MenuItem(addonWeapon.Name, $"打开 ~y~{addonWeapon.Name}~s~ 的选项。")
                     {
                         Label = "→→→",
                         LeftIcon = MenuItem.Icon.GUN,
@@ -120,20 +120,20 @@ namespace vMenuClient.menus
                     {
                         addonWeaponItem.Enabled = false;
                         addonWeaponItem.LeftIcon = MenuItem.Icon.LOCK;
-                        addonWeaponItem.Description = "Access to this has been restricted by the server owner.";
+                        addonWeaponItem.Description = "服务器所有者已限制访问此项。";
                     }
                     
                     
                     addonWeaponInfo.Add(addonWeaponMenu, addonWeapon);
 
-                    var getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.")
+                    var getOrRemoveWeapon = new MenuItem("装备/移除武器", "将此武器添加到/从你的库存中移除.")
                     {
                         LeftIcon = MenuItem.Icon.GUN
                     };
                     addonWeaponMenu.AddMenuItem(getOrRemoveWeapon);
 
 
-                    var fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.")
+                    var fillAmmo = new MenuItem("弹药补充", "为此武器获取最大弹药.")
                     {
                         LeftIcon = MenuItem.Icon.AMMO
                     };
@@ -155,7 +155,7 @@ namespace vMenuClient.menus
                         }
                     }
 
-                    var weaponTints = new MenuListItem("Tints", tints, 0, "Select a tint for your weapon.");
+                    var weaponTints = new MenuListItem("色调", tints, 0, "选择适合武器的色调.");
                     addonWeaponMenu.AddMenuItem(weaponTints);
                     #endregion
 
@@ -170,7 +170,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You need to get the weapon first!");
+                                Notify.Error("您需要先拿到武器!");
                             }
                         }
                     };
@@ -187,14 +187,14 @@ namespace vMenuClient.menus
                             if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
-                                Subtitle.Custom("Weapon removed.");
+                                Subtitle.Custom("武器已移除.");
                             }
                             else
                             {
                                 var ammo = 255;
                                 GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
                                 GiveWeaponToPed(Game.PlayerPed.Handle, hash, ammo, false, true);
-                                Subtitle.Custom("Weapon added.");
+                                Subtitle.Custom("武器已添加.");
                             }
                         }
                         else if (item == fillAmmo)
@@ -207,7 +207,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You need to get the weapon first before re-filling ammo!");
+                                Notify.Error("在重新填充弹药之前, 您需要先获得武器!");
                             }
                         }
                     };
@@ -217,7 +217,7 @@ namespace vMenuClient.menus
                     {
                         foreach (var comp in addonWeapon.AddonComponents)
                         {
-                            var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
+                            var compItem = new MenuItem(comp.Key, "单击以装备或移除此组件.");
                             addonWeaponComponents.Add(compItem, comp.Key);
                             addonWeaponMenu.AddMenuItem(compItem);
 
@@ -236,7 +236,7 @@ namespace vMenuClient.menus
                                     if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, weapon.Hash, componentHash))
                                     {
                                         RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, weapon.Hash, componentHash);
-                                        Subtitle.Custom("Component removed.");
+                                        Subtitle.Custom("武器组件已移除.");
                                     }
                                     else
                                     {
@@ -246,7 +246,7 @@ namespace vMenuClient.menus
                                 }
                                 else
                                 {
-                                    Notify.Error("You need to get the weapon first before you can modify it.");
+                                    Notify.Error("您需要先获得武器, 然后才能对其进行改装.");
                                 }
                             };
                             #endregion
@@ -277,7 +277,7 @@ namespace vMenuClient.menus
             if (addonWeaponsMenu.Size == 0)
             {
                 addonWeaponsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                addonWeaponsBtn.Description = "This option is not available on this server because you don't have permission to use it, or it is not setup correctly.";
+                addonWeaponsBtn.Description = "此选项在当前服务器上不可用,因为你没有权限使用它,或它未正确设置.";
                 addonWeaponsBtn.Enabled = false;
             }
             #endregion
@@ -287,8 +287,8 @@ namespace vMenuClient.menus
             if (IsAllowed(Permission.WPParachute))
             {
                 // main parachute options menu setup
-                var parachuteMenu = new Menu("Parachute Options", "Parachute Options");
-                var parachuteBtn = new MenuItem("Parachute Options", "All parachute related options can be changed here.") { Label = "→→→" };
+                var parachuteMenu = new Menu("降落伞选项", "降落伞选项");
+                var parachuteBtn = new MenuItem("降落伞选项", "在这里可以更改所有与降落伞相关的选项.") { Label = "→→→" };
 
                 MenuController.AddSubmenu(menu, parachuteMenu);
                 menu.AddMenuItem(parachuteBtn);
@@ -325,20 +325,20 @@ namespace vMenuClient.menus
                     GetLabelText("PD_TINT7"),
 
                     // broken in FiveM for some weird reason:
-                    GetLabelText("PSD_CAN_0") + " ~r~For some reason this one doesn't seem to work in FiveM.",
-                    GetLabelText("PSD_CAN_1") + " ~r~For some reason this one doesn't seem to work in FiveM.",
-                    GetLabelText("PSD_CAN_2") + " ~r~For some reason this one doesn't seem to work in FiveM.",
-                    GetLabelText("PSD_CAN_3") + " ~r~For some reason this one doesn't seem to work in FiveM.",
-                    GetLabelText("PSD_CAN_4") + " ~r~For some reason this one doesn't seem to work in FiveM.",
-                    GetLabelText("PSD_CAN_5") + " ~r~For some reason this one doesn't seem to work in FiveM."
+                    GetLabelText("PSD_CAN_0") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用.",
+                    GetLabelText("PSD_CAN_1") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用.",
+                    GetLabelText("PSD_CAN_2") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用.",
+                    GetLabelText("PSD_CAN_3") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用.",
+                    GetLabelText("PSD_CAN_4") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用.",
+                    GetLabelText("PSD_CAN_5") + " ~r~由于某些原因,这一条在 FiveM 中似乎不起作用."
                 };
 
-                var togglePrimary = new MenuItem("Toggle Primary Parachute", "Equip or remove the primary parachute");
-                var toggleReserve = new MenuItem("Enable Reserve Parachute", "Enables the reserve parachute. Only works if you enabled the primary parachute first. Reserve parachute can not be removed from the player once it's activated.");
-                var primaryChutes = new MenuListItem("Primary Chute Style", chutes, 0, $"Primary chute: {chuteDescriptions[0]}");
-                var secondaryChutes = new MenuListItem("Reserve Chute Style", chutes, 0, $"Reserve chute: {chuteDescriptions[0]}");
-                var unlimitedParachutes = new MenuCheckboxItem("Unlimited Parachutes", "Enable unlimited parachutes and reserve parachutes.", UnlimitedParachutes);
-                var autoEquipParachutes = new MenuCheckboxItem("Auto Equip Parachutes", "Automatically equip a parachute and reserve parachute when entering planes/helicopters.", AutoEquipChute);
+                var togglePrimary = new MenuItem("切换主降落伞", "装备或移除主降落伞");
+                var toggleReserve = new MenuItem("启用备用降落伞", "启用备用降落伞.只有在先启用主降落伞后才有效.一旦激活.备用降落伞无法从玩家身上移除.");
+                var primaryChutes = new MenuListItem("主降落伞样式", chutes, 0, $"主降落伞: {chuteDescriptions[0]}");
+                var secondaryChutes = new MenuListItem("备用降落伞样式", chutes, 0, $"备用降落伞: {chuteDescriptions[0]}");
+                var unlimitedParachutes = new MenuCheckboxItem("无限降落伞", "启用无限降落伞和备用降落伞.", UnlimitedParachutes);
+                var autoEquipParachutes = new MenuCheckboxItem("自动装备降落伞", "进入飞机/直升机时自动装备降落伞和备用降落伞.", AutoEquipChute);
 
                 // smoke color list
                 var smokeColorsList = new List<string>()
@@ -360,7 +360,7 @@ namespace vMenuClient.menus
                     new int[3] { 20, 20, 20 },
                 };
 
-                var smokeColors = new MenuListItem("Smoke Trail Color", smokeColorsList, 0, "Choose a smoke trail color, then press select to change it. Changing colors takes 4 seconds, you can not use your smoke while the color is being changed.");
+                var smokeColors = new MenuListItem("烟雾轨迹颜色", smokeColorsList, 0, "选择一个烟雾轨迹颜色.然后按选择来更改它.更改颜色需要 4 秒钟.在颜色更改期间无法使用烟雾.");
 
                 parachuteMenu.AddMenuItem(togglePrimary);
                 parachuteMenu.AddMenuItem(toggleReserve);
@@ -376,19 +376,19 @@ namespace vMenuClient.menus
                     {
                         if (HasPedGotWeapon(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), false))
                         {
-                            Subtitle.Custom("Primary parachute removed.");
+                            Subtitle.Custom("主降落伞已移除.");
                             RemoveWeaponFromPed(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"));
                         }
                         else
                         {
-                            Subtitle.Custom("Primary parachute added.");
+                            Subtitle.Custom("主降落伞已添加.");
                             GiveWeaponToPed(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), 0, false, false);
                         }
                     }
                     else if (item == toggleReserve)
                     {
                         SetPlayerHasReserveParachute(Game.Player.Handle);
-                        Subtitle.Custom("Reserve parachute has been added.");
+                        Subtitle.Custom("备用降落伞已添加.");
 
                     }
                 };
@@ -423,12 +423,12 @@ namespace vMenuClient.menus
                     }
                     else if (item == primaryChutes)
                     {
-                        item.Description = $"Primary chute: {chuteDescriptions[newIndex]}";
+                        item.Description = $"主降落伞: {chuteDescriptions[newIndex]}";
                         SetPlayerParachuteTintIndex(Game.Player.Handle, newIndex);
                     }
                     else if (item == secondaryChutes)
                     {
-                        item.Description = $"Reserve chute: {chuteDescriptions[newIndex]}";
+                        item.Description = $"备用降落伞: {chuteDescriptions[newIndex]}";
                         SetPlayerReserveParachuteTintIndex(Game.Player.Handle, newIndex);
                     }
                 }
@@ -442,29 +442,29 @@ namespace vMenuClient.menus
             var spacer = GetSpacerMenuItem("↓ Weapon Categories ↓");
             menu.AddMenuItem(spacer);
 
-            var handGuns = new Menu("Weapons", "Handguns");
-            var handGunsBtn = new MenuItem("Handguns");
+            var handGuns = new Menu("武器", "手枪");
+            var handGunsBtn = new MenuItem("手枪");
 
-            var rifles = new Menu("Weapons", "Assault Rifles");
-            var riflesBtn = new MenuItem("Assault Rifles");
+            var rifles = new Menu("武器", "突击步枪");
+            var riflesBtn = new MenuItem("突击步枪");
 
-            var shotguns = new Menu("Weapons", "Shotguns");
-            var shotgunsBtn = new MenuItem("Shotguns");
+            var shotguns = new Menu("武器", "霰弹枪");
+            var shotgunsBtn = new MenuItem("霰弹枪");
 
-            var smgs = new Menu("Weapons", "Sub-/Light Machine Guns");
-            var smgsBtn = new MenuItem("Sub-/Light Machine Guns");
+            var smgs = new Menu("武器", "冲锋枪 / 轻机枪");
+            var smgsBtn = new MenuItem("冲锋枪 / 轻机枪");
 
-            var throwables = new Menu("Weapons", "Throwables");
-            var throwablesBtn = new MenuItem("Throwables");
+            var throwables = new Menu("武器", "投掷武器");
+            var throwablesBtn = new MenuItem("投掷武器");
 
-            var melee = new Menu("Weapons", "Melee");
-            var meleeBtn = new MenuItem("Melee");
+            var melee = new Menu("武器", "近战武器");
+            var meleeBtn = new MenuItem("近战武器");
 
-            var heavy = new Menu("Weapons", "Heavy Weapons");
-            var heavyBtn = new MenuItem("Heavy Weapons");
+            var heavy = new Menu("武器", "重型武器");
+            var heavyBtn = new MenuItem("重型武器");
 
-            var snipers = new Menu("Weapons", "Sniper Rifles");
-            var snipersBtn = new MenuItem("Sniper Rifles");
+            var snipers = new Menu("武器", "狙击步枪");
+            var snipersBtn = new MenuItem("狙击步枪");
 
             MenuController.AddSubmenu(menu, handGuns);
             MenuController.AddSubmenu(menu, rifles);
@@ -518,14 +518,14 @@ namespace vMenuClient.menus
                 {
                     //Log($"[DEBUG LOG] [WEAPON-BUG] {weapon.Name} - {weapon.Perm} = {IsAllowed(weapon.Perm)} & All = {IsAllowed(Permission.WPGetAll)}");
                     #region Create menu for this weapon and add buttons
-                    var weaponMenu = new Menu("Weapon Options", weapon.Name)
+                    var weaponMenu = new Menu("武器功能选项", weapon.Name)
                     {
                         ShowWeaponStatsPanel = true
                     };
                     var stats = new Game.WeaponHudStats();
                     Game.GetWeaponHudStats(weapon.Hash, ref stats);
                     weaponMenu.SetWeaponStats(stats.hudDamage / 100f, stats.hudSpeed / 100f, stats.hudAccuracy / 100f, stats.hudRange / 100f);
-                    var weaponItem = new MenuItem(weapon.Name, $"Open the options for ~y~{weapon.Name}~s~.")
+                    var weaponItem = new MenuItem(weapon.Name, $"查看 ~y~{weapon.Name}~s~ 详细功能选项.")
                     {
                         Label = "→→→",
                         LeftIcon = MenuItem.Icon.GUN,
@@ -534,7 +534,7 @@ namespace vMenuClient.menus
 
                     weaponInfo.Add(weaponMenu, weapon);
 
-                    var getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.")
+                    var getOrRemoveWeapon = new MenuItem("装备/移除武器", "将此武器添加到/从你的库存中移除.")
                     {
                         LeftIcon = MenuItem.Icon.GUN
                     };
@@ -542,11 +542,11 @@ namespace vMenuClient.menus
                     if (!IsAllowed(Permission.WPSpawn))
                     {
                         getOrRemoveWeapon.Enabled = false;
-                        getOrRemoveWeapon.Description = "You do not have permission to use this option.";
+                        getOrRemoveWeapon.Description = "你没有权限使用此选项.";
                         getOrRemoveWeapon.LeftIcon = MenuItem.Icon.LOCK;
                     }
 
-                    var fillAmmo = new MenuItem("Re-fill Ammo", "Get max ammo for this weapon.")
+                    var fillAmmo = new MenuItem("弹药补充", "为此武器获取最大弹药.")
                     {
                         LeftIcon = MenuItem.Icon.AMMO
                     };
@@ -568,7 +568,7 @@ namespace vMenuClient.menus
                         }
                     }
 
-                    var weaponTints = new MenuListItem("Tints", tints, 0, "Select a tint for your weapon.");
+                    var weaponTints = new MenuListItem("色调", tints, 0, "选择适合武器的色调.");
                     weaponMenu.AddMenuItem(weaponTints);
                     #endregion
 
@@ -583,7 +583,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You need to get the weapon first!");
+                                Notify.Error("您需要先拿到武器!");
                             }
                         }
                     };
@@ -602,14 +602,14 @@ namespace vMenuClient.menus
                             if (HasPedGotWeapon(Game.PlayerPed.Handle, hash, false))
                             {
                                 RemoveWeaponFromPed(Game.PlayerPed.Handle, hash);
-                                Subtitle.Custom("Weapon removed.");
+                                Subtitle.Custom("武器已移除.");
                             }
                             else
                             {
                                 var ammo = 255;
                                 GetMaxAmmo(Game.PlayerPed.Handle, hash, ref ammo);
                                 GiveWeaponToPed(Game.PlayerPed.Handle, hash, ammo, false, true);
-                                Subtitle.Custom("Weapon added.");
+                                Subtitle.Custom("武器已添加.");
                             }
                         }
                         else if (item == fillAmmo)
@@ -622,7 +622,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You need to get the weapon first before re-filling ammo!");
+                                Notify.Error("在重新填充弹药之前, 您需要先获得武器!");
                             }
                         }
                     };
@@ -633,7 +633,7 @@ namespace vMenuClient.menus
                     {
                         foreach (var comp in weapon.Components)
                         {
-                            var compItem = new MenuItem(comp.Key, "Click to equip or remove this component.");
+                            var compItem = new MenuItem(comp.Key, "单击以装备或移除此组件.");
                             weaponComponents.Add(compItem, comp.Key);
                             weaponMenu.AddMenuItem(compItem);
 
@@ -650,7 +650,7 @@ namespace vMenuClient.menus
                                     if (HasPedGotWeaponComponent(Game.PlayerPed.Handle, weaponData.Hash, componentHash))
                                     {
                                         RemoveWeaponComponentFromPed(Game.PlayerPed.Handle, weaponData.Hash, componentHash);
-                                        Subtitle.Custom("Component removed.");
+                                        Subtitle.Custom("武器组件已移除.");
                                     }
                                     else
                                     {
@@ -660,7 +660,7 @@ namespace vMenuClient.menus
                                 }
                                 else
                                 {
-                                    Notify.Error("You need to get the weapon first before you can modify it.");
+                                    Notify.Error("您需要先获得武器, 然后才能对其进行改装.");
                                 }
                             };
                             #endregion
@@ -736,49 +736,49 @@ namespace vMenuClient.menus
             if (handGuns.Size == 0)
             {
                 handGunsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                handGunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                handGunsBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 handGunsBtn.Enabled = false;
             }
             if (rifles.Size == 0)
             {
                 riflesBtn.LeftIcon = MenuItem.Icon.LOCK;
-                riflesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                riflesBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 riflesBtn.Enabled = false;
             }
             if (shotguns.Size == 0)
             {
                 shotgunsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                shotgunsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                shotgunsBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 shotgunsBtn.Enabled = false;
             }
             if (smgs.Size == 0)
             {
                 smgsBtn.LeftIcon = MenuItem.Icon.LOCK;
-                smgsBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                smgsBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 smgsBtn.Enabled = false;
             }
             if (throwables.Size == 0)
             {
                 throwablesBtn.LeftIcon = MenuItem.Icon.LOCK;
-                throwablesBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                throwablesBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 throwablesBtn.Enabled = false;
             }
             if (melee.Size == 0)
             {
                 meleeBtn.LeftIcon = MenuItem.Icon.LOCK;
-                meleeBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                meleeBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 meleeBtn.Enabled = false;
             }
             if (heavy.Size == 0)
             {
                 heavyBtn.LeftIcon = MenuItem.Icon.LOCK;
-                heavyBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                heavyBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 heavyBtn.Enabled = false;
             }
             if (snipers.Size == 0)
             {
                 snipersBtn.LeftIcon = MenuItem.Icon.LOCK;
-                snipersBtn.Description = "The server owner removed the permissions for all weapons in this category.";
+                snipersBtn.Description = "服务器拥有者已移除此类别所有武器的权限.";
                 snipersBtn.Enabled = false;
             }
             #endregion

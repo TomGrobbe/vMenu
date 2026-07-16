@@ -152,13 +152,13 @@ namespace vMenuServer
             // Perm banned.
             if (record.bannedUntil.Year >= 3000)
             {
-                kickCallback($"You have been permanently banned from this server. Banned by: {record.bannedBy}. Ban reason: {record.banReason}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                kickCallback($"You have been permanently banned from this server. 操作人: {record.bannedBy}. 封禁原因: {record.banReason}. 额外信息: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                 CancelEvent();
             }
             // Temp banned
             else
             {
-                kickCallback($"You are banned from this server. Ban time remaining: {GetRemainingTimeMessage(record.bannedUntil.Subtract(DateTime.Now))}. Additional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                kickCallback($"You are banned from this server. 禁令剩余时间: {GetRemainingTimeMessage(record.bannedUntil.Subtract(DateTime.Now))}. 额外信息: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
                 CancelEvent();
             }
         }
@@ -213,19 +213,19 @@ namespace vMenuServer
                         TriggerEvent("vMenu:BanSuccessful", JsonConvert.SerializeObject(ban).ToString());
 
                         var timeRemaining = GetRemainingTimeMessage(ban.bannedUntil.Subtract(DateTime.Now));
-                        target.Drop($"You are banned from this server. Ban time remaining: {timeRemaining}. Banned by: {ban.bannedBy}. Ban reason: {ban.banReason}. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
-                        source.TriggerEvent("vMenu:Notify", "~g~Target player successfully banned.");
+                        target.Drop($"您已被禁止加入本服务器. 禁令剩余时间: {timeRemaining}. 操作人: {ban.bannedBy}. 封禁原因: {ban.banReason}. 额外信息: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.");
+                        source.TriggerEvent("vMenu:Notify", "~g~成功封禁目标玩家.");
                     }
                     else
                     {
                         Log("Player could not be banned because he is exempt from being banned.", LogLevel.error);
-                        source.TriggerEvent("vMenu:Notify", "~r~Could not ban this player, they are exempt from being banned.");
+                        source.TriggerEvent("vMenu:Notify", "~r~由于属于免禁用范围, 无法对该玩家实施封禁.");
                     }
                 }
                 else
                 {
                     Log("Player is invalid (no longer online) and therefor the banning has failed.", LogLevel.error);
-                    source.TriggerEvent("vMenu:Notify", "Could not ban this player because they already left the server.");
+                    source.TriggerEvent("vMenu:Notify", "由于该玩家已离开服务器, 无法禁止该玩家.");
                 }
             }
             else
@@ -341,7 +341,7 @@ namespace vMenuServer
 
                 if (string.IsNullOrEmpty(reason))
                 {
-                    reason = $"You have been automatically banned. If you believe this was done by error, please contact the server owner for support. Aditional information: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.";
+                    reason = $"You have been automatically banned. If you believe this was done by error, please contact the server owner for support. 额外信息: {vMenuShared.ConfigManager.GetSettingsString(vMenuShared.ConfigManager.Setting.vmenu_default_ban_message_information)}.";
                 }
                 var ban = new BanRecord(
                     GetSafePlayerName(source.Name),

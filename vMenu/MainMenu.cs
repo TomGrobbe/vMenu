@@ -138,7 +138,7 @@ namespace vMenuClient
                         else
                         {
                             NoClipEnabled = false;
-                            Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                            Notify.Error("该载具不存在(原因不明), 亦或您必须是该载具的驾驶员才能启用飞行模式!");
                         }
                     }
                     else
@@ -174,9 +174,9 @@ namespace vMenuClient
                 MenuToggleKey = "M";
             }
             MenuController.MenuToggleKey = (Control)(-1); // disables the menu toggle key
-            RegisterKeyMapping($"vMenu:{KeyMappingID}:NoClip", "vMenu NoClip Toggle Button", "keyboard", NoClipKey);
-            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu Toggle Button", "keyboard", MenuToggleKey);
-            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu Toggle Button Controller", "pad_digitalbuttonany", "start_index");
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:NoClip", "vMenu 飞行模式热键", "keyboard", NoClipKey);
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu 主菜单热键", "keyboard", MenuToggleKey);
+            RegisterKeyMapping($"vMenu:{KeyMappingID}:MenuToggle", "vMenu 主菜单热键(手柄)", "pad_digitalbuttonany", "start_index");
             #endregion
             if (EnableExperimentalFeatures)
             {
@@ -207,15 +207,15 @@ namespace vMenuClient
                         if (args[0].ToString().ToLower() == "debug")
                         {
                             DebugMode = !DebugMode;
-                            Notify.Custom($"Debug mode is now set to: {DebugMode}.");
+                            Notify.Custom($"调试模式现已设置为: {DebugMode}.");
                             // Set discord rich precense once, allowing it to be overruled by other resources once those load.
                             if (DebugMode)
                             {
-                                SetRichPresence($"Debugging vMenu {Version}!");
+                                SetRichPresence($"开发调试 vMenu {Version}!");
                             }
                             else
                             {
-                                SetRichPresence($"Enjoying FiveM!");
+                                SetRichPresence($"享受 FiveM 把!");
                             }
                         }
                         else if (args[0].ToString().ToLower() == "gc")
@@ -225,7 +225,7 @@ namespace vMenuClient
                         }
                         else if (args[0].ToString().ToLower() == "dump")
                         {
-                            Notify.Info("A full config dump will be made to the console. Check the log file. This can cause lag!");
+                            Notify.Info("控制台将转存完整的配置文件. 您可检查日志文件. 此举可能会导致延迟!");
                             Debug.WriteLine("\n\n\n########################### vMenu ###########################");
                             Debug.WriteLine($"Running vMenu Version: {Version}, Experimental features: {EnableExperimentalFeatures}, Debug mode: {DebugMode}.");
                             Debug.WriteLine("\nDumping a list of all KVPs:");
@@ -312,7 +312,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Custom($"vMenu is currently running version: {Version}.");
+                        Notify.Custom($"vMenu 当前运行的版本为: {Version}.");
                     }
                 }
             }), false);
@@ -490,10 +490,10 @@ namespace vMenuClient
                 return;
             }
             // Create the main menu.
-            Menu = new Menu(Game.Player.Name, "Main Menu");
-            PlayerSubmenu = new Menu(Game.Player.Name, "Player Related Options");
-            VehicleSubmenu = new Menu(Game.Player.Name, "Vehicle Related Options");
-            WorldSubmenu = new Menu(Game.Player.Name, "World Options");
+            Menu = new Menu(Game.Player.Name, "主面板");
+            PlayerSubmenu = new Menu(Game.Player.Name, "玩家相关选项");
+            VehicleSubmenu = new Menu(Game.Player.Name, "载具相关选项");
+            WorldSubmenu = new Menu(Game.Player.Name, "游戏世界相关选项");
 
             // Add the main menu to the menu pool.
             MenuController.AddMenu(Menu);
@@ -593,7 +593,7 @@ namespace vMenuClient
                 if (Game.IsDisabledControlJustReleased(0, Control.PhoneCancel) && MpPedCustomization.DisableBackButton)
                 {
                     await Delay(0);
-                    Notify.Alert("You must save your ped first before exiting, or click the ~r~Exit Without Saving~s~ button.");
+                    Notify.Alert("在退出前，你必须先保存你的角色, 或者点击 ~r~退出且不保存~s~ 按钮.");
                 }
 
                 //if (Game.CurrentInputMode == InputMode.MouseAndKeyboard)
@@ -610,7 +610,7 @@ namespace vMenuClient
                 //            else
                 //            {
                 //                NoClipEnabled = false;
-                //                Notify.Error("This vehicle does not exist (somehow) or you need to be the driver of this vehicle to enable noclip!");
+                //                Notify.Error("该载具不存在(原因不明), 亦或您必须是该载具的驾驶员才能启用飞行模式!");
                 //            }
                 //        }
                 //        else
@@ -654,7 +654,7 @@ namespace vMenuClient
             {
                 OnlinePlayersMenu = new OnlinePlayers();
                 var menu = OnlinePlayersMenu.GetMenu();
-                var button = new MenuItem("Online Players", "All currently connected players.")
+                var button = new MenuItem("当前在线玩家", "当前服务器内所有在线玩家.")
                 {
                     Label = "→→→"
                 };
@@ -674,7 +674,7 @@ namespace vMenuClient
             {
                 BannedPlayersMenu = new BannedPlayers();
                 var menu = BannedPlayersMenu.GetMenu();
-                var button = new MenuItem("Banned Players", "View and manage all banned players in this menu.")
+                var button = new MenuItem("内置封禁列表", "在此菜单中查看和管理所有已被封禁的玩家.")
                 {
                     Label = "→→→"
                 };
@@ -689,7 +689,7 @@ namespace vMenuClient
                 };
             }
 
-            var playerSubmenuBtn = new MenuItem("Player Related Options", "Open this submenu for player related subcategories.") { Label = "→→→" };
+            var playerSubmenuBtn = new MenuItem("玩家相关选项", "打开此子菜单,查看与玩家相关的子类别.") { Label = "→→→" };
             Menu.AddMenuItem(playerSubmenuBtn);
 
             // Add the player options menu.
@@ -697,21 +697,21 @@ namespace vMenuClient
             {
                 PlayerOptionsMenu = new PlayerOptions();
                 var menu = PlayerOptionsMenu.GetMenu();
-                var button = new MenuItem("Player Options", "Common player options can be accessed here.")
+                var button = new MenuItem("玩家个人选项", "查看和使用常见的个人选项功能.")
                 {
                     Label = "→→→"
                 };
                 AddMenu(PlayerSubmenu, menu, button);
             }
 
-            var vehicleSubmenuBtn = new MenuItem("Vehicle Related Options", "Open this submenu for vehicle related subcategories.") { Label = "→→→" };
+            var vehicleSubmenuBtn = new MenuItem("载具相关选项", "打开此子菜单, 查看与载具相关的子类别.") { Label = "→→→" };
             Menu.AddMenuItem(vehicleSubmenuBtn);
             // Add the vehicle options Menu.
             if (IsAllowed(Permission.VOMenu))
             {
                 VehicleOptionsMenu = new VehicleOptions();
                 var menu = VehicleOptionsMenu.GetMenu();
-                var button = new MenuItem("Vehicle Options", "Here you can change common vehicle options, as well as tune & style your vehicle.")
+                var button = new MenuItem("载具数据编辑", "在这里,您可以更改常用的载具数据,还可以调整和设计您的载具.")
                 {
                     Label = "→→→"
                 };
@@ -723,7 +723,7 @@ namespace vMenuClient
             {
                 VehicleSpawnerMenu = new VehicleSpawner();
                 var menu = VehicleSpawnerMenu.GetMenu();
-                var button = new MenuItem("Vehicle Spawner", "Spawn a vehicle by name or choose one from a specific category.")
+                var button = new MenuItem("载具快捷生成", "按名称生成载具或从特定类别中选择载具.")
                 {
                     Label = "→→→"
                 };
@@ -735,7 +735,7 @@ namespace vMenuClient
             {
                 SavedVehiclesMenu = new SavedVehicles();
                 var menu = SavedVehiclesMenu.GetTypeMenu();
-                var button = new MenuItem("Saved Vehicles", "Save new vehicles, or spawn or delete already saved vehicles.")
+                var button = new MenuItem("已保存载具", "保存新载具,或生成或删除已保存的载具.")
                 {
                     Label = "→→→"
                 };
@@ -747,7 +747,7 @@ namespace vMenuClient
             {
                 PersonalVehicleMenu = new PersonalVehicle();
                 var menu = PersonalVehicleMenu.GetMenu();
-                var button = new MenuItem("Personal Vehicle", "Set a vehicle as your personal vehicle, and control some things about that vehicle when you're not inside.")
+                var button = new MenuItem("私人座驾", "将载具设为您的私人座驾,当您不在载具内时,可以控制该载具的某些功能.")
                 {
                     Label = "→→→"
                 };
@@ -759,7 +759,7 @@ namespace vMenuClient
             {
                 PlayerAppearanceMenu = new PlayerAppearance();
                 var menu = PlayerAppearanceMenu.GetMenu();
-                var button = new MenuItem("Player Appearance", "Choose a ped model, customize it and save & load your customized characters.")
+                var button = new MenuItem("玩家外观选项", "选择一个人物模型, 进行自定义, 保存并加载自定义模型外观.")
                 {
                     Label = "→→→"
                 };
@@ -767,14 +767,14 @@ namespace vMenuClient
 
                 MpPedCustomizationMenu = new MpPedCustomization();
                 var menu2 = MpPedCustomizationMenu.GetMenu();
-                var button2 = new MenuItem("MP Ped Customization", "Create, edit, save and load multiplayer peds. ~r~Note, you can only save peds created in this submenu. vMenu can NOT detect peds created outside of this submenu. Simply due to GTA limitations.")
+                var button2 = new MenuItem("MP人物模型自定义", "创建、编辑、保存和加载多人模式人物模型.~r~注意, 你只能保存此子菜单中创建的人物模型.由于 GTA 的限制 vMenu 无法检测在此子菜单外创建的人物模型.")
                 {
                     Label = "→→→"
                 };
                 AddMenu(PlayerSubmenu, menu2, button2);
             }
 
-            var worldSubmenuBtn = new MenuItem("World Related Options", "Open this submenu for world related subcategories.") { Label = "→→→" };
+            var worldSubmenuBtn = new MenuItem("游戏世界相关选项", "打开该子菜单，查看游戏世界相关的子类别.") { Label = "→→→" };
             Menu.AddMenuItem(worldSubmenuBtn);
 
             // Add the time options menu.
@@ -783,7 +783,7 @@ namespace vMenuClient
             {
                 TimeOptionsMenu = new TimeOptions();
                 var menu = TimeOptionsMenu.GetMenu();
-                var button = new MenuItem("Time Options", "Change the time, and edit other time related options.")
+                var button = new MenuItem("游戏时间选项", "更改时间并编辑其他时间相关选项.")
                 {
                     Label = "→→→"
                 };
@@ -796,7 +796,7 @@ namespace vMenuClient
             {
                 WeatherOptionsMenu = new WeatherOptions();
                 var menu = WeatherOptionsMenu.GetMenu();
-                var button = new MenuItem("Weather Options", "Change all weather related options here.")
+                var button = new MenuItem("游戏天气选项", "更改天气并编辑所有与天气相关的选项.")
                 {
                     Label = "→→→"
                 };
@@ -808,7 +808,7 @@ namespace vMenuClient
             {
                 WeaponOptionsMenu = new WeaponOptions();
                 var menu = WeaponOptionsMenu.GetMenu();
-                var button = new MenuItem("Weapon Options", "Add/remove weapons, modify weapons and set ammo options.")
+                var button = new MenuItem("武器功能选项", "武器添加、删除、修改和弹药设置选项.")
                 {
                     Label = "→→→"
                 };
@@ -820,7 +820,7 @@ namespace vMenuClient
             {
                 WeaponLoadoutsMenu = new WeaponLoadouts();
                 var menu = WeaponLoadoutsMenu.GetMenu();
-                var button = new MenuItem("Weapon Loadouts", "Mange, and spawn saved weapon loadouts.")
+                var button = new MenuItem("武器配置", "管理和生成保存的武器配置")
                 {
                     Label = "→→→"
                 };
@@ -829,7 +829,7 @@ namespace vMenuClient
 
             if (IsAllowed(Permission.NoClip))
             {
-                var toggleNoclip = new MenuItem("Toggle NoClip", "Toggle NoClip on or off.");
+                var toggleNoclip = new MenuItem("飞行模式", "打开或关闭飞行模式.");
                 PlayerSubmenu.AddMenuItem(toggleNoclip);
                 PlayerSubmenu.OnItemSelect += (sender, item, index) =>
                 {
@@ -845,7 +845,7 @@ namespace vMenuClient
             {
                 VoiceChatSettingsMenu = new VoiceChat();
                 var menu = VoiceChatSettingsMenu.GetMenu();
-                var button = new MenuItem("Voice Chat Settings", "Change Voice Chat options here.")
+                var button = new MenuItem("游戏语音选项", "在此查看并更改语音聊天选项.")
                 {
                     Label = "→→→"
                 };
@@ -855,7 +855,7 @@ namespace vMenuClient
             {
                 RecordingMenu = new Recording();
                 var menu = RecordingMenu.GetMenu();
-                var button = new MenuItem("Recording Options", "In-game recording options.")
+                var button = new MenuItem("游戏录制选项", "便捷使用游戏内录制功能, 即 RockStar 编辑器.")
                 {
                     Label = "→→→"
                 };
@@ -866,7 +866,7 @@ namespace vMenuClient
             {
                 MiscSettingsMenu = new MiscSettings();
                 var menu = MiscSettingsMenu.GetMenu();
-                var button = new MenuItem("Misc Settings", "Miscellaneous vMenu options/settings can be configured here. You can also save your settings in this menu.")
+                var button = new MenuItem("其他杂项配置", "可以在此配置其他 vMenu 选项/设置. 还可于此菜单中保存个人数据.")
                 {
                     Label = "→→→"
                 };
@@ -876,7 +876,7 @@ namespace vMenuClient
             // Add About Menu.
             AboutMenu = new About();
             var sub = AboutMenu.GetMenu();
-            var btn = new MenuItem("About vMenu", "Information about vMenu.")
+            var btn = new MenuItem("关于 vMenu", "vMenu 的相关信息.")
             {
                 Label = "→→→"
             };

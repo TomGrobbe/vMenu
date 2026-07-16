@@ -23,7 +23,7 @@ namespace vMenuClient.menus
         // Menu variable, will be defined in CreateMenu()
         private Menu menu;
 
-        readonly Menu playerMenu = new("Online Players", "Player:");
+        readonly Menu playerMenu = new("当前在线玩家", "玩家:");
         IPlayer currentPlayer = new NativePlayer(Game.Player);
 
 
@@ -33,24 +33,24 @@ namespace vMenuClient.menus
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Online Players")
+            menu = new Menu(Game.Player.Name, "当前在线玩家")
             {
-                CounterPreText = "Players: "
+                CounterPreText = "共计: "
             };
 
             MenuController.AddSubmenu(menu, playerMenu);
 
-            var sendMessage = new MenuItem("Send Private Message", "Sends a private message to this player. ~r~Note: staff may be able to see all PM's.");
-            var teleport = new MenuItem("Teleport To Player", "Teleport to this player.");
-            var teleportVeh = new MenuItem("Teleport Into Player Vehicle", "Teleport into the vehicle of the player.");
-            var summon = new MenuItem("Summon Player", "Teleport the player to you.");
-            var toggleGPS = new MenuItem("Toggle GPS", "Enables or disables the GPS route on your radar to this player.");
-            var spectate = new MenuItem("Spectate Player", "Spectate this player. Click this button again to stop spectating.");
-            var printIdentifiers = new MenuItem("Print Identifiers", "This will print the player's identifiers to the client console (F8). And also save it to the CitizenFX.log file.");
-            var kill = new MenuItem("~r~Kill Player", "Kill this player, note they will receive a notification saying that you killed them. It will also be logged in the Staff Actions log.");
-            var kick = new MenuItem("~r~Kick Player", "Kick the player from the server.");
-            var ban = new MenuItem("~r~Ban Player Permanently", "Ban this player permanently from the server. Are you sure you want to do this? You can specify the ban reason after clicking this button.");
-            var tempban = new MenuItem("~r~Ban Player Temporarily", "Give this player a tempban of up to 30 days (max). You can specify duration and ban reason after clicking this button.");
+            var sendMessage = new MenuItem("发送私信", "向该玩家发送私信.~r~注意：工作人员可能能够查看所有私信.");
+            var teleport = new MenuItem("传送到玩家", "传送到该玩家的位置.");
+            var teleportVeh = new MenuItem("传送到玩家车辆", "传送到玩家的车辆中.");
+            var summon = new MenuItem("召唤玩家", "将玩家传送到你的位置.");
+            var toggleGPS = new MenuItem("切换GPS", "启用或禁用雷达上的GPS路线到该玩家.");
+            var spectate = new MenuItem("观看玩家", "观察该玩家.再次点击此按钮以停止观察.");
+            var printIdentifiers = new MenuItem("打印标识符", "将玩家的标识符打印到客户端控制台(F8).同时也会保存到 CitizenFX.log 文件中.");
+            var kill = new MenuItem("~r~击杀玩家", "击杀该玩家,请注意他们会收到通知,说明是你杀了他们.此操作也会记录在工作人员操作日志中.");
+            var kick = new MenuItem("~r~踢出玩家", "将玩家从服务器中踢出.");
+            var ban = new MenuItem("~r~永久封禁玩家", "永久封禁该玩家.你确定要这样做吗？点击此按钮后可以指定封禁原因.");
+            var tempban = new MenuItem("~r~临时封禁玩家", "对该玩家实施最长30天的临时封禁.点击此按钮后可以指定封禁时长和原因.");
 
             if (IsAllowed(Permission.OPSendMessage))
             {
@@ -146,7 +146,7 @@ namespace vMenuClient.menus
                     }
                     else
                     {
-                        Notify.Error("You can not teleport to yourself!");
+                        Notify.Error("您无法传送于自身!");
                     }
                 }
                 // summon button
@@ -158,7 +158,7 @@ namespace vMenuClient.menus
                     }
                     else
                     {
-                        Notify.Error("You can't summon yourself.");
+                        Notify.Error("您无法召唤于自身.");
                     }
                 }
                 // spectating
@@ -206,7 +206,7 @@ namespace vMenuClient.menus
                                 var oldBlip = GetBlipFromEntity(playerPed);
                                 SetBlipRoute(oldBlip, false);
                                 RemoveBlip(ref oldBlip);
-                                Notify.Custom($"~g~GPS route to ~s~<C>{GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now disabled.");
+                                Notify.Custom($"~g~前往 ~s~{GetSafePlayerName(currentPlayer.Name)}~g~ 的GPS路线现已禁用.");
                             }
                         }
                         PlayersWaypointList.Clear();
@@ -242,11 +242,11 @@ namespace vMenuClient.menus
                             SetBlipRoute(blip, true);
 
                             PlayersWaypointList.Add(currentPlayer.ServerId);
-                            Notify.Custom($"~g~GPS route to ~s~<C>{GetSafePlayerName(currentPlayer.Name)}</C>~g~ is now active, press the ~s~Toggle GPS Route~g~ button again to disable the route.");
+                            Notify.Custom($"~g~前往 ~s~{GetSafePlayerName(currentPlayer.Name)}~g~ 的GPS路线已激活, 再次键下 ~s~切换GPS~g~ 功能用以关闭路线.");
                         }
                         else
                         {
-                            Notify.Error("You can not set a waypoint to yourself.");
+                            Notify.Error("您无法为自己设置导航点.");
                         }
                     }
                 }
@@ -261,7 +261,7 @@ namespace vMenuClient.menus
                         {
                             ids += "~n~" + s;
                         }
-                        Notify.Custom($"~y~<C>{GetSafePlayerName(currentPlayer.Name)}</C>~g~'s Identifiers: {ids}", false);
+                        Notify.Custom($"~y~{GetSafePlayerName(currentPlayer.Name)}~g~的全部身份标识符为: {ids}", false);
                         return data;
                     };
                     BaseScript.TriggerServerEvent("vMenu:GetPlayerIdentifiers", currentPlayer.ServerId, CallbackFunction);
@@ -275,7 +275,7 @@ namespace vMenuClient.menus
                     }
                     else
                     {
-                        Notify.Error("You cannot kick yourself!");
+                        Notify.Error("您无法将自身踢出服务器!");
                     }
                 }
                 // temp ban
@@ -303,14 +303,14 @@ namespace vMenuClient.menus
             // handle button presses in the player list.
             menu.OnItemSelect += (sender, item, index) =>
                 {
-                    var baseId = int.Parse(item.Label.Replace(" →→→", "").Replace("Server #", ""));
+                    var baseId = int.Parse(item.Label.Replace(" →→→", "").Replace("服务器 #", ""));
                     var player = MainMenu.PlayersList.FirstOrDefault(p => p.ServerId == baseId);
 
                     if (player != null)
                     {
                         currentPlayer = player;
-                        playerMenu.MenuSubtitle = $"~s~Player: ~y~{GetSafePlayerName(currentPlayer.Name)}";
-                        playerMenu.CounterPreText = $"[Server ID: ~y~{currentPlayer.ServerId}~s~] ";
+                        playerMenu.MenuSubtitle = $"~s~玩家: ~y~{GetSafePlayerName(currentPlayer.Name)}";
+                        playerMenu.CounterPreText = $"[服务器 ID: ~y~{currentPlayer.ServerId}~s~] ";
                     }
                     else
                     {
@@ -330,7 +330,7 @@ namespace vMenuClient.menus
 
                 foreach (var p in MainMenu.PlayersList.OrderBy(a => a.Name))
                 {
-                    var pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"Click to view the options for this player. Server ID: {p.ServerId}. Local ID: {p.Handle}.")
+                    var pItem = new MenuItem($"{GetSafePlayerName(p.Name)}", $"点击查看该玩家的选项.服务器ID: {p.ServerId}.本地ID: {p.Handle}.")
                     {
                         Label = $"Server #{p.ServerId} →→→"
                     };

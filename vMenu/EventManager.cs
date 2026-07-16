@@ -444,7 +444,7 @@ namespace vMenuClient
         /// </summary>
         private void KillMe(string sourceName)
         {
-            Notify.Alert($"You have been killed by <C>{GetSafePlayerName(sourceName)}</C>~s~ using the ~r~Kill Player~s~ option in vMenu.");
+            Notify.Alert($"您已被 ~r~{GetSafePlayerName(sourceName)}~s~ 使用 vMenu中~r~击杀玩家~s~功能所击杀.");
             SetEntityHealth(Game.PlayerPed.Handle, 0);
         }
 

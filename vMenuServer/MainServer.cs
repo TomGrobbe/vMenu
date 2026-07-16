@@ -893,13 +893,13 @@ namespace vMenuServer
 
             if (PermissionsManager.IsAllowed(PermissionsManager.Permission.DontKickMe, targetPlayer))
             {
-                source.TriggerEvent("vMenu:Notify", "Sorry, this player can ~r~not ~w~be kicked.");
+                source.TriggerEvent("vMenu:Notify", "操作无效, 此玩家~r~无法~w~被踢出服务器.");
                 return;
             }
 
-            KickLog($"Player: {source.Name} has kicked: {targetPlayer.Name} for: {kickReason}.");
+            KickLog($"玩家: {source.Name} 将: {targetPlayer.Name} 用: {kickReason}.的理由踢出服务器");
 
-            source.TriggerEvent("vMenu:Notify", $"The target player (<C>{targetPlayer.Name}</C>) has been kicked.");
+            source.TriggerEvent("vMenu:Notify", $"目标玩家: ({targetPlayer.Name}) 已被成功踢出服务器.");
 
             targetPlayer.Drop(kickReason);
         }

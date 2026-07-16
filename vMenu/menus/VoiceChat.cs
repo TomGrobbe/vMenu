@@ -20,10 +20,10 @@ namespace vMenuClient.menus
         public float currentProximity = (GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) != 0.0) ? GetSettingsFloat(Setting.vmenu_override_voicechat_default_range) : UserDefaults.VoiceChatProximity;
         public List<string> channels = new()
         {
-            "Channel 1 (Default)",
-            "Channel 2",
-            "Channel 3",
-            "Channel 4",
+            "频道 1 (默认)",
+            "频道 2",
+            "频道 3",
+            "频道 4",
         };
         public string currentChannel;
         private readonly List<float> proximityRange = new()
@@ -45,15 +45,15 @@ namespace vMenuClient.menus
             currentChannel = channels[0];
             if (IsAllowed(Permission.VCStaffChannel))
             {
-                channels.Add("Staff Channel");
+                channels.Add("管理员频道");
             }
 
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Voice Chat Settings");
+            menu = new Menu(Game.Player.Name, "游戏语音选项");
 
-            var voiceChatEnabled = new MenuCheckboxItem("Enable Voice Chat", "Enable or disable voice chat.", EnableVoicechat);
-            var showCurrentSpeaker = new MenuCheckboxItem("Show Current Speaker", "Shows who is currently talking.", ShowCurrentSpeaker);
-            var showVoiceStatus = new MenuCheckboxItem("Show Microphone Status", "Shows whether your microphone is open or muted.", ShowVoiceStatus);
+            var voiceChatEnabled = new MenuCheckboxItem("启用语音聊天", "启用或禁用vMenu内置语音聊天系统.", EnableVoicechat);
+            var showCurrentSpeaker = new MenuCheckboxItem("显示当前语音玩家", "于屏幕上方显示当前语音的玩家名称的文本.", ShowCurrentSpeaker);
+            var showVoiceStatus = new MenuCheckboxItem("显示麦克风状态", "于屏幕左下角显示麦克风是否处于使用或静音状态的标记.", ShowVoiceStatus);
 
             var proximity = new List<string>()
             {
@@ -67,8 +67,8 @@ namespace vMenuClient.menus
                 "2 km",
                 "Global",
             };
-            var voiceChatProximity = new MenuItem("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")", "Set the voice chat receiving proximity in meters. Set to 0 for global.");
-            var voiceChatChannel = new MenuListItem("Voice Chat Channel", channels, channels.IndexOf(currentChannel), "Set the voice chat channel.");
+            var voiceChatProximity = new MenuItem("语音聊天有效范围 (" + ConvertToMetric(currentProximity) + ")", "以米为单位设置语音聊天接收的有效距离. 全局则设置为0.");
+            var voiceChatChannel = new MenuListItem("语音聊天频道", channels, channels.IndexOf(currentChannel), "设置语音聊天的通话频道.");
 
             if (IsAllowed(Permission.VCEnable))
             {
@@ -106,20 +106,20 @@ namespace vMenuClient.menus
                 if (item == voiceChatChannel)
                 {
                     currentChannel = channels[newIndex];
-                    Subtitle.Custom($"New voice chat channel set to: ~b~{channels[newIndex]}~s~.");
+                    Subtitle.Custom($"新的语音聊天频道设定为: ~b~{channels[newIndex]}~s~.");
                 }
             };
             menu.OnItemSelect += async (sender, item, index) =>
             {
                 if (item == voiceChatProximity)
                 {
-                    var result = await GetUserInput(windowTitle: $"Enter Proximity In Meters. Current: ({ConvertToMetric(currentProximity)})", maxInputLength: 6);
+                    var result = await GetUserInput(windowTitle: $"输入以米为单位距离. 当前: ({ConvertToMetric(currentProximity)})", maxInputLength: 6);
 
                     if (float.TryParse(result, out var resultfloat))
                     {
                         currentProximity = resultfloat;
-                        Subtitle.Custom($"New voice chat proximity set to: ~b~{ConvertToMetric(currentProximity)}~s~.");
-                        voiceChatProximity.Text = ("Voice Chat Proximity (" + ConvertToMetric(currentProximity) + ")");
+                        Subtitle.Custom($"新的语音聊天有效距离设定为: ~b~{ConvertToMetric(currentProximity)}~s~.");
+                        voiceChatProximity.Text = ("语音聊天有效范围 (" + ConvertToMetric(currentProximity) + ")");
                     }
                 }
             };

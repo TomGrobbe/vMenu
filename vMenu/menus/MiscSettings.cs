@@ -102,97 +102,97 @@ namespace vMenuClient.menus
             }
 
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Misc Settings");
-            teleportOptionsMenu = new Menu(Game.Player.Name, "Teleport Options");
-            developerToolsMenu = new Menu(Game.Player.Name, "Development Tools");
-            entitySpawnerMenu = new Menu(Game.Player.Name, "Entity Spawner");
+            menu = new Menu(Game.Player.Name, "其他杂项配置");
+            teleportOptionsMenu = new Menu(Game.Player.Name, "传送选项");
+            developerToolsMenu = new Menu(Game.Player.Name, "开发者工具");
+            entitySpawnerMenu = new Menu(Game.Player.Name, "实体生成器");
 
             // teleport menu
-            var teleportMenu = new Menu(Game.Player.Name, "Teleport Locations");
-            var teleportMenuBtn = new MenuItem("Teleport Locations", "Teleport to pre-configured locations, added by the server owner.");
+            var teleportMenu = new Menu(Game.Player.Name, "预设传送点");
+            var teleportMenuBtn = new MenuItem("预设传送点", "选择服务器添加完成的预设地点并传送至该位置.");
             MenuController.AddSubmenu(menu, teleportMenu);
             MenuController.BindMenuItem(menu, teleportMenu, teleportMenuBtn);
 
             // keybind settings menu
-            var keybindMenu = new Menu(Game.Player.Name, "Keybind Settings");
-            var keybindMenuBtn = new MenuItem("Keybind Settings", "Enable or disable keybinds for some options.");
+            var keybindMenu = new Menu(Game.Player.Name, "热键绑定设置");
+            var keybindMenuBtn = new MenuItem("热键绑定设置", "启用或禁用某些选项的按键绑定.");
             MenuController.AddSubmenu(menu, keybindMenu);
             MenuController.BindMenuItem(menu, keybindMenu, keybindMenuBtn);
 
             // keybind settings menu items
-            var kbTpToWaypoint = new MenuCheckboxItem("Teleport To Waypoint", "Teleport to your waypoint when pressing the keybind. By default, this keybind is set to ~r~F7~s~, server owners are able to change this however so ask them if you don't know what it is.", KbTpToWaypoint);
-            var kbDriftMode = new MenuCheckboxItem("Drift Mode", "Makes your vehicle have almost no traction while holding left shift on keyboard, or X on controller.", KbDriftMode);
-            var kbRecordKeys = new MenuCheckboxItem("Recording Controls", "Enables or disables the recording (gameplay recording for the Rockstar editor) hotkeys on both keyboard and controller.", KbRecordKeys);
-            var kbRadarKeys = new MenuCheckboxItem("Minimap Controls", "Press the Multiplayer Info (z on keyboard, down arrow on controller) key to switch between expanded radar and normal radar.", KbRadarKeys);
-            var kbPointKeysCheckbox = new MenuCheckboxItem("Finger Point Controls", "Enables the finger point toggle key. The default QWERTY keyboard mapping for this is 'B', or for controller quickly double tap the right analog stick.", KbPointKeys);
-            var backBtn = new MenuItem("Back");
+            var kbTpToWaypoint = new MenuCheckboxItem("传送至导航点", "当按下该键绑定时,可传送到您的航点.默认情况下,该键绑定设置为 ~r~F7~s~,但服务器所有者可以更改该键绑定,因此如果您不知道该键绑定是什么,请询问服务器所有者..", KbTpToWaypoint);
+            var kbDriftMode = new MenuCheckboxItem("漂移模式", "按住键盘上的左Shift或手柄上的X键时,车辆将进入漂移模式.", KbDriftMode);
+            var kbRecordKeys = new MenuCheckboxItem("快速录制控制", "启用或禁用'F1'键盘和手柄上的原生录制(Rockstar 编辑器的游戏录制)功能热键.", KbRecordKeys);
+            var kbRadarKeys = new MenuCheckboxItem("雷达地图控制", "按下'多人游戏信息'(键盘上的'Z'键,手柄上的向下箭头)在大型雷达和小型雷达之间切换.", KbRadarKeys);
+            var kbPointKeysCheckbox = new MenuCheckboxItem("手指指向控制", "启用手指点切换键.默认键盘映射为'B',手柄则可快速双击右模拟摇杆.", KbPointKeys);
+            var backBtn = new MenuItem("返回");
 
             // Create the menu items.
-            var rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
-            var disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
-            var disableControllerKey = new MenuCheckboxItem("Disable Controller Support", "This disables the controller menu toggle key. This does NOT disable the navigation buttons.", MiscDisableControllerSupport);
-            var speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
-            var speedMph = new MenuCheckboxItem("Show Speed MPH", "Show a speedometer on your screen indicating your speed in MPH.", ShowSpeedoMph);
-            var coords = new MenuCheckboxItem("Show Coordinates", "Show your current coordinates at the top of your screen.", ShowCoordinates);
-            var hideRadar = new MenuCheckboxItem("Hide Radar", "Hide the radar/minimap.", HideRadar);
-            var hideHud = new MenuCheckboxItem("Hide Hud", "Hide all hud elements.", HideHud);
-            var showLocation = new MenuCheckboxItem("Location Display", "Shows your current location and heading, as well as the nearest cross road. Similar like PLD. ~r~Warning: This feature (can) take(s) up to -4.6 FPS when running at 60 Hz.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
-            var drawTime = new MenuCheckboxItem("Show Time On Screen", "Shows you the current time on screen.", DrawTimeOnScreen);
-            var saveSettings = new MenuItem("Save Personal Settings", "Save your current settings. All saving is done on the client side, if you re-install windows you will lose your settings. Settings are shared across all servers using vMenu.")
+            var rightAlignMenu = new MenuCheckboxItem("菜单右对齐", "如果希望 vMenu 显示于屏幕左侧, 禁用此选项. 此选项将立即保存. 您无需手动保存个人设置.", MiscRightAlignMenu);
+            var disablePms = new MenuCheckboxItem("私人信息禁用", "通过 \"在线玩家 \"菜单阻止他人向您发送私人信息. 这也会阻止您向其他玩家发送信息.", MiscDisablePrivateMessages);
+            var disableControllerKey = new MenuCheckboxItem("停用手柄支持", "这将禁用手柄菜单切换键. 但不会禁用导航按钮.", MiscDisableControllerSupport);
+            var speedKmh = new MenuCheckboxItem("速度显示(KM/H)", "在屏幕上显示以公里/小时为单位的速度计.", ShowSpeedoKmh);
+            var speedMph = new MenuCheckboxItem("速度显示(MPH)", "在屏幕上显示以英里/小时为单位的速度计.", ShowSpeedoMph);
+            var coords = new MenuCheckboxItem("坐标显示", "于屏幕顶部实时显示当前坐标数据.", ShowCoordinates);
+            var hideRadar = new MenuCheckboxItem("雷达隐藏", "隐藏雷达小地图.", HideRadar);
+            var hideHud = new MenuCheckboxItem("HUD隐藏", "隐藏当前存在的所有HUD元素(轮廓绘制, 文本显示等)", HideHud);
+            var showLocation = new MenuCheckboxItem("游戏位置显示", "显示当前位置和方向, 以及最近的十字路口.此功能会影响帧数.", ShowLocation) { LeftIcon = MenuItem.Icon.WARNING };
+            var drawTime = new MenuCheckboxItem("游戏时间显示", "在屏幕上显示您当前游戏时间.", DrawTimeOnScreen);
+            var saveSettings = new MenuItem("保存个人设置", "保存当前个人数据. 所有保存都在本地设置完成, 如重装系统则将丢失本地设置. 当前设置可于使用 vMenu 的所有其他服务器上共享.")
             {
                 RightIcon = MenuItem.Icon.TICK
             };
-            var joinQuitNotifs = new MenuCheckboxItem("Join / Quit Notifications", "Receive notifications when someone joins or leaves the server.", JoinQuitNotifications);
-            var deathNotifs = new MenuCheckboxItem("Death Notifications", "Receive notifications when someone dies or gets killed.", DeathNotifications);
-            var nightVision = new MenuCheckboxItem("Toggle Night Vision", "Enable or disable night vision.", false);
-            var thermalVision = new MenuCheckboxItem("Toggle Thermal Vision", "Enable or disable thermal vision.", false);
-            var vehModelDimensions = new MenuCheckboxItem("Show Vehicle Dimensions", "Draws the model outlines for every vehicle that's currently close to you.", ShowVehicleModelDimensions);
-            var propModelDimensions = new MenuCheckboxItem("Show Prop Dimensions", "Draws the model outlines for every prop that's currently close to you.", ShowPropModelDimensions);
-            var pedModelDimensions = new MenuCheckboxItem("Show Ped Dimensions", "Draws the model outlines for every ped that's currently close to you.", ShowPedModelDimensions);
-            var showEntityHandles = new MenuCheckboxItem("Show Entity Handles", "Draws the the entity handles for all close entities (you must enable the outline functions above for this to work).", ShowEntityHandles);
-            var showEntityModels = new MenuCheckboxItem("Show Entity Models", "Draws the the entity models for all close entities (you must enable the outline functions above for this to work).", ShowEntityModels);
-            var showEntityNetOwners = new MenuCheckboxItem("Show Network Owners", "Draws the the entity net owner for all close entities (you must enable the outline functions above for this to work).", ShowEntityNetOwners);
-            var dimensionsDistanceSlider = new MenuSliderItem("Show Dimensions Radius", "Show entity model/handle/dimension draw range.", 0, 20, 20, false);
+            var joinQuitNotifs = new MenuCheckboxItem("加入/退出提醒", "接收当玩家加入或离开服务器时的提醒.", JoinQuitNotifications);
+            var deathNotifs = new MenuCheckboxItem("死亡提醒", "接收当玩家死亡或被杀时的提醒.", DeathNotifications);
+            var nightVision = new MenuCheckboxItem("切换夜视功能", "启用或禁用夜视功能.", false);
+            var thermalVision = new MenuCheckboxItem("切换热成像功能", "启用或禁用红外热成像功能.", false);
+            var vehModelDimensions = new MenuCheckboxItem("载具轮廓显示", "绘制当前您附近载具的模型轮廓.", ShowVehicleModelDimensions);
+            var propModelDimensions = new MenuCheckboxItem("道具轮廓显示", "绘制当前您附近道具的模型轮廓.", ShowPropModelDimensions);
+            var pedModelDimensions = new MenuCheckboxItem("行人轮廓显示", "绘制当前您附近行人的模型轮廓.", ShowPedModelDimensions);
+            var showEntityHandles = new MenuCheckboxItem("实体句柄数据显示", "绘制当前已存在的实体句柄数据文本(必须启用上述大纲功能才能生效).", ShowEntityHandles);
+            var showEntityModels = new MenuCheckboxItem("实体哈希值数据显示", "绘制当前已存在的实体哈希值数据文本(必须启用上述大纲功能才能生效).", ShowEntityModels);
+            var showEntityNetOwners = new MenuCheckboxItem("实体所有者数据显示", "绘制当前已存在的实体网络所有者数据文本(必须启用上述大纲功能才能生效).", ShowEntityNetOwners);
+            var dimensionsDistanceSlider = new MenuSliderItem("数据显示半径", "配置绘制显示实体模型/句柄/轮廓具体的显示范围.", 0, 20, 20, false);
 
-            var clearArea = new MenuItem("Clear Area", "Clears the area around your player (100 meters). Damage, dirt, peds, props, vehicles, etc. Everything gets cleaned up, fixed and reset to the default world state.");
-            var lockCamX = new MenuCheckboxItem("Lock Camera Horizontal Rotation", "Locks your camera horizontal rotation. Could be useful in helicopters I guess.", false);
-            var lockCamY = new MenuCheckboxItem("Lock Camera Vertical Rotation", "Locks your camera vertical rotation. Could be useful in helicopters I guess.", false);
+            var clearArea = new MenuItem("区域清除", "清除周围(100 单位)的区域. 损坏、污垢、行人、道具、车辆等将被移除修复并重置为默认世界状态.");
+            var lockCamX = new MenuCheckboxItem("锁定镜头水平旋转", "锁定相机水平旋转.我想这在直升机上可能很有用.", false);
+            var lockCamY = new MenuCheckboxItem("锁定镜头垂直旋转", "锁定相机垂直旋转.我想这在直升机上可能很有用.", false);
 
-            var mpPedPreview = new MenuCheckboxItem("3D MP Ped Preview", "Shows a 3D Ped preview when viewing saved MP Peds.", MPPedPreviews);
+            var mpPedPreview = new MenuCheckboxItem("3D MP 角色预览", "查看已保存 MP 角色时显示 3D 预览。", MPPedPreviews);
 
             // Entity spawner
-            var spawnNewEntity = new MenuItem("Spawn New Entity", "Spawns entity into the world and lets you set its position and rotation");
-            var confirmEntityPosition = new MenuItem("Confirm Entity Position", "Stops placing entity and sets it at it current location.");
-            var cancelEntity = new MenuItem("Cancel", "Deletes current entity and cancels its placement");
-            var confirmAndDuplicate = new MenuItem("Confirm Entity Position And Duplicate", "Stops placing entity and sets it at it current location and creates new one to place.");
+            var spawnNewEntity = new MenuItem("生成新实体", "于当前世界中生成实体, 并设置其位置和旋转角度");
+            var confirmEntityPosition = new MenuItem("确认实体位置", "停止放置实体并将其设置在当前位置.");
+            var cancelEntity = new MenuItem("取消", "删除当前实体并取消放置");
+            var confirmAndDuplicate = new MenuItem("确认实体位置和复制", "停止放置实体, 将其设置在当前位置, 并创建新实体放置.");
 
-            var connectionSubmenu = new Menu(Game.Player.Name, "Connection Options");
-            var connectionSubmenuBtn = new MenuItem("Connection Options", "Server connection/game quit options.");
+            var connectionSubmenu = new Menu(Game.Player.Name, "连接选项");
+            var connectionSubmenuBtn = new MenuItem("连接选项", "服务器连接/游戏退出选项.");
 
-            var quitSession = new MenuItem("Quit Session", "Leaves you connected to the server, but quits the network session. ~r~Can not be used when you are the host.");
-            var rejoinSession = new MenuItem("Re-join Session", "This may not work in all cases, but you can try to use this if you want to re-join the previous session after clicking 'Quit Session'.");
-            var quitGame = new MenuItem("Quit Game", "Exits the game after 5 seconds.");
-            var disconnectFromServer = new MenuItem("Disconnect From Server", "Disconnects you from the server and returns you to the serverlist. ~r~This feature is not recommended, quit the game completely instead and restart it for a better experience.");
+            var quitSession = new MenuItem("断开会话", "保持与服务器的连接, 但退出网络会话. ~r~当您是主机时无法使用.");
+            var rejoinSession = new MenuItem("重连会话", "这可能并非在所有情况下都有效, 但如果您想在点击'断开会话'后重新加入上一个会话, 可尝试使用此功能.");
+            var quitGame = new MenuItem("退出平台", "五秒后将自动退出游戏并关闭平台.");
+            var disconnectFromServer = new MenuItem("断开服务器连接", "断开您与服务器的连接并返回服务器列表. ~r~不建议使用此功能.");
             connectionSubmenu.AddMenuItem(quitSession);
             connectionSubmenu.AddMenuItem(rejoinSession);
             connectionSubmenu.AddMenuItem(quitGame);
             connectionSubmenu.AddMenuItem(disconnectFromServer);
 
-            var enableTimeCycle = new MenuCheckboxItem("Enable Timecycle Modifier", "Enable or disable the timecycle modifier from the list below.", TimecycleEnabled);
+            var enableTimeCycle = new MenuCheckboxItem("启用时间周期修改器", "从已选择的列表中启用或禁用时间周期修改器.", TimecycleEnabled);
             var timeCycleModifiersListData = TimeCycles.Timecycles.ToList();
             for (var i = 0; i < timeCycleModifiersListData.Count; i++)
             {
                 timeCycleModifiersListData[i] += $" ({i + 1}/{timeCycleModifiersListData.Count})";
             }
-            var timeCycles = new MenuListItem("TM", timeCycleModifiersListData, MathUtil.Clamp(LastTimeCycleModifierIndex, 0, Math.Max(0, timeCycleModifiersListData.Count - 1)), "Select a timecycle modifier and enable the checkbox above.");
-            var timeCycleIntensity = new MenuSliderItem("Timecycle Modifier Intensity", "Set the timecycle modifier intensity.", 0, 20, LastTimeCycleModifierStrength, true);
+            var timeCycles = new MenuListItem("时间循环效果", timeCycleModifiersListData, MathUtil.Clamp(LastTimeCycleModifierIndex, 0, Math.Max(0, timeCycleModifiersListData.Count - 1)), "选择时间循环修饰效果，并启用上方复选框。");
+            var timeCycleIntensity = new MenuSliderItem("时间周期(TM)强度修改器", "设置时间周期修改器的强度.", 0, 20, LastTimeCycleModifierStrength, true);
 
-            var locationBlips = new MenuCheckboxItem("Location Blips", "Shows blips on the map for some common locations.", ShowLocationBlips);
-            var playerBlips = new MenuCheckboxItem("Show Player Blips", "Shows blips on the map for all players. ~y~Note for when the server is using OneSync Infinity: this won't work for players that are too far away.", ShowPlayerBlips);
-            var playerNames = new MenuCheckboxItem("Show Player Names", "Enables or disables player overhead names.", MiscShowOverheadNames);
-            var respawnDefaultCharacter = new MenuCheckboxItem("Respawn As Default MP Character", "If you enable this, then you will (re)spawn as your default saved MP character. Note the server owner can globally disable this option. To set your default character, go to one of your saved MP Characters and click the 'Set As Default Character' button.", MiscRespawnDefaultCharacter);
-            var restorePlayerAppearance = new MenuCheckboxItem("Restore Player Appearance", "Restore your player's skin whenever you respawn after being dead. Re-joining a server will not restore your previous skin.", RestorePlayerAppearance);
-            var restorePlayerWeapons = new MenuCheckboxItem("Restore Player Weapons", "Restore your weapons whenever you respawn after being dead. Re-joining a server will not restore your previous weapons.", RestorePlayerWeapons);
+            var locationBlips = new MenuCheckboxItem("地图图标显示", "在地图上显示一些常见地点的图标.", ShowLocationBlips);
+            var playerBlips = new MenuCheckboxItem("玩家图标提示", "在地图上显示所有玩家的图标. ~y~服务器使用 OneSync Infinity 时的注意事项：这对距离太远的玩家不起作用.", ShowPlayerBlips);
+            var playerNames = new MenuCheckboxItem("玩家名称显示", "启用或禁用玩家头顶名称.", MiscShowOverheadNames);
+            var respawnDefaultCharacter = new MenuCheckboxItem("以默认 MP 角色身份重生", "如果启用此选项,您将以默认保存的MP角色(重新)生成.请注意,服务器所有者可以全局禁用此选项.要设置默认角色,请转到您保存的 MP 角色之一,然后单击'设置为默认角色'按钮.", MiscRespawnDefaultCharacter);
+            var restorePlayerAppearance = new MenuCheckboxItem("恢复角色外观", "死亡后重生时恢复玩家外观. 重新加入服务器不会恢复之前外观.", RestorePlayerAppearance);
+            var restorePlayerWeapons = new MenuCheckboxItem("恢复玩家武器", "死亡后重生时恢复武器. 重新加入服务器不会恢复之前的武器.", RestorePlayerWeapons);
 
             MenuController.AddSubmenu(menu, connectionSubmenu);
             MenuController.BindMenuItem(menu, connectionSubmenu, connectionSubmenuBtn);
@@ -240,7 +240,7 @@ namespace vMenuClient.menus
                     {
                         if (NetworkIsHost())
                         {
-                            Notify.Error("Sorry, you cannot leave the session when you are the host. This would prevent other players from joining/staying on the server.");
+                            Notify.Error("抱歉, 当您是主机时, 您不能离开会话.这将阻止其他玩家加入/留在服务器上.");
                         }
                         else
                         {
@@ -249,18 +249,18 @@ namespace vMenuClient.menus
                     }
                     else
                     {
-                        Notify.Error("You are currently not in any session.");
+                        Notify.Error("您目前不在任何会话中.");
                     }
                 }
                 else if (item == rejoinSession)
                 {
                     if (NetworkIsSessionActive())
                     {
-                        Notify.Error("You are already connected to a session.");
+                        Notify.Error("您已经连接到一个会话.");
                     }
                     else
                     {
-                        Notify.Info("Attempting to re-join the session.");
+                        Notify.Info("尝试重新加入会话.");
                         NetworkSessionHost(-1, 32, false);
                     }
                 }
@@ -275,13 +275,13 @@ namespace vMenuClient.menus
             // Teleportation options
             if (IsAllowed(Permission.MSTeleportToWp) || IsAllowed(Permission.MSTeleportLocations) || IsAllowed(Permission.MSTeleportToCoord))
             {
-                var teleportOptionsMenuBtn = new MenuItem("Teleport Options", "Various teleport options.") { Label = "→→→" };
+                var teleportOptionsMenuBtn = new MenuItem("传送选项", "多种传送功能选项.") { Label = "→→→" };
                 menu.AddMenuItem(teleportOptionsMenuBtn);
                 MenuController.BindMenuItem(menu, teleportOptionsMenu, teleportOptionsMenuBtn);
 
-                var tptowp = new MenuItem("Teleport To Waypoint", "Teleport to the waypoint on your map.");
-                var tpToCoord = new MenuItem("Teleport To Coords", "Enter x, y, z coordinates and you will be teleported to that location.");
-                var saveLocationBtn = new MenuItem("Save Teleport Location", "Adds your current location to the teleport locations menu and saves it on the server.");
+                var tptowp = new MenuItem("传送至导航点", "传送到您于地图上标记的导航点");
+                var tpToCoord = new MenuItem("传送至具体坐标", "传送到您输入 X、Y、Z 的有效坐标处.");
+                var saveLocationBtn = new MenuItem("保存当前传送位置", "将当前位置添加到传送地点菜单并保存于服务器上.");
                 teleportOptionsMenu.OnItemSelect += async (sender, item, index) =>
                 {
                     // Teleport to waypoint.
@@ -291,19 +291,19 @@ namespace vMenuClient.menus
                     }
                     else if (item == tpToCoord)
                     {
-                        var x = await GetUserInput("Enter X coordinate.");
+                        var x = await GetUserInput("请输入 X 坐标数据.");
                         if (string.IsNullOrEmpty(x))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        var y = await GetUserInput("Enter Y coordinate.");
+                        var y = await GetUserInput("请输入 Y 坐标数据.");
                         if (string.IsNullOrEmpty(y))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
                             return;
                         }
-                        var z = await GetUserInput("Enter Z coordinate.");
+                        var z = await GetUserInput("请输入 Z 坐标数据.");
                         if (string.IsNullOrEmpty(z))
                         {
                             Notify.Error(CommonErrors.InvalidInput);
@@ -319,7 +319,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid X coordinate.");
+                                Notify.Error("您尚未输入有效的 X 坐标数据.");
                                 return;
                             }
                         }
@@ -331,7 +331,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid Y coordinate.");
+                                Notify.Error("您尚未输入有效的 Y 坐标数据.");
                                 return;
                             }
                         }
@@ -343,7 +343,7 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("You did not enter a valid Z coordinate.");
+                                Notify.Error("您尚未输入有效的 Z 坐标数据.");
                                 return;
                             }
                         }
@@ -384,7 +384,7 @@ namespace vMenuClient.menus
                                 var y = Math.Round(location.coordinates.Y, 2);
                                 var z = Math.Round(location.coordinates.Z, 2);
                                 var heading = Math.Round(location.heading, 2);
-                                var tpBtn = new MenuItem(location.name, $"Teleport to ~y~{location.name}~n~~s~x: ~y~{x}~n~~s~y: ~y~{y}~n~~s~z: ~y~{z}~n~~s~heading: ~y~{heading}") { ItemData = location };
+                                var tpBtn = new MenuItem(location.name, $"传送至 ~y~{location.name}~n~~s~X: ~y~{x}~n~~s~Y: ~y~{y}~n~~s~Z: ~y~{z}~n~~s~朝向: ~y~{heading}") { ItemData = location };
                                 teleportMenu.AddMenuItem(tpBtn);
                             }
                         }
@@ -410,7 +410,7 @@ namespace vMenuClient.menus
 
             #region dev tools menu
 
-            var devToolsBtn = new MenuItem("Developer Tools", "Various development/debug tools.") { Label = "→→→" };
+            var devToolsBtn = new MenuItem("开发者工具", "各种开发工具/调试工具.") { Label = "→→→" };
             menu.AddMenuItem(devToolsBtn);
             MenuController.AddSubmenu(menu, developerToolsMenu);
             MenuController.BindMenuItem(menu, developerToolsMenu, devToolsBtn);
@@ -532,7 +532,7 @@ namespace vMenuClient.menus
 
             if (IsAllowed(Permission.MSEntitySpawner))
             {
-                var entSpawnerMenuBtn = new MenuItem("Entity Spawner", "Spawn and move entities") { Label = "→→→" };
+                var entSpawnerMenuBtn = new MenuItem("实体生成器", "生成和移动实体") { Label = "→→→" };
                 developerToolsMenu.AddMenuItem(entSpawnerMenuBtn);
                 MenuController.BindMenuItem(developerToolsMenu, entitySpawnerMenu, entSpawnerMenuBtn);
 
@@ -547,11 +547,11 @@ namespace vMenuClient.menus
                     {
                         if (EntitySpawner.CurrentEntity != null || EntitySpawner.Active)
                         {
-                            Notify.Error("You are already placing one entity, set its location or cancel and try again!");
+                            Notify.Error("您已经放置了一个实体, 请设置其位置或取消并重试!");
                             return;
                         }
 
-                        var result = await GetUserInput(windowTitle: "Enter model name");
+                        var result = await GetUserInput(windowTitle: "输入有效实体模型代码");
 
                         if (string.IsNullOrEmpty(result))
                         {
@@ -568,7 +568,7 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            Notify.Error("No entity to confirm position for!");
+                            Notify.Error("暂无有效实体确认位置!");
                         }
                     }
                     else if (item == cancelEntity)
@@ -579,7 +579,7 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            Notify.Error("No entity to cancel!");
+                            Notify.Error("无任何有效实体可取消!");
                         }
                     }
                 };

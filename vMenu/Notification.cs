@@ -47,21 +47,21 @@ namespace vMenuClient
             var placeholder = placeholderValue != null ? " " + placeholderValue : "";
             outputMessage = errorType switch
             {
-                CommonErrors.NeedToBeTheDriver => "You need to be the driver of this vehicle.",
-                CommonErrors.NoVehicle => $"You need to be inside a vehicle{placeholder}.",
-                CommonErrors.NotAllowed => $"You are not allowed to{placeholder}, sorry.",
-                CommonErrors.InvalidModel => $"This model~r~{placeholder} ~s~could not be found, are you sure it's valid?",
-                CommonErrors.InvalidInput => $"The input~r~{placeholder} ~s~is invalid or you cancelled the action, please try again.",
-                CommonErrors.InvalidSaveName => $"Saving failed because the provided save name~r~{placeholder} ~s~is invalid.",
-                CommonErrors.SaveNameAlreadyExists => $"Saving failed because the provided save name~r~{placeholder} ~s~already exists.",
-                CommonErrors.CouldNotLoadSave => $"Loading of~r~{placeholder} ~s~failed! Is the saves file corrupt?",
-                CommonErrors.CouldNotLoad => $"Could not load~r~{placeholder}~s~, sorry!",
-                CommonErrors.PedNotFound => $"The specified ped could not be found.{placeholder}",
-                CommonErrors.PlayerNotFound => $"The specified player could not be found.{placeholder}",
-                CommonErrors.WalkingStyleNotForMale => $"This walking style is not available for male peds.{placeholder}",
-                CommonErrors.WalkingStyleNotForFemale => $"This walking style is not available for female peds.{placeholder}",
-                CommonErrors.RightAlignedNotSupported => $"Right aligned menus are not supported for ultra wide aspect ratios.{placeholder}",
-                _ => $"An unknown error occurred, sorry!{placeholder}",
+                CommonErrors.NeedToBeTheDriver => "你需要成为这辆车的司机.",
+                CommonErrors.NoVehicle => $"你需要在车内{placeholder}.",
+                CommonErrors.NotAllowed => $"你不被允许{placeholder}, 抱歉.",
+                CommonErrors.InvalidModel => $"该模型~r~{placeholder} ~s~未找到, 你确定它是有效的吗？",
+                CommonErrors.InvalidInput => $"输入~r~{placeholder} ~s~无效或你取消了操作, 请重试.",
+                CommonErrors.InvalidSaveName => $"保存失败, 因为提供的保存名称~r~{placeholder} ~s~无效.",
+                CommonErrors.SaveNameAlreadyExists => $"保存失败, 因为提供的保存名称~r~{placeholder} ~s~已经存在.",
+                CommonErrors.CouldNotLoadSave => $"加载~r~{placeholder} ~s~失败!保存文件是否损坏？",
+                CommonErrors.CouldNotLoad => $"无法加载~r~{placeholder}~s~, 抱歉!",
+                CommonErrors.PedNotFound => $"指定的角色未找到.{placeholder}",
+                CommonErrors.PlayerNotFound => $"指定的玩家未找到.{placeholder}",
+                CommonErrors.WalkingStyleNotForMale => $"该行走风格不适用于男性角色.{placeholder}",
+                CommonErrors.WalkingStyleNotForFemale => $"该行走风格不适用于女性角色.{placeholder}",
+                CommonErrors.RightAlignedNotSupported => $"超宽屏幕不支持右对齐菜单.{placeholder}",
+                _ => $"发生未知错误, 抱歉!{placeholder}",
             };
             return outputMessage;
         }
@@ -99,7 +99,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Alert(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~y~~h~Alert~h~~s~: " + message, blink, saveToBrief);
+            Custom("~y~~h~警告~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Error(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~r~~h~Error~h~~s~: " + message, blink, saveToBrief);
+            Custom("~r~~h~错误~h~~s~: " + message, blink, saveToBrief);
             Debug.Write("[vMenu] [ERROR] " + message + "\n");
         }
 
@@ -148,7 +148,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Info(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~b~~h~Info~h~~s~: " + message, blink, saveToBrief);
+            Custom("~b~~h~通知~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace vMenuClient
         /// <param name="saveToBrief">Should the notification be logged to the brief (PAUSE menu > INFO > Notifications)?</param>
         public static void Success(string message, bool blink = true, bool saveToBrief = true)
         {
-            Custom("~g~~h~Success~h~~s~: " + message, blink, saveToBrief);
+            Custom("~g~~h~成功~h~~s~: " + message, blink, saveToBrief);
         }
 
         /// <summary>

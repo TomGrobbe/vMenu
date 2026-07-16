@@ -19,13 +19,13 @@ namespace vMenuClient.menus
             AddTextEntry("ERROR_UPLOAD", "Are you sure you want to upload this photo to Cfx.re forum?"); // Replace the warning message text for uploading
 
             // Create the menu.
-            menu = new Menu("Recording", "Recording Options");
+            menu = new Menu("游戏录制", "游戏录制选项");
 
-            var takePic = new MenuItem("Take Photo", "Takes a photo and saves it to the Pause Menu gallery.");
-            var openPmGallery = new MenuItem("Open Gallery", "Opens the Pause Menu gallery.");
-            var startRec = new MenuItem("Start Recording", "Start a new game recording using GTA V's built in recording.");
-            var stopRec = new MenuItem("Stop Recording", "Stop and save your current recording.");
-            var openEditor = new MenuItem("Rockstar Editor", "Open the rockstar editor, note you might want to quit the session first before doing this to prevent some issues.");
+            var takePic = new MenuItem("照片拍摄", "拍摄照片并保存到暂停菜单-相册中.");
+            var openPmGallery = new MenuItem("打开相册", "打开暂停菜单-相册.");
+            var startRec = new MenuItem("开始录制", "使用GTAV的内置录制功能开始新的游戏视频录制.");
+            var stopRec = new MenuItem("停止录制", "停止并保存当前游戏视频录制.");
+            var openEditor = new MenuItem("Rockstar 编辑器", "打开'rockstar 编辑器', 注意:为避免出现某些问题, 请优先断开会话.");
 
             menu.AddMenuItem(takePic);
             menu.AddMenuItem(openPmGallery);
@@ -39,7 +39,7 @@ namespace vMenuClient.menus
                 {
                     if (IsRecording())
                     {
-                        Notify.Alert("You are already recording a clip, you need to stop recording first before you can start recording again!");
+                        Notify.Alert("当前已处于录制状态, 您需要优先停止当前录制方可继续录制!");
                     }
                     else
                     {
@@ -60,7 +60,7 @@ namespace vMenuClient.menus
                 {
                     if (!IsRecording())
                     {
-                        Notify.Alert("You are currently NOT recording a clip, you need to start recording first before you can stop and save a clip.");
+                        Notify.Alert("当前并未存在任何已录制片段, 您需要先开启录制, 方可停止并保存.");
                     }
                     else
                     {
@@ -81,7 +81,7 @@ namespace vMenuClient.menus
                     }
                     // then fade in the screen.
                     DoScreenFadeIn(1);
-                    Notify.Alert("You left your previous session before entering the Rockstar Editor. Restart the game to be able to rejoin the server's main session.", true, true);
+                    Notify.Alert("由于您在进入 Rockstar 编辑器之前就离开之前的会话. 重新启动游戏, 并加入服务器的主会话.", true, true);
                 }
             };
 

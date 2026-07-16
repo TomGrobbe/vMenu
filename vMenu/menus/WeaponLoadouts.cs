@@ -19,8 +19,8 @@ namespace vMenuClient.menus
     {
         // Variables
         private Menu menu = null;
-        private readonly Menu SavedLoadoutsMenu = new("Saved Loadouts", "saved weapon loadouts list");
-        private readonly Menu ManageLoadoutMenu = new("Mange Loadout", "Manage saved weapon loadout");
+        private readonly Menu SavedLoadoutsMenu = new("已保存配置", "已保存的武器配置列表");
+        private readonly Menu ManageLoadoutMenu = new("管理配置", "管理已保存的武器配置");
         public bool WeaponLoadoutsSetLoadoutOnRespawn { get; private set; } = UserDefaults.WeaponLoadoutsSetLoadoutOnRespawn;
 
         private readonly Dictionary<string, List<ValidWeapon>> SavedWeapons = new();
@@ -94,14 +94,14 @@ namespace vMenuClient.menus
         /// </summary>
         public void CreateMenu()
         {
-            menu = new Menu(Game.Player.Name, "weapon loadouts management");
+            menu = new Menu(Game.Player.Name, "武器配置管理");
 
             MenuController.AddSubmenu(menu, SavedLoadoutsMenu);
             MenuController.AddSubmenu(SavedLoadoutsMenu, ManageLoadoutMenu);
 
-            var saveLoadout = new MenuItem("Save Loadout", "Save your current weapons into a new loadout slot.");
-            var savedLoadoutsMenuBtn = new MenuItem("Manage Loadouts", "Manage saved weapon loadouts.") { Label = "→→→" };
-            var enableDefaultLoadouts = new MenuCheckboxItem("Restore Default Loadout On Respawn", "If you've set a loadout as default loadout, then your loadout will be equipped automatically whenever you (re)spawn.", WeaponLoadoutsSetLoadoutOnRespawn);
+            var saveLoadout = new MenuItem("保存配置", "将当前武器保存到一个新的配置槽中.");
+            var savedLoadoutsMenuBtn = new MenuItem("管理配置", "管理保存的武器配置.") { Label = "→→→" };
+            var enableDefaultLoadouts = new MenuCheckboxItem("重生时恢复默认配置", "如果您设置了一个默认配置,那么每次您（重新）重生时,系统将自动装备该配置.", WeaponLoadoutsSetLoadoutOnRespawn);
 
             menu.AddMenuItem(saveLoadout);
             menu.AddMenuItem(savedLoadoutsMenuBtn);
@@ -126,7 +126,7 @@ namespace vMenuClient.menus
 
                 foreach (var sw in SavedWeapons)
                 {
-                    var btn = new MenuItem(sw.Key.Replace("vmenu_string_saved_weapon_loadout_", ""), "Click to manage this loadout.") { Label = "→→→" };
+                    var btn = new MenuItem(sw.Key.Replace("vmenu_string_saved_weapon_loadout_", ""), "点击管理此装备.") { Label = "→→→" };
                     SavedLoadoutsMenu.AddMenuItem(btn);
                     MenuController.BindMenuItem(SavedLoadoutsMenu, ManageLoadoutMenu, btn);
                 }
@@ -138,12 +138,12 @@ namespace vMenuClient.menus
             }
 
 
-            var spawnLoadout = new MenuItem("Equip Loadout", "Spawn this saved weapons loadout. This will remove all your current weapons and replace them with this saved slot.");
-            var renameLoadout = new MenuItem("Rename Loadout", "Rename this saved loadout.");
-            var cloneLoadout = new MenuItem("Clone Loadout", "Clones this saved loadout to a new slot.");
-            var setDefaultLoadout = new MenuItem("Set As Default Loadout", "Set this loadout to be your default loadout for whenever you (re)spawn. This will override the 'Restore Weapons' option inside the Misc Settings menu. You can toggle this option in the main Weapon Loadouts menu.");
-            var replaceLoadout = new MenuItem("~r~Replace Loadout", "~r~This replaces this saved slot with the weapons that you currently have in your inventory. This action can not be undone!");
-            var deleteLoadout = new MenuItem("~r~Delete Loadout", "~r~This will delete this saved loadout. This action can not be undone!");
+            var spawnLoadout = new MenuItem("装备配置", "使用这个保存的武器配置.这将移除您当前的所有武器,并用这个保存的配置替换它们.");
+            var renameLoadout = new MenuItem("重命名配置", "重命名这个保存的配置.");
+            var cloneLoadout = new MenuItem("克隆配置", "将这个保存的配置克隆到一个新的槽中.");
+            var setDefaultLoadout = new MenuItem("设置为默认配置", "将这个配置设置为您每次（重新）重生时的默认配置.这将覆盖'恢复武器'选项在其他杂项配置菜单中的设置.您可以在主武器配置菜单中切换此选项.");
+            var replaceLoadout = new MenuItem("~r~替换配置", "~r~这将用您当前的武器替换这个保存的槽.此操作无法撤销!");
+            var deleteLoadout = new MenuItem("~r~删除配置", "~r~这将删除这个保存的配置.此操作无法撤销!");
 
             if (IsAllowed(Permission.WLEquip))
             {
@@ -177,7 +177,7 @@ namespace vMenuClient.menus
                             if (SaveWeaponLoadout("vmenu_string_saved_weapon_loadout_" + name))
                             {
                                 Log("saveweapons called from menu select (save loadout button)");
-                                Notify.Success($"Your weapons have been saved as ~g~<C>{name}</C>~s~.");
+                                Notify.Success($"您的武器已保存为 ~g~{name}~s~.");
                             }
                             else
                             {
@@ -229,35 +229,35 @@ namespace vMenuClient.menus
                     else if (item == setDefaultLoadout) // set as default
                     {
                         SetResourceKvp("vmenu_string_default_loadout", SelectedSavedLoadoutName);
-                        Notify.Success("This is now your default loadout.");
+                        Notify.Success("现在这是您的默认装备.");
                         item.LeftIcon = MenuItem.Icon.TICK;
                     }
                     else if (item == replaceLoadout) // replace
                     {
-                        if (replaceLoadout.Label == "Are you sure?")
+                        if (replaceLoadout.Label == "二次确认?")
                         {
                             replaceLoadout.Label = "";
                             SaveWeaponLoadout(SelectedSavedLoadoutName);
                             Log("save weapons called from replace loadout");
-                            Notify.Success("Your saved loadout has been replaced with your current weapons.");
+                            Notify.Success("您保存的武器装备已替换为当前武器.");
                         }
                         else
                         {
-                            replaceLoadout.Label = "Are you sure?";
+                            replaceLoadout.Label = "二次确认?";
                         }
                     }
                     else if (item == deleteLoadout) // delete
                     {
-                        if (deleteLoadout.Label == "Are you sure?")
+                        if (deleteLoadout.Label == "二次确认?")
                         {
                             deleteLoadout.Label = "";
                             DeleteResourceKvp(SelectedSavedLoadoutName);
                             ManageLoadoutMenu.GoBack();
-                            Notify.Success("Your saved loadout has been deleted.");
+                            Notify.Success("您保存的装备已被删除.");
                         }
                         else
                         {
-                            deleteLoadout.Label = "Are you sure?";
+                            deleteLoadout.Label = "二次确认?";
                         }
                     }
                 }

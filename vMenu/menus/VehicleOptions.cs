@@ -70,79 +70,79 @@ namespace vMenuClient.menus
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Vehicle Options");
+            menu = new Menu(Game.Player.Name, "载具数据编辑");
 
             #region menu items variables
             // vehicle god mode menu
-            var vehGodMenu = new Menu("Vehicle Godmode", "Vehicle Godmode Options");
-            var vehGodMenuBtn = new MenuItem("God Mode Options", "Enable or disable specific damage types.") { Label = "→→→" };
+            var vehGodMenu = new Menu("无敌模式选项", "载具无敌模式选项");
+            var vehGodMenuBtn = new MenuItem("无敌模式选项", "启用或禁用特定载具伤害类型.") { Label = "→→→" };
             MenuController.AddSubmenu(menu, vehGodMenu);
 
             // Create Checkboxes.
-            var vehicleGod = new MenuCheckboxItem("Vehicle God Mode", "Makes your vehicle not take any damage. Note, you need to go into the god menu options below to select what kind of damage you want to disable.", VehicleGodMode);
-            var vehicleNeverDirty = new MenuCheckboxItem("Keep Vehicle Clean", "This will constantly clean your car if the vehicle dirt level goes above 0. Note that this only cleans ~o~dust~s~ or ~o~dirt~s~. This does not clean mud, snow or other ~r~damage decals~s~. Repair your vehicle to remove them.", VehicleNeverDirty);
-            var vehicleBikeSeatbelt = new MenuCheckboxItem("Bike Seatbelt", "Prevents you from being knocked off your bike, bicyle, ATV or similar.", VehicleBikeSeatbelt);
-            var vehicleEngineAO = new MenuCheckboxItem("Engine Always On", "Keeps your vehicle engine on when you exit your vehicle.", VehicleEngineAlwaysOn);
-            var vehicleNoTurbulence = new MenuCheckboxItem("Disable Plane Turbulence", "Disables the turbulence for all planes.", DisablePlaneTurbulence);
-            var vehicleNoTurbulenceHeli = new MenuCheckboxItem("Disable Helicopter Turbulence", "Disables the turbulence for all helicopters.", DisableHelicopterTurbulence);
-            var vehicleSetAnchor = new MenuCheckboxItem("Anchor Boat", "Only works if the current vehicle is a boat and its position is valid for anchoring", AnchorBoat);
-            var vehicleNoSiren = new MenuCheckboxItem("Disable Siren", "Disables your vehicle's siren. Only works if your vehicle actually has a siren.", VehicleNoSiren);
-            var vehicleNoBikeHelmet = new MenuCheckboxItem("No Bike Helmet", "No longer auto-equip a helmet when getting on a bike or quad.", VehicleNoBikeHelemet);
-            var vehicleFreeze = new MenuCheckboxItem("Freeze Vehicle", "Freeze your vehicle's position.", VehicleFrozen);
-            var torqueEnabled = new MenuCheckboxItem("Enable Torque Multiplier", "Enables the torque multiplier selected from the list below.", VehicleTorqueMultiplier);
-            var powerEnabled = new MenuCheckboxItem("Enable Power Multiplier", "Enables the power multiplier selected from the list below.", VehiclePowerMultiplier);
-            var highbeamsOnHonk = new MenuCheckboxItem("Flash Highbeams On Honk", "Turn on your highbeams on your vehicle when honking your horn. Does not work during the day when you have your lights turned off.", FlashHighbeamsOnHonk);
-            var showHealth = new MenuCheckboxItem("Show Vehicle Health", "Shows the vehicle health on the screen.", VehicleShowHealth);
-            var infiniteFuel = new MenuCheckboxItem("Infinite Fuel", "Enables or disables infinite fuel for this vehicle, only works if FRFuel is installed.", VehicleInfiniteFuel);
-            var vehicleRadioOverride = new MenuCheckboxItem("Enable Default Radio Station", "Enables or disables overriding default radio channel in all vehicles", VehicleRadioOverride);
+            var vehicleGod = new MenuCheckboxItem("载具无敌模式", "使载具不受某种伤害类型破坏. 注意,您需要进入下面的'无敌模式选项',选择要禁用的伤害类型.", VehicleGodMode);
+            var vehicleNeverDirty = new MenuCheckboxItem("载具永不脏污", "如载具污垢水平超过0, 它将持续清洁您的载具. 请注意, 这只能清洁~o~灰尘~s~或~o~ 垢~s~. 无法清洁类似于泥、雪或其他~r~损坏~s~, 修理载具以清除它们.", VehicleNeverDirty);
+            var vehicleBikeSeatbelt = new MenuCheckboxItem("单车安全带", "防止您从自行车、脚踏车、全地形车或类似装置被撞下.", VehicleBikeSeatbelt);
+            var vehicleEngineAO = new MenuCheckboxItem("载具引擎常开", "当您离开载具时, 载具发动机仍能保持开启状态.", VehicleEngineAlwaysOn);
+            var vehicleNoTurbulence = new MenuCheckboxItem("禁用飞机乱流", "禁用所有飞机的乱流功能.", DisablePlaneTurbulence);
+            var vehicleNoTurbulenceHeli = new MenuCheckboxItem("禁用直升机乱流", "禁用所有直升机的乱流功能.", DisableHelicopterTurbulence);
+            var vehicleSetAnchor = new MenuCheckboxItem("抛锚", "仅在当前载具为船只且位置允许抛锚时生效。", AnchorBoat);
+            var vehicleNoSiren = new MenuCheckboxItem("禁用警笛", "禁用载具的警报器. 仅当您的载具确实有警报器时才有效.", VehicleNoSiren);
+            var vehicleNoBikeHelmet = new MenuCheckboxItem("无单车头盔", "骑上自行车, 四轮车, 摩托车时不再自动装备头盔.", VehicleNoBikeHelemet);
+            var vehicleFreeze = new MenuCheckboxItem("载具冻结", "冻结载具位置.", VehicleFrozen);
+            var torqueEnabled = new MenuCheckboxItem("启用扭矩倍增器", "启用从下面列表中选择的扭矩倍增器.", VehicleTorqueMultiplier);
+            var powerEnabled = new MenuCheckboxItem("启用功率倍增器", "启用从以下列表中选择的功率倍增器.", VehiclePowerMultiplier);
+            var highbeamsOnHonk = new MenuCheckboxItem("鸣笛灯光闪烁", "按喇叭时打开载具的远光灯. 关闭车灯时不起作用.", FlashHighbeamsOnHonk);
+            var showHealth = new MenuCheckboxItem("显示载具健康状况", "于屏幕上显示载具健康值的文本.", VehicleShowHealth);
+            var infiniteFuel = new MenuCheckboxItem("无限油量", "启用或禁用该载具的无限油量, 仅在安装了 FRFuel 时有效.", VehicleInfiniteFuel);
+            var vehicleRadioOverride = new MenuCheckboxItem("启用默认电台", "启用或禁用对所有载具默认电台的覆盖。", VehicleRadioOverride);
 
             // Create buttons.
-            var fixVehicle = new MenuItem("Repair Vehicle", "Repair any visual and physical damage present on your vehicle.");
-            var cleanVehicle = new MenuItem("Wash Vehicle", "Clean your vehicle.");
-            var toggleEngine = new MenuItem("Toggle Engine On/Off", "Turn your engine on/off.");
-            var setLicensePlateText = new MenuItem("Set License Plate Text", "Enter a custom license plate for your vehicle.");
-            var modMenuBtn = new MenuItem("Mod Menu", "Tune and customize your vehicle here.")
+            var fixVehicle = new MenuItem("载具全面修复", "修复载具上的任何外观和物理损坏.");
+            var cleanVehicle = new MenuItem("载具全面清洗", "清洁载具上的任何泥垢及其它脏污.");
+            var toggleEngine = new MenuItem("载具引擎开关", "打开/关闭发动机.");
+            var setLicensePlateText = new MenuItem("载具自定义车牌", "为您的载具输入自定义车牌号码.");
+            var modMenuBtn = new MenuItem("载具改装菜单", "在此调整和定制您的载具.")
             {
                 Label = "→→→"
             };
-            var doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
+            var doorsMenuBtn = new MenuItem("载具车门管理", "在此打开、关闭、拆卸和修复车门.")
             {
                 Label = "→→→"
             };
-            var windowsMenuBtn = new MenuItem("Vehicle Windows", "Roll your windows up/down or remove/restore your vehicle windows here.")
+            var windowsMenuBtn = new MenuItem("载具车窗管理", "在此摇上/摇下车窗或拆下/修复车窗.")
             {
                 Label = "→→→"
             };
-            var componentsMenuBtn = new MenuItem("Vehicle Extras", "Add/remove vehicle components/extras.")
+            var componentsMenuBtn = new MenuItem("载具额外改件", "添加/移除载具部件/改件装置.")
             {
                 Label = "→→→"
             };
-            var liveriesMenuBtn = new MenuItem("Vehicle Liveries", "Style your vehicle with fancy liveries!")
+            var liveriesMenuBtn = new MenuItem("载具额外涂装", "用花哨的涂装为您的载具增添自有风格!")
             {
                 Label = "→→→"
             };
-            var colorsMenuBtn = new MenuItem("Vehicle Colors", "Style your vehicle even further by giving it some ~g~Snailsome ~s~colors!")
+            var colorsMenuBtn = new MenuItem("载具配色管理", "为载具增添一些 ~g~Snailsome ~s~ 色彩,让载具更具风格!")
             {
                 Label = "→→→"
             };
-            var underglowMenuBtn = new MenuItem("Vehicle Neon Kits", "Make your vehicle shine with some fancy neon underglow!")
+            var underglowMenuBtn = new MenuItem("载具霓虹灯套件", "用花哨的霓虹底光让您的载具熠熠生辉!")
             {
                 Label = "→→→"
             };
-            var vehicleInvisible = new MenuItem("Toggle Vehicle Visibility", "Makes your vehicle visible/invisible. ~r~Your vehicle will be made visible again as soon as you leave the vehicle. Otherwise you would not be able to get back in.");
-            var flipVehicle = new MenuItem("Flip Vehicle", "Sets your current vehicle on all 4 wheels.");
-            var vehicleAlarm = new MenuItem("Toggle Vehicle Alarm", "Starts/stops your vehicle's alarm.");
-            var cycleSeats = new MenuItem("Cycle Through Vehicle Seats", "Cycle through the available vehicle seats.");
+            var vehicleInvisible = new MenuItem("载具可见性", "使载具可见/不可见. ~r~您离开载具后,载具将立即恢复可见.");
+            var flipVehicle = new MenuItem("载具翻转", "如载具发生翻滚, 可尝试使用此功能.");
+            var vehicleAlarm = new MenuItem("载具警报器", "启动/停止载具警报器.");
+            var cycleSeats = new MenuItem("载具座位循环", "循环切换可用的载具座位.");
             var lights = new List<string>()
             {
-                "Hazard Lights",
-                "Left Indicator",
-                "Right Indicator",
-                "Interior Lights",
+                "危险指示灯",
+                "左指示灯",
+                "右指示灯",
+                "车内照明",
                 //"Taxi Light", // this doesn't seem to work no matter what.
-                "Helicopter Spotlight",
+                "直升机聚光灯",
             };
-            var vehicleLights = new MenuListItem("Vehicle Lights", lights, 0, "Turn vehicle lights on/off.");
+            var vehicleLights = new MenuListItem("载具灯具管理", lights, 0, "开启/关闭载具各项灯具.");
 
             var stationNames = new List<string>();
 
@@ -164,30 +164,30 @@ namespace vMenuClient.menus
                 radioIndex = 0;
             }
 
-            var radioStations = new MenuListItem("Set Default Radio Station", stationNames, radioIndex, "Select a default radio station for all cars you spawn")
+            var radioStations = new MenuListItem("设置默认电台", stationNames, radioIndex, "为生成的所有汽车选择默认电台。")
             {
                 Enabled = VehicleRadioOverride
             };
 
-            var tiresList = new List<string>() { "All Tires", "Tire #1", "Tire #2", "Tire #3", "Tire #4", "Tire #5", "Tire #6", "Tire #7", "Tire #8" };
-            var vehicleTiresList = new MenuListItem("Fix / Destroy Tires", tiresList, 0, "Fix or destroy a specific vehicle tire, or all of them at once. Note, not all indexes are valid for all vehicles, some might not do anything on certain vehicles.");
+            var tiresList = new List<string>() { "全部轮胎", "轮胎 #1", "轮胎 #2", "轮胎 #3", "轮胎 #4", "轮胎 #5", "轮胎 #6", "轮胎 #7", "轮胎 #8" };
+            var vehicleTiresList = new MenuListItem("载具轮胎修复/销毁", tiresList, 0, "修复或毁坏载具的轮胎.注意,并非所有索引对所有载具都有效,有某些载具不起作用.");
 
-            var destroyEngine = new MenuItem("Destroy Engine", "Destroys your vehicle's engine.");
+            var destroyEngine = new MenuItem("载具引擎摧毁", "直接摧毁载具引擎.");
 
-            var deleteBtn = new MenuItem("~r~Delete Vehicle", "Delete your vehicle, this ~r~can NOT be undone~s~!")
+            var deleteBtn = new MenuItem("~r~载具删除", "删除载具, ~r~此项操作无法撤销~s~!")
             {
                 LeftIcon = MenuItem.Icon.WARNING,
                 Label = "→→→"
             };
-            var deleteNoBtn = new MenuItem("NO, CANCEL", "NO, do NOT delete my vehicle and go back!");
-            var deleteYesBtn = new MenuItem("~r~YES, DELETE", "Yes I'm sure, delete my vehicle please, I understand that this cannot be undone.")
+            var deleteNoBtn = new MenuItem("取消", "取消删除载具并返回!");
+            var deleteYesBtn = new MenuItem("~r~确认删除", "已知晓无法撤销并确认删除载具.")
             {
                 LeftIcon = MenuItem.Icon.WARNING
             };
 
             // Create lists.
-            var dirtlevel = new List<string> { "No Dirt", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
-            var setDirtLevel = new MenuListItem("Set Dirt Level", dirtlevel, 0, "Select how much dirt should be visible on your vehicle, press ~r~enter~s~ " +
+            var dirtlevel = new List<string> { "无", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
+            var setDirtLevel = new MenuListItem("设置污渍等级", dirtlevel, 0, "选择载具显示的污渍程度，按 ~r~ENTER~s~ " +
                 "to apply the selected level.");
             var licensePlates = new List<string> {
                 GetLabelText("CMOD_PLA_0"), // Plate Index 0 // BlueOnWhite1
@@ -204,20 +204,20 @@ namespace vMenuClient.menus
                 GetLabelText("CMOD_PLA_11"), // Plate Index 11 // LSPounders
                 GetLabelText("CMOD_PLA_12"), // Plate Index 12 // Sprunk
             };
-            var setLicensePlateType = new MenuListItem("License Plate Type", licensePlates, 0, "Choose a license plate type and press ~r~enter ~s~to apply " +
-                "it to your vehicle.");
+            var setLicensePlateType = new MenuListItem("载具牌照类型", licensePlates, 0, "选择车牌类型并键下 ~r~ENTER ~s~确认 " +
+                "修改至载具.");
             var torqueMultiplierList = new List<string> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
-            var torqueMultiplier = new MenuListItem("Set Engine Torque Multiplier", torqueMultiplierList, 0, "Set the engine torque multiplier.");
+            var torqueMultiplier = new MenuListItem("设置发动机扭矩乘数", torqueMultiplierList, 0, "设置发动机扭矩乘数.");
             var powerMultiplierList = new List<string> { "x2", "x4", "x8", "x16", "x32", "x64", "x128", "x256", "x512", "x1024" };
-            var powerMultiplier = new MenuListItem("Set Engine Power Multiplier", powerMultiplierList, 0, "Set the engine power multiplier.");
-            var speedLimiterOptions = new List<string>() { "Set", "Reset", "Custom Speed Limit" };
-            var speedLimiter = new MenuListItem("Speed Limiter", speedLimiterOptions, 0, "Set your vehicles max speed to your ~y~current speed~s~. Resetting your vehicles max speed will set the max speed of your current vehicle back to default. Only your current vehicle is affected by this option.");
+            var powerMultiplier = new MenuListItem("设置发动机功率乘数", powerMultiplierList, 0, "设置发动机功率乘数.");
+            var speedLimiterOptions = new List<string>() { "设置", "重置", "自定义" };
+            var speedLimiter = new MenuListItem("载具限速器", speedLimiterOptions, 0, "'设置'=设置最大速度为~y~当前速度~s~. '重置'=设置最大速度恢复默认值. 此选项只影响当前驾驶载具.");
             #endregion
 
             #region Submenus
             // Submenu's
-            VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
-            VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
+            VehicleModMenu = new Menu("载具改装菜单", "载具改装");
+            VehicleModMenu.InstructionalButtons.Add(Control.Jump, "载具车门开关");
             VehicleModMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_PRESSED, new Action<Menu, Control>((m, c) =>
             {
                 var veh = GetVehicle();
@@ -237,13 +237,13 @@ namespace vMenuClient.menus
                     }
                 }
             }), false));
-            VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
-            VehicleWindowsMenu = new Menu("Vehicle Windows", "Vehicle Windows Management");
-            VehicleComponentsMenu = new Menu("Vehicle Extras", "Vehicle Extras/Components");
-            VehicleLiveriesMenu = new Menu("Vehicle Liveries", "Vehicle Liveries");
-            VehicleColorsMenu = new Menu("Vehicle Colors", "Vehicle Colors");
-            DeleteConfirmMenu = new Menu("Confirm Action", "Delete Vehicle, Are You Sure?");
-            VehicleUnderglowMenu = new Menu("Vehicle Neon Kits", "Vehicle Neon Underglow Options");
+            VehicleDoorsMenu = new Menu("载具车门管理", "载具车门管理");
+            VehicleWindowsMenu = new Menu("载具车窗管理", "载具车窗管理");
+            VehicleComponentsMenu = new Menu("载具额外改件", "载具附件/改件");
+            VehicleLiveriesMenu = new Menu("载具额外涂装", "载具额外涂装");
+            VehicleColorsMenu = new Menu("载具配色管理", "载具配色管理");
+            DeleteConfirmMenu = new Menu("二次确认", "确认删除载具?");
+            VehicleUnderglowMenu = new Menu("载具霓虹灯套件", "载具霓虹灯套件");
 
             MenuController.AddSubmenu(menu, VehicleModMenu);
             MenuController.AddSubmenu(menu, VehicleDoorsMenu);
@@ -263,12 +263,12 @@ namespace vMenuClient.menus
                 menu.AddMenuItem(vehGodMenuBtn);
                 MenuController.BindMenuItem(menu, vehGodMenu, vehGodMenuBtn);
 
-                var godInvincible = new MenuCheckboxItem("Invincible", "Makes the car invincible. Includes fire damage, explosion damage, collision damage and more.", VehicleGodInvincible);
-                var godEngine = new MenuCheckboxItem("Engine Damage", "Disables your engine from taking any damage.", VehicleGodEngine);
-                var godVisual = new MenuCheckboxItem("Visual Damage", "This prevents scratches and other damage decals from being applied to your vehicle. It does not prevent (body) deformation damage.", VehicleGodVisual);
-                var godStrongWheels = new MenuCheckboxItem("Strong Wheels", "Disables your wheels from being deformed and causing reduced handling. This does not make tires bulletproof.", VehicleGodStrongWheels);
-                var godRamp = new MenuCheckboxItem("Ramp Damage", "Disables vehicles such as the Ramp Buggy from taking damage when using the ramp.", VehicleGodRamp);
-                var godAutoRepair = new MenuCheckboxItem("~r~Auto Repair", "Automatically repairs your vehicle when it has ANY type of damage. It's recommended to keep this turned off to prevent glitchyness.", VehicleGodAutoRepair);
+                var godInvincible = new MenuCheckboxItem("战无不胜", "使载具战无不胜, 所向披靡. 免疫包括火焰伤害、爆炸伤害、碰撞伤害等.", VehicleGodInvincible);
+                var godEngine = new MenuCheckboxItem("引擎损坏", "使载具引擎免受任何损坏.", VehicleGodEngine);
+                var godVisual = new MenuCheckboxItem("视觉损伤", "可防止载具贴花出现划痕和其他损坏. 无法防止车体变形损坏.", VehicleGodVisual);
+                var godStrongWheels = new MenuCheckboxItem("强劲车轮", "防止车轮变形, 降低操控性. 此功能非轮胎防弹.", VehicleGodStrongWheels);
+                var godRamp = new MenuCheckboxItem("坡道损坏", "使斜坡越野车等载具在使用斜坡时无法受到伤害.", VehicleGodRamp);
+                var godAutoRepair = new MenuCheckboxItem("~r~自动维修", "在载具出现任何类型的损坏时自动修复. 建议将其关闭, 以防出现故障.", VehicleGodAutoRepair);
 
                 vehGodMenu.AddMenuItem(godInvincible);
                 vehGodMenu.AddMenuItem(godEngine);
@@ -561,7 +561,7 @@ namespace vMenuClient.menus
                     // If the player is not the driver seat and a button other than the option below (cycle seats) was pressed, notify them.
                     else if (item != cycleSeats)
                     {
-                        Notify.Error("You have to be the driver of a vehicle to access this menu!", true, false);
+                        Notify.Error("您必须是载具驾驶员才能访问该菜单!", true, false);
                     }
 
                     // Cycle vehicle seats
@@ -917,22 +917,22 @@ namespace vMenuClient.menus
 
                                 if (ShouldUseMetricMeasurements()) // kph
                                 {
-                                    Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(vehicle.Speed * 3.6f, 1)} KPH~s~.");
+                                    Notify.Info($"车速现在限制为 ~b~{Math.Round(vehicle.Speed * 3.6f, 1)} KPH~s~.");
                                 }
                                 else // mph
                                 {
-                                    Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(vehicle.Speed * 2.237f, 1)} MPH~s~.");
+                                    Notify.Info($"车速现在限制为 ~b~{Math.Round(vehicle.Speed * 2.237f, 1)} MPH~s~.");
                                 }
 
                             }
                             else if (listIndex == 1) // Reset
                             {
                                 SetEntityMaxSpeed(vehicle.Handle, 500.01f); // Default max speed seemingly for all vehicles.
-                                Notify.Info("Vehicle speed is now no longer limited.");
+                                Notify.Info("车速已不再受限.");
                             }
                             else if (listIndex == 2) // custom speed
                             {
-                                var inputSpeed = await GetUserInput("Enter a speed (in meters/sec)", "20.0", 5);
+                                var inputSpeed = await GetUserInput("请配置载具车速(单位：米/秒)", "20.0", 5);
                                 if (!string.IsNullOrEmpty(inputSpeed))
                                 {
                                     if (float.TryParse(inputSpeed, out var outFloat))
@@ -943,11 +943,11 @@ namespace vMenuClient.menus
                                         SetEntityMaxSpeed(vehicle.Handle, outFloat + 0.01f);
                                         if (ShouldUseMetricMeasurements()) // kph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outFloat * 3.6f, 1)} KPH~s~.");
+                                            Notify.Info($"车速现在限制为 ~b~{Math.Round(outFloat * 3.6f, 1)} KPH~s~.");
                                         }
                                         else // mph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outFloat * 2.237f, 1)} MPH~s~.");
+                                            Notify.Info($"车速现在限制为 ~b~{Math.Round(outFloat * 2.237f, 1)} MPH~s~.");
                                         }
                                     }
                                     else if (int.TryParse(inputSpeed, out var outInt))
@@ -957,16 +957,16 @@ namespace vMenuClient.menus
                                         SetEntityMaxSpeed(vehicle.Handle, outInt + 0.01f);
                                         if (ShouldUseMetricMeasurements()) // kph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outInt * 3.6f, 1)} KPH~s~.");
+                                            Notify.Info($"车速现在限制为 ~b~{Math.Round(outInt * 3.6f, 1)} KPH~s~.");
                                         }
                                         else // mph
                                         {
-                                            Notify.Info($"Vehicle speed is now limited to ~b~{Math.Round(outInt * 2.237f, 1)} MPH~s~.");
+                                            Notify.Info($"车速现在限制为 ~b~{Math.Round(outInt * 2.237f, 1)} MPH~s~.");
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Error("This is not a valid number. Please enter a valid speed in meters per second.");
+                                        Notify.Error("这不是有效数字. 请输入有效的速度(米/秒).");
                                     }
                                 }
                                 else
@@ -994,7 +994,7 @@ namespace vMenuClient.menus
                                     {
                                         SetVehicleTyreFixed(veh.Handle, i);
                                     }
-                                    Notify.Success("All vehicle tyres have been fixed.");
+                                    Notify.Success("所有载具轮胎均已修复.");
                                 }
                                 else
                                 {
@@ -1002,7 +1002,7 @@ namespace vMenuClient.menus
                                     {
                                         SetVehicleTyreBurst(veh.Handle, i, false, 1f);
                                     }
-                                    Notify.Success("All vehicle tyres have been destroyed.");
+                                    Notify.Success("所有载具轮胎均已损毁.");
                                 }
                             }
                             else
@@ -1011,12 +1011,12 @@ namespace vMenuClient.menus
                                 if (IsVehicleTyreBurst(veh.Handle, index, false))
                                 {
                                     SetVehicleTyreFixed(veh.Handle, index);
-                                    Notify.Success($"Vehicle tyre #{listIndex} has been fixed.");
+                                    Notify.Success($"载具轮胎 #{listIndex} 已修复.");
                                 }
                                 else
                                 {
                                     SetVehicleTyreBurst(veh.Handle, index, false, 1f);
-                                    Notify.Success($"Vehicle tyre #{listIndex} has been destroyed.");
+                                    Notify.Success($"载具轮胎 #{listIndex} 已销毁.");
                                 }
                             }
                         }
@@ -1035,33 +1035,33 @@ namespace vMenuClient.menus
 
             #region Vehicle Colors Submenu Stuff
             // color customization menu
-            var customizeColorMenu = new Menu("Vehicle Colors", "Customize Colors");
+            var customizeColorMenu = new Menu("载具配色管理", "自定义颜色");
             MenuController.AddSubmenu(VehicleColorsMenu, customizeColorMenu);
 
-            var colorsCustomizationBtn = new MenuItem("Customize Colors") { Label = "→→→" };
+            var colorsCustomizationBtn = new MenuItem("自定义颜色") { Label = "→→→" };
             VehicleColorsMenu.AddMenuItem(colorsCustomizationBtn);
             MenuController.BindMenuItem(VehicleColorsMenu, customizeColorMenu, colorsCustomizationBtn);
 
             // primary menu
-            var primaryColorsMenu = new Menu("Vehicle Colors", "Primary Colors");
+            var primaryColorsMenu = new Menu("载具配色管理", "主要颜色");
             MenuController.AddSubmenu(customizeColorMenu, primaryColorsMenu);
 
-            var primaryColorsBtn = new MenuItem("Primary Color") { Label = "→→→" };
+            var primaryColorsBtn = new MenuItem("主要颜色") { Label = "→→→" };
             customizeColorMenu.AddMenuItem(primaryColorsBtn);
             MenuController.BindMenuItem(customizeColorMenu, primaryColorsMenu, primaryColorsBtn);
 
             // secondary menu
-            var secondaryColorsMenu = new Menu("Vehicle Colors", "Secondary Colors");
+            var secondaryColorsMenu = new Menu("载具配色管理", "次要颜色");
             MenuController.AddSubmenu(customizeColorMenu, secondaryColorsMenu);
 
-            var secondaryColorsBtn = new MenuItem("Secondary Color") { Label = "→→→" };
+            var secondaryColorsBtn = new MenuItem("次要颜色") { Label = "→→→" };
             customizeColorMenu.AddMenuItem(secondaryColorsBtn);
             MenuController.BindMenuItem(customizeColorMenu, secondaryColorsMenu, secondaryColorsBtn);
 
-            var presetColorsBtn = new MenuListItem("Preset Colors", [], 0);
+            var presetColorsBtn = new MenuListItem("预设颜色", [], 0);
             customizeColorMenu.AddMenuItem(presetColorsBtn);
 
-            var chrome = new MenuItem("Chrome");
+            var chrome = new MenuItem("镀铬效果");
             customizeColorMenu.AddMenuItem(chrome);
 
             // color lists
@@ -1071,7 +1071,7 @@ namespace vMenuClient.menus
             var util = new List<string>();
             var worn = new List<string>();
             var chameleon = new List<string>();
-            var wheelColors = new List<string>() { "Default Alloy" };
+            var wheelColors = new List<string>() { "默认" };
 
             // Just quick and dirty solution to put this in a new enclosed section so that we can still use 'i' as a counter in the other code parts.
             {
@@ -1113,9 +1113,9 @@ namespace vMenuClient.menus
                 if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
                 {
                     i = 0;
-                    foreach (var vc in VehicleData.ChameleonColors)
+                    foreach (var vc in VehicleData.变色龙漆面Colors)
                     {
-                        chameleon.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.ChameleonColors.Count})");
+                        chameleon.Add($"{GetLabelText(vc.label)} ({i + 1}/{VehicleData.变色龙漆面Colors.Count})");
                         i++;
                     }
                 }
@@ -1123,10 +1123,10 @@ namespace vMenuClient.menus
                 wheelColors.AddRange(classic);
             }
 
-            var wheelColorsList = new MenuListItem("Wheel Color", wheelColors, 0);
-            var dashColorList = new MenuListItem("Dashboard Color", classic, 0);
-            var intColorList = new MenuListItem("Interior / Trim Color", classic, 0);
-            var vehicleEnveffScale = new MenuSliderItem("Vehicle Enveff Scale", "This works on certain vehicles only, like the besra for example. It 'fades' certain paint layers.", 0, 20, 10, true);
+            var wheelColorsList = new MenuListItem("轮毂颜色", wheelColors, 0);
+            var dashColorList = new MenuListItem("仪表板颜色", classic, 0);
+            var intColorList = new MenuListItem("内饰/饰边颜色", classic, 0);
+            var vehicleEnveffScale = new MenuSliderItem("载具能效比", "这只对某些载具有效, 例如 besra.它能'淡化'某些油漆层.", 0, 20, 10, true);
 
             VehicleColorsMenu.AddMenuItem(vehicleEnveffScale);
 
@@ -1142,7 +1142,7 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this slider.");
+                    Notify.Error("您必须是可驾驶载具的驾驶员, 才能更改此滑块.");
                 }
             };
 
@@ -1205,8 +1205,8 @@ namespace vMenuClient.menus
                         {
                             if (itemIndex == 7)
                             {
-                                primaryColor = VehicleData.ChameleonColors[newIndex].id;
-                                secondaryColor = VehicleData.ChameleonColors[newIndex].id;
+                                primaryColor = VehicleData.变色龙漆面Colors[newIndex].id;
+                                secondaryColor = VehicleData.变色龙漆面Colors[newIndex].id;
 
                                 SetVehicleModKit(veh.Handle, 0);
                             }
@@ -1279,24 +1279,24 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a vehicle in order to change the vehicle colors.");
+                    Notify.Error("您必须是载具的驾驶员才能更改载具颜色.");
                 }
             }
 
             for (var i = 0; i < 2; i++)
             {
-                var customColour = new MenuItem("Custom RGB") { Label = "→→→" };
-                var pearlescentList = new MenuListItem("Pearlescent", classic, 0);
-                var classicList = new MenuListItem("Classic", classic, 0);
-                var metallicList = new MenuListItem("Metallic", classic, 0);
-                var matteList = new MenuListItem("Matte", matte, 0);
-                var metalList = new MenuListItem("Metals", metals, 0);
-                var utilList = new MenuListItem("Util", util, 0);
-                var wornList = new MenuListItem("Worn", worn, 0);
+                var customColour = new MenuItem("自定义 RGB 颜色") { Label = "→→→" };
+                var pearlescentList = new MenuListItem("珠光喷漆", classic, 0);
+                var classicList = new MenuListItem("经典喷漆", classic, 0);
+                var metallicList = new MenuListItem("光面喷漆", classic, 0);
+                var matteList = new MenuListItem("哑光喷漆", matte, 0);
+                var metalList = new MenuListItem("金属喷漆", metals, 0);
+                var utilList = new MenuListItem("工业喷漆", util, 0);
+                var wornList = new MenuListItem("旧化喷漆", worn, 0);
 
                 if (i == 0)
                 {
-                    var customColourMenuPrimary = new Menu("Custom Colour", "Custom Vehicle Colour");
+                    var customColourMenuPrimary = new Menu("自定义颜色", "自定义载具颜色");
                     primaryColorsMenu.AddMenuItem(customColour);
                     primaryColorsMenu.AddMenuItem(classicList);
                     primaryColorsMenu.AddMenuItem(metallicList);
@@ -1310,7 +1310,7 @@ namespace vMenuClient.menus
 
                     if (GetSettingsBool(Setting.vmenu_using_chameleon_colours))
                     {
-                        var chameleonList = new MenuListItem("Chameleon", chameleon, 0);
+                        var chameleonList = new MenuListItem("变色龙漆面", chameleon, 0);
 
                         primaryColorsMenu.AddMenuItem(chameleonList);
                     }
@@ -1320,7 +1320,7 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    var customColourMenuSecondary = new Menu("Custom Colour", "Custom Vehicle Colour");
+                    var customColourMenuSecondary = new Menu("自定义颜色", "自定义载具颜色");
                     secondaryColorsMenu.AddMenuItem(customColour);
                     secondaryColorsMenu.AddMenuItem(pearlescentList);
                     secondaryColorsMenu.AddMenuItem(classicList);
@@ -1344,7 +1344,7 @@ namespace vMenuClient.menus
                 if (numVehColors == 0)
                 {
                     presetColorsBtn.Enabled = false;
-                    presetColorsBtn.ListItems = ["No Preset Colors"];
+                    presetColorsBtn.ListItems = ["No 预设颜色"];
                     presetColorsBtn.ListIndex = 0;
                     return;
                 }
@@ -1376,7 +1376,7 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
+                    Notify.Error("您必须是可驾驶载具的驾驶员, 才能更改此功能.");
                 }
             };
 
@@ -1393,26 +1393,26 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You need to be the driver of a driveable vehicle to change this.");
+                    Notify.Error("您必须是可驾驶载具的驾驶员, 才能更改此功能.");
                 }
             }
             #endregion
 
             #region Vehicle Doors Submenu Stuff
-            var openAll = new MenuItem("Open All Doors", "Open all vehicle doors.");
-            var closeAll = new MenuItem("Close All Doors", "Close all vehicle doors.");
-            var LF = new MenuItem("Left Front Door", "Open/close the left front door.");
-            var RF = new MenuItem("Right Front Door", "Open/close the right front door.");
-            var LR = new MenuItem("Left Rear Door", "Open/close the left rear door.");
-            var RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
-            var HD = new MenuItem("Hood", "Open/close the hood.");
-            var TR = new MenuItem("Trunk", "Open/close the trunk.");
-            var E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
-            var E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
-            var BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
-            var doors = new List<string>() { "Front Left", "Front Right", "Rear Left", "Rear Right", "Hood", "Trunk", "Extra 1", "Extra 2" };
-            var removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
-            var deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
+            var openAll = new MenuItem("打开全部车门", "开启所有车门.");
+            var closeAll = new MenuItem("关闭全部车门", "关闭所有车门.");
+            var LF = new MenuItem("左前门", "打开/关闭左前门.");
+            var RF = new MenuItem("右前门", "打开/关闭右前门.");
+            var LR = new MenuItem("左后门", "打开/关闭左后门.");
+            var RR = new MenuItem("右后门", "打开/关闭右后门.");
+            var HD = new MenuItem("引擎盖", "打开/关闭引擎盖.");
+            var TR = new MenuItem("后备箱", "打开/关闭后备箱.");
+            var E1 = new MenuItem("额外门 1", "打开/关闭额外门（#1）.请注意, 大多数载具没有此门.");
+            var E2 = new MenuItem("额外门 2", "打开/关闭额外门（#2）.请注意, 大多数载具没有此门.");
+            var BB = new MenuItem("炸弹舱", "打开/关闭炸弹舱.仅在某些飞机上可用.");
+            var doors = new List<string>() { "左前门", "右前门", "左后门", "右后门", "引擎盖", "后备箱", "额外门 1", "额外门 2" };
+            var removeDoorList = new MenuListItem("移除车门", doors, 0, "完全移除特定载具的车门.");
+            var deleteDoors = new MenuCheckboxItem("删除移除的车门", "启用时,通过上面的列表移除的车门将从世界中删除. 否则车门将只会掉到地上.", false);
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -1517,17 +1517,17 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Alert(CommonErrors.NoVehicle, placeholderValue: "to open/close a vehicle door");
+                    Notify.Alert(CommonErrors.NoVehicle, placeholderValue: "打开或关闭车门");
                 }
             };
 
             #endregion
 
             #region Vehicle Windows Submenu Stuff
-            var fwu = new MenuItem("~y~↑~s~ Roll Front Windows Up", "Roll both front windows up.");
-            var fwd = new MenuItem("~o~↓~s~ Roll Front Windows Down", "Roll both front windows down.");
-            var rwu = new MenuItem("~y~↑~s~ Roll Rear Windows Up", "Roll both rear windows up.");
-            var rwd = new MenuItem("~o~↓~s~ Roll Rear Windows Down", "Roll both rear windows down.");
+            var fwu = new MenuItem("~y~↑~s~ 升起前车窗", "升起前面的车窗.");
+            var fwd = new MenuItem("~o~↓~s~ 降下前车窗", "降下前面的车窗.");
+            var rwu = new MenuItem("~y~↑~s~ 升起后车窗", "升起后面的车窗.");
+            var rwd = new MenuItem("~o~↓~s~ 降下后车窗", "降下后面的车窗.");
             VehicleWindowsMenu.AddMenuItem(fwu);
             VehicleWindowsMenu.AddMenuItem(fwd);
             VehicleWindowsMenu.AddMenuItem(rwu);
@@ -1584,10 +1584,10 @@ namespace vMenuClient.menus
                                 for (var i = 0; i < liveryCount; i++)
                                 {
                                     var livery = GetLiveryName(veh.Handle, i);
-                                    livery = GetLabelText(livery) != "NULL" ? GetLabelText(livery) : $"Livery #{i}";
+                                    livery = GetLabelText(livery) != "NULL" ? GetLabelText(livery) : $"涂装 #{i}";
                                     liveryList.Add(livery);
                                 }
-                                var liveryListItem = new MenuListItem("Set Livery", liveryList, GetVehicleLivery(veh.Handle), "Choose a livery for this vehicle.");
+                                var liveryListItem = new MenuListItem("设置涂装", liveryList, GetVehicleLivery(veh.Handle), "为此载具选择一种涂装.");
                                 VehicleLiveriesMenu.AddMenuItem(liveryListItem);
                                 VehicleLiveriesMenu.OnListIndexChange += (_menu, listItem, oldIndex, newIndex, itemIndex) =>
                                 {
@@ -1602,12 +1602,12 @@ namespace vMenuClient.menus
                             }
                             else
                             {
-                                Notify.Error("This vehicle does not have any liveries.");
+                                Notify.Error("该车辆无任何涂装.");
                                 VehicleLiveriesMenu.CloseMenu();
                                 menu.OpenMenu();
-                                var backBtn = new MenuItem("No Liveries Available :(", "Click me to go back.")
+                                var backBtn = new MenuItem("无可用的涂装 :(", "点击我返回.")
                                 {
-                                    Label = "Go Back"
+                                    Label = "返回"
                                 };
                                 VehicleLiveriesMenu.AddMenuItem(backBtn);
                                 VehicleLiveriesMenu.OnItemSelect += (sender2, item2, index2) =>
@@ -1624,12 +1624,12 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            Notify.Error("You have to be the driver of a vehicle to access this menu.");
+                            Notify.Error("您必须是车辆驾驶员才能访问该菜单.");
                         }
                     }
                     else
                     {
-                        Notify.Error("You have to be the driver of a vehicle to access this menu.");
+                        Notify.Error("您必须是车辆驾驶员才能访问该菜单.");
                     }
                 }
             };
@@ -1696,7 +1696,7 @@ namespace vMenuClient.menus
                                 // Create the checkbox label
                                 string extraLabel;
                                 if (!extraLabels.TryGetValue(extra, out extraLabel))
-                                    extraLabel = $"Extra #{extra}";
+                                    extraLabel = $"改件 #{extra}";
                                 // Create a checkbox for it.
                                 var extraCheckbox = new MenuCheckboxItem(extraLabel, extra.ToString(), veh.IsExtraOn(extra));
                                 // Add the checkbox to the menu.
@@ -1711,7 +1711,7 @@ namespace vMenuClient.menus
 
                         if (vehicleExtras.Count > 0)
                         {
-                            var backBtn = new MenuItem("Go Back", "Go back to the Vehicle Options menu.");
+                            var backBtn = new MenuItem("返回", "返回上一菜单.");
                             VehicleComponentsMenu.AddMenuItem(backBtn);
                             VehicleComponentsMenu.OnItemSelect += (sender3, item3, index3) =>
                             {
@@ -1720,9 +1720,9 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            var backBtn = new MenuItem("No Extras Available :(", "Go back to the Vehicle Options menu.")
+                            var backBtn = new MenuItem("无附件/改件 :(", "返回上一菜单.")
                             {
-                                Label = "Go Back"
+                                Label = "返回"
                             };
                             VehicleComponentsMenu.AddMenuItem(backBtn);
                             VehicleComponentsMenu.OnItemSelect += (sender3, item3, index3) =>
@@ -1772,7 +1772,7 @@ namespace vMenuClient.menus
                             continue;
                         }
                     }
-                    else if (item.Text != "Go Back")
+                    else if (item.Text != "返回")
                     {
                         item.Enabled = !isTooDamaged;
                     }
@@ -1821,16 +1821,16 @@ namespace vMenuClient.menus
             #endregion
 
             #region Underglow Submenu
-            var underglowFront = new MenuCheckboxItem("Enable Front Light", "Enable or disable the underglow on the front side of the vehicle. Note not all vehicles have lights.", false);
-            var underglowBack = new MenuCheckboxItem("Enable Rear Light", "Enable or disable the underglow on the left side of the vehicle. Note not all vehicles have lights.", false);
-            var underglowLeft = new MenuCheckboxItem("Enable Left Light", "Enable or disable the underglow on the right side of the vehicle. Note not all vehicles have lights.", false);
-            var underglowRight = new MenuCheckboxItem("Enable Right Light", "Enable or disable the underglow on the back side of the vehicle. Note not all vehicles have lights.", false);
+            var underglowFront = new MenuCheckboxItem("启用前灯", "启用或禁用载具前侧的底部灯光.注意,并不是所有载具都有灯光.", false);
+            var underglowBack = new MenuCheckboxItem("启用后灯", "启用或禁用载具后侧的底部灯光.注意,并不是所有载具都有灯光.", false);
+            var underglowLeft = new MenuCheckboxItem("启用左灯", "启用或禁用载具左侧的底部灯光.注意,并不是所有载具都有灯光.", false);
+            var underglowRight = new MenuCheckboxItem("启用右灯", "启用或禁用载具右侧的底部灯光.注意,并不是所有载具都有灯光.", false);
             var underglowColorsList = new List<string>();
             for (var i = 0; i < 13; i++)
             {
                 underglowColorsList.Add(GetLabelText($"CMOD_NEONCOL_{i}"));
             }
-            var underglowColor = new MenuListItem(GetLabelText("CMOD_NEON_1"), underglowColorsList, 0, "Select the color of the neon underglow.");
+            var underglowColor = new MenuListItem(GetLabelText("CMOD_NEON_1"), underglowColorsList, 0, "选择底盘霓虹灯颜色。");
 
             VehicleUnderglowMenu.AddMenuItem(underglowFront);
             VehicleUnderglowMenu.AddMenuItem(underglowBack);
@@ -2097,7 +2097,7 @@ namespace vMenuClient.menus
                         typeName,
                         modlist,
                         currIndex,
-                        $"Choose a ~y~{typeName}~s~ upgrade, it will be automatically applied to your vehicle."
+                        $"对 ~y~{typeName}~s~ 进行升级, 它将自动应用于您的载具."
                     )
                     {
                         ItemData = (int)mod.ModType
@@ -2113,9 +2113,9 @@ namespace vMenuClient.menus
                 // Create the wheel types list & listitem and add it to the menu.
                 var wheelTypes = new List<string>()
                 {
-                    "Sports",       // 0
-                    "Muscle",       // 1
-                    "Lowrider",     // 2
+                    "运动",       // 0
+                    "肌肉",       // 1
+                    "低底盘",     // 2
                     "SUV",          // 3
                     "Offroad",      // 4
                     "Tuner",        // 5
@@ -2124,25 +2124,25 @@ namespace vMenuClient.menus
                     "Benny's (1)",  // 8
                     "Benny's (2)",  // 9
                     "Open Wheel",   // 10
-                    "Street",       // 11
+                    "街头",       // 11
                     "Track"         // 12    
                 };
-                var vehicleWheelType = new MenuListItem("Wheel Type", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 12), $"Choose a ~y~wheel type~s~ for your vehicle.");
+                var vehicleWheelType = new MenuListItem("轮毂类型", wheelTypes, MathUtil.Clamp(GetVehicleWheelType(veh.Handle), 0, 12), $"选择适合您载具的~y~轮毂类型.");
                 if (!veh.Model.IsBoat && !veh.Model.IsHelicopter && !veh.Model.IsPlane && !veh.Model.IsBicycle && !veh.Model.IsTrain)
                 {
                     VehicleModMenu.AddMenuItem(vehicleWheelType);
                 }
 
-                var headlightsButton = new MenuItem("Headlights");
-                var headlightsMenu = new Menu("Headlights", "headlights");
-                var xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
+                var headlightsButton = new MenuItem("车头灯");
+                var headlightsMenu = new Menu("车头灯", "车头灯设置");
+                var xenonHeadlights = new MenuCheckboxItem("氙气大灯", "启用或禁用~b~氙气大灯~s~.", IsToggleModOn(veh.Handle, 22));
                 headlightsMenu.AddMenuItem(xenonHeadlights);
                 var currentHeadlightColor = GetHeadlightsColorForVehicle(veh);
                 if (currentHeadlightColor is < 0 or > 12)
                 {
                     currentHeadlightColor = 13;
                 }
-                var headlightColor = new MenuListItem("Headlight Color", new List<string>() { "White", "Blue", "Electric Blue", "Mint Green", "Lime Green", "Yellow", "Golden Shower", "Orange", "Red", "Pony Pink", "Hot Pink", "Purple", "Blacklight", "Default Xenon" }, currentHeadlightColor, "New in the Arena Wars GTA V update: Colored headlights. Note you must enable Xenon Headlights first.");
+                var headlightColor = new MenuListItem("大灯配色", new List<string>() { "白色", "蓝色", "电蓝", "薄荷绿", "酸橙绿", "黄色", "喷射金", "橙色", "红色", "小马粉", "艳粉色", "紫色", "黑光", "默认" }, currentHeadlightColor, "在GTA V的DLC更新中新增：彩色大灯. 请注意, 您必须先启用氙气大灯.");
                 headlightsMenu.AddMenuItem(headlightColor);
                 headlightsMenu.OnCheckboxChange += (sender2, item2, index2, _checked) =>
                 {
@@ -2177,9 +2177,9 @@ namespace vMenuClient.menus
 
 
                 // Create the checkboxes for some options.
-                var toggleCustomWheels = new MenuCheckboxItem("Toggle Custom Wheels", "Press this to add or remove ~y~custom~s~ wheels.", GetVehicleModVariation(veh.Handle, 23));
-                var turbo = new MenuCheckboxItem("Turbo", "Enable or disable the ~y~turbo~s~ for this vehicle.", IsToggleModOn(veh.Handle, 18));
-                var bulletProofTires = new MenuCheckboxItem("Bullet Proof Tires", "Enable or disable ~y~bullet proof tires~s~ for this vehicle.", !GetVehicleTyresCanBurst(veh.Handle));
+                var toggleCustomWheels = new MenuCheckboxItem("定制轮毂开关", "按下此键可添加或删除~y~定制轮毂~s~.", GetVehicleModVariation(veh.Handle, 23));
+                var turbo = new MenuCheckboxItem("涡轮增压", "启用或禁用该载具的~y~涡轮增压~s.", IsToggleModOn(veh.Handle, 18));
+                var bulletProofTires = new MenuCheckboxItem("防弹轮胎", "启用或禁用此载具的防弹轮胎.", !GetVehicleTyresCanBurst(veh.Handle));
 
             
 
@@ -2189,29 +2189,29 @@ namespace vMenuClient.menus
                 VehicleModMenu.AddMenuItem(bulletProofTires);
 
                 bool isLowGripAvailable = GetGameBuildNumber() >= 2372;
-                var lowGripTires = new MenuCheckboxItem("Low Grip Tires", "Enable or disable ~y~low grip tires~s~ for this vehicle.", isLowGripAvailable ? GetDriftTyresEnabled(veh.Handle) : false);
+                var lowGripTires = new MenuCheckboxItem("降低轮胎抓地力", "启用或禁用 ~y~ 降低轮胎抓地力 ~s~s.", isLowGripAvailable ? GetDriftTyresEnabled(veh.Handle) : false);
                 if (isLowGripAvailable)
                 {
                     VehicleModMenu.AddMenuItem(lowGripTires);
                 }
 
-                var tireSmokeButton = new MenuItem("Tire Smoke");
-                var tireSmokeMenu = new Menu("Tire Smoke", "Tire Smoke");
+                var tireSmokeButton = new MenuItem("轮胎烟雾");
+                var tireSmokeMenu = new Menu("轮胎烟雾", "轮胎烟雾");
                 // Create a list of tire smoke options.
-                var tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
+                var tireSmokes = new List<string>() { "红色", "橙色", "黄色", "金色", "浅绿色", "深绿色", "浅蓝色", "深蓝色", "紫色", "粉色", "黑色" };
                 var tireSmokeColors = new Dictionary<string, int[]>()
                 {
-                    ["Red"] = new int[] { 244, 65, 65 },
-                    ["Orange"] = new int[] { 244, 167, 66 },
-                    ["Yellow"] = new int[] { 244, 217, 65 },
-                    ["Gold"] = new int[] { 181, 120, 0 },
-                    ["Light Green"] = new int[] { 158, 255, 84 },
-                    ["Dark Green"] = new int[] { 44, 94, 5 },
-                    ["Light Blue"] = new int[] { 65, 211, 244 },
-                    ["Dark Blue"] = new int[] { 24, 54, 163 },
-                    ["Purple"] = new int[] { 108, 24, 192 },
-                    ["Pink"] = new int[] { 192, 24, 172 },
-                    ["Black"] = new int[] { 1, 1, 1 }
+                    ["红色"] = new int[] { 244, 65, 65 },
+                    ["橙色"] = new int[] { 244, 167, 66 },
+                    ["黄色"] = new int[] { 244, 217, 65 },
+                    ["金色"] = new int[] { 181, 120, 0 },
+                    ["浅绿色"] = new int[] { 158, 255, 84 },
+                    ["深绿色"] = new int[] { 44, 94, 5 },
+                    ["浅蓝色"] = new int[] { 65, 211, 244 },
+                    ["深蓝色"] = new int[] { 24, 54, 163 },
+                    ["紫色"] = new int[] { 108, 24, 192 },
+                    ["粉色"] = new int[] { 192, 24, 172 },
+                    ["黑色"] = new int[] { 1, 1, 1 }
                 };
                 int smoker = 0, smokeg = 0, smokeb = 0;
                 GetVehicleTyreSmokeColor(veh.Handle, ref smoker, ref smokeg, ref smokeb);
@@ -2222,11 +2222,11 @@ namespace vMenuClient.menus
                     index = 0;
                 }
 
-                var tireSmoke = new MenuListItem("Tire Smoke Color", tireSmokes, index, $"Choose a ~y~tire smoke color~s~ for your vehicle.");
+                var tireSmoke = new MenuListItem("胎烟颜色", tireSmokes, index, $"选择适合您载具的~y ~烧胎胎烟颜色 ~s ~.");
                 tireSmokeMenu.AddMenuItem(tireSmoke);
 
                 // Create the checkbox to enable/disable the tiresmoke.
-                var tireSmokeEnabled = new MenuCheckboxItem("Tire Smoke", "Enable or disable ~y~tire smoke~s~ for your vehicle. ~h~~r~Important:~s~ When disabling tire smoke, you'll need to drive around before it takes affect.", IsToggleModOn(veh.Handle, 20));
+                var tireSmokeEnabled = new MenuCheckboxItem("轮胎烟雾", "启用或禁用载具的 ~y~轮胎烟雾~s~ 功能. ~h~~r~提醒:~s~ 禁用轮胎烟雾时, 您需要在其生效前驾驶一圈.", IsToggleModOn(veh.Handle, 20));
                 tireSmokeMenu.AddMenuItem(tireSmokeEnabled);
 
 
@@ -2286,7 +2286,7 @@ namespace vMenuClient.menus
                 CreateCustomColourMenu(tireSmokeMenu, RGBType.tiresmoke);
 
                 // Create list for window tint
-                var windowTints = new List<string>() { "Stock [1/7]", "None [2/7]", "Limo [3/7]", "Light Smoke [4/7]", "Dark Smoke [5/7]", "Pure Black [6/7]", "Green [7/7]" };
+                var windowTints = new List<string>() { "原厂 [1/7]", "无色 [2/7]", "豪华 [3/7]", "浅灰 [4/7]", "深灰 [5/7]", "纯黑 [6/7]", "绿色 [7/7]" };
                 var currentTint = GetVehicleWindowTint(veh.Handle);
                 if (currentTint == -1)
                 {
@@ -2321,7 +2321,7 @@ namespace vMenuClient.menus
                         break;
                 }
 
-                var windowTint = new MenuListItem("Window Tint", windowTints, currentTint, "Apply tint to your windows.");
+                var windowTint = new MenuListItem("车窗贴膜", windowTints, currentTint, "为车窗应用不同颜色玻璃膜.");
                 VehicleModMenu.AddMenuItem(windowTint);
 
                 #endregion
@@ -2539,7 +2539,7 @@ namespace vMenuClient.menus
             Matte,
             Metals,
             Chrome,
-            Chameleon
+            变色龙漆面
         }
         private static bool IsHex(IEnumerable<char> chars)
         {
@@ -2568,22 +2568,22 @@ namespace vMenuClient.menus
         public static void CreateCustomColourMenu(Menu menu, RGBType type = RGBType.primaryPaint)
         {
             
-            var hexColour = new MenuItem("Hex Color Code");
-            var typeList = new MenuListItem("Paint Finish", Enum.GetNames(typeof(Colour_Types)).ToList(), 0);
+            var hexColour = new MenuItem("十六进制颜色代码");
+            var typeList = new MenuListItem("漆面效果", Enum.GetNames(typeof(Colour_Types)).ToList(), 0);
             
             int r = 0,  g = 0, b = 0;     
 
-            var redColour = new MenuSliderItem("Red Color", 0, 255, 128, true)
+            var redColour = new MenuSliderItem("红色数值", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
             };
-            var greenColour = new MenuSliderItem("Green Color", 0, 255, 128, true)
+            var greenColour = new MenuSliderItem("绿色数值", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
             };
-            var blueColour = new MenuSliderItem("Blue Color", 0, 255, 128, true)
+            var blueColour = new MenuSliderItem("蓝色数值", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
@@ -2628,13 +2628,13 @@ namespace vMenuClient.menus
                     GetVehicleTyreSmokeColor(vehicle.Handle, ref r, ref g, ref b);
 
 
-                redColour.Text = $"Red Color ({r})";
+                redColour.Text = $"红色数值 ({r})";
                 redColour.Position = r;
 
-                greenColour.Text = $"Green Color ({g})";
+                greenColour.Text = $"绿色数值 ({g})";
                 greenColour.Position = g;
 
-                blueColour.Text = $"Blue Color ({b})";
+                blueColour.Text = $"蓝色数值 ({b})";
                 blueColour.Position = b;
 
                 redColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
@@ -2673,13 +2673,13 @@ namespace vMenuClient.menus
                             greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                             blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                            redColour.Text = $"Red Color ({red})";
+                            redColour.Text = $"红色数值 ({red})";
                             redColour.Position = red;
 
-                            greenColour.Text = $"Green Color ({green})";
+                            greenColour.Text = $"绿色数值 ({green})";
                             greenColour.Position = green;
 
-                            blueColour.Text = $"Blue Color ({blue})";
+                            blueColour.Text = $"蓝色数值 ({blue})";
                             blueColour.Position = blue;
                         }
                     }
@@ -2730,7 +2730,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, newPosition, g, b);
 
-                    redColour.Text = $"Red Color ({newPosition})";
+                    redColour.Text = $"红色数值 ({newPosition})";
                 }
                 if (sliderItem == greenColour)
                 {
@@ -2745,7 +2745,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, r, newPosition, b);
 
-                    greenColour.Text = $"Green Color ({newPosition})";
+                    greenColour.Text = $"绿色数值 ({newPosition})";
                 }
                 if (sliderItem == blueColour)
                 {
@@ -2760,7 +2760,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, r, g, newPosition);
 
-                    blueColour.Text = $"Blue Color ({newPosition})";
+                    blueColour.Text = $"蓝色数值 ({newPosition})";
                 }
                 redColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
                 greenColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
@@ -2800,13 +2800,13 @@ namespace vMenuClient.menus
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Color ({red})";
+                    redColour.Text = $"红色数值 ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Color ({green})";
+                    greenColour.Text = $"绿色数值 ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Color ({blue})";
+                    blueColour.Text = $"蓝色数值 ({blue})";
                     blueColour.Position = blue; 
                 }
                 else if (type == RGBType.headlight)
@@ -2821,13 +2821,13 @@ namespace vMenuClient.menus
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Color ({red})";
+                    redColour.Text = $"红色数值 ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Color ({green})";
+                    greenColour.Text = $"绿色数值 ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Color ({blue})";
+                    blueColour.Text = $"蓝色数值 ({blue})";
                     blueColour.Position = blue; 
                 }
                 else if (type == RGBType.tiresmoke)
@@ -2840,13 +2840,13 @@ namespace vMenuClient.menus
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Color ({red})";
+                    redColour.Text = $"红色数值 ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Color ({green})";
+                    greenColour.Text = $"绿色数值 ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Color ({blue})";
+                    blueColour.Text = $"蓝色数值 ({blue})";
                     blueColour.Position = blue; 
                 }
     

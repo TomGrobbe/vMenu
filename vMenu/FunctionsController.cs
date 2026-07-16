@@ -329,7 +329,7 @@ namespace vMenuClient
             if (DriveToWpTaskActive && !Game.IsWaypointActive)
             {
                 ClearPedTasks(Game.PlayerPed.Handle);
-                Notify.Custom("Destination reached, the car will now stop driving!");
+                Notify.Custom("到达目的地后, 汽车将停止行驶!");
                 DriveToWpTaskActive = false;
             }
             await Task.FromResult(0);
@@ -634,7 +634,7 @@ namespace vMenuClient
                     if (m.Visible)
                     {
                         m.GoBack();
-                        Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to access this menu");
+                        Notify.Error(CommonErrors.NoVehicle, placeholderValue: "进行访问此菜单");
                     }
                 }
             }
@@ -983,11 +983,11 @@ namespace vMenuClient
                         if (Game.IsWaypointActive)
                         {
                             TeleportToWp();
-                            Notify.Success("Teleported to waypoint.");
+                            Notify.Success("已传送至导航点处.");
                         }
                         else
                         {
-                            Notify.Error("You need to set a waypoint first.");
+                            Notify.Error("请优先于地图上标记一个有效导航点!");
                         }
                     }
                 }
@@ -1247,11 +1247,11 @@ namespace vMenuClient
                 {
                     if (dropReason == null)
                     {
-                        Notify.Custom($"~g~<C>{GetSafePlayerName(playerName)}</C>~s~ joined the server.");
+                        Notify.Custom($"~g~{GetSafePlayerName(playerName)}~s~ 已进入服务器.");
                     }
                     else
                     {
-                        Notify.Custom($"~r~<C>{GetSafePlayerName(playerName)}</C>~s~ left the server. ~c~({GetSafePlayerName(dropReason)})");
+                        Notify.Custom($"~r~{GetSafePlayerName(playerName)}~s~ 由于~c~({GetSafePlayerName(dropReason)}) ~~s~退出服务器.");
                     }
                 }
             }
@@ -1290,14 +1290,14 @@ namespace vMenuClient
                                         {
                                             if (playerKiller.Character.Handle == killer.Handle)
                                             {
-                                                Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{GetSafePlayerName(playerKiller.Name)}</C>~s~.");
+                                                Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被 ~y~{GetSafePlayerName(playerKiller.Name)}~s~ 所击杀.");
                                                 found = true;
                                                 break;
                                             }
                                         }
                                         if (!found)
                                         {
-                                            Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                            Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被击杀.");
                                         }
                                     }
                                     else if (killer.Model.IsVehicle)
@@ -1309,7 +1309,7 @@ namespace vMenuClient
                                             {
                                                 if (playerKiller.Character.CurrentVehicle.Handle == killer.Handle)
                                                 {
-                                                    Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered by ~y~<C>{GetSafePlayerName(playerKiller.Name)}</C>~s~.");
+                                                    Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被 ~y~{GetSafePlayerName(playerKiller.Name)}~s~ 所击杀.");
                                                     found = true;
                                                     break;
                                                 }
@@ -1317,27 +1317,27 @@ namespace vMenuClient
                                         }
                                         if (!found)
                                         {
-                                            Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                            Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被击杀.");
                                         }
                                     }
                                     else
                                     {
-                                        Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                        Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被击杀.");
                                     }
                                 }
                                 else
                                 {
-                                    Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~has been murdered.");
+                                    Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已被击杀.");
                                 }
                             }
                             else
                             {
-                                Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~committed suicide.");
+                                Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~自杀身亡.");
                             }
                         }
                         else
                         {
-                            Notify.Custom($"~o~<C>{GetSafePlayerName(p.Name)}</C> ~s~died.");
+                            Notify.Custom($"~o~{GetSafePlayerName(p.Name)} ~s~已死亡!");
                         }
                         deadPlayers.Add(p.Handle);
                     }
@@ -1453,7 +1453,7 @@ namespace vMenuClient
                 var minutes = GetClockMinutes();
                 var hoursString = hours < 10 ? "0" + hours.ToString() : hours.ToString();
                 var minutesString = minutes < 10 ? "0" + minutes.ToString() : minutes.ToString();
-                MainMenu.TimeOptionsMenu.freezeTimeToggle.Label = $"(Current Time {hoursString}:{minutesString})";
+                MainMenu.TimeOptionsMenu.freezeTimeToggle.Label = $"(当前时间: {hoursString}:{minutesString})";
             }
             // This only needs to be updated once every 2 seconds so we can delay it.
             await Delay(2000);
@@ -1620,19 +1620,19 @@ namespace vMenuClient
                 {
                     MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = false;
                     MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.LOCK;
-                    MainMenu.MpPedCustomizationMenu.editPedBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    MainMenu.MpPedCustomizationMenu.editPedBtn.Description += " ~r~使用前请先离开载具。";
                 }
                 if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
                 {
                     MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = false;
                     MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.LOCK;
-                    MainMenu.MpPedCustomizationMenu.createMaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    MainMenu.MpPedCustomizationMenu.createMaleBtn.Description += " ~r~使用前请先离开载具。";
                 }
                 if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
                 {
                     MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = false;
                     MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.LOCK;
-                    MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description += " ~r~You need to get out of your vehicle before you can use this.";
+                    MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description += " ~r~使用前请先离开载具。";
                 }
             }
             else
@@ -1641,19 +1641,19 @@ namespace vMenuClient
                 {
                     MainMenu.MpPedCustomizationMenu.editPedBtn.Enabled = true;
                     MainMenu.MpPedCustomizationMenu.editPedBtn.LeftIcon = MenuItem.Icon.NONE;
-                    MainMenu.MpPedCustomizationMenu.editPedBtn.Description = MainMenu.MpPedCustomizationMenu.editPedBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    MainMenu.MpPedCustomizationMenu.editPedBtn.Description = MainMenu.MpPedCustomizationMenu.editPedBtn.Description.Replace(" ~r~使用前请先离开载具。", "");
                 }
                 if (MainMenu.MpPedCustomizationMenu.createMaleBtn != null && !MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled)
                 {
                     MainMenu.MpPedCustomizationMenu.createMaleBtn.Enabled = true;
                     MainMenu.MpPedCustomizationMenu.createMaleBtn.LeftIcon = MenuItem.Icon.NONE;
-                    MainMenu.MpPedCustomizationMenu.createMaleBtn.Description = MainMenu.MpPedCustomizationMenu.createMaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    MainMenu.MpPedCustomizationMenu.createMaleBtn.Description = MainMenu.MpPedCustomizationMenu.createMaleBtn.Description.Replace(" ~r~使用前请先离开载具。", "");
                 }
                 if (MainMenu.MpPedCustomizationMenu.createFemaleBtn != null && !MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled)
                 {
                     MainMenu.MpPedCustomizationMenu.createFemaleBtn.Enabled = true;
                     MainMenu.MpPedCustomizationMenu.createFemaleBtn.LeftIcon = MenuItem.Icon.NONE;
-                    MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description = MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description.Replace(" ~r~You need to get out of your vehicle before you can use this.", "");
+                    MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description = MainMenu.MpPedCustomizationMenu.createFemaleBtn.Description.Replace(" ~r~使用前请先离开载具。", "");
                 }
             }
 
@@ -2050,7 +2050,7 @@ namespace vMenuClient
                     }
                     else
                     {
-                        Notify.Error("You did not set a saved character to restore to. Do so in the ~g~MP Ped Customization~s~ > ~g~Saved Characters~s~ menu.");
+                        Notify.Error("您没有将保存的字符设置为还原. 到前往 ~g~MP人物模型自定义~s~ > ~g~已保存人物s~s~ 菜单.");
                     }
                 }
                 if (!restoreDefault)
@@ -2458,7 +2458,7 @@ namespace vMenuClient
                                 SetBlipRoute(blip, false);
                                 RemoveBlip(ref blip);
                                 waypointPlayerIdsToRemove.Add(playerId);
-                                Notify.Custom($"~g~You've reached ~s~<C>{GetPlayerName(playerId)}</C>'s~g~ location, disabling GPS route.");
+                                Notify.Custom($"~g~您已到达 ~s~{GetPlayerName(playerId)}'s~g~ 既定目标点, 正在关闭GPS路线.");
                             }
                         }
                     }
@@ -2728,7 +2728,7 @@ namespace vMenuClient
                         if (MainMenu.MiscSettingsMenu.ShowEntityHandles && v.IsOnScreen)
                         {
                             SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z, 0);
-                            DrawTextOnScreen($"Veh {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"载具句柄: {v.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
                         if (MainMenu.MiscSettingsMenu.ShowEntityModels && v.IsOnScreen)
@@ -2738,7 +2738,7 @@ namespace vMenuClient
 
                             var hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
-                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"哈希值: {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
                         if (MainMenu.MiscSettingsMenu.ShowEntityNetOwners && v.IsOnScreen)
@@ -2750,7 +2750,7 @@ namespace vMenuClient
                                 var playerServerId = GetPlayerServerId(netOwnerLocalId);
                                 var playerName = GetPlayerName(netOwnerLocalId);
                                 SetDrawOrigin(v.Position.X, v.Position.Y, v.Position.Z + 0.3f, 0);
-                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                DrawTextOnScreen($"所有者服务器 ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
                                 ClearDrawOrigin();
                             }
                         }
@@ -2772,7 +2772,7 @@ namespace vMenuClient
                         if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
                         {
                             SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
-                            DrawTextOnScreen($"Prop {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"道具句柄: {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
 
@@ -2783,7 +2783,7 @@ namespace vMenuClient
 
                             var hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
-                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"哈希值: {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
 
@@ -2796,7 +2796,7 @@ namespace vMenuClient
                                 var playerServerId = GetPlayerServerId(netOwnerLocalId);
                                 var playerName = GetPlayerName(netOwnerLocalId);
                                 SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z + 0.3f, 0);
-                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                DrawTextOnScreen($"所有者服务器 ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
                                 ClearDrawOrigin();
                             }
                         }
@@ -2818,7 +2818,7 @@ namespace vMenuClient
                         if (MainMenu.MiscSettingsMenu.ShowEntityHandles && p.IsOnScreen)
                         {
                             SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z, 0);
-                            DrawTextOnScreen($"Ped {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"行人句柄 {p.Handle}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
 
@@ -2829,7 +2829,7 @@ namespace vMenuClient
 
                             var hashes = $"{model} / {(uint)model} / 0x{model:X8}";
 
-                            DrawTextOnScreen($"Hash {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
+                            DrawTextOnScreen($"哈希值: {hashes}", 0f, 0f, 0.3f, Alignment.Center, 0);
                             ClearDrawOrigin();
                         }
 
@@ -2842,7 +2842,7 @@ namespace vMenuClient
                                 var playerServerId = GetPlayerServerId(netOwnerLocalId);
                                 var playerName = GetPlayerName(netOwnerLocalId);
                                 SetDrawOrigin(p.Position.X, p.Position.Y, p.Position.Z + 0.3f, 0);
-                                DrawTextOnScreen($"Owner ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
+                                DrawTextOnScreen($"所有者服务器 ID {playerServerId} ({playerName})", 0f, 0f, 0.3f, Alignment.Center, 0);
                                 ClearDrawOrigin();
                             }
                         }

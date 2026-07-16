@@ -716,7 +716,7 @@ namespace vMenuClient
                 prefs.Add("pvEnableVehicleBlip", PVEnableVehicleBlip);
             }
 
-            Notify.Success("Your settings have been saved.");
+            Notify.Success("您的设置已被保存.");
 
             Log($"Saving preferences:\n{JsonConvert.SerializeObject(prefs)}");
         }

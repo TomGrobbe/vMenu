@@ -387,7 +387,7 @@ namespace vMenuClient
         /// </summary>
         public static async void QuitGame()
         {
-            Notify.Info("The game will exit in 5 seconds.");
+            Notify.Info("游戏将在 5 秒后退出.");
             Debug.WriteLine("Game will be terminated in 5 seconds, because the player used the Quit Game option in vMenu.");
             await BaseScript.Delay(5000);
             ForceSocialClubUpdate(); // bye bye
@@ -413,7 +413,7 @@ namespace vMenuClient
                     var playerPedObj = player.Character;
                     if (Game.PlayerPed == playerPedObj)
                     {
-                        Notify.Error("Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!");
+                        Notify.Error("抱歉, 您无法~r~~h~传送~h~ ~s~于自身!");
                         return;
                     }
 
@@ -483,12 +483,12 @@ namespace vMenuClient
                                 // If there's only one seat on this vehicle, tell them that it's a one-seater.
                                 if (totalVehicleSeats == 1)
                                 {
-                                    Notify.Error("This vehicle only has room for 1 player!");
+                                    Notify.Error("此载具只有一个座位!");
                                 }
                                 // Otherwise, tell them there's not enough empty seats remaining.
                                 else
                                 {
-                                    Notify.Error("Not enough empty vehicle seats remaining!");
+                                    Notify.Error("暂无足够的空余座位!");
                                 }
                             }
                         }
@@ -498,13 +498,13 @@ namespace vMenuClient
                 // Notify the user.
                 else
                 {
-                    Notify.Success("Teleported to ~y~<C>" + GetPlayerName(playerId) + "</C>~s~.");
+                    Notify.Success("已传送到 ~y~" + GetPlayerName(playerId) + "~s~ 的位置.");
                 }
             }
             // The specified playerId does not exist, notify the user of the error.
             else
             {
-                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: "So the teleport has been cancelled.");
+                Notify.Error(CommonErrors.PlayerNotFound, placeholderValue: ", 传送发生中断.");
             }
         }
         #endregion
@@ -662,8 +662,8 @@ namespace vMenuClient
                     GetNthClosestVehicleNode(pos.X, pos.Y, pos.Z, 0, ref safePos, 0, 0, 0);
 
                     // Notify the user that the ground z coord couldn't be found, so we will place them on a nearby road instead.
-                    Notify.Alert("Could not find a safe ground coord. Placing you on the nearest road instead.");
-                    Log("Could not find a safe ground coord. Placing you on the nearest road instead.");
+                    Notify.Alert("暂无法寻觅到相对安全地面坐标. 已将您置于最近道路口.");
+                    Log("暂无法寻觅到相对安全地面坐标. 已将您置于最近道路口.");
 
                     // Teleport vehicle, or player.
                     if (inVehicle())
@@ -735,7 +735,7 @@ namespace vMenuClient
             }
             else
             {
-                Notify.Error("You need to set a waypoint first!");
+                Notify.Error("请首先于地图上标记有效导航点!");
             }
         }
         #endregion
@@ -747,24 +747,24 @@ namespace vMenuClient
         /// <param name="player"></param>
         /// <param name="askUserForReason"></param>
         /// <param name="providedReason"></param>
-        public static async void KickPlayer(IPlayer player, bool askUserForReason, string providedReason = "You have been kicked.")
+        public static async void KickPlayer(IPlayer player, bool askUserForReason, string providedReason = "已被服务器管理员强制踢出.")
         {
             if (player != null)
             {
                 // Default kick reason.
-                var defaultReason = "You have been kicked.";
+                var defaultReason = "已被服务器管理员强制踢出.";
                 // If we need to ask for the user's input and the default reason is the same as the provided reason, get the user input..
                 if (askUserForReason && providedReason == defaultReason)
                 {
-                    var userInput = await GetUserInput(windowTitle: "Enter Kick Message", maxInputLength: 100);
+                    var userInput = await GetUserInput(windowTitle: "请输入踢出理由", maxInputLength: 100);
                     // If the input is not invalid, set the kick reason to the user's custom message.
                     if (!string.IsNullOrEmpty(userInput))
                     {
-                        defaultReason += $" Reason: {userInput}";
+                        defaultReason += $" 踢出理由: {userInput}";
                     }
                     else
                     {
-                        Notify.Error("An invalid kick reason was provided. Action cancelled.");
+                        Notify.Error("提供的踢出理由无效. 此操作已被取消.");
                         return;
                     }
                 }
@@ -774,7 +774,7 @@ namespace vMenuClient
             }
             else
             {
-                Notify.Error("The selected player is somehow invalid, action aborted.");
+                Notify.Error("所选玩家无效，操作已中止.");
             }
         }
         #endregion
@@ -787,7 +787,7 @@ namespace vMenuClient
         /// <param name="forever">Ban forever or ban temporarily.</param>
         public static async void BanPlayer(IPlayer player, bool forever)
         {
-            var banReason = await GetUserInput(windowTitle: "Enter Ban Reason", defaultText: "Banned by staff.", maxInputLength: 200);
+            var banReason = await GetUserInput(windowTitle: "请输入封禁原因", defaultText: "管理员临时封禁.", maxInputLength: 200);
             if (!string.IsNullOrEmpty(banReason) && banReason.Length > 1)
             {
                 if (forever)
@@ -796,7 +796,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    var banDurationHours = await GetUserInput(windowTitle: "Ban Duration (in hours) - Max: 720 (1 month)", defaultText: "1.5", maxInputLength: 10);
+                    var banDurationHours = await GetUserInput(windowTitle: "临时封禁时长 (单位:小时) - 最高: 720 (一个月)", defaultText: "1.5", maxInputLength: 10);
                     if (!string.IsNullOrEmpty(banDurationHours))
                     {
                         if (double.TryParse(banDurationHours, out var banHours))
@@ -807,7 +807,7 @@ namespace vMenuClient
                             }
                             else
                             {
-                                Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
+                                Notify.Error("您需要输入有效临时封禁时长, 请输入在~h~1 - 720~h~ 之间的有效数字!");
                             }
                         }
                         else
@@ -820,20 +820,20 @@ namespace vMenuClient
                                 }
                                 else
                                 {
-                                    Notify.Error("You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!");
+                                    Notify.Error("您需要输入有效临时封禁时长, 请输入在~h~1 - 720~h~ 之间的有效数字!");
                                 }
                             }
                             else
                             {
                                 Notify.Error(CommonErrors.InvalidInput);
-                                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                                TriggerEvent("chatMessage", $"[vMenu] 输入无效或您取消了操作, 请重试.");
                             }
                         }
                     }
                     else
                     {
                         Notify.Error(CommonErrors.InvalidInput);
-                        TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                        TriggerEvent("chatMessage", $"[vMenu] 输入无效或您取消了操作, 请重试.");
                     }
 
                 }
@@ -841,7 +841,7 @@ namespace vMenuClient
             else
             {
                 Notify.Error(CommonErrors.InvalidInput);
-                TriggerEvent("chatMessage", $"[vMenu] The input is invalid or you cancelled the action, please try again.");
+                TriggerEvent("chatMessage", $"[vMenu] 输入无效或您取消了操作, 请重试.");
             }
         }
         #endregion
@@ -1037,12 +1037,12 @@ namespace vMenuClient
 
                         NetworkSetInSpectatorMode(false, 0); // disable spectating.
                         DoScreenFadeIn(500);
-                        Notify.Success("Stopped spectating.", false, true);
+                        Notify.Success("已停止观看.", false, true);
                         currentlySpectatingPlayer = -1;
                     }
                     else
                     {
-                        Notify.Error("You can't spectate yourself.", false, true);
+                        Notify.Error("您无法对自己使用此功能!.", false, true);
                     }
                 }
                 else
@@ -1064,7 +1064,7 @@ namespace vMenuClient
                             }
 
                             DoScreenFadeIn(500);
-                            Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            Notify.Success($"当前正在观看 ~g~{GetSafePlayerName(player.Name)}~s~.", false, true);
                             currentlySpectatingPlayer = player.Handle;
                         }
                         else
@@ -1077,7 +1077,7 @@ namespace vMenuClient
 
                             NetworkSetInSpectatorMode(false, 0); // disable spectating.
                             DoScreenFadeIn(500);
-                            Notify.Success("Stopped spectating.", false, true);
+                            Notify.Success("已停止观看.", false, true);
                             currentlySpectatingPlayer = -1;
                         }
                     }
@@ -1098,7 +1098,7 @@ namespace vMenuClient
                             }
 
                             DoScreenFadeIn(500);
-                            Notify.Success($"You are now spectating ~g~<C>{GetSafePlayerName(player.Name)}</C>~s~.", false, true);
+                            Notify.Success($"当前正在观看 ~g~{GetSafePlayerName(player.Name)}~s~.", false, true);
                             currentlySpectatingPlayer = player.Handle;
                         }
                     }
@@ -1186,7 +1186,7 @@ namespace vMenuClient
             }
             else
             {
-                Notify.Alert("There are no more available seats to cycle through.");
+                Notify.Alert("已无更多可用载具座位可供循环使用.");
             }
         }
         #endregion
@@ -1204,7 +1204,7 @@ namespace vMenuClient
             if (vehicleName == "custom")
             {
                 // Get the result.
-                var result = await GetUserInput(windowTitle: "Enter Vehicle Name");
+                var result = await GetUserInput(windowTitle: "输入有效载具代码");
                 // If the result was not invalid.
                 if (!string.IsNullOrEmpty(result))
                 {
@@ -1251,7 +1251,7 @@ namespace vMenuClient
             var modelClass = GetVehicleClassFromName(vehicleHash);
             if (!VehicleSpawner.allowedCategories[modelClass])
             {
-                Notify.Alert("You are not allowed to spawn this vehicle, because it belongs to a category which is restricted by the server owner.");
+                Notify.Alert("您不能生成此载具, 因为它属于服务器所有者限制的类别.");
                 return 0;
             }
             
@@ -1342,7 +1342,7 @@ namespace vMenuClient
                         }
                     }
                     tmpveh.Delete();
-                    Notify.Info("Your old car was removed to prevent your new car from glitching inside it. Next time, get out of your vehicle before spawning a new one if you want to keep your old one.");
+                    Notify.Info("以防止您的新车在车内出现错误, 您的上一辆载具已被移除. 如您想保留上一辆载具, 请在生成新车前离开载具.");
                 }
             }
 
@@ -1715,7 +1715,7 @@ namespace vMenuClient
                         bulletProofTires = !veh.CanTiresBurst,
                         headlightColor = VehicleOptions.GetHeadlightsColorForVehicle(veh),
                         enveffScale = GetVehicleEnveffScale(veh.Handle),
-                        Category = string.IsNullOrEmpty(existingCatergory) ? "Uncategorized" : existingCatergory
+                        Category = string.IsNullOrEmpty(existingCatergory) ? "未分类" : existingCatergory
                     };
 
                     #endregion
@@ -1723,7 +1723,7 @@ namespace vMenuClient
                     if (updateExistingSavedVehicleName == null)
                     {
                         // Ask the user for a save name (will be displayed to the user and will be used as unique identifier for this vehicle)
-                        var saveName = await GetUserInput(windowTitle: "Enter a save name", maxInputLength: 30);
+                        var saveName = await GetUserInput(windowTitle: "请输入有效昵称", maxInputLength: 30);
                         // If the name is not invalid.
                         if (!string.IsNullOrEmpty(saveName))
                         {
@@ -1731,7 +1731,7 @@ namespace vMenuClient
                             // If the save was successfull:
                             if (StorageManager.SaveVehicleInfo("veh_" + saveName, vi, false))
                             {
-                                Notify.Success($"Vehicle {saveName} saved.");
+                                Notify.Success($"载具 {saveName} 已完成保存.");
                             }
                             // If the save was not successfull:
                             else
@@ -1755,7 +1755,7 @@ namespace vMenuClient
                 // The player is not inside a vehicle, or the vehicle is dead/not existing so we won't do anything. Only alert the user.
                 else
                 {
-                    Notify.Error(CommonErrors.NoVehicle, placeholderValue: "to save it");
+                    Notify.Error(CommonErrors.NoVehicle, placeholderValue: "保存");
                 }
             }
             // The player is not inside a vehicle.
@@ -1928,7 +1928,7 @@ namespace vMenuClient
                 if (Game.PlayerPed == veh.Driver)
                 {
                     // Get the input.
-                    var text = await GetUserInput(windowTitle: "Enter License Plate", defaultText: veh.Mods.LicensePlate ?? "", maxInputLength: 8);
+                    var text = await GetUserInput(windowTitle: "输入有效车牌号码", defaultText: veh.Mods.LicensePlate ?? "", maxInputLength: 8);
                     // If the input is valid.
                     if (!string.IsNullOrEmpty(text))
                     {
@@ -2027,42 +2027,42 @@ namespace vMenuClient
                 // Check if the player CAN play a scenario...
                 if (IsPedRunning(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You can't start a scenario when you are running.", true, false);
+                    Notify.Alert("您无法在奔跑时启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (IsEntityDead(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You can't start a scenario when you are dead.", true, false);
+                    Notify.Alert("您无法在死亡时启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (IsPlayerInCutscene(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You can't start a scenario when you are in a cutscene.", true, false);
+                    Notify.Alert("您无法在剪辑人物场景动作中启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (IsPedFalling(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You can't start a scenario when you are falling.", true, false);
+                    Notify.Alert("您无法在下落时启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (IsPedRagdoll(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You can't start a scenario when you are currently in a ragdoll state.", true, false);
+                    Notify.Alert("您无法在布娃娃状态下启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (!IsPedOnFoot(Game.PlayerPed.Handle))
                 {
-                    Notify.Alert("You must be on foot to start a scenario.", true, false);
+                    Notify.Alert("您必须在步行状态下才能启动人物场景动作", true, false);
                     canPlay = false;
                 }
                 if (NetworkIsInSpectatorMode())
                 {
-                    Notify.Alert("You can't start a scenario when you are currently spectating.", true, false);
+                    Notify.Alert("您无法在当前观看模式下启动人物场景动作.", true, false);
                     canPlay = false;
                 }
                 if (GetEntitySpeed(Game.PlayerPed.Handle) > 5.0f)
                 {
-                    Notify.Alert("You can't start a scenario when you are moving too fast.", true, false);
+                    Notify.Alert("您无法在移动过快时启动人物场景动作.", true, false);
                     canPlay = false;
                 }
 
@@ -2370,7 +2370,7 @@ namespace vMenuClient
                 else
                 {
                     // notify user of unsupported version
-                    Notify.Error("This is an unsupported saved ped version. Cannot restore appearance. :(");
+                    Notify.Error("这是一个不支持的已保存人物模型版本.无法恢复外观 :(");
                 }
                 if (keepWeapons)
                 {
@@ -2401,7 +2401,7 @@ namespace vMenuClient
         /// </summary>
         public static async void SpawnPedByName()
         {
-            var input = await GetUserInput(windowTitle: "Enter Ped Model Name", maxInputLength: 30);
+            var input = await GetUserInput(windowTitle: "输入有效人物模型代码", maxInputLength: 30);
             if (!string.IsNullOrEmpty(input))
             {
                 await SetPlayerSkin(Game.GenerateHashASCII(input), new PedInfo() { version = -1 });
@@ -2469,7 +2469,7 @@ namespace vMenuClient
                 data.isMpPed = model == Game.GenerateHashASCII("mp_f_freemode_01") || model == Game.GenerateHashASCII("mp_m_freemode_01");
                 if (data.isMpPed)
                 {
-                    Notify.Alert("Note, you should probably use the MP Character creator if you want more advanced features. Saving Multiplayer characters with this function does NOT save a lot of the online peds customization.");
+                    Notify.Alert("请注意, 如果您想要更高级的功能, 最好使用 MP人物模型自定义.使用此功能保存多人游戏角色并不会保存很多在线脚本自定义功能.");
                 }
 
                 // Try to save the data, and save the result in a variable.
@@ -2685,7 +2685,7 @@ namespace vMenuClient
         /// </summary>
         public static async void SetAllWeaponsAmmo()
         {
-            var inputAmmo = await GetUserInput(windowTitle: "Enter Ammo Amount", defaultText: "100");
+            var inputAmmo = await GetUserInput(windowTitle: "输入弹药数额", defaultText: "100");
             if (!string.IsNullOrEmpty(inputAmmo))
             {
                 if (int.TryParse(inputAmmo, out var ammo))
@@ -2700,7 +2700,7 @@ namespace vMenuClient
                 }
                 else
                 {
-                    Notify.Error("You did not enter a valid number.");
+                    Notify.Error("您没有输入有效数字.");
                 }
             }
             else
@@ -2715,14 +2715,14 @@ namespace vMenuClient
         public static async void SpawnCustomWeapon()
         {
             var ammo = 900;
-            var inputName = await GetUserInput(windowTitle: "Enter Weapon Model Name", maxInputLength: 30);
+            var inputName = await GetUserInput(windowTitle: "输入武器代码", maxInputLength: 30);
             if (!string.IsNullOrEmpty(inputName))
             {
                 if (!ValidWeapons.weaponPermissions.ContainsKey(inputName.ToLower()))
                 {
                     if (!IsAllowed(Permission.WPSpawn))
                     {
-                        Notify.Error("Sorry, you do not have permission to spawn this weapon.");
+                        Notify.Error("抱歉, 您无权生成该武器.");
                         return;
                     }
                 }
@@ -2730,7 +2730,7 @@ namespace vMenuClient
                 {
                     if (!IsAllowed(ValidWeapons.weaponPermissions[inputName.ToLower()]))
                     {
-                        Notify.Error("Sorry, you are not allowed to spawn that weapon by name because it's a restricted weapon.");
+                        Notify.Error("很抱歉, 您不能用代码催生该武器, 因为它是限制级武器.");
                         return;
                     }
                 }
@@ -2740,11 +2740,11 @@ namespace vMenuClient
                 if (IsWeaponValid(model))
                 {
                     GiveWeaponToPed(Game.PlayerPed.Handle, model, ammo, false, true);
-                    Notify.Success("Added weapon to inventory.");
+                    Notify.Success("已增加武器至背包.");
                 }
                 else
                 {
-                    Notify.Error($"This ({inputName}) is not a valid weapon model name, or the model hash ({model}) could not be found in the game files.");
+                    Notify.Error($" ({inputName}) 非有效的武器模型名称, 或者模型哈希 ({model}) 在游戏文件中未找到.");
                 }
             }
             else
@@ -2827,7 +2827,7 @@ namespace vMenuClient
                 // Check if any weapon is not allowed.
                 if (!ignoreSettingsAndPerms && loadout.Any((wp) => !IsAllowed(wp.Perm)))
                 {
-                    Notify.Alert("One or more weapon(s) in this saved loadout are not allowed on this server. Those weapons will not be loaded.");
+                    Notify.Alert("这个保存的装备中有一个或多个武器在这个服务器上是不允许的. 这些武器将不会被加载. ");
                 }
 
                 foreach (var w in loadout)
@@ -2904,7 +2904,7 @@ namespace vMenuClient
 
                 if (!(saveName == "vmenu_temp_weapons_loadout_before_respawn" || dontNotify))
                 {
-                    Notify.Success("Weapon loadout spawned.");
+                    Notify.Success("武器装备已生成.");
                 }
             }
         }
@@ -3090,7 +3090,7 @@ namespace vMenuClient
             }
             else
             {
-                Notify.Error("This feature only supports the multiplayer freemode male/female ped models.");
+                Notify.Error("此功能仅支持多人自由模式的男性/女性人物模型.");
             }
         }
         #endregion
@@ -3443,22 +3443,22 @@ namespace vMenuClient
                     var headshotTxd = GetPedheadshotTxdString(headshotHandle);
                     if (sent)
                     {
-                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(name)}</C>", "Message Sent", true, 1);
+                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(name)}</C>", "信息已发送!", true, 1);
                     }
                     else
                     {
-                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(name)}</C>", "Message Received", true, 1);
+                        Notify.CustomImage(headshotTxd, headshotTxd, message, $"<C>{GetSafePlayerName(name)}</C>", "信息已接收", true, 1);
                     }
                 }
                 else
                 {
                     if (sent)
                     {
-                        Notify.Custom($"PM From: <C>{GetSafePlayerName(name)}</C>. Message: {message}");
+                        Notify.Custom($"PM 来自于: {GetSafePlayerName(name)}. 消息: {message}");
                     }
                     else
                     {
-                        Notify.Custom($"PM To: <C>{GetSafePlayerName(name)}</C>. Message: {message}");
+                        Notify.Custom($"PM 至: {GetSafePlayerName(name)}. 消息: {message}");
                     }
                 }
                 UnregisterPedheadshot(headshotHandle);
@@ -3591,7 +3591,7 @@ namespace vMenuClient
         {
             var pos = Game.PlayerPed.Position;
             var heading = Game.PlayerPed.Heading;
-            var locationName = await GetUserInput("Enter location save name", 30);
+            var locationName = await GetUserInput("输入位置的保存名称", 30);
             if (string.IsNullOrEmpty(locationName))
             {
                 Notify.Error(CommonErrors.InvalidInput);
@@ -3599,11 +3599,11 @@ namespace vMenuClient
             }
             if (vMenuShared.ConfigManager.GetTeleportLocationsData().Any(loc => loc.name == locationName))
             {
-                Notify.Error("This location name is already used, please use a different name.");
+                Notify.Error("名称已被使用, 请使用其他名称.");
                 return;
             }
             TriggerServerEvent("vMenu:SaveTeleportLocation", JsonConvert.SerializeObject(new vMenuShared.ConfigManager.TeleportLocation(locationName, pos, heading)));
-            Notify.Success("The location was successfully saved.");
+            Notify.Success("此位置已完成保存.");
         }
         #endregion
 

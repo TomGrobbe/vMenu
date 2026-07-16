@@ -31,27 +31,27 @@ namespace vMenuClient.menus
         private void CreateMenu()
         {
             // Menu
-            menu = new Menu(GetSafePlayerName(Game.Player.Name), "Personal Vehicle Options");
+            menu = new Menu(GetSafePlayerName(Game.Player.Name), "私人座驾");
 
             // menu items
-            var setVehice = new MenuItem("Set Vehicle", "Sets your current vehicle as your personal vehicle. If you already have a personal vehicle set then this will override your selection.") { Label = "Current Vehicle: None" };
-            var toggleEngine = new MenuItem("Toggle Engine", "Toggles the engine on or off, even when you're not inside of the vehicle. This does not work if someone else is currently using your vehicle.");
-            var toggleLights = new MenuListItem("Set Vehicle Lights", new List<string>() { "Force On", "Force Off", "Reset" }, 0, "This will enable or disable your vehicle headlights, the engine of your vehicle needs to be running for this to work.");
-            var toggleStance = new MenuListItem("Vehicle Stance", new List<string>() { "Default", "Lowered" }, 0, "Select stance for your Personal Vehicle.");
-            var kickAllPassengers = new MenuItem("Kick Passengers", "This will remove all passengers from your personal vehicle.");
+            var setVehice = new MenuItem("设置为私人座驾", "将当前载具设置为私人座驾. 如果您已经设置了私人座驾,那么这将覆盖您的选择.") { Label = "当前载具: 暂无" };
+            var toggleEngine = new MenuItem("引擎开关", "即使您不在载具内,也可切换引擎的开启或关闭.如果有其他人正在使用您的载具,该功能将不起作用.");
+            var toggleLights = new MenuListItem("载具照明", new List<string>() { "强制开启", "强制关闭", "重置" }, 0, "这将启用或禁用载具前大灯,载具引擎必须运转才能工作.");
+            var toggleStance = new MenuListItem("载具姿态", new List<string>() { "默认", "降低" }, 0, "为私人座驾进行姿态调谐.");
+            var kickAllPassengers = new MenuItem("踢出乘客", "这将使所有乘客离开您的私人座驾.");
             //MenuItem
-            var lockDoors = new MenuItem("Lock Vehicle Doors", "This will lock all your vehicle doors for all players. Anyone already inside will always be able to leave the vehicle, even if the doors are locked.");
-            var unlockDoors = new MenuItem("Unlock Vehicle Doors", "This will unlock all your vehicle doors for all players.");
-            var doorsMenuBtn = new MenuItem("Vehicle Doors", "Open, close, remove and restore vehicle doors here.")
+            var lockDoors = new MenuItem("车门上锁", "这将为所有玩家锁上所有车门. 即使车门已锁, 已在载具内的任何人始终可以离开载具.");
+            var unlockDoors = new MenuItem("车门解锁", "这将为所有玩家解锁所有车门.");
+            var doorsMenuBtn = new MenuItem("车门控制", "在这里打开、关闭、拆卸和修复车门.")
             {
                 Label = "→→→"
             };
-            var soundHorn = new MenuItem("Sound Horn", "Sounds the horn of the vehicle.");
-            var toggleAlarm = new MenuItem("Toggle Alarm Sound", "Toggles the vehicle alarm sound on or off. This does not set an alarm. It only toggles the current sounding status of the alarm.");
-            var enableBlip = new MenuCheckboxItem("Add Blip For Personal Vehicle", "Enables or disables the blip that gets added when you mark a vehicle as your personal vehicle.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
-            var exclusiveDriver = new MenuCheckboxItem("Exclusive Driver", "If enabled, then you will be the only one that can enter the drivers seat. Other players will not be able to drive the car. They can still be passengers.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            var soundHorn = new MenuItem("音响喇叭", "鸣响载具喇叭.");
+            var toggleAlarm = new MenuItem("警报声音开关", "切换载具警报声的开启或关闭.这不会设置警报.它只会切换警报的当前响声状态.");
+            var enableBlip = new MenuCheckboxItem("私人座驾图标", "启用或禁用将载具标记为私人座驾的图标显示功能.", EnableVehicleBlip) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
+            var exclusiveDriver = new MenuCheckboxItem("专属司机", "如果启用,则只有您可以进入驾驶座.其他玩家将无法驾驶汽车.他们仍然可以作为乘客.", false) { Style = MenuCheckboxItem.CheckboxStyle.Cross };
             //submenu
-            VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
+            VehicleDoorsMenu = new Menu("车门控制", "车门管理管理");
             MenuController.AddSubmenu(menu, VehicleDoorsMenu);
             MenuController.BindMenuItem(menu, VehicleDoorsMenu, doorsMenuBtn);
 
@@ -130,7 +130,7 @@ namespace vMenuClient.menus
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error("您目前无法控制此载具.是否有其他人正在驾驶您的载具?请在确保没有其他玩家控制您的载具后再试一次.");
                             return;
                         }
                     }
@@ -167,7 +167,7 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                    Notify.Error("您尚未选择私人座驾,或者您的载具已被删除");
                 }
             };
 
@@ -190,7 +190,7 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                            Notify.Error("您尚未选择私人座驾,或者您的载具已被删除");
                         }
 
                     }
@@ -224,7 +224,7 @@ namespace vMenuClient.menus
                         else
                         {
                             item.Checked = !_checked;
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error("您目前无法控制此载具.是否有其他人正在驾驶您的载具?请在确保没有其他玩家控制您的载具后再试一次.");
                         }
                     }
                 }
@@ -259,7 +259,7 @@ namespace vMenuClient.menus
                                 {
                                     name = veh.DisplayName;
                                 }
-                                item.Label = $"Current Vehicle: {name}";
+                                item.Label = $"当前载具: {name}";
                             }
                             else
                             {
@@ -288,7 +288,7 @@ namespace vMenuClient.menus
                         }
                         else
                         {
-                            Notify.Info("There are no other players in your vehicle that need to be kicked out.");
+                            Notify.Info("您的载具中没有其他需要踢出的人员.");
                         }
                     }
                     else
@@ -297,7 +297,7 @@ namespace vMenuClient.menus
                         {
                             if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                             {
-                                Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                                Notify.Error("您目前无法控制此载具.是否有其他人正在驾驶您的载具?请在确保没有其他玩家控制您的载具后再试一次.");
                                 return;
                             }
                         }
@@ -330,25 +330,25 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                    Notify.Error("您尚未选择私人座驾,或者您的载具已被删除");
                 }
             };
 
             #region Doors submenu 
-            var openAll = new MenuItem("Open All Doors", "Open all vehicle doors.");
-            var closeAll = new MenuItem("Close All Doors", "Close all vehicle doors.");
-            var LF = new MenuItem("Left Front Door", "Open/close the left front door.");
-            var RF = new MenuItem("Right Front Door", "Open/close the right front door.");
-            var LR = new MenuItem("Left Rear Door", "Open/close the left rear door.");
-            var RR = new MenuItem("Right Rear Door", "Open/close the right rear door.");
-            var HD = new MenuItem("Hood", "Open/close the hood.");
-            var TR = new MenuItem("Trunk", "Open/close the trunk.");
-            var E1 = new MenuItem("Extra 1", "Open/close the extra door (#1). Note this door is not present on most vehicles.");
-            var E2 = new MenuItem("Extra 2", "Open/close the extra door (#2). Note this door is not present on most vehicles.");
-            var BB = new MenuItem("Bomb Bay", "Open/close the bomb bay. Only available on some planes.");
-            var doors = new List<string>() { "Front Left", "Front Right", "Rear Left", "Rear Right", "Hood", "Trunk", "Extra 1", "Extra 2", "Bomb Bay" };
-            var removeDoorList = new MenuListItem("Remove Door", doors, 0, "Remove a specific vehicle door completely.");
-            var deleteDoors = new MenuCheckboxItem("Delete Removed Doors", "When enabled, doors that you remove using the list above will be deleted from the world. If disabled, then the doors will just fall on the ground.", false);
+            var openAll = new MenuItem("打开所有车门", "打开所有载具的车门.");
+            var closeAll = new MenuItem("关闭所有车门", "关闭所有载具的车门.");
+            var LF = new MenuItem("左前门", "打开/关闭左前门.");
+            var RF = new MenuItem("右前门", "打开/关闭右前门.");
+            var LR = new MenuItem("左后门", "打开/关闭左后门.");
+            var RR = new MenuItem("右后门", "打开/关闭右后门.");
+            var HD = new MenuItem("引擎盖", "打开/关闭引擎盖.");
+            var TR = new MenuItem("后备箱", "打开/关闭后备箱.");
+            var E1 = new MenuItem("额外门 1", "打开/关闭额外门（#1）.请注意.大多数载具没有此门.");
+            var E2 = new MenuItem("额外门 2", "打开/关闭额外门（#2）.请注意.大多数载具没有此门.");
+            var BB = new MenuItem("炸弹舱", "打开/关闭炸弹舱.仅在某些飞机上可用.");
+            var doors = new List<string>() { "左前门", "右前门", "左后门", "右后门", "引擎盖", "后备箱", "额外门 1", "额外门 2", "炸弹舱" };
+            var removeDoorList = new MenuListItem("移除车门", doors, 0, "完全移除特定载具的车门.");
+            var deleteDoors = new MenuCheckboxItem("删除已移除的车门", "启用时.通过上面的列表移除的车门将从世界中删除.如果禁用.车门将只会掉落在地上.", false);
 
             VehicleDoorsMenu.AddMenuItem(LF);
             VehicleDoorsMenu.AddMenuItem(RF);
@@ -373,7 +373,7 @@ namespace vMenuClient.menus
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error("您目前无法控制此载具.是否有其他人正在驾驶您的载具?请在确保没有其他玩家控制您的载具后再试一次.");
                             return;
                         }
                     }
@@ -395,7 +395,7 @@ namespace vMenuClient.menus
                     {
                         if (!NetworkRequestControlOfEntity(CurrentPersonalVehicle.Handle))
                         {
-                            Notify.Error("You currently can't control this vehicle. Is someone else currently driving your car? Please try again after making sure other players are not controlling your vehicle.");
+                            Notify.Error("您目前无法控制此载具.是否有其他人正在驾驶您的载具?请在确保没有其他玩家控制您的载具后再试一次.");
                             return;
                         }
                     }
@@ -444,7 +444,7 @@ namespace vMenuClient.menus
                     }
                     else
                     {
-                        Notify.Error("You have not yet selected a personal vehicle, or your vehicle has been deleted. Set a personal vehicle before you can use these options.");
+                        Notify.Error("您尚未选择私人座驾,或者您的载具已被删除");
                     }
                 }
             };

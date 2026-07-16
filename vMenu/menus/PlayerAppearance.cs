@@ -22,11 +22,11 @@ namespace vMenuClient.menus
         private Menu savedPedsMenu;
         private Menu spawnPedsMenu;
         private Menu addonPedsMenu;
-        private readonly Menu mainPedsMenu = new("Main Peds", "Spawn A Ped");
-        private readonly Menu animalsPedsMenu = new("Animals", "Spawn A Ped");
-        private readonly Menu malePedsMenu = new("Male Peds", "Spawn A Ped");
-        private readonly Menu femalePedsMenu = new("Female Peds", "Spawn A Ped");
-        private readonly Menu otherPedsMenu = new("Other Peds", "Spawn A Ped");
+        private readonly Menu mainPedsMenu = new("主要人物模型", "生成一个行人");
+        private readonly Menu animalsPedsMenu = new("动物模型", "生成一个行人");
+        private readonly Menu malePedsMenu = new("男性人物模型", "生成一个行人");
+        private readonly Menu femalePedsMenu = new("女性人物模型", "生成一个行人");
+        private readonly Menu otherPedsMenu = new("其他人物模型", "生成一个行人");
 
         public static Dictionary<string, uint> AddonPeds;
         public static Dictionary<string, uint> WhitelistedPeds;
@@ -43,13 +43,13 @@ namespace vMenuClient.menus
         private void CreateMenu()
         {
             // Create the menu.
-            menu = new Menu(Game.Player.Name, "Player Appearance");
-            savedPedsMenu = new Menu(Game.Player.Name, "Saved Peds");
-            pedCustomizationMenu = new Menu(Game.Player.Name, "Customize Saved Ped");
-            pedCollectionsMenu = new Menu(Game.Player.Name, "Ped Collections");
-            pedCollectionsCustomizationMenu = new Menu(Game.Player.Name, "I get updated at runtime!");
-            spawnPedsMenu = new Menu(Game.Player.Name, "Spawn Ped");
-            addonPedsMenu = new Menu(Game.Player.Name, "Addon Peds");
+            menu = new Menu(Game.Player.Name, "玩家外观选项");
+            savedPedsMenu = new Menu(Game.Player.Name, "已保存人物");
+            pedCustomizationMenu = new Menu(Game.Player.Name, "人物模型自定义");
+            pedCollectionsMenu = new Menu(Game.Player.Name, "角色外观合集");
+            pedCollectionsCustomizationMenu = new Menu(Game.Player.Name, "运行时更新");
+            spawnPedsMenu = new Menu(Game.Player.Name, "人物模型生成");
+            addonPedsMenu = new Menu(Game.Player.Name, "添加式人物模型");
 
 
             // Add the (submenus) to the menu pool.
@@ -66,27 +66,27 @@ namespace vMenuClient.menus
             MenuController.AddSubmenu(spawnPedsMenu, otherPedsMenu);
 
             // Create the menu items.
-            var pedCustomization = new MenuItem("Ped Customization", "Modify your ped's appearance.") { Label = "→→→" };
-            var pedCollections = new MenuItem("Ped Collections", "Modify your ped's appearance using collections, such as from the Base Game, Offical DLCs, and Custom Collections.") { Label = "→→→" };
-            var saveCurrentPed = new MenuItem("Save Ped", "Save your current ped. Note for the MP Male/Female peds this won't save most of their customization, just because that's impossible. Create those characters in the MP Character creator instead.");
-            var savedPedsBtn = new MenuItem("Saved Peds", "Edit, rename, clone, spawn or delete saved peds.") { Label = "→→→" };
-            var spawnPedsBtn = new MenuItem("Spawn Peds", "Change ped model by selecting one from the list or by selecting an addon ped from the list.") { Label = "→→→" };
+            var pedCustomization = new MenuItem("人物模型自定义", "更改编辑模型的服装,外观等.") { Label = "→→→" };
+            var pedCollections = new MenuItem("角色外观合集", "使用基础游戏、官方 DLC 或自定义合集修改角色外观。") { Label = "→→→" };
+            var saveCurrentPed = new MenuItem("保存当前人物", "保存当前的人物模型.注意,对于MP 男性/女性人物,这不会保存他们的大部分自定义内容,因为这是不可能的.请在MP角色创建器中创建这些角色.");
+            var savedPedsBtn = new MenuItem("已保存人物", "编辑、重命名、克隆、生成或删除已保存的人物模型.") { Label = "→→→" };
+            var spawnPedsBtn = new MenuItem("人物模型生成", "通过从列表中选择一个模型或从列表中选择一个附加人物来更改人物模型.") { Label = "→→→" };
 
 
-            var spawnByNameBtn = new MenuItem("Spawn By Name", "Spawn a ped by entering it's name manually.");
-            var addonPedsBtn = new MenuItem("Addon Peds", "Spawn a ped from the addon peds list.") { Label = "→→→" };
-            var mainPedsBtn = new MenuItem("Main Peds", "Select a new ped from the main player-peds list.") { Label = "→→→" };
-            var animalPedsBtn = new MenuItem("Animals", "Become an animal. ~r~Note this may crash your own or other players' game if you die as an animal, godmode can NOT prevent this.") { Label = "→→→" };
-            var malePedsBtn = new MenuItem("Male Peds", "Select a male ped.") { Label = "→→→" };
-            var femalePedsBtn = new MenuItem("Female Peds", "Select a female ped.") { Label = "→→→" };
-            var otherPedsBtn = new MenuItem("Other Peds", "Select a ped.") { Label = "→→→" };
+            var spawnByNameBtn = new MenuItem("使用人物模型代码生成", "通过手动输入名称来生成一个人物模型.");
+            var addonPedsBtn = new MenuItem("添加式人物模型", "从附加人物模型列表中生成一个人物模型.") { Label = "→→→" };
+            var mainPedsBtn = new MenuItem("主要人物模型", "从主要玩家人物列表中选择一个新的人物模型.") { Label = "→→→" };
+            var animalPedsBtn = new MenuItem("动物模型", "选择一个动物.~r~注意:如果您作为动物死亡,可能会导致服务器发生游戏崩溃,无敌模式无法防止这种情况.") { Label = "→→→" };
+            var malePedsBtn = new MenuItem("男性人物模型", "选择一个男性人物模型.") { Label = "→→→" };
+            var femalePedsBtn = new MenuItem("女性人物模型", "选择一个女性人物模型.") { Label = "→→→" };
+            var otherPedsBtn = new MenuItem("其他人物模型", "选择一个人物模型.") { Label = "→→→" };
 
-            var walkstyles = new List<string>() { "Normal", "Injured", "Tough Guy", "Femme", "Gangster", "Posh", "Sexy", "Business", "Drunk", "Hipster" };
-            var walkingStyle = new MenuListItem("Walking Style", walkstyles, 0, "Change the walking style of your current ped. " +
+            var walkstyles = new List<string>() { "正常", "受伤", "硬汉", "女性", "黑帮", "优雅", "性感", "商务", "醉酒", "嬉皮士" };
+            var walkingStyle = new MenuListItem("行走风格", walkstyles, 0, "修改当前角色的行走风格。" +
                 "You need to re-apply this each time you change player model or load a saved ped.");
 
-            var clothingGlowAnimations = new List<string>() { "On", "Off", "Fade", "Flash" };
-            var clothingGlowType = new MenuListItem("Illuminated Clothing Style", clothingGlowAnimations, ClothingAnimationType, "Set the style of the animation used on your player's illuminated clothing items.");
+            var clothingGlowAnimations = new List<string>() { "开启", "关闭", "渐变", "闪烁" };
+            var clothingGlowType = new MenuListItem("发光服装风格", clothingGlowAnimations, ClothingAnimationType, "设置用于玩家发光服装项的动画风格.");
 
             // Add items to the menu.
             menu.AddMenuItem(pedCustomization);
@@ -113,19 +113,19 @@ namespace vMenuClient.menus
             MenuController.BindMenuItem(menu, savedPedsMenu, savedPedsBtn);
             MenuController.BindMenuItem(menu, spawnPedsMenu, spawnPedsBtn);
 
-            var selectedSavedPedMenu = new Menu("Saved Ped", "renameme");
+            var selectedSavedPedMenu = new Menu("已保存人物", "管理已保存人物");
             MenuController.AddSubmenu(savedPedsMenu, selectedSavedPedMenu);
-            var spawnSavedPed = new MenuItem("Spawn Saved Ped", "Spawn this saved ped.");
-            var cloneSavedPed = new MenuItem("Clone Saved Ped", "Clone this saved ped.");
-            var renameSavedPed = new MenuItem("Rename Saved Ped", "Rename this saved ped.") { LeftIcon = MenuItem.Icon.WARNING };
-            var replaceSavedPed = new MenuItem("~r~Replace Saved Ped", "Replace this saved ped with your current ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
-            var deleteSavedPed = new MenuItem("~r~Delete Saved Ped", "Delete this saved ped. Note this can not be undone!") { LeftIcon = MenuItem.Icon.WARNING };
+            var spawnSavedPed = new MenuItem("生成已保存的人物", "生成这个已保存的人物.");
+            var cloneSavedPed = new MenuItem("克隆已保存的人物", "克隆这个已保存的人物.");
+            var renameSavedPed = new MenuItem("重命名已保存的人物", "重命名这个已保存的人物.") { LeftIcon = MenuItem.Icon.WARNING };
+            var replaceSavedPed = new MenuItem("~r~替换已保存的人物", "用当前人物替换此已保存人物。注意：此操作不可撤销！") { LeftIcon = MenuItem.Icon.WARNING };
+            var deleteSavedPed = new MenuItem("~r~删除已保存的人物", "删除这个已保存的人物.注意,此操作不可撤销!") { LeftIcon = MenuItem.Icon.WARNING };
 
             if (!IsAllowed(Permission.PASpawnSaved))
             {
                 spawnSavedPed.Enabled = false;
                 spawnSavedPed.RightIcon = MenuItem.Icon.LOCK;
-                spawnSavedPed.Description = "You are not allowed to spawn saved peds.";
+                spawnSavedPed.Description = "您不允许生成已保存的人物.";
             }
 
             selectedSavedPedMenu.AddMenuItem(spawnSavedPed);
@@ -159,11 +159,11 @@ namespace vMenuClient.menus
                         {
                             if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
                             {
-                                Notify.Success($"Saved Ped has successfully been cloned. Clone name: ~g~<C>{name}</C>~s~.");
+                                Notify.Success($"保存的角色已成功克隆. 克隆名称：~g~{name}~s~. ");
                             }
                             else
                             {
-                                Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your cloned ped. Don't worry, your original ped is unharmed.");
+                                Notify.Error(CommonErrors.UnknownError, placeholderValue: " 无法保存您的克隆角色. 别担心,您的原始角色没有受损. ");
                             }
                         }
                     }
@@ -179,12 +179,12 @@ namespace vMenuClient.menus
                     {
                         if ("ped_" + name == savedPed.Key)
                         {
-                            Notify.Error("You need to choose a different name, you can't use the same name as your existing ped.");
+                            Notify.Error("您需要选择一个不同的名称, 不能使用与现有角色相同的名称.");
                             return;
                         }
                         if (StorageManager.SavePedInfo("ped_" + name, savedPed.Value, false))
                         {
-                            Notify.Success($"Saved Ped has successfully been renamed. New ped name: ~g~<C>{name}</C>~s~.");
+                            Notify.Success($"保存的角色已成功重命名.新角色名称: ~g~{name}~s~.");
                             DeleteResourceKvp(savedPed.Key);
                             selectedSavedPedMenu.MenuSubtitle = name;
                             savedPed = new KeyValuePair<string, PedInfo>("ped_" + name, savedPed.Value);
@@ -197,36 +197,36 @@ namespace vMenuClient.menus
                 }
                 else if (item == replaceSavedPed)
                 {
-                    if (item.Label == "Are you sure?")
+                    if (item.Label == "二次确认?")
                     {
                         item.Label = "";
                         var success = await SavePed(savedPed.Key.Substring(4), overrideExistingPed: true);
                         if (!success)
                         {
-                            Notify.Error(CommonErrors.UnknownError, placeholderValue: " Could not save your replaced ped. Don't worry, your original ped is unharmed.");
+                            Notify.Error(CommonErrors.UnknownError, placeholderValue: " 无法保存您的替换角色.请放心, 您的原始角色没有受到影响.");
                         }
                         else
                         {
-                            Notify.Success("Your saved ped has successfully been replaced.");
+                            Notify.Success("您的保存角色已成功替换.");
                             savedPed = new KeyValuePair<string, PedInfo>(savedPed.Key, StorageManager.GetSavedPedInfo(savedPed.Key));
                         }
                     }
                     else
                     {
-                        item.Label = "Are you sure?";
+                        item.Label = "二次确认?";
                     }
                 }
                 else if (item == deleteSavedPed)
                 {
-                    if (item.Label == "Are you sure?")
+                    if (item.Label == "二次确认?")
                     {
                         DeleteResourceKvp(savedPed.Key);
-                        Notify.Success("Your saved ped has been deleted.");
+                        Notify.Success("您已保存的人物角色已被删除.");
                         selectedSavedPedMenu.GoBack();
                     }
                     else
                     {
-                        item.Label = "Are you sure?";
+                        item.Label = "二次确认?";
                     }
                 }
             };
@@ -265,7 +265,7 @@ namespace vMenuClient.menus
                         return ped.Key == kvp.Key;
                     }))
                     {
-                        var btn = new MenuItem(ped.Key.Substring(4), "Click to manage this saved ped.") { Label = "→→→", ItemData = ped };
+                        var btn = new MenuItem(ped.Key.Substring(4), "点击管理已保存的人物模型.") { Label = "→→→", ItemData = ped };
                         savedPedsMenu.AddMenuItem(btn);
                         MenuController.BindMenuItem(savedPedsMenu, selectedSavedPedMenu, btn);
                     }
@@ -341,7 +341,7 @@ namespace vMenuClient.menus
                         name = ped.Key;
                     }
 
-                    var pedBtn = new MenuItem(ped.Key, "Click to spawn this model.") { Label = $"({name})" };
+                    var pedBtn = new MenuItem(ped.Key, "点击生成此人物模型。") { Label = $"({name})" };
 
                     checkPedWhitelist(ped.Key, pedBtn);
                     
@@ -349,7 +349,7 @@ namespace vMenuClient.menus
                     {
                         pedBtn.Enabled = false;
                         pedBtn.LeftIcon = MenuItem.Icon.LOCK;
-                        pedBtn.Description = "This ped is not (correctly) streamed. If you are the server owner, please ensure that the ped name and model are valid!";
+                        pedBtn.Description = "此人物模型未正确流式传输。服务器所有者请确认模型名称和模型数据有效！";
                     } 
                     else 
                     {
@@ -381,7 +381,7 @@ namespace vMenuClient.menus
                 else
                 {
                     animalPedsBtn.Enabled = false;
-                    animalPedsBtn.Description = "This is disabled by the server owner, probably for a good reason because animals quite often crash the game.";
+                    animalPedsBtn.Description = "服务器所有者已禁用此项；动物模型经常导致游戏崩溃，通常不建议启用。";
                     animalPedsBtn.LeftIcon = MenuItem.Icon.LOCK;
                 }
 
@@ -391,35 +391,35 @@ namespace vMenuClient.menus
 
                 foreach (var animal in animalModels)
                 {
-                    var animalBtn = new MenuItem(animal.Key, "Click to spawn this animal.") { Label = $"({animal.Value})" };
+                    var animalBtn = new MenuItem(animal.Key, "确认并生成选择的动物模型.") { Label = $"({animal.Value})" };
                     checkPedWhitelist(animal.Key, animalBtn);
                     animalsPedsMenu.AddMenuItem(animalBtn);
                 }
 
                 foreach (var ped in mainModels)
                 {
-                    var pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    var pedBtn = new MenuItem(ped.Key, "确认并生成选择的人物模型.") { Label = $"({ped.Value})" };
                     checkPedWhitelist(ped.Key, pedBtn);
                     mainPedsMenu.AddMenuItem(pedBtn);
                 }
 
                 foreach (var ped in maleModels)
                 {
-                    var pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    var pedBtn = new MenuItem(ped.Key, "确认并生成选择的人物模型.") { Label = $"({ped.Value})" };
                     checkPedWhitelist(ped.Key, pedBtn);
                     malePedsMenu.AddMenuItem(pedBtn);
                 }
 
                 foreach (var ped in femaleModels)
                 {
-                    var pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    var pedBtn = new MenuItem(ped.Key, "确认并生成选择的人物模型.") { Label = $"({ped.Value})" };
                     checkPedWhitelist(ped.Key, pedBtn);
                     femalePedsMenu.AddMenuItem(pedBtn);
                 }
 
                 foreach (var ped in otherPeds)
                 {
-                    var pedBtn = new MenuItem(ped.Key, "Click to spawn this ped.") { Label = $"({ped.Value})" };
+                    var pedBtn = new MenuItem(ped.Key, "确认并生成选择的人物模型.") { Label = $"({ped.Value})" };
                     checkPedWhitelist(ped.Key, pedBtn);
                     otherPedsMenu.AddMenuItem(pedBtn);
                 }
@@ -472,7 +472,7 @@ namespace vMenuClient.menus
                             case "a_c_killerwhale":
                             case "a_c_sharkhammer":
                             case "a_c_sharktiger":
-                                Notify.Error("This animal can only be spawned when you are in water, otherwise you will die immediately.");
+                                Notify.Error("这种动物只能在水中生成, 否则您会立即死亡.");
                                 return;
                             default: break;
                         }
@@ -557,11 +557,11 @@ namespace vMenuClient.menus
                 {
                     if (await SavePed())
                     {
-                        Notify.Success("Successfully saved your new ped.");
+                        Notify.Success("成功保存了您新的角色。");
                     }
                     else
                     {
-                        Notify.Error("Could not save your current ped, does that save name already exist?");
+                        Notify.Error("无法保存您当前的角色,该保存名称是否已经存在?");
                     }
                 }
             };
@@ -673,17 +673,17 @@ namespace vMenuClient.menus
 
                         SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, newListIndex, 0, 0);
 
-                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedTextureVariation(pedHandle, currentDrawableID) + 1} (of {maxDrawableTextures}).";
+                        item.Description = $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前纹理：#{GetPedTextureVariation(pedHandle, currentDrawableID) + 1}/{maxDrawableTextures}。";
                     }
                     else if (item.ListItems[newListIndex].StartsWith("None"))
                     {
                         SetPedComponentVariation(pedHandle, currentDrawableID, originalItemId, originalTextureId, paletteId: 0);
 
-                        item.Description = "← & → to select, ~r~enter~s~ to cycle textures. Current selection not part collection.";
+                        item.Description = "使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前选择不属于此合集。";
                     }
                     else
                     {
-                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selection is invalid (broken, Gen9, etc.)";
+                        item.Description = $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前选择无效（损坏、Gen9 等）。";
                     }
                 }
                 else if (propsMenuListItems.ContainsKey(item))
@@ -694,7 +694,7 @@ namespace vMenuClient.menus
                     {
                         SetPedPropIndex(pedHandle, propID, originalItemId, originalTextureId, attach: false);
 
-                        item.Description = "← & → to select, ~r~enter~s~ to cycle textures. Current selection not part collection.";
+                    item.Description = "使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前选择不属于此合集。";
                     }
                     else
                     {
@@ -702,7 +702,7 @@ namespace vMenuClient.menus
 
                         SetPedCollectionPropIndex(pedHandle, propID, collectionName, newListIndex - 1, 0, true);
 
-                        item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{GetPedPropTextureIndex(pedHandle, propID) + 1} (of {maxDrawableTextures}).";
+                        item.Description = $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前纹理：#{GetPedPropTextureIndex(pedHandle, propID) + 1}/{maxDrawableTextures}。";
                     }
 
                     if (propID == 0)
@@ -744,7 +744,7 @@ namespace vMenuClient.menus
 
                     SetPedCollectionComponentVariation(pedHandle, currentDrawableID, collectionName, listIndex, newTexture, 0);
 
-                    item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{newTexture + 1} (of {maxDrawableTextures + 1}).";
+                    item.Description = $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前纹理：#{newTexture + 1}/{maxDrawableTextures + 1}。";
                 }
                 else if (propsMenuListItems.ContainsKey(item))
                 {
@@ -755,7 +755,7 @@ namespace vMenuClient.menus
 
                     SetPedCollectionPropIndex(pedHandle, currentPropID, collectionName, listIndex - 1, newPropTextureVariationIndex, true);
 
-                    item.Description = $"← & → to select, ~r~enter~s~ to cycle textures. Selected texture: #{newPropTextureVariationIndex + 1} (of {maxPropTextureVariations}).";
+                    item.Description = $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。当前纹理：#{newPropTextureVariationIndex + 1}/{maxPropTextureVariations}。";
                 }
             };
 
@@ -780,7 +780,7 @@ namespace vMenuClient.menus
                 {
                     pedBtn.Enabled = false;
                     pedBtn.LeftIcon = MenuItem.Icon.LOCK;
-                    pedBtn.Description = "Access to this has been restricted by the server owner.";
+                    pedBtn.Description = "服务器所有者已限制访问此项。";
                 }
             }
         }
@@ -825,10 +825,10 @@ namespace vMenuClient.menus
 
                     for (var i = 0; i < maxVariations; i++)
                     {
-                        drawableTexturesList.Add($"Drawable #{i + 1} (of {maxVariations})");
+                        drawableTexturesList.Add($"选择 #({i + 1}/ {maxVariations})");
                     }
 
-                    var drawableTextures = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentDrawable, $"Use ← & → to select a ~o~{textureNames[drawable]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                var drawableTextures = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentDrawable, $"使用 ← 和 → 选择 ~o~{textureNames[drawable]} 变体~s~，按 ~r~ENTER~s~ 切换可用纹理。");
                     drawablesMenuListItems.Add(drawableTextures, drawable);
                     pedCustomizationMenu.AddMenuItem(drawableTextures);
                 }
@@ -847,15 +847,15 @@ namespace vMenuClient.menus
                 {
                     var propTexturesList = new List<string>
                     {
-                        $"Prop #1 (of {maxPropVariations + 1})"
+                        $"选择 #(1/ {maxPropVariations + 1})"
                     };
                     for (var i = 0; i < maxPropVariations; i++)
                     {
-                        propTexturesList.Add($"Prop #{i + 2} (of {maxPropVariations + 1})");
+                        propTexturesList.Add($"选择 # ({i + 2}/ {maxPropVariations + 1})");
                     }
 
 
-                    var propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"Use ← & → to select a ~o~{propNames[tmpProp]} Variation~s~, press ~r~enter~s~ to cycle through the available textures.");
+                var propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentProp + 1, $"使用 ← 和 → 选择 ~o~{propNames[tmpProp]} 变体~s~，按 ~r~ENTER~s~ 切换可用纹理。");
                     propsMenuListItems.Add(propTextures, realProp);
                     pedCustomizationMenu.AddMenuItem(propTextures);
 
@@ -881,7 +881,7 @@ namespace vMenuClient.menus
             for (int i = collectionsCount - 1; i > -1; i--)
             {
                 string collectionName = i == 0 ? "Base Collection" : GetPedCollectionName(pedHandle, i);
-                MenuItem collectionItem = new(collectionName, $"Customize your ped using the \"{collectionName}\" collection.")
+                MenuItem collectionItem = new(collectionName, $"使用“{collectionName}”合集自定义角色外观。")
                 {
                     ItemData = collectionName,
                     Label = $"(#{i})"
@@ -943,7 +943,7 @@ namespace vMenuClient.menus
                     suffixText = "Current selection not part collection.";
                 }
 
-                MenuListItem item = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentLocalIndex, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
+                MenuListItem item = new MenuListItem($"{textureNames[drawable]}", drawableTexturesList, currentLocalIndex, $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。{suffixText}")
                 {
                     ItemData = new Tuple<int, int, string>(currentDrawableGlobalId, currentTextureId, collectionName)
                 };
@@ -986,7 +986,7 @@ namespace vMenuClient.menus
                     suffixText = "Current selection not part collection.";
                 }
 
-                MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentLocalIndex + 1, $"← & → to select, ~r~enter~s~ to cycle textures. {suffixText}")
+                MenuListItem propTextures = new MenuListItem($"{propNames[tmpProp]}", propTexturesList, currentLocalIndex + 1, $"使用 ← 和 → 选择，按 ~r~ENTER~s~ 切换纹理。{suffixText}")
                 {
                     ItemData = new Tuple<int, int, string>(currentPropGlobalId, currentTextureId, collectionName)
                 };
@@ -1001,18 +1001,18 @@ namespace vMenuClient.menus
         #region Textures & Props
         private readonly List<string> textureNames = new()
         {
-            "Head",
-            "Mask / Facial Hair",
-            "Hair Style / Color",
-            "Hands / Upper Body",
-            "Legs / Pants",
-            "Bags / Parachutes",
-            "Shoes",
-            "Neck / Scarfs",
-            "Shirt / Accessory",
-            "Body Armor / Accessory 2",
-            "Badges / Logos",
-            "Shirt Overlay / Jackets",
+            "头部",
+            "面具/面部胡须",
+            "发型/颜色",
+            "手部/上半身",
+            "腿部/裤子",
+            "背包/降落伞",
+            "鞋子",
+            "颈部/围巾",
+            "衬衫/配饰",
+            "护甲/配饰 2",
+            "徽章/标志",
+            "衬衫覆盖层/夹克",
         };
 
         private readonly List<string> propNames = new()
@@ -1060,7 +1060,7 @@ namespace vMenuClient.menus
         //            var title = savename.Substring(4);
         //            if (!items.Contains(title))
         //            {
-        //                MenuItem savedPedBtn = new MenuItem(title, "Spawn this saved ped.");
+        //                MenuItem savedPedBtn = new MenuItem(title, "生成这个已保存的人物.");
         //                spawnSavedPedMenu.AddMenuItem(savedPedBtn);
         //                items.Add(title);
         //            }
@@ -1096,7 +1096,7 @@ namespace vMenuClient.menus
         //    }
         //    foreach (var savename in savesFound)
         //    {
-        //        MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~Delete ~s~this saved ped, this action can ~r~NOT~s~ be undone!")
+        //        MenuItem deleteSavedPed = new MenuItem(savename.Substring(4), "~r~删除 ~s~此已保存人物；此操作~r~不可~s~撤销！")
         //        {
         //            LeftIcon = MenuItem.Icon.WARNING
         //        };
@@ -2535,8 +2535,8 @@ namespace vMenuClient.menus
                 if (!IsHelpMessageBeingDisplayed())
                 {
                     BeginTextCommandDisplayHelp("TWOSTRINGS");
-                    AddTextComponentSubstringPlayerName("Hold ~INPUT_SWITCH_VISOR~ to flip your helmet visor open or closed");
-                    AddTextComponentSubstringPlayerName("when on foot or on a motorcycle and when vMenu is closed.");
+                    AddTextComponentSubstringPlayerName("按住 ~INPUT_SWITCH_VISOR~ 来翻开或关闭你的头盔遮挡板");
+                    AddTextComponentSubstringPlayerName("当你步行或者骑摩托车时，并且 vMenu 关闭时，你可以使用这个按键翻开或关闭你的头盔遮挡板. ");
                     EndTextCommandDisplayHelp(0, false, true, 6000);
                 }
             }
