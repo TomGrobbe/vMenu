@@ -260,11 +260,18 @@ site-search button,
 
 /* =========================== Tables ==================================== */
 .sl-markdown-content table {
+  /* Starlight makes content tables `display: block; overflow: auto` so wide
+     ones scroll. Shrink the box to its content so the border and header/row
+     backgrounds wrap tightly (no gap on the right), but still scroll instead
+     of clipping when a table is wider than the column. */
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
   border: var(--toon-border);
   border-radius: var(--toon-radius);
   border-collapse: separate;
   border-spacing: 0;
-  overflow: hidden;
   box-shadow: var(--toon-shadow);
 }
 .sl-markdown-content th {
