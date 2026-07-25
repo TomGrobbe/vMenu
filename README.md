@@ -16,7 +16,7 @@ Click [here](https://github.com/TomGrobbe/vMenu/releases) to go to the releases 
 
 ## Installation
 
-Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/installation)
+Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/legacy/installation/)
 
 ## ZAP-Hosting
 
@@ -34,19 +34,19 @@ If you like my work, please consider supporting me on [**Patreon**](https://www.
 
 Take a look at the docs first of all. I will ignore you if your question is answered on the docs or the forum topic.
 
-- [Docs](https://docs.vespura.com/vmenu/)
-- [Forum topic](https://vespura.com/vmenu)
+- [Docs](https://docs.vespura.com/vmenu/legacy/)
+- [Forum topic](https://forum.cfx.re/t/vmenu/88868)
 - [Discord](https://vespura.com/discord)
 
 ---
 
 ## Permissions
 
-Click [here](https://docs.vespura.com/vmenu/permissions-ref) for permission information.
+Click [here](https://docs.vespura.com/vmenu/legacy/permissions/permissions/) for permission information.
 
 ## Configuration
 
-Click [here](https://docs.vespura.com/vmenu/configuration) for configuration options information.
+Click [here](https://docs.vespura.com/vmenu/legacy/configuration/) for configuration options information.
 
 ---
 

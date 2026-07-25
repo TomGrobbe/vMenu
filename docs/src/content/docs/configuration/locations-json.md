@@ -1242,4 +1242,4 @@ In this example config I've added 2 example teleport locations, and a total of 4
 ## Appreciate my work?
 Consider supporting me on [Patreon](https://www.patreon.com/vespura)!
 
-[blip-sprites]: https://vespura.com/blips/
+[blip-sprites]: https://docs.fivem.net/docs/game-references/blips/

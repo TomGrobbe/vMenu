@@ -401,8 +401,8 @@ _Ignore this part if you've already upgraded to v3.3.0-pre, you can skip to the 
 SQLite support has been dropped. This caused too many crashes and was completely incompatible with recent (Linux) FXServer artifacts.
 The new ban system uses the default server side storage built in to FXServer. To migrate (copy) your old `vmenu_bans.db` or `bans.json` file, follow the following steps. If you don't have a `vmenu_bans.db` file, and only a `bans.json` file skip to step 2.
 
-- **Step 1.** Upload your `vmenu_bans.db` file to [here](https://vespura.com/vmenu/migrate/), and place the `bans.json` file you get here: `/resources/vMenu/bans.json`
-- **Step 2.** [Update to the latest version of vMenu](https://docs.vespura.com/vmenu/installation), start the server and type `vmenuserver migrate` in the server console. This may take some time depending on the amount of bans you have stored. **ONLY RUN THIS COMMAND ONCE, OTHERWISE YOUR BANS WILL BE DUPLICATED**
+- **Step 1.** Upload your `vmenu_bans.db` file to the online migration tool, and place the `bans.json` file you get here: `/resources/vMenu/bans.json` (the migration tool is no longer available)
+- **Step 2.** [Update to the latest version of vMenu](/vmenu/legacy/installation/), start the server and type `vmenuserver migrate` in the server console. This may take some time depending on the amount of bans you have stored. **ONLY RUN THIS COMMAND ONCE, OTHERWISE YOUR BANS WILL BE DUPLICATED**
 - **Step 3** Make sure the bans are imported by joining the server and checking the banned players menu. After that, delete the `bans.json` and `vmenu_bans.db` files, as you'll no longer need them.
 
 
@@ -1052,7 +1052,7 @@ Pfew, that's all. I sure hope you enjoy the update.
 **THIS UPDATE REMOVES THE config.ini FILE AND INSTEAD USES NEW CONVARS IN THE PERMISSIONS. CFG FILE.**
 
 *__Note that this update requires your FXServer artifacts to be up to date (around 801 and up should be fine).__*
-Info on how to setup the new config system can be found on the [configuration](https://docs.vespura.com/vmenu/configuration) page.
+Info on how to setup the new config system can be found on the [configuration](/vmenu/legacy/configuration/) page.
 
 * Improved server-side weather management.
 * Added a new submenu called 'Recording Options', which allows you to start/stop recording using the in-game recording feature. It also allows you to enter the Rockstar Editor.
@@ -1072,7 +1072,7 @@ Info on how to setup the new config system can be found on the [configuration](h
 * Created a new ConfigurationManager. All vMenu configuration options are now handled through a new file called `config.ini` which can be found inside the `\config\` folder. **Convars are no longer being used, from this version on!**
 * Added ELS compatibility config option.
 * Added a new voice chat option, that will display a small icon in the bottom left corner, indicating whether your microphone is muted or if you're talking to the server through voice chat.
-* Added a lot of new configuration options, please check the [updated docs](https://docs.vespura.com/vmenu/configuration) page for info on all the new config options, and how to use them in the new config file!
+* Added a lot of new configuration options, please check the [updated docs](/vmenu/legacy/configuration/) page for info on all the new config options, and how to use them in the new config file!
 * Added `locations.json` . This file is used for configuring pre-set locations to either teleport to or to add as a blip on the map. (permissions support included)
 * vMenu can now be used without having to set up permissions! Simply disable the permissions usage in the config section. Doing this will allow **all** options, **except for actions like kick, ban, unban, kill, etc**.
 
@@ -1266,7 +1266,7 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 ### New permissions in this update
 
 * `vMenu.VehicleOptions.SpecialGod` This allows you to use the new special vehicle god mode feature.
-* (all new weapon permissions have been included in this list: [code](https://hastebin.com/anowahehub.css))
+* (all new weapon permissions have been included in this list: [weapon permissions](/vmenu/legacy/permissions/weapon-permissions/))
 
 ### New convars / settings in this update
 
