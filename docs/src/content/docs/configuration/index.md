@@ -2,7 +2,7 @@
 title: "Configuration Options"
 ---
 
-**Starting from version v1.4.0, vMenu now uses different convars to configure it's options. A list of all available options can be found below. Please note that you need to have a recent server artifacts version (around 804) for this to work. All options can also be found in the permissions.cfg, this is also the place where you can configure them. If you want, you could also move this to the server.cfg, as long as it's above the `start vMenu` line, but for most people it'll be eaiser to just keep the config options in the permissions.cfg.**
+**Starting from version v1.4.0, vMenu now uses different convars to configure its options. A list of all available options can be found below. Please note that you need to have a recent server artifacts version (around 804) for this to work. All options can also be found in the permissions.cfg, which is also the place where you can configure them. If you want, you could also move this to the server.cfg, as long as it's above the `start vMenu` line, but for most people it'll be easier to just keep the config options in the permissions.cfg.**
 
 To set an option, use the following command in the server.cfg or permissions.cfg:
 
@@ -16,9 +16,9 @@ setr vmenu_option_name value
 |`vmenu_menu_staff_only`|`true` / `false`|This option allows you to make this menu staff-only. Anyone with the `vMenu.Staff` permission will be able to use the menu. It will still keep in mind all other permissions, it's just a way of limiting who can open the menu.|
 |`vmenu_menu_toggle_key`|A valid [control ID][control].|Sets the control ID for the key that opens vMenu (keyboard/mouse only, controller key will always be (hold) 'change view/select').|
 |`vmenu_noclip_toggle_key`|A valid [control ID][control].|Sets the control ID for the noclip toggle key (keyboard/mouse only).|
-|`vmenu_keep_spawned_vehicles_persistent`|`true` / `false`|Keeps spawned vehicles persistend if 'replace previous vehicle' is turned off.|
+|`vmenu_keep_spawned_vehicles_persistent`|`true` / `false`|Keeps spawned vehicles persistent if 'replace previous vehicle' is turned off.|
 |`vmenu_enable_weather_sync`|`true` / `false`|Enables/disables weather sync completely.|
-|`vmenu_enable_dynamic_weather`|`true` / `false`|Enbales/disables dynamic weather changes by default. It can still be toggled on/off in-game using the menu.|
+|`vmenu_enable_dynamic_weather`|`true` / `false`|Enables/disables dynamic weather changes by default. It can still be toggled on/off in-game using the menu.|
 |`vmenu_dynamic_weather_timer`|Any [integer][integer] (whole number)|Sets the delay between dynamic weather changes in whole minutes.|
 |`vmenu_default_weather`|A valid weather type|Set the default weather type that will be selected when the resource is loaded.|
 |`vmenu_enable_time_sync`|`true` / `false`|Enables/disables time sync completely.|

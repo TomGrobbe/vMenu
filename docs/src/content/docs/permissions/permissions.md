@@ -21,7 +21,7 @@ title: "Permissions Reference"
 
 |Permission|Description|Default[\*](#global-permissions)|
 |---|---|---|
-|`vMenu.Everything`|Grants access to everything, not recommended to give this out.|**Not** allowed|
+|`vMenu.Everything`|Grants access to everything. It's not recommended to give this out.|**Not** allowed|
 |`vMenu.DontKickMe`|Prevents this player from being kicked.|**Not** allowed|
 |`vMenu.DontBanMe`|Prevents this player from being banned.|**Not** allowed|
 |`vMenu.NoClip`|Allows the user to use the NoClip feature.|Allowed|
@@ -38,7 +38,7 @@ title: "Permissions Reference"
 |`vMenu.OnlinePlayers.Spectate`|Allows you to spectate another player.|Allowed|
 |`vMenu.OnlinePlayers.Identifiers`|Allows you to see the identifiers of a player in-game. (Allowed by default for admins only)|Allowed\*|
 |`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you. (Default: moderators only)|**Not** allowed|
-|`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. Dam, you're very cruel. (Default: moderators only)|**Not** allowed|
+|`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. (Default: moderators only)|**Not** allowed|
 |`vMenu.OnlinePlayers.Kick`|Allows you to kick another player from the server. (Default: moderators only)|**Not** allowed|
 |`vMenu.OnlinePlayers.TempBan`|Allows you to ban the player from the server for a custom amount of time, max temp-ban duration: 30 days. (Default: admins only)|Denied\*|
 |`vMenu.OnlinePlayers.PermBan`|Allows you to ban the player from the server forever. (Default: admin only)|Denied\*\*\*\*|
@@ -53,7 +53,7 @@ title: "Permissions Reference"
 |`vMenu.PlayerOptions.Menu`|Grants access to the Player Options Menu.|Allowed|
 |`vMenu.PlayerOptions.All`|Grants access to **ALL** `Player Options Menu` options.|Allowed|
 |`vMenu.PlayerOptions.God`|Allows you to use god mode.|Allowed|
-|`vMenu.PlayerOptions.Invisible`|Allows you to go invisble.|Allowed|
+|`vMenu.PlayerOptions.Invisible`|Allows you to go invisible.|Allowed|
 |`vMenu.PlayerOptions.UnlimitedStamina`|Allows you to go enable/disable unlimited stamina so you don't take damage after sprinting for 2 seconds.|Allowed|
 |`vMenu.PlayerOptions.FastRun`|Allows you to enable Fast Run.|Allowed|
 |`vMenu.PlayerOptions.FastSwim`|Allows you to enable Fast Swim.|Allowed|
@@ -69,7 +69,7 @@ title: "Permissions Reference"
 |`vMenu.PlayerOptions.DryPlayer`|This allows the player to make their clothes dry in the Player Options menu.|Allowed|
 |`vMenu.PlayerOptions.WetPlayer`|This allows the player to make their clothes wet in the Player Options menu.|Allowed|
 |`vMenu.PlayerOptions.VehicleAutoPilotMenu`|This allows the player to use the vehicle auto pilot options, which is located in the Player Options menu.|Allowed|
-|`vMenu.PlayerOptions.Freeze`|Allows you to freeze your own player. Why would you need to do this though...|Allowed|
+|`vMenu.PlayerOptions.Freeze`|Allows you to freeze your own player.|Allowed|
 |`vMenu.PlayerOptions.Scenarios`|Allows you to play and stop scenarios.|Allowed|
 |`vMenu.PlayerOptions.StayInVehicle`|Gives you access to the "stay in vehicle" option that prevents you from being dragged out of your vehicle.|Allowed|
 
@@ -93,7 +93,7 @@ title: "Permissions Reference"
 |`vMenu.VehicleOptions.Components`|Allows you to modify the components/extras of your vehicle.|Allowed|
 |`vMenu.VehicleOptions.Doors`|Allows you to open/close vehicle doors using the menu.|Allowed|
 |`vMenu.VehicleOptions.Windows`|Allows you to roll up/down your windows using the menu.|Allowed|
-|`vMenu.VehicleOptions.Freeze`|Allows you to freeze the position of your vehicle (why would you do this though...)|Allowed|
+|`vMenu.VehicleOptions.Freeze`|Allows you to freeze the position of your vehicle.|Allowed|
 |`vMenu.VehicleOptions.TorqueMultiplier`|Allows you to set and enable an engine torque multiplier.|Allowed|
 |`vMenu.VehicleOptions.PowerMultiplier`|Allows you to set and enable an engine power multiplier.|Allowed|
 |`vMenu.VehicleOptions.Invisible`|Allows you to toggle vehicle visibility.|Allowed|
@@ -165,7 +165,7 @@ title: "Permissions Reference"
 |`vMenu.PersonalVehicle.KickPassengers`|Allows you to kick all passengers from your vehicle, they will have a 10 second timer to stop the vehicle if they’re driving it. If they refuse to stop then they will be forcefully kicked out of the vehicle after 10 seconds. If they do stop the vehicle within those 10 seconds they’ll automatically be tasked to get out of the vehicle.|Allowed|
 |`vMenu.PersonalVehicle.LockDoors`|This allows you to lock and unlock your personal vehicle’s doors for all players. Anyone inside the vehicle is still able to get out of the vehicle if the doors get locked. If you are close to the vehicle, you can quickly double tap E on keyboard or L3 on controller (the vehicle horn button) to toggle locking/unlocking your doors.|Allowed|
 |`vMenu.PersonalVehicle.AddBlip`|Allows you to add a blip for your personal vehicle.|Allowed|
-|`vMenu.PersonalVehicle.SoundHorn`|Allows you to remotely sound the horn for 1 second. Fucks up if you’re inside the vehicle, so only use it whenever you’re outside of the vehicle for the best effect.|Allowed|
+|`vMenu.PersonalVehicle.SoundHorn`|Allows you to remotely sound the horn for 1 second. It doesn't work well if you’re inside the vehicle, so only use it whenever you’re outside of the vehicle for the best effect.|Allowed|
 |`vMenu.PersonalVehicle.ToggleAlarm`|Remotely toggles the alarm on/off.|Allowed|
 |`vMenu.PersonalVehicle.ExclusiveDriver`|Allows you to be the exclusive driver of the vehicle, preventing other players from getting into the driver's seat.|Allowed|
 |`vMenu.PersonalVehicle.ToggleStance`|Allows you to toggle your vehicle stance.|Allowed|
@@ -240,7 +240,7 @@ title: "Permissions Reference"
 
 ## Misc Settings
 
-**The `Save Personal Settings` option in the Misc Settings Menu is always allowed, so there's no permission line for that. Also the menu itself does not have a permisison to access it, for the same reason why saving preferences is always allowed.**
+**The `Save Personal Settings` option in the Misc Settings Menu is always allowed, so there's no permission line for that. Also the menu itself does not have a permission to access it, for the same reason why saving preferences is always allowed.**
 
 |Permission|Description|Default[\*](#global-permissions)|
 |---|---|---|
@@ -268,7 +268,7 @@ title: "Permissions Reference"
 
 
 ## About Submenu
-The **About vMenu** submenu is always available for everyone, and can not be disabled with the use of permissions. If you don't feel like showing credits to everyone --which seems very selfish to me-- then you'll have to edit the code and disable it yourself, which also means I won't be giving you any support whatsoever.
+The **About vMenu** submenu is always available for everyone, and cannot be disabled with the use of permissions. If you'd prefer not to show credits to everyone, then you'll have to edit the code and disable it yourself. Please note that support is not offered for that kind of modification.
 
 ## Appreciate my work?
 Consider supporting me on [Patreon](https://www.patreon.com/vespura)!

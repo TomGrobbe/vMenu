@@ -3,7 +3,7 @@ title: "locations.json"
 ---
 
 ## About
-In this file you can configure as many blips or teleport locations as you want. The teleport locations are accessable from the Misc Settings menu (scroll down until you see the Teleport Locations button). The blips can also be turned on from the Misc Settings menu (near the player blips option).
+In this file you can configure as many blips or teleport locations as you want. The teleport locations are accessible from the Misc Settings menu (scroll down until you see the Teleport Locations button). The blips can also be turned on from the Misc Settings menu (near the player blips option).
 
 
 ## Blips
@@ -11,7 +11,7 @@ For a list of all possible blip sprite ID's, click [here][blip-sprites].
 
 
 ## Example config
-In this example config I've added 2 example teleport locations, and a total of 4 blip locations. Simply follow the setup below and copy/paste as many new blips/locations as you want. Just make sure you keep track of the brackets and all the comma's in the right places!
+In this example config I've added 2 example teleport locations, and a total of 4 blip locations. Simply follow the setup below and copy/paste as many new blips/locations as you want. Just make sure you keep track of the brackets and all the commas in the right places!
 
 ```json
 {

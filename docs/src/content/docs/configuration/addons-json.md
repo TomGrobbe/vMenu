@@ -8,7 +8,7 @@ The addons.json file (located in `resources\vMenu\config\`) is used to add addon
 
 ## Removing sections
 
-In this file you can list all your addon models. If you want to remove a all addon models from one of the categories below, simply set that category to `[]`, for example, to remove all models set each category to the following:
+In this file you can list all your addon models. If you want to remove all addon models from one of the categories below, simply set that category to `[]`. For example, to remove all models, set each category to the following:
 
 ```json
 {
@@ -20,7 +20,7 @@ In this file you can list all your addon models. If you want to remove a all add
 
 ## Adding models
 
-If you want to add new models, imply add a comma after the last row in a specific category, add a new line below and just copy the format from the line above, replacing the name with your new name.
+If you want to add new models, simply add a comma after the last row in a specific category, add a new line below, and just copy the format from the line above, replacing the name with your new name.
 For example, here I've added 4 extra cars, 1 extra ped and 5 extra weapons:
 
 ```json
@@ -58,7 +58,7 @@ For example, here I've added 4 extra cars, 1 extra ped and 5 extra weapons:
 
 ## Renaming vehicles
 
-Vehicles can not be renamed through vMenu. This would be really easy to add, but because this is not the proper way to name vehicles, I refuse to add an option for it because you should learn to properly add vehicle names. To **properly** set a vehicle's name, follow the easy steps below:
+Vehicles cannot be renamed through vMenu. While this would be fairly easy to add, it is not the recommended way to name vehicles, so vMenu intentionally does not include an option for it. The recommended approach is to add vehicle names properly. To **properly** set a vehicle's name, follow the easy steps below:
 
 1. Go to the `vehicles.meta` file for your vehicle, set the `<gameName>MODELNAME</gameName>` entry to the **vehicle model** name. **Do <u>NOT</u> enter a custom name in there**. For example, if my addonvehicle is called `mgt` in-game (shows up as `mgt` in the addons vehicle spawner/you spawn it by typing `mgt` in the spawn by name function) then set the `gameName` to `mgt` in the `vehicles.meta` file.
 
@@ -75,7 +75,7 @@ Vehicles can not be renamed through vMenu. This would be really easy to add, but
 
 5. Now change the `"MODELNAME"` to your vehicle's spawn name (the same name that you set as the `gameName` in the vehicles.meta file.) In this case: `"mgt"`.
 
-6. Now change the display name. I'm sure you can figure out where you're supposed to enter that.
+6. Now change the display name. Enter it in the second parameter of the `AddTextEntry` call, in place of the placeholder text.
 
 7. The final result should be something like this:<br>
     ```lua

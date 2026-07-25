@@ -44,7 +44,7 @@ The latest DLC vehicles, peds and weapons should now also be included.
 
   Possible Values:
   - `true` Enable the chameleon colour vehicle paints category in the primary colours menu.
-  - `false` chamelon colors will not be available in the menu.
+  - `false` chameleon colors will not be available in the menu.
 
 ### Changes
 Here's a list of all the changes in this update.
@@ -226,7 +226,7 @@ A new section has been added for `weapon_components` in which you can add the na
 * Updated README and a few other Git(Hub) related files.
 * Converted the `__resource.lua` file into a `fxmanifest.lua` file.
 * Cleaned up some code.
-* Removed the feature where your ped would keep it's head gear on while in a vehicle, this apparently caused sync issues for other players whenever you got out of the vehicle.
+* Removed the feature where your ped would keep its head gear on while in a vehicle, this apparently caused sync issues for other players whenever you got out of the vehicle.
 * Added support for Benny's (1) and Benny's (2) vehicle wheel types. Apparently [these were missing](https://forum.cfx.re/t/vmenu-v3-2-0/88868/4606?u=vespura) but luckily someone reported that :tada:
 * Added a paint fade/enveff scale feature (which is also saved/re-applied for saved vehicles now)
 * Updated MenuAPI version
@@ -286,7 +286,7 @@ See this changelog [here](https://github.com/TomGrobbe/vMenu/releases/tag/v3.1.3
 * Fix potential text issue for tempbanning players (discussion about this issue can be found [here](https://github.com/TomGrobbe/vMenu/issues/169))
 * Try/Catch all SQLite code, to try and prevent fatal server crashes that randomly occur.
 * Add finger pointing when pressing B or quickly double tapping the point control on controller (which is the right analog stick/look backwards key)
-* Add body blemishes to the mp ped creator, apparently these were missing, nobody (afaik) reported this to me or if they did then they didn't reminded me about this.
+* Add body blemishes to the mp ped creator, apparently these were missing. As far as I know this wasn't reported, so it went unnoticed for a while.
 * No longer toggle the mini-map radar size when the control for it is disabled (by another resource or mod).
 
 ----------------
@@ -300,7 +300,7 @@ _Only some critical fix with SQLite on linux servers, nothing else changed._
 ## v3.0.1 (March 19 2019)
 
 Small update to address the missing "Save Ped" button in the player appearance menu.
-This update also adds a feature that has been requested many times, which is database support for bans. However, don't get your "hopes" up, because of the following:
+This update also adds a feature that has been requested many times, which is database support for bans. However, please keep your expectations in check, because of the following:
 
 * This is implemented using SQLite, not your normal MySQL database used for many frameworks.
 * This is not 100% tested, use at your own risk right now.
@@ -372,9 +372,9 @@ SQLite was not stress-tested, use at your own risk.
 * Add smooth time transitions.
 * Add timecycle modifiers options into the Misc Settings menu.
 * Added 'tattoo' clothing badges/overlays option to the MP Character 'tattoos' section. (There's more than 700 of these overlays...)
-* CFX: Because of the update to the nuget packages, the vMenuShared project is no longer used. Instead a new folder containing 2 classes is a shared folder for both the client and server project. This This means that the `vMenuShared.net.dll` is no longer used, you can remove this from the vMenu folder.
+* CFX: Because of the update to the nuget packages, the vMenuShared project is no longer used. Instead a new folder containing 2 classes is a shared folder for both the client and server project. This means that the `vMenuShared.net.dll` is no longer used, you can remove this from the vMenu folder.
 * Change the method used to disconnect yourself using the connection options menu, no longer requiring the player to be kicked from the server side.
-* Completely rebuild the Player Appearance menu. Including: animals, male/female ped submenus, online player ped submenu, ability to filter/search for a specific ped, the "fake" names everyone wanted are finally 'added' 😒 and more.
+* Completely rebuild the Player Appearance menu. Including: animals, male/female ped submenus, online player ped submenu, ability to filter/search for a specific ped, the "fake" names that were often requested are now added, and more.
 * Completely refactor internal handling of tattoos data.
 * Disable first person camera when currently using any animal ped, because that causes crashes (both game crashes and birds "crashing" into the ground because you can't fly when in first person).
 * Disable the MP Character editor while inside a vehicle.
@@ -409,7 +409,7 @@ SQLite was not stress-tested, use at your own risk.
 * `vMenu.VehicleOptions.Invisible` Allows you to make a vehicle invisible.
 * `vMenu.VehicleOptions.InfiniteFuel` Allows you to enable the Infinite Fuel option in the vehicle options menu (requires FRFuel).
 * `vMenu.PersonalVehicle.ExclusiveDriver` Allows you to become the exclusive driver of this vehicle.
-* `vMenu.PlayerAppearance.AddonPeds` Allows you to spawn a addon ped from the list. (This is not required to spawn addon peds using the 'spawn by name' option.)
+* `vMenu.PlayerAppearance.AddonPeds` Allows you to spawn an addon ped from the list. (This is not required to spawn addon peds using the 'spawn by name' option.)
 
 ### Convar changes (v2.2.2)
 
@@ -446,7 +446,7 @@ SQLite was not stress-tested, use at your own risk.
 * Add a filter option to the banned players menu. Press the jump key ( `| 22 | INPUT_JUMP | SPACEBAR | X |` ) while the banned players menu is open to filter the list based on (part of) a username. Press the jump key again and leave the input box empty to reset the filter. Alternatively, clicking on a banned players record or backing out of the menu will also reset the filter.
 * Add 'max textures' indicator to clothing and props lists in the MP character creator menu. This makes it easier to find all texture variations for a specific clothing item or ped prop.
 * Add 'Neck Thickness' option to the face shape features menu in the MP character creator menu. This should have been added earlier, but it was never included due to a typo in a for-loop.
-* The Addons Vehicle menu now contains vehicle classes. Each addon car is sorted into it's correct vehicle class category. This should hopefully prevent 200+ vehicles in one single menu.
+* The Addons Vehicle menu now contains vehicle classes. Each addon car is sorted into its correct vehicle class category. This should hopefully prevent 200+ vehicles in one single menu.
 * The update checker will now check if the server is a ZAP-Hosting server. If it is, then it will check the one-click installer version first before marking the vMenu version as outdated. This is done to hopefully prevent unnecessary spam in the console when the one-click installer isn't updated yet.
 * Add 'infinite fuel' option to the vehicle options menu. This requires FRFuel to be installed.
 * Added permission for the addon peds submenu.
@@ -461,7 +461,7 @@ SQLite was not stress-tested, use at your own risk.
 * Fixed: Hide _all_ vehicle options sub-menus when not in any vehicle.
 * Fixed: A couple of crashes/null object exceptions.
 * Fixed: No-clip should now work again when you're in a vehicle that's completely broken/dead.
-* Fixed: Hazard lights / indicator lights should now always turn off when you toggle them off for all vehicles. This apparently didn't work for some vehicles like taxi's, however nobody ever reported it broken... 😕
+* Fixed: Hazard lights / indicator lights should now always turn off when you toggle them off for all vehicles. This apparently didn't work for some vehicles like taxis, and it seems it went unreported for a while. 😕
 * Fixed: Removed the 'spawned saved weapon loadout' message on first join if a weapon loadout was set to 'default' and 'equip on (re)spawn' was enabled.
 * Fixed: Fix players not receiving the 'vMenu is outdated' notification even if it was set to enabled (default) in the permissions.cfg.
 * Fixed: A typo in the banned players menu has been fixed. ('Again' instead of 'Agian').
@@ -492,7 +492,7 @@ SQLite was not stress-tested, use at your own risk.
 * `vMenu.PersonalVehicle.KickPassengers` Allows you to kick all passengers from your vehicle, they will have a 10 second timer to stop the vehicle if they're driving it. If they refuse to stop then they will be forcefully kicked out of the vehicle after 10 seconds. If they do stop the vehicle within those 10 seconds they'll automatically be tasked to get out of the vehicle.
 * `vMenu.PersonalVehicle.LockDoors` This allows you to lock and unlock your personal vehicle's doors for all players. Anyone inside the vehicle is still able to get out of the vehicle if the doors get locked. If you are close to the vehicle, you can quickly double tap E on keyboard or L3 on controller (the vehicle horn button) to toggle locking/unlocking your doors.
 * `vMenu.PersonalVehicle.AddBlip` Allows you to add a blip for your personal vehicle.
-* `vMenu.PersonalVehicle.SoundHorn` Allows you to remotely sound the horn for 1 second. Fucks up if you're inside the vehicle, so only use it whenever you're outside of the vehicle for the best effect.
+* `vMenu.PersonalVehicle.SoundHorn` Allows you to remotely sound the horn for 1 second. It does not work well if you're inside the vehicle, so only use it whenever you're outside of the vehicle for the best effect.
 * `vMenu.PersonalVehicle.ToggleAlarm` Remotely toggles the alarm on/off.
 
 ### Other changes
@@ -623,7 +623,7 @@ There is currently no option to disable this warning, that'll come in a future u
 * Add teleport to waypoint keybind.
 * Set the player back into their vehicle if they changed from ped model/skins.
 * Restore armor whenever a player switches ped models/skins.
-* Add a depreciated notification to the Save Ped function whenever a MP Ped is saved.
+* Add a deprecated notification to the Save Ped function whenever an MP Ped is saved.
 * Hide the radar/minimap when the MP Character Creator is open.
 * Add missing user defaults for keybind options.
 * Change 'max armor' into a list containing multiple armor types/stages (no armor, light armor, standard armor, etc).
@@ -636,18 +636,18 @@ There is currently no option to disable this warning, that'll come in a future u
 * Fix some user defaults not getting saved correctly.
 * Fixed saved vehicles crashing the game (bug introduced after converting to MenuAPI, this was not an issue before in any production version of vMenu and only affected the dev builds).
 * Switch to Appveyor for all future GitHub deployments and dev builds. This replaces travis completely.
-* Fix location & coordinates drawing. And move back the time display to it's old location. (It's still a separate toggle though.)
+* Fix location & coordinates drawing. And move back the time display to its old location. (It's still a separate toggle though.)
 * The menu now works correctly both left and right aligned. You can now instantly switch between left/right menu alignment by toggling the option in the Misc Settings menu.
-* Fix the 'look at' function myself in vMenu's code by changing parameters, since the PR that fixes that has not been build on the FiveM production channel yet (at the time of that commit).
+* Fix the 'look at' function myself in vMenu's code by changing parameters, since the PR that fixes that has not been built on the FiveM production channel yet (at the time of that commit).
 * Re-add the notification for whenever you try to exit the MP Character creator without saving.
 * README.md has been changed slightly.
-* Fix _rare_ weapon attachments bug that was randomly introduced without the code for it every changing. Most likely something internally in GTA (or maybe even FiveM, doubt that though) has changed that broke vMenu's previous setup. All data related to weapons has now been refactored, reworked and should be a lot better now. Also removed duplicate entries and reduced memory usage because of this.
+* Fix _rare_ weapon attachments bug that was randomly introduced without the code for it ever changing. Most likely something internally in GTA (or maybe even FiveM, doubt that though) has changed that broke vMenu's previous setup. All data related to weapons has now been refactored, reworked and should be a lot better now. Also removed duplicate entries and reduced memory usage because of this.
 * Change some descriptions, and other text entries in the menu.
 * Add a Remove All Tattoos button to the tattoos menu.
 * Renaming a saved MP Character now puts the old name in the input box by default. Which should help you change any typos or other small name changes.
 * Fix changing wheel type resetting menu index.
 * Fix window tint showing as 'Green \[7/7\]' when it should have been 'Stock \[1/7\]'.
-* Add FPS warning for Show Location option. It's laggy as hell and I can't fix it.
+* Add FPS warning for Show Location option. It's very laggy and I haven't been able to fix it.
 * Properly fix picking up snowballs.
 * Added a 'default character' option. Go to your 'Saved Characters' in the MP Characters menu and select 'Set As Default Character' on one of them. Next time you (re)spawn you'll be spawning as that character automatically. Server owners can disable this feature globally on the server by setting a convar. Players can disable this themselves in the Misc Settings menu by toggling the Spawn As Default Character checkbox.
 * Added a system that will cleanup old/unused KVP entries.
@@ -702,7 +702,7 @@ vMenu v2 contains a lot of performance improvements (also due to the changes tha
 
 1. You can NOT save existing peds made through vMenu, or some other mod/resource. You can only save/create/edit/spawn characters created through this new menu inside vMenu. This is due to GTA limitations.
 2. You should NOT edit your saved character through the 'Player Appearance' menu after you've created it in the 'MP Character' menu. Customizations done there will NOT be saved to your character.
-3. Some options like Tattoos are not (yet) available. Tattoos probably won't be added due to a large number of impossible challenges to overcome. Mainly 'getting' the current tattoos on a ped, and 'removing a specific tattoo'. Which are both impossible. Don't even start with "but SkinControl has it". No, it doesn't. SkinControl basically commented in their code "fuck this part, it's impossible" and they manually set everything to -1 (making it useless for our purpose).
+3. Some options like Tattoos are not (yet) available. Tattoos probably won't be added due to a large number of impossible challenges to overcome. Mainly 'getting' the current tattoos on a ped, and 'removing a specific tattoo'. Which are both impossible. And to address the common question of "but SkinControl has it": it doesn't. SkinControl basically gave up on that part in their code because it's impossible, and they manually set everything to -1 (making it useless for our purpose).
 
 Some cool but useless stats about this update: **40** files changed. **77, 544** additions and **1, 295** deletions.
 
@@ -778,14 +778,14 @@ The pistol animation now actually has a real firing gun in it as well.
 * Internal: Reset the experimental features to be enabled/disabled based on the config option in the `__resource.lua` file.
 * Fixed some typos.
 * Change how vMenu hides hud elements as well as change when vMenu should hide certain hud elements created by vMenu.
-* No-reload option is now changed, it acts more like infinite ammo but this way it stops the rapid-fire revolvers and stops other mk2 weapons from completely going insane. Also fixes a issue when no-reload was on while in a vehicle.
+* No-reload option is now changed, it acts more like infinite ammo but this way it stops the rapid-fire revolvers and stops other mk2 weapons from completely going insane. Also fixes an issue when no-reload was on while in a vehicle.
 * NoClip: change (increase) max speed and add some more in-between speeds as well.
-* Like mentioned before, the 'Player Functions' in 'Player Options' is now separated into multiple buttons, each having it's own permission node.
+* As mentioned before, the 'Player Functions' in 'Player Options' is now separated into multiple buttons, each having its own permission node.
 * Create a small JS script which will be used in a future version of vMenu. To be continued...
 * Some MP Ped re-structuring and preparations for future development related to mp peds.
 * Fix fast running & fast swimming options not being set/saved correctly.
 * Add missing DLC vehicles to the Vehicle Spawner menu.
-* Fix bullet proof tires option not working correctly. Will now als be locked if godmode is enabled and restore to the previous setting if godmode is disabled.
+* Fix bullet proof tires option not working correctly. Will now also be locked if godmode is enabled and restore to the previous setting if godmode is disabled.
 
 Pfew, that's all. I sure hope you enjoy the update.
 
@@ -793,7 +793,7 @@ Pfew, that's all. I sure hope you enjoy the update.
 
 ## v1.4.0 (October 6 2018)
 
-* Fixed time jumping/glichyness that appeared since v1.3.0.
+* Fixed time jumping/glitchiness that appeared since v1.3.0.
 * Added missing DLC vehicles into the Vehicle Spawner menu.
 * Upgrade vMenu's config system once again.
 
@@ -978,7 +978,7 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 * [63d7667](https://github.com/TomGrobbe/vMenu/commit/63d7667c3d83170027c4eff27331e7d4b88ff9b2) update: (dev change) cleaned up code internally.
 * [07c28be](https://github.com/TomGrobbe/vMenu/commit/07c28be661bca26fdb517583f54738eb6da5e164) update: (dev change) added more comments to some parts of the code.
 * [e9df970](https://github.com/TomGrobbe/vMenu/commit/e9df97005c2c04cbca80d9b584255d161fd803f8) update: (dev change) testing dll for nativeui (this commit was broken, has been fixed in future commit).
-* [4d2bd20](https://github.com/TomGrobbe/vMenu/commit/4d2bd200e15c96d1bd459d36f972a66492f9bc0f) update: (dev change) moved the order in wich a menu gets created and refreshed/updated.
+* [4d2bd20](https://github.com/TomGrobbe/vMenu/commit/4d2bd200e15c96d1bd459d36f972a66492f9bc0f) update: (dev change) moved the order in which a menu gets created and refreshed/updated.
 * [eb7f014](https://github.com/TomGrobbe/vMenu/commit/eb7f0140bfca8556f88d7c14a7457d04c62511c1) update: (dev change) added loading/saving of json strings to user saved data. (used for experimental features)
 * [0fe49a0](https://github.com/TomGrobbe/vMenu/commit/0fe49a08977aca71a35d7ae6181786af3f58f6d2) update: more attempts at fixing the random issue someone was having regarding banning players breaking randomly. (not really any progress on finding the cause)
 * [a89b479](https://github.com/TomGrobbe/vMenu/commit/a89b4798ed391e9ef8ca5d89d4cbf304f7116b5a) update: notifications above the minimap will now blink by default, this is useful when multiple messages are shown at the same time, and the same message already on the screen is being shown again, then you will now see which notification just got triggered.
@@ -1044,13 +1044,13 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 * fixed index out of range exception when pressing "enter" in an empty submenu.
 * fixed typo making the "no bike helmet" option save correctly now when pressing "save preferences".
 * fixed a mistake in the default permissions.cfg file that prevented the `DontBanMe` permission from working (if you customized/changed it, then it would've worked just fine)
-* fixed and cleaned up some random minor things, and changed license because of too many idiots abusing the old license.
+* fixed and cleaned up some random minor things, and changed license because too many people were abusing the old license.
 
 ----------------
 
 ## v1.1.1 (April 16 2018)
 
-* Added _full_ weapons permissions support (each weapon has it's own permission now).
+* Added _full_ weapons permissions support (each weapon has its own permission now).
 * Added gameplay camera rotation locking.
 * Fixed kicking, summoning and killing.
 * Added ban and tempban options.
@@ -1077,7 +1077,7 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 * 9de2eea Fixed addon list permission bug for vehicle spawning. This list will now also check for vehicle classes permissions.
 * 65ce0b5 Improved some "spacer items centering" internal functions (used in the new Weapon Options menu and the Vehicle Colors submenu).
 * 087a589 Fixed/improved vehicle and player freezing/unfreezing, allowing for better compatibility with other resources relying on the player to be frozen without external resources trying to unfreeze the entity constantly.
-* d1e5b0f Fixed an issue which allowed certain people who think they're cool abuse the kick/summon/kill options by injecting code into the game and creating fake events. It's unlikely this has been used a lot, if at all, so  it's nothing to worry about. Especially because it's now fixed 😊.
+* d1e5b0f Fixed an issue which allowed people to abuse the kick/summon/kill options by injecting code into the game and creating fake events. It's unlikely this has been used a lot, if at all, so it's nothing to worry about. Especially because it's now fixed 😊.
 * c1e8aa8 Fixed saved vehicles being spawned multiple times when opening/closing the menu a lot and disabling "replace previous vehicle". Thanks to [Deltanic](https://github.com/Deltanic) for reporting this some time ago and helping me test/debug this issue.
 * fa28ac9 Also reported by Deltanic, was that sometimes your car would not be deleted/placed on the ground correctly when already in a vehicle and spawning a new one. This is now changed so if you disabled "replace previous vehicle" and you spawn a new car while already being inside one, your old one won't be deleted and your new car will spawn in front of your old car.
 
@@ -1090,11 +1090,11 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 ### Bug fixes, new features and some features have changed. Also quite a few internal changes
 
 * Added more realistic suicide options. (random: 50/50 chance: either take the pill, or shoot yourself in the head (currently slightly bugged because the gun does not make any sound when the animation is playing, still need to figure out how to solve that).
-* Changed unlimited stamina to use stats instead of a repeating native call. Also included driving, flying shooting, and other MP stats to be 100% at all times. This also greatly increases the max ammo count for weapons 🙂
+* Changed unlimited stamina to use stats instead of a repeating native call. Also included driving, flying, shooting, and other MP stats to be 100% at all times. This also greatly increases the max ammo count for weapons 🙂
 * Improved performance and fix incompatibility issues with _some_ other [random] resources. Help text being drawn by buggy resources could cause issues for vMenu. Not sure if it's fixed 100% but I guess we'll find out for sure when this update is shipped out.
 * Added more debugging when debug mode is on. I'm trying to figure out an issue relating vehicles not being deleted or spawning x amount of times instead of only once when toggling "Replace Previous Vehicle" on/off repeatedly, this bug is still in this version as I'm still not sure how to solve it. For the time being, just keep Replace Previous Vehicle turned on to prevent this.
 * Fixed another couple of NativeUI bugs, hopefully reducing the weird positioning on some systems -although the previous 6 million of those "fixes" didn't seem to work either so I doubt it'll improve anything- it's worth a try.
-* Switched to another version of Newtonsoft. Json. It's now compatible for client and server side. Saving things to the client will now be done using Newtonsoft. Json instead of my own hacky json parser functions. This will allow for improved saving in the future. For now I've just tried to keep compatibility with existing save files and also keep backwards compatibility for servers using older versions of vMenu. However if I decide to update the system completely, it might mean you either lose your custom saves, or you loose access to them on certain servers using outdated versions of vMenu. Though that's planned for another update.
+* Switched to another version of Newtonsoft. Json. It's now compatible for client and server side. Saving things to the client will now be done using Newtonsoft. Json instead of my own hacky json parser functions. This will allow for improved saving in the future. For now I've just tried to keep compatibility with existing save files and also keep backwards compatibility for servers using older versions of vMenu. However if I decide to update the system completely, it might mean you either lose your custom saves, or you lose access to them on certain servers using outdated versions of vMenu. Though that's planned for another update.
 * Added the `vMenu.VehicleSpawner.DisableReplacePrevious` permission. This is now required in order to be able to turn _off_ the "Replace Previous Vehicle" toggle. This is to give server owners the ability to protect their servers against vehicle spawn spam.
 * Last but not least, some misc improvements, not very noticeable but it was needed to get the resource more organized.
 
@@ -1104,7 +1104,7 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 
 * Fixed addon.json file not being loaded properly.
 * Fixed weapon spawning and setting all ammo permissions.
-* Added new DLC vehicles to the the correct vehicle classes/categories. (Note, at the time of writing this you still need to get [Blü's resource to add the vehicles here](https://forum.fivem.net/t/mp-assault-vehicles-in-fivem/93153?u=vespura).
+* Added new DLC vehicles to the correct vehicle classes/categories. (Note, at the time of writing this you still need to get [Blü's resource to add the vehicles here](https://forum.fivem.net/t/mp-assault-vehicles-in-fivem/93153?u=vespura).
 * Added night vision and thermal vision in the Misc Settings menu. Required permissions are: `vMenu.MiscSettings.NightVision` and `vMenu.MiscSettings.ThermalVision` .
 * Updated instructions, readme and permissions list on the GitHub wiki pages as well as in the provided readme.md and permissions.md files in the repository.
 * Also updated the Travis builds, however this has nothing to do with vMenu features/bugfixes.
@@ -1136,7 +1136,7 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 
 * Fixed a small issue regarding the window title when getting user input (the black input box).
 * Fixed saved cars (old format) not being converted/saved correctly to the new format. The save was fine, but it used the wrong save name when re-saving. This is now fixed.
-* Attempted another fix/improvement that has to do with the car spawning and deleting bug. It works fine for me, not sure if others will have issues with it. Just note that if you see something like this in the console: `Invalid network/entity ID` that is **NOT** caused by vMenu. It's _another_ scrip that fails to handle Network ID's correctly.
+* Attempted another fix/improvement that has to do with the car spawning and deleting bug. It works fine for me, not sure if others will have issues with it. Just note that if you see something like this in the console: `Invalid network/entity ID` that is **NOT** caused by vMenu. It's _another_ script that fails to handle Network ID's correctly.
 
 ----------------
 
@@ -1144,9 +1144,9 @@ To unban a player using the server console, type `vmenuserver unban "<playername
 
 ### Fixes (v1.0.6)
 
-* Fixed 2k/ultra wide monitors from freaking the fuck out when opening the menu (sometimes).
+* Fixed 2k/ultra wide monitors from breaking badly when opening the menu (sometimes).
 * Improved teleporting to waypoint, it's now a _lot_ less common to get the "could not teleport" error and be teleported randomly near the original waypoint, instead you'll now often be teleported exactly to the waypoint (if possible).
-* Almost certainly fixed the vehicle despawn issue. Can't confirm that it's 100% fixed as i've spend 5 minutes spawning new vehicles non stop, and it worked fine every time, but I've not tested it a 2 million and 10th times... Only time will tell if this actually worked.
+* Almost certainly fixed the vehicle despawn issue. Can't confirm that it's 100% fixed as I've spent 5 minutes spawning new vehicles non stop, and it worked fine every time, but I've not tested it a 2 million and 10th times... Only time will tell if this actually worked.
 * Solved some other small bugs I noticed while trying to figure out the bug mentioned above and also fixed those and cleaned up the code a lot regarding the spawning of vehicles.
 
 ----------------
