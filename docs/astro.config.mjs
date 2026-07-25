@@ -30,6 +30,8 @@ export default defineConfig({
       logo: { src: './src/assets/logo.png', alt: 'vMenu', replacesTitle: false },
       // Add an "vMenu Enhanced Docs (coming soon)" link into the header nav.
       components: { SocialIcons: './src/components/SocialIcons.astro' },
+      // Retarget the header logo + title link at the site root (see src/routeData.ts).
+      routeMiddleware: './src/routeData.ts',
       head: [
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },
