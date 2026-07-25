@@ -4,15 +4,30 @@ title: "Permissions Reference"
 
 ## List of ALL permissions
 
+This page lists **every** permission (ace) that vMenu has, grouped per menu. You give these to your players with `add_ace` — if you're not sure how, read the step-by-step [Permissions guide](/vmenu/legacy/permissions/) first.
+
+Two special permissions show up in almost every category, and they trip a lot of people up:
+
+- **`.Menu`** — lets a player *open* that submenu. Without it, the entire submenu is hidden from them.
+- **`.All`** — grants *every* option inside that submenu at once. It also **overrides** the individual options, so if you want to deny just one option, you must **not** grant `.All` for that menu (see [Denying certain permissions](/vmenu/legacy/permissions/#denying-certain-permissions)).
+
+The **Default** column tells you whether a normal player has each permission when you use the unmodified default `permissions.cfg`. The `*` symbols are explained in the note right below.
+
 ## Global Permissions
 
 
 :::note
 
-**1\)** __\*__ The `Default (allowed/denied)` values are based on the assumption that you use the default permissions file included with the menu, and you've granted yourself no special permissions or added yourself to any of the admin/moderator groups. If you **DON'T** use the default permissions file, then every option will be **DENIED** by default.
-<br><br>**2\)** __\*\*__ These options are only allowed by default for the "Moderators" / "Admins" groups in the provided permissions file with this resource.
-<br><br>**3\)** __\*\*\*__ When spawning a car using the `Spawn By Name` button, it will always check to see if you have permission for that specific vehicle's class. eg: If you don't have permission to spawn cars from the `Super` class, trying to spawn an `adder` using the `Spawn By Name` button won't work.
-<br><br>**4\)** __\*\*\*\*__ Only admins are allowed to use this by default.
+**How to read the "Default" column**
+
+The **Default** column assumes you are using the **unmodified** default `permissions.cfg` that ships with vMenu, and that you have not added yourself to any group. If you **don't** use the default permissions file, then **every** option is **denied** until you specifically allow it.
+
+The symbols mean:
+
+- __\*__ — Only allowed because the default permissions file grants it. If you replace or remove that file, it becomes denied.
+- __\*\*__ — Allowed by default only for the **Moderator** / **Admin** groups.
+- __\*\*\*__ — The `Spawn By Name` button still checks the vehicle's class. For example, if you're not allowed to spawn `Super` cars, then typing `adder` won't work either.
+- __\*\*\*\*__ — Allowed by default for **Admins** only.
 
 :::
 
@@ -36,6 +51,7 @@ title: "Permissions Reference"
 |`vMenu.OnlinePlayers.Teleport`|Allows you to teleport to another player.|Allowed|
 |`vMenu.OnlinePlayers.Waypoint`|Allows you to set a waypoint to another player.|Allowed|
 |`vMenu.OnlinePlayers.Spectate`|Allows you to spectate another player.|Allowed|
+|`vMenu.OnlinePlayers.SendMessage`|Allows you to send a private message to another online player.|Allowed|
 |`vMenu.OnlinePlayers.Identifiers`|Allows you to see the identifiers of a player in-game. (Allowed by default for admins only)|Allowed\*|
 |`vMenu.OnlinePlayers.Summon`|Allows you to summon/teleport another player to you. (Default: moderators only)|**Not** allowed|
 |`vMenu.OnlinePlayers.Kill`|Allows you to kill another player by pressing a button. (Default: moderators only)|**Not** allowed|
@@ -54,7 +70,7 @@ title: "Permissions Reference"
 |`vMenu.PlayerOptions.All`|Grants access to **ALL** `Player Options Menu` options.|Allowed|
 |`vMenu.PlayerOptions.God`|Allows you to use god mode.|Allowed|
 |`vMenu.PlayerOptions.Invisible`|Allows you to go invisible.|Allowed|
-|`vMenu.PlayerOptions.UnlimitedStamina`|Allows you to go enable/disable unlimited stamina so you don't take damage after sprinting for 2 seconds.|Allowed|
+|`vMenu.PlayerOptions.UnlimitedStamina`|Allows you to enable/disable unlimited stamina, so you can keep sprinting or swimming without getting tired.|Allowed|
 |`vMenu.PlayerOptions.FastRun`|Allows you to enable Fast Run.|Allowed|
 |`vMenu.PlayerOptions.FastSwim`|Allows you to enable Fast Swim.|Allowed|
 |`vMenu.PlayerOptions.Superjump`|Allows you to enable Superjump.|Allowed|
@@ -68,6 +84,8 @@ title: "Permissions Reference"
 |`vMenu.PlayerOptions.CleanPlayer`|This allows the player to clean their player clothes in the Player Options menu.|Allowed|
 |`vMenu.PlayerOptions.DryPlayer`|This allows the player to make their clothes dry in the Player Options menu.|Allowed|
 |`vMenu.PlayerOptions.WetPlayer`|This allows the player to make their clothes wet in the Player Options menu.|Allowed|
+|`vMenu.PlayerOptions.ClearBlood`|Allows you to clear the blood and damage decals off your player ped.|Allowed|
+|`vMenu.PlayerOptions.SetBlood`|Allows you to set/apply a blood & damage level on your player ped.|Allowed|
 |`vMenu.PlayerOptions.VehicleAutoPilotMenu`|This allows the player to use the vehicle auto pilot options, which is located in the Player Options menu.|Allowed|
 |`vMenu.PlayerOptions.Freeze`|Allows you to freeze your own player.|Allowed|
 |`vMenu.PlayerOptions.Scenarios`|Allows you to play and stop scenarios.|Allowed|
@@ -109,10 +127,12 @@ title: "Permissions Reference"
 |`vMenu.VehicleOptions.Underglow`|Allows you to access the vehicle underglow options submenu.|Allowed|
 |`vMenu.VehicleOptions.FlashHighbeamsOnHonk`|Allows you to enable/disable the 'Flash highbeams on Honk' option.|Allowed|
 |`vMenu.VehicleOptions.DisableTurbulence`|Allows you to disable plane and helicopter turbulence.|Allowed|
+|`vMenu.VehicleOptions.AnchorBoat`|Allows you to toggle the boat anchor, keeping a boat in place on the water (only works while you're in a boat).|Allowed|
 |`vMenu.VehicleOptions.FixOrDestroyTires`|Allows you to use the tire fix/destroy list option to fix or destroy specific vehicle tires through the menu.|Allowed|
 |`vMenu.VehicleOptions.Flares`|Unused for now.|N/A|
 |`vMenu.VehicleOptions.PlaneBombs`|Unused for now.|N/A|
 |`vMenu.VehicleOptions.DestroyEngine`|Allows the player to destroy their engine.|Allowed|
+|`vMenu.VehicleOptions.BypassExtraDamage`|Allows you to change vehicle extras even when the vehicle is damaged, bypassing the `vmenu_prevent_extras_when_damaged` config restriction.|Allowed|
 
 ## Vehicle Spawner
 
@@ -120,6 +140,7 @@ title: "Permissions Reference"
 |---|---|---|
 |`vMenu.VehicleSpawner.Menu`|Grants access to the Vehicle Spawner Menu.|Allowed|
 |`vMenu.VehicleSpawner.All`|Allows you to spawn **ANY** vehicle.|Allowed|
+|`vMenu.VehicleSpawner.BypassRateLimit`|Allows you to bypass the vehicle spawn delay (`vmenu_vehicle_spawn_delay`), so you can spawn vehicles without waiting between spawns.|Allowed|
 |`vMenu.VehicleSpawner.DisableReplacePrevious`|Allows you to disable the "Replace Previous" vehicle option, if this is not allowed, then the option will be forced on.|Allowed|
 |`vMenu.VehicleSpawner.SpawnByName`|Allows you to enter a **custom vehicle name** to spawn[\*\*\*](#global-permissions).|Allowed|
 |`vMenu.VehicleSpawner.Addon`|Allows you to spawn a vehicle from the Addon Vehicles list (requires vMenu v1.0.7+).|Allowed|
@@ -145,6 +166,7 @@ title: "Permissions Reference"
 |`vMenu.VehicleSpawner.Military`|Allows you to spawn a vehicle from this category.|Allowed|
 |`vMenu.VehicleSpawner.Commercial`|Allows you to spawn a vehicle from this category.|Allowed|
 |`vMenu.VehicleSpawner.Trains`|Allows you to spawn a vehicle from this category.|Allowed|
+|`vMenu.VehicleSpawner.OpenWheel`|Allows you to spawn a vehicle from this category.|Allowed|
 
 ## Saved Vehicles
 
@@ -164,6 +186,7 @@ title: "Permissions Reference"
 |`vMenu.PersonalVehicle.ToggleLights`|Allows you to toggle the lights state remotely for your personal vehicle.|Allowed|
 |`vMenu.PersonalVehicle.KickPassengers`|Allows you to kick all passengers from your vehicle, they will have a 10 second timer to stop the vehicle if they’re driving it. If they refuse to stop then they will be forcefully kicked out of the vehicle after 10 seconds. If they do stop the vehicle within those 10 seconds they’ll automatically be tasked to get out of the vehicle.|Allowed|
 |`vMenu.PersonalVehicle.LockDoors`|This allows you to lock and unlock your personal vehicle’s doors for all players. Anyone inside the vehicle is still able to get out of the vehicle if the doors get locked. If you are close to the vehicle, you can quickly double tap E on keyboard or L3 on controller (the vehicle horn button) to toggle locking/unlocking your doors.|Allowed|
+|`vMenu.PersonalVehicle.Doors`|Allows you to open and close the individual doors of your personal vehicle from the menu.|Allowed|
 |`vMenu.PersonalVehicle.AddBlip`|Allows you to add a blip for your personal vehicle.|Allowed|
 |`vMenu.PersonalVehicle.SoundHorn`|Allows you to remotely sound the horn for 1 second. It doesn't work well if you’re inside the vehicle, so only use it whenever you’re outside of the vehicle for the best effect.|Allowed|
 |`vMenu.PersonalVehicle.ToggleAlarm`|Remotely toggles the alarm on/off.|Allowed|
@@ -198,6 +221,7 @@ title: "Permissions Reference"
 |`vMenu.WeatherOptions.All`|Grants access to **ALL** `Weather Options Menu` options.|**Not** allowed|
 |`vMenu.WeatherOptions.Dynamic`|Allows you to enable/disable dynamic weather changes (which, when enabled, occur every 5 minutes). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
 |`vMenu.WeatherOptions.Blackout`|Allows you to enable/disable blackout mode (all light sources in the map go dark). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
+|`vMenu.WeatherOptions.VehBlackout`|Allows you to enable/disable vehicle blackout mode, which turns the lights off on all vehicles. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
 |`vMenu.WeatherOptions.SetWeather`|Allows you to set a custom weather type. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
 |`vMenu.WeatherOptions.RemoveClouds`|Allows you to remove all cloud effects (only use this with Clear or Extra Sunny weather, obviously). (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
 |`vMenu.WeatherOptions.RandomizeClouds`|Allows you to randomize the cloud patterns/effects. (Synced for everyone in the server)|Denied[\*\*](#global-permissions)|
@@ -264,6 +288,7 @@ title: "Permissions Reference"
 |`vMenu.MiscSettings.TeleportSaveLocation`|Allows you to save a new location to the "Teleport Locations" menu, which will also get saved to the locations.json file. (not allowed by default if you use the new permissions.cfg in this update, otherwise EVERYONE may be able to use this so be careful!)|**Not Allowed**|
 |`vMenu.MiscSettings.TeleportToCoord`|Allows you to teleport to any coordinate you enter.|Allowed|
 |`vMenu.MiscSettings.EntitySpawner`|Allows you to use the entity spawner option inside Misc Settings > Developer Tools.|**Not Allowed**|
+|`vMenu.MiscSettings.DevTools`|Allows you to open the Developer Tools submenu in Misc Settings. Only granted to the `developer` group in the default permissions file.|**Not Allowed**|
 
 
 

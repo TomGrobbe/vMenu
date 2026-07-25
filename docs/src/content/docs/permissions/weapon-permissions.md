@@ -120,6 +120,11 @@ add_ace builtin.everyone "vMenu.WeaponOptions.CandyCane" allow # mpchristmas3 dl
 add_ace builtin.everyone "vMenu.WeaponOptions.RailgunXM3" allow # mpchristmas3 dlc (2802)
 add_ace builtin.everyone "vMenu.WeaponOptions.AcidPackage" allow # mpchristmas3 dlc (2802)
 add_ace builtin.everyone "vMenu.WeaponOptions.TecPistol" allow # mp2023_01 dlc (2944)
+add_ace builtin.everyone "vMenu.WeaponOptions.BattleRifle" allow # mp2023_02 dlc (3095)
+add_ace builtin.everyone "vMenu.WeaponOptions.SnowLauncher" allow # mp2023_02 dlc (3095)
+add_ace builtin.everyone "vMenu.WeaponOptions.HackingDevice" allow # mp2023_02 dlc (3095)
+add_ace builtin.everyone "vMenu.WeaponOptions.StunRod" allow # mp2024_01 dlc (3258)
+add_ace builtin.everyone "vMenu.WeaponOptions.Newspaper" allow # mp2025_02 dlc (3717)
 ```
 
 ## Appreciate my work?

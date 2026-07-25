@@ -17,6 +17,8 @@ vMenu uses the default Aces & Principals system available in FiveM. I've made a 
 <br>Aces (`vMenu.PlayerOptions.Menu`, for example) are what you want to _give_ to your players. With such an Ace/permission, a player will be able to access different parts of the menu and perform different actions.
 2. **Groups are called Principals**
 <br>Giving permissions to every single player individually would take a lot of time. That's where Principals (groups) come in to play. You can give permissions to a specific Principal, and add Players to a principal. You can also add principals to other principals, allowing an inheritance-like permissions system to improve your setup. <br>You can create as many groups/Principals as you want, and you can also name them whatever you want.
+3. **Two aces you'll see everywhere: `.Menu` and `.All`**
+<br>Almost every menu has a `.Menu` ace and an `.All` ace. The `.Menu` ace lets a player *open* that submenu — without it, the submenu is completely hidden from them. The `.All` ace grants *every* option inside that submenu in one go, so you don't have to list them one by one. One important thing to remember: `.All` **overrides** the individual options, so if you ever want to block just one option in a menu, you must **not** give out that menu's `.All` ace (more on that in the "Denying certain permissions" section below).
 
 --------
 
@@ -118,6 +120,28 @@ See how the `.Teleport` line is commented out? That will `deny` that option in t
 
 ----------
 
+### A complete example
+
+Let's put everything above together. Say you want an **admin** group that can use the whole Online Players menu, and can also open the Player Options menu — but for Player Options you only want to hand out a couple of specific options (god mode and invisibility) instead of all of them. Your `permissions.cfg` would look like this:
+
+```yaml
+# 1. Create the group and add yourself to it (using your steam identifier here)
+add_principal identifier.steam:110000101234567 group.admin
+
+# 2. Let the group open the Online Players menu AND use every option in it
+add_ace group.admin "vMenu.OnlinePlayers.Menu" allow
+add_ace group.admin "vMenu.OnlinePlayers.All" allow
+
+# 3. Let the group open the Player Options menu, but only grant god mode + invisibility
+add_ace group.admin "vMenu.PlayerOptions.Menu" allow
+add_ace group.admin "vMenu.PlayerOptions.God" allow
+add_ace group.admin "vMenu.PlayerOptions.Invisible" allow
+```
+
+See the difference between the two menus? For **Online Players** we granted `.All`, so the group gets *every* option in that menu. For **Player Options** we did **not** grant `.All` — we granted `.Menu` (to open it) plus only the two options we actually want, so the group gets *just* those two and nothing else.
+
+----------
+
 ### Setting up group inheritance
 
 Manually adding all permissions to every single group takes a lot of time. There's a much better and faster way to go about it, using group inheritance.
@@ -195,7 +219,7 @@ Note, inheritance works recursive. In the example above, `group.superadmin` gets
 
 
 
-That's all there is to it. You now know everything you need to know to set up vMenu's permissions. If you have any questions, please read the [FAQ page](/vmenu/legacy/faq) first, then read this page again, then read [this topic](https://forum.fivem.net/t/basic-aces-principals-overview-guide/90917?u=vespura), and then feel free to ask on the [vMenu topic](https://vespura.com/vmenu) (note that there is only community support on the forum topic because vMenu is no longer supported by myself). You could also check the `#vmenu-help-archived` channel in my [Discord server](https://vespura.com/discord). Please note that support is no longer offered directly in the Discord, so the forum topic is the best place to ask.
+That's all there is to it. You now know everything you need to know to set up vMenu's permissions. If you have any questions, please read the [FAQ page](/vmenu/legacy/faq/) first, then read this page again, then read [this topic](https://forum.fivem.net/t/basic-aces-principals-overview-guide/90917?u=vespura), and then feel free to ask on the [vMenu topic](https://vespura.com/vmenu) (note that there is only community support on the forum topic because vMenu is no longer supported by myself). You could also check the `#vmenu-help-archived` channel in my [Discord server](https://vespura.com/discord). Please note that support is no longer offered directly in the Discord, so the forum topic is the best place to ask.
 
 ----
 
