@@ -71,7 +71,7 @@ config/templates/SupplementaryPermissionTemplate.cfg
 
 This file is regenerated every time the vMenu resource starts, and it always overwrites the previous version. It contains a header and one ready to use permission line for each whitelisted model, along with the two catch all permissions. Using the example above, the generated file looks like this:
 
-```cfg
+```bash
 #################################################################
 #                   THIS IS A TEMPLATE FILE.                    #
 #          DO NOT EDIT, MAKE A COPY AND EDIT THE COPY.          #
@@ -114,7 +114,7 @@ Once the template file has been generated, the workflow is:
 3. Open `config/templates/SupplementaryPermissionTemplate.cfg` and copy the lines you want into your `permissions.cfg`.
 4. In `permissions.cfg`, change `builtin.everyone` to the group or ace that you want to give access to, and use `allow` or `deny` as needed. For example, to allow only your VIP group to spawn the Adder:
 
-```cfg
+```bash
 add_ace group.vip "vMenu.VehicleSpawner.WhitelistedModels.adder" allow
 ```
 

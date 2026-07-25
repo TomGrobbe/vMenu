@@ -21,6 +21,12 @@ export default defineConfig({
       description: 'Documentation for vMenu — a server-sided trainer/menu for FiveM.',
       favicon: '/favicon.png',
       customCss: ['./src/styles/cartoon.css'],
+      // Give Expressive Code an explicit dark + light theme pair. Setting custom
+      // themes turns off Starlight's UI theme colors for code blocks, so each
+      // block now takes its background from its own theme. That fixes the earlier
+      // low contrast issue where dark theme tokens were drawn on a light
+      // background. Starlight needs at least one dark and one light theme here.
+      expressiveCode: { themes: ['github-dark', 'github-light'] },
       logo: { src: './src/assets/logo.png', alt: 'vMenu', replacesTitle: false },
       // Add an "vMenu Enhanced Docs (coming soon)" link into the header nav.
       components: { SocialIcons: './src/components/SocialIcons.astro' },
