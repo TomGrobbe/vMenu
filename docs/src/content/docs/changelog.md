@@ -4,6 +4,245 @@ title: "Changelog"
 
 ----------------
 
+## vMenu v3.8.24 (July 25 2026)
+
+### Changed
+- Began migrating the documentation from the separate docs repository into GitHub Pages, by Tom Grobbe. This release is a work in progress test of the deployment.
+
+----------------
+
+## vMenu v3.8.23 (July 22 2026)
+
+### Fixed
+- Added the missing templates folder, by Ricky Merc.
+
+----------------
+
+## vMenu v3.8.22 (July 8 2026)
+
+### Fixed
+- Fixed an RGB paint material issue in CommonFunctions, by Ricky Merc (#629).
+
+----------------
+
+## vMenu v3.8.21 (July 3 2026)
+
+### Fixed
+- Fixed permission checking for addon vehicle models, which was broken, by Ricky Merc (#626).
+
+----------------
+
+## vMenu v3.8.20 (July 1 2026)
+
+### Fixed
+- Added the missing templates folder, by Ricky Merc.
+
+----------------
+
+## vMenu v3.8.14, v3.8.15 and v3.8.19 (June 5 2026)
+
+### Added
+- Added a supplemental permissions pilot, by Tom Grobbe (#619).
+
+### Changed
+- Updated the gitignore file, by Tom Grobbe.
+
+### Fixed
+- Fixed several vehicle bugs related to spelling and missing text fields, by Ricky Merc (#609).
+- Fixed the vehicle headlight index going out of range, by Ricky Merc (#609).
+- Fixed a bug with underglow colour grabbing, by Ricky Merc (#609).
+- Fixed the continuous integration workflow to truncate the Discord commit field, avoiding a 400 error on long messages, by Tom Grobbe.
+
+----------------
+
+## vMenu v3.8.8 (April 6 2026)
+
+### Added
+- Added support for custom tattoos, hair tattoos, and all known tattoos and badges up to 2026, by Christopher M.
+- Added support for custom blendable faces and granular face skin selection, along with an `extra_blendable_faces` entry in `addons.json`, by Christopher M.
+- Added a `tattoos.json` config file, by Christopher M.
+- Added the ability to save addon weapons to Weapon Loadouts, by Tom Grobbe (#604).
+- Added an explicit on and off button for overriding a vehicle's default radio, by Christopher M.
+- Added the `Left Ctrl` and `Enter` keybind to the Player Appearance menu and the MP Ped Customization menu, by Christopher M.
+- Added updated data for the mp2025_02 DLC, by L'kid (#552).
+- Added missing DrivingFlags, by L'kid (#545).
+
+### Changed
+- Overhauled the paint and other RGB capable options and removed unused functions, by Ricky Merc.
+- Moved neon colors into VehicleData and refactored the statebag logic to use pattern matching, by Christopher M.
+- Now stores the prior ped drawable and prop when browsing ped collections, by Christopher M.
+- Config files are now included using globbing, so that all JSON files in the config folder are loaded, by Christopher M.
+- Removed the data export experimental feature, by Christopher M.
+- Development builds are now drafted as releases instead of being published automatically, and the build number is now included in the GitHub release title for development pre-releases, by Tom Grobbe.
+- The fxmanifest.lua file is now included in the repository instead of being downloaded on build, builds now also run for pull requests, and the fx_version was updated to cerulean, by Tom Grobbe.
+
+### Fixed
+- Fixed a JSON crash on saved weapon loadout data, by Grav (#551).
+- Fixed the radio override not applying when a vehicle is spawned while the player is already in a vehicle, by Christopher M.
+- Fixed the version number in the DLL, by Tom Grobbe.
+
+----------------
+
+## vMenu v3.8.7 (April 4 2026)
+
+### Changed
+- Bumped MenuAPI, the menu UI library that vMenu is built on, to version 3.2.4, by cm8263 (#584). This update changes the control value checks in anticipation of Title Update 3788, which was not compatible.
+- Added Git workflows and removed AppVeyor, and fixed a missing source branch.
+
+### Fixed
+- Fixed a runtime dynamic cast error, so that vMenu no longer errors when checking whether the `vmenu_onesync` convar is set to `true`, by cm8263 (#586).
+
+Please note that v3.8.5 was pulled because it contained a bug. v3.8.7 is the first working release after it, and it includes the changes that were in v3.8.5.
+
+----------------
+
+## vMenu v3.8.4 (November 9 2025)
+
+### Added
+- Added vehicle color presets. Vehicle color customization has been moved to a new sub-menu within the vehicle color menu, and a new option lets you select from a vehicle's preset colors. The presets are determined by the colors set in a vehicle's meta files, by Toycarium (#501).
+
+### Changed
+- Removed the disused `vmenu_disable_server_info_convars` server convar, which was a leftover that is no longer used anywhere in the codebase, by TheIndra55 (#539).
+
+### Fixed
+- Fixed a typo in the server event permissions check that caused a permissions regression introduced in #533, by cm8263 (#540).
+
+----------------
+
+## vMenu v3.8.3 (November 1 2025)
+
+### Added
+- Added a new `vMenu.OnlinePlayers.SendMessage` permission that is now required to send private messages. The permission is assigned to everyone by default in `permissions.cfg`, but existing servers will need to add the line `add_ace builtin.everyone "vMenu.OnlinePlayers.SendMessage" allow` to their `permissions.cfg` to let players private message each other. Existing servers that update without adding this will stop their players from private messaging each other, by cm8263 (#533).
+
+### Changed
+- Refactored several server events to be less vulnerable to abuse by malicious actors, improved permissions checking, and updated some logic to use server-sided natives where appropriate. The changed systems include summon player (inside and outside vehicles), clear area, private messages, kicking passengers out of a Personal Vehicle, kick player, kill player, saving teleport locations, teleport to player, and join and leave notifications, by cm8263 (#533).
+
+----------------
+
+## vMenu v3.8.2 (October 14 2025)
+
+### Added
+- Added an option in `permissions.cfg` to check vehicles for damage before changing extras. It also allows for a specific engine and body damage threshold to be met first, and adds a new permission that allows bypassing of this check, by Tyler-9822 (#513). Bypass permissions for the damage check before an extra change were also added, by cm8263 (#528).
+
+### Changed
+- Enabled options on "missing" saved vehicles, allowing the renaming, recategorization, replacement, and deletion of saved vehicles that are not currently spawnable because the model is missing. The ordering was also tweaked so that all unspawnable vehicles are grouped at the bottom of the respective menus, instead of scattered throughout the various menus, by cm8263 (#522).
+
+### Fixed
+- Fixed the MP Ped inheritance sliders, so that the "Head Shape Mix" and "Body Skin Mix" sliders correctly update the ped, by SkylarPlayz348 (#519).
+- Fixed vehicle colors being saved incorrectly, where a vehicle's custom primary and secondary color would be used when saving a vehicle's color even if custom RGB colors had not been used, resulting in incorrect colors when the vehicle was spawned in. This fix only applies to vehicles saved after this update. Previously saved vehicles will be incorrect until re-saved with the correct colors, by cm8263 (#521).
+- Fixed vehicle light blackout not syncing between clients, so that it is now correctly synced across all players and not just the player who enabled the option in their menu, by cm8263 (#524).
+- Fixed a saved MP Ped's face resetting to default when editing its appearance, which was a regression introduced in #515. A check was also added for previously incorrectly saved ped values, so they are accounted for when editing appearance, by cm8263 (#529).
+- Fixed the saved MP Ped appearance menu values not updating, where the items in the appearance menu of a saved MP Ped would be set to their default values, such as `#0 of 100`, instead of the values matching the ped currently being edited, by cm8263 (#529).
+- Fixed the saved MP Ped category not being reflected in the ped edit menu, where the current category of a saved ped would not be selected from the list of available categories and instead always showed as "Uncategorised", by cm8263 (#529).
+
+----------------
+
+## vMenu v3.8.1 (September 30 2025)
+
+### Changed
+- Changed the default hair color of newly created MP Peds to black instead of bright green, by cm8263 (#515).
+
+### Fixed
+- Fixed weather and time change server events not checking whether the requesting player has the correct permissions before updating, which allowed malicious actors to change both without permission, by poco8537 (#430).
+- Fixed an issue where malicious actors could unfreeze, but not freeze, time without permission, by cm8263.
+- Fixed missing vehicle modkits, where modkit types 47 (Right Door) and 49 (Lightbar) did not appear in the Vehicle Mods menu, by cm8263 (#514).
+- Fixed a regression introduced in #475, where newly created MP Peds could not have their hair color changed from bright green without first saving the character and then changing the hair color, by cm8263 (#515).
+- Fixed an oversight where `extras.json` was not included in the release files of prior vMenu versions, by cm8263 (#516).
+
+----------------
+
+## vMenu v3.8.0 (September 7 2025)
+
+### Fixed
+- Fixed teleport to player, by prikolium-cfx (#500).
+- Fixed weather sync when players do not have access to the WeatherOptionsMenu, by Tom Grobbe.
+
+----------------
+
+## vMenu v3.7.0 (June 24 2025)
+
+### Added
+- Added configurable labels for vehicle extras using a JSON config file, by DeckardCain001 (#275).
+- Added the Weapon Options menu to the Addon Weapons menu, by blackfirefly000 (#428).
+- Added new license plate styles to the Vehicle Options menu, by christopher-nzcs (#452).
+- Added new content from the Agents of Sabotage DLC (mp2024_02), by MichaelCoding25 (#463).
+- Expanded the self driving options, by Coriana (#453).
+- Added character randomization to the MP Ped Creator menu, by cm8263 (#475).
+- Added an MP Ped preview for saved MP Peds, by cm8263 (#476).
+- Enabled addon MK2 weapon tints, by blackfirefly000 (#450).
+- Added an "Update Character Clothing" option to the Saved MP Ped menu, by cm8263 (#479).
+- Added Ped Collections to the Player Appearance menu, by cm8263 (#480).
+- Added an event trigger for the Infinite Fuel toggle, by coleminer0112 (#270).
+- Added new content from the Money Fronts DLC (mp2025_01), by MichaelCoding25 (#489).
+
+### Changed
+- Removed unnecessary new Ped() values, by RickyB505 (#464).
+- Allowed vehicle lights to work when blackout is enabled, by rondonpd (#409).
+- Updated appveyor.yml, by christopher-nzcs (#478).
+- Updated ConfigManager.cs, by christopher-nzcs (#483).
+- Updated EventManager.cs, by christopher-nzcs (#482).
+
+### Fixed
+- Fixed a missing wheel type, by SkylarPlayz348 (#448).
+- Fixed vehicle categories not listing for saved vehicles by class, by cm8263 (#466).
+- Fixed a vehicle name typo, by MichaelCoding25 (#470).
+- Fixed the license plate names list, by MichaelCoding25 (#487).
+- Fixed the license plate style ordering, by MichaelCoding25 (#490).
+
+----------------
+
+## vMenu v3.6.5 (September 20 2024)
+
+### Added
+- Added blood options to the Player Options menu, by aka-lucifer (#414).
+- Added a boat anchoring option, by Mathu-lmn (#410).
+- Added the ability to select custom vehicle colours using RGB values in the Vehicle Options menu, by JayPaulinCodes (#395).
+
+### Changed
+- Updated natives and project configuration, by Mathu-lmn (#411).
+- Updated the client project to .NET 4.6.2 (previously 4.5.2, matching the server project).
+- Updated the build output locations, so the build folder is now placed in the main solution directory instead of outside the solution folder.
+
+### Fixed
+- Fixed a typo in PlayerAppearance, by cm8263 (#420).
+- Fixed the vehicle customization menu crashing on game builds below 2372, by Mathu-lmn (#425).
+- Fixed a ped model typo, by MichaelCoding25 (#421).
+
+----------------
+
+## vMenu v3.6.3 (July 1 2024)
+
+### Added
+- Added new content from the Bottom Dollar Bounties DLC (mp2024_01), by MichaelCoding25 (#403).
+
+### Changed
+- Made minor grammar fixes and improvements to README.md, by Michael21107 (#398).
+- Updated the ZAP-Hosting section, by OfficialSkypo (#389).
+
+### Fixed
+- Fixed replacing a saved vehicle, so it now keeps the existing vehicle's category, by cm8263 (#404).
+
+----------------
+
+## vMenu v3.6.2 (February 9 2024)
+
+### Added
+- Added a feature requested in a FiveM discussion on Discord, by RickyB505 (#317).
+- Added custom categories for saved MP characters and vehicles, by cm8263 (#357).
+- Added new content from The Chop Shop DLC (mp2023_02), by MichaelCoding25 (#363).
+- Added a permission for showing ped and prop dimensions and related options, by NickReagan (#300).
+
+### Changed
+- Disposed of the Noclip scaleform when it is not in use, by cm8263 (#315).
+- Performed code cleanup, by MichaelCoding25 (#370).
+
+### Fixed
+- Fixed an issue in MpPedCustomization, by XdGoldenTigerOfficial (#369).
+- Added missing weapon permissions, by MichaelCoding25 (#368).
+- Fixed a controller problem, by RickyB505 (#373).
+
+----------------
+
 ## vMenu v3.6.0 (August 12 2023)
 
 Thanks for all the community provided pull requests ❤️!
