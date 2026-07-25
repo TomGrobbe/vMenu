@@ -14,7 +14,7 @@ title: "F.A.Q."
 
 #### **Q:** How do I make this menu _admin only_?
 
-> **A**: Look at the [configuration page](../configuration/), make the menu staff only by setting the convar and giving your staff members the `vMenu.Staff` ace.
+> **A**: Set the `vmenu_menu_staff_only` convar to `true` (see the [configuration page](../configuration/)) and give your staff members the `vMenu.Staff` ace.
 
 ---
 
@@ -27,7 +27,7 @@ title: "F.A.Q."
 #### **Q:** I installed vMenu but I only see the Misc settings and About menu.
 
 > **A**: This usually means vMenu is not fully set up yet, which is common when you are still using the default permissions file. Please take a look at the [installation instructions](../installation/), they are quick to follow. Most likely the permissions.cfg is not in the correct location, or the correct `exec` line for your setup was not added **ABOVE** the `start vMenu` line.
-> You may also have edited the permissions.cfg and accidentally changed which menus players can access, so please double check it and compare it to the original. You can also use the [permissions generator](https://vespura.com/vmenu/permissions-generator/) if you would like some help putting it together.
+> You may also have edited the permissions.cfg and accidentally changed which menus players can access, so please double check it and compare it to the [default permissions.cfg](../permissions/default-permissions/). The [permissions page](../permissions/) explains how to put one together from scratch.
 
 ---
 
@@ -39,29 +39,14 @@ title: "F.A.Q."
 
 #### **Q**: The permissions.cfg is not being executed, or my changes are not being saved.
 
-> **A**: vMenu does **not** read the permissions.cfg on its own. You are responsible for executing this file by adding the `exec <path_to_permissions.cfg>` command in your server.cfg before starting vMenu. Please make sure it is being executed. If you see a message in the server console like `No such config file: permissions.cfg`, then the permissions.cfg is not in the correct folder, or your `exec` command is pointing to the wrong file path. If you get an error saying `No such command: setr`, then please read the question below.
-
----
-
-#### **Q**: I get an error saying `No such command: setr` in the server console.
-
-> **A**: Please update your server, you are using an outdated version of FXServer. You need to be using at least version 801 or above. This only applies to vMenu v1.4.0 and up.
-
----
-
-#### **Q**: vMenu v1.4.0 no longer works, or the permissions and options no longer work since v1.4.0.
-
-> **A**: Most likely it is one of the following:
->
-> 1. You might be using the old convars, check the configuration page for a list of the most recent convar names.
-> 2. Make sure to use `setr` instead of `set` to configure the convars.
-> 3. If that does not help, update your server. You are using an outdated version of FXServer. You need to be using at least version 801 or above. This only applies to vMenu v1.4.0 and up.
+> **A**: vMenu does **not** read the permissions.cfg on its own. You are responsible for executing this file by adding the `exec <path_to_permissions.cfg>` command in your server.cfg before starting vMenu. Please make sure it is being executed. If you see a message in the server console like `No such config file: permissions.cfg`, then the permissions.cfg is not in the correct folder, or your `exec` command is pointing to the wrong file path.
 
 ---
 
 #### **Q**: How do I set the default voice proximity?
 
-> **A**: This is intentionally not possible. I prefer not to let servers override a player's own preferences for settings like voice chat proximity. If a player sets it to a certain distance and expects it to stay that way, having the server change it globally without their knowledge would be a poor experience and a privacy concern. If you want to manage this on the server side, you can use another resource, and simply remove all voice chat permissions from everyone so vMenu does not touch any voice chat settings.
+> **A**: Set the `vmenu_override_voicechat_default_range` convar to the range (in meters) you want players to start with, or leave it at `0.0` to use each player's own saved preference. See the [configuration page](../configuration/) for details.
+> Note that this only changes the **default**: players can still pick their own proximity in the Voice Chat Options menu afterwards. If you do not want them to change it at all, remove the voice chat permissions so vMenu does not touch any voice chat settings.
 
 ---
 
@@ -102,25 +87,19 @@ title: "F.A.Q."
 
 #### **Q**: How can I ban someone that's offline?
 
-> **A**: This is not something I plan to add support for, but it is possible if you know what you are doing, by editing the bans.json file while the server is offline. Please be careful, because a mistake in that file can break or remove your existing bans. No support is provided for this.
-
----
-
-#### **Q**: How can I change the arrow keys to be numpad like lambda menu?
-
-> **A**: This is not possible, since it is not supported by GTA V.
+> **A**: This is not supported. The `vmenuserver ban` console command only works on players who are currently online. Bans are stored in FXServer's own server-side storage, not in a `bans.json` file like older vMenu versions did, so there is no file you can edit while the server is offline.
 
 ---
 
 #### **Q**: When I install vMenu everyone has godmode / pvp is disabled!
 
-> **A**: This is not caused by vMenu. You likely disabled scripthook, so PVP is no longer on by default. Add a PVP resource such as vBasic.
+> **A**: Set the `vmenu_pvp_mode` convar to `1` to enable PVP (friendly fire) for everyone. The available modes are `0` (do nothing and leave PVP as it is), `1` (enable PVP for everyone) and `2` (disable PVP for everyone), and they are explained on the [configuration page](../configuration/). You do not need a separate PVP resource for this.
 
 ---
 
 #### **Q**: How do I get different identifiers for my users / how do I get the 'FiveM License'?
 
-> **A**: Install [**'WhatsMyId'**](https://forum.cfx.re/t/whatsmyid/49426), and let them join the server. Or try joining `vespura.com:30122` in FiveM (the server may be offline sometimes).
+> **A**: Install [**'WhatsMyId'**](https://forum.cfx.re/t/whatsmyid/49426) on your server, and let them join it.
 
 ---
 

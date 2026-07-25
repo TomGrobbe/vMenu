@@ -2,7 +2,7 @@
 title: "Configuration Options"
 ---
 
-**Starting from version v1.4.0, vMenu now uses different convars to configure its options. A list of all available options can be found below. Please note that you need to have a recent server artifacts version (around 804) for this to work. All options can also be found in the permissions.cfg, which is also the place where you can configure them. If you want, you could also move this to the server.cfg, as long as it's above the `start vMenu` line, but for most people it'll be easier to just keep the config options in the permissions.cfg.**
+**vMenu is configured using convars. A list of all available options can be found below. All options can also be found in the permissions.cfg, which is also the place where you can configure them. If you want, you could also move this to the server.cfg, as long as it's above the `start vMenu` line, but for most people it'll be easier to just keep the config options in the permissions.cfg.**
 
 To set an option, use the following command in the server.cfg or permissions.cfg:
 
@@ -107,7 +107,7 @@ A few debugging and development options aren't convars — they're set as resour
 ## Appreciate my work?
 Consider supporting me on [Patreon](https://www.patreon.com/vespura)!
 
-[control]: https://docs.fivem.net/game-references/controls/#controls
+[control]: https://docs.fivem.net/docs/game-references/controls/#controls
 [integer]: https://en.wikipedia.org/wiki/Integer
 
 ## 1-click installation with Zap Hosting
