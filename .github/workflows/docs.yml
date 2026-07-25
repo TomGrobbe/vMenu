@@ -9,25 +9,30 @@ on:
   # Manual run from the Actions tab (no commit needed)
   workflow_dispatch:
 
+# Only needs to read this repo; the push to the hub site uses HUB_DEPLOY_TOKEN.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Separate group from build.yml so the two workflows never cancel each other
 concurrency:
-  group: pages-docs
+  group: docs-deploy
   cancel-in-progress: true
 
+env:
+  # Hub repo that owns the docs domain and serves it as lowercase subfolders.
+  HUB_REPO: TomGrobbe/TomGrobbe.github.io
+  HUB_BRANCH: main
+  # Subfolder within the hub the vMenu docs are published to -> /vmenu/
+  HUB_SUBDIR: vmenu
+
 jobs:
-  build:
-    name: Build docs
+  deploy:
+    name: Build & publish docs
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: docs
     steps:
-      - name: Checkout
+      - name: Checkout vMenu
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -44,12 +49,10 @@ jobs:
         run: npm run build
 
       # Astro emits a FLAT dist/ (the /vmenu/legacy base is baked into URLs).
-      # The vMenu repo is a GitHub Pages *project* site, so its artifact root is
-      # already served at /vmenu/. Place the docs under legacy/ and the landing
-      # pages at the root so the final URLs are:
-      #   /vmenu/            -> landing (Legacy + Enhanced)
-      #   /vmenu/legacy/     -> Starlight docs
-      #   /vmenu/enhanced/   -> coming-soon stub
+      # Assemble the folder that becomes <hub>/vmenu/:
+      #   _site/index.html    -> /vmenu/            (landing)
+      #   _site/legacy/**     -> /vmenu/legacy/     (Starlight docs)
+      #   _site/enhanced/**   -> /vmenu/enhanced/   (coming-soon stub)
       - name: Assemble publish directory
         run: |
           rm -rf _site
@@ -58,19 +61,35 @@ jobs:
           cp landing/index.html _site/index.html
           cp landing/enhanced/index.html _site/enhanced/index.html
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/_site
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Publish into the hub repo. GitHub Pages serves a *project* site at the
+      # case-sensitive /RepoName/ path, so lowercase /vmenu/ can't come from the
+      # vMenu repo itself — instead we push the built site into the user/hub
+      # site (TomGrobbe.github.io) as a real lowercase folder.
+      - name: Publish to hub site
+        env:
+          HUB_TOKEN: ${{ secrets.HUB_DEPLOY_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HUB_TOKEN}" ]; then
+            echo "::error::HUB_DEPLOY_TOKEN secret is not set. See docs/README.md for setup."
+            exit 1
+          fi
+          git clone --depth 1 --branch "${HUB_BRANCH}" \
+            "https://x-access-token:${HUB_TOKEN}@github.com/${HUB_REPO}.git" hub
+          # Replace only the vMenu subfolder; keep the hub's index.html, CNAME,
+          # .nojekyll and any other product folders (e.g. /menuapi/) intact.
+          rm -rf "hub/${HUB_SUBDIR}"
+          mkdir -p "hub/${HUB_SUBDIR}"
+          cp -r _site/. "hub/${HUB_SUBDIR}/"
+          # Disable Jekyll so Astro's _astro/ asset folder is served (not skipped).
+          touch hub/.nojekyll
+          cd hub
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No documentation changes to publish."
+          else
+            git commit -m "Deploy vMenu docs"
+            git push origin "${HUB_BRANCH}"
+          fi
