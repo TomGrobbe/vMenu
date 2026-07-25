@@ -8,7 +8,7 @@ title: "F.A.Q."
 
 #### **Q:** How do I change the 'M' (menu toggle) key to 'some other key'?
 
-> **A:** Look [here](../configuration/) for the convar (configuration) options.
+> **A:** Each player can rebind this themselves in FiveM's key binding settings, so there is nothing to configure server side. Open the pause menu (`ESC`) → **Settings** → **Key Bindings**, scroll down to the **FiveM** section, and set **"vMenu Toggle Button"** to whatever key you like. The noclip toggle (**"vMenu NoClip Toggle Button"**) can be rebound in the same place. Because these are per-player keybinds, everyone can choose their own key without affecting anyone else.
 
 ---
 
@@ -138,7 +138,7 @@ title: "F.A.Q."
 
 #### **Q**: Where can I find the beta/dev/pre-release builds?
 
-> **A**: The latest [beta build of vMenu](https://ci.appveyor.com/project/TomGrobbe/vmenu/build/artifacts) can contain bugs, so be careful when using it. Please do not put it on your live server unless you know what you are doing and you have tested it to make sure there are no bugs.
+> **A**: Beta/pre-release builds are published on the [GitHub releases page](https://github.com/TomGrobbe/vMenu/releases) — look for the versions marked as "Pre-release". These can contain bugs, so be careful when using them. Please do not put a pre-release build on your live server unless you know what you are doing and you have tested it to make sure there are no bugs.
 
 ---
 
