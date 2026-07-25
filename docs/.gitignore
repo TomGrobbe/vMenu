@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# generated types
+.astro/
+
+# assembled publish dir (created in CI)
+_site/
+
+# environment / misc
+.env
+.env.production
+.DS_Store
+npm-debug.log*

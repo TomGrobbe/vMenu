@@ -1,0 +1,76 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  # Manual run from the Actions tab (no commit needed)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Separate group from build.yml so the two workflows never cancel each other
+concurrency:
+  group: pages-docs
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build docs
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      # Astro emits a FLAT dist/ (the /vmenu/legacy base is baked into URLs).
+      # The vMenu repo is a GitHub Pages *project* site, so its artifact root is
+      # already served at /vmenu/. Place the docs under legacy/ and the landing
+      # pages at the root so the final URLs are:
+      #   /vmenu/            -> landing (Legacy + Enhanced)
+      #   /vmenu/legacy/     -> Starlight docs
+      #   /vmenu/enhanced/   -> coming-soon stub
+      - name: Assemble publish directory
+        run: |
+          rm -rf _site
+          mkdir -p _site/legacy _site/enhanced
+          cp -r dist/. _site/legacy/
+          cp landing/index.html _site/index.html
+          cp landing/enhanced/index.html _site/enhanced/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

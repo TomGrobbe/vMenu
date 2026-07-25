@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - "**"
+    # Docs live in /docs and deploy via docs.yml — don't trigger the .NET
+    # build/release pipeline (and cut a spurious release) on docs-only commits.
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
   pull_request:
 
 permissions:
