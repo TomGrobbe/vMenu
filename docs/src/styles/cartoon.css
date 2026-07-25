@@ -133,7 +133,7 @@ starlight-theme-select {
   transition: transform 0.15s var(--toon-pop);
 }
 /* playful tilt for the round GitHub/Discord icons only — not the Enhanced pill */
-.social-icons a:not(.enhanced-nav-link):hover {
+.social-icons a:not(.back-nav-link):hover {
   color: var(--violet-deep);
   transform: translateY(-2px) rotate(-6deg);
 }
