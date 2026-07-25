@@ -22,7 +22,7 @@ export default defineConfig({
       favicon: '/favicon.png',
       customCss: ['./src/styles/cartoon.css'],
       logo: { src: './src/assets/logo.png', alt: 'vMenu', replacesTitle: false },
-      // Add an "Enhanced Docs (coming soon)" link into the header nav.
+      // Add an "vMenu Enhanced Docs (coming soon)" link into the header nav.
       components: { SocialIcons: './src/components/SocialIcons.astro' },
       head: [
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
