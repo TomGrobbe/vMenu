@@ -1,0 +1,60 @@
+---
+// Override: prepend an "vMenu Enhanced Docs (coming soon)" link to the header nav,
+// then render Starlight's default social icons.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+---
+
+<a class="enhanced-nav-link" href="/vmenu/enhanced/">
+  <span class="label">vMenu Enhanced Docs</span>
+  <span class="soon">Soon</span>
+</a>
+
+<Default><slot /></Default>
+
+<style>
+  .enhanced-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Fredoka', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1;
+    color: #1a1523;
+    background: #7fe0c8;
+    border: 2px solid #1a1523;
+    border-radius: 999px;
+    padding: 0.32rem 0.4rem 0.32rem 0.8rem;
+    box-shadow: 3px 3px 0 #1a1523;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .enhanced-nav-link:hover {
+    transform: translate(-1px, -2px);
+    box-shadow: 5px 6px 0 #1a1523;
+  }
+  .enhanced-nav-link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #1a1523;
+  }
+  .soon {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: #1a1523;
+    color: #fef3d9;
+    border-radius: 999px;
+    padding: 0.15rem 0.45rem;
+  }
+  /* keep the header uncramped on narrow viewports */
+  @media (max-width: 50rem) {
+    .enhanced-nav-link .label {
+      display: none;
+    }
+    .enhanced-nav-link {
+      padding: 0.32rem 0.5rem;
+    }
+  }
+</style>

@@ -17,11 +17,13 @@ export default defineConfig({
   base: '/vmenu/legacy',
   integrations: [
     starlight({
-      title: 'vMenu',
+      title: 'vMenu (legacy)',
       description: 'Documentation for vMenu — a server-sided trainer/menu for FiveM.',
       favicon: '/favicon.png',
       customCss: ['./src/styles/cartoon.css'],
       logo: { src: './src/assets/logo.png', alt: 'vMenu', replacesTitle: false },
+      // Add an "Enhanced Docs (coming soon)" link into the header nav.
+      components: { SocialIcons: './src/components/SocialIcons.astro' },
       head: [
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },

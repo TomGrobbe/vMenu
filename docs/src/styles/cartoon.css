@@ -56,10 +56,11 @@
   --sl-color-bg-inline-code: var(--paper);
   --sl-color-bg-accent: var(--violet-deep);
 
-  /* borders */
-  --sl-color-hairline: var(--ink);
-  --sl-color-hairline-shade: rgba(26, 21, 35, 0.12);
-  --sl-color-hairline-light: rgba(26, 21, 35, 0.18);
+  /* borders — keep Starlight's own hairlines subtle; the bold cartoon borders
+     are applied explicitly per element (header, sidebar, cards, etc.) */
+  --sl-color-hairline: rgba(26, 21, 35, 0.12);
+  --sl-color-hairline-shade: rgba(26, 21, 35, 0.1);
+  --sl-color-hairline-light: rgba(26, 21, 35, 0.14);
 
   /* type scale bump for the playful feel */
   --sl-text-h1: 2.6rem;
@@ -67,22 +68,13 @@
   --sl-text-h3: 1.45rem;
 }
 
-/* dotted cream background across the whole page */
+/* solid cream background (no polka dots behind docs text — keeps it readable) */
 html {
   background-color: var(--cream);
-  background-image: radial-gradient(var(--dot) 2.5px, transparent 2.5px);
-  background-size: 30px 30px;
   scroll-behavior: smooth;
 }
 body {
   background: transparent;
-}
-
-/* let the dots show through the main content column */
-.main-frame,
-.main-pane,
-main {
-  background: transparent !important;
 }
 
 /* Fredoka everywhere + chunky headings */
@@ -105,7 +97,13 @@ h1, h2, h3, h4, h5, h6,
 .header {
   background: var(--cream);
   border-bottom: var(--toon-border);
-  box-shadow: 0 4px 0 rgba(26, 21, 35, 0.06);
+}
+
+/* Starlight's mobile "On this page" bar sits flush under the header on narrower
+   viewports — drop its own top border so it doesn't read as a second navbar. */
+mobile-starlight-toc nav {
+  border-top: none;
+  background: var(--cream);
 }
 .site-title {
   font-weight: 700;
