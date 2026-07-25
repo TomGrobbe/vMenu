@@ -94,7 +94,10 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* =========================== Header ===================================== */
-.header {
+/* Only the OUTER page header. Starlight's inner Header.astro root is also a
+   `<div class="header">`, so scope by the <header> tag to avoid a doubled
+   border bar under the navbar. */
+header.header {
   background: var(--cream);
   border-bottom: var(--toon-border);
 }
@@ -129,7 +132,8 @@ starlight-theme-select {
   color: var(--ink);
   transition: transform 0.15s var(--toon-pop);
 }
-.social-icons a:hover {
+/* playful tilt for the round GitHub/Discord icons only — not the Enhanced pill */
+.social-icons a:not(.enhanced-nav-link):hover {
   color: var(--violet-deep);
   transform: translateY(-2px) rotate(-6deg);
 }
