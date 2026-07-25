@@ -64,6 +64,7 @@ export default defineConfig({
           items: [
             { label: 'Permissions', link: '/permissions/' },
             { label: 'Permissions Reference', link: '/permissions/permissions/' },
+            { label: 'Supplemental Permissions', link: '/permissions/supplemental-permissions/' },
             { label: 'Weapon Permissions', link: '/permissions/weapon-permissions/' },
             { label: 'Default Permissions.cfg', link: '/permissions/default-permissions/' },
           ],
