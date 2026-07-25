@@ -4,7 +4,11 @@ title: "Troubleshooting & Support"
 
 ## Help, it doesn't work!
 
-If you have looked _everywhere_ on here and still cannot figure it out, then post on the [forum topic](https://forum.fivem.net/t/vmenu-v1-1-5-a-server-sided-menu-including-almost-full-permissions-support/88868?u=vespura). **Please note that vMenu is no longer actively supported, so I may not be able to reply, but community members may be able to help you.**
+If you have looked _everywhere_ on here and still cannot figure it out, then feel free to ask in my [Discord server](https://vespura.com/discord).
+
+**vMenu (Legacy)** now only receives small updates, either when community pull requests are merged, or when a FiveM update adds new content that needs supporting (new vehicles, for example). In the meantime, we're working on **vMenu Enhanced**, a new version built for the FiveM Enhanced update. vMenu Enhanced is a community project, led and coordinated by Vespura. For news about its development, keep an eye on the [Discord server](https://vespura.com/discord).
+
+Because vMenu is no longer actively supported, **support is not guaranteed**. You're still welcome to ask your questions on the forum topic or in the [Discord server](https://vespura.com/discord) though. If a community member, staff member or Vespura has the time and knows the answer, they just might help you out, especially if you ask nicely. Any help you receive there is provided by the community, or volunteers, so keep that in mind how you treat them. If you are rude, disrespectful, or demanding, you will not receive help.
 
 :::caution
 Please search the existing reports here and on the [GitHub](https://github.com/TomGrobbe/vMenu/) issues page before posting, since many questions have already been answered. If you have found a genuine bug, please open an issue on the GitHub repository with the details.

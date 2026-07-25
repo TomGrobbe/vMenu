@@ -49,7 +49,7 @@ Congratulations, you've just installed vMenu in its most basic, plug and play co
 Zap Hosting provides a simple 1 click installation method for vMenu! Click [this link](https://zap-hosting.com/vespura) to get a Zap server and use code `Vespura-a-3715` at checkout for 20% off your purchase!
 
 ## Support / Trouble Shooting
-vMenu is no longer actively supported. You can check the archived support channels in my [Discord](https://vespura.com/discord) server, or take a look at the forum topic. Most issues are already answered there or here in the docs.
+vMenu (Legacy) is no longer actively supported — it now only receives small updates when community pull requests are merged or when a FiveM update adds new content, while work is underway on **vMenu Enhanced**. You're still welcome to ask questions in my [Discord](https://vespura.com/discord) server or on the forum topic, but any help is community-provided and not guaranteed. Most issues are already answered there or here in the docs. See the [Troubleshooting & Support](/vmenu/legacy/support/) page for more details.
 
 ## F.A.Q.
 Check out the [F.A.Q. page](/vmenu/legacy/faq/).
