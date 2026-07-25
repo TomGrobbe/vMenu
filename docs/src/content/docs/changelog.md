@@ -4,6 +4,19 @@ title: "Changelog"
 
 ----------------
 
+## vMenu v3.8.43 (July 25 2026)
+
+### Fixed
+- Corrected the vehicle spawn delay convar name to `vmenu_vehicle_spawn_delay` in the default `permissions.cfg`, by Tom Grobbe.
+- Corrected several commented-out permission (ace) names in the default `permissions.cfg` so they work when uncommented, by Tom Grobbe.
+
+### Changed
+- Audited and corrected the configuration documentation, adding missing convars, fixing outdated ones, and documenting the `fxmanifest.lua` options, by Tom Grobbe.
+- Audited and corrected the permissions documentation, adding missing permission nodes and weapons, fixing a broken link, and expanding the setup guide, by Tom Grobbe.
+- Continued migrating and polishing the documentation site, including theme, styling, landing page, and wording improvements, by Tom Grobbe.
+
+----------------
+
 ## vMenu v3.8.24 (July 25 2026)
 
 ### Changed
