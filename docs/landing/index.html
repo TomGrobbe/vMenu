@@ -106,14 +106,14 @@
       box-shadow: 2px 2px 0 var(--ink);
     }
 
-    /* enhanced = coming soon, disabled */
-    .card.enhanced {
-      cursor: default;
-      background: #f4efe4;
-      color: #8a8478;
-      border-color: #8a8478;
-      box-shadow: 8px 8px 0 #8a8478;
-      pointer-events: none;
+    .card.enhanced:hover {
+      transform: translate(-2px, -4px);
+      box-shadow: 12px 14px 0 var(--ink);
+      background: var(--mint);
+    }
+    .card.enhanced:active {
+      transform: translate(6px, 6px);
+      box-shadow: 2px 2px 0 var(--ink);
     }
 
     .blob {
@@ -128,8 +128,8 @@
       transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
     }
     .card.legacy .blob   { background: var(--violet); box-shadow: 4px 4px 0 var(--ink); }
-    .card.enhanced .blob { background: var(--muted); border-color: #8a8478; box-shadow: 4px 4px 0 #8a8478; }
-    .card.legacy:hover .blob { transform: rotate(-8deg) scale(1.05); }
+    .card.enhanced .blob { background: var(--mint); box-shadow: 4px 4px 0 var(--ink); }
+    .card:hover .blob { transform: rotate(-8deg) scale(1.05); }
     .blob svg { width: 46px; height: 46px; }
 
     .name { font-size: 1.7rem; font-weight: 700; line-height: 1; margin-bottom: 0.4rem; }
@@ -142,9 +142,9 @@
       font-weight: 600;
       opacity: 0.7;
     }
-    .card.legacy:hover .tag { opacity: 1; }
+    .card:hover .tag { opacity: 1; }
     .tag svg { transition: transform 0.2s ease; }
-    .card.legacy:hover .tag svg { transform: translateX(4px); }
+    .card:hover .tag svg { transform: translateX(4px); }
 
     .badge {
       position: absolute;
@@ -222,14 +222,16 @@
       </span>
     </a>
 
-    <div class="card enhanced" aria-disabled="true">
-      <span class="badge">Coming soon</span>
+    <a class="card enhanced" href="/vmenu/enhanced/">
       <div class="blob">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#8a8478" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1523" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </div>
       <div class="name">vMenu for FiveM Enhanced</div>
-      <span class="tag">Documentation coming soon</span>
-    </div>
+      <span class="tag">
+        Browse documentation
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </span>
+    </a>
   </main>
 
   <a class="back" href="/">

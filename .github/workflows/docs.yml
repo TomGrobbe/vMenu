@@ -48,22 +48,12 @@ jobs:
       - name: Build site
         run: npm run build
 
-      # Astro emits a FLAT dist/ (the /vmenu/legacy base is baked into URLs).
-      # Assemble the folder that becomes <hub>/vmenu/:
-      #   _site/index.html    -> /vmenu/            (landing)
-      #   _site/legacy/**     -> /vmenu/legacy/     (Starlight docs)
-      #   _site/enhanced/**   -> /vmenu/enhanced/   (coming-soon stub)
-      - name: Assemble publish directory
-        run: |
-          rm -rf _site
-          mkdir -p _site/legacy _site/enhanced
-          cp -r dist/. _site/legacy/
-          cp landing/index.html _site/index.html
-          cp landing/enhanced/index.html _site/enhanced/index.html
+      # Astro emits a FLAT dist/ (the /vmenu/legacy base is baked into URLs),
+      # which maps straight onto the hub's /vmenu/legacy/ folder.
 
       # Publish into the hub repo. GitHub Pages serves a *project* site at the
       # case-sensitive /RepoName/ path, so lowercase /vmenu/ can't come from the
-      # vMenu repo itself — instead we push the built site into the user/hub
+      # vMenu repo itself; instead we push the built site into the user/hub
       # site (TomGrobbe.github.io) as a real lowercase folder.
       - name: Publish to hub site
         env:
@@ -76,11 +66,15 @@ jobs:
           fi
           git clone --depth 1 --branch "${HUB_BRANCH}" \
             "https://x-access-token:${HUB_TOKEN}@github.com/${HUB_REPO}.git" hub
-          # Replace only the vMenu subfolder; keep the hub's index.html, CNAME,
-          # .nojekyll and any other product folders (e.g. /menuapi/) intact.
-          rm -rf "hub/${HUB_SUBDIR}"
+          # This branch owns ONLY the legacy docs and the /vmenu/ landing chooser.
+          # Replace hub/vmenu/legacy/ and hub/vmenu/index.html in place, and never
+          # touch hub/vmenu/enhanced/ (owned by the enhanced branch) or the hub's
+          # own index.html, CNAME, .nojekyll and other product folders.
           mkdir -p "hub/${HUB_SUBDIR}"
-          cp -r _site/. "hub/${HUB_SUBDIR}/"
+          rm -rf "hub/${HUB_SUBDIR}/legacy"
+          mkdir -p "hub/${HUB_SUBDIR}/legacy"
+          cp -r dist/. "hub/${HUB_SUBDIR}/legacy/"
+          cp landing/index.html "hub/${HUB_SUBDIR}/index.html"
           # Disable Jekyll so Astro's _astro/ asset folder is served (not skipped).
           touch hub/.nojekyll
           cd hub
