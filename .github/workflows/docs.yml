@@ -1,8 +1,8 @@
-name: Deploy Docs
+name: Deploy Enhanced Docs
 
 on:
   push:
-    branches: [master]
+    branches: [enhanced]
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
@@ -14,19 +14,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: docs-deploy
+  group: docs-deploy-enhanced
   cancel-in-progress: true
 
 env:
   # Hub repo that owns the docs domain and serves it as lowercase subfolders.
   HUB_REPO: TomGrobbe/TomGrobbe.github.io
   HUB_BRANCH: main
-  # Subfolder within the hub the vMenu docs are published to -> /vmenu/
-  HUB_SUBDIR: vmenu
+  # This branch owns ONLY the /vmenu/enhanced/ subfolder. The /vmenu/ landing
+  # chooser and /vmenu/legacy/ docs are owned by the legacy branch's docs.yml,
+  # so the two deploys never overwrite each other.
+  HUB_SUBDIR: vmenu/enhanced
 
 jobs:
   deploy:
-    name: Build & publish docs
+    name: Build & publish enhanced docs
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -48,23 +50,9 @@ jobs:
       - name: Build site
         run: npm run build
 
-      # Astro emits a FLAT dist/ (the /vmenu/legacy base is baked into URLs).
-      # Assemble the folder that becomes <hub>/vmenu/:
-      #   _site/index.html    -> /vmenu/            (landing)
-      #   _site/legacy/**     -> /vmenu/legacy/     (Starlight docs)
-      #   _site/enhanced/**   -> /vmenu/enhanced/   (coming-soon stub)
-      - name: Assemble publish directory
-        run: |
-          rm -rf _site
-          mkdir -p _site/legacy _site/enhanced
-          cp -r dist/. _site/legacy/
-          cp landing/index.html _site/index.html
-          cp landing/enhanced/index.html _site/enhanced/index.html
-
-      # Publish into the hub repo. GitHub Pages serves a *project* site at the
-      # case-sensitive /RepoName/ path, so lowercase /vmenu/ can't come from the
-      # vMenu repo itself — instead we push the built site into the user/hub
-      # site (TomGrobbe.github.io) as a real lowercase folder.
+      # Publish into the hub repo. Astro emits a flat dist/ with the
+      # /vmenu/enhanced base baked into URLs, so it maps 1:1 onto the
+      # hub's /vmenu/enhanced/ folder.
       - name: Publish to hub site
         env:
           HUB_TOKEN: ${{ secrets.HUB_DEPLOY_TOKEN }}
@@ -76,11 +64,11 @@ jobs:
           fi
           git clone --depth 1 --branch "${HUB_BRANCH}" \
             "https://x-access-token:${HUB_TOKEN}@github.com/${HUB_REPO}.git" hub
-          # Replace only the vMenu subfolder; keep the hub's index.html, CNAME,
-          # .nojekyll and any other product folders (e.g. /menuapi/) intact.
+          # Replace ONLY the /vmenu/enhanced/ subfolder; leave hub/vmenu/index.html
+          # (landing), hub/vmenu/legacy/, and any other product folder untouched.
           rm -rf "hub/${HUB_SUBDIR}"
           mkdir -p "hub/${HUB_SUBDIR}"
-          cp -r _site/. "hub/${HUB_SUBDIR}/"
+          cp -r dist/. "hub/${HUB_SUBDIR}/"
           # Disable Jekyll so Astro's _astro/ asset folder is served (not skipped).
           touch hub/.nojekyll
           cd hub
@@ -90,6 +78,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No documentation changes to publish."
           else
-            git commit -m "Deploy vMenu docs"
+            git commit -m "Deploy vMenu Enhanced docs"
             git push origin "${HUB_BRANCH}"
           fi

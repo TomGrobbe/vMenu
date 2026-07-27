@@ -1,0 +1,29 @@
+<Project>
+
+  <!--
+    Shared MSBuild settings for every vMenu Enhanced project (Client, Server, Shared).
+    These are the .NET 10 class libraries that make up vMenu for FiveM Enhanced.
+
+    FiveM Enhanced runtime / package wiring is intentionally NOT here yet: this is
+    baseline project structure only. Add CitizenFX references once the Enhanced
+    runtime packages are known.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Configurations>Release;Debug</Configurations>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!--
+      Every project emits into one shared folder (repo-root/build/vMenu.Enhanced/)
+      so CI can zip the whole resource in a single step, mirroring the legacy
+      build/vMenu/ convention.
+    -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)..\build\vMenu.Enhanced\</OutputPath>
+  </PropertyGroup>
+
+</Project>

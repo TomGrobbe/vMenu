@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared data models used by both the client and server assemblies. -->
+
+</Project>

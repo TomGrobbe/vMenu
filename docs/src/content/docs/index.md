@@ -1,22 +1,25 @@
 ---
-title: "vMenu Documentation"
+title: "vMenu Enhanced"
+description: "Documentation for vMenu Enhanced, a version of vMenu built for FiveM Enhanced (GTA V Enhanced)."
 ---
 
-_vMenu is a server-sided trainer/menu for FiveM servers, allowing server owners to configure it almost completely using simple permissions._
+_vMenu Enhanced is a fresh build of vMenu for **FiveM Enhanced** (GTA V Enhanced), running on the new .NET runtime._
 
-## Getting Started
+:::caution[Early alpha]
+vMenu Enhanced is in early development. It is not feature complete, things will change, and there is not much to document yet. This site will grow as the project does.
+:::
 
-So, you've decided to install vMenu on your FiveM server. Great!... now what?!
+## What is this?
 
-If this is your first time installing vMenu (or you're completely new at installing FiveM resources) then follow the instructions on the [Installation](/vmenu/legacy/installation/) page!
+vMenu is a server-sided trainer/menu for FiveM that server owners configure almost entirely through permissions and configuration options. 
+vMenu Enhanced is a from-scratch version targeting FiveM Enhanced, kept separate from the legacy build so each can evolve on its own.
 
-If you already know the basics of installing resources (make sure you name the resource folder `vMenu` otherwise this resource will break) continue reading over at the Permissions or Configuration pages.
+Looking for the current, stable version for FiveM Legacy? See the [vMenu Legacy docs](/vmenu/legacy/).
 
-## Appreciate my work?
+## Next steps
 
-Consider supporting me on [Patreon](https://www.patreon.com/vespura)!
+- [Getting Started](/vmenu/enhanced/getting-started/)
 
-## 1-click installation with Zap Hosting
+## Appreciate the work?
 
-[![](https://zap-hosting.com/interface/_images/banner/gameserver/fivem-affiliate-banner-1006x180.png)](https://zap-hosting.com/vespura)
-Zap Hosting provides a simple 1 click installation method for vMenu! Click [this link](https://zap-hosting.com/vespura) to get a Zap server and use code `Vespura-a-3715` at checkout for 20% off your purchase!
+Consider supporting development on [Patreon](https://www.patreon.com/vespura).

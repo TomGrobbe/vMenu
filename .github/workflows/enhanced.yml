@@ -1,0 +1,246 @@
+name: CI/CD (Enhanced)
+
+# Build + release pipeline for vMenu Enhanced (FiveM Enhanced, .NET 10).
+#
+# This is the ACTIVE Enhanced pipeline. While the project is in alpha it only
+# ever produces DRAFT PRE-RELEASES, versioned 0.0.1-alpha.<run_number> and tagged
+# with the `enhanced-v` prefix so the Enhanced version lineage stays fully
+# separate from legacy vMenu's `v` tags.
+#
+# Later, once master is renamed to legacy, the combined workflow
+# (.github/workflows/combined.yml) takes over cutting the shared release and
+# the release job below can be switched off.
+
+on:
+  push:
+    branches:
+      - enhanced
+    # Docs live in /docs and deploy via docs.yml - don't trigger the .NET
+    # build/release pipeline (and cut a spurious release) on docs-only commits.
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  # Build (but never release) pull requests, so PRs into enhanced get validated.
+  pull_request:
+
+permissions:
+  contents: write
+
+# Cancel any in-progress run on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # vMenu Enhanced version lineage. While in alpha the base stays fixed and the
+  # build number is appended => 0.0.1-alpha.<run_number>. Bump this manually
+  # when promoting to beta, and again when moving to stable 1.0.0 releases.
+  ENHANCED_VERSION_BASE: "0.0.1-alpha"
+
+jobs:
+  # ============================================================
+  # VERSION - derives the alpha version from the base + run number
+  #   enhanced-v0.0.1-alpha.<run_number>
+  # ============================================================
+  version:
+    name: Calculate Version
+    runs-on: ubuntu-latest
+
+    outputs:
+      semver:       ${{ steps.version.outputs.semver }}
+      assembly_ver: ${{ steps.version.outputs.assembly_ver }}
+      tag:          ${{ steps.version.outputs.tag }}
+      zip_name:     ${{ steps.version.outputs.zip_name }}
+
+    steps:
+      - name: Set version outputs
+        id: version
+        shell: bash
+        run: |
+          SEMVER="${ENHANCED_VERSION_BASE}.${{ github.run_number }}"
+          # AssemblyVersion/FileVersion must be numeric (no pre-release label).
+          ASSEMBLY_VER="0.0.1.${{ github.run_number }}"
+          TAG="enhanced-v${SEMVER}"
+          ZIP_NAME="vMenu-Enhanced-v${SEMVER}.zip"
+          echo "semver=$SEMVER"             >> "$GITHUB_OUTPUT"
+          echo "assembly_ver=$ASSEMBLY_VER" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG"                   >> "$GITHUB_OUTPUT"
+          echo "zip_name=$ZIP_NAME"         >> "$GITHUB_OUTPUT"
+
+  # ============================================================
+  # BUILD - runs on enhanced pushes and on pull requests
+  # ============================================================
+  build:
+    name: Build
+    needs: version
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore vMenu.Enhanced.slnx
+
+      - name: Build
+        shell: bash
+        run: |
+          dotnet build vMenu.Enhanced.slnx -c Release --no-restore \
+            -p:Version="${{ needs.version.outputs.semver }}" \
+            -p:AssemblyVersion="${{ needs.version.outputs.assembly_ver }}" \
+            -p:FileVersion="${{ needs.version.outputs.assembly_ver }}"
+
+      - name: Copy fxmanifest.lua
+        shell: pwsh
+        run: Copy-Item 'assets/enhanced/fxmanifest.lua' 'build/vMenu.Enhanced/fxmanifest.lua' -Force
+
+      - name: Inject version into fxmanifest.lua
+        shell: pwsh
+        run: |
+          (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ needs.version.outputs.semver }}' |
+            Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
+
+      - name: Copy README and LICENSE
+        shell: pwsh
+        run: |
+          Copy-Item README.md  build/vMenu.Enhanced/README.md  -Force
+          Copy-Item LICENSE.md build/vMenu.Enhanced/LICENSE.md -Force
+
+      - name: Package zip
+        shell: pwsh
+        run: Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ needs.version.outputs.zip_name }}' -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vmenu-enhanced-zip
+          path: ${{ needs.version.outputs.zip_name }}
+
+  # ============================================================
+  # RELEASE - enhanced branch only, always a DRAFT PRE-RELEASE while alpha
+  # ============================================================
+  release:
+    name: Release (draft pre-release)
+    needs: [version, build]
+    if: github.ref == 'refs/heads/enhanced'
+    runs-on: ubuntu-latest
+
+    outputs:
+      release_url: ${{ steps.create_release.outputs.release_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vmenu-enhanced-zip
+          path: release-assets
+
+      # Changelog spans commits since the previous enhanced-v pre-release tag.
+      # Note: draft releases don't create their tag until published, so early on
+      # there may be no enhanced-v tags yet and we fall back to the full log.
+      - name: Generate changelog
+        shell: bash
+        run: |
+          LAST_TAG=$(git tag --sort=-version:refname | grep '^enhanced-v' | head -n 1 || true)
+          if [ -n "$LAST_TAG" ]; then
+            git log "$LAST_TAG..HEAD" --pretty=format:'- `%h` (%an) %s' > changelog.txt
+          else
+            git log --pretty=format:'- `%h` (%an) %s' > changelog.txt
+          fi
+          echo "Changelog since: ${LAST_TAG:-<beginning>}"
+          cat changelog.txt
+
+      - name: Create GitHub Release (draft pre-release)
+        id: create_release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.version.outputs.semver }}"
+          TAG="${{ needs.version.outputs.tag }}"
+          {
+            echo "vMenu Enhanced pre-release v${VERSION} (alpha)."
+            echo ""
+            echo "> [!WARNING]"
+            echo "> This is an early alpha build of vMenu for FiveM Enhanced. Expect breaking changes and incomplete features."
+            echo ""
+            echo "<details><summary>Changes since the last Enhanced pre-release</summary>"
+            echo ""
+            cat changelog.txt
+            echo ""
+            echo "</details>"
+          } > release_notes.md
+
+          # --draft keeps the release (and its tag) unpublished until reviewed:
+          # the enhanced-v tag is only created on the target commit when the
+          # draft is published, so alpha builds don't spam tags.
+          RELEASE_URL=$(gh release create "$TAG" \
+            --title "vMenu Enhanced v${VERSION}" \
+            --notes-file release_notes.md \
+            --prerelease --draft \
+            --target "$GITHUB_SHA" \
+            "release-assets/${{ needs.version.outputs.zip_name }}")
+
+          echo "release_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+
+  # ============================================================
+  # DISCORD NOTIFICATION
+  # ============================================================
+  # notify:
+  #   name: Discord Notification
+  #   needs: [version, build, release]
+  #   if: always()
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Send Discord notification
+  #       shell: bash
+  #       env:
+  #         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  #       run: |
+  #         if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+  #           echo "DISCORD_WEBHOOK_URL not configured, skipping."
+  #           exit 0
+  #         fi
+
+  #         BUILD_RESULT="${{ needs.build.result }}"
+  #         RELEASE_RESULT="${{ needs.release.result }}"
+  #         VERSION="${{ needs.version.outputs.semver }}"
+
+  #         if [ "$BUILD_RESULT" = "cancelled" ] || [ "$RELEASE_RESULT" = "cancelled" ]; then
+  #           COLOR=16776960; STATUS_TEXT="Build cancelled."
+  #         elif [ "$BUILD_RESULT" = "success" ] && { [ "$RELEASE_RESULT" = "success" ] || [ "$RELEASE_RESULT" = "skipped" ]; }; then
+  #           COLOR=4502298;  STATUS_TEXT="Build passed!"
+  #         else
+  #           COLOR=13632027; STATUS_TEXT="Build FAILED!"
+  #         fi
+
+  #         RELEASE_URL="${{ needs.release.outputs.release_url }}"
+  #         if [ -n "$RELEASE_URL" ] && [ "$RELEASE_RESULT" = "success" ]; then
+  #           LINK_URL="$RELEASE_URL"
+  #         else
+  #           LINK_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+  #         fi
+
+  #         PAYLOAD=$(jq -n \
+  #           --arg title "vMenu Enhanced (v${VERSION})" \
+  #           --arg desc  "$STATUS_TEXT" \
+  #           --arg url   "$LINK_URL" \
+  #           --argjson color "$COLOR" \
+  #           '{embeds:[{title:$title,description:$desc,url:$url,color:$color}]}')
+
+  #         curl -fsSL -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL"

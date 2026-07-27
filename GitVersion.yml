@@ -1,31 +1,30 @@
-# GitVersion configuration
+# GitVersion configuration - vMenu Enhanced branch
 # Docs: https://gitversion.net/docs/reference/configuration
 #
-# master      → stable releases, patch auto-increments per commit
-# development → version is calculated from master tags; the workflow
-#               appends -dev-{sha} to MajorMinorPatch, so GitVersion's
-#               own pre-release label is intentionally ignored there.
+# This is the `enhanced` branch copy. It keeps a version lineage that is fully
+# separate from legacy vMenu by only counting tags with the `enhanced-v` prefix
+# (legacy uses the default `v` prefix on its own branch).
+#
+# While the project is in ALPHA the enhanced CI workflow (.github/workflows/
+# enhanced.yml) does NOT use GitVersion: the version is a fixed base plus the
+# build number (0.0.1-alpha.<run_number>). This config is here so that once the
+# project promotes to beta / stable 1.0.0 (and the combined workflow starts
+# computing versions on this branch), the tag prefix and mainline branch are
+# already set up correctly.
 #
 # Commit message overrides (anywhere in the message):
-#   +semver: major  →  bumps major (e.g. 3.8.6 → 4.0.0)
-#   +semver: minor  →  bumps minor (e.g. 3.8.6 → 3.9.0)
-#   +semver: patch  →  bumps patch (e.g. 3.8.6 → 3.8.7)  ← default
-#   +semver: none   →  no bump on this commit
-#
-# dev- prefixed tags (created by development branch builds) are ignored
-# by GitVersion because they don't match the default tag-prefix [vV].
+#   +semver: major | minor | patch | none
 
+tag-prefix: 'enhanced-v'
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
 mode: Mainline
 
+# Starting point for the stable lineage once alpha/beta is over.
+# next-version: 1.0.0
+
 branches:
-  master:
-    regex: '^master$'
+  enhanced:
+    regex: '^enhanced$'
     increment: Patch
     is-mainline: true
-  development:
-    regex: '^development$'
-    increment: Patch
-    is-mainline: false
-    source-branches: [master]

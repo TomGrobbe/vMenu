@@ -1,0 +1,195 @@
+name: Combined Release (vMenu + vMenu Enhanced)
+
+# ============================================================================
+# DE-ACTIVATED SCAFFOLD - do NOT enable until master has been renamed to legacy.
+#
+# Goal: a single commit on either the legacy branch or the enhanced branch
+# triggers a build of BOTH branches and bundles their outputs into ONE GitHub
+# release titled:
+#     "vMenu v<x> & vMenu Enhanced v<y>"
+# containing two zips: vMenu-v<x>.zip and vMenu-Enhanced-v<y>.zip.
+#
+# Right now only `workflow_dispatch` is active, so this never fires on a commit
+# and can be tested manually from the Actions tab. To ACTIVATE later:
+#   1. Uncomment the `push:` block below.
+#   2. Turn off the `release` job in enhanced.yml (and the legacy build.yml
+#      release) so a release is not cut twice for the same commit.
+# ============================================================================
+
+on:
+  workflow_dispatch:
+  # ACTIVATE LATER: uncomment so a commit on either branch cuts the combined release.
+  # push:
+  #   branches:
+  #     - legacy
+  #     - master
+  #     - enhanced
+  #   paths-ignore:
+  #     - "docs/**"
+  #     - ".github/workflows/docs.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: combined-release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Branch that carries legacy vMenu. Rename to `legacy` after the migration.
+  LEGACY_BRANCH: master
+  ENHANCED_BRANCH: enhanced
+  ENHANCED_VERSION_BASE: "0.0.1-alpha"
+
+jobs:
+  # ------------------------------------------------------------
+  # Build legacy vMenu (net452/net462, GitVersion `v` lineage)
+  # ------------------------------------------------------------
+  build-legacy:
+    name: Build legacy (vMenu)
+    runs-on: windows-latest
+    outputs:
+      version:  ${{ steps.ver.outputs.version }}
+      zip_name: ${{ steps.ver.outputs.zip_name }}
+    steps:
+      - name: Checkout legacy branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.LEGACY_BRANCH }}
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: "5.x"
+
+      - name: Execute GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3.0.0
+
+      - name: Compute version
+        id: ver
+        shell: bash
+        run: |
+          VERSION="${{ steps.gitversion.outputs.semVer }}"
+          echo "version=$VERSION"                    >> "$GITHUB_OUTPUT"
+          echo "zip_name=vMenu-v${VERSION}.zip"       >> "$GITHUB_OUTPUT"
+
+      - name: Restore and build
+        shell: bash
+        run: |
+          dotnet restore vMenu.sln
+          dotnet build vMenu.sln -c Release --no-restore \
+            -p:Version="${{ steps.gitversion.outputs.semVer }}" \
+            -p:AssemblyVersion="${{ steps.gitversion.outputs.assemblySemVer }}" \
+            -p:FileVersion="${{ steps.gitversion.outputs.assemblySemVer }}"
+
+      - name: Assemble and zip
+        shell: pwsh
+        run: |
+          Copy-Item 'assets/fxmanifest.lua' 'build/vMenu/fxmanifest.lua' -Force
+          (Get-Content 'build/vMenu/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.ver.outputs.version }}' |
+            Set-Content -Encoding ASCII 'build/vMenu/fxmanifest.lua'
+          Copy-Item README.md  build/vMenu/README.md  -Force
+          Copy-Item LICENSE.md build/vMenu/LICENSE.md -Force
+          Compress-Archive -Path 'build/vMenu/*' -DestinationPath '${{ steps.ver.outputs.zip_name }}' -Force
+
+      - name: Upload legacy zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-zip
+          path: ${{ steps.ver.outputs.zip_name }}
+
+  # ------------------------------------------------------------
+  # Build vMenu Enhanced (net10.0, enhanced-v alpha lineage)
+  # ------------------------------------------------------------
+  build-enhanced:
+    name: Build enhanced (vMenu Enhanced)
+    runs-on: windows-latest
+    outputs:
+      version:  ${{ steps.ver.outputs.version }}
+      zip_name: ${{ steps.ver.outputs.zip_name }}
+    steps:
+      - name: Checkout enhanced branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ENHANCED_BRANCH }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Compute version
+        id: ver
+        shell: bash
+        run: |
+          VERSION="${ENHANCED_VERSION_BASE}.${{ github.run_number }}"
+          echo "version=$VERSION"                             >> "$GITHUB_OUTPUT"
+          echo "assembly_ver=0.0.1.${{ github.run_number }}"  >> "$GITHUB_OUTPUT"
+          echo "zip_name=vMenu-Enhanced-v${VERSION}.zip"      >> "$GITHUB_OUTPUT"
+
+      - name: Restore and build
+        shell: bash
+        run: |
+          dotnet restore vMenu.Enhanced.slnx
+          dotnet build vMenu.Enhanced.slnx -c Release --no-restore \
+            -p:Version="${{ steps.ver.outputs.version }}" \
+            -p:AssemblyVersion="${{ steps.ver.outputs.assembly_ver }}" \
+            -p:FileVersion="${{ steps.ver.outputs.assembly_ver }}"
+
+      - name: Assemble and zip
+        shell: pwsh
+        run: |
+          Copy-Item 'assets/enhanced/fxmanifest.lua' 'build/vMenu.Enhanced/fxmanifest.lua' -Force
+          (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.ver.outputs.version }}' |
+            Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
+          Copy-Item README.md  build/vMenu.Enhanced/README.md  -Force
+          Copy-Item LICENSE.md build/vMenu.Enhanced/LICENSE.md -Force
+          Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.ver.outputs.zip_name }}' -Force
+
+      - name: Upload enhanced zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-zip
+          path: ${{ steps.ver.outputs.zip_name }}
+
+  # ------------------------------------------------------------
+  # One release containing both zips
+  # ------------------------------------------------------------
+  release:
+    name: Combined release
+    needs: [build-legacy, build-enhanced]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download legacy zip
+        uses: actions/download-artifact@v4
+        with:
+          name: legacy-zip
+          path: release-assets
+
+      - name: Download enhanced zip
+        uses: actions/download-artifact@v4
+        with:
+          name: enhanced-zip
+          path: release-assets
+
+      - name: Create combined release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LEGACY_VER="${{ needs.build-legacy.outputs.version }}"
+          ENHANCED_VER="${{ needs.build-enhanced.outputs.version }}"
+          TAG="combined-v${LEGACY_VER}-and-enhanced-v${ENHANCED_VER}"
+          {
+            echo "Combined release bundling vMenu v${LEGACY_VER} and vMenu Enhanced v${ENHANCED_VER}."
+          } > release_notes.md
+          gh release create "$TAG" \
+            --title "vMenu v${LEGACY_VER} & vMenu Enhanced v${ENHANCED_VER}" \
+            --notes-file release_notes.md \
+            "release-assets/${{ needs.build-legacy.outputs.zip_name }}" \
+            "release-assets/${{ needs.build-enhanced.outputs.zip_name }}"
