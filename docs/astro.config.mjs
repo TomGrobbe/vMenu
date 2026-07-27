@@ -63,7 +63,7 @@ export default defineConfig({
         {
           label: 'Links',
           items: [
-            { label: 'vMenu Legacy docs', link: '/vmenu/legacy/', attrs: { target: '_blank' } },
+            { label: 'vMenu Legacy docs', link: 'https://docs.vespura.com/vmenu/legacy/', attrs: { target: '_blank' } },
             { label: 'Releases', link: 'https://github.com/TomGrobbe/vMenu/releases/', attrs: { target: '_blank' } },
             { label: 'Patreon', link: 'https://www.patreon.com/vespura', attrs: { target: '_blank' } },
             { label: 'vespura.com', link: 'https://vespura.com/', attrs: { target: '_blank' } },
