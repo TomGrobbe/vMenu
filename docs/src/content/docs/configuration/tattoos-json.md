@@ -14,7 +14,7 @@ The file ships empty:
 []
 ```
 
-Once you add at least one entry, an extra **Addon Tattoos** list appears in *MP Ped Customization* > *Tattoos*, alongside the built in Hair, Head, Torso, Left/Right Arm, Left/Right Leg and Badge Overlays lists. If the file is empty, that menu item is hidden entirely.
+Once you add at least one entry, an extra **Addon Tattoos** list appears in _MP Ped Customization_ > _Tattoos_, alongside the built in Hair, Head, Torso, Left/Right Arm, Left/Right Leg and Badge Overlays lists. If the file is empty, that menu item is hidden entirely.
 
 ## Format
 
@@ -102,7 +102,7 @@ When you stream a custom tattoo, your resource contains an overlay definition fi
 </Item>
 ```
 
-- **`name`** is the `<nameHash>` value, so `mytattoos_05_A` in the example above. Note that this is *not* the same as `<txdHash>`/`<txtHash>` (the texture dictionary), which is a common mix up.
+- **`name`** is the `<nameHash>` value, so `mytattoos_05_A` in the example above. Note that this is _not_ the same as `<txdHash>`/`<txtHash>` (the texture dictionary), which is a common mix up.
 - **`collectionName`** is the collection that overlay file declares. By convention this matches the overlay file's own name without the extension, so `mytattoos_overlays.xml` gives you a collection called `mytattoos_overlays`.
 - **`gender`** maps from the `<gender>` field: `GENDER_MALE` (or a `_M` suffixed name) becomes `0`, `GENDER_FEMALE` (or `_F`) becomes `1`, and `GENDER_DONTCARE` becomes `2`.
 
@@ -116,7 +116,9 @@ AddPedDecorationFromHashes(ped, GetHashKey("mytattoos_overlays"), GetHashKey("my
 If you can apply your tattoo with that native but it won't show in vMenu, your `collectionName`/`name` pair is correct and the problem is somewhere in your tattoos.json. If the native doesn't work either, the problem is in your streamed resource, not in vMenu.
 :::
 
-If you're creating custom tattoos from scratch rather than configuring ones you already have, see the [FiveM-CustomTattoos][custom-tattoos] example repo and the [tattoo streaming guide][stream-tattoos] for the asset side of things (texture sizes, OpenIV, the overlay XML and the shop meta files).
+## Creating your own tattoos
+
+Everything above assumes you already have a working tattoo resource and just need to point vMenu at it. Making the assets themselves is a separate job that vMenu isn't involved in at all, so it isn't covered here.
 
 ## Hair tattoos and badges
 
@@ -157,8 +159,7 @@ Unlike the other config files, tattoos.json is **not** checked on the server, so
 ```
 
 ## Appreciate my work?
+
 Consider supporting me on [Patreon](https://www.patreon.com/vespura)!
 
-[custom-tattoos]: https://github.com/TimothyDexter/FiveM-CustomTattoos
-[stream-tattoos]: https://docs.altv.mp/gta/articles/tutorials/stream_tattoos.html
 [add-ped-decoration]: https://docs.fivem.net/natives/?_0x5F5D1665E352A839=
