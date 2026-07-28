@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <PackageReference Include="CitizenFX.FiveM.Client" Version="0.0.2-alpha" />
+    <PackageReference Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.3" />
   </ItemGroup>
 
 </Project>

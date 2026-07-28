@@ -18,6 +18,14 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
     <!--
+      Class libraries normally leave NuGet assemblies in the package cache and
+      only list them in the .deps.json. FiveM has no host to resolve them, so
+      every referenced assembly (MenuAPI, CitizenFX.*, MessagePack, ...) has to
+      sit next to the resource. This copies the whole resolved graph to OutputPath.
+    -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!--
       Every project emits into one shared folder (repo-root/build/vMenu.Enhanced/)
       so CI can zip the whole resource in a single step, mirroring the legacy
       build/vMenu/ convention.

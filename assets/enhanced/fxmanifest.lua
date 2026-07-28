@@ -16,6 +16,16 @@ server_debug_mode 'false'
 -- Adds extra commands for testing and development
 experimental_features_enabled '0'
 
+files {
+    'CitizenFX.Base.dll',
+    'CitizenFX.FiveM.Shared.dll',
+    'CitizenFX.FiveM.Client.dll',
+    'MenuAPI.dll',
+    'MessagePack.dll',
+    'MessagePack.Annotations.dll',
+    'Microsoft.NET.StringTools.dll',
+}
+
 -- Shared data models compiled into a single shared assembly.
 shared_script 'vMenu.Enhanced.Data.dll'
 
@@ -25,6 +35,8 @@ client_scripts {
     'vMenu.Enhanced.Configuration.dll',
     'vMenu.Enhanced.Permissions.dll',
     'vMenu.Enhanced.Menus.dll',
+    'vMenu.Enhanced.IamAproblem.dll',
+    -- 'vMenu.Enhanced.NoClip.dll',
 }
 
 -- Server assemblies.

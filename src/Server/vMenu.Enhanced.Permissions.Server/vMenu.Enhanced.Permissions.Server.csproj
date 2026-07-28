@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
-    <ProjectReference Include="..\vMenu.Enhanced.Core.Server\vMenu.Enhanced.Core.Server.csproj" />
+    <PackageReference Include="CitizenFX.FiveM.Server" Version="0.0.2-alpha" />
   </ItemGroup>
-
 </Project>

@@ -1,16 +1,18 @@
 <Solution>
-  <Folder Name="/Client/">
+  <Folder Name="/src/" />
+  <Folder Name="/src/Client/">
+    <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
+    <Project Path="src/Client/vMenu.Enhanced.IamAproblem/vMenu.Enhanced.IamAproblem.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
   </Folder>
-  <Folder Name="/Server/">
+  <Folder Name="/src/Server/">
+    <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
   </Folder>
-  <Folder Name="/Shared/">
+  <Folder Name="/src/Shared/">
     <Project Path="src/Shared/vMenu.Enhanced.Data/vMenu.Enhanced.Data.csproj" />
   </Folder>
 </Solution>

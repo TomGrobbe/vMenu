@@ -270,3 +270,4 @@ external/
 build/
 
 *.lscache
+/.github
