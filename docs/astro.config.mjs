@@ -64,7 +64,10 @@ export default defineConfig({
           items: [
             { label: 'Configuration Options', link: '/configuration/' },
             { label: 'addons.json', link: '/configuration/addons-json/' },
+            { label: 'extras.json', link: '/configuration/extras-json/' },
             { label: 'locations.json', link: '/configuration/locations-json/' },
+            { label: 'model-whitelists.json', link: '/configuration/model-whitelists-json/' },
+            { label: 'tattoos.json', link: '/configuration/tattoos-json/' },
           ],
         },
         {

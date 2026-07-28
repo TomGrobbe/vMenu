@@ -33,16 +33,24 @@ Whitelisted models are listed in the `config/model-whitelists.json` file inside 
 
 ## Whitelisting models
 
-To whitelist a model, add its spawn name to the correct list. You can whitelist base game models and addon models in exactly the same way, just use the model's spawn name.
+To whitelist a model, add its spawn name to the correct list.
 
 - Add vehicle spawn names to `whitelistedvehicle`.
 - Add ped spawn names to `whitelistedpeds`.
-- Add weapon names to `whitelistedweapons`.
+- Add addon weapon names to `whitelistedweapons`.
 
 A few things to keep in mind:
 
 - Model names are treated in lowercase, so the generated permission will always be lowercase regardless of how you type it here.
-- For weapons, the `weapon_` prefix is removed from the generated permission. For example, `weapon_pistol` becomes the permission ending in `pistol`.
+- For weapons, the `weapon_` prefix is removed from the generated permission. For example, `weapon_myaddonrifle` becomes the permission ending in `myaddonrifle`.
+
+:::caution
+For **vehicles and peds**, base game models and addon models work exactly the same way here.
+
+**Weapons are different.** Base game weapons ignore this file completely, since they already have their own permissions, so only addon weapons are worth listing. Addon weapons are also restricted whether or not you list them here. See [Weapons work differently](/vmenu/legacy/configuration/model-whitelists-json/#weapons-work-differently) for the full explanation.
+:::
+
+For more detail on the file itself, including the error messages it can log and what players see when a model is restricted, see the [model-whitelists.json](/vmenu/legacy/configuration/model-whitelists-json/) page.
 
 Here is an example with real values:
 
@@ -56,7 +64,7 @@ Here is an example with real values:
     "a_m_y_business_01"
   ],
   "whitelistedweapons": [
-    "weapon_pistol"
+    "weapon_myaddonrifle"
   ]
 }
 ```
@@ -79,7 +87,7 @@ This file is regenerated every time the vMenu resource starts, and it always ove
 add_ace builtin.everyone "vMenu.VehicleSpawner.WhitelistedModels.All" allow
 add_ace builtin.everyone "vMenu.PlayerAppearance.WhitelistedModels.All" allow
 add_ace builtin.everyone "vMenu.WeaponOptions.WhitelistedModels.All" allow
-add_ace builtin.everyone "vMenu.WeaponOptions.WhitelistedModels.pistol" allow
+add_ace builtin.everyone "vMenu.WeaponOptions.WhitelistedModels.myaddonrifle" allow
 add_ace builtin.everyone "vMenu.VehicleSpawner.WhitelistedModels.adder" allow
 add_ace builtin.everyone "vMenu.VehicleSpawner.WhitelistedModels.zentorno" allow
 add_ace builtin.everyone "vMenu.PlayerAppearance.WhitelistedModels.a_m_y_business_01" allow
