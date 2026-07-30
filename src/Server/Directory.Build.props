@@ -1,0 +1,26 @@
+<Project>
+  <!--
+    MSBuild stops at the FIRST Directory.Build.props it finds walking up from a
+    project, so this file shadows src/Directory.Build.props for everything under
+    src/Server/. Import the parent explicitly to keep the shared settings.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!--
+      Server assemblies live in their own subfolder of the resource,
+	  because if we put them in the same folder as the client assemblies,
+	  the server crashes on resource load.
+
+      Doing it this way, it isolates the assemblies both sides ship: 
+	  CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry CitizenFX.Base.dll and
+      CitizenFX.FiveM.Shared.dll. Separate folders keep each side consistent.
+
+      CopyLocalLockFileAssemblies (inherited from src/Directory.Build.props)
+      copies the resolved NuGet graph next to the output, so the server's
+      dependencies land in server/ too.
+    -->
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\server\</OutputPath>
+  </PropertyGroup>
+
+</Project>

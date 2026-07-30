@@ -34,9 +34,6 @@ files {
     'vMenu.Enhanced.NoClip.dll',
 
     'vMenu.Enhanced.Data.dll',
-
-    'vMenu.Enhanced.Configuration.Server.dll',
-    'vMenu.Enhanced.Permissions.Server.dll',
 }
 
 -- Client assemblies.
@@ -44,7 +41,5 @@ client_scripts {
     'vMenu.Enhanced.Core.dll',
 }
 
--- Server assemblies.
-server_scripts {
-    'vMenu.Enhanced.Core.Server.dll',
-}
+-- Server assembly
+server_script 'server/vMenu.Enhanced.Core.Server.dll'
