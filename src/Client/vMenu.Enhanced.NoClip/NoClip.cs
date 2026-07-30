@@ -83,22 +83,29 @@ namespace vMenu.Enhanced.NoClip
                 await PrepareInstructionalButtons();
             }
 
+            var playerPed = API.Players.Local;
+            var noclipEntity = (playerPed.Ped?.IsPedInAnyVehicle() ?? false) ? playerPed.Ped.GetVehiclePedIsIn() : playerPed.PedIndex;
+            var cachedEntity = noclipEntity;
+            var reset = false;
             while (NoclipActive)
             {
+                reset = true;
+
                 if (!Native.IsHudHidden())
                 {
                     DisplayInstructionalButtons();
                 }
 
-                var playerPed = API.Players.Local;
+                playerPed = API.Players.Local;
 
-                var noclipEntity = playerPed.Ped?.IsPedInAnyVehicle() == true ? playerPed.Ped.GetVehiclePedIsIn() : playerPed.PedIndex;
+                noclipEntity = (playerPed.Ped?.IsPedInAnyVehicle() ?? false) ? playerPed.Ped.GetVehiclePedIsIn() : playerPed.PedIndex;
 
                 Native.FreezeEntityPosition(noclipEntity, true);
                 Native.SetEntityInvincible(noclipEntity, true, false);
 
                 System.Numerics.Vector3 newPos;
 
+                Native.DisableControlAction(0, 85, false);  // Control.RadioWheel
                 Native.DisableControlAction(0, 30, false);  // Control.MoveLeftRight
                 Native.DisableControlAction(0, 31, false);  // Control.MoveUpDown
                 Native.DisableControlAction(0, 32, false);  // Control.MoveUp
@@ -196,27 +203,49 @@ namespace vMenu.Enhanced.NoClip
                 Native.SetEveryoneIgnorePlayer(playerPed.PedIndex, true);
                 Native.SetPoliceIgnorePlayer(playerPed.PedIndex, true);
 
-                // After the next game tick, reset the entity properties.
-                await API.Delay(0);
+                await API.Yield();
+
+                if (noclipEntity != cachedEntity)
+                {
+                    API.Log.Info("not the same");
+                    if (Native.IsEntityAVehicle(cachedEntity))
+                    {
+                        API.Log.Info("is vehicle");
+                        ResetEntity(cachedEntity, cachedEntity);
+                    }
+
+                    cachedEntity = noclipEntity;
+                }
+            }
+
+            if (reset)
+            {
+                ResetEntity(playerPed.PedIndex, noclipEntity);
+            }
+
+            static void ResetEntity(int playerPed, int noclipEntity)
+            {
                 Native.FreezeEntityPosition(noclipEntity, false);
                 Native.SetEntityInvincible(noclipEntity, false, false);
                 Native.SetEntityCollision(noclipEntity, true, true);
 
-                // If the player is not set as invisible by PlayerOptions or if the noclip entity is not the player ped, reset the visibility
-                if (noclipEntity == playerPed.PedIndex)
+                Native.SetEntityVisible(playerPed, true, false);
+                Native.SetLocalPlayerVisibleLocally(true);
+
+                if (noclipEntity != playerPed)
                 {
                     Native.SetEntityVisible(noclipEntity, true, false);
-                    Native.SetLocalPlayerVisibleLocally(true);
                 }
 
                 // Always reset the alpha.
                 Native.ResetEntityAlpha(noclipEntity);
 
-                Native.SetEveryoneIgnorePlayer(playerPed.PedIndex, false);
-                Native.SetPoliceIgnorePlayer(playerPed.PedIndex, false);
+                if (Native.IsEntityAPed(playerPed))
+                {
+                    Native.SetEveryoneIgnorePlayer(playerPed, false);
+                    Native.SetPoliceIgnorePlayer(playerPed, false);
+                }
             }
-
-            await API.Yield();
         }
 
         private static async Task PrepareInstructionalButtons()

@@ -1,4 +1,5 @@
 using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Script;
 
@@ -30,6 +31,11 @@ public sealed class Main : IScript
             Native.RequestModel(weaponHash);
 
             Native.GiveWeaponToPed(ped, weaponHash, 1000, true, true);
+        });
+
+        SharedAPI.Commands.RegisterCommand("spawnadder", false, async (string? weapon) =>
+        {
+            await API.Vehicles.RequestAndCreate(API.Hash("adder"), API.Players.Local.Position, 0, true, true, true);
         });
     }
 
