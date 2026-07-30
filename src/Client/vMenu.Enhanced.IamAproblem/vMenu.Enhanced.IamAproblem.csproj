@@ -1,5 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <PackageReference Include="CitizenFX.FiveM.Client" Version="0.0.2-alpha" />
-  </ItemGroup>
-</Project>

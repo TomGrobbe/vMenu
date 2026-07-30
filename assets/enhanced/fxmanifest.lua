@@ -20,28 +20,31 @@ files {
     'CitizenFX.Base.dll',
     'CitizenFX.FiveM.Shared.dll',
     'CitizenFX.FiveM.Client.dll',
-    'MenuAPI.dll',
+
     'MessagePack.dll',
     'MessagePack.Annotations.dll',
-    'Microsoft.NET.StringTools.dll',
-}
 
--- Shared data models compiled into a single shared assembly.
-shared_script 'vMenu.Enhanced.Data.dll'
+    'Microsoft.NET.StringTools.dll',
+
+    'MenuAPI.dll',
+
+    'vMenu.Enhanced.Configuration.dll',
+    'vMenu.Enhanced.Permissions.dll',
+    'vMenu.Enhanced.Menus.dll',
+    'vMenu.Enhanced.NoClip.dll',
+
+    'vMenu.Enhanced.Data.dll',
+
+    'vMenu.Enhanced.Configuration.Server.dll',
+    'vMenu.Enhanced.Permissions.Server.dll',
+}
 
 -- Client assemblies.
 client_scripts {
     'vMenu.Enhanced.Core.dll',
-    'vMenu.Enhanced.Configuration.dll',
-    'vMenu.Enhanced.Permissions.dll',
-    'vMenu.Enhanced.Menus.dll',
-    'vMenu.Enhanced.IamAproblem.dll',
-    -- 'vMenu.Enhanced.NoClip.dll',
 }
 
 -- Server assemblies.
 server_scripts {
     'vMenu.Enhanced.Core.Server.dll',
-    'vMenu.Enhanced.Configuration.Server.dll',
-    'vMenu.Enhanced.Permissions.Server.dll',
 }

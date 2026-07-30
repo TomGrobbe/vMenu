@@ -1,4 +1,3 @@
-using CitizenFX.Core;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Script;
@@ -7,11 +6,11 @@ using MenuAPI;
 
 namespace vMenu.Enhanced.Core;
 
-public sealed class Main : Entrypoint, IScript
+public sealed class Main : IScript
 {
     public async void Initialize()
     {
-        _ = new NoClip();
+        _ = new NoClip.NoClip();
 
         SharedAPI.Commands.RegisterCommand("give", false, async (string? weapon) =>
         {

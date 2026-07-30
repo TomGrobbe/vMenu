@@ -1,9 +1,9 @@
 ﻿using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
 
-namespace vMenu.Enhanced.Core
+namespace vMenu.Enhanced.NoClip
 {
-    internal class NoClip
+    public class NoClip
     {
         private static bool NoclipActive { get; set; } = false;
         private static int MovingSpeed { get; set; } = 0;
@@ -27,7 +27,7 @@ namespace vMenu.Enhanced.Core
         private static bool IsF8ConsoleLikelyOpen => !Native.IsControlEnabled(0, 360);
 
 
-        internal NoClip()
+        public NoClip()
         {
             NoClipper();
             NoClipperKeyer();
