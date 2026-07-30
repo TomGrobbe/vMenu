@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" Version="0.0.3-alpha" />
-    <PackageReference Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.6" />
+    <PackageReference Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vMenu.Enhanced.NoClip\vMenu.Enhanced.NoClip.csproj" />
