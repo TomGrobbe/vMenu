@@ -1,305 +1,439 @@
-﻿using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Client.Extensions;
+using CitizenFX.FiveM.Client;
 
-namespace vMenu.Enhanced.NoClip
+namespace vMenu.Enhanced.NoClip;
+
+public class NoClip
 {
-    public class NoClip
+    /// <summary>
+    /// Controls that have to be disabled every frame while noclip is active, otherwise the ped
+    /// or vehicle would still act on them.
+    /// </summary>
+    private static readonly int[] DisabledControls =
+    [
+        Controls.RadioWheel,
+        Controls.MoveLeftRight,
+        Controls.MoveUpDown,
+        Controls.MoveForward,
+        Controls.MoveBackward,
+        Controls.TurnLeft,
+        Controls.TurnRight,
+        Controls.DecreaseSpeed,
+        Controls.MoveUp,
+        Controls.MultiplayerInfo,
+        Controls.ToggleFollowCam,
+    ];
+
+    /// <summary>Selectable movement speeds, paired with the label shown on the instructional buttons.</summary>
+    private static readonly (float Multiplier, string Label)[] MoveSpeeds =
+    [
+        (0.1f, "1"),
+        (0.5f, "2"),
+        (1.0f, "3"),
+        (1.5f, "4"),
+        (2.5f, "5"),
+        (5.5f, "6"),
+        (8.5f, "7"),
+        (12.5f, "8"),
+        (18.5f, "9"),
+        (25.5f, "10"),
+    ];
+
+    private const float ForwardStep = 0.5f;
+    private const float VerticalStep = 0.21f;
+    private const float TurnStep = 3f;
+
+    /// <summary>20% opacity, so the entity stays faintly visible to the noclipping player.</summary>
+    private const int NoclipAlpha = 51;
+
+    private const string InstructionalButtonsScaleform = "INSTRUCTIONAL_BUTTONS";
+
+    private static bool NoclipActive { get; set; } = false;
+    private static int MovingSpeed { get; set; } = 0;
+    private static bool FollowCamMode { get; set; } = true;
+
+    private static int _instructionalButtonsScaleformId = -1;
+
+    // State the instructional buttons were last built for. The scaleform keeps its data slots
+    // between frames, so the buttons only have to be rebuilt when one of these changes.
+    private static int _renderedSpeed = -1;
+    private static bool _renderedFollowCamMode;
+
+    private static bool IsF8ConsoleLikelyOpen => !Native.IsControlEnabled(Controls.Group, Controls.ConsoleProbe);
+
+    public NoClip()
     {
-        private static bool NoclipActive { get; set; } = false;
-        private static int MovingSpeed { get; set; } = 0;
-        private static bool FollowCamMode { get; set; } = true;
+        NoClipper();
+        NoClipperKeyer();
+    }
 
-        private static int _instructionalButtonsScaleformId = -1;
-
-        private static readonly List<string> speeds = new() {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-        };
-
-        private static bool IsF8ConsoleLikelyOpen => !Native.IsControlEnabled(0, 360);
-
-
-        public NoClip()
+    private static async void NoClipper()
+    {
+        while (true)
         {
-            NoClipper();
-            NoClipperKeyer();
+            await NoClipHandler();
+            await API.Yield();
+        }
+    }
+
+    private static async void NoClipperKeyer()
+    {
+        while (true)
+        {
+            NoClipControls();
+            await API.Yield();
+        }
+    }
+
+    private static void NoClipControls()
+    {
+        if (IsF8ConsoleLikelyOpen)
+        {
+            return;
         }
 
-        async void NoClipper()
+        if (Native.IsControlJustPressed(Controls.Group, Controls.ToggleNoclip)
+            || Native.IsDisabledControlJustPressed(Controls.Group, Controls.ToggleNoclip))
         {
-            while (true)
-            {
-                await NoClipHandler();
-                await API.Yield();
-            }
+            SetNoclipActive(!NoclipActive);
+        }
+    }
+
+    internal static void SetNoclipActive(bool active)
+    {
+        if (active == NoclipActive)
+        {
+            return;
         }
 
-        static async void NoClipperKeyer()
+        NoclipActive = active;
+
+        if (!active)
         {
-            while (true)
-            {
-                NoClipControls();
-                await API.Yield();
-            }
+            ReleaseInstructionalButtons();
+        }
+    }
+
+    internal static bool IsNoclipActive()
+    {
+        return NoclipActive;
+    }
+
+    private static async Task NoClipHandler()
+    {
+        if (!NoclipActive)
+        {
+            return;
         }
 
-        private static void NoClipControls()
+        await PrepareInstructionalButtons();
+
+        var playerPed = Native.PlayerPedId();
+        var noclipEntity = GetNoclipEntity(playerPed, out _);
+        var cachedEntity = noclipEntity;
+        var noclipApplied = false;
+
+        while (NoclipActive)
         {
-            if (!IsF8ConsoleLikelyOpen && (Native.IsControlJustPressed(0, 289) || Native.IsDisabledControlJustPressed(0, 289)))
+            noclipApplied = true;
+
+            if (!Native.IsHudHidden())
             {
-                NoclipActive = !NoclipActive;
-            }
-        }
-
-        internal static void SetNoclipActive(bool active)
-        {
-            NoclipActive = active;
-
-            if (!active)
-            {
-                Native.SetScaleformMovieAsNoLongerNeeded(out _instructionalButtonsScaleformId);
-
-                _instructionalButtonsScaleformId = -1;
-            }
-        }
-
-        internal static bool IsNoclipActive()
-        {
-            return NoclipActive;
-        }
-
-        private async Task NoClipHandler()
-        {
-            if (NoclipActive)
-            {
-                await PrepareInstructionalButtons();
+                DisplayInstructionalButtons();
             }
 
-            var playerPed = API.Players.Local;
-            var noclipEntity = (playerPed.Ped?.IsPedInAnyVehicle() ?? false) ? playerPed.Ped.GetVehiclePedIsIn() : playerPed.PedIndex;
-            var cachedEntity = noclipEntity;
-            var reset = false;
-            while (NoclipActive)
+            playerPed = Native.PlayerPedId();
+            noclipEntity = GetNoclipEntity(playerPed, out var inVehicle);
+
+            FreezeEntity(noclipEntity);
+            DisableConflictingControls(inVehicle);
+
+            var input = ReadMoveInput();
+
+            MoveEntity(noclipEntity, input);
+            ConcealEntity(playerPed, noclipEntity);
+
+            await API.Yield();
+
+            // Deliberately after the yield: the old entity has to be handed back a tick after the
+            // switch is noticed, otherwise the game overwrites the reset and it stays invisible.
+            if (noclipEntity != cachedEntity)
             {
-                reset = true;
+                ReleaseEntity(cachedEntity);
 
-                if (!Native.IsHudHidden())
-                {
-                    DisplayInstructionalButtons();
-                }
-
-                playerPed = API.Players.Local;
-
-                noclipEntity = (playerPed.Ped?.IsPedInAnyVehicle() ?? false) ? playerPed.Ped.GetVehiclePedIsIn() : playerPed.PedIndex;
-
-                Native.FreezeEntityPosition(noclipEntity, true);
-                Native.SetEntityInvincible(noclipEntity, true, false);
-
-                System.Numerics.Vector3 newPos;
-
-                Native.DisableControlAction(0, 85, false);  // Control.RadioWheel
-                Native.DisableControlAction(0, 30, false);  // Control.MoveLeftRight
-                Native.DisableControlAction(0, 31, false);  // Control.MoveUpDown
-                Native.DisableControlAction(0, 32, false);  // Control.MoveUp
-                Native.DisableControlAction(0, 33, false);  // Control.MoveDownOnly
-                Native.DisableControlAction(0, 34, false);  // Control.MoveLeftOnly
-                Native.DisableControlAction(0, 35, false);  // Control.MoveRightOnly
-                Native.DisableControlAction(0, 36, false);  // Control.Duck
-                Native.DisableControlAction(0, 44, false);  // Control.Cover
-                Native.DisableControlAction(0, 244, false); // Control.MultiplayerInfo
-                Native.DisableControlAction(0, 74, false);  // Control.VehicleHeadlight
-
-                if (playerPed.Ped?.IsPedInAnyVehicle() == true)
-                {
-                    Native.DisableControlAction(0, 81, false); // VehicleRadioWheel
-                }
-
-                var yoff = 0.0f;
-                var zoff = 0.0f;
-
-                if (Native.IsUsingKeyboardAndMouse(2) && Native.UpdateOnscreenKeyboard() != 0 && !Native.IsPauseMenuActive())
-                {
-                    if (Native.IsControlJustPressed(0, 21))
-                    {
-                        MovingSpeed++;
-                        if (MovingSpeed >= speeds.Count)
-                        {
-                            MovingSpeed = 0;
-                        }
-                    }
-                    if (Native.IsDisabledControlJustPressed(0, 36))
-                    {
-                        MovingSpeed--;
-                        if (MovingSpeed < 0)
-                        {
-                            MovingSpeed = speeds.Count - 1;
-                        }
-                    }
-
-                    if (Native.IsDisabledControlPressed(0, 32))
-                    {
-                        yoff = 0.5f;
-                    }
-                    if (Native.IsDisabledControlPressed(0, 33))
-                    {
-                        yoff = -0.5f;
-                    }
-                    if (!FollowCamMode && Native.IsDisabledControlPressed(0, 34))
-                    {
-                        Native.SetEntityHeading(playerPed.PedIndex, Native.GetEntityHeading(playerPed.PedIndex) + 3f);
-                    }
-                    if (!FollowCamMode && Native.IsDisabledControlPressed(0, 35))
-                    {
-                        Native.SetEntityHeading(playerPed.PedIndex, Native.GetEntityHeading(playerPed.PedIndex) - 3f);
-                    }
-                    if (Native.IsDisabledControlPressed(0, 44))
-                    {
-                        zoff = 0.21f;
-                    }
-                    if (Native.IsDisabledControlPressed(0, 20))
-                    {
-                        zoff = -0.21f;
-                    }
-                    if (Native.IsDisabledControlJustPressed(0, 74))
-                    {
-                        FollowCamMode = !FollowCamMode;
-                    }
-                }
-                float moveSpeed = MovingSpeed switch
-                {
-                    0 => 0.1f,
-                    1 => 0.5f,
-                    2 => 1.0f,
-                    3 => 1.5f,
-                    4 => 2.5f,
-                    5 => 5.5f,
-                    6 => 8.5f,
-                    7 => 12.5f,
-                    8 => 18.5f,
-                    9 => 25.5f,
-                    _ => 0.1f,
-                };
-                newPos = Native.GetOffsetFromEntityInWorldCoords(noclipEntity, 0f, yoff * moveSpeed, zoff * moveSpeed);
-
-                var heading = Native.GetEntityHeading(noclipEntity);
-                Native.SetEntityVelocity(noclipEntity, 0f, 0f, 0f);
-                Native.SetEntityRotation(noclipEntity, 0f, 0f, 0f, 0, false);
-                Native.SetEntityHeading(noclipEntity, FollowCamMode ? Native.GetGameplayCamRelativeHeading() : heading);
-                Native.SetEntityCollision(noclipEntity, false, false);
-                Native.SetEntityCoordsNoOffset(noclipEntity, newPos.X, newPos.Y, newPos.Z, true, true, true);
-
-                Native.SetEntityVisible(noclipEntity, false, false);
-                Native.SetLocalPlayerVisibleLocally(true);
-                Native.SetEntityAlpha(noclipEntity, (int)(255 * 0.2), false);
-
-                Native.SetEveryoneIgnorePlayer(playerPed.PedIndex, true);
-                Native.SetPoliceIgnorePlayer(playerPed.PedIndex, true);
-
-                await API.Yield();
-
-                if (noclipEntity != cachedEntity)
-                {
-                    API.Log.Info("not the same");
-                    if (Native.IsEntityAVehicle(cachedEntity))
-                    {
-                        API.Log.Info("is vehicle");
-                        ResetEntity(cachedEntity, cachedEntity);
-                    }
-
-                    cachedEntity = noclipEntity;
-                }
-            }
-
-            if (reset)
-            {
-                ResetEntity(playerPed.PedIndex, noclipEntity);
-            }
-
-            static void ResetEntity(int playerPed, int noclipEntity)
-            {
-                Native.FreezeEntityPosition(noclipEntity, false);
-                Native.SetEntityInvincible(noclipEntity, false, false);
-                Native.SetEntityCollision(noclipEntity, true, true);
-
-                Native.SetEntityVisible(playerPed, true, false);
-                Native.SetLocalPlayerVisibleLocally(true);
-
-                if (noclipEntity != playerPed)
-                {
-                    Native.SetEntityVisible(noclipEntity, true, false);
-                }
-
-                // Always reset the alpha.
-                Native.ResetEntityAlpha(noclipEntity);
-
-                if (Native.IsEntityAPed(playerPed))
-                {
-                    Native.SetEveryoneIgnorePlayer(playerPed, false);
-                    Native.SetPoliceIgnorePlayer(playerPed, false);
-                }
+                cachedEntity = noclipEntity;
             }
         }
 
-        private static async Task PrepareInstructionalButtons()
+        if (noclipApplied)
         {
-            _instructionalButtonsScaleformId = Native.RequestScaleformMovie("INSTRUCTIONAL_BUTTONS");
-            while (!Native.HasScaleformMovieLoaded(_instructionalButtonsScaleformId))
+            ResetEntity(playerPed, noclipEntity);
+        }
+    }
+
+    /// <summary>
+    /// The entity noclip moves around: the vehicle the player is in, or the player ped itself.
+    /// </summary>
+    private static int GetNoclipEntity(int playerPed, out bool inVehicle)
+    {
+        inVehicle = Native.IsPedInAnyVehicle(playerPed, false);
+
+        return inVehicle ? Native.GetVehiclePedIsIn(playerPed, false) : playerPed;
+    }
+
+    /// <summary>
+    /// Hands an entity noclip is no longer moving back to the game, which happens whenever the
+    /// player leaves a vehicle or switches to another one. Has to be called a tick after the
+    /// switch, see the call site.
+    /// </summary>
+    private static void ReleaseEntity(int entity)
+    {
+        if (Native.IsEntityAVehicle(entity))
+        {
+            ResetEntity(entity, entity);
+        }
+    }
+
+    /// <summary>
+    /// Disables the controls the ped or vehicle would otherwise still act on this frame.
+    /// </summary>
+    private static void DisableConflictingControls(bool inVehicle)
+    {
+        foreach (var control in DisabledControls)
+        {
+            Native.DisableControlAction(Controls.Group, control, false);
+        }
+
+        if (inVehicle)
+        {
+            Native.DisableControlAction(Controls.Group, Controls.VehicleRadioWheel, false);
+        }
+    }
+
+    /// <summary>
+    /// Reads the movement controls, and applies the speed and follow cam toggles. Returns
+    /// <c>default</c> while the player can't steer, e.g. on a gamepad, in the pause menu, or with
+    /// the on-screen keyboard open.
+    /// </summary>
+    private static MoveInput ReadMoveInput()
+    {
+        if (!Native.IsUsingKeyboardAndMouse(2) || Native.UpdateOnscreenKeyboard() == 0 || Native.IsPauseMenuActive())
+        {
+            return default;
+        }
+
+        UpdateMovingSpeed();
+
+        var forward = 0.0f;
+        var vertical = 0.0f;
+        var headingDelta = 0.0f;
+
+        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveForward))
+        {
+            forward = ForwardStep;
+        }
+        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveBackward))
+        {
+            forward = -ForwardStep;
+        }
+
+        // Turning is only available when the entity isn't already following the camera.
+        if (!FollowCamMode)
+        {
+            if (Native.IsDisabledControlPressed(Controls.Group, Controls.TurnLeft))
             {
-                await API.Delay(0);
+                headingDelta += TurnStep;
+            }
+            if (Native.IsDisabledControlPressed(Controls.Group, Controls.TurnRight))
+            {
+                headingDelta -= TurnStep;
             }
         }
 
-        internal record InstructionalButton(Func<string> TextGetter, string Control);
-        private readonly List<InstructionalButton> _instructionalButtons = new()
+        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveUp))
         {
-            new InstructionalButton(() => $"Speed: {speeds[MovingSpeed]}x", ""),
-            new InstructionalButton(() => $"Increase speed", "INPUT_SPRINT"),
-            new InstructionalButton(() => $"Decrease speed", "INPUT_DUCK"),
-            new InstructionalButton(() => "Move Up", "INPUT_COVER"),
-            new InstructionalButton(() => "Move Down", "INPUT_MULTIPLAYER_INFO"),
-            new InstructionalButton(() => "Move Backward / Forward", "INPUT_MOVE_UD"),
-            new InstructionalButton(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", "INPUT_VEH_HEADLIGHT")
-        };
-
-        private void DisplayInstructionalButtons()
+            vertical = VerticalStep;
+        }
+        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveDown))
         {
-            Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "CLEAR_ALL");
-            Native.EndScaleformMovieMethod();
-
-            int i = 0;
-            foreach (var button in _instructionalButtons)
-            {
-                SetDataSlot(i, button);
-                i++;
-            }
-
-            if (!FollowCamMode)
-            {
-                SetDataSlot(_instructionalButtons.Count, new InstructionalButton(() => "Turn Right / Left", "INPUT_MOVE_LR"));
-            }
-
-            Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "DRAW_INSTRUCTIONAL_BUTTONS");
-            Native.ScaleformMovieMethodAddParamInt(0);
-            Native.EndScaleformMovieMethod();
-
-            Native.DrawScaleformMovieFullscreen(_instructionalButtonsScaleformId, 255, 255, 255, 255, 0);
+            vertical = -VerticalStep;
         }
 
-        private static void SetDataSlot(int i, InstructionalButton button)
+        if (Native.IsDisabledControlJustPressed(Controls.Group, Controls.ToggleFollowCam))
         {
-            Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "SET_DATA_SLOT");
-            Native.ScaleformMovieMethodAddParamInt(i);
-            Native.ScaleformMovieMethodAddParamTextureNameString($"~{button.Control}~");
-            Native.ScaleformMovieMethodAddParamTextureNameString(button.TextGetter());
-            Native.EndScaleformMovieMethod();
+            FollowCamMode = !FollowCamMode;
         }
+
+        return new MoveInput(forward, vertical, headingDelta);
+    }
+
+    /// <summary>Steps <see cref="MovingSpeed"/> through <see cref="MoveSpeeds"/>, wrapping around.</summary>
+    private static void UpdateMovingSpeed()
+    {
+        if (Native.IsControlJustPressed(Controls.Group, Controls.IncreaseSpeed))
+        {
+            MovingSpeed = (MovingSpeed + 1) % MoveSpeeds.Length;
+        }
+        if (Native.IsDisabledControlJustPressed(Controls.Group, Controls.DecreaseSpeed))
+        {
+            MovingSpeed = ((MovingSpeed - 1) + MoveSpeeds.Length) % MoveSpeeds.Length;
+        }
+    }
+
+    /// <summary>Pins the entity in place, so the game stops simulating it.</summary>
+    private static void FreezeEntity(int noclipEntity)
+    {
+        Native.FreezeEntityPosition(noclipEntity, true);
+        Native.SetEntityInvincible(noclipEntity, true, false);
+    }
+
+    /// <summary>Teleports the entity to where the player is steering it.</summary>
+    private static void MoveEntity(int noclipEntity, MoveInput input)
+    {
+        var moveSpeed = MoveSpeeds[MovingSpeed].Multiplier;
+        var newPos = Native.GetOffsetFromEntityInWorldCoords(noclipEntity, 0f, input.Forward * moveSpeed, input.Vertical * moveSpeed);
+
+        // Has to be read before the rotation below zeroes it out. Unused in follow cam mode.
+        var heading = FollowCamMode ? 0f : Native.GetEntityHeading(noclipEntity) + input.HeadingDelta;
+
+        Native.SetEntityVelocity(noclipEntity, 0f, 0f, 0f);
+        Native.SetEntityRotation(noclipEntity, 0f, 0f, 0f, 0, false);
+
+        // The gameplay cam heading is relative to the entity, so it has to be read *after* the
+        // rotation reset above. Reading it while the entity still has last frame's heading makes
+        // it compound every frame.
+        Native.SetEntityHeading(noclipEntity, FollowCamMode ? Native.GetGameplayCamRelativeHeading() : heading);
+        Native.SetEntityCollision(noclipEntity, false, false);
+        Native.SetEntityCoordsNoOffset(noclipEntity, newPos.X, newPos.Y, newPos.Z, true, true, true);
+    }
+
+    /// <summary>Hides the entity from other players, and from anyone who would react to it.</summary>
+    private static void ConcealEntity(int playerPed, int noclipEntity)
+    {
+        Native.SetEntityVisible(noclipEntity, false, false);
+        Native.SetLocalPlayerVisibleLocally(true);
+        Native.SetEntityAlpha(noclipEntity, NoclipAlpha, false);
+
+        Native.SetEveryoneIgnorePlayer(playerPed, true);
+        Native.SetPoliceIgnorePlayer(playerPed, true);
+    }
+
+    private static void ResetEntity(int playerPed, int noclipEntity)
+    {
+        Native.FreezeEntityPosition(noclipEntity, false);
+        Native.SetEntityInvincible(noclipEntity, false, false);
+        Native.SetEntityCollision(noclipEntity, true, true);
+
+        Native.SetEntityVisible(playerPed, true, false);
+        Native.SetLocalPlayerVisibleLocally(true);
+
+        if (noclipEntity != playerPed)
+        {
+            Native.SetEntityVisible(noclipEntity, true, false);
+        }
+
+        Native.ActivatePhysics(noclipEntity);
+
+        // Always reset the alpha.
+        Native.ResetEntityAlpha(noclipEntity);
+
+        if (Native.IsEntityAPed(playerPed))
+        {
+            Native.SetEveryoneIgnorePlayer(playerPed, false);
+            Native.SetPoliceIgnorePlayer(playerPed, false);
+        }
+    }
+
+    private static async Task PrepareInstructionalButtons()
+    {
+        if (_instructionalButtonsScaleformId != -1 && Native.HasScaleformMovieLoaded(_instructionalButtonsScaleformId))
+        {
+            return;
+        }
+
+        _instructionalButtonsScaleformId = Native.RequestScaleformMovie(InstructionalButtonsScaleform);
+
+        while (!Native.HasScaleformMovieLoaded(_instructionalButtonsScaleformId))
+        {
+            await API.Delay(0);
+        }
+
+        // A freshly loaded movie has no data slots yet, so force a rebuild.
+        _renderedSpeed = -1;
+    }
+
+    private static void ReleaseInstructionalButtons()
+    {
+        if (_instructionalButtonsScaleformId == -1)
+        {
+            return;
+        }
+
+        Native.SetScaleformMovieAsNoLongerNeeded(out _instructionalButtonsScaleformId);
+
+        _instructionalButtonsScaleformId = -1;
+        _renderedSpeed = -1;
+    }
+
+    private static readonly InstructionalButton[] InstructionalButtons =
+    [
+        new(() => $"Speed: {MoveSpeeds[MovingSpeed].Label}x", string.Empty),
+        new(() => "Increase speed", "INPUT_SPRINT"),
+        new(() => "Decrease speed", "INPUT_DUCK"),
+        new(() => "Move Up", "INPUT_COVER"),
+        new(() => "Move Down", "INPUT_MULTIPLAYER_INFO"),
+        new(() => "Move Backward / Forward", "INPUT_MOVE_UD"),
+        new(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", "INPUT_VEH_HEADLIGHT"),
+    ];
+
+    /// <summary>Only shown when the entity isn't following the camera, see <see cref="FollowCamMode"/>.</summary>
+    private static readonly InstructionalButton TurnButton = new(() => "Turn Right / Left", "INPUT_MOVE_LR");
+
+    private static void DisplayInstructionalButtons()
+    {
+        if (_instructionalButtonsScaleformId == -1)
+        {
+            return;
+        }
+
+        // The scaleform keeps its data slots between frames, so the buttons only have to be
+        // rebuilt whenever their contents actually change. Every other frame just draws it.
+        if (_renderedSpeed != MovingSpeed || _renderedFollowCamMode != FollowCamMode)
+        {
+            BuildInstructionalButtons();
+
+            _renderedSpeed = MovingSpeed;
+            _renderedFollowCamMode = FollowCamMode;
+        }
+
+        Native.DrawScaleformMovieFullscreen(_instructionalButtonsScaleformId, 255, 255, 255, 255, 0);
+    }
+
+    private static void BuildInstructionalButtons()
+    {
+        Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "CLEAR_ALL");
+        Native.EndScaleformMovieMethod();
+
+        for (var i = 0; i < InstructionalButtons.Length; i++)
+        {
+            SetDataSlot(i, InstructionalButtons[i]);
+        }
+
+        if (!FollowCamMode)
+        {
+            SetDataSlot(InstructionalButtons.Length, TurnButton);
+        }
+
+        Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "DRAW_INSTRUCTIONAL_BUTTONS");
+        Native.ScaleformMovieMethodAddParamInt(0);
+        Native.EndScaleformMovieMethod();
+    }
+
+    private static void SetDataSlot(int slot, InstructionalButton button)
+    {
+        Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "SET_DATA_SLOT");
+        Native.ScaleformMovieMethodAddParamInt(slot);
+        Native.ScaleformMovieMethodAddParamTextureNameString(button.ControlName);
+        Native.ScaleformMovieMethodAddParamTextureNameString(button.TextGetter());
+        Native.EndScaleformMovieMethod();
     }
 }

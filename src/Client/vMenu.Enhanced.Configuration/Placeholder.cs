@@ -4,4 +4,7 @@ namespace vMenu.Enhanced.Configuration;
 /// Placeholder so the project produces a valid assembly. Replace with the
 /// client-side configuration loading/handling as the port lands.
 /// </summary>
-internal sealed class Placeholder;
+public sealed class Placeholder
+{
+
+}
