@@ -17,29 +17,27 @@ server_debug_mode 'false'
 experimental_features_enabled '0'
 
 files {
-    'CitizenFX.Base.dll',
-    'CitizenFX.FiveM.Shared.dll',
-    'CitizenFX.FiveM.Client.dll',
+    'client/CitizenFX.Base.dll',
+    'client/CitizenFX.FiveM.Shared.dll',
+    'client/CitizenFX.FiveM.Client.dll',
 
-    'MessagePack.dll',
-    'MessagePack.Annotations.dll',
+    'client/MessagePack.dll',
+    'client/MessagePack.Annotations.dll',
 
-    'Microsoft.NET.StringTools.dll',
+    'client/Microsoft.NET.StringTools.dll',
 
-    'MenuAPI.dll',
+    'client/MenuAPI.dll',
 
-    'vMenu.Enhanced.Configuration.dll',
-    'vMenu.Enhanced.Permissions.dll',
-    'vMenu.Enhanced.Menus.dll',
-    'vMenu.Enhanced.NoClip.dll',
+    'client/vMenu.Enhanced.Configuration.dll',
+    'client/vMenu.Enhanced.Permissions.dll',
+    'client/vMenu.Enhanced.Menus.dll',
+    'client/vMenu.Enhanced.NoClip.dll',
 
-    'vMenu.Enhanced.Data.dll',
+    'shared/vMenu.Enhanced.Data.dll',
 }
 
--- Client assemblies.
-client_scripts {
-    'vMenu.Enhanced.Core.dll',
-}
+-- Client assembly
+client_script 'client/vMenu.Enhanced.Core.dll'
 
 -- Server assembly
 server_script 'server/vMenu.Enhanced.Core.Server.dll'

@@ -1,0 +1,20 @@
+<Project>
+  <!--
+    MSBuild stops at the FIRST Directory.Build.props it finds walking up from a
+    project, so this file shadows src/Directory.Build.props for everything under
+    src/Shared/. Import the parent explicitly to keep the shared settings.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!--
+      Shared assemblies get their own subfolder alongside client/ and server/.
+      This is the canonical build location; once a client or server project
+      takes a ProjectReference on a shared project, MSBuild also copies the
+      shared output next to that side's assemblies, so each side still loads a
+      dependency from its own folder.
+    -->
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\shared\</OutputPath>
+  </PropertyGroup>
+
+</Project>
