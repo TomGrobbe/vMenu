@@ -86,7 +86,7 @@ public class NoClip
 
     private static void NoClipControls()
     {
-        if (IsF8ConsoleLikelyOpen)
+        if (IsF8ConsoleLikelyOpen || !Native.IsUsingKeyboardAndMouse(0))
         {
             return;
         }
@@ -216,7 +216,7 @@ public class NoClip
     /// </summary>
     private static MoveInput ReadMoveInput()
     {
-        if (!Native.IsUsingKeyboardAndMouse(2) || Native.UpdateOnscreenKeyboard() == 0 || Native.IsPauseMenuActive())
+        if (IsF8ConsoleLikelyOpen || !Native.IsUsingKeyboardAndMouse(0) || Native.UpdateOnscreenKeyboard() == 0 || Native.IsPauseMenuActive())
         {
             return default;
         }
