@@ -12,5 +12,6 @@ public class Placeholder : IScript
     public void Initialize()
     {
         API.Log.Info("Resource Loaded");
+        //Native.SaveResourceFile()
     }
 }

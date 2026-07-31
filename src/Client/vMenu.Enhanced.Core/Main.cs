@@ -4,6 +4,8 @@ using CitizenFX.FiveM.Shared.Script;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Menus;
+
 namespace vMenu.Enhanced.Core;
 
 public sealed class Main : IScript
@@ -44,16 +46,17 @@ public sealed class Main : IScript
         //        API.Log.Info("Found class inside vMenu.Enhanced.Configuration: {0}", subClass.Name);
         //    }
         //}
-    }
 
-    public Main()
-    {
-        var menu = new Menu("Test menu");
+        var menu = new Menu("Test menu", "vMenu.Enhanced");
         MenuController.AddMenu(menu);
 
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < 3; i++)
         {
             menu.AddMenuItem(new MenuItem($"Menu item #{i + 1}"));
         }
+
+        API.Log.Info("Creating and requesting vehicle spawner menu now.");
+        var vehicleSpawnerMenu = await (new VehicleSpawnerMenu()).GetMenu();
+
     }
 }
