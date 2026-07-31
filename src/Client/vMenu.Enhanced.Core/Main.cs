@@ -39,24 +39,10 @@ public sealed class Main : IScript
             await API.Vehicles.RequestAndCreate(API.Hash("adder"), API.Players.Local.Position, 0, true, true, true);
         });
 
-        //foreach (var subClass in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()))
-        //{
-        //    if (subClass.Namespace == "vMenu.Enhanced.Configuration")
-        //    {
-        //        API.Log.Info("Found class inside vMenu.Enhanced.Configuration: {0}", subClass.Name);
-        //    }
-        //}
-
-        var menu = new Menu("Test menu", "vMenu.Enhanced");
+        var menu = new Menu("vMenu Enhanced", "Main Menu");
         MenuController.AddMenu(menu);
 
-        for (var i = 0; i < 3; i++)
-        {
-            menu.AddMenuItem(new MenuItem($"Menu item #{i + 1}"));
-        }
-
-        API.Log.Info("Creating and requesting vehicle spawner menu now.");
-        var vehicleSpawnerMenu = await (new VehicleSpawnerMenu()).GetMenu();
+        await (new VehicleSpawnerMenu()).Initialize();
 
     }
 }

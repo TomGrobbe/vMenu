@@ -7,14 +7,11 @@ namespace vMenu.Enhanced.Core.Server;
 /// Placeholder so the project produces a valid assembly. Replace with the
 /// server core (main server, event handling) as the port lands.
 /// </summary>
-public class Placeholder : IScript
+public class CoreServer : IScript
 {
     public void Initialize()
     {
-        API.Log.Info("Resource Loaded");
-        //Native.SaveResourceFile()
-        Native.SetConvar("add_filesystem_permission", "vMenu.Enhanced write vMenu.Enhanced");
-
         BrokenNatives.Server.NativeFixer.SaveResourceFile("vMenu.Enhanced", "test.txt", "Hello world");
+        API.Log.Info("Server started");
     }
 }
