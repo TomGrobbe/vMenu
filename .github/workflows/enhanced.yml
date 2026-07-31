@@ -99,21 +99,14 @@ jobs:
             -p:AssemblyVersion="${{ needs.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ needs.version.outputs.assembly_ver }}"
 
-      - name: Copy fxmanifest.lua
-        shell: pwsh
-        run: Copy-Item 'assets/enhanced/fxmanifest.lua' 'build/vMenu.Enhanced/fxmanifest.lua' -Force
-
+      # fxmanifest.lua, README.md and LICENSE.md are copied into the resource
+      # root by the build itself (CopyResourceRootFiles, see
+      # src/Directory.Build.targets), so only the version stamp is left to do.
       - name: Inject version into fxmanifest.lua
         shell: pwsh
         run: |
           (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ needs.version.outputs.semver }}' |
             Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
-
-      - name: Copy README and LICENSE
-        shell: pwsh
-        run: |
-          Copy-Item README.md  build/vMenu.Enhanced/README.md  -Force
-          Copy-Item LICENSE.md build/vMenu.Enhanced/LICENSE.md -Force
 
       - name: Package zip
         shell: pwsh

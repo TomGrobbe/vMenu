@@ -1,6 +1,18 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/assets/">
+    <File Path="assets/enhanced/fxmanifest.lua" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="LICENSE.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+    <File Path="src/Directory.Packages.props" />
+  </Folder>
   <Folder Name="/src/Client/">
+    <File Path="src/Client/Directory.Build.props" />
     <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
@@ -8,11 +20,13 @@
     <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
   </Folder>
   <Folder Name="/src/Server/">
+    <File Path="src/Server/Directory.Build.props" />
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
   </Folder>
   <Folder Name="/src/Shared/">
+    <File Path="src/Shared/Directory.Build.props" />
     <Project Path="src/Shared/vMenu.Enhanced.Data/vMenu.Enhanced.Data.csproj" />
   </Folder>
 </Solution>

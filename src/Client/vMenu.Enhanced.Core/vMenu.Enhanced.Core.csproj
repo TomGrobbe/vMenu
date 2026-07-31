@@ -1,4 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      This project owns copying fxmanifest.lua / README.md / LICENSE.md into the
+      resource root. See CopyResourceRootFiles in src/Directory.Build.targets.
+    -->
+    <IsResourceRootProject>true</IsResourceRootProject>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" />
     <PackageReference Include="MenuAPI.FiveM.Enhanced" />

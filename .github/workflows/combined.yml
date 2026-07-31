@@ -141,14 +141,14 @@ jobs:
             -p:AssemblyVersion="${{ steps.ver.outputs.assembly_ver }}" \
             -p:FileVersion="${{ steps.ver.outputs.assembly_ver }}"
 
+      # fxmanifest.lua, README.md and LICENSE.md are copied into the resource
+      # root by the build itself (CopyResourceRootFiles, see
+      # src/Directory.Build.targets), so only the version stamp is left to do.
       - name: Assemble and zip
         shell: pwsh
         run: |
-          Copy-Item 'assets/enhanced/fxmanifest.lua' 'build/vMenu.Enhanced/fxmanifest.lua' -Force
           (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.ver.outputs.version }}' |
             Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
-          Copy-Item README.md  build/vMenu.Enhanced/README.md  -Force
-          Copy-Item LICENSE.md build/vMenu.Enhanced/LICENSE.md -Force
           Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.ver.outputs.zip_name }}' -Force
 
       - name: Upload enhanced zip

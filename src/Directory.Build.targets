@@ -1,0 +1,38 @@
+<Project>
+
+  <!--
+    Resource-root files (fxmanifest, README, LICENSE) live in the repo, not in
+    any project's output. CI used to copy them into build/vMenu.Enhanced/ as a
+    separate step, which meant a local build produced a resource that FiveM
+    could not load. This target does the same copy on every build.
+
+    Only ONE project may run it: all projects share the same destination, so
+    letting every project copy would make them race for the same three files on
+    a parallel build. vMenu.Enhanced.Core opts in via IsResourceRootProject
+    because it is the resource entry point (the client_script in the manifest).
+    A build of only the server or shared projects therefore does not refresh
+    these files; build the solution to pick up manifest edits.
+  -->
+  <PropertyGroup>
+    <RepoRoot>$(MSBuildThisFileDirectory)..\</RepoRoot>
+    <ResourceRoot>$(RepoRoot)build\vMenu.Enhanced\</ResourceRoot>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceRootFile Include="$(RepoRoot)assets\enhanced\fxmanifest.lua" />
+    <ResourceRootFile Include="$(RepoRoot)README.md" />
+    <ResourceRootFile Include="$(RepoRoot)LICENSE.md" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceRootFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ResourceRootFile)"
+          Outputs="@(ResourceRootFile -> '$(ResourceRoot)%(Filename)%(Extension)')">
+    
+	  <Copy SourceFiles="@(ResourceRootFile)"
+          DestinationFolder="$(ResourceRoot)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
