@@ -2,4 +2,7 @@
   <ItemGroup>
     <PackageReference Include="MenuAPI.FiveM.Enhanced" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives\vMenu.Enhanced.BrokenNatives.csproj" />
+  </ItemGroup>
 </Project>

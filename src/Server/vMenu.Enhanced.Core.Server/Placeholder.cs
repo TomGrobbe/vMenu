@@ -13,5 +13,8 @@ public class Placeholder : IScript
     {
         API.Log.Info("Resource Loaded");
         //Native.SaveResourceFile()
+        Native.SetConvar("add_filesystem_permission", "vMenu.Enhanced write vMenu.Enhanced");
+
+        BrokenNatives.Server.NativeFixer.SaveResourceFile("vMenu.Enhanced", "test.txt", "Hello world");
     }
 }

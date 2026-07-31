@@ -11,6 +11,30 @@ vMenu Enhanced is in early alpha. Installation and configuration steps are not f
 
 - A FiveM **Enhanced** server.
 
+## Installation
+
+### Filesystem permissions
+
+vMenu Enhanced writes files into its own resource folder (saved vehicles, outfits, and other
+persistent data). FiveM Enhanced blocks resources from writing to disk unless you explicitly
+grant permission, so add the following line to your `server.cfg` **before** the line that starts
+vMenu Enhanced:
+
+```cfg
+add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
+ensure vMenu.Enhanced
+```
+
+Both names in that command are resource names: the first is the resource being granted access
+(vMenu Enhanced), the second is the resource whose folder it may write to (its own). If you renamed
+the resource folder, use your own folder name in both places.
+
+:::danger[Order matters]
+The permission must be set before the resource starts. If `ensure vMenu.Enhanced` comes first,
+vMenu Enhanced will not be able to save anything and you will see filesystem errors in the server
+console.
+:::
+
 ## Where things stand
 
 Setup instructions, configuration, and permissions documentation will land here as vMenu Enhanced becomes usable. 

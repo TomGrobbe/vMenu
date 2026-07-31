@@ -2,4 +2,7 @@
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Server" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives.Server\vMenu.Enhanced.BrokenNatives.Server.csproj" />
+  </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/src/Client/">
     <File Path="src/Client/Directory.Build.props" />
+    <Project Path="src/Client/vMenu.Enhanced.BrokenNatives/vMenu.Enhanced.BrokenNatives.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
@@ -21,6 +22,7 @@
   </Folder>
   <Folder Name="/src/Server/">
     <File Path="src/Server/Directory.Build.props" />
+    <Project Path="src/Server/vMenu.Enhanced.BrokenNatives.Server/vMenu.Enhanced.BrokenNatives.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />

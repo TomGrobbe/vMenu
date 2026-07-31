@@ -1,5 +1,3 @@
-using System.Text;
-
 using CitizenFX.Base;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
@@ -14,7 +12,7 @@ namespace vMenu.Enhanced.Menus;
 /// </summary>
 public sealed class VehicleSpawnerMenu
 {
-
+    internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
 
 
     public async Task<Menu> GetMenu()
@@ -26,18 +24,12 @@ public sealed class VehicleSpawnerMenu
         MenuController.MainMenu.AddMenuItem(linkBtn);
         MenuController.BindMenuItem(MenuController.MainMenu, menu, linkBtn);
 
-        API.Log.Info("Calling something.GetVehicleList now");
-        var data = API.Exports["something"].Call<string>("GetVehicleList");
+        var vehicles = BrokenNatives.NativeFixer.GetAllVehicleModels();
 
-        // This is broken due to crash: https://github.com/citizenfx/rfc/discussions/328
-        //var vehicles = System.Text.Json.JsonSerializer.Deserialize<string[]>(data);
 
-        API.Log.Info("Got vehicle list data: " + data);
-        var vehicles = data.Replace("[", "").Replace("]", "").Replace("\"", "").Split(',');
 
         if (vehicles is null)
         {
-            API.Log.Warn("Vehicle list is null");
             return menu;
         }
 
@@ -46,10 +38,6 @@ public sealed class VehicleSpawnerMenu
             .Select(veh => veh.Trim())
             .OrderBy(vehicle => vehicle)
             .GroupBy(vehicle => Native.GetVehicleClassFromName(API.Hash(vehicle)));
-
-        API.Log.Info("Vehicle list categorized and cleaned up");
-
-
 
         foreach (var cat in vehicleSperCategory)
         {
@@ -61,8 +49,10 @@ public sealed class VehicleSpawnerMenu
 
             submenu.OnItemSelect += Submenu_OnItemSelect;
             MenuController.AddSubmenu(menu, submenu);
+
             var btn = new MenuItem("Veh Class: " + cat.Key.ToString());
             menu.AddMenuItem(btn);
+
             MenuController.BindMenuItem(menu, submenu, btn);
             API.Log.Info("Added submenu for vehicle class: {0}", cat.Key.ToString());
         }
@@ -73,7 +63,23 @@ public sealed class VehicleSpawnerMenu
 
     private async void Submenu_OnItemSelect(Menu menu, MenuItem menuItem, int itemIndex)
     {
-        var veh = await API.Vehicles.RequestAndCreate(API.Hash(menuItem.Text), API.Players.Local.Ped!.Position, (int)API.Players.Local.Ped.Heading, true, true, true);
+        var hash = API.Hash(menuItem.Text);
+
+        // Manually checking and requesting model because API.Vehicles.RequestAndCreate uses datetime which is currently broken and crashes the game.
+        // https://github.com/citizenfx/rfc/discussions/328
+        if (!Native.IsModelValid(hash))
+        {
+            return;
+        }
+
+        Native.RequestModel(hash);
+
+        while (!Native.HasModelLoaded(hash))
+        {
+            await API.Delay(0);
+        }
+
+        var veh = await API.Vehicles.RequestAndCreate(hash, API.Players.Local.Ped!.Position, (int)API.Players.Local.Ped.Heading, true, true, true);
         if (veh is not null)
         {
             API.Players.Local.Ped.SetPedIntoVehicle(veh!.Handle, -1);
