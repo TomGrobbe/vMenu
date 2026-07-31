@@ -25,6 +25,9 @@
     -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
+    <!-- The .deps.json files are not used, so don't generate them during build. -->
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+
     <!--
       Every project emits into one shared folder (repo-root/build/vMenu.Enhanced/)
       so CI can zip the whole resource in a single step, mirroring the legacy
