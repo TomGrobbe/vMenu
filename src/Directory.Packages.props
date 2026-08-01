@@ -7,6 +7,6 @@
     <PackageVersion Include="CitizenFX.FiveM.Client" Version="0.0.3-alpha" />
     <PackageVersion Include="CitizenFX.FiveM.Server" Version="0.0.3-alpha" />
     <!-- Menu rendering for the client-side menus. -->
-    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.8" />
+    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.9" />
   </ItemGroup>
 </Project>
