@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Shared.Script;
 
+using vMenu.Enhanced.Permissions.Server;
+
 namespace vMenu.Enhanced.Core.Server;
 
 /// <summary>
@@ -11,7 +13,9 @@ public class CoreServer : IScript
 {
     public void Initialize()
     {
-        BrokenNatives.Server.NativeFixer.SaveResourceFile("vMenu.Enhanced", "test.txt", "Hello world");
+        ServerPermissions.Initialize();
+        PermissionsSync.RegisterEventHandlers();
+
         API.Log.Info("Server started");
     }
 }

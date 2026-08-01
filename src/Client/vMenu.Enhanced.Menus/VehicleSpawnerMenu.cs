@@ -1,11 +1,16 @@
 using System.Globalization;
 using System.Numerics;
+using System.Reflection.Metadata;
 
 using CitizenFX.Base;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
 
 using MenuAPI;
+
+using vMenu.Enhanced.Permissions;
+
+using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -18,6 +23,10 @@ public sealed class VehicleSpawnerMenu
     internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
     private static readonly TextInfo _textInfo = new CultureInfo("en-US", false).TextInfo;
 
+    private const string RestrictedDescription = "Access to this has been restricted by the server owner.";
+
+    private readonly List<GatedItem> _gatedItems = [];
+
     public async Task Initialize()
     {
         var menu = new Menu("Vehicle Spawner", "Vehicle Spawner Menu");
@@ -25,6 +34,7 @@ public sealed class VehicleSpawnerMenu
         var linkBtn = new MenuItem("VehicleSpawner Menu", "Temporary vehicle spawner menu.") { Label = "→" };
         MenuController.MainMenu.AddMenuItem(linkBtn);
         MenuController.BindMenuItem(MenuController.MainMenu, menu, linkBtn);
+        Gate(linkBtn, static () => ClientPermissions.IsAllowed(VehicleSpawnerPermissions.Menu));
 
         MenuItem spawnByClassBtn = new MenuItem("Spawn Vehicle By Class", "Spawn a vehicle from a list of vehicle classes.") { Label = "→" };
         Menu spawnByClassMenu = new Menu("Vehicle Spawner", "Spawn vehicles by class");
@@ -173,6 +183,10 @@ public sealed class VehicleSpawnerMenu
                 };
 
                 vehicleClassSubMenu.AddMenuItem(vehicleSpawnButton);
+
+                var vehicleClass = cat.Key;
+                var modelName = vehicle;
+                Gate(vehicleSpawnButton, () => ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass));
             }
 
             static void HandleStatsPanel(Menu openedMenu, MenuItem currentItem)
@@ -208,8 +222,36 @@ public sealed class VehicleSpawnerMenu
             spawnByClassMenu.AddMenuItem(btn);
             MenuController.AddSubmenu(spawnByClassMenu, vehicleClassSubMenu);
             MenuController.BindMenuItem(spawnByClassMenu, vehicleClassSubMenu, btn);
+
+            var gatedClass = cat.Key;
+            Gate(btn, () => ClientVehiclePermissions.CanSpawnVehicleClass(gatedClass));
+        }
+
+        // Subscribe only once every Gate call is done, so an incoming set cannot enumerate
+        // _gatedItems while it is still being added to.
+        ClientPermissions.PermissionsChanged += ApplyPermissions;
+
+        // Items are created enabled, so without this pass everything looks unlocked until the
+        // first set lands.
+        ApplyPermissions();
+    }
+
+    private void Gate(MenuItem item, Func<bool> isAllowed) => _gatedItems.Add(new GatedItem(item, item.Description, isAllowed));
+
+    private void ApplyPermissions()
+    {
+        foreach (var gated in _gatedItems)
+        {
+            var allowed = gated.IsAllowed();
+
+            gated.Item.Enabled = allowed;
+            gated.Item.LeftIcon = allowed ? MenuItem.Icon.NONE : MenuItem.Icon.LOCK;
+            gated.Item.Description = allowed ? gated.Description : RestrictedDescription;
         }
     }
+
+    /// <param name="Description">Kept so it can be restored when the item is unlocked again.</param>
+    private sealed record GatedItem(MenuItem Item, string Description, Func<bool> IsAllowed);
 
     private static string GetVehicleDisplayName(uint hash)
     {
@@ -249,6 +291,12 @@ public sealed class VehicleSpawnerMenu
             return;
         }
 
+        // Re-checked because a permission refresh can land between drawing and selecting.
+        if (!ClientVehiclePermissions.CanSpawnVehicle(menuItem.Label, Native.GetVehicleClassFromName(hash)))
+        {
+            return;
+        }
+
         Native.RequestModel(hash);
 
         while (!Native.HasModelLoaded(hash))
@@ -260,6 +308,8 @@ public sealed class VehicleSpawnerMenu
 
         var position = ped.Position;
         Vector3? velocity = null;
+        float rpm = 100f;
+        var speed = 0f;
         if (ped.IsPedInAnyVehicle())
         {
             var currentVehicle = ped.Vehicle!;
@@ -271,16 +321,20 @@ public sealed class VehicleSpawnerMenu
             position = Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, yOffset, 0f);
 
             velocity = currentVehicle.Velocity;
+            speed = Native.GetEntitySpeedVector(currentVehicle.Handle, true).Y;
+            rpm = Native.GetVehicleCurrentRpm(currentVehicle.Handle);
         }
 
         var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
 
         Native.SetModelAsNoLongerNeeded(hash);
 
+
         if (newVehicle is null)
         {
             return;
         }
+
         Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
 
         if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
@@ -297,10 +351,14 @@ public sealed class VehicleSpawnerMenu
             }
         }
 
+        Native.SetVehicleForwardSpeed(newVehicle.Handle, speed);
+
         if (velocity.HasValue)
         {
             newVehicle.Velocity = velocity.Value;
         }
+
+        Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
 
         ped.SetPedIntoVehicle(newVehicle!.Handle, -1);
     }

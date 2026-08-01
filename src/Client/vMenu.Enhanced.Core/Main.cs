@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Shared.Script;
 using MenuAPI;
 
 using vMenu.Enhanced.Menus;
+using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.Core;
 
@@ -12,6 +13,7 @@ public sealed class Main : IScript
 {
     public async void Initialize()
     {
+
         _ = new NoClip.NoClip();
 
         SharedAPI.Commands.RegisterCommand("give", false, async (string? weapon) =>
@@ -44,5 +46,7 @@ public sealed class Main : IScript
 
         await (new VehicleSpawnerMenu()).Initialize();
 
+
+        PermissionsSync.RegisterEventHandlers();
     }
 }

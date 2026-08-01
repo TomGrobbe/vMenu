@@ -35,4 +35,25 @@
           SkipUnchangedFiles="true" />
   </Target>
 
+  <!--
+    Config files are defaults for a server owner to edit in place, so they are only copied when
+    missing. Delete one in build/vMenu.Enhanced/config/ to get the default back.
+  -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceConfigFile Include="$(RepoRoot)assets\enhanced\config\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceConfigFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'">
+
+    <ItemGroup>
+      <MissingResourceConfigFile Include="@(ResourceConfigFile)"
+                                 Condition="!Exists('$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(MissingResourceConfigFile)"
+          DestinationFiles="@(MissingResourceConfigFile -> '$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
 </Project>

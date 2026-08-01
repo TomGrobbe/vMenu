@@ -30,11 +30,10 @@ files {
 
     'client/vMenu.Enhanced.BrokenNatives.dll',
     'client/vMenu.Enhanced.Configuration.dll',
+    'client/vMenu.Enhanced.Data.dll',
     'client/vMenu.Enhanced.Permissions.dll',
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',
-
-    'shared/vMenu.Enhanced.Data.dll',
 }
 
 -- Client assembly

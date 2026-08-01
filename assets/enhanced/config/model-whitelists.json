@@ -1,0 +1,10 @@
+{
+    // Models listed here are taken out of the reach of the class permissions and get their own
+    // permission instead: vMenu.Enhanced.SupplementalPermissions.VehicleModels.<modelname>
+    // Names must be lowercase, and may only contain letters, digits and underscores.
+    "vehicles": [],
+
+    // Read and validated, but not wired up to permissions yet.
+    "peds": [],
+    "weapons": []
+}

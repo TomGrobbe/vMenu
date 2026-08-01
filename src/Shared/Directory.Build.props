@@ -8,13 +8,11 @@
 
   <PropertyGroup>
     <!--
-      Shared assemblies get their own subfolder alongside client/ and server/.
-      This is the canonical build location; once a client or server project
-      takes a ProjectReference on a shared project, MSBuild also copies the
-      shared output next to that side's assemblies, so each side still loads a
-      dependency from its own folder.
+      Shared assemblies build outside the resource folder. A ProjectReference from either side
+      already copies the output next to that side's assemblies, so a third copy in the resource
+      would be dead weight. CI packages build/vMenu.Enhanced/*, so nothing here ships.
     -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\shared\</OutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
 
 </Project>

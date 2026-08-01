@@ -2,6 +2,9 @@
   <Folder Name="/assets/">
     <File Path="assets/enhanced/fxmanifest.lua" />
   </Folder>
+  <Folder Name="/assets/config/">
+    <File Path="assets/enhanced/config/model-whitelists.json" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
     <File Path="LICENSE.md" />
