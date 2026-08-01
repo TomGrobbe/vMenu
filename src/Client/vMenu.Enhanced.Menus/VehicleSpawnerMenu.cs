@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 
 using CitizenFX.Base;
 using CitizenFX.FiveM.Client;
@@ -258,6 +259,7 @@ public sealed class VehicleSpawnerMenu
         var ped = API.Players.Local.Ped!;
 
         var position = ped.Position;
+        Vector3? velocity = null;
         if (ped.IsPedInAnyVehicle())
         {
             var currentVehicle = ped.Vehicle!;
@@ -267,7 +269,10 @@ public sealed class VehicleSpawnerMenu
 
             var yOffset = (Math.Abs((p1 - p2).Y) / 2) + (Math.Abs((p3 - p4).Y) / 2) + 1f;
             position = Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, yOffset, 0f);
+
+            velocity = currentVehicle.Velocity;
         }
+
         var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
 
         Native.SetModelAsNoLongerNeeded(hash);
@@ -275,6 +280,26 @@ public sealed class VehicleSpawnerMenu
         if (newVehicle is null)
         {
             return;
+        }
+        Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
+
+        if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
+        {
+            newVehicle.HeliBladesSpeed = 1f;
+
+            if (isHeli)
+            {
+                Native.SetHeliTurbulenceScalar(newVehicle.Handle, 0f);
+            }
+            else
+            {
+                Native.SetPlaneTurbulenceMultiplier(newVehicle.Handle, 0f);
+            }
+        }
+
+        if (velocity.HasValue)
+        {
+            newVehicle.Velocity = velocity.Value;
         }
 
         ped.SetPedIntoVehicle(newVehicle!.Handle, -1);

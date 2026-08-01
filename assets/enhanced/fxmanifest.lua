@@ -28,6 +28,7 @@ files {
 
     'client/MenuAPI.dll',
 
+    'client/vMenu.Enhanced.BrokenNatives.dll',
     'client/vMenu.Enhanced.Configuration.dll',
     'client/vMenu.Enhanced.Permissions.dll',
     'client/vMenu.Enhanced.Menus.dll',
