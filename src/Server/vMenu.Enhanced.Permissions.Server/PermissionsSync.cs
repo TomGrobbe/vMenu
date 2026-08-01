@@ -25,10 +25,6 @@ public static class PermissionsSync
         API.OnNetEvent(PermissionEvents.Request, new Action<Player>(OnPermissionsRequested), false);
 
         SharedAPI.Commands.RegisterCommand(RefreshCommand, true, new Action(RefreshAll));
-
-        // A resource restart restarts both sides at once, so a client may have asked before this
-        // handler existed. Pushing to everyone already connected closes that window.
-        RefreshAll();
     }
 
     /// <summary>
