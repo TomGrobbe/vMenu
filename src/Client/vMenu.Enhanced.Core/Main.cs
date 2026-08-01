@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared.Script;
 
 using MenuAPI;
 
+using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Permissions;
 
@@ -38,17 +39,20 @@ public sealed class Main : IScript
             Native.GiveWeaponToPed(ped, weaponHash, 1000, true, true);
         });
 
-        SharedAPI.Commands.RegisterCommand("spawnadder", false, async (string? weapon) =>
-        {
-            await API.Vehicles.RequestAndCreate(API.Hash("adder"), API.Players.Local.Position, 0, true, true, true);
-        });
+        // Calling something to do with MenuController is required, otherwise the compiler optimizes
+        // the dependency away and MenuAPI won't run at all.
+        _ = MenuController.MenuToggleKeyIsValid;
 
-        var menu = new Menu("vMenu Enhanced", "Main Menu");
-        MenuController.AddMenu(menu);
-
-        await (new VehicleSpawnerMenu()).Initialize();
-
-
+        // Registered before the menus are built: the build awaits, so a permission set pushed during
+        // startup would otherwise arrive with nothing listening. The build ends with its own gate
+        // pass, so whatever has landed by then is picked up regardless.
         PermissionsSync.RegisterEventHandlers();
+
+        while (!ClientPermissions.HasReceivedPermissions)
+        {
+            await API.Yield();
+        }
+
+        await MenuRegistry.BuildAsync(MainMenuComposition.Definitions);
     }
 }

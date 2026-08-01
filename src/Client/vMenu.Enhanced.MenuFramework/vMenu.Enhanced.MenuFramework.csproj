@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.FiveM.Client" />
+    <PackageReference Include="MenuAPI.FiveM.Enhanced" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      The framework asks ClientPermissions directly so a menu can write
+      `Gate = SomePermission.Name`. Keeping it gate-agnostic would cost that implicit
+      conversion, which is the single biggest readability win at the call site.
+    -->
+    <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
+  </ItemGroup>
+
+</Project>

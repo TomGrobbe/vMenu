@@ -32,6 +32,7 @@ files {
     'client/vMenu.Enhanced.Configuration.dll',
     'client/vMenu.Enhanced.Data.dll',
     'client/vMenu.Enhanced.Permissions.dll',
+    'client/vMenu.Enhanced.MenuFramework.dll',
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',
 }

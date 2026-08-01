@@ -6,8 +6,9 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared.Data;
 
-using MenuAPI;
-
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Menus.Data;
 using vMenu.Enhanced.Permissions;
 
 using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;
@@ -15,284 +16,119 @@ using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleS
 namespace vMenu.Enhanced.Menus;
 
 /// <summary>
-/// Placeholder so the project produces a valid assembly. Replace with the
-/// client core (bootstrap, common functions, controllers) as the port lands.
+/// Spawns vehicles, grouped by the game's own vehicle classes.
 /// </summary>
-public sealed class VehicleSpawnerMenu
+[VMenu(
+    TitleKey = Loc.VehicleSpawner.Title,
+    SubtitleKey = Loc.VehicleSpawner.Subtitle,
+    DescriptionKey = Loc.VehicleSpawner.LinkDescription,
+    Permission = VehicleSpawnerPermissions.Menu)]
+public sealed class VehicleSpawnerMenu : MenuDefinition
 {
-    internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
-    private static readonly TextInfo _textInfo = new CultureInfo("en-US", false).TextInfo;
+    private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
 
-    private const string RestrictedDescription = "Access to this has been restricted by the server owner.";
+    private IGrouping<int, string>[] _vehiclesPerClass = [];
 
-    private readonly List<GatedItem> _gatedItems = [];
-
-    public async Task Initialize()
+    public override Task PrepareAsync()
     {
-        var menu = new Menu("Vehicle Spawner", "Vehicle Spawner Menu");
-        MenuController.AddSubmenu(MenuController.MainMenu, menu);
-        var linkBtn = new MenuItem("VehicleSpawner Menu", "Temporary vehicle spawner menu.") { Label = "→" };
-        MenuController.MainMenu.AddMenuItem(linkBtn);
-        MenuController.BindMenuItem(MenuController.MainMenu, menu, linkBtn);
-        Gate(linkBtn, static () => ClientPermissions.IsAllowed(VehicleSpawnerPermissions.Menu));
-
-        MenuItem spawnByClassBtn = new MenuItem("Spawn Vehicle By Class", "Spawn a vehicle from a list of vehicle classes.") { Label = "→" };
-        Menu spawnByClassMenu = new Menu("Vehicle Spawner", "Spawn vehicles by class");
-        menu.AddMenuItem(spawnByClassBtn);
-        MenuController.AddSubmenu(menu, spawnByClassMenu);
-        MenuController.BindMenuItem(menu, spawnByClassMenu, spawnByClassBtn);
-
         var vehicles = BrokenNatives.NativeFixer.GetAllVehicleModels();
 
         if (vehicles is null)
         {
-            return;
+            // The menu still exists, it just has no classes in it. Leaving it half-built would be
+            // worse than leaving it empty.
+            return Task.CompletedTask;
         }
 
-        var vehiclesPerCategory = vehicles
-            .Where(veh => !string.IsNullOrWhiteSpace(veh))
-            .Select(veh => veh.Trim())
+        _vehiclesPerClass = [.. vehicles
+            .Where(vehicle => !string.IsNullOrWhiteSpace(vehicle))
+            .Select(vehicle => vehicle.Trim())
             .OrderBy(vehicle => vehicle)
             .GroupBy(vehicle => Native.GetVehicleClassFromName(API.Hash(vehicle)))
-            .OrderBy(vehicle => Native.GetLabelText($"VEH_CLASS_{vehicle.Key}"));
+            .OrderBy(category => ClassName(category.Key))];
 
-        // These are the max speed, acceleration, braking and traction values per vehicle class.
-        var speedValues = new float[23]
-        {
-                44.9374657f,
-                50.0000038f,
-                48.862133f,
-                48.1321335f,
-                50.7077942f,
-                51.3333359f,
-                52.3922348f,
-                53.86687f,
-                52.03867f,
-                49.2241631f,
-                39.6176529f,
-                37.5559425f,
-                42.72843f,
-                21.0f,
-                45.0f,
-                65.1952744f,
-                109.764259f,
-                42.72843f,
-                56.5962219f,
-                57.5398865f,
-                43.3140678f,
-                26.66667f,
-                53.0537224f
-        };
-        var accelerationValues = new float[23]
-        {
-                0.34f,
-                0.29f,
-                0.335f,
-                0.28f,
-                0.395f,
-                0.39f,
-                0.66f,
-                0.42f,
-                0.425f,
-                0.475f,
-                0.21f,
-                0.3f,
-                0.32f,
-                0.17f,
-                18.0f,
-                5.88f,
-                21.0700016f,
-                0.33f,
-                14.0f,
-                6.86f,
-                0.32f,
-                0.2f,
-                0.76f
-        };
-        var brakingValues = new float[23]
-        {
-                0.72f,
-                0.95f,
-                0.85f,
-                0.9f,
-                1.0f,
-                1.0f,
-                1.3f,
-                1.25f,
-                1.52f,
-                1.1f,
-                0.6f,
-                0.7f,
-                0.8f,
-                3.0f,
-                0.4f,
-                3.5920403f,
-                20.58f,
-                0.9f,
-                2.93960738f,
-                3.9472363f,
-                0.85f,
-                5.0f,
-                1.3f
-        };
-        var tractionValues = new float[23]
-        {
-                2.3f,
-                2.55f,
-                2.3f,
-                2.6f,
-                2.625f,
-                2.65f,
-                2.8f,
-                2.782f,
-                2.9f,
-                2.95f,
-                2.0f,
-                3.3f,
-                2.175f,
-                2.05f,
-                0.0f,
-                1.6f,
-                2.15f,
-                2.55f,
-                2.57f,
-                3.7f,
-                2.05f,
-                2.5f,
-                3.2925f
-        };
-
-        foreach (var cat in vehiclesPerCategory)
-        {
-            var className = Native.GetLabelText($"VEH_CLASS_{cat.Key}");
-
-            var vehicleClassSubMenu = new Menu(className, "Vehicle Spawner Menu");
-            foreach (var vehicle in cat)
-            {
-                var hash = API.Hash(vehicle);
-                var topSpeed = Map(Native.GetVehicleModelEstimatedMaxSpeed(hash), 0f, speedValues[cat.Key], 0f, 1f);
-                var acceleration = Map(Native.GetVehicleModelAcceleration(hash), 0f, accelerationValues[cat.Key], 0f, 1f);
-                var maxBraking = Map(Native.GetVehicleModelMaxBraking(hash), 0f, brakingValues[cat.Key], 0f, 1f);
-                var maxTraction = Map(Native.GetVehicleModelMaxTraction(hash), 0f, tractionValues[cat.Key], 0f, 1f);
-
-                var vehicleDisplayName = GetVehicleDisplayName(hash);
-                var vehicleSpawnButton = new MenuItem(vehicleDisplayName)
-                {
-                    Label = vehicle,
-                    ItemData = new float[4] { topSpeed, acceleration, maxBraking, maxTraction }
-                };
-
-                vehicleClassSubMenu.AddMenuItem(vehicleSpawnButton);
-
-                var vehicleClass = cat.Key;
-                var modelName = vehicle;
-                Gate(vehicleSpawnButton, () => ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass));
-            }
-
-            static void HandleStatsPanel(Menu openedMenu, MenuItem currentItem)
-            {
-                if (currentItem != null)
-                {
-                    if (currentItem.ItemData is float[] data)
-                    {
-                        openedMenu.ShowVehicleStatsPanel = true;
-                        openedMenu.SetVehicleStats(data[0], data[1], data[2], data[3]);
-                        openedMenu.SetVehicleUpgradeStats(0f, 0f, 0f, 0f);
-                    }
-                    else
-                    {
-                        openedMenu.ShowVehicleStatsPanel = false;
-                    }
-                }
-            }
-
-            vehicleClassSubMenu.OnMenuOpen += (m) =>
-            {
-                HandleStatsPanel(m, m.GetCurrentMenuItem());
-            };
-
-            vehicleClassSubMenu.OnIndexChange += (m, oldItem, newItem, oldIndex, newIndex) =>
-            {
-                HandleStatsPanel(m, newItem);
-            };
-
-            vehicleClassSubMenu.OnItemSelect += Submenu_OnItemSelect;
-
-            var btn = new MenuItem(className, $"Spawn a vehicle from the ~y~{className}~s~ class.") { Label = $"({cat.Count()}) →" };
-            spawnByClassMenu.AddMenuItem(btn);
-            MenuController.AddSubmenu(spawnByClassMenu, vehicleClassSubMenu);
-            MenuController.BindMenuItem(spawnByClassMenu, vehicleClassSubMenu, btn);
-
-            var gatedClass = cat.Key;
-            Gate(btn, () => ClientVehiclePermissions.CanSpawnVehicleClass(gatedClass));
-        }
-
-        // Subscribe only once every Gate call is done, so an incoming set cannot enumerate
-        // _gatedItems while it is still being added to.
-        ClientPermissions.PermissionsChanged += ApplyPermissions;
-
-        // Items are created enabled, so without this pass everything looks unlocked until the
-        // first set lands.
-        ApplyPermissions();
+        return Task.CompletedTask;
     }
 
-    private void Gate(MenuItem item, Func<bool> isAllowed) => _gatedItems.Add(new GatedItem(item, item.Description, isAllowed));
+    protected override void Build(MenuBuilder menu) =>
+        menu.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByClass),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByClassDescription),
+            MenuTitle = MenuText.Key(Loc.VehicleSpawner.Title),
+            MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByClassSubtitle),
+            Build = BuildClassList,
+        });
 
-    private void ApplyPermissions()
+    private void BuildClassList(MenuBuilder byClass)
     {
-        foreach (var gated in _gatedItems)
+        foreach (var category in _vehiclesPerClass)
         {
-            var allowed = gated.IsAllowed();
+            // Copied out of the loop variable so each entry's callbacks capture its own class.
+            var classId = category.Key;
+            var models = category.ToArray();
 
-            gated.Item.Enabled = allowed;
-            gated.Item.LeftIcon = allowed ? MenuItem.Icon.NONE : MenuItem.Icon.LOCK;
-            gated.Item.Description = allowed ? gated.Description : RestrictedDescription;
+            byClass.Entries.Add(new SubmenuEntry
+            {
+                Text = MenuText.From(() => ClassName(classId)),
+                Description = MenuText.Key(
+                    Loc.VehicleSpawner.ClassDescription,
+                    ("class", MenuText.From(() => ClassName(classId)))),
+                Label = MenuText.Literal($"({models.Length}) →"),
+                MenuTitle = MenuText.From(() => ClassName(classId)),
+                MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.ClassSubtitle),
+                Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicleClass(classId)),
+                Build = classMenu => BuildClassMenu(classMenu, classId, models),
+            });
         }
     }
 
-    /// <param name="Description">Kept so it can be restored when the item is unlocked again.</param>
-    private sealed record GatedItem(MenuItem Item, string Description, Func<bool> IsAllowed);
+    private void BuildClassMenu(MenuBuilder classMenu, int classId, string[] models)
+    {
+        foreach (var model in models)
+        {
+            var modelName = model;
+            var hash = API.Hash(modelName);
+            var stats = VehicleClassStats.Normalise(hash, classId);
+
+            classMenu.Entries.Add(new ButtonEntry
+            {
+                // Model names are data, not prose, so they are never looked up as a key.
+                Text = MenuText.Literal(GetVehicleDisplayName(hash)),
+                Label = MenuText.Literal(modelName),
+                Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicle(modelName, classId)),
+                VehicleStats = () => stats,
+                OnSelectedAsync = _ => SpawnVehicleAsync(modelName, classId),
+            });
+        }
+    }
+
+    /// <summary>The game already returns these in the player's game language.</summary>
+    private static string ClassName(int vehicleClass) => Native.GetLabelText($"VEH_CLASS_{vehicleClass}");
 
     private static string GetVehicleDisplayName(uint hash)
     {
         var displayName = Native.GetDisplayNameFromVehicleModel(hash);
         var labelText = Native.GetLabelText(displayName);
-        if (labelText == "NULL")
-        {
-            return _textInfo.ToTitleCase(displayName);
-        }
 
-        return _textInfo.ToTitleCase(labelText);
+        return TitleCase.ToTitleCase(labelText == "NULL" ? displayName : labelText);
     }
 
-    /// <summary>
-    /// Maps the <paramref name="value"/> (which is a value between <paramref name="min_in"/> and <paramref name="max_in"/>) to a new value in the range of <paramref name="min_out"/> and <paramref name="max_out"/>.
-    /// </summary>
-    /// <param name="value">The value to map.</param>
-    /// <param name="min_in">The minimum range value of the value.</param>
-    /// <param name="max_in">The max range value of the value.</param>
-    /// <param name="min_out">The min output range value.</param>
-    /// <param name="max_out">The max output range value.</param>
-    /// <returns></returns>
-    public static float Map(float value, float min_in, float max_in, float min_out, float max_out)
+    private static async Task SpawnVehicleAsync(string modelName, int vehicleClass)
     {
-        return ((value - min_in) * (max_out - min_out) / (max_in - min_in)) + min_out;
-    }
+        var hash = API.Hash(modelName);
 
-
-    private async void Submenu_OnItemSelect(Menu menu, MenuItem menuItem, int itemIndex)
-    {
-        var hash = API.Hash(menuItem.Label);
-
-        // Manually checking and requesting model because API.Vehicles.RequestAndCreate uses datetime which is currently broken and crashes the game.
+        // Manually checking and requesting the model because API.Vehicles.RequestAndCreate uses
+        // DateTime, which is currently broken and crashes the game.
         // https://github.com/citizenfx/rfc/discussions/328
         if (!Native.IsModelValid(hash))
         {
             return;
         }
 
-        // Re-checked because a permission refresh can land between drawing and selecting.
-        if (!ClientVehiclePermissions.CanSpawnVehicle(menuItem.Label, Native.GetVehicleClassFromName(hash)))
+        // Re-checked because a permission refresh can land between drawing and selecting. The server
+        // decides for real; this only avoids doing the work.
+        if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
         {
             return;
         }
@@ -308,16 +144,17 @@ public sealed class VehicleSpawnerMenu
 
         var position = ped.Position;
         Vector3? velocity = null;
-        float rpm = 100f;
+        var rpm = 100f;
         var speed = 0f;
+
         if (ped.IsPedInAnyVehicle())
         {
             var currentVehicle = ped.Vehicle!;
 
-            BrokenNatives.NativeFixer.GetModelDimensions(currentVehicle.Model, out var p1, out var p2);
-            BrokenNatives.NativeFixer.GetModelDimensions(hash, out var p3, out var p4);
+            BrokenNatives.NativeFixer.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
+            BrokenNatives.NativeFixer.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
 
-            var yOffset = (Math.Abs((p1 - p2).Y) / 2) + (Math.Abs((p3 - p4).Y) / 2) + 1f;
+            var yOffset = (Math.Abs((currentMin - currentMax).Y) / 2) + (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
             position = Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, yOffset, 0f);
 
             velocity = currentVehicle.Velocity;
@@ -331,7 +168,6 @@ public sealed class VehicleSpawnerMenu
         var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
 
         Native.SetModelAsNoLongerNeeded(hash);
-
 
         if (newVehicle is null)
         {
@@ -363,6 +199,6 @@ public sealed class VehicleSpawnerMenu
 
         Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
 
-        ped.SetPedIntoVehicle(newVehicle!.Handle, -1);
+        ped.SetPedIntoVehicle(newVehicle.Handle, -1);
     }
 }

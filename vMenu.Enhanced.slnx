@@ -20,6 +20,7 @@
     <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
+    <Project Path="src/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
   </Folder>

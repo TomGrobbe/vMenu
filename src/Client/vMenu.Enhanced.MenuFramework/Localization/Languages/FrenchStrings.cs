@@ -1,0 +1,33 @@
+namespace vMenu.Enhanced.Localization.Languages;
+
+/// <summary>
+/// French. Partial tables are fine — anything absent falls back to <see cref="EnglishStrings"/>.
+/// </summary>
+internal static class FrenchStrings
+{
+    internal static LanguageTable Table { get; } = new(
+        new LanguageId("fr"),
+        "Français",
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            [Loc.Framework.RestrictedDescription] = "Le propriétaire du serveur a restreint l'accès à cet élément.",
+
+            [Loc.MainMenu.Title] = "vMenu Enhanced",
+            [Loc.MainMenu.Subtitle] = "Menu principal",
+
+            [Loc.VehicleSpawner.Title] = "Générateur de véhicules",
+            [Loc.VehicleSpawner.Subtitle] = "Menu du générateur de véhicules",
+            [Loc.VehicleSpawner.LinkDescription] = "Faire apparaître un véhicule.",
+            [Loc.VehicleSpawner.SpawnByClass] = "Faire apparaître un véhicule par classe",
+            [Loc.VehicleSpawner.SpawnByClassDescription] = "Faites apparaître un véhicule à partir d'une liste de classes de véhicules.",
+            [Loc.VehicleSpawner.SpawnByClassSubtitle] = "Faire apparaître des véhicules par classe",
+            [Loc.VehicleSpawner.ClassDescription] = "Faites apparaître un véhicule de la classe ~y~{class}~s~.",
+            [Loc.VehicleSpawner.ClassSubtitle] = "Menu du générateur de véhicules",
+
+            [Loc.MiscSettings.Title] = "Paramètres divers",
+            [Loc.MiscSettings.Subtitle] = "Paramètres divers",
+            [Loc.MiscSettings.LinkDescription] = "Modifier les paramètres de vMenu.",
+            [Loc.MiscSettings.Language] = "Langue",
+            [Loc.MiscSettings.LanguageDescription] = "Sélectionnez une langue et appuyez sur Entrée pour l'appliquer.",
+        });
+}
