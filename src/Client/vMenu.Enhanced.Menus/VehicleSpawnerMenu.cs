@@ -1,10 +1,10 @@
 using System.Globalization;
 using System.Numerics;
-using System.Reflection.Metadata;
 
 using CitizenFX.Base;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
+using CitizenFX.FiveM.Shared.Data;
 
 using MenuAPI;
 
@@ -323,6 +323,9 @@ public sealed class VehicleSpawnerMenu
             velocity = currentVehicle.Velocity;
             speed = Native.GetEntitySpeedVector(currentVehicle.Handle, true).Y;
             rpm = Native.GetVehicleCurrentRpm(currentVehicle.Handle);
+
+            var handle = currentVehicle.Handle;
+            Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
         }
 
         var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
