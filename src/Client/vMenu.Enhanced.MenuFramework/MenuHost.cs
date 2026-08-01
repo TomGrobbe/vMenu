@@ -2,7 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
-using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 

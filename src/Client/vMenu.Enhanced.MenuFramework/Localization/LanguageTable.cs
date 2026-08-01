@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// One language's strings.
@@ -9,21 +9,14 @@ namespace vMenu.Enhanced.Localization;
 /// Only <see cref="LanguageId.English"/> is expected to be complete; every other table may be
 /// partial and falls back to English key by key, so a half-finished translation is still usable.
 /// </remarks>
-public sealed class LanguageTable
+public sealed class LanguageTable(LanguageId id, string nativeName, IReadOnlyDictionary<string, string> strings)
 {
-    private readonly Dictionary<string, string> _strings;
+    private readonly Dictionary<string, string> _strings = new(strings, StringComparer.Ordinal);
 
-    public LanguageTable(LanguageId id, string nativeName, IReadOnlyDictionary<string, string> strings)
-    {
-        Id = id;
-        NativeName = nativeName;
-        _strings = new Dictionary<string, string>(strings, StringComparer.Ordinal);
-    }
-
-    public LanguageId Id { get; }
+    public LanguageId Id { get; } = id;
 
     /// <summary>The language's name in itself ("Nederlands", not "Dutch"), for the language picker.</summary>
-    public string NativeName { get; }
+    public string NativeName { get; } = nativeName;
 
     public IReadOnlyCollection<string> Keys => _strings.Keys;
 

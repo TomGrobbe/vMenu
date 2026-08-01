@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 public static partial class Loc
 {
@@ -13,5 +13,9 @@ public static partial class Loc
         public const string Language = "miscsettings.language";
 
         public const string LanguageDescription = "miscsettings.language.desc";
+
+        public const string MenuRightAlignment = "miscsettings.rightaligned";
+
+        public const string MenuRightAlignmentDescription = "miscsettings.rightaligned.desc";
     }
 }

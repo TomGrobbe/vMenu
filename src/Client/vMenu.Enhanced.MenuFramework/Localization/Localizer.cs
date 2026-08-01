@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// The ambient localizer, plus one event that covers every reason resolved text can change.

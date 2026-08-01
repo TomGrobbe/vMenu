@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Resolves translation keys to display strings.

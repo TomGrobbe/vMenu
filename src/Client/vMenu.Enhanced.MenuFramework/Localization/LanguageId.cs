@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Identifies a language by its lowercase code.
@@ -9,14 +9,13 @@ namespace vMenu.Enhanced.Localization;
 /// to load the internal comparer behind it. The same rule applies anywhere else in this assembly —
 /// always hand collections an explicit comparer.
 /// </remarks>
-public readonly struct LanguageId : IEquatable<LanguageId>
+public readonly struct LanguageId(string code) : IEquatable<LanguageId>
 {
-    public LanguageId(string code) => Code = code;
 
     /// <summary>The fallback for every other language, and the only one required to be complete.</summary>
     public static LanguageId English { get; } = new("en");
 
-    public string Code { get; }
+    public string Code { get; } = code;
 
     public bool IsEmpty => string.IsNullOrEmpty(Code);
 

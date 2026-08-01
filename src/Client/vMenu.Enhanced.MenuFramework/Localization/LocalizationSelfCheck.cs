@@ -2,7 +2,7 @@ using System.Reflection;
 
 using CitizenFX.FiveM.Client;
 
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Reports localization gaps once at startup.

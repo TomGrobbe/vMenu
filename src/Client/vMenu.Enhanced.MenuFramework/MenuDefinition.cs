@@ -1,4 +1,4 @@
-using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 

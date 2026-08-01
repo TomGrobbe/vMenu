@@ -1,4 +1,5 @@
-namespace vMenu.Enhanced.Localization.Languages;
+
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>
 /// The English strings, and the fallback for every other language.
@@ -33,5 +34,7 @@ internal static class EnglishStrings
             [Loc.MiscSettings.LinkDescription] = "Change vMenu's own settings.",
             [Loc.MiscSettings.Language] = "Language",
             [Loc.MiscSettings.LanguageDescription] = "Select a language and press enter to apply it.",
+            [Loc.MiscSettings.MenuRightAlignment] = "Right Align Menu",
+            [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
         });
 }

@@ -1,4 +1,5 @@
-namespace vMenu.Enhanced.Localization.Languages;
+
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>
 /// French. Partial tables are fine — anything absent falls back to <see cref="EnglishStrings"/>.
@@ -29,5 +30,7 @@ internal static class FrenchStrings
             [Loc.MiscSettings.LinkDescription] = "Modifier les paramètres de vMenu.",
             [Loc.MiscSettings.Language] = "Langue",
             [Loc.MiscSettings.LanguageDescription] = "Sélectionnez une langue et appuyez sur Entrée pour l'appliquer.",
+            [Loc.MiscSettings.MenuRightAlignment] = "Aligner le menu à droite",
+            [Loc.MiscSettings.MenuRightAlignmentDescription] = "Appuyez sur Entrée pour aligner le menu à gauche ou à droite.",
         });
 }

@@ -1,6 +1,6 @@
 using CitizenFX.FiveM.Client;
 
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Deduplicated reporting for localization gaps.

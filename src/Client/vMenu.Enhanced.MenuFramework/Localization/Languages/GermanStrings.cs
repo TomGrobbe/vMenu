@@ -1,4 +1,5 @@
-namespace vMenu.Enhanced.Localization.Languages;
+
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>
 /// German. Partial tables are fine — anything absent falls back to <see cref="EnglishStrings"/>.
@@ -29,5 +30,7 @@ internal static class GermanStrings
             [Loc.MiscSettings.LinkDescription] = "Ändere die Einstellungen von vMenu.",
             [Loc.MiscSettings.Language] = "Sprache",
             [Loc.MiscSettings.LanguageDescription] = "Wähle eine Sprache und drücke Enter, um sie anzuwenden.",
+            [Loc.MiscSettings.MenuRightAlignment] = "Menü rechts ausrichten",
+            [Loc.MiscSettings.MenuRightAlignmentDescription] = "Drücke Enter, um das Menü links oder rechts auszurichten.",
         });
 }

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Named <c>{placeholder}</c> substitution.
@@ -72,11 +72,11 @@ internal static class Placeholders
     {
         if (arguments is not null)
         {
-            foreach (var argument in arguments)
+            foreach (var (Name, Value) in arguments)
             {
-                if (string.Equals(argument.Name, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(Name, name, StringComparison.OrdinalIgnoreCase))
                 {
-                    return argument.Value.Resolve(localizer);
+                    return Value.Resolve(localizer);
                 }
             }
         }

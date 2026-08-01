@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 
-using vMenu.Enhanced.Localization.Languages;
+using vMenu.Enhanced.MenuFramework.Localization.Languages;
 
-namespace vMenu.Enhanced.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>
 /// Every language vMenu can display.

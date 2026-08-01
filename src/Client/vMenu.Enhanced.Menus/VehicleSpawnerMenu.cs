@@ -1,13 +1,12 @@
 using System.Globalization;
 using System.Numerics;
 
-using CitizenFX.Base;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared.Data;
 
-using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Data;
 using vMenu.Enhanced.Permissions;
 
@@ -83,7 +82,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         }
     }
 
-    private void BuildClassMenu(MenuBuilder classMenu, int classId, string[] models)
+    private static void BuildClassMenu(MenuBuilder classMenu, int classId, string[] models)
     {
         foreach (var model in models)
         {

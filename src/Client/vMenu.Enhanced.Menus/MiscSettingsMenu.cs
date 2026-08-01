@@ -1,5 +1,7 @@
-using vMenu.Enhanced.Localization;
+using MenuAPI;
+
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -37,7 +39,29 @@ public sealed class MiscSettingsMenu : MenuDefinition
             OnSelected = Apply,
         });
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.MenuRightAlignment),
+            Description = MenuText.Key(Loc.MiscSettings.MenuRightAlignmentDescription),
+            ReadState = RightAlignedMenuCheck,
+            OnChangedAsync = OnRightAlignMenuCheckboxChanged
+        });
     }
+
+    private async Task OnRightAlignMenuCheckboxChanged(CheckboxChanged changed)
+    {
+        if (changed.Checked)
+        {
+            MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Right;
+        }
+        else
+        {
+            MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
+        }
+    }
+
+    private bool RightAlignedMenuCheck() =>
+        MenuController.MenuAlignment == MenuController.MenuAlignmentOption.Right;
 
     private static MenuText NativeLanguageName(LanguageId language) =>
         MenuText.Literal(LanguageCatalog.TryGet(language, out var table) ? table.NativeName : language.Code);

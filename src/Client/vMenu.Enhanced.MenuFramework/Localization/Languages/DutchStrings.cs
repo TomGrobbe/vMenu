@@ -1,4 +1,5 @@
-namespace vMenu.Enhanced.Localization.Languages;
+
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>
 /// Dutch. Partial tables are fine — anything absent falls back to <see cref="EnglishStrings"/>.
@@ -30,5 +31,7 @@ internal static class DutchStrings
             [Loc.MiscSettings.LinkDescription] = "Pas de instellingen van vMenu aan.",
             [Loc.MiscSettings.Language] = "Taal",
             [Loc.MiscSettings.LanguageDescription] = "Selecteer een taal en druk op enter om deze toe te passen.",
+            [Loc.MiscSettings.MenuRightAlignment] = "Menu rechts uitlijnen",
+            [Loc.MiscSettings.MenuRightAlignmentDescription] = "Druk op enter om het menu links of rechts uit te lijnen.",
         });
 }
