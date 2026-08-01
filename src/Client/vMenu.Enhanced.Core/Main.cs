@@ -13,6 +13,8 @@ public sealed class Main : IScript
 {
     public async void Initialize()
     {
+        Native.DisableIdleCamera(true);
+        Native.DisableVehiclePassengerIdleCamera(true);
 
         _ = new NoClip.NoClip();
 
