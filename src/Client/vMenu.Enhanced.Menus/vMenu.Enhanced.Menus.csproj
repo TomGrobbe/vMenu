@@ -4,6 +4,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives\vMenu.Enhanced.BrokenNatives.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Configuration\vMenu.Enhanced.Configuration.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.MenuFramework\vMenu.Enhanced.MenuFramework.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
   </ItemGroup>

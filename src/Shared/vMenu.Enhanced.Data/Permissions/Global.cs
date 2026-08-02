@@ -7,5 +7,6 @@ namespace vMenu.Enhanced.Data.Permissions;
 public static class Global
 {
     /// <summary>Grants every permission in vMenu, including any registered at runtime.</summary>
+    [StaffOnly]
     public const string Everything = "vMenu.Enhanced.Everything";
 }

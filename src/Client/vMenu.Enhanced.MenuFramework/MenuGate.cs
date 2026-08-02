@@ -1,5 +1,7 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
@@ -26,6 +28,10 @@ public sealed class MenuGate
 
     public static MenuGate Permission(string permission) =>
         new(() => ClientPermissions.IsAllowed(permission));
+
+    /// <summary>A gate the server owner controls through a convar rather than through ACEs.</summary>
+    public static MenuGate Setting(BoolSetting setting) =>
+        new(() => ClientConfig.Value(setting));
 
     public static MenuGate When(Func<bool> predicate) => new(predicate);
 

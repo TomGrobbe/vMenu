@@ -3,6 +3,7 @@ using System.Numerics;
 using CitizenFX.Base;
 using CitizenFX.Base.Data;
 using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Shared;
 
 namespace vMenu.Enhanced.BrokenNatives;
 
@@ -39,5 +40,28 @@ public static class NativeFixer
         nativeApi.Invoke(14500376258260264975uL, "GetModelDimensions");
         p1 = nativeApi.GetResVector(1).ToVector();
         p2 = nativeApi.GetResVector(2).ToVector();
+    }
+
+    /// <summary>
+    /// Replacement call for <see cref="Native.AddConvarChangeListener(string, int)" />, whose
+    /// <em>func</em> parameter is generated as a raw <em>int</em> with no way to produce one.
+    /// </summary>
+    /// <remarks>
+    /// The reference must come from the shared <c>FuncRefManager</c>, not from
+    /// <see cref="NativeApi.RegisterFunctionReference(Delegate)" />: the runtime dispatches every
+    /// callback through the shared manager's table, so a reference registered anywhere else comes
+    /// back as "Invalid function" when it fires.
+    /// </remarks>
+    /// <param name="handler">Called with the convar name; the second argument is reserved by FiveM.</param>
+    public static int AddConvarChangeListener(string convar, Action<string, object?> handler)
+    {
+        // GetCore is flagged as internal API, and is taken anyway because it is the only route to
+        // that manager: SharedAPI exposes Log, Side, Exports and Commands, none of which can
+        // register a reference. If a future runtime removes it, this call is the one thing to move.
+#pragma warning disable FIVEM001
+        var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
+#pragma warning restore FIVEM001
+
+        return Native.AddConvarChangeListener(convar, unchecked((int)reference));
     }
 }

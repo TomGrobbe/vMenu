@@ -1,0 +1,63 @@
+using System.Text;
+
+namespace vMenu.Enhanced.Data;
+
+/// <summary>
+/// The warning header shared by every generated <c>.example</c> file.
+/// </summary>
+public static class ExampleFile
+{
+    public const string Extension = ".example";
+
+    public const string ConfigDirectory = "config";
+
+    private const string Rule = "###############################################################################";
+
+    public static string Banner(string copyName, params string[] extraNotes)
+    {
+        var banner = new StringBuilder();
+
+        banner.Append(Rule).Append('\n');
+        banner.Append("#  THIS FILE IS REGENERATED EVERY TIME vMenu Enhanced STARTS.\n");
+        banner.Append("#  ANY CHANGES YOU MAKE TO IT WILL BE LOST.\n");
+        banner.Append("#\n");
+        banner.Append("#  To use it:\n");
+        // Concatenated rather than interpolated: the FiveM sandbox refuses StringBuilder's
+        // interpolated string handler, so an interpolated argument here fails to load the assembly.
+        banner.Append("#    1. Copy this file and name the copy '" + copyName + "'.\n");
+        banner.Append("#    2. Edit that copy, never this one.\n");
+        banner.Append("#    3. Exec it from your server.cfg ABOVE the line that starts vMenu:\n");
+        banner.Append("#\n");
+        banner.Append("#         exec @vMenu.Enhanced/" + ConfigDirectory + "/" + copyName + "\n");
+        banner.Append("#         ensure vMenu.Enhanced\n");
+
+        foreach (var note in extraNotes)
+        {
+            banner.Append("#\n").Append(Comment(note, "# "));
+        }
+
+        banner.Append(Rule).Append('\n');
+
+        return banner.ToString();
+    }
+
+    /// <summary>Wraps prose into <c>#</c> comment lines.</summary>
+    public static string Comment(string text, string prefix = "#", int width = 78)
+    {
+        var comment = new StringBuilder();
+        var line = new StringBuilder(prefix);
+
+        foreach (var word in text.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (line.Length + 1 + word.Length > width && line.Length > prefix.Length)
+            {
+                comment.Append(line).Append('\n');
+                line.Clear().Append(prefix);
+            }
+
+            line.Append(' ').Append(word);
+        }
+
+        return comment.Append(line).Append('\n').ToString();
+    }
+}

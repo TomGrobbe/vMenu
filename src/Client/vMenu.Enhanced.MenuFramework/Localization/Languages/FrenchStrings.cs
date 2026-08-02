@@ -41,5 +41,23 @@ internal static class FrenchStrings
             [Loc.MiscSettings.LanguageDescription] = "Sélectionnez une langue et appuyez sur Entrée pour l'appliquer.",
             [Loc.MiscSettings.MenuRightAlignment] = "Aligner le menu à droite",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Appuyez sur Entrée pour aligner le menu à gauche ou à droite.",
+
+            [Loc.DeveloperFeatures.Title] = "Fonctions de développement",
+            [Loc.DeveloperFeatures.Subtitle] = "Fonctions de développement",
+            [Loc.DeveloperFeatures.LinkDescription] = "Outils de développement et de débogage.",
+            [Loc.DeveloperFeatures.VehicleDimensions] = "Afficher les dimensions des véhicules",
+            [Loc.DeveloperFeatures.VehicleDimensionsDescription] = "Dessine le contour du modèle de chaque véhicule proche de vous.",
+            [Loc.DeveloperFeatures.PropDimensions] = "Afficher les dimensions des props",
+            [Loc.DeveloperFeatures.PropDimensionsDescription] = "Dessine le contour du modèle de chaque prop proche de vous.",
+            [Loc.DeveloperFeatures.PedDimensions] = "Afficher les dimensions des peds",
+            [Loc.DeveloperFeatures.PedDimensionsDescription] = "Dessine le contour du modèle de chaque ped proche de vous.",
+            [Loc.DeveloperFeatures.EntityHandles] = "Afficher les handles d'entité",
+            [Loc.DeveloperFeatures.EntityHandlesDescription] = "Dessine le handle de chaque entité proche. Activez l'une des options de contour ci-dessus pour le voir.",
+            [Loc.DeveloperFeatures.EntityModels] = "Afficher les modèles d'entité",
+            [Loc.DeveloperFeatures.EntityModelsDescription] = "Dessine le hash du modèle de chaque entité proche. Activez l'une des options de contour ci-dessus pour le voir.",
+            [Loc.DeveloperFeatures.NetworkOwners] = "Afficher les propriétaires réseau",
+            [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Dessine le propriétaire réseau de chaque entité proche. Activez l'une des options de contour ci-dessus pour le voir.",
+            [Loc.DeveloperFeatures.DrawRadius] = "Distance d'affichage",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Jusqu'à quelle distance les entités restent entourées et étiquetées.",
         });
 }

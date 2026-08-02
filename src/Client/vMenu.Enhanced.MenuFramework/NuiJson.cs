@@ -88,8 +88,10 @@ internal static class NuiJson
                 case 'f':
                     builder.Append('\f');
                     break;
+                // Substring rather than AsSpan: the sandbox refuses MemoryExtensions, so the span
+                // overload of TryParse throws a SecurityException on the first escape it parses.
                 case 'u' when index + 4 < raw.Length - 1
-                    && ushort.TryParse(raw.AsSpan(index + 1, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var code):
+                    && ushort.TryParse(raw.Substring(index + 1, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var code):
                     builder.Append((char)code);
                     index += 4;
                     break;

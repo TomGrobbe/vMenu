@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared.Script;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Permissions;
@@ -47,6 +48,10 @@ public sealed class Main : IScript
         // startup would otherwise arrive with nothing listening. The build ends with its own gate
         // pass, so whatever has landed by then is picked up regardless.
         PermissionsSync.RegisterEventHandlers();
+
+        // Before the build, so the gate pass at the end of it reads real values rather than
+        // treating every convar backed menu as switched off.
+        ClientConfig.Initialize();
 
         while (!ClientPermissions.HasReceivedPermissions)
         {

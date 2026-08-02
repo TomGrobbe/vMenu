@@ -15,6 +15,9 @@ public sealed class PermissionNode
 
     public bool IsDynamic { get; init; }
 
+    /// <summary>Only steers which principal the generated example suggests, never a live check.</summary>
+    public bool IsStaffOnly { get; internal set; }
+
     public required IReadOnlyList<string> ExtraParents { get; init; }
 
     public PermissionNode? StructuralParent { get; internal set; }

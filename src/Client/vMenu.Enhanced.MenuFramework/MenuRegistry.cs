@@ -2,18 +2,20 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
 
 /// <summary>
-/// Builds the whole menu tree and keeps it in step with permissions and language.
+/// Builds the whole menu tree and keeps it in step with permissions, configuration and language.
 /// </summary>
 /// <remarks>
-/// Subscribes to <see cref="ClientPermissions.PermissionsChanged"/> and
-/// <see cref="Localizer.Changed"/> exactly once and fans out from here, rather than one
-/// subscription per menu: fewer delegates, one place to unsubscribe, and a deterministic order.
+/// Subscribes to <see cref="ClientPermissions.PermissionsChanged"/>,
+/// <see cref="ClientConfig.Changed"/> and <see cref="Localizer.Changed"/> exactly once and fans out
+/// from here, rather than one subscription per menu: fewer delegates, one place to unsubscribe, and a
+/// deterministic order.
 /// </remarks>
 public static class MenuRegistry
 {
@@ -74,6 +76,7 @@ public static class MenuRegistry
                 Text = definition.LinkText,
                 Description = definition.LinkDescription,
                 Label = definition.LinkLabel,
+                Behaviour = definition.LinkBehaviour,
                 Definition = definition,
             });
         }
@@ -81,6 +84,7 @@ public static class MenuRegistry
         await MaterialiseAsync(_root, localizer);
 
         ClientPermissions.PermissionsChanged += RefreshAll;
+        ClientConfig.Changed += RefreshAll;
         Localizer.Changed += RefreshAll;
 
         // Items are created enabled, so without this pass everything looks unlocked until the first
@@ -112,6 +116,7 @@ public static class MenuRegistry
         }
 
         ClientPermissions.PermissionsChanged -= RefreshAll;
+        ClientConfig.Changed -= RefreshAll;
         Localizer.Changed -= RefreshAll;
 
         foreach (var host in Hosts)

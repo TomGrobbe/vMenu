@@ -41,5 +41,23 @@ internal static class SpanishStrings
             [Loc.MiscSettings.LanguageDescription] = "Selecciona un idioma y pulsa intro para aplicarlo.",
             [Loc.MiscSettings.MenuRightAlignment] = "Alinear el menú a la derecha",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Pulsa intro para alinear el menú a la izquierda o a la derecha.",
+
+            [Loc.DeveloperFeatures.Title] = "Funciones de desarrollo",
+            [Loc.DeveloperFeatures.Subtitle] = "Funciones de desarrollo",
+            [Loc.DeveloperFeatures.LinkDescription] = "Herramientas de desarrollo y depuración.",
+            [Loc.DeveloperFeatures.VehicleDimensions] = "Mostrar dimensiones de vehículos",
+            [Loc.DeveloperFeatures.VehicleDimensionsDescription] = "Dibuja el contorno del modelo de cada vehículo que tengas cerca.",
+            [Loc.DeveloperFeatures.PropDimensions] = "Mostrar dimensiones de props",
+            [Loc.DeveloperFeatures.PropDimensionsDescription] = "Dibuja el contorno del modelo de cada prop que tengas cerca.",
+            [Loc.DeveloperFeatures.PedDimensions] = "Mostrar dimensiones de peds",
+            [Loc.DeveloperFeatures.PedDimensionsDescription] = "Dibuja el contorno del modelo de cada ped que tengas cerca.",
+            [Loc.DeveloperFeatures.EntityHandles] = "Mostrar handles de entidad",
+            [Loc.DeveloperFeatures.EntityHandlesDescription] = "Dibuja el handle de cada entidad cercana. Activa una de las opciones de contorno de arriba para verlo.",
+            [Loc.DeveloperFeatures.EntityModels] = "Mostrar modelos de entidad",
+            [Loc.DeveloperFeatures.EntityModelsDescription] = "Dibuja el hash del modelo de cada entidad cercana. Activa una de las opciones de contorno de arriba para verlo.",
+            [Loc.DeveloperFeatures.NetworkOwners] = "Mostrar propietarios de red",
+            [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Dibuja el propietario de red de cada entidad cercana. Activa una de las opciones de contorno de arriba para verlo.",
+            [Loc.DeveloperFeatures.DrawRadius] = "Distancia de dibujado",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Hasta qué distancia se siguen contorneando y etiquetando las entidades.",
         });
 }

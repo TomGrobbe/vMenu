@@ -41,5 +41,23 @@ internal static class GermanStrings
             [Loc.MiscSettings.LanguageDescription] = "Wähle eine Sprache und drücke Enter, um sie anzuwenden.",
             [Loc.MiscSettings.MenuRightAlignment] = "Menü rechts ausrichten",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Drücke Enter, um das Menü links oder rechts auszurichten.",
+
+            [Loc.DeveloperFeatures.Title] = "Entwicklerfunktionen",
+            [Loc.DeveloperFeatures.Subtitle] = "Entwicklerfunktionen",
+            [Loc.DeveloperFeatures.LinkDescription] = "Werkzeuge zum Entwickeln und Debuggen.",
+            [Loc.DeveloperFeatures.VehicleDimensions] = "Fahrzeugabmessungen anzeigen",
+            [Loc.DeveloperFeatures.VehicleDimensionsDescription] = "Zeichnet die Modellumrisse jedes Fahrzeugs in deiner Nähe.",
+            [Loc.DeveloperFeatures.PropDimensions] = "Prop-Abmessungen anzeigen",
+            [Loc.DeveloperFeatures.PropDimensionsDescription] = "Zeichnet die Modellumrisse jedes Props in deiner Nähe.",
+            [Loc.DeveloperFeatures.PedDimensions] = "Ped-Abmessungen anzeigen",
+            [Loc.DeveloperFeatures.PedDimensionsDescription] = "Zeichnet die Modellumrisse jedes Peds in deiner Nähe.",
+            [Loc.DeveloperFeatures.EntityHandles] = "Entity-Handles anzeigen",
+            [Loc.DeveloperFeatures.EntityHandlesDescription] = "Zeichnet das Entity-Handle jeder Entity in der Nähe. Aktiviere dafür eine der Umriss-Optionen oben.",
+            [Loc.DeveloperFeatures.EntityModels] = "Entity-Modelle anzeigen",
+            [Loc.DeveloperFeatures.EntityModelsDescription] = "Zeichnet den Modell-Hash jeder Entity in der Nähe. Aktiviere dafür eine der Umriss-Optionen oben.",
+            [Loc.DeveloperFeatures.NetworkOwners] = "Netzwerkbesitzer anzeigen",
+            [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Zeichnet den Netzwerkbesitzer jeder Entity in der Nähe. Aktiviere dafür eine der Umriss-Optionen oben.",
+            [Loc.DeveloperFeatures.DrawRadius] = "Anzeigereichweite",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Wie weit entfernt Entities noch umrissen und beschriftet werden.",
         });
 }

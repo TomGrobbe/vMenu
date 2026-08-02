@@ -45,5 +45,23 @@ internal static class EnglishStrings
             [Loc.MiscSettings.LanguageDescription] = "Select a language and press enter to apply it.",
             [Loc.MiscSettings.MenuRightAlignment] = "Right Align Menu",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
+
+            [Loc.DeveloperFeatures.Title] = "Developer Features",
+            [Loc.DeveloperFeatures.Subtitle] = "Developer Features",
+            [Loc.DeveloperFeatures.LinkDescription] = "Development and debugging tools.",
+            [Loc.DeveloperFeatures.VehicleDimensions] = "Show Vehicle Dimensions",
+            [Loc.DeveloperFeatures.VehicleDimensionsDescription] = "Draws the model outlines for every vehicle that's currently close to you.",
+            [Loc.DeveloperFeatures.PropDimensions] = "Show Prop Dimensions",
+            [Loc.DeveloperFeatures.PropDimensionsDescription] = "Draws the model outlines for every prop that's currently close to you.",
+            [Loc.DeveloperFeatures.PedDimensions] = "Show Ped Dimensions",
+            [Loc.DeveloperFeatures.PedDimensionsDescription] = "Draws the model outlines for every ped that's currently close to you.",
+            [Loc.DeveloperFeatures.EntityHandles] = "Show Entity Handles",
+            [Loc.DeveloperFeatures.EntityHandlesDescription] = "Draws the entity handle of every nearby entity. Enable one of the outline options above for this to show up.",
+            [Loc.DeveloperFeatures.EntityModels] = "Show Entity Models",
+            [Loc.DeveloperFeatures.EntityModelsDescription] = "Draws the model hash of every nearby entity. Enable one of the outline options above for this to show up.",
+            [Loc.DeveloperFeatures.NetworkOwners] = "Show Network Owners",
+            [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Draws the network owner of every nearby entity. Enable one of the outline options above for this to show up.",
+            [Loc.DeveloperFeatures.DrawRadius] = "Show Dimensions Radius",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "How far away entities are still outlined and labelled.",
         });
 }

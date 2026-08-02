@@ -42,5 +42,23 @@ internal static class DutchStrings
             [Loc.MiscSettings.LanguageDescription] = "Selecteer een taal en druk op enter om deze toe te passen.",
             [Loc.MiscSettings.MenuRightAlignment] = "Menu rechts uitlijnen",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Druk op enter om het menu links of rechts uit te lijnen.",
+
+            [Loc.DeveloperFeatures.Title] = "Ontwikkelaarsfuncties",
+            [Loc.DeveloperFeatures.Subtitle] = "Ontwikkelaarsfuncties",
+            [Loc.DeveloperFeatures.LinkDescription] = "Hulpmiddelen voor ontwikkelen en debuggen.",
+            [Loc.DeveloperFeatures.VehicleDimensions] = "Voertuigafmetingen tonen",
+            [Loc.DeveloperFeatures.VehicleDimensionsDescription] = "Tekent de modelomlijning van elk voertuig dat op dit moment bij je in de buurt is.",
+            [Loc.DeveloperFeatures.PropDimensions] = "Propafmetingen tonen",
+            [Loc.DeveloperFeatures.PropDimensionsDescription] = "Tekent de modelomlijning van elke prop die op dit moment bij je in de buurt is.",
+            [Loc.DeveloperFeatures.PedDimensions] = "Pedafmetingen tonen",
+            [Loc.DeveloperFeatures.PedDimensionsDescription] = "Tekent de modelomlijning van elke ped die op dit moment bij je in de buurt is.",
+            [Loc.DeveloperFeatures.EntityHandles] = "Entity handles tonen",
+            [Loc.DeveloperFeatures.EntityHandlesDescription] = "Tekent de entity handle van elke entity in de buurt. Zet hierboven een van de omlijningsopties aan om dit te zien.",
+            [Loc.DeveloperFeatures.EntityModels] = "Entity modellen tonen",
+            [Loc.DeveloperFeatures.EntityModelsDescription] = "Tekent de modelhash van elke entity in de buurt. Zet hierboven een van de omlijningsopties aan om dit te zien.",
+            [Loc.DeveloperFeatures.NetworkOwners] = "Netwerkeigenaren tonen",
+            [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Tekent de netwerkeigenaar van elke entity in de buurt. Zet hierboven een van de omlijningsopties aan om dit te zien.",
+            [Loc.DeveloperFeatures.DrawRadius] = "Weergaveafstand",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Tot hoe ver entities nog omlijnd en gelabeld worden.",
         });
 }

@@ -36,6 +36,13 @@ public abstract class MenuDefinition
     public virtual GateBehaviour? DefaultGateBehaviour => null;
 
     /// <summary>
+    /// What the item that opens this menu looks like when <see cref="Gate"/> denies. Only consulted
+    /// for a top level menu, where the registry rather than an author declares that item; a nested
+    /// menu's link is a <see cref="SubmenuEntry"/> with its own <c>Behaviour</c>.
+    /// </summary>
+    public virtual GateBehaviour? LinkBehaviour => null;
+
+    /// <summary>
     /// Anything that has to be fetched or computed before <see cref="Build"/> can declare entries.
     /// Runs once, before the menu is materialised.
     /// </summary>
