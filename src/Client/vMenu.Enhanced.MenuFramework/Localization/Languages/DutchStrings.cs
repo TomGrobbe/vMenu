@@ -31,6 +31,7 @@ internal static class DutchStrings
             [Loc.VehicleSpawner.SpawnByNamePrompt] = "Voer een voertuigmodelnaam in",
             [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ is geen geldig voertuigmodel.",
             [Loc.VehicleSpawner.SpawnByNameDenied] = "Je hebt geen toestemming om ~y~{model}~s~ te spawnen.",
+            [Loc.VehicleSpawner.Spawned] = "~g~{vehicle}~s~ gespawnd.",
             [Loc.VehicleSpawner.ClassDescription] = "Spawn een voertuig uit de klasse ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Voertuigspawnermenu",
 

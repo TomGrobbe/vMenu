@@ -20,6 +20,11 @@ ui_page 'ui/index.html'
 
 files {
     'ui/index.html',
+    'ui/shared.css',
+    'ui/input.css',
+    'ui/input.js',
+    'ui/notifications.css',
+    'ui/notifications.js',
 
     'client/CitizenFX.Base.dll',
     'client/CitizenFX.FiveM.Shared.dll',

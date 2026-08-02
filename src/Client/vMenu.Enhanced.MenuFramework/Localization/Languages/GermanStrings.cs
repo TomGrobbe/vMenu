@@ -30,6 +30,7 @@ internal static class GermanStrings
             [Loc.VehicleSpawner.SpawnByNamePrompt] = "Gib einen Fahrzeugmodellnamen ein",
             [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ ist kein gültiges Fahrzeugmodell.",
             [Loc.VehicleSpawner.SpawnByNameDenied] = "Du hast keine Berechtigung, ~y~{model}~s~ zu spawnen.",
+            [Loc.VehicleSpawner.Spawned] = "~g~{vehicle}~s~ wurde gespawnt.",
             [Loc.VehicleSpawner.ClassDescription] = "Spawne ein Fahrzeug aus der Klasse ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Fahrzeug-Spawner-Menü",
 

@@ -139,7 +139,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
         if (!Native.IsModelValid(hash) || !Native.IsModelAVehicle(hash))
         {
-            Notify(MenuText.Key(Loc.VehicleSpawner.SpawnByNameInvalid, ("model", MenuText.Literal(modelName))));
+            Notifications.Error(MenuText.Key(Loc.VehicleSpawner.SpawnByNameInvalid, ("model", MenuText.Literal(modelName))));
             return;
         }
 
@@ -147,7 +147,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
         if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
         {
-            Notify(MenuText.Key(Loc.VehicleSpawner.SpawnByNameDenied, ("model", MenuText.Literal(modelName))));
+            Notifications.Warning(MenuText.Key(Loc.VehicleSpawner.SpawnByNameDenied, ("model", MenuText.Literal(modelName))));
             return;
         }
 
@@ -226,13 +226,6 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             12 => "van",
             _ => "car",
         };
-    }
-
-    private static void Notify(MenuText text)
-    {
-        Native.BeginTextCommandThefeedPost("STRING");
-        Native.AddTextComponentSubstringPlayerName(text.Resolve(Localizer.Current));
-        Native.EndTextCommandThefeedPostTicker(bIsImportant: false, bCacheMessage: true);
     }
 
     /// <summary>The game already returns these in the player's game language.</summary>
@@ -332,5 +325,9 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
 
         ped.SetPedIntoVehicle(newVehicle.Handle, -1);
+
+        Notifications.Success(MenuText.Key(
+            Loc.VehicleSpawner.Spawned,
+            ("vehicle", MenuText.Literal(GetVehicleDisplayName(hash)))));
     }
 }

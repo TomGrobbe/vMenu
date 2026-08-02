@@ -30,6 +30,7 @@ internal static class SpanishStrings
             [Loc.VehicleSpawner.SpawnByNamePrompt] = "Introduce el nombre de un modelo de vehículo",
             [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ no es un modelo de vehículo válido.",
             [Loc.VehicleSpawner.SpawnByNameDenied] = "No tienes permiso para generar ~y~{model}~s~.",
+            [Loc.VehicleSpawner.Spawned] = "~g~{vehicle}~s~ generado.",
             [Loc.VehicleSpawner.ClassDescription] = "Genera un vehículo de la clase ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Menú del generador de vehículos",
 

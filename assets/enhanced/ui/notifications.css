@@ -1,0 +1,131 @@
+:root {
+    --toast-gap: 0.4rem;
+}
+
+#toasts {
+    /*
+       Every one of these is overwritten by the client, which is the only side that can see where the
+       minimap starts and ends. The values here are the 16:9 defaults, in case a message ever arrives
+       without an anchor.
+    */
+    position: fixed;
+    left: 2%;
+    bottom: 20%;
+    width: 14%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--toast-gap);
+    pointer-events: none;
+}
+
+.toast {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-left: 0.2rem solid var(--tone);
+    border-radius: 0.2rem;
+    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    animation: toast-in 200ms ease-out;
+}
+
+.toast.info {
+    --tone: #4d94f7;
+    --tone-soft: rgba(59, 139, 245, 0.16);
+    --tone-edge: rgba(59, 139, 245, 0.35);
+}
+
+.toast.success {
+    --tone: #58cf90;
+    --tone-soft: rgba(71, 193, 127, 0.16);
+    --tone-edge: rgba(71, 193, 127, 0.35);
+}
+
+.toast.warning {
+    --tone: #edb44b;
+    --tone-soft: rgba(224, 163, 56, 0.16);
+    --tone-edge: rgba(224, 163, 56, 0.35);
+}
+
+.toast.error {
+    --tone: #ef6a60;
+    --tone-soft: rgba(226, 85, 76, 0.16);
+    --tone-edge: rgba(226, 85, 76, 0.35);
+}
+
+/* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
+.toast .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.55rem;
+    background: var(--tone-soft);
+    border-bottom: 1px solid var(--tone-edge);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--tone);
+}
+
+.toast .icon {
+    flex: none;
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+.toast .body {
+    padding: 0.45rem 0.6rem 0.5rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.toast .progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 0.125rem;
+    background: var(--tone);
+    opacity: 0.55;
+    animation-name: toast-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+/* Leaving from the top of a bottom-anchored stack, so nothing below it has to move. */
+.toast.leaving {
+    opacity: 0;
+    transform: translateX(-0.75rem);
+    transition: opacity 200ms ease-in, transform 200ms ease-in;
+}
+
+/*
+   The stack grows upwards, so the newest row also has to push the older ones up. Clipping its own
+   height open does that; the cap only has to clear the tallest row a message can produce.
+*/
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        max-height: 0;
+        margin-top: calc(var(--toast-gap) * -1);
+        transform: translateX(-1rem);
+    }
+
+    to {
+        opacity: 1;
+        max-height: 14rem;
+        margin-top: 0;
+        transform: none;
+    }
+}
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0;
+    }
+}

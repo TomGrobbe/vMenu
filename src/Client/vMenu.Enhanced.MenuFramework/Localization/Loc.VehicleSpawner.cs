@@ -26,6 +26,8 @@ public static partial class Loc
 
         public const string SpawnByNameDenied = "vehiclespawner.byname.denied";
 
+        public const string Spawned = "vehiclespawner.spawned";
+
         public const string ClassDescription = "vehiclespawner.class.desc";
 
         public const string ClassSubtitle = "vehiclespawner.class.subtitle";

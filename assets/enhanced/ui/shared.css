@@ -1,0 +1,34 @@
+:root {
+    --accent: #3b8bf5;
+    --panel: rgba(18, 18, 20, 0.94);
+    --row: rgba(255, 255, 255, 0.05);
+    --text: #f2f2f2;
+    --muted: rgba(242, 242, 242, 0.55);
+    --edge: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: var(--text);
+}
+
+/*
+   The page is rendered at the game's own resolution, so a rem fixed at 16px shrinks to nothing on a
+   4K screen and everything sized in rem shrinks with it. Tying the root to viewport height instead
+   makes every size below a fraction of the screen, which is also how the game scales its own HUD —
+   width is left out of it so an ultrawide monitor does not inflate the text.
+*/
+html {
+    font-size: clamp(13px, 1.6vh, 40px);
+}

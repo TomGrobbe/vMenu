@@ -30,6 +30,7 @@ internal static class FrenchStrings
             [Loc.VehicleSpawner.SpawnByNamePrompt] = "Saisissez un nom de modèle de véhicule",
             [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ n'est pas un modèle de véhicule valide.",
             [Loc.VehicleSpawner.SpawnByNameDenied] = "Vous n'avez pas la permission de faire apparaître ~y~{model}~s~.",
+            [Loc.VehicleSpawner.Spawned] = "~g~{vehicle}~s~ est apparu.",
             [Loc.VehicleSpawner.ClassDescription] = "Faites apparaître un véhicule de la classe ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Menu du générateur de véhicules",
 
