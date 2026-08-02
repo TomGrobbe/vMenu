@@ -17,6 +17,10 @@
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
+    <Authors>Tom Grobbe</Authors>
+    <Copyright>Copyright (C) 2017-2026 Tom Grobbe</Copyright>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+
     <!--
       Class libraries normally leave NuGet assemblies in the package cache and
       only list them in the .deps.json. FiveM has no host to resolve them, so

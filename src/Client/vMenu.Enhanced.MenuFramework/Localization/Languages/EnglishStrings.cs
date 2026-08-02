@@ -16,6 +16,9 @@ internal static class EnglishStrings
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             [Loc.Framework.RestrictedDescription] = "Access to this has been restricted by the server owner.",
+            [Loc.Framework.InputPlaceholder] = "Start typing…",
+            [Loc.Framework.InputHint] = "Enter to confirm · Esc to cancel · ↑↓ to pick a suggestion · Tab to complete",
+            [Loc.Framework.InputNoMatches] = "No matches",
 
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Main Menu",
@@ -26,6 +29,11 @@ internal static class EnglishStrings
             [Loc.VehicleSpawner.SpawnByClass] = "Spawn Vehicle By Class",
             [Loc.VehicleSpawner.SpawnByClassDescription] = "Spawn a vehicle from a list of vehicle classes.",
             [Loc.VehicleSpawner.SpawnByClassSubtitle] = "Spawn vehicles by class",
+            [Loc.VehicleSpawner.SpawnByName] = "Spawn Vehicle By Name",
+            [Loc.VehicleSpawner.SpawnByNameDescription] = "Spawn a vehicle by typing its model name.",
+            [Loc.VehicleSpawner.SpawnByNamePrompt] = "Enter a vehicle model name",
+            [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ is not a valid vehicle model.",
+            [Loc.VehicleSpawner.SpawnByNameDenied] = "You do not have permission to spawn ~y~{model}~s~.",
             [Loc.VehicleSpawner.ClassDescription] = "Spawn a vehicle from the ~y~{class}~s~ class.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Vehicle Spawner Menu",
 

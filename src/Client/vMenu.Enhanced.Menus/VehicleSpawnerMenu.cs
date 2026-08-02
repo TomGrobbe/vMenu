@@ -28,6 +28,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
     private IGrouping<int, string>[] _vehiclesPerClass = [];
 
+    private (string Model, int Class, string Label, string ClassName, string Icon)[] _describedVehicles = [];
+
     public override Task PrepareAsync()
     {
         var vehicles = BrokenNatives.NativeFixer.GetAllVehicleModels();
@@ -42,14 +44,23 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         _vehiclesPerClass = [.. vehicles
             .Where(vehicle => !string.IsNullOrWhiteSpace(vehicle))
             .Select(vehicle => vehicle.Trim())
-            .OrderBy(vehicle => vehicle)
+            .OrderBy(vehicle => GetVehicleDisplayName(API.Hash(vehicle)))
+                .ThenBy(vehicle => vehicle)
             .GroupBy(vehicle => Native.GetVehicleClassFromName(API.Hash(vehicle)))
             .OrderBy(category => ClassName(category.Key))];
+
+        _describedVehicles = [.. _vehiclesPerClass.SelectMany(category => category.Select(model =>
+        {
+            var hash = API.Hash(model);
+
+            return (model, category.Key, GetVehicleDisplayName(hash), ClassName(category.Key), VehicleIcon(hash, category.Key));
+        }))];
 
         return Task.CompletedTask;
     }
 
-    protected override void Build(MenuBuilder menu) =>
+    protected override void Build(MenuBuilder menu)
+    {
         menu.Entries.Add(new SubmenuEntry
         {
             Text = MenuText.Key(Loc.VehicleSpawner.SpawnByClass),
@@ -58,6 +69,15 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByClassSubtitle),
             Build = BuildClassList,
         });
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByName),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByNameDescription),
+            Gate = VehicleSpawnerPermissions.SpawnByName,
+            OnSelectedAsync = _ => SpawnByNameAsync(),
+        });
+    }
 
     private void BuildClassList(MenuBuilder byClass)
     {
@@ -73,7 +93,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
                 Description = MenuText.Key(
                     Loc.VehicleSpawner.ClassDescription,
                     ("class", MenuText.From(() => ClassName(classId)))),
-                Label = MenuText.Literal($"({models.Length}) →"),
+                Label = MenuText.Literal("→"),
                 MenuTitle = MenuText.From(() => ClassName(classId)),
                 MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.ClassSubtitle),
                 Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicleClass(classId)),
@@ -100,6 +120,119 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
                 OnSelectedAsync = _ => SpawnVehicleAsync(modelName, classId),
             });
         }
+    }
+
+    private async Task SpawnByNameAsync()
+    {
+        var typed = await UserInput.GetTextAsync(
+            MenuText.Key(Loc.VehicleSpawner.SpawnByNamePrompt),
+            maxLength: 30,
+            suggestions: SpawnableSuggestions());
+
+        if (string.IsNullOrWhiteSpace(typed))
+        {
+            return;
+        }
+
+        var modelName = typed.Trim();
+        var hash = API.Hash(modelName);
+
+        if (!Native.IsModelValid(hash) || !Native.IsModelAVehicle(hash))
+        {
+            Notify(MenuText.Key(Loc.VehicleSpawner.SpawnByNameInvalid, ("model", MenuText.Literal(modelName))));
+            return;
+        }
+
+        var vehicleClass = Native.GetVehicleClassFromName(hash);
+
+        if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
+        {
+            Notify(MenuText.Key(Loc.VehicleSpawner.SpawnByNameDenied, ("model", MenuText.Literal(modelName))));
+            return;
+        }
+
+        await SpawnVehicleAsync(modelName, vehicleClass);
+    }
+
+    /// <summary>Built per opening: a permission refresh in between changes what belongs in it.</summary>
+    private IReadOnlyList<InputSuggestion> SpawnableSuggestions() =>
+        [.. _describedVehicles
+            .Where(vehicle => ClientVehiclePermissions.CanSpawnVehicle(vehicle.Model, vehicle.Class))
+            .Select(vehicle => new InputSuggestion
+            {
+                Value = vehicle.Model,
+                Label = vehicle.Label,
+                Icon = vehicle.Icon,
+                Detail = vehicle.ClassName,
+            })];
+
+    /// <summary>
+    /// These natives answer for a model hash, unlike <c>GET_VEHICLE_TYPE_RAW</c>, which needs a
+    /// vehicle that exists.
+    /// </summary>
+    private static string VehicleIcon(uint hash, int vehicleClass)
+    {
+        if (Native.IsThisModelATrain(hash))
+        {
+            return "train";
+        }
+
+        if (Native.IsThisModelAPlane(hash))
+        {
+            return "plane";
+        }
+
+        if (Native.IsThisModelAHeli(hash))
+        {
+            return "heli";
+        }
+
+        if (Native.IsThisModelABicycle(hash))
+        {
+            return "bicycle";
+        }
+
+        if (Native.IsThisModelABike(hash))
+        {
+            return "motorcycle";
+        }
+
+        if (Native.IsThisModelAQuadbike(hash) || Native.IsThisModelAnAmphibiousQuadbike(hash))
+        {
+            return "quad";
+        }
+
+        if (Native.IsThisModelASubmersible(hash))
+        {
+            return "submarine";
+        }
+
+        if (Native.IsThisModelABoat(hash) || Native.IsThisModelAnEmergencyBoat(hash) || Native.IsThisModelAJetski(hash))
+        {
+            return "boat";
+        }
+
+        // A blimp is its own type, a trailer is none of these: what the natives have no word for
+        // follows its class instead.
+        return vehicleClass switch
+        {
+            8 => "motorcycle",
+            13 => "bicycle",
+            14 => "boat",
+            15 => "heli",
+            16 => "plane",
+            21 => "train",
+            10 or 11 or 20 => "truck",
+            12 => "van",
+            _ => "car",
+        };
+    }
+
+    private static void Notify(MenuText text)
+    {
+        Native.BeginTextCommandThefeedPost("STRING");
+        Native.AddTextComponentSubstringPlayerName(text.Resolve(Localizer.Current));
+        Native.EndTextCommandThefeedPostTicker(bIsImportant: false, bCacheMessage: true);
     }
 
     /// <summary>The game already returns these in the player's game language.</summary>

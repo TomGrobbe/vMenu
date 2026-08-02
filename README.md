@@ -60,12 +60,39 @@ vMenu v2.0.0 and earlier was [using a modified version of NativeUI](https://gith
 
 ## License
 
-**For an updated license, check the license.md file. That file will always overrule anything mentioned in the readme.md**
+**The [LICENSE.md](LICENSE.md) file is authoritative and always overrules anything mentioned here.**
+
+vMenu Enhanced is licensed under the **[GNU General Public License v3.0 or later](LICENSE.md)** (`GPL-3.0-or-later`).
 
 Tom Grobbe - https://www.vespura.com/
 
 Copyright © 2017-2026
 
-You can use and edit this code to your liking as long as you don't ever claim it to be your code and always provide proper credit.
-You're **not** allowed to sell vMenu or any code you take from it.
-If you want to release your version of vMenu, you have to link the original GitHub repo or release it via a Forked repo.
+In short — this is not legal advice, read the license itself:
+
+- You may use, modify and redistribute vMenu Enhanced, including commercially.
+- If you distribute a modified version, you **must** release your full source code under the GPL-3.0 as well.
+- You must keep the copyright and license notices intact, and state what you changed.
+- It comes with **absolutely no warranty**.
+
+You cannot take vMenu Enhanced, close the source, and sell it as your own proprietary product.
+
+### Full notice
+
+```
+vMenu Enhanced
+Copyright (C) 2017-2026 Tom Grobbe
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```

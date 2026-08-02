@@ -12,6 +12,9 @@ internal static class DutchStrings
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             [Loc.Framework.RestrictedDescription] = "De servereigenaar heeft de toegang hiertoe beperkt.",
+            [Loc.Framework.InputPlaceholder] = "Begin met typen…",
+            [Loc.Framework.InputHint] = "Enter om te bevestigen · Esc om te annuleren · ↑↓ om een suggestie te kiezen · Tab om aan te vullen",
+            [Loc.Framework.InputNoMatches] = "Geen resultaten",
 
             // "vMenu Enhanced" is a product name, so it is deliberately left untranslated.
             [Loc.MainMenu.Title] = "vMenu Enhanced",
@@ -23,6 +26,11 @@ internal static class DutchStrings
             [Loc.VehicleSpawner.SpawnByClass] = "Voertuig spawnen op klasse",
             [Loc.VehicleSpawner.SpawnByClassDescription] = "Spawn een voertuig uit een lijst met voertuigklassen.",
             [Loc.VehicleSpawner.SpawnByClassSubtitle] = "Voertuigen spawnen op klasse",
+            [Loc.VehicleSpawner.SpawnByName] = "Voertuig spawnen op naam",
+            [Loc.VehicleSpawner.SpawnByNameDescription] = "Spawn een voertuig door de modelnaam te typen.",
+            [Loc.VehicleSpawner.SpawnByNamePrompt] = "Voer een voertuigmodelnaam in",
+            [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ is geen geldig voertuigmodel.",
+            [Loc.VehicleSpawner.SpawnByNameDenied] = "Je hebt geen toestemming om ~y~{model}~s~ te spawnen.",
             [Loc.VehicleSpawner.ClassDescription] = "Spawn een voertuig uit de klasse ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Voertuigspawnermenu",
 

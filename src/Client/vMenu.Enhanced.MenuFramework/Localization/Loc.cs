@@ -15,6 +15,12 @@ public static partial class Loc
     public static class Framework
     {
         public const string RestrictedDescription = "framework.restricted";
+
+        public const string InputPlaceholder = "framework.input.placeholder";
+
+        public const string InputHint = "framework.input.hint";
+
+        public const string InputNoMatches = "framework.input.nomatches";
     }
 
     public static class MainMenu

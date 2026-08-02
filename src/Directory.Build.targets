@@ -35,6 +35,22 @@
           SkipUnchangedFiles="true" />
   </Target>
 
+  <!-- Overwritten on every build, unlike config below: vMenu's own UI, not a server owner's file. -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceUiFile Include="$(RepoRoot)assets\enhanced\ui\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceUiFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ResourceUiFile)"
+          Outputs="@(ResourceUiFile -> '$(ResourceRoot)ui\%(RecursiveDir)%(Filename)%(Extension)')">
+
+    <Copy SourceFiles="@(ResourceUiFile)"
+          DestinationFiles="@(ResourceUiFile -> '$(ResourceRoot)ui\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
   <!--
     Config files are defaults for a server owner to edit in place, so they are only copied when
     missing. Delete one in build/vMenu.Enhanced/config/ to get the default back.

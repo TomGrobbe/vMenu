@@ -12,6 +12,9 @@ internal static class SpanishStrings
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             [Loc.Framework.RestrictedDescription] = "El propietario del servidor ha restringido el acceso a esto.",
+            [Loc.Framework.InputPlaceholder] = "Empieza a escribir…",
+            [Loc.Framework.InputHint] = "Intro para confirmar · Esc para cancelar · ↑↓ para elegir una sugerencia · Tab para completar",
+            [Loc.Framework.InputNoMatches] = "Sin coincidencias",
 
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Menú principal",
@@ -22,6 +25,11 @@ internal static class SpanishStrings
             [Loc.VehicleSpawner.SpawnByClass] = "Generar vehículo por clase",
             [Loc.VehicleSpawner.SpawnByClassDescription] = "Genera un vehículo a partir de una lista de clases de vehículos.",
             [Loc.VehicleSpawner.SpawnByClassSubtitle] = "Generar vehículos por clase",
+            [Loc.VehicleSpawner.SpawnByName] = "Generar vehículo por nombre",
+            [Loc.VehicleSpawner.SpawnByNameDescription] = "Genera un vehículo escribiendo el nombre de su modelo.",
+            [Loc.VehicleSpawner.SpawnByNamePrompt] = "Introduce el nombre de un modelo de vehículo",
+            [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ no es un modelo de vehículo válido.",
+            [Loc.VehicleSpawner.SpawnByNameDenied] = "No tienes permiso para generar ~y~{model}~s~.",
             [Loc.VehicleSpawner.ClassDescription] = "Genera un vehículo de la clase ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Menú del generador de vehículos",
 

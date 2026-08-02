@@ -16,7 +16,11 @@ server_debug_mode 'false'
 -- Adds extra commands for testing and development
 experimental_features_enabled '0'
 
+ui_page 'ui/index.html'
+
 files {
+    'ui/index.html',
+
     'client/CitizenFX.Base.dll',
     'client/CitizenFX.FiveM.Shared.dll',
     'client/CitizenFX.FiveM.Client.dll',

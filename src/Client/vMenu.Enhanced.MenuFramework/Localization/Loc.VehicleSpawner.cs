@@ -16,7 +16,16 @@ public static partial class Loc
 
         public const string SpawnByClassSubtitle = "vehiclespawner.byclass.subtitle";
 
-        /// <summary>Takes a <c>{class}</c> argument, supplied as the game's own class label.</summary>
+        public const string SpawnByName = "vehiclespawner.byname";
+
+        public const string SpawnByNameDescription = "vehiclespawner.byname.desc";
+
+        public const string SpawnByNamePrompt = "vehiclespawner.byname.prompt";
+
+        public const string SpawnByNameInvalid = "vehiclespawner.byname.invalid";
+
+        public const string SpawnByNameDenied = "vehiclespawner.byname.denied";
+
         public const string ClassDescription = "vehiclespawner.class.desc";
 
         public const string ClassSubtitle = "vehiclespawner.class.subtitle";

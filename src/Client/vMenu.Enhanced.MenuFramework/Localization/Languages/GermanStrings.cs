@@ -12,6 +12,9 @@ internal static class GermanStrings
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             [Loc.Framework.RestrictedDescription] = "Der Serverbesitzer hat den Zugriff darauf eingeschränkt.",
+            [Loc.Framework.InputPlaceholder] = "Tippe los…",
+            [Loc.Framework.InputHint] = "Enter zum Bestätigen · Esc zum Abbrechen · ↑↓ für einen Vorschlag · Tab zum Vervollständigen",
+            [Loc.Framework.InputNoMatches] = "Keine Treffer",
 
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Hauptmenü",
@@ -22,6 +25,11 @@ internal static class GermanStrings
             [Loc.VehicleSpawner.SpawnByClass] = "Fahrzeug nach Klasse spawnen",
             [Loc.VehicleSpawner.SpawnByClassDescription] = "Spawne ein Fahrzeug aus einer Liste von Fahrzeugklassen.",
             [Loc.VehicleSpawner.SpawnByClassSubtitle] = "Fahrzeuge nach Klasse spawnen",
+            [Loc.VehicleSpawner.SpawnByName] = "Fahrzeug nach Name spawnen",
+            [Loc.VehicleSpawner.SpawnByNameDescription] = "Spawne ein Fahrzeug, indem du seinen Modellnamen eingibst.",
+            [Loc.VehicleSpawner.SpawnByNamePrompt] = "Gib einen Fahrzeugmodellnamen ein",
+            [Loc.VehicleSpawner.SpawnByNameInvalid] = "~r~{model}~s~ ist kein gültiges Fahrzeugmodell.",
+            [Loc.VehicleSpawner.SpawnByNameDenied] = "Du hast keine Berechtigung, ~y~{model}~s~ zu spawnen.",
             [Loc.VehicleSpawner.ClassDescription] = "Spawne ein Fahrzeug aus der Klasse ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Fahrzeug-Spawner-Menü",
 
