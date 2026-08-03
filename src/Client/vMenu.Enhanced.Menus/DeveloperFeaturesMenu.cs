@@ -29,7 +29,12 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
     /// carry a label to put the value in: <c>MenuSliderItem.Draw</c> clears it every frame, because
     /// the bar occupies that side of the row.
     /// </summary>
-    private static readonly MenuText RadiusDescription = MenuText.Key(
+    /// <remarks>
+    /// A property, not a <see langword="static" /> <see langword="readonly" /> field: calling
+    /// <see cref="MenuText.Resolve" /> on a field of that shape takes the address of an initonly
+    /// field, which the FiveM client's IL verifier rejects at JIT time.
+    /// </remarks>
+    private static MenuText RadiusDescription => MenuText.Key(
         Loc.DeveloperFeatures.DrawRadiusDescription,
         ("radius", MenuText.From(() => $"{DeveloperFeaturesState.DrawRadiusMetres} m")));
 
