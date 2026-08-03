@@ -35,6 +35,18 @@ internal static class DutchStrings
             [Loc.VehicleSpawner.ClassDescription] = "Spawn een voertuig uit de klasse ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Voertuigspawnermenu",
 
+            [Loc.VehicleOptions.Title] = "Voertuigopties",
+            [Loc.VehicleOptions.Subtitle] = "Voertuigoptiesmenu",
+            [Loc.VehicleOptions.LinkDescription] = "Opties voor je huidige voertuig.",
+            [Loc.VehicleOptions.DeleteVehicle] = "Voertuig verwijderen",
+            [Loc.VehicleOptions.DeleteVehicleDescription] = "Verwijdert het voertuig waarin je rijdt, of dat voor je staat.",
+            [Loc.VehicleOptions.DeleteNotDriver] = "Je moet de ~y~bestuurder~s~ zijn om dit voertuig te verwijderen.",
+            [Loc.VehicleOptions.DeleteNoVehicle] = "~r~Geen voertuig gevonden~s~ voor je.",
+            [Loc.VehicleOptions.DeleteDenied] = "Je hebt geen toestemming om voertuigen te verwijderen.",
+            [Loc.VehicleOptions.DeleteTooFar] = "Je bent ~r~te ver weg~s~ van dat voertuig.",
+            [Loc.VehicleOptions.DeleteFailed] = "~r~Kon dat voertuig niet verwijderen~s~. Probeer het opnieuw.",
+            [Loc.VehicleOptions.Deleted] = "~g~Voertuig verwijderd~s~.",
+
             [Loc.MiscSettings.Title] = "Overige instellingen",
             [Loc.MiscSettings.Subtitle] = "Overige instellingen",
             [Loc.MiscSettings.LinkDescription] = "Pas de instellingen van vMenu aan.",

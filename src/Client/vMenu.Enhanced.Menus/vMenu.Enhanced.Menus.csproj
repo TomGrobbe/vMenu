@@ -3,6 +3,7 @@
     <PackageReference Include="MenuAPI.FiveM.Enhanced" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.Actions\vMenu.Enhanced.Actions.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives\vMenu.Enhanced.BrokenNatives.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration\vMenu.Enhanced.Configuration.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.MenuFramework\vMenu.Enhanced.MenuFramework.csproj" />

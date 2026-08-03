@@ -22,6 +22,7 @@ public static class ConfigCatalog
 {
     public static IReadOnlyList<ConfigSection> Sections { get; } =
     [
+        new("Vehicle Options", [VehicleOptions.DeleteVehicleDistance, VehicleOptions.DeleteVehicleCommand]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
     ];
 

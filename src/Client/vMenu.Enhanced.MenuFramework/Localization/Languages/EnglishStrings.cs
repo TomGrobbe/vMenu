@@ -38,6 +38,18 @@ internal static class EnglishStrings
             [Loc.VehicleSpawner.ClassDescription] = "Spawn a vehicle from the ~y~{class}~s~ class.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Vehicle Spawner Menu",
 
+            [Loc.VehicleOptions.Title] = "Vehicle Options",
+            [Loc.VehicleOptions.Subtitle] = "Vehicle Options Menu",
+            [Loc.VehicleOptions.LinkDescription] = "Options for your current vehicle.",
+            [Loc.VehicleOptions.DeleteVehicle] = "Delete Vehicle",
+            [Loc.VehicleOptions.DeleteVehicleDescription] = "Deletes the vehicle you're driving, or the one in front of you.",
+            [Loc.VehicleOptions.DeleteNotDriver] = "You have to be the ~y~driver~s~ to delete this vehicle.",
+            [Loc.VehicleOptions.DeleteNoVehicle] = "~r~No vehicle found~s~ in front of you.",
+            [Loc.VehicleOptions.DeleteDenied] = "You do not have permission to delete vehicles.",
+            [Loc.VehicleOptions.DeleteTooFar] = "You are ~r~too far away~s~ from that vehicle.",
+            [Loc.VehicleOptions.DeleteFailed] = "~r~Could not delete~s~ that vehicle. Try again.",
+            [Loc.VehicleOptions.Deleted] = "~g~Vehicle deleted~s~.",
+
             [Loc.MiscSettings.Title] = "Miscellaneous Settings",
             [Loc.MiscSettings.Subtitle] = "Miscellaneous Settings",
             [Loc.MiscSettings.LinkDescription] = "Change vMenu's own settings.",

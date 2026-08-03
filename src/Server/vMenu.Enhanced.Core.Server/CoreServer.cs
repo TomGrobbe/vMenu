@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Shared.Script;
 
+using vMenu.Enhanced.Actions.Server;
+using vMenu.Enhanced.Actions.Server.Handlers;
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Permissions.Server;
 
@@ -19,6 +21,9 @@ public class CoreServer : IScript
         PermissionsExampleFile.Write();
 
         PermissionsSync.RegisterEventHandlers();
+
+        VehicleActions.Register();
+        ActionRegistry.RegisterEventHandlers();
 
         API.Log.Info("Server started");
     }

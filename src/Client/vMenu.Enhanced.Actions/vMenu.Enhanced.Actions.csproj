@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.FiveM.Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+  </ItemGroup>
+
+</Project>

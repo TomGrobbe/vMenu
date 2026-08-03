@@ -4,6 +4,7 @@ using CitizenFX.Base;
 using CitizenFX.Base.Data;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
+using CitizenFX.FiveM.Shared.Serialization;
 
 namespace vMenu.Enhanced.BrokenNatives;
 
@@ -40,6 +41,45 @@ public static class NativeFixer
         nativeApi.Invoke(14500376258260264975uL, "GetModelDimensions");
         p1 = nativeApi.GetResVector(1).ToVector();
         p2 = nativeApi.GetResVector(2).ToVector();
+    }
+
+    /// <summary>
+    /// Replacement call for <see cref="Native.GetShapeTestResult(int, out int, out Vector3, out Vector3, out int)" />
+    /// because <em>nativeApi.PushArg(default(Vector3))</em> is not supported. The <em>Ref&lt;Vector3&gt;</em>
+    /// overload pushes a Vector3 too, so neither generated form is usable.
+    /// </summary>
+    /// <returns>0 when the handle is not a shape test, 1 while the result is not ready, 2 once it is.</returns>
+    public static int GetShapeTestResult(int shapeTestHandle, out int hit, out Vector3 endCoords, out Vector3 surfaceNormal, out int entityHit)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(shapeTestHandle);
+        nativeApi.PushArg(0);
+        nativeApi.PushArg(default(ObjectArg));
+        nativeApi.PushArg(default(ObjectArg));
+        nativeApi.PushArg(0);
+        nativeApi.Invoke(1044221499265592803uL, "GetShapeTestResult");
+        hit = nativeApi.GetResInt(1);
+        endCoords = nativeApi.GetResVector(2).ToVector();
+        surfaceNormal = nativeApi.GetResVector(3).ToVector();
+        entityHit = nativeApi.GetResInt(4);
+        return nativeApi.GetResInt(0);
+    }
+
+    /// <summary>
+    /// Replacement call for <c>SharedAPI.Commands.RegisterCommand</c>, which throws away the id
+    /// <see cref="Native.UnregisterCommand(int)" /> needs, so a command registered through it can
+    /// never be removed.
+    /// </summary>
+    /// <param name="handler">Invoked with the source, the arguments, and the raw command text.</param>
+    /// <returns>The command id.</returns>
+    public static int RegisterCommand(string command, bool restricted, Action<int, MessagePackBuffer, string> handler)
+    {
+        // Same registry as AddConvarChangeListener, for the same reason.
+#pragma warning disable FIVEM001
+        var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
+#pragma warning restore FIVEM001
+
+        return Native.RegisterCommand(command, unchecked((int)reference), restricted);
     }
 
     /// <summary>

@@ -34,6 +34,18 @@ internal static class SpanishStrings
             [Loc.VehicleSpawner.ClassDescription] = "Genera un vehículo de la clase ~y~{class}~s~.",
             [Loc.VehicleSpawner.ClassSubtitle] = "Menú del generador de vehículos",
 
+            [Loc.VehicleOptions.Title] = "Opciones de vehículo",
+            [Loc.VehicleOptions.Subtitle] = "Menú de opciones de vehículo",
+            [Loc.VehicleOptions.LinkDescription] = "Opciones para tu vehículo actual.",
+            [Loc.VehicleOptions.DeleteVehicle] = "Eliminar vehículo",
+            [Loc.VehicleOptions.DeleteVehicleDescription] = "Elimina el vehículo que conduces o el que tienes delante.",
+            [Loc.VehicleOptions.DeleteNotDriver] = "Tienes que ser el ~y~conductor~s~ para eliminar este vehículo.",
+            [Loc.VehicleOptions.DeleteNoVehicle] = "~r~No se ha encontrado ningún vehículo~s~ delante de ti.",
+            [Loc.VehicleOptions.DeleteDenied] = "No tienes permiso para eliminar vehículos.",
+            [Loc.VehicleOptions.DeleteTooFar] = "Estás ~r~demasiado lejos~s~ de ese vehículo.",
+            [Loc.VehicleOptions.DeleteFailed] = "~r~No se ha podido eliminar~s~ ese vehículo. Inténtalo de nuevo.",
+            [Loc.VehicleOptions.Deleted] = "~g~Vehículo eliminado~s~.",
+
             [Loc.MiscSettings.Title] = "Ajustes varios",
             [Loc.MiscSettings.Subtitle] = "Ajustes varios",
             [Loc.MiscSettings.LinkDescription] = "Cambia los ajustes de vMenu.",

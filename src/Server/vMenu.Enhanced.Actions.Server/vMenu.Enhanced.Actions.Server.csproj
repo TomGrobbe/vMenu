@@ -1,11 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Server" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\vMenu.Enhanced.Actions.Server\vMenu.Enhanced.Actions.Server.csproj" />
-    <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives.Server\vMenu.Enhanced.BrokenNatives.Server.csproj" />
+    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration.Server\vMenu.Enhanced.Configuration.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions.Server\vMenu.Enhanced.Permissions.Server.csproj" />
   </ItemGroup>
+
 </Project>
