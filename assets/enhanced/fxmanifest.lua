@@ -45,6 +45,7 @@ files {
     'client/vMenu.Enhanced.MenuFramework.dll',
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',
+    'client/vMenu.Enhanced.Ticks.dll',
 }
 
 -- Client assembly
