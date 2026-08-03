@@ -86,11 +86,16 @@ public static class VehicleActions
         return Delete(entity);
     }
 
+    /// <remarks>
+    /// The outcome is deliberately not verified. The removal only lands on the next server tick, so
+    /// <c>DoesEntityExist</c> still reports the vehicle right here and every successful delete would
+    /// be answered as a failure. A handler runs to completion on the event's thread and replies from
+    /// it, so there is no point at which the server could look again before answering.
+    /// </remarks>
     private static ActionResponse Delete(int entity)
     {
         Native.DeleteEntity(entity);
 
-        // The native reports on the call, not on the outcome.
-        return Native.DoesEntityExist(entity) ? ActionResponse.Failed() : ActionResponse.Ok();
+        return ActionResponse.Ok();
     }
 }
