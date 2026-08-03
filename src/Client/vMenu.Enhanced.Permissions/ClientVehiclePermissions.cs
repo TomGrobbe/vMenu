@@ -14,14 +14,11 @@ public static class ClientVehiclePermissions
     /// <summary>Apply before the matching permission set.</summary>
     public static void ApplyWhitelistedVehicleModels(string[] models)
     {
-        lock (WhitelistedVehicles)
-        {
-            WhitelistedVehicles.Clear();
+        WhitelistedVehicles.Clear();
 
-            foreach (var model in models)
-            {
-                WhitelistedVehicles.Add(model);
-            }
+        foreach (var model in models)
+        {
+            WhitelistedVehicles.Add(model);
         }
     }
 

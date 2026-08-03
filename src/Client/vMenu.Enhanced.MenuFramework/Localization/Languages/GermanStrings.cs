@@ -70,6 +70,6 @@ internal static class GermanStrings
             [Loc.DeveloperFeatures.NetworkOwners] = "Netzwerkbesitzer anzeigen",
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Zeichnet den Netzwerkbesitzer jeder Entity in der Nähe. Aktiviere dafür eine der Umriss-Optionen oben.",
             [Loc.DeveloperFeatures.DrawRadius] = "Anzeigereichweite",
-            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Wie weit entfernt Entities noch umrissen und beschriftet werden.",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Wie weit entfernt Entities noch umrissen und beschriftet werden. Aktuell {radius}.",
         });
 }

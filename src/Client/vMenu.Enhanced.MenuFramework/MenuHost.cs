@@ -135,7 +135,10 @@ internal sealed class MenuHost : IDisposable
     /// resync and a language change, because the two cannot be allowed to disagree about what an
     /// item currently says.
     /// </summary>
-    /// <remarks>Stays synchronous: it runs inside the lock <c>ClientPermissions</c> holds while notifying.</remarks>
+    /// <remarks>
+    /// Stays synchronous: the change notifications behind it are plain events, so anything deferred
+    /// here would leave menus showing stale state after the notifier had already returned.
+    /// </remarks>
     internal void Refresh(ILocalizer localizer)
     {
         Menu.MenuTitle = Title.Resolve(localizer);

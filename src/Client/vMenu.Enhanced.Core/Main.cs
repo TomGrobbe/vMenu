@@ -8,8 +8,10 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Menus;
+using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Core;
 
@@ -20,7 +22,7 @@ public sealed class Main : IScript
         Native.DisableIdleCamera(true);
         Native.DisableVehiclePassengerIdleCamera(true);
 
-        _ = new NoClip.NoClip();
+        TickRegistry.Initialize();
 
         SharedAPI.Commands.RegisterCommand("give", false, async (string? weapon) =>
         {
@@ -58,8 +60,15 @@ public sealed class Main : IScript
         // treating every convar backed menu as switched off.
         ClientConfig.Initialize();
 
-        // Watches both the setting and the permission, so it needs no particular order after this.
+        // Every gated tick answers to the same two events the menu gates do, so a convar edit or an
+        // ACL change starts and stops loops without anything else having to subscribe.
+        ClientConfig.Changed += TickRegistry.Reevaluate;
+        ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
+
+        // All three watch their own setting and permission, so they need no particular order here.
         VehicleCommands.Initialize();
+        DeveloperOverlay.Initialize();
+        NoClip.NoClip.Initialize();
 
         while (!ClientPermissions.HasReceivedPermissions)
         {

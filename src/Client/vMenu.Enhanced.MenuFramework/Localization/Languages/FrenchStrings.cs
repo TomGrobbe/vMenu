@@ -70,6 +70,6 @@ internal static class FrenchStrings
             [Loc.DeveloperFeatures.NetworkOwners] = "Afficher les propriétaires réseau",
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Dessine le propriétaire réseau de chaque entité proche. Activez l'une des options de contour ci-dessus pour le voir.",
             [Loc.DeveloperFeatures.DrawRadius] = "Distance d'affichage",
-            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Jusqu'à quelle distance les entités restent entourées et étiquetées.",
+            [Loc.DeveloperFeatures.DrawRadiusDescription] = "Jusqu'à quelle distance les entités restent entourées et étiquetées. Actuellement {radius}.",
         });
 }

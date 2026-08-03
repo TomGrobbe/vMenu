@@ -34,34 +34,31 @@ public static class ClientPermissions
 
     public static void ApplyPermissions(string[] permissions)
     {
-        lock (ResolvedCache)
+        GrantedExact.Clear();
+        GrantedSubtrees.Clear();
+        ResolvedCache.Clear();
+        _grantsEverything = false;
+
+        foreach (var permission in permissions)
         {
-            GrantedExact.Clear();
-            GrantedSubtrees.Clear();
-            ResolvedCache.Clear();
-            _grantsEverything = false;
-
-            foreach (var permission in permissions)
+            if (permission.Equals(Global.Everything, StringComparison.OrdinalIgnoreCase))
             {
-                if (permission.Equals(Global.Everything, StringComparison.OrdinalIgnoreCase))
-                {
-                    _grantsEverything = true;
-                    continue;
-                }
-
-                if (PermissionPath.IsContainerGrant(permission))
-                {
-                    GrantedSubtrees.Add(permission[..^PermissionPath.AllSuffix.Length]);
-                    continue;
-                }
-
-                GrantedExact.Add(permission);
+                _grantsEverything = true;
+                continue;
             }
 
-            HasReceivedPermissions = true;
+            if (PermissionPath.IsContainerGrant(permission))
+            {
+                GrantedSubtrees.Add(permission[..^PermissionPath.AllSuffix.Length]);
+                continue;
+            }
 
-            PermissionsChanged?.Invoke();
+            GrantedExact.Add(permission);
         }
+
+        HasReceivedPermissions = true;
+
+        PermissionsChanged?.Invoke();
     }
 
     /// <summary>

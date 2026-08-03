@@ -1,5 +1,6 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Developer;
 
 using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.DeveloperFeatures;
 
@@ -12,7 +13,10 @@ namespace vMenu.Enhanced.Menus;
 /// Gated by a convar rather than a permission: this is not something an owner grants to a person,
 /// it is something they turn on for the server. Hidden rather than locked while it is off, so a
 /// server that never wanted it does not advertise it.
-/// <para>Every item here is a placeholder. The state is tracked; nothing draws it yet.</para>
+/// <para>
+/// The items here only write <see cref="DeveloperFeaturesState"/>. <see cref="DeveloperOverlay"/>
+/// watches it and starts or stops its own ticks, so nothing here has to know a tick exists.
+/// </para>
 /// </remarks>
 [VMenu(
     TitleKey = Loc.DeveloperFeatures.Title,
@@ -20,6 +24,15 @@ namespace vMenu.Enhanced.Menus;
     DescriptionKey = Loc.DeveloperFeatures.LinkDescription)]
 public sealed class DeveloperFeaturesMenu : MenuDefinition
 {
+    /// <summary>
+    /// Held rather than written inline so the slider handler can re-resolve it. A slider cannot
+    /// carry a label to put the value in: <c>MenuSliderItem.Draw</c> clears it every frame, because
+    /// the bar occupies that side of the row.
+    /// </summary>
+    private static readonly MenuText RadiusDescription = MenuText.Key(
+        Loc.DeveloperFeatures.DrawRadiusDescription,
+        ("radius", MenuText.From(() => $"{DeveloperFeaturesState.DrawRadiusMetres} m")));
+
     public override MenuGate Gate => MenuGate.Setting(DeveloperFeaturesSetting.Enabled);
 
     public override GateBehaviour? LinkBehaviour => GateBehaviour.Hide;
@@ -77,11 +90,18 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
         menu.Entries.Add(new SliderEntry
         {
             Text = MenuText.Key(Loc.DeveloperFeatures.DrawRadius),
-            Description = MenuText.Key(Loc.DeveloperFeatures.DrawRadiusDescription),
+            Description = RadiusDescription,
             Min = DeveloperFeaturesState.MinDrawRadius,
             Max = DeveloperFeaturesState.MaxDrawRadius,
             ReadPosition = () => DeveloperFeaturesState.DrawRadius,
-            OnMoved = moved => DeveloperFeaturesState.DrawRadius = moved.NewPosition,
+            OnMoved = moved =>
+            {
+                DeveloperFeaturesState.DrawRadius = moved.NewPosition;
+
+                // Moving a slider does not trigger a refresh pass, so the description would keep
+                // showing the previous distance until something else caused one.
+                moved.Item.Description = RadiusDescription.Resolve(Localizer.Current);
+            },
         });
     }
 }

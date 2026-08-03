@@ -27,6 +27,24 @@ public static class NativeFixer
     }
 
     /// <summary>
+    /// Replacement call for <see cref="Native.GetGamePool(string)" /> because that return type is <em>byte[]</em>.
+    /// </summary>
+    /// <remarks>
+    /// The only working way to enumerate the world: there is no <em>World</em> type in Enhanced, the
+    /// entity pools are caches of handles this resource already touched, and
+    /// <see cref="Native.GetAllVehicles(out int)" /> is generated with the returned array collapsed
+    /// to a single <em>int</em>.
+    /// </remarks>
+    /// <param name="poolName"><em>CVehicle</em>, <em>CPed</em>, <em>CObject</em> or <em>CPickup</em>.</param>
+    public static int[] GetGamePool(string poolName)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(poolName);
+        nativeApi.Invoke(731729744uL, "GetGamePool");
+        return nativeApi.GetResObject(0).DeserializeTo<int[]>();
+    }
+
+    /// <summary>
     /// Replacement call for <see cref="Native.GetModelDimensions(uint, out Vector3, out Vector3)" /> because <em>nativeApi.PushArg(default(Vector3))</em> is not supported.
     /// </summary>
     /// <param name="p0"></param>

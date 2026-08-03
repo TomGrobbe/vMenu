@@ -1,8 +1,12 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Ticks;
+
 namespace vMenu.Enhanced.NoClip;
 
-public class NoClip
+public static class NoClip
 {
     /// <summary>
     /// Controls that have to be disabled every frame while noclip is active, otherwise the ped
@@ -60,27 +64,48 @@ public class NoClip
 
     private static bool IsF8ConsoleLikelyOpen => !Native.IsControlEnabled(Controls.Group, Controls.ConsoleProbe);
 
-    public NoClip()
+    private static bool IsAllowed => ClientPermissions.IsAllowed(MiscSettings.NoClip);
+
+    /// <summary>The entity being moved, and the player ped it was read from. Both survive the frame.</summary>
+    private static int _noclipEntity;
+
+    private static int _noclipPed;
+
+    /// <summary>The entity <see cref="_noclipEntity"/> was on last frame, see <see cref="NoClipFrame"/>.</summary>
+    private static int _cachedEntity;
+
+    private static TickHandle? _move;
+
+    public static void Initialize()
     {
-        NoClipper();
-        NoClipperKeyer();
+        // Gated rather than always on: without the permission there is no reason to read the key
+        // every frame, and stopping the tick means that check does not happen at all.
+        TickRegistry.Register(
+            "NoClip.Keys",
+            NoClipControls,
+            TickRate.PerFrame,
+            condition: () => IsAllowed);
+
+        _move = TickRegistry.Register(
+            "NoClip.Move",
+            NoClipFrame,
+            TickRate.PerFrame,
+            condition: () => NoclipActive,
+            onStarted: BeginNoclip,
+            onStopped: EndNoclip);
+
+        ClientPermissions.PermissionsChanged += OnPermissionsChanged;
     }
 
-    private static async void NoClipper()
+    /// <summary>
+    /// Routes a revoke through the normal teardown instead of leaving the flag set, which would drop
+    /// the player straight back into noclip the moment the permission came back.
+    /// </summary>
+    private static void OnPermissionsChanged()
     {
-        while (true)
+        if (!IsAllowed)
         {
-            await NoClipHandler();
-            await API.Yield();
-        }
-    }
-
-    private static async void NoClipperKeyer()
-    {
-        while (true)
-        {
-            NoClipControls();
-            await API.Yield();
+            SetNoclipActive(false);
         }
     }
 
@@ -100,6 +125,12 @@ public class NoClip
 
     internal static void SetNoclipActive(bool active)
     {
+        // The key tick follows the permission, but a revoke can land between the two.
+        if (active && !IsAllowed)
+        {
+            return;
+        }
+
         if (active == NoclipActive)
         {
             return;
@@ -107,10 +138,7 @@ public class NoClip
 
         NoclipActive = active;
 
-        if (!active)
-        {
-            ReleaseInstructionalButtons();
-        }
+        _move?.Reevaluate();
     }
 
     internal static bool IsNoclipActive()
@@ -118,56 +146,54 @@ public class NoClip
         return NoclipActive;
     }
 
-    private static async Task NoClipHandler()
+    private static void BeginNoclip()
     {
-        if (!NoclipActive)
+        _noclipPed = Native.PlayerPedId();
+        _noclipEntity = GetNoclipEntity(_noclipPed, out _);
+        _cachedEntity = _noclipEntity;
+    }
+
+    private static void EndNoclip()
+    {
+        // A switch on the last frame leaves a hand-back owing that the next frame would have done,
+        // and there is no next frame now.
+        if (_cachedEntity != _noclipEntity)
         {
-            return;
+            ReleaseEntity(_cachedEntity);
+        }
+
+        ResetEntity(_noclipPed, _noclipEntity);
+        ReleaseInstructionalButtons();
+    }
+
+    private static async Task NoClipFrame()
+    {
+        // Deliberately a frame behind the switch that set it: handing the old entity back on the
+        // same frame lets the game overwrite the reset, and it stays invisible.
+        if (_noclipEntity != _cachedEntity)
+        {
+            ReleaseEntity(_cachedEntity);
+
+            _cachedEntity = _noclipEntity;
         }
 
         await PrepareInstructionalButtons();
 
-        var playerPed = Native.PlayerPedId();
-        var noclipEntity = GetNoclipEntity(playerPed, out _);
-        var cachedEntity = noclipEntity;
-        var noclipApplied = false;
-
-        while (NoclipActive)
+        if (!Native.IsHudHidden())
         {
-            noclipApplied = true;
-
-            if (!Native.IsHudHidden())
-            {
-                DisplayInstructionalButtons();
-            }
-
-            playerPed = Native.PlayerPedId();
-            noclipEntity = GetNoclipEntity(playerPed, out var inVehicle);
-
-            FreezeEntity(noclipEntity);
-            DisableConflictingControls(inVehicle);
-
-            var input = ReadMoveInput();
-
-            MoveEntity(noclipEntity, input);
-            ConcealEntity(playerPed, noclipEntity);
-
-            await API.Yield();
-
-            // Deliberately after the yield: the old entity has to be handed back a tick after the
-            // switch is noticed, otherwise the game overwrites the reset and it stays invisible.
-            if (noclipEntity != cachedEntity)
-            {
-                ReleaseEntity(cachedEntity);
-
-                cachedEntity = noclipEntity;
-            }
+            DisplayInstructionalButtons();
         }
 
-        if (noclipApplied)
-        {
-            ResetEntity(playerPed, noclipEntity);
-        }
+        _noclipPed = Native.PlayerPedId();
+        _noclipEntity = GetNoclipEntity(_noclipPed, out var inVehicle);
+
+        FreezeEntity(_noclipEntity);
+        DisableConflictingControls(inVehicle);
+
+        var input = ReadMoveInput();
+
+        MoveEntity(_noclipEntity, input);
+        ConcealEntity(_noclipPed, _noclipEntity);
     }
 
     /// <summary>
