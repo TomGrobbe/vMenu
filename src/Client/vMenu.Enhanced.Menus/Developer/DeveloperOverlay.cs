@@ -175,10 +175,18 @@ public static class DeveloperOverlay
     private static string? OwnerLabel(int entity)
     {
         var owner = Native.NetworkGetEntityOwner(entity);
+
+        // Nobody owns it: every map prop answers this way. Handing that index to the player natives
+        // below makes the game log "Player ID -1 is invalid!" for each one, every scan.
+        if (owner < 0)
+        {
+            return null;
+        }
+
         var serverId = Native.GetPlayerServerId(owner);
 
-        // Covers both an unowned entity and a stale owner index, which the legacy check for a
-        // non-zero local index did not: index zero is a real player.
+        // Covers a stale owner index, which the legacy check for a non-zero local index did not:
+        // index zero is a real player.
         return serverId == 0 ? null : $"Owner ID {serverId} ({Native.GetPlayerName(owner)})";
     }
 
