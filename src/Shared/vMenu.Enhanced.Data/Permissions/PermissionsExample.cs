@@ -29,6 +29,9 @@ public static class PermissionsExample
 
     private const string StaffGroup = "group.admin";
 
+    /// <summary>Entries at or above this depth get a blank line before them, so each menu block stands apart.</summary>
+    private const int SpacedDepth = 1;
+
     public static string ResourcePath => $"{ExampleFile.ConfigDirectory}/{CopyName}{ExampleFile.Extension}";
 
     public static string Render(IEnumerable<PermissionExampleEntry> entries)
@@ -79,7 +82,7 @@ public static class PermissionsExample
 
         foreach (var entry in entries)
         {
-            if (entry.Depth == 0)
+            if (entry.Depth <= SpacedDepth)
             {
                 file.Append('\n');
             }
