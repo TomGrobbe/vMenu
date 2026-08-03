@@ -37,5 +37,9 @@ public static partial class Loc
         public const string DrawRadius = "devfeatures.drawradius";
 
         public const string DrawRadiusDescription = "devfeatures.drawradius.desc";
+
+        public const string BoxOpacity = "devfeatures.boxopacity";
+
+        public const string BoxOpacityDescription = "devfeatures.boxopacity.desc";
     }
 }

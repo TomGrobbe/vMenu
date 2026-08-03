@@ -75,5 +75,7 @@ internal static class EnglishStrings
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Draws the network owner of every nearby entity. Enable one of the outline options above for this to show up.",
             [Loc.DeveloperFeatures.DrawRadius] = "Show Dimensions Radius",
             [Loc.DeveloperFeatures.DrawRadiusDescription] = "How far away entities are still outlined and labelled. Currently {radius}.",
+            [Loc.DeveloperFeatures.BoxOpacity] = "Dimensions Box Opacity",
+            [Loc.DeveloperFeatures.BoxOpacityDescription] = "How solidly the coloured boxes are filled in. The outlines and labels around them are not affected. Currently {opacity}.",
         });
 }

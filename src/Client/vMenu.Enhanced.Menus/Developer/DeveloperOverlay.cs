@@ -32,9 +32,6 @@ public static class DeveloperOverlay
     /// </summary>
     private const long ScanIntervalMs = 250;
 
-    /// <summary>Legacy's face opacity: enough to read the shape, not enough to hide the entity.</summary>
-    private const int FillAlpha = 100;
-
     private const float LabelSize = 0.3f;
 
     private const int LabelFont = 0;
@@ -195,6 +192,7 @@ public static class DeveloperOverlay
         var showHandles = DeveloperFeaturesState.ShowEntityHandles;
         var showModels = DeveloperFeaturesState.ShowEntityModels;
         var showOwners = DeveloperFeaturesState.ShowNetworkOwners;
+        var fillAlpha = DeveloperFeaturesState.BoxFillAlpha;
 
         // The outlines still draw over a hidden HUD, as they did in legacy. Only the labels go, so
         // the string building behind them is skipped rather than thrown away by the text call.
@@ -214,7 +212,7 @@ public static class DeveloperOverlay
                     continue;
                 }
 
-                EntityBox.Draw(entity.Handle, entity.Model, pool.Red, pool.Green, pool.Blue, FillAlpha);
+                EntityBox.Draw(entity.Handle, entity.Model, pool.Red, pool.Green, pool.Blue, fillAlpha);
 
                 if (anyLabel)
                 {

@@ -71,5 +71,7 @@ internal static class SpanishStrings
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Dibuja el propietario de red de cada entidad cercana. Activa una de las opciones de contorno de arriba para verlo.",
             [Loc.DeveloperFeatures.DrawRadius] = "Distancia de dibujado",
             [Loc.DeveloperFeatures.DrawRadiusDescription] = "Hasta qué distancia se siguen contorneando y etiquetando las entidades. Actualmente {radius}.",
+            [Loc.DeveloperFeatures.BoxOpacity] = "Opacidad de las cajas de dimensiones",
+            [Loc.DeveloperFeatures.BoxOpacityDescription] = "Cuánto se rellenan las cajas de color. Los contornos y las etiquetas alrededor no cambian. Actualmente {opacity}.",
         });
 }

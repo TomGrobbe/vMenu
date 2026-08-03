@@ -72,5 +72,7 @@ internal static class DutchStrings
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Tekent de netwerkeigenaar van elke entity in de buurt. Zet hierboven een van de omlijningsopties aan om dit te zien.",
             [Loc.DeveloperFeatures.DrawRadius] = "Weergaveafstand",
             [Loc.DeveloperFeatures.DrawRadiusDescription] = "Tot hoe ver entities nog omlijnd en gelabeld worden. Nu {radius}.",
+            [Loc.DeveloperFeatures.BoxOpacity] = "Dekking afmetingsvakken",
+            [Loc.DeveloperFeatures.BoxOpacityDescription] = "Hoe vol de gekleurde vakken worden ingekleurd. De omlijning en labels eromheen veranderen niet mee. Nu {opacity}.",
         });
 }

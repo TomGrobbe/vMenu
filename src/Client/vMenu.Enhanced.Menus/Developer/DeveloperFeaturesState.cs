@@ -13,6 +13,19 @@ public static class DeveloperFeaturesState
     /// <summary>Slider steps are coarse on purpose: a metre of extra reach is not worth a keypress.</summary>
     public const int MetresPerStep = 2;
 
+    public const int MinBoxOpacity = 1;
+
+    public const int MaxBoxOpacity = 10;
+
+    /// <summary>Ten points a step, so the slider runs from barely there to what it draws at now.</summary>
+    public const int OpacityPercentPerStep = 10;
+
+    /// <summary>
+    /// Legacy's face opacity: enough to read the shape, not enough to hide the entity. The top of
+    /// the opacity slider, never exceeded.
+    /// </summary>
+    public const int OpaqueBoxFillAlpha = 100;
+
     /// <summary>
     /// Raised only when a value actually moves, so the overlay can re-evaluate its ticks without
     /// every caller having to remember to.
@@ -32,6 +45,8 @@ public static class DeveloperFeaturesState
     private static bool _showNetworkOwners;
 
     private static int _drawRadius = MaxDrawRadius;
+
+    private static int _boxOpacity = MaxBoxOpacity;
 
     public static bool ShowVehicleDimensions
     {
@@ -77,6 +92,21 @@ public static class DeveloperFeaturesState
     }
 
     public static int DrawRadiusMetres => DrawRadius * MetresPerStep;
+
+    /// <summary>Slider position, not a percentage. See <see cref="BoxOpacityPercent"/>.</summary>
+    public static int BoxOpacity
+    {
+        get => _boxOpacity;
+        set => Set(ref _boxOpacity, value);
+    }
+
+    public static int BoxOpacityPercent => BoxOpacity * OpacityPercentPerStep;
+
+    /// <summary>
+    /// What the shaded faces of a box draw at. The edges around them and the labels beside them keep
+    /// their own opacity: at the bottom of the slider the shape is still outlined, just barely filled.
+    /// </summary>
+    public static int BoxFillAlpha => OpaqueBoxFillAlpha * BoxOpacityPercent / 100;
 
     /// <summary>
     /// Whether anything can be drawn at all. The handle, model and owner labels hang off an outline,

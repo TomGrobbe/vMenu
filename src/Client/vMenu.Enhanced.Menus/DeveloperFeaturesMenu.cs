@@ -38,6 +38,11 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
         Loc.DeveloperFeatures.DrawRadiusDescription,
         ("radius", MenuText.From(() => $"{DeveloperFeaturesState.DrawRadiusMetres} m")));
 
+    /// <inheritdoc cref="RadiusDescription"/>
+    private static MenuText BoxOpacityDescription => MenuText.Key(
+        Loc.DeveloperFeatures.BoxOpacityDescription,
+        ("opacity", MenuText.From(() => $"{DeveloperFeaturesState.BoxOpacityPercent}%")));
+
     public override MenuGate Gate => MenuGate.Setting(DeveloperFeaturesSetting.Enabled);
 
     public override GateBehaviour? LinkBehaviour => GateBehaviour.Hide;
@@ -106,6 +111,21 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
                 // Moving a slider does not trigger a refresh pass, so the description would keep
                 // showing the previous distance until something else caused one.
                 moved.Item.Description = RadiusDescription.Resolve(Localizer.Current);
+            },
+        });
+
+        menu.Entries.Add(new SliderEntry
+        {
+            Text = MenuText.Key(Loc.DeveloperFeatures.BoxOpacity),
+            Description = BoxOpacityDescription,
+            Min = DeveloperFeaturesState.MinBoxOpacity,
+            Max = DeveloperFeaturesState.MaxBoxOpacity,
+            ReadPosition = () => DeveloperFeaturesState.BoxOpacity,
+            OnMoved = moved =>
+            {
+                DeveloperFeaturesState.BoxOpacity = moved.NewPosition;
+
+                moved.Item.Description = BoxOpacityDescription.Resolve(Localizer.Current);
             },
         });
     }

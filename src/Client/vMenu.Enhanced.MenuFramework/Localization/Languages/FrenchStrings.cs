@@ -71,5 +71,7 @@ internal static class FrenchStrings
             [Loc.DeveloperFeatures.NetworkOwnersDescription] = "Dessine le propriétaire réseau de chaque entité proche. Activez l'une des options de contour ci-dessus pour le voir.",
             [Loc.DeveloperFeatures.DrawRadius] = "Distance d'affichage",
             [Loc.DeveloperFeatures.DrawRadiusDescription] = "Jusqu'à quelle distance les entités restent entourées et étiquetées. Actuellement {radius}.",
+            [Loc.DeveloperFeatures.BoxOpacity] = "Opacité des boîtes de dimensions",
+            [Loc.DeveloperFeatures.BoxOpacityDescription] = "À quel point les boîtes colorées sont remplies. Les contours et les étiquettes autour ne changent pas. Actuellement {opacity}.",
         });
 }
