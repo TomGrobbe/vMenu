@@ -26,9 +26,18 @@ public static class TickRegistry
 
     public static IReadOnlyList<TickHandle> Handles => Registered;
 
+    /// <summary>
+    /// Raised when a tick starts or stops, and when one joins or leaves the registry. A single
+    /// <see cref="Reevaluate"/> pass raises it once per tick it flips, so a subscriber doing real
+    /// work should coalesce.
+    /// </summary>
+    public static event Action? Changed;
+
     public static void Initialize()
     {
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, new Action(Dump));
+
+        TickOverlay.Initialize();
     }
 
     /// <param name="condition">
@@ -54,6 +63,8 @@ public static class TickRegistry
         Registered.Add(handle);
 
         handle.Apply();
+
+        NotifyChanged();
 
         return handle;
     }
@@ -107,5 +118,24 @@ public static class TickRegistry
         }
     }
 
-    internal static void Unregister(TickHandle handle) => Registered.Remove(handle);
+    internal static void Unregister(TickHandle handle)
+    {
+        if (Registered.Remove(handle))
+        {
+            NotifyChanged();
+        }
+    }
+
+    /// <summary>A throwing subscriber must not abort the state change that raised the event.</summary>
+    internal static void NotifyChanged()
+    {
+        try
+        {
+            Changed?.Invoke();
+        }
+        catch (Exception exception)
+        {
+            API.Log.Error($"[Tick] a change subscriber threw: {exception}");
+        }
+    }
 }

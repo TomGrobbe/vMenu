@@ -1,0 +1,82 @@
+/*
+   Anchored opposite the menu, which the client reads from MenuController.MenuAlignment and sends
+   along: a debugging aid drawn over the menu it is used with would be no use. Right by default,
+   because the menu's own default is left.
+*/
+#ticks {
+    display: none;
+    position: fixed;
+    top: 2%;
+    right: 2%;
+    width: 20rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 0.3rem;
+    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+}
+
+#ticks.shown {
+    display: block;
+}
+
+#ticks.left {
+    right: auto;
+    left: 2%;
+}
+
+#ticks .head {
+    padding: 0.35rem 0.6rem;
+    background: rgba(59, 139, 245, 0.16);
+    border-bottom: 1px solid rgba(59, 139, 245, 0.35);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+#ticks .row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.6rem;
+    font-size: 0.72rem;
+}
+
+#ticks .row:nth-child(even) {
+    background: var(--row);
+}
+
+#ticks .dot {
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: #6f6f6f;
+}
+
+#ticks .row.running .dot {
+    background: #58cf90;
+    box-shadow: 0 0 0.35rem rgba(88, 207, 144, 0.8);
+}
+
+#ticks .name {
+    flex: 1;
+    min-width: 0;
+    font-family: Consolas, monospace;
+    overflow-wrap: anywhere;
+    color: var(--muted);
+}
+
+#ticks .row.running .name {
+    color: var(--text);
+}
+
+#ticks .rate {
+    flex: none;
+    font-size: 0.66rem;
+    color: var(--muted);
+}

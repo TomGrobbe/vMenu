@@ -100,6 +100,8 @@ public sealed class TickHandle : IDisposable
 
         _running = shouldRun;
 
+        TickRegistry.NotifyChanged();
+
         if (!shouldRun)
         {
             Notify(OnStopped);
@@ -165,6 +167,8 @@ public sealed class TickHandle : IDisposable
                         API.Log.Error($"[Tick] {Name} stopped after {MaxFailures} consecutive failures.");
 
                         _running = false;
+
+                        TickRegistry.NotifyChanged();
 
                         Notify(OnStopped);
 

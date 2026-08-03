@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" />
+
+    <!-- Only for MenuController.MenuAlignment, so the tick overlay can sit opposite the menu. -->
+    <PackageReference Include="MenuAPI.FiveM.Enhanced" />
   </ItemGroup>
 </Project>

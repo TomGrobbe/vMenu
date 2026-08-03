@@ -19,12 +19,7 @@ experimental_features_enabled '0'
 ui_page 'ui/index.html'
 
 files {
-    'ui/index.html',
-    'ui/shared.css',
-    'ui/input.css',
-    'ui/input.js',
-    'ui/notifications.css',
-    'ui/notifications.js',
+    'ui/**/*',
 
     'client/CitizenFX.Base.dll',
     'client/CitizenFX.FiveM.Shared.dll',
