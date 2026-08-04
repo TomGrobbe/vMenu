@@ -53,7 +53,7 @@ public sealed class Main : IScript
 
         // Calling something to do with MenuController is required, otherwise the compiler optimizes
         // the dependency away and MenuAPI won't run at all.
-        _ = MenuController.MenuToggleKeyIsValid;
+        _ = MenuController.IsAnyMenuOpen();
 
         // Registered before the menus are built: the build awaits, so a permission set pushed during
         // startup would otherwise arrive with nothing listening. The build ends with its own gate
