@@ -21,7 +21,7 @@ public sealed class AboutMenu : MenuDefinition
     {
         menu.Entries.Add(Fact(
             "Version",
-            "The version of vMenu this server is running. Worth quoting in a bug report.",
+            "The version of vMenu this server is running.",
             MenuText.From(Metadata("version"))));
 
         // Not the manifest's author field, which carries a legal name.

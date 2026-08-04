@@ -7,7 +7,7 @@ public static class About
         Description =
             "The documentation link shown in the About menu. Point it at your own guide if you run " +
             "a modified vMenu or want players sent somewhere else.",
-        Default = "docs.vespura.com/vmenu/enhanced",
+        Default = "https://docs.vespura.com/vmenu/enhanced",
     };
 
     public static readonly StringSetting DiscordUrl = new("vMenu.Enhanced.DiscordUrl")
@@ -15,6 +15,6 @@ public static class About
         Description =
             "The Discord link shown in the About menu. Defaults to the Cfx.re Discord, so change " +
             "this to your own server's invite if you would rather players went there.",
-        Default = "discord.gg/fivem",
+        Default = "https://discord.gg/fivem",
     };
 }
