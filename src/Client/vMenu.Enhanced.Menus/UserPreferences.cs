@@ -1,3 +1,5 @@
+using CitizenFX.FiveM.Client;
+
 using MenuAPI;
 
 using vMenu.Enhanced.MenuFramework;
@@ -44,10 +46,20 @@ public static class UserPreferences
             return;
         }
 
-        // A language vMenu used to ship and no longer does, or a hand-edited value.
+        // Kept rather than corrected. Preferences are keyed by resource name and follow the player
+        // between servers, so one server not offering their language must not cost them the choice
+        // on every server that does.
+        API.Log.Info(
+            $"[i18n] '{stored}' is not available here, so English is being used. The preference is "
+            + "kept for servers that do offer it.");
+
         Localizer.TrySetLanguage(LanguageId.English);
 
-        UserDefaults.Language.Value = LanguageId.English.Code;
+        // Always resolves in English, since English is what the fallback just selected. Deferred
+        // because this runs before the player has spawned.
+        _ = Notifications.ShowWhenVisibleAsync(
+            NotificationStyle.Warning,
+            MenuText.Key(Loc.MiscSettings.LanguageUnavailable, ("language", MenuText.Literal(stored))));
     }
 
     // MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A
@@ -61,7 +73,11 @@ public static class UserPreferences
 
         if (rightAligned && !IsRightAligned)
         {
-            Notifications.Error(MenuText.Key(Loc.MiscSettings.MenuRightAlignmentUnsupported));
+            // Deferred, because this also runs from Restore before the player has spawned. At
+            // runtime the wait is skipped and it shows straight away.
+            _ = Notifications.ShowWhenVisibleAsync(
+                NotificationStyle.Error,
+                MenuText.Key(Loc.MiscSettings.MenuRightAlignmentUnsupported));
 
             UserDefaults.MiscRightAlignMenu.Value = false;
 

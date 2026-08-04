@@ -14,6 +14,8 @@ public static partial class Loc
 
         public const string LanguageDescription = "miscsettings.language.desc";
 
+        public const string LanguageUnavailable = "miscsettings.language.unavailable";
+
         public const string MenuRightAlignment = "miscsettings.rightaligned";
 
         public const string MenuRightAlignmentDescription = "miscsettings.rightaligned.desc";

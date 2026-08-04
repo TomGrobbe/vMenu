@@ -52,6 +52,7 @@ internal static class EnglishStrings
             [Loc.MiscSettings.LinkDescription] = "Change vMenu's own settings.",
             [Loc.MiscSettings.Language] = "Language",
             [Loc.MiscSettings.LanguageDescription] = "Select a language and press enter to apply it.",
+            [Loc.MiscSettings.LanguageUnavailable] = "This server does not offer ~y~{language}~s~, so vMenu is in English. Your choice is kept for servers that do.",
             [Loc.MiscSettings.MenuRightAlignment] = "Right Align Menu",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
             [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "A right aligned menu is not supported here, so the menu has been left aligned.",
