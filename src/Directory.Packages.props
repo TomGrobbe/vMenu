@@ -7,7 +7,7 @@
     <PackageVersion Include="CitizenFX.FiveM.Client" Version="0.0.3-alpha" />
     <PackageVersion Include="CitizenFX.FiveM.Server" Version="0.0.3-alpha" />
     <!-- Menu rendering for the client-side menus. -->
-    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.10" />
+    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="0.1.0-alpha.11" />
     <!-- Client side JSON. Pinned exactly: ClientJson reaches into a private field of this version. -->
     <PackageVersion Include="Newtonsoft.Json" Version="[13.0.4]" />
   </ItemGroup>

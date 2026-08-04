@@ -22,7 +22,9 @@ public static class NoClip
         Controls.TurnLeft,
         Controls.TurnRight,
         Controls.DecreaseSpeed,
+        Controls.IncreaseSpeed,
         Controls.MoveUp,
+        Controls.MoveDown,
         Controls.MultiplayerInfo,
         Controls.ToggleFollowCam,
     ];
@@ -78,13 +80,13 @@ public static class NoClip
 
     public static void Initialize()
     {
-        // Gated rather than always on: without the permission there is no reason to read the key
-        // every frame, and stopping the tick means that check does not happen at all.
-        TickRegistry.Register(
-            "NoClip.Keys",
-            NoClipControls,
-            TickRate.PerFrame,
-            condition: () => IsAllowed);
+        // The keys arrive as commands now, so there is no per frame tick reading them: the only
+        // loop left is the one that moves the entity, and that runs solely while noclip is on.
+        NoClipKeyBindings.Register(
+            onToggle: ToggleNoclip,
+            onSpeedUp: () => StepSpeed(1),
+            onSpeedDown: () => StepSpeed(-1),
+            onFollowCam: ToggleFollowCam);
 
         _move = TickRegistry.Register(
             "NoClip.Move",
@@ -109,23 +111,50 @@ public static class NoClip
         }
     }
 
-    private static void NoClipControls()
+    /// <summary>
+    /// Whether a key binding should be acted on at all. Key mappings fire whatever the game is doing,
+    /// so the checks the old per frame tick did have to happen here instead.
+    /// </summary>
+    private static bool CanUseKeys =>
+        !IsF8ConsoleLikelyOpen && Native.UpdateOnscreenKeyboard() != 0 && !Native.IsPauseMenuActive();
+
+    /// <summary>As <see cref="CanUseKeys"/>, for the keys that only mean anything while noclip is on.</summary>
+    private static bool CanSteer => NoclipActive && CanUseKeys;
+
+    private static void ToggleNoclip()
     {
-        if (IsF8ConsoleLikelyOpen || !Native.IsUsingKeyboardAndMouse(0))
+        if (!CanUseKeys)
         {
             return;
         }
 
-        if (Native.IsControlJustPressed(Controls.Group, Controls.ToggleNoclip)
-            || Native.IsDisabledControlJustPressed(Controls.Group, Controls.ToggleNoclip))
+        SetNoclipActive(!NoclipActive);
+    }
+
+    /// <summary>Steps <see cref="MovingSpeed"/> through <see cref="MoveSpeeds"/>, wrapping around.</summary>
+    private static void StepSpeed(int direction)
+    {
+        if (!CanSteer)
         {
-            SetNoclipActive(!NoclipActive);
+            return;
         }
+
+        MovingSpeed = ((MovingSpeed + direction) + MoveSpeeds.Length) % MoveSpeeds.Length;
+    }
+
+    private static void ToggleFollowCam()
+    {
+        if (!CanSteer)
+        {
+            return;
+        }
+
+        FollowCamMode = !FollowCamMode;
     }
 
     internal static void SetNoclipActive(bool active)
     {
-        // The key tick follows the permission, but a revoke can land between the two.
+        // The toggle key fires regardless of permission, so this is the only thing gating it.
         if (active && !IsAllowed)
         {
             return;
@@ -164,6 +193,10 @@ public static class NoClip
 
         ResetEntity(_noclipPed, _noclipEntity);
         ReleaseInstructionalButtons();
+
+        // A direction still held when noclip switches off would otherwise be waiting for its release
+        // that never gets read, and the entity would drift the moment noclip came back on.
+        NoClipKeyBindings.ClearHeld();
     }
 
     private static async Task NoClipFrame()
@@ -236,28 +269,25 @@ public static class NoClip
     }
 
     /// <summary>
-    /// Reads the movement controls, and applies the speed and follow cam toggles. Returns
-    /// <c>default</c> while the player can't steer, e.g. on a gamepad, in the pause menu, or with
-    /// the on-screen keyboard open.
+    /// Reads the held movement bindings. Returns <c>default</c> while the player can't steer, e.g.
+    /// in the pause menu or with the on-screen keyboard open.
     /// </summary>
     private static MoveInput ReadMoveInput()
     {
-        if (IsF8ConsoleLikelyOpen || !Native.IsUsingKeyboardAndMouse(0) || Native.UpdateOnscreenKeyboard() == 0 || Native.IsPauseMenuActive())
+        if (!CanSteer)
         {
             return default;
         }
-
-        UpdateMovingSpeed();
 
         var forward = 0.0f;
         var vertical = 0.0f;
         var headingDelta = 0.0f;
 
-        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveForward))
+        if (NoClipKeyBindings.ForwardHeld)
         {
             forward = ForwardStep;
         }
-        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveBackward))
+        if (NoClipKeyBindings.BackwardHeld)
         {
             forward = -ForwardStep;
         }
@@ -265,44 +295,26 @@ public static class NoClip
         // Turning is only available when the entity isn't already following the camera.
         if (!FollowCamMode)
         {
-            if (Native.IsDisabledControlPressed(Controls.Group, Controls.TurnLeft))
+            if (NoClipKeyBindings.TurnLeftHeld)
             {
                 headingDelta += TurnStep;
             }
-            if (Native.IsDisabledControlPressed(Controls.Group, Controls.TurnRight))
+            if (NoClipKeyBindings.TurnRightHeld)
             {
                 headingDelta -= TurnStep;
             }
         }
 
-        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveUp))
+        if (NoClipKeyBindings.UpHeld)
         {
             vertical = VerticalStep;
         }
-        if (Native.IsDisabledControlPressed(Controls.Group, Controls.MoveDown))
+        if (NoClipKeyBindings.DownHeld)
         {
             vertical = -VerticalStep;
         }
 
-        if (Native.IsDisabledControlJustPressed(Controls.Group, Controls.ToggleFollowCam))
-        {
-            FollowCamMode = !FollowCamMode;
-        }
-
         return new MoveInput(forward, vertical, headingDelta);
-    }
-
-    /// <summary>Steps <see cref="MovingSpeed"/> through <see cref="MoveSpeeds"/>, wrapping around.</summary>
-    private static void UpdateMovingSpeed()
-    {
-        if (Native.IsControlJustPressed(Controls.Group, Controls.IncreaseSpeed))
-        {
-            MovingSpeed = (MovingSpeed + 1) % MoveSpeeds.Length;
-        }
-        if (Native.IsDisabledControlJustPressed(Controls.Group, Controls.DecreaseSpeed))
-        {
-            MovingSpeed = ((MovingSpeed - 1) + MoveSpeeds.Length) % MoveSpeeds.Length;
-        }
     }
 
     /// <summary>Pins the entity in place, so the game stops simulating it.</summary>
@@ -402,17 +414,20 @@ public static class NoClip
 
     private static readonly InstructionalButton[] InstructionalButtons =
     [
-        new(() => $"Speed: {MoveSpeeds[MovingSpeed].Label}x", string.Empty),
-        new(() => "Increase speed", "INPUT_SPRINT"),
-        new(() => "Decrease speed", "INPUT_DUCK"),
-        new(() => "Move Up", "INPUT_COVER"),
-        new(() => "Move Down", "INPUT_MULTIPLAYER_INFO"),
-        new(() => "Move Backward / Forward", "INPUT_MOVE_UD"),
-        new(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", "INPUT_VEH_HEADLIGHT"),
+        new(() => $"Speed: {MoveSpeeds[MovingSpeed].Label}x", static () => string.Empty),
+        new(() => "Increase speed", static () => NoClipKeyBindings.Button(NoClipKeyBindings.SpeedUpControl)),
+        new(() => "Decrease speed", static () => NoClipKeyBindings.Button(NoClipKeyBindings.SpeedDownControl)),
+        new(() => "Move Up", static () => NoClipKeyBindings.Button(NoClipKeyBindings.UpControl)),
+        new(() => "Move Down", static () => NoClipKeyBindings.Button(NoClipKeyBindings.DownControl)),
+        new(() => "Move Backward / Forward",
+            static () => NoClipKeyBindings.Button(NoClipKeyBindings.BackwardControl) + NoClipKeyBindings.Button(NoClipKeyBindings.ForwardControl)),
+        new(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", static () => NoClipKeyBindings.Button(NoClipKeyBindings.FollowCamControl)),
     ];
 
     /// <summary>Only shown when the entity isn't following the camera, see <see cref="FollowCamMode"/>.</summary>
-    private static readonly InstructionalButton TurnButton = new(() => "Turn Right / Left", "INPUT_MOVE_LR");
+    private static readonly InstructionalButton TurnButton = new(
+        () => "Turn Right / Left",
+        static () => NoClipKeyBindings.Button(NoClipKeyBindings.TurnRightControl) + NoClipKeyBindings.Button(NoClipKeyBindings.TurnLeftControl));
 
     private static void DisplayInstructionalButtons()
     {
@@ -458,7 +473,7 @@ public static class NoClip
     {
         Native.BeginScaleformMovieMethod(_instructionalButtonsScaleformId, "SET_DATA_SLOT");
         Native.ScaleformMovieMethodAddParamInt(slot);
-        Native.ScaleformMovieMethodAddParamTextureNameString(button.ControlName);
+        Native.ScaleformMovieMethodAddParamTextureNameString(button.ButtonGetter());
         Native.ScaleformMovieMethodAddParamTextureNameString(button.TextGetter());
         Native.EndScaleformMovieMethod();
     }

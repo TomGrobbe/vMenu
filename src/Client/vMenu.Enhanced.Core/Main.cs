@@ -6,6 +6,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
@@ -66,6 +67,10 @@ public sealed class Main : IScript
         // Before the build, so the gate pass at the end of it reads real values rather than
         // treating every convar backed menu as switched off.
         ClientConfig.Initialize();
+
+        // MenuAPI registers its key mappings on the first tick, and nothing here awaits before then,
+        // so this lands in time. It is only the starting key: a player who has rebound it keeps theirs.
+        MenuController.MenuToggleKeyDefault = ClientConfig.Value(KeyBindings.MenuToggleKey);
 
         // After the config, whose convar names the languages, and before the build, since the
         // picker's options are fixed once its item exists.

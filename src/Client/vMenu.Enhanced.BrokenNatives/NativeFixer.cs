@@ -90,7 +90,7 @@ public static class NativeFixer
         var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
 #pragma warning restore FIVEM001
 
-        return Native.RegisterCommand(command, unchecked((int)reference), restricted);
+        return Native.RegisterCommand(command, (int)reference, restricted);
     }
 
     /// <summary>
@@ -108,6 +108,6 @@ public static class NativeFixer
         var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
 #pragma warning restore FIVEM001
 
-        return Native.AddConvarChangeListener(convar, unchecked((int)reference));
+        return Native.AddConvarChangeListener(convar, (int)reference);
     }
 }

@@ -1,8 +1,8 @@
 namespace vMenu.Enhanced.NoClip;
 
-internal sealed record InstructionalButton(Func<string> TextGetter, string Control)
-{
-    /// <summary>Pre-formatted texture name, so it doesn't have to be built on every rebuild.</summary>
-    internal string ControlName { get; } = $"~{Control}~";
-}
+/// <summary>
+/// One instructional button. <paramref name="ButtonGetter"/> is resolved on every rebuild rather
+/// than cached, because the buttons come from key mappings the player can rebind at any time.
+/// </summary>
+internal sealed record InstructionalButton(Func<string> TextGetter, Func<string> ButtonGetter);
 

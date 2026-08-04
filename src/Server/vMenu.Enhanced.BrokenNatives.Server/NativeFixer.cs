@@ -42,6 +42,6 @@ public static class NativeFixer
         var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
 #pragma warning restore FIVEM001
 
-        return Native.AddConvarChangeListener(convar, unchecked((int)reference));
+        return Native.AddConvarChangeListener(convar, (int)reference);
     }
 }

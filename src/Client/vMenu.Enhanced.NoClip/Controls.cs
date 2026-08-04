@@ -1,7 +1,9 @@
 namespace vMenu.Enhanced.NoClip;
 
 /// <summary>
-/// Control indices used by noclip, see https://docs.fivem.net/docs/game-references/controls/
+/// Game controls noclip has to suppress while it is active, see
+/// https://docs.fivem.net/docs/game-references/controls/. Noclip's own keys are FiveM key mappings,
+/// see <see cref="NoClipKeyBindings"/>; these are the game's reactions to the same keys.
 /// </summary>
 internal static class Controls
 {
@@ -22,7 +24,6 @@ internal static class Controls
     internal const int VehicleRadioWheel = 81;
     internal const int RadioWheel = 85;
     internal const int MultiplayerInfo = 244;
-    internal const int ToggleNoclip = 289;     // F2
 
     /// <summary>Disabled by the game whenever the F8 console has focus, so it doubles as a console check.</summary>
     internal const int ConsoleProbe = 360;
