@@ -6,39 +6,24 @@ using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.Deve
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Debugging overlays for people building content on the server.
-/// </summary>
-/// <remarks>
-/// Gated by a convar rather than a permission: this is not something an owner grants to a person,
-/// it is something they turn on for the server. Hidden rather than locked while it is off, so a
-/// server that never wanted it does not advertise it.
-/// <para>
-/// The items here only write <see cref="DeveloperFeaturesState"/>. <see cref="DeveloperOverlay"/>
-/// watches it and starts or stops its own ticks, so nothing here has to know a tick exists.
-/// </para>
-/// </remarks>
+/// <summary>Debugging overlays for people building content on the server.</summary>
+// Gated by a convar, not a permission: an owner turns this on for the server rather than granting it
+// to a person. Hidden rather than locked while off, so a server that never wanted it does not
+// advertise it. The items only write DeveloperFeaturesState, which DeveloperOverlay watches.
 [VMenu(
     TitleKey = Loc.DeveloperFeatures.Title,
     SubtitleKey = Loc.DeveloperFeatures.Subtitle,
     DescriptionKey = Loc.DeveloperFeatures.LinkDescription)]
 public sealed class DeveloperFeaturesMenu : MenuDefinition
 {
-    /// <summary>
-    /// Held rather than written inline so the slider handler can re-resolve it. A slider cannot
-    /// carry a label to put the value in: <c>MenuSliderItem.Draw</c> clears it every frame, because
-    /// the bar occupies that side of the row.
-    /// </summary>
-    /// <remarks>
-    /// A property, not a <see langword="static" /> <see langword="readonly" /> field: calling
-    /// <see cref="MenuText.Resolve" /> on a field of that shape takes the address of an initonly
-    /// field, which the FiveM client's IL verifier rejects at JIT time.
-    /// </remarks>
+    // A slider cannot carry a label for the value, MenuSliderItem.Draw clearing it every frame. A
+    // property, not a static readonly field: resolving a field of that shape takes the address of an
+    // initonly field, which the client's IL verifier rejects at JIT time.
     private static MenuText RadiusDescription => MenuText.Key(
         Loc.DeveloperFeatures.DrawRadiusDescription,
         ("radius", MenuText.From(() => $"{DeveloperFeaturesState.DrawRadiusMetres} m")));
 
-    /// <inheritdoc cref="RadiusDescription"/>
+    // See RadiusDescription.
     private static MenuText BoxOpacityDescription => MenuText.Key(
         Loc.DeveloperFeatures.BoxOpacityDescription,
         ("opacity", MenuText.From(() => $"{DeveloperFeaturesState.BoxOpacityPercent}%")));
@@ -108,8 +93,7 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
             {
                 DeveloperFeaturesState.DrawRadius = moved.NewPosition;
 
-                // Moving a slider does not trigger a refresh pass, so the description would keep
-                // showing the previous distance until something else caused one.
+                // Moving a slider triggers no refresh pass, so this would show a stale distance.
                 moved.Item.Description = RadiusDescription.Resolve(Localizer.Current);
             },
         });

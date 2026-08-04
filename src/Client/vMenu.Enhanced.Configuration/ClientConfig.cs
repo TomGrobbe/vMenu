@@ -6,13 +6,9 @@ using vMenu.Enhanced.Data.Configuration;
 
 namespace vMenu.Enhanced.Configuration;
 
-/// <summary>
-/// Client side of the configuration module.
-/// </summary>
-/// <remarks>
-/// There is no handshake with the server, unlike permissions: settings are replicated convars, so an
-/// owner changing one reaches every client through the runtime and each client's own listener fires.
-/// </remarks>
+/// <summary>Client side of the configuration module.</summary>
+// No handshake with the server, unlike permissions: settings are replicated convars, so an owner
+// changing one reaches every client through the runtime.
 public static class ClientConfig
 {
     private const string DumpCommand = "vmenu_config";
@@ -30,9 +26,8 @@ public static class ClientConfig
     {
         Store.Prime();
 
-        // One listener per convar rather than a single wildcard filter: an exact name cannot be
-        // matched wrongly, and a filter that silently matches nothing would look like the whole
-        // module quietly not working.
+        // One listener per convar rather than a wildcard filter, which if it matched nothing would
+        // look like the module quietly not working.
         foreach (var convar in Store.Tracked)
         {
             NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);

@@ -2,15 +2,10 @@ using vMenu.Enhanced.Data.Permissions;
 
 namespace vMenu.Enhanced.Permissions;
 
-/// <summary>
-/// The client's cached view of what the local player may do.
-/// </summary>
-/// <remarks>
-/// The server sends the smallest set that describes the player, so this expands it back out from
-/// the dotted names alone: a permission ending in <c>.All</c> is stored as a subtree, and a
-/// question about anything inside it is answered by walking up the asked-for name. Advisory only;
-/// the server re-checks anything that matters.
-/// </remarks>
+/// <summary>The client's cached view of what the local player may do. Advisory only.</summary>
+// The server sends the smallest set describing the player, so a permission ending in .All is stored
+// as a subtree and questions inside it are answered by walking up the asked for name. The server
+// re-checks anything that matters.
 public static class ClientPermissions
 {
     private static readonly HashSet<string> GrantedExact = new(StringComparer.OrdinalIgnoreCase);
@@ -18,10 +13,7 @@ public static class ClientPermissions
     /// <summary>Container paths granted in full, stored without their trailing <c>.All</c>.</summary>
     private static readonly HashSet<string> GrantedSubtrees = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Answers derived from the two sets above, so the prefix walk runs once per distinct
-    /// permission rather than every frame a menu asks.
-    /// </summary>
+    // So the prefix walk runs once per distinct permission rather than every frame a menu asks.
     private static readonly Dictionary<string, bool> ResolvedCache = new(StringComparer.OrdinalIgnoreCase);
 
     private static bool _grantsEverything;
@@ -61,9 +53,7 @@ public static class ClientPermissions
         PermissionsChanged?.Invoke();
     }
 
-    /// <summary>
-    /// Inheritance is applied here, so callers never name a parent themselves.
-    /// </summary>
+    /// <summary>Inheritance is applied here, so callers never name a parent themselves.</summary>
     public static bool IsAllowed(string permission)
     {
         if (_grantsEverything)

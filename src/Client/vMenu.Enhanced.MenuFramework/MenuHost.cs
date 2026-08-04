@@ -6,15 +6,10 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// Owns one MenuAPI <see cref="Menu"/>: its entries, its event subscriptions, its filter and its
-/// gate state.
-/// </summary>
-/// <remarks>
-/// All eleven MenuAPI events are menu level rather than per item, which is what forces every
-/// hand-written menu into one long if/else over item identity. Subscribing once here and routing on
-/// object identity is the whole point of the framework.
-/// </remarks>
+/// <summary>Owns one MenuAPI <see cref="Menu"/>, its entries, subscriptions, filter and gate state.</summary>
+// All eleven MenuAPI events are menu level rather than per item, which is what forces a hand written
+// menu into one long if/else over item identity. Subscribing once here and routing on object
+// identity is the whole point of the framework.
 internal sealed class MenuHost : IDisposable
 {
     private readonly Dictionary<MenuItem, MenuEntry> _byItem = new(ReferenceComparer<MenuItem>.Instance);
@@ -69,10 +64,8 @@ internal sealed class MenuHost : IDisposable
         return true;
     }
 
-    /// <summary>
-    /// Creates the MenuAPI item for an entry and registers it for dispatch. Gating deliberately does
-    /// not happen here: the filter needs the complete item list, so it runs in one pass afterwards.
-    /// </summary>
+    /// <summary>Creates the MenuAPI item for an entry and registers it for dispatch.</summary>
+    // Gating does not happen here: the filter needs the complete item list, so it runs afterwards.
     internal MenuItem Materialise(MenuEntry entry, ILocalizer localizer)
     {
         var item = entry.Materialise(localizer);
@@ -130,15 +123,10 @@ internal sealed class MenuHost : IDisposable
         Menu.OnIndexChange -= HandleIndexChange;
     }
 
-    /// <summary>
-    /// Re-evaluates every gate and rewrites every visible property. Used for both a permission
-    /// resync and a language change, because the two cannot be allowed to disagree about what an
-    /// item currently says.
-    /// </summary>
-    /// <remarks>
-    /// Stays synchronous: the change notifications behind it are plain events, so anything deferred
-    /// here would leave menus showing stale state after the notifier had already returned.
-    /// </remarks>
+    /// <summary>Re-evaluates every gate and rewrites every visible property.</summary>
+    // Used for both a permission resync and a language change, which cannot be allowed to disagree
+    // about what an item says. Synchronous, or menus would show stale state after the notifier
+    // already returned.
     internal void Refresh(ILocalizer localizer)
     {
         Menu.MenuTitle = Title.Resolve(localizer);
@@ -167,14 +155,14 @@ internal sealed class MenuHost : IDisposable
 
         if (!visibilityChanged)
         {
-            // Nothing moved, so the filter is left alone and the player's cursor does not jump.
+            // Leave the filter alone so the player's cursor does not jump.
             return;
         }
 
         if (Menu.Visible)
         {
             // Re-filtering under an open menu would shuffle rows beneath the cursor. Hidden entries
-            // are already disabled by the pass above, so deferring this is cosmetic only.
+            // are already disabled above, so deferring is cosmetic only.
             _filterDirty = true;
             return;
         }
@@ -197,11 +185,8 @@ internal sealed class MenuHost : IDisposable
         ApplyFilter();
     }
 
-    /// <summary>
-    /// The only place that touches MenuAPI's filter for a managed menu. Gate-hiding and a caller's
-    /// own predicate are combined here because MenuAPI supports exactly one, and the last writer
-    /// would otherwise win.
-    /// </summary>
+    // The only place that touches MenuAPI's filter for a managed menu. Gate hiding and a caller's
+    // predicate are combined here because MenuAPI supports exactly one.
     private void ApplyFilter()
     {
         _filterDirty = false;
@@ -222,7 +207,7 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        // Filtering always resets to the top; put the player back on their row if it survived.
+        // Filtering always resets to the top, so put the player back on their row if it survived.
         var index = Menu.GetMenuItems().IndexOf(restore);
 
         Menu.RefreshIndex(index < 0 ? 0 : index);
@@ -268,8 +253,8 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            // MenuAPI's events are multicast and its delegates return void, so an unobserved throw
-            // here would take the rest of the invocation list with it.
+            // MenuAPI's events are multicast and return void, so an unobserved throw would take the
+            // rest of the invocation list with it.
             API.Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
         finally
@@ -288,8 +273,7 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        // Checkboxes reach this through SelectItem, which honours Enabled, so this is belt and
-        // braces rather than the real guard the list and slider handlers need.
+        // Belt and braces: checkboxes reach this through SelectItem, which honours Enabled.
         if (!item.Enabled)
         {
             item.Checked = !newState;
@@ -327,9 +311,9 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        // MenuAPI's GoLeft/GoRight do not check Enabled, and the value has already moved by the time
-        // this fires. Suppressing the callback is not enough — the change has to be undone.
-        // Deliberately checked before the entry type, so a hand-added raw list item is covered too.
+        // GoLeft/GoRight do not check Enabled and the value has already moved, so the change has to
+        // be undone rather than the callback suppressed. Before the entry type check, so a hand
+        // added raw list item is covered too.
         if (!item.Enabled)
         {
             item.ListIndex = oldIndex;
@@ -466,8 +450,8 @@ internal sealed class MenuHost : IDisposable
 
     private void HandleMenuOpen(Menu menu)
     {
-        // MenuController's bound-item table is static and rebindable, and any code can call
-        // OpenMenu() directly, so the menu re-checks its own gate rather than trusting the door.
+        // The bound item table is static and rebindable, and any code can call OpenMenu directly, so
+        // the menu re-checks its own gate rather than trusting the door.
         if (!IsReachable())
         {
             menu.CloseMenu();
@@ -497,10 +481,8 @@ internal sealed class MenuHost : IDisposable
         Guard(() => Builder.OnIndexChanged?.Invoke(new MenuIndexChanged(menu, oldItem, newItem, oldIndex, newIndex)), newItem);
     }
 
-    /// <summary>
-    /// Drives MenuAPI's stats panels from the highlighted entry, which is why entries model them and
-    /// <c>ItemData</c> stays free for callers.
-    /// </summary>
+    // Drives the stats panels from the highlighted entry, which is why entries model them and
+    // ItemData stays free for callers.
     private void ApplyHighlight(MenuItem? item)
     {
         if (item is null || !_byItem.TryGetValue(item, out var entry))

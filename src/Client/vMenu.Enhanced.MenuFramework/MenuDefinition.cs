@@ -2,13 +2,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// One menu, declared. Subclassed by every concrete menu.
-/// </summary>
-/// <remarks>
-/// The framework owns the MenuAPI <c>Menu</c>, its event subscriptions and its lifetime; a
-/// definition only says what should be in it.
-/// </remarks>
+/// <summary>One menu, declared. Subclassed by every concrete menu.</summary>
 public abstract class MenuDefinition
 {
     private VMenuMetadata? _metadata;
@@ -26,37 +20,24 @@ public abstract class MenuDefinition
 
     public virtual MenuText LinkLabel => Metadata.LinkLabel;
 
-    /// <summary>
-    /// Gates the item that opens this menu. That is enough to gate the menu as a whole — MenuAPI
-    /// will not open a submenu from a disabled item.
-    /// </summary>
+    /// <summary>Gates the item that opens this menu, which gates the menu as a whole.</summary>
     public virtual MenuGate Gate => Metadata.Gate;
 
     /// <summary>Null inherits <see cref="MenuFrameworkOptions.DefaultGateBehaviour"/>.</summary>
     public virtual GateBehaviour? DefaultGateBehaviour => null;
 
     /// <summary>
-    /// What the item that opens this menu looks like when <see cref="Gate"/> denies. Only consulted
-    /// for a top level menu, where the registry rather than an author declares that item; a nested
-    /// menu's link is a <see cref="SubmenuEntry"/> with its own <c>Behaviour</c>.
+    /// What the item that opens this menu looks like when <see cref="Gate"/> denies. Top level menus
+    /// only, since a nested menu's link is a <see cref="SubmenuEntry"/> with its own behaviour.
     /// </summary>
     public virtual GateBehaviour? LinkBehaviour => null;
 
-    /// <summary>
-    /// Anything that has to be fetched or computed before <see cref="Build"/> can declare entries.
-    /// Runs once, before the menu is materialised.
-    /// </summary>
+    /// <summary>Anything to fetch or compute before <see cref="Build"/> can declare entries.</summary>
     public virtual Task PrepareAsync() => Task.CompletedTask;
 
-    /// <summary>
-    /// Declares the menu's contents. Append to <see cref="MenuBuilder.Entries"/>; the list is
-    /// mutable so a menu can mix a static block with entries generated from runtime data.
-    /// </summary>
+    /// <summary>Declares the menu's contents by appending to <see cref="MenuBuilder.Entries"/>.</summary>
     protected abstract void Build(MenuBuilder menu);
 
-    /// <summary>
-    /// Lets the registry drive <see cref="Build"/>, which stays protected: a menu overriding it from
-    /// another assembly could not widen a <c>protected internal</c> member anyway.
-    /// </summary>
+    // Lets the registry drive Build, which stays protected.
     internal void BuildInto(MenuBuilder builder) => Build(builder);
 }

@@ -4,13 +4,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// A row whose value is a position on a bar.
-/// </summary>
-/// <remarks>
-/// <see cref="Min"/> and <see cref="Max"/> are fixed once the item exists — MenuAPI exposes them
-/// read-only — so a range that changes at runtime needs the menu rebuilt rather than refreshed.
-/// </remarks>
+/// <summary>A row whose value is a position on a bar.</summary>
+// Min and Max are fixed once the item exists, MenuAPI exposing them read only, so a range that
+// changes at runtime needs the menu rebuilt rather than refreshed.
 public sealed class SliderEntry : MenuEntry<MenuSliderItem>
 {
     public required int Min { get; init; }

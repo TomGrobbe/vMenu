@@ -7,22 +7,12 @@ using Newtonsoft.Json.Serialization;
 
 namespace vMenu.Enhanced.Serialization;
 
-/// <summary>
-/// JSON on the client, which takes one piece of setup before it works at all.
-/// </summary>
-/// <remarks>
-/// The sandbox refuses <c>System.Reflection.Emit</c>, which Newtonsoft reaches for to build contract
-/// accessors, so an unprepared <see cref="JsonConvert"/> call dies with a
-/// <see cref="System.Security.SecurityException"/>. Newtonsoft carries a reflection-only path for
-/// platforms that cannot emit, but decides by asking the runtime, which answers that emit is
-/// supported — true of the runtime, not of the sandbox on top of it. <see cref="Prepare"/> answers
-/// for it.
-/// <para>
-/// LINQ-to-JSON — <c>JObject</c>, <c>JArray</c>, <c>JToken</c> — does not work and no setting fixes
-/// it: <c>JPropertyKeyedCollection</c> overrides <c>Collection&lt;JToken&gt;.InsertItem</c>, and the
-/// sandbox refuses Newtonsoft that call across the assembly boundary. Deserialize into a type.
-/// </para>
-/// </remarks>
+/// <summary>JSON on the client, which takes one piece of setup before it works at all.</summary>
+// The sandbox refuses Reflection.Emit, which Newtonsoft uses to build contract accessors, so an
+// unprepared call dies with a SecurityException. Newtonsoft has a reflection only path but picks it
+// by asking the runtime, which says emit is supported. Prepare answers for it.
+// LINQ to JSON (JObject, JArray, JToken) never works and no setting fixes it, because the sandbox
+// refuses Newtonsoft the Collection<JToken>.InsertItem call. Always deserialize into a type.
 public static class ClientJson
 {
     private const string ReflectorTypeName = "Newtonsoft.Json.Serialization.JsonTypeReflector";
@@ -36,10 +26,8 @@ public static class ClientJson
     private const BindingFlags Hidden =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
-    /// <summary>
-    /// A plain resolver rather than <c>CamelCasePropertyNamesContractResolver</c>, whose strategy
-    /// also rewrites dictionary keys and overrides explicit names.
-    /// </summary>
+    // A plain resolver, not CamelCasePropertyNamesContractResolver, whose strategy also rewrites
+    // dictionary keys and overrides explicit names.
     private static readonly JsonSerializerSettings Settings = new()
     {
         ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
@@ -60,10 +48,8 @@ public static class ClientJson
 
     public static T? Deserialize<T>(string json) => JsonConvert.DeserializeObject<T>(json, Settings);
 
-    /// <summary>
-    /// For JSON from somewhere that can send nonsense — a saved file, the NUI page. A sandbox
-    /// refusal still throws, because that is a broken build rather than a bad document.
-    /// </summary>
+    /// <summary>For JSON from somewhere that can send nonsense, such as a saved file or the page.</summary>
+    // A sandbox refusal still throws, because that is a broken build rather than a bad document.
     public static bool TryDeserialize<T>(string json, out T? value)
     {
         try
@@ -80,11 +66,9 @@ public static class ClientJson
         }
     }
 
-    /// <summary>
-    /// Says on the startup path whether the setup took, because it depends on a private field of a
-    /// pinned package and an upgrade that renames it would otherwise surface as a menu quietly
-    /// failing.
-    /// </summary>
+    /// <summary>Says on the startup path whether the setup took.</summary>
+    // It depends on a private field of a pinned package, and an upgrade renaming that field would
+    // otherwise surface as a menu quietly failing.
     public static void Verify()
     {
         if (Failure is null)

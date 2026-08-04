@@ -4,15 +4,10 @@ using vMenu.Enhanced.Data.Permissions;
 
 namespace vMenu.Enhanced.Permissions;
 
-/// <summary>
-/// Client side of the permission handshake.
-/// </summary>
-/// <remarks>
-/// The client asks rather than waiting to be told, because the server-side join event fires before
-/// this script is running. Handlers are registered imperatively rather than with
-/// <c>[OnNetEvent]</c> because attribute discovery only scans the assembly named as the
-/// <c>client_script</c>, and this one is a referenced assembly.
-/// </remarks>
+/// <summary>Client side of the permission handshake.</summary>
+// The client asks rather than waiting to be told, because the server side join event fires before
+// this script runs. Handlers are registered imperatively because attribute discovery only scans the
+// assembly named as the client_script, and this one is a referenced assembly.
 public static class PermissionsSync
 {
     private const int MaxRequestAttempts = 10;
@@ -27,10 +22,8 @@ public static class PermissionsSync
         RequestPermissions();
     }
 
-    /// <summary>
-    /// Retrying covers this script starting before the server resource has registered its handler,
-    /// which happens routinely when the resource is restarted with players connected.
-    /// </summary>
+    // Retries cover this script starting before the server resource has registered its handler,
+    // which happens routinely on a restart with players connected.
     public static async void RequestPermissions()
     {
         for (var attempt = 0; attempt < MaxRequestAttempts; attempt++)

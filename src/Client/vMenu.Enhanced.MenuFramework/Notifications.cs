@@ -5,29 +5,18 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// Short messages stacked above the minimap, drawn by the NUI page rather than the game's feed.
-/// </summary>
-/// <remarks>
-/// Unlike <see cref="UserInput"/> nothing here takes focus or waits for an answer, so a notification
-/// is a one-way message and the page needs no handshake to receive it.
-/// <para>
-/// Where the stack sits depends on the safe zone and on whether the map is expanded, neither of which
-/// the page can see. The client works it out and sends it along, once per notification: a resize or
-/// a map toggle mid-notification leaves that one where it was, which is worth a frame of drift
-/// against a tick that would run for the entire session to catch it.
-/// </para>
-/// </remarks>
+/// <summary>Short messages stacked above the minimap, drawn by the NUI page, not the game's feed.</summary>
+// Nothing here takes focus or waits for an answer, so the page needs no handshake. Where the stack
+// sits depends on the safe zone and the map state, neither of which the page can see, so the client
+// works it out and sends it once per notification. A resize mid-notification leaves that one where
+// it was, which beats a tick running all session to catch it.
 public static class Notifications
 {
     /// <summary>Long enough to read a sentence without hurrying, short enough not to sit in the way.</summary>
     public const int DefaultDurationMs = 8500;
 
-    /// <summary>
-    /// The minimap's height as a fraction of the screen, and the same for the expanded map. Both are
-    /// measured off the game's own HUD: no native reports either, and the map is a scaleform rather
-    /// than a HUD component whose size could be asked for.
-    /// </summary>
+    // Measured off the game's own HUD. No native reports either, the map being a scaleform rather
+    // than a HUD component whose size could be asked for.
     private const float MinimapHeight = 1f / 5.674f;
 
     private const float BigmapHeight = 1f / 2.35f;
@@ -56,14 +45,11 @@ public static class Notifications
         Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs));
     }
 
-    /// <summary>
-    /// The box the stack grows out of, as fractions of the screen: how far in from the left edge, how
-    /// far up from the bottom edge, and how wide. Sized and placed to line up with the minimap.
-    /// </summary>
+    /// <summary>The box the stack grows out of, as fractions of the screen, lined up with the minimap.</summary>
     private static (float Left, float Bottom, float Width) Anchor()
     {
-        // The safe zone takes the same fraction off every edge, halved because it is split between
-        // the two opposite sides. This is the figure MenuAPI and the legacy HUD both position by.
+        // Halved because the safe zone is split between two opposite edges. The figure MenuAPI and
+        // the legacy HUD both position by.
         var inset = (1f - Native.GetSafeZoneSize()) / 2f;
 
         var map = Native.IsRadarHidden()
@@ -73,11 +59,8 @@ public static class Notifications
         return (inset, inset + map, MinimapWidth());
     }
 
-    /// <summary>
-    /// The minimap is a quarter of the screen's height wide, which as a fraction of the width is that
-    /// over the aspect ratio. Always the unexpanded width, even under the big map: a notification as
-    /// wide as the expanded map would be a banner across the screen.
-    /// </summary>
+    // Always the unexpanded width, even under the big map, because a notification as wide as the
+    // expanded map would be a banner across the screen.
     private static float MinimapWidth()
     {
         var aspect = Native.GetScreenAspectRatio(false);

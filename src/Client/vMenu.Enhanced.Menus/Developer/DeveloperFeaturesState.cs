@@ -2,14 +2,9 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Developer;
 
-/// <summary>
-/// What the developer overlays are currently showing.
-/// </summary>
-/// <remarks>
-/// Backed by <see cref="UserDefaults"/>, so a setting survives a reconnect. Reads go through
-/// <c>KvpStore</c>'s cache rather than the store itself; the overlay hoists them out of its per
-/// entity loops, so this stays off the frame budget.
-/// </remarks>
+/// <summary>What the developer overlays are currently showing.</summary>
+// Backed by UserDefaults, so a setting survives a reconnect. Reads hit the KvpStore cache, and the
+// overlay hoists them out of its per entity loops, so this stays off the frame budget.
 public static class DeveloperFeaturesState
 {
     public const int MinDrawRadius = 0;
@@ -26,16 +21,10 @@ public static class DeveloperFeaturesState
     /// <summary>Ten points a step, so the slider runs from barely there to what it draws at now.</summary>
     public const int OpacityPercentPerStep = 10;
 
-    /// <summary>
-    /// Legacy's face opacity: enough to read the shape, not enough to hide the entity. The top of
-    /// the opacity slider, never exceeded.
-    /// </summary>
+    /// <summary>Enough to read the shape, not enough to hide the entity.</summary>
     public const int OpaqueBoxFillAlpha = 100;
 
-    /// <summary>
-    /// Raised only when a value actually moves, so the overlay can re-evaluate its ticks without
-    /// every caller having to remember to.
-    /// </summary>
+    /// <summary>Raised only when a value actually moves.</summary>
     public static event Action? Changed;
 
     public static bool ShowVehicleDimensions
@@ -75,11 +64,8 @@ public static class DeveloperFeaturesState
     }
 
     /// <summary>Slider position, not a distance. See <see cref="DrawRadiusMetres"/>.</summary>
-    /// <remarks>
-    /// Clamped on read. A stored position can fall outside the slider if the bounds above are
-    /// narrowed in a later version, or if the value is edited by hand — either would hand MenuAPI a
-    /// position its slider has no room for.
-    /// </remarks>
+    // Clamped, because a stored position falls outside the slider if the bounds are narrowed later
+    // or the value is edited by hand.
     public static int DrawRadius
     {
         get => Math.Clamp(UserDefaults.DevDrawRadius.Value, MinDrawRadius, MaxDrawRadius);
@@ -89,7 +75,7 @@ public static class DeveloperFeaturesState
     public static int DrawRadiusMetres => DrawRadius * MetresPerStep;
 
     /// <summary>Slider position, not a percentage. See <see cref="BoxOpacityPercent"/>.</summary>
-    /// <inheritdoc cref="DrawRadius" path="/remarks"/>
+    // Clamped, for the same reason as DrawRadius.
     public static int BoxOpacity
     {
         get => Math.Clamp(UserDefaults.DevBoxOpacity.Value, MinBoxOpacity, MaxBoxOpacity);
@@ -98,16 +84,11 @@ public static class DeveloperFeaturesState
 
     public static int BoxOpacityPercent => BoxOpacity * OpacityPercentPerStep;
 
-    /// <summary>
-    /// What the shaded faces of a box draw at. The edges around them and the labels beside them keep
-    /// their own opacity: at the bottom of the slider the shape is still outlined, just barely filled.
-    /// </summary>
+    /// <summary>What the shaded faces of a box draw at. Edges and labels keep their own opacity.</summary>
     public static int BoxFillAlpha => OpaqueBoxFillAlpha * BoxOpacityPercent / 100;
 
-    /// <summary>
-    /// Whether anything can be drawn at all. The handle, model and owner labels hang off an outline,
-    /// so none of them counts on its own.
-    /// </summary>
+    /// <summary>Whether anything can be drawn at all.</summary>
+    // The handle, model and owner labels hang off an outline, so none of them counts on its own.
     public static bool AnyOutlineEnabled =>
         ShowVehicleDimensions || ShowPropDimensions || ShowPedDimensions;
 

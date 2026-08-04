@@ -1,14 +1,9 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Identifies a language by its lowercase code.
-/// </summary>
-/// <remarks>
-/// Equality is written out by hand rather than left to a <see langword="record"/>: the generated
-/// members route through <c>EqualityComparer&lt;string&gt;.Default</c>, and the FiveM sandbox refuses
-/// to load the internal comparer behind it. The same rule applies anywhere else in this assembly —
-/// always hand collections an explicit comparer.
-/// </remarks>
+/// <summary>Identifies a language by its lowercase code.</summary>
+// Equality is hand written, not from a record: the generated members route through
+// EqualityComparer<string>.Default, whose internal comparer the sandbox refuses to load. Same rule
+// everywhere, so always hand collections an explicit comparer.
 public readonly struct LanguageId(string code) : IEquatable<LanguageId>
 {
 
@@ -25,8 +20,7 @@ public readonly struct LanguageId(string code) : IEquatable<LanguageId>
 
     public override bool Equals(object? obj) => obj is LanguageId other && Equals(other);
 
-    /// <summary>Plain <see cref="string.GetHashCode()"/>, which is already ordinal, to keep the
-    /// amount of BCL machinery the sandbox has to allow as small as possible.</summary>
+    // Plain string.GetHashCode, already ordinal, to keep the BCL machinery the sandbox must allow small.
     public override int GetHashCode() => Code?.GetHashCode() ?? 0;
 
     public static bool operator ==(LanguageId left, LanguageId right) => left.Equals(right);

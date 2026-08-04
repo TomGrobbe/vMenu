@@ -4,14 +4,10 @@ using vMenu.Enhanced.Data.Actions;
 
 namespace vMenu.Enhanced.Actions;
 
-/// <summary>
-/// Client side of the server action layer: asks the server to do something, and waits for its answer.
-/// </summary>
-/// <remarks>
-/// The runtime has no request/response primitive, so a reply is matched to its request by an id this
-/// side chose. Handlers are registered imperatively because attribute discovery only scans the
-/// assembly named as the <c>client_script</c>, and this one is a project reference.
-/// </remarks>
+/// <summary>Asks the server to do something, and waits for its answer.</summary>
+// The runtime has no request/response primitive, so a reply is matched to its request by an id this
+// side chose. Handlers are registered imperatively because attribute discovery only scans the
+// assembly named as the client_script, and this one is a project reference.
 public static class ServerActions
 {
     private const int TimeoutMs = 10000;
@@ -61,7 +57,6 @@ public static class ServerActions
 
             var timeout = API.Delay(TimeoutMs);
 
-            // WhenAny hands back whichever of the two finished first.
             var finishedFirst = await Task.WhenAny(pending.Task, timeout);
 
             if (finishedFirst == timeout)

@@ -3,14 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 namespace vMenu.Enhanced.Storage;
 
-/// <summary>
-/// Every preference vMenu remembers for the player.
-/// </summary>
-/// <remarks>
-/// An explicit list rather than attribute discovery, for the same reason <c>ConfigCatalog</c> and
-/// <c>MainMenuComposition</c> are. Only preferences with a feature behind them belong here; the list
-/// grows as features land.
-/// </remarks>
+/// <summary>Every preference vMenu remembers for the player.</summary>
 public static class UserDefaults
 {
     private const string DumpCommand = "vmenu_defaults";
@@ -19,15 +12,12 @@ public static class UserDefaults
 
     #region Misc Settings
 
-    /// <summary>MenuAPI can refuse the alignment, so whoever applies this has to check that it took.</summary>
     public static BoolDefault MiscRightAlignMenu { get; } =
         new("miscRightAlignMenu") { Default = true };
 
-    /// <summary>
-    /// A <c>LanguageId</c> code rather than an index into the available languages, which would
-    /// silently point at a different language the moment one is added. A plain string because the
-    /// localizer sits above this assembly.
-    /// </summary>
+    /// <summary>A <c>LanguageId</c> code.</summary>
+    // A code rather than an index, which would point at a different language once one is added. A
+    // plain string because the localizer sits above this assembly.
     public static StringDefault Language { get; } =
         new("language") { Default = "en" };
 
@@ -35,11 +25,9 @@ public static class UserDefaults
 
     #region Developer Features
 
-    /// <remarks>
-    /// Stored regardless of the <c>DeveloperFeatures.Enabled</c> convar. The overlay's tick condition
-    /// already carries that gate, so a server turning the feature off makes these inert rather than
-    /// erasing what the player had switched on.
-    /// </remarks>
+    // Stored regardless of the DeveloperFeatures.Enabled convar. The overlay's tick condition
+    // carries that gate, so a server turning the feature off makes these inert rather than erasing
+    // what the player had switched on.
     public static BoolDefault DevVehicleDimensions { get; } = new("devVehicleDimensions") { Default = false };
 
     public static BoolDefault DevPropDimensions { get; } = new("devPropDimensions") { Default = false };
@@ -52,11 +40,9 @@ public static class UserDefaults
 
     public static BoolDefault DevNetworkOwners { get; } = new("devNetworkOwners") { Default = false };
 
-    /// <summary>
-    /// Slider positions, not metres or percentages. The bounds live on
-    /// <c>DeveloperFeaturesState</c>, which sits above this assembly, so these two defaults are its
-    /// maxima written out — and the state clamps on read in case they ever disagree.
-    /// </summary>
+    /// <summary>Slider positions, not metres or percentages.</summary>
+    // The bounds live on DeveloperFeaturesState, above this assembly, so these are its maxima
+    // written out. That state clamps on read in case they ever disagree.
     public static IntDefault DevDrawRadius { get; } = new("devDrawRadius") { Default = 20 };
 
     /// <inheritdoc cref="DevDrawRadius"/>
@@ -79,10 +65,7 @@ public static class UserDefaults
         DevBoxOpacity,
     ];
 
-    /// <summary>
-    /// Call once, after <c>ClientJson.Verify</c>: every value here is a JSON envelope, so a client
-    /// that cannot serialize cannot store anything either.
-    /// </summary>
+    /// <summary>Call once, after <c>ClientJson.Verify</c>.</summary>
     public static void Initialize()
     {
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, new Action(Dump));
@@ -100,18 +83,13 @@ public static class UserDefaults
 
         API.Log.Info("[Defaults] Stored:");
 
-        // Raw rather than reformatted: the reason a value carries its own key and type is so a dump
-        // is useful when the code that writes it has gone wrong.
         foreach (var line in KvpStore.Describe(UserDefault.KeyPrefix))
         {
             API.Log.Info("[Defaults]   " + line);
         }
     }
 
-    /// <summary>
-    /// Forgets every declared preference, and anything left under the prefix that is no longer
-    /// declared, so a preference dropped in a later version does not linger forever.
-    /// </summary>
+    /// <summary>Forgets every declared preference, and anything under the prefix no longer declared.</summary>
     public static void ResetAll()
     {
         foreach (var preference in All)

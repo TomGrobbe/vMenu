@@ -3,14 +3,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Settings that belong to the player rather than to the server.
-/// </summary>
-/// <remarks>
-/// Deliberately ungated. Everything here changes how vMenu presents itself to one player, so there
-/// is nothing for a server owner to grant — and gating the language picker would mean a server could
-/// lock a player out of reading their own menu.
-/// </remarks>
+/// <summary>Settings that belong to the player rather than to the server.</summary>
+// Ungated on purpose. Everything here changes how vMenu presents itself to one player, and gating
+// the language picker would let a server lock someone out of reading their own menu.
 [VMenu(
     TitleKey = Loc.MiscSettings.Title,
     SubtitleKey = Loc.MiscSettings.Subtitle,
@@ -24,16 +19,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Text = MenuText.Key(Loc.MiscSettings.Language),
             Description = MenuText.Key(Loc.MiscSettings.LanguageDescription),
 
-            // Endonyms: a language names itself the same way whatever language you are reading in,
-            // so these are literals and never looked up as keys.
+            // Endonyms, so these are literals and never looked up as keys.
             Options = [.. Localizer.Current.AvailableLanguages.Select(NativeLanguageName)],
 
-            // Read rather than stored, so the highlighted row follows the language even when
-            // something other than this list changed it.
+            // Read, so the highlighted row follows the language even when something else changed it.
             ReadSelectedIndex = CurrentIndex,
 
-            // On select rather than on scroll: applying a language re-labels every menu, and doing
-            // that on each arrow press would rebuild thousands of vehicle rows per keystroke.
+            // On select, not on scroll: applying a language relabels every menu, which on each arrow
+            // press would rebuild thousands of vehicle rows per keystroke.
             OnSelected = Apply,
         });
 
@@ -78,8 +71,7 @@ public sealed class MiscSettingsMenu : MenuDefinition
 
         var language = languages[selected.SelectedIndex];
 
-        // Fires Localizer.Changed, which the registry turns into one relabel pass over every
-        // built menu. No menu is rebuilt.
+        // Fires Localizer.Changed, which the registry turns into one relabel pass. Nothing rebuilds.
         if (Localizer.TrySetLanguage(language))
         {
             UserPreferences.SetLanguage(language);

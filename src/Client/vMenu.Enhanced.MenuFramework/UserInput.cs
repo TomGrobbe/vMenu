@@ -10,20 +10,14 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// Free text typed by the player.
-/// </summary>
-/// <remarks>
-/// Registered as raw NUI callbacks: an ordinary one is dispatched as an event whose source is
-/// "nui:&lt;resource&gt;", which this runtime parses as a player id and throws on. Three things about
-/// raw ones are not negotiable — the reference has to come from the core's own registry or the host
-/// answers "Invalid function", only the request may be declared because the second argument is a
-/// function reference that will not deserialize, and the page has to post JSON because the body is
-/// parsed before anything is dispatched.
-/// 
-/// Existing bug report on RFC: https://github.com/citizenfx/rfc/discussions/257
-/// To be changed whenever that bug is fixed.
-/// </remarks>
+/// <summary>Free text typed by the player.</summary>
+// Raw NUI callbacks, because an ordinary one is dispatched as an event whose source is
+// "nui:<resource>", which this runtime parses as a player id and throws on. Three things about raw
+// ones are not negotiable: the reference must come from the core's own registry or the host answers
+// "Invalid function", only the request may be declared because the second argument is a function
+// reference that will not deserialize, and the page must post JSON because the body is parsed before
+// anything is dispatched.
+// Bug report: https://github.com/citizenfx/rfc/discussions/257
 public static class UserInput
 {
     private const string SubmitCallback = "vMenuPromptSubmit";

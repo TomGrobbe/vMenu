@@ -1,13 +1,8 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// The ambient localizer, plus one event that covers every reason resolved text can change.
-/// </summary>
-/// <remarks>
-/// Consumers subscribe to <see cref="Changed"/> rather than to
-/// <see cref="ILocalizer.LanguageChanged"/> directly, so swapping the localizer itself does not
-/// silently orphan their subscription.
-/// </remarks>
+/// <summary>The ambient localizer, plus one event covering every reason resolved text can change.</summary>
+// Consumers subscribe to Changed rather than ILocalizer.LanguageChanged, so swapping the localizer
+// does not orphan their subscription.
 public static class Localizer
 {
     private static ILocalizer _current = new CompiledLocalizer();

@@ -6,14 +6,9 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Turns stored preferences into applied state, and back again when the player changes one.
-/// </summary>
-/// <remarks>
-/// Sits here rather than in the storage module so that stays a store: it knows how to persist a
-/// value, not what the value means. Pairing the two in one place is what keeps "read it at startup"
-/// and "write it on change" from drifting apart.
-/// </remarks>
+/// <summary>Turns stored preferences into applied state, and back when the player changes one.</summary>
+// Sits here rather than in the storage module so that stays a store, knowing how to persist a value
+// but not what it means.
 public static class UserPreferences
 {
     /// <summary>
@@ -55,11 +50,9 @@ public static class UserPreferences
         UserDefaults.Language.Value = LanguageId.English.Code;
     }
 
-    /// <remarks>
-    /// MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A
-    /// rejection is written back even when <paramref name="persist"/> is false, so the player does
-    /// not meet the same message on every restart.
-    /// </remarks>
+    // MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A
+    // rejection is written back even when persist is false, so the player does not meet the same
+    // message on every restart.
     private static void ApplyRightAligned(bool rightAligned, bool persist)
     {
         MenuController.MenuAlignment = rightAligned

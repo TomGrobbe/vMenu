@@ -8,15 +8,9 @@ using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// Builds the whole menu tree and keeps it in step with permissions, configuration and language.
-/// </summary>
-/// <remarks>
-/// Subscribes to <see cref="ClientPermissions.PermissionsChanged"/>,
-/// <see cref="ClientConfig.Changed"/> and <see cref="Localizer.Changed"/> exactly once and fans out
-/// from here, rather than one subscription per menu: fewer delegates, one place to unsubscribe, and a
-/// deterministic order.
-/// </remarks>
+/// <summary>Builds the menu tree and keeps it in step with permissions, configuration and language.</summary>
+// Subscribes to the three change events once and fans out from here rather than one subscription per
+// menu, for one place to unsubscribe and a deterministic order.
 public static class MenuRegistry
 {
     private static readonly List<MenuHost> Hosts = [];
@@ -30,14 +24,9 @@ public static class MenuRegistry
     /// <summary>The main menu, once built.</summary>
     public static Menu? MainMenu => _root?.Menu;
 
-    /// <summary>
-    /// Builds the main menu and everything under it, in the order given.
-    /// </summary>
-    /// <remarks>
-    /// Not repeatable. MenuAPI's <see cref="MenuController"/> has no way to remove a menu — its
-    /// <c>Menus</c> and bound-item tables are static and append-only — so a second call would leave
-    /// the first tree in place and duplicate every row.
-    /// </remarks>
+    /// <summary>Builds the main menu and everything under it, in the order given. Not repeatable.</summary>
+    // MenuController has no way to remove a menu, its tables being static and append only, so a
+    // second call would leave the first tree in place and duplicate every row.
     public static async Task BuildAsync(IReadOnlyList<MenuDefinition> definitions)
     {
         if (_built)
@@ -68,9 +57,8 @@ public static class MenuRegistry
                 API.Log.Error($"[Menu] {definition.GetType().Name} has no title: add a [VMenu(TitleKey = ...)] attribute or override Title.");
             }
 
-            // Modelled as a submenu entry so the link item, its gate and its child menu all go
-            // through the same code path as every nested submenu. No Gate is set here: a submenu
-            // entry already folds its definition's gate into the one it evaluates.
+            // A submenu entry so the link, its gate and its child menu go through the same path as
+            // every nested submenu. No Gate here, since a submenu entry folds in its definition's.
             _root.Builder.Entries.Add(new SubmenuEntry
             {
                 Text = definition.LinkText,
@@ -87,7 +75,7 @@ public static class MenuRegistry
         ClientConfig.Changed += RefreshAll;
         Localizer.Changed += RefreshAll;
 
-        // Items are created enabled, so without this pass everything looks unlocked until the first
+        // Items are created enabled, so without this everything looks unlocked until the first
         // permission set lands.
         RefreshAll();
 
@@ -142,15 +130,12 @@ public static class MenuRegistry
             MaterialiseSync(child, localizer);
         }
 
-        // Whole tree rather than just this host, so a submenu created here is gated too.
+        // Whole tree, so a submenu created here is gated too.
         RefreshAll();
     }
 
-    /// <summary>
-    /// The synchronous counterpart of <see cref="MaterialiseAsync"/>, for entries added once the
-    /// menu is already live. There is nowhere to await from there, so a definition that genuinely
-    /// needs asynchronous preparation is refused rather than silently built from empty state.
-    /// </summary>
+    // For entries added once the menu is live. There is nowhere to await from there, so a definition
+    // needing asynchronous preparation is refused rather than built from empty state.
     private static void MaterialiseSync(MenuHost host, ILocalizer localizer)
     {
         for (var index = 0; index < host.Builder.Entries.Count; index++)
@@ -186,8 +171,8 @@ public static class MenuRegistry
 
     private static async Task MaterialiseAsync(MenuHost host, ILocalizer localizer)
     {
-        // Indexed rather than foreach: a definition's Build may append to its own list while the
-        // child menus underneath it are still being created.
+        // Indexed, because a definition's Build may append to its own list while the child menus
+        // underneath it are still being created.
         for (var index = 0; index < host.Builder.Entries.Count; index++)
         {
             var entry = host.Builder.Entries[index];
@@ -258,14 +243,10 @@ public static class MenuRegistry
         return child;
     }
 
-    /// <summary>
-    /// Returns the player to the nearest menu they can still reach.
-    /// </summary>
-    /// <remarks>
-    /// Walks the framework's own parent links rather than <c>Menu.ParentMenu</c>: MenuAPI re-parents
-    /// a child to whatever menu was open when its link was selected, so that chain describes how the
-    /// player got here, not where the menu belongs.
-    /// </remarks>
+    /// <summary>Returns the player to the nearest menu they can still reach.</summary>
+    // Walks the framework's own parent links, not Menu.ParentMenu: MenuAPI re-parents a child to
+    // whatever menu was open when its link was selected, so that chain describes how the player got
+    // here, not where the menu belongs.
     private static void BackOutOfUnreachableMenu()
     {
         if (MenuController.GetCurrentMenu() is not { } open

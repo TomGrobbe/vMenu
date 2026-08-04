@@ -11,25 +11,13 @@ using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.Deve
 
 namespace vMenu.Enhanced.Menus.Developer;
 
-/// <summary>
-/// Draws the outlines and labels the developer features menu switches on.
-/// </summary>
-/// <remarks>
-/// Split across two ticks by cost. Finding nearby entities means walking a whole game pool, which is
-/// far too expensive per frame but barely matters four times a second; drawing has to happen every
-/// frame or it flickers. Anything that can be worked out at scan rate is, so the frame loop is left
-/// with little more than the draw calls themselves.
-/// <para>
-/// Both ticks are gated on the same condition, so with the feature off there is no loop running at
-/// all rather than one that checks a flag and returns.
-/// </para>
-/// </remarks>
+/// <summary>Draws the outlines and labels the developer features menu switches on.</summary>
+// Split across two ticks by cost. Walking a game pool is far too expensive per frame but barely
+// matters four times a second, while drawing must happen every frame or it flickers. Both are gated
+// on the same condition, so with the feature off no loop runs at all.
 public static class DeveloperOverlay
 {
-    /// <summary>
-    /// Four refreshes a second. Fast enough that walking does not outrun the list, slow enough that
-    /// the pool walk stays off the frame budget.
-    /// </summary>
+    // Fast enough that walking does not outrun the list, slow enough to stay off the frame budget.
     private const long ScanIntervalMs = 250;
 
     private const float LabelSize = 0.3f;
@@ -105,10 +93,8 @@ public static class DeveloperOverlay
         _draw?.Reevaluate();
     }
 
-    /// <summary>
-    /// Dropped when the overlay stops rather than kept for next time: a session long cache of every
-    /// model the player has ever driven past is not worth holding for a debugging aid.
-    /// </summary>
+    // Dropped when the overlay stops. A session long cache of every model the player drove past is
+    // not worth holding for a debugging aid.
     private static void Reset()
     {
         foreach (var pool in Pools)
@@ -165,7 +151,7 @@ public static class DeveloperOverlay
         }
 
         // Nothing is awaited between filling the staging list and publishing it, so the draw tick
-        // can only ever see a complete one. Legacy needed a flag per pool to get the same guarantee.
+        // can only ever see a complete one.
         pool.Publish();
     }
 
@@ -173,8 +159,8 @@ public static class DeveloperOverlay
     {
         var owner = Native.NetworkGetEntityOwner(entity);
 
-        // Nobody owns it: every map prop answers this way. Handing that index to the player natives
-        // below makes the game log "Player ID -1 is invalid!" for each one, every scan.
+        // Nobody owns it, as every map prop answers. Handing that index to the player natives below
+        // makes the game log "Player ID -1 is invalid!" for each one, every scan.
         if (owner < 0)
         {
             return null;
@@ -182,8 +168,8 @@ public static class DeveloperOverlay
 
         var serverId = Native.GetPlayerServerId(owner);
 
-        // Covers a stale owner index, which the legacy check for a non-zero local index did not:
-        // index zero is a real player.
+        // Covers a stale owner index. Checking the local index instead would not, index zero being a
+        // real player.
         return serverId == 0 ? null : $"Owner ID {serverId} ({Native.GetPlayerName(owner)})";
     }
 
@@ -228,8 +214,7 @@ public static class DeveloperOverlay
     {
         LabelBuilder.Clear();
 
-        // Ordered to match legacy's stacking, which put the owner above the handle and the model
-        // below it. A block drawn from one origin runs downward, so this is top to bottom.
+        // A block drawn from one origin runs downward, so this is top to bottom.
         if (owners && entity.OwnerLabel is not null)
         {
             LabelBuilder.Append(entity.OwnerLabel);
@@ -296,10 +281,7 @@ public static class DeveloperOverlay
         public string? OwnerLabel { get; } = ownerLabel;
     }
 
-    /// <summary>
-    /// One entity type's tracked entities, double buffered so the scan can rebuild without the draw
-    /// tick ever reading a partly filled list.
-    /// </summary>
+    /// <summary>One entity type's tracked entities, double buffered against a partly filled read.</summary>
     private sealed class OutlinePool
     {
         private List<TrackedEntity> _visible = [];

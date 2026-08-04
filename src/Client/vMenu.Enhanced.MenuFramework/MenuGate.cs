@@ -6,16 +6,9 @@ using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// Decides whether one entry is available to the player.
-/// </summary>
-/// <remarks>
-/// Deliberately not a bare <see cref="Func{TResult}"/>: the permission form is what almost every
-/// entry needs, and the implicit conversion lets it be written as a declaration
-/// (<c>Gate = SomePermission.Name</c>) rather than a lambda. Composition covers the rest, because
-/// some checks are not a permission name at all — see
-/// <see cref="ClientVehiclePermissions.CanSpawnVehicle(string, int)"/>.
-/// </remarks>
+/// <summary>Decides whether one entry is available to the player.</summary>
+// Not a bare Func<bool> so the permission form can be written as a declaration
+// (Gate = SomePermission.Name) rather than a lambda.
 public sealed class MenuGate
 {
     private readonly Func<bool> _evaluate;
@@ -35,11 +28,8 @@ public sealed class MenuGate
 
     public static MenuGate When(Func<bool> predicate) => new(predicate);
 
-    /// <summary>
-    /// No matching conversion from <see cref="Func{TResult}"/> exists on purpose: an implicitly
-    /// typed lambda has no natural type, so a user defined conversion would never apply and the
-    /// call site would have to spell out the delegate type anyway. Use <see cref="When"/>.
-    /// </summary>
+    // No Func<bool> conversion on purpose: an implicitly typed lambda has no natural type, so a user
+    // defined conversion would never apply. Use When.
     public static implicit operator MenuGate(string permission) => Permission(permission);
 
     public static MenuGate operator &(MenuGate left, MenuGate right) =>
@@ -48,10 +38,8 @@ public sealed class MenuGate
     public static MenuGate operator |(MenuGate left, MenuGate right) =>
         new(() => left.Evaluate() || right.Evaluate());
 
-    /// <summary>
-    /// Fails closed. A refresh pass walks every entry in every menu, so one throwing predicate must
-    /// not abort it and leave the rest of the menu showing stale state.
-    /// </summary>
+    /// <summary>Fails closed.</summary>
+    // A refresh pass walks every entry in every menu, so one throwing predicate must not abort it.
     public bool Evaluate()
     {
         try

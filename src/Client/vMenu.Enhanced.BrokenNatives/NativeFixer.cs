@@ -8,9 +8,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 
 namespace vMenu.Enhanced.BrokenNatives;
 
-/// <summary>
-/// Natives that are broken in the API get fixed here.
-/// </summary>
+/// <summary>Natives that are broken in the API get fixed here.</summary>
 public static class NativeFixer
 {
     internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
@@ -28,13 +26,8 @@ public static class NativeFixer
 
     /// <summary>
     /// Replacement call for <see cref="Native.GetGamePool(string)" /> because that return type is <em>byte[]</em>.
+    /// The only working way to enumerate the world.
     /// </summary>
-    /// <remarks>
-    /// The only working way to enumerate the world: there is no <em>World</em> type in Enhanced, the
-    /// entity pools are caches of handles this resource already touched, and
-    /// <see cref="Native.GetAllVehicles(out int)" /> is generated with the returned array collapsed
-    /// to a single <em>int</em>.
-    /// </remarks>
     /// <param name="poolName"><em>CVehicle</em>, <em>CPed</em>, <em>CObject</em> or <em>CPickup</em>.</param>
     public static int[] GetGamePool(string poolName)
     {
@@ -104,18 +97,13 @@ public static class NativeFixer
     /// Replacement call for <see cref="Native.AddConvarChangeListener(string, int)" />, whose
     /// <em>func</em> parameter is generated as a raw <em>int</em> with no way to produce one.
     /// </summary>
-    /// <remarks>
-    /// The reference must come from the shared <c>FuncRefManager</c>, not from
-    /// <see cref="NativeApi.RegisterFunctionReference(Delegate)" />: the runtime dispatches every
-    /// callback through the shared manager's table, so a reference registered anywhere else comes
-    /// back as "Invalid function" when it fires.
-    /// </remarks>
-    /// <param name="handler">Called with the convar name; the second argument is reserved by FiveM.</param>
+    /// <param name="handler">Called with the convar name. The second argument is reserved by FiveM.</param>
+    // The reference must come from the shared FuncRefManager. The runtime dispatches every callback
+    // through that table, so one registered anywhere else comes back as "Invalid function".
     public static int AddConvarChangeListener(string convar, Action<string, object?> handler)
     {
-        // GetCore is flagged as internal API, and is taken anyway because it is the only route to
-        // that manager: SharedAPI exposes Log, Side, Exports and Commands, none of which can
-        // register a reference. If a future runtime removes it, this call is the one thing to move.
+        // GetCore is internal API, taken because it is the only route to that manager. If a future
+        // runtime removes it, this call is the one thing to move.
 #pragma warning disable FIVEM001
         var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
 #pragma warning restore FIVEM001
