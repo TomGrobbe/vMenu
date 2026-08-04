@@ -208,7 +208,7 @@ public static class UserInput
 
     private sealed class OpenMessage
     {
-        public string Type => "open";
+        public string Type { get; } = "open";
 
         public required string Title { get; init; }
 

@@ -112,9 +112,9 @@ public static class TickOverlay
 
     private sealed class TicksMessage
     {
-        public string Type => "ticks";
+        public string Type { get; } = "ticks";
 
-        public bool Visible => true;
+        public bool Visible { get; } = true;
 
         public required string Side { get; init; }
 

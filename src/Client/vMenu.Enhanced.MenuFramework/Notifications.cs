@@ -108,7 +108,7 @@ public static class Notifications
 
     private sealed class NotifyMessage
     {
-        public string Type => "notify";
+        public string Type { get; } = "notify";
 
         public required string Style { get; init; }
 
