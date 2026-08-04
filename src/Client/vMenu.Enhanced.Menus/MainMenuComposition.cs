@@ -13,5 +13,6 @@ public static class MainMenuComposition
         new VehicleSpawnerMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
+        new AboutMenu(),
     ];
 }

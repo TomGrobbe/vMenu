@@ -23,6 +23,7 @@ public static class ConfigCatalog
     public static IReadOnlyList<ConfigSection> Sections { get; } =
     [
         new("Languages", [Localization.Languages]),
+        new("About", [About.DocumentationUrl, About.DiscordUrl]),
         new("Vehicle Options", [VehicleOptions.DeleteVehicleDistance, VehicleOptions.DeleteVehicleCommand]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
     ];
