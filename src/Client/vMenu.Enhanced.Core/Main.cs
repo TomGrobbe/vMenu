@@ -11,6 +11,7 @@ using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Core;
@@ -43,6 +44,8 @@ public sealed class Main : IScript
 
             Native.GiveWeaponToPed(ped, weaponHash, 1000, true, true);
         });
+
+        ClientJson.Verify();
 
         // Calling something to do with MenuController is required, otherwise the compiler optimizes
         // the dependency away and MenuAPI won't run at all.

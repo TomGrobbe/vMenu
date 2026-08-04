@@ -5,4 +5,7 @@
     <!-- Only for MenuController.MenuAlignment, so the tick overlay can sit opposite the menu. -->
     <PackageReference Include="MenuAPI.FiveM.Enhanced" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
+  </ItemGroup>
 </Project>

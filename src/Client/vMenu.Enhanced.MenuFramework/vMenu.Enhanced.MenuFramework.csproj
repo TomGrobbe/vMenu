@@ -3,11 +3,14 @@
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" />
     <PackageReference Include="MenuAPI.FiveM.Enhanced" />
+    <!-- UserInput names its suggestion keys with [JsonProperty]; everything else goes through ClientJson. -->
+    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\vMenu.Enhanced.Configuration\vMenu.Enhanced.Configuration.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
   </ItemGroup>
 
 </Project>

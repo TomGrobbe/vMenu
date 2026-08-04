@@ -1,9 +1,7 @@
-using System.Globalization;
-using System.Text;
-
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
@@ -87,23 +85,48 @@ public static class Notifications
         return aspect > 0f ? 1f / (4f * aspect) : 1f / 4f;
     }
 
-    /// <summary>Written by hand because <c>System.Text.Json</c> does not load in the FiveM client sandbox.</summary>
     private static string BuildMessage(string style, string text, int durationMs)
     {
         var (left, bottom, width) = Anchor();
 
-        return new StringBuilder(192)
-            .Append("""{"type":"notify","style":""").AppendString(style)
-            .Append(""","text":""").AppendString(text)
-            .Append(""","duration":""").Append(durationMs.ToString(CultureInfo.InvariantCulture))
-            .Append(""","anchor":{"left":""").Append(Fraction(left))
-            .Append(""","bottom":""").Append(Fraction(bottom))
-            .Append(""","width":""").Append(Fraction(width))
-            .Append("}}")
-            .ToString();
+        return ClientJson.Serialize(new NotifyMessage
+        {
+            Style = style,
+            Text = text,
+            Duration = durationMs,
+            Anchor = new AnchorBox
+            {
+                Left = Fraction(left),
+                Bottom = Fraction(bottom),
+                Width = Fraction(width),
+            },
+        });
     }
 
-    private static string Fraction(float value) => value.ToString("0.#####", CultureInfo.InvariantCulture);
+    /// <summary>Drops the float noise a screen measurement carries past what the page lays out.</summary>
+    private static float Fraction(float value) => MathF.Round(value, 5);
+
+    private sealed class NotifyMessage
+    {
+        public string Type => "notify";
+
+        public required string Style { get; init; }
+
+        public required string Text { get; init; }
+
+        public required int Duration { get; init; }
+
+        public required AnchorBox Anchor { get; init; }
+    }
+
+    private sealed class AnchorBox
+    {
+        public required float Left { get; init; }
+
+        public required float Bottom { get; init; }
+
+        public required float Width { get; init; }
+    }
 
     private static string Name(NotificationStyle style) => style switch
     {

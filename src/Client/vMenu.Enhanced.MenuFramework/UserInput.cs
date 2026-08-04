@@ -1,12 +1,12 @@
-using System.Globalization;
-using System.Text;
-
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
+using Newtonsoft.Json;
+
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
@@ -146,10 +146,28 @@ public static class UserInput
 
     private static string BodyOf(object? request) => request switch
     {
-        IDictionary<object, object> map when map.TryGetValue("body", out var body) => NuiJson.Unquote(body as string ?? string.Empty),
-        IDictionary<string, object> map when map.TryGetValue("body", out var body) => NuiJson.Unquote(body as string ?? string.Empty),
+        IDictionary<object, object> map when map.TryGetValue("body", out var body) => Text(body),
+        IDictionary<string, object> map when map.TryGetValue("body", out var body) => Text(body),
         _ => Unreadable(request),
     };
+
+    /// <summary>The page posts what was typed as a JSON string, so the body arrives quoted and escaped.</summary>
+    private static string Text(object? body)
+    {
+        if (body is not string raw || raw.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (ClientJson.TryDeserialize<string>(raw, out var text))
+        {
+            return text ?? string.Empty;
+        }
+
+        API.Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
+
+        return string.Empty;
+    }
 
     private static string Unreadable(object? request)
     {
@@ -161,33 +179,65 @@ public static class UserInput
     private static string BuildOpenMessage(string title, int maxLength, string initialValue, IReadOnlyList<InputSuggestion>? suggestions)
     {
         var localizer = Localizer.Current;
+        var rows = new SuggestionRow[suggestions?.Count ?? 0];
 
-        // Manually making Json because System.Text.Json is broken due to sandbox.
-        var message = new StringBuilder(256)
-            .Append("""{"type":"open","title":""").AppendString(title)
-            .Append(""","value":""").AppendString(initialValue)
-            .Append(""","maxLength":""").Append(maxLength.ToString(CultureInfo.InvariantCulture))
-            .Append(""","placeholder":""").AppendString(localizer.Get(Loc.Framework.InputPlaceholder))
-            .Append(""","hint":""").AppendString(localizer.Get(Loc.Framework.InputHint))
-            .Append(""","noMatches":""").AppendString(localizer.Get(Loc.Framework.InputNoMatches))
-            .Append(""","suggestions":[""");
-
-        for (var index = 0; index < (suggestions?.Count ?? 0); index++)
+        for (var index = 0; index < rows.Length; index++)
         {
             var suggestion = suggestions![index];
 
-            if (index > 0)
+            rows[index] = new SuggestionRow
             {
-                message.Append(',');
-            }
-
-            message.Append("""{"v":""").AppendString(suggestion.Value)
-                .Append(""","l":""").AppendString(suggestion.Label)
-                .Append(""","i":""").AppendString(suggestion.Icon ?? string.Empty)
-                .Append(""","d":""").AppendString(suggestion.Detail ?? string.Empty)
-                .Append('}');
+                Value = suggestion.Value,
+                Label = suggestion.Label,
+                Icon = suggestion.Icon ?? string.Empty,
+                Detail = suggestion.Detail ?? string.Empty,
+            };
         }
 
-        return message.Append("]}").ToString();
+        return ClientJson.Serialize(new OpenMessage
+        {
+            Title = title,
+            Value = initialValue,
+            MaxLength = maxLength,
+            Placeholder = localizer.Get(Loc.Framework.InputPlaceholder),
+            Hint = localizer.Get(Loc.Framework.InputHint),
+            NoMatches = localizer.Get(Loc.Framework.InputNoMatches),
+            Suggestions = rows,
+        });
+    }
+
+    private sealed class OpenMessage
+    {
+        public string Type => "open";
+
+        public required string Title { get; init; }
+
+        public required string Value { get; init; }
+
+        public required int MaxLength { get; init; }
+
+        public required string Placeholder { get; init; }
+
+        public required string Hint { get; init; }
+
+        public required string NoMatches { get; init; }
+
+        public required IReadOnlyList<SuggestionRow> Suggestions { get; init; }
+    }
+
+    /// <summary>Single letter keys: a spawner sends thousands of these in one message.</summary>
+    private sealed class SuggestionRow
+    {
+        [JsonProperty("v")]
+        public required string Value { get; init; }
+
+        [JsonProperty("l")]
+        public required string Label { get; init; }
+
+        [JsonProperty("i")]
+        public required string Icon { get; init; }
+
+        [JsonProperty("d")]
+        public required string Detail { get; init; }
     }
 }

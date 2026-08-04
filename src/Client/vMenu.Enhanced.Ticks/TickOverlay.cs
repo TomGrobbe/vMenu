@@ -1,10 +1,9 @@
-using System.Globalization;
-using System.Text;
-
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
+
+using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Ticks;
 
@@ -24,8 +23,6 @@ public static class TickOverlay
     private const long RefreshIntervalMs = 100;
 
     private const string HideMessage = """{"type":"ticks","visible":false}""";
-
-    private static readonly StringBuilder Builder = new(512);
 
     private static TickHandle? _tick;
 
@@ -92,60 +89,44 @@ public static class TickOverlay
     private static string BuildMessage()
     {
         var handles = TickRegistry.Handles;
-
-        Builder.Clear();
-        Builder.Append("""{"type":"ticks","visible":true,"side":""")
-            .Append(_onRight ? "\"right\"" : "\"left\"")
-            .Append(""","ticks":[""");
+        var rows = new TickRow[handles.Count];
 
         for (var index = 0; index < handles.Count; index++)
         {
             var handle = handles[index];
 
-            if (index > 0)
+            rows[index] = new TickRow
             {
-                Builder.Append(',');
-            }
-
-            Builder.Append("""{"name":""");
-            AppendString(handle.Name);
-            Builder.Append(""","rate":""");
-            AppendString(handle.Rate.ToString());
-            Builder.Append(""","running":""").Append(handle.IsRunning ? "true" : "false").Append('}');
+                Name = handle.Name,
+                Rate = handle.Rate.ToString(),
+                Running = handle.IsRunning,
+            };
         }
 
-        return Builder.Append("]}").ToString();
+        return ClientJson.Serialize(new TicksMessage
+        {
+            Side = _onRight ? "right" : "left",
+            Ticks = rows,
+        });
     }
 
-    /// <summary>Written by hand because <c>System.Text.Json</c> does not load in the FiveM client sandbox.</summary>
-    private static void AppendString(string text)
+    private sealed class TicksMessage
     {
-        Builder.Append('"');
+        public string Type => "ticks";
 
-        foreach (var character in text)
-        {
-            switch (character)
-            {
-                case '"':
-                    Builder.Append("\\\"");
-                    break;
-                case '\\':
-                    Builder.Append("\\\\");
-                    break;
-                default:
-                    if (character < ' ')
-                    {
-                        Builder.Append("\\u").Append(((int)character).ToString("x4", CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        Builder.Append(character);
-                    }
+        public bool Visible => true;
 
-                    break;
-            }
-        }
+        public required string Side { get; init; }
 
-        Builder.Append('"');
+        public required IReadOnlyList<TickRow> Ticks { get; init; }
+    }
+
+    private sealed class TickRow
+    {
+        public required string Name { get; init; }
+
+        public required string Rate { get; init; }
+
+        public required bool Running { get; init; }
     }
 }

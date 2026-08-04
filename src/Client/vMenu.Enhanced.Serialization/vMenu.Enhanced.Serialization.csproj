@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.FiveM.Client" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+</Project>
