@@ -57,6 +57,7 @@ internal static class EnglishStrings
             [Loc.MiscSettings.LanguageDescription] = "Select a language and press enter to apply it.",
             [Loc.MiscSettings.MenuRightAlignment] = "Right Align Menu",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
+            [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "A right aligned menu is not supported here, so the menu has been left aligned.",
 
             [Loc.DeveloperFeatures.Title] = "Developer Features",
             [Loc.DeveloperFeatures.Subtitle] = "Developer Features",

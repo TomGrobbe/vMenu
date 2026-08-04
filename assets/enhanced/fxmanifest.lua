@@ -40,6 +40,7 @@ files {
     'client/vMenu.Enhanced.Data.dll',
     'client/vMenu.Enhanced.Permissions.dll',
     'client/vMenu.Enhanced.Serialization.dll',
+    'client/vMenu.Enhanced.Storage.dll',
     'client/vMenu.Enhanced.MenuFramework.dll',
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',

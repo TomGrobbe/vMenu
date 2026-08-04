@@ -1,5 +1,3 @@
-using MenuAPI;
-
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
@@ -43,25 +41,13 @@ public sealed class MiscSettingsMenu : MenuDefinition
         {
             Text = MenuText.Key(Loc.MiscSettings.MenuRightAlignment),
             Description = MenuText.Key(Loc.MiscSettings.MenuRightAlignmentDescription),
-            ReadState = RightAlignedMenuCheck,
-            OnChangedAsync = OnRightAlignMenuCheckboxChanged
+
+            // What MenuAPI is actually doing rather than what was stored, so an alignment it
+            // declined shows as off instead of as a tick that does nothing.
+            ReadState = () => UserPreferences.IsRightAligned,
+            OnChanged = changed => UserPreferences.SetRightAligned(changed.Checked),
         });
     }
-
-    private async Task OnRightAlignMenuCheckboxChanged(CheckboxChanged changed)
-    {
-        if (changed.Checked)
-        {
-            MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Right;
-        }
-        else
-        {
-            MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Left;
-        }
-    }
-
-    private bool RightAlignedMenuCheck() =>
-        MenuController.MenuAlignment == MenuController.MenuAlignmentOption.Right;
 
     private static MenuText NativeLanguageName(LanguageId language) =>
         MenuText.Literal(LanguageCatalog.TryGet(language, out var table) ? table.NativeName : language.Code);
@@ -85,11 +71,18 @@ public sealed class MiscSettingsMenu : MenuDefinition
     {
         var languages = Localizer.Current.AvailableLanguages;
 
-        if ((uint)selected.SelectedIndex < (uint)languages.Count)
+        if ((uint)selected.SelectedIndex >= (uint)languages.Count)
         {
-            // Fires Localizer.Changed, which the registry turns into one relabel pass over every
-            // built menu. No menu is rebuilt.
-            Localizer.TrySetLanguage(languages[selected.SelectedIndex]);
+            return;
+        }
+
+        var language = languages[selected.SelectedIndex];
+
+        // Fires Localizer.Changed, which the registry turns into one relabel pass over every
+        // built menu. No menu is rebuilt.
+        if (Localizer.TrySetLanguage(language))
+        {
+            UserPreferences.SetLanguage(language);
         }
     }
 }

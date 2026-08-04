@@ -1,9 +1,15 @@
+using vMenu.Enhanced.Storage;
+
 namespace vMenu.Enhanced.Menus.Developer;
 
 /// <summary>
-/// What the developer overlays are currently showing. Deliberately not persisted: these are debugging
-/// aids, and having them survive a reconnect is more surprising than useful.
+/// What the developer overlays are currently showing.
 /// </summary>
+/// <remarks>
+/// Backed by <see cref="UserDefaults"/>, so a setting survives a reconnect. Reads go through
+/// <c>KvpStore</c>'s cache rather than the store itself; the overlay hoists them out of its per
+/// entity loops, so this stays off the frame budget.
+/// </remarks>
 public static class DeveloperFeaturesState
 {
     public const int MinDrawRadius = 0;
@@ -32,72 +38,62 @@ public static class DeveloperFeaturesState
     /// </summary>
     public static event Action? Changed;
 
-    private static bool _showVehicleDimensions;
-
-    private static bool _showPropDimensions;
-
-    private static bool _showPedDimensions;
-
-    private static bool _showEntityHandles;
-
-    private static bool _showEntityModels;
-
-    private static bool _showNetworkOwners;
-
-    private static int _drawRadius = MaxDrawRadius;
-
-    private static int _boxOpacity = MaxBoxOpacity;
-
     public static bool ShowVehicleDimensions
     {
-        get => _showVehicleDimensions;
-        set => Set(ref _showVehicleDimensions, value);
+        get => UserDefaults.DevVehicleDimensions.Value;
+        set => Set(UserDefaults.DevVehicleDimensions, value);
     }
 
     public static bool ShowPropDimensions
     {
-        get => _showPropDimensions;
-        set => Set(ref _showPropDimensions, value);
+        get => UserDefaults.DevPropDimensions.Value;
+        set => Set(UserDefaults.DevPropDimensions, value);
     }
 
     public static bool ShowPedDimensions
     {
-        get => _showPedDimensions;
-        set => Set(ref _showPedDimensions, value);
+        get => UserDefaults.DevPedDimensions.Value;
+        set => Set(UserDefaults.DevPedDimensions, value);
     }
 
     public static bool ShowEntityHandles
     {
-        get => _showEntityHandles;
-        set => Set(ref _showEntityHandles, value);
+        get => UserDefaults.DevEntityHandles.Value;
+        set => Set(UserDefaults.DevEntityHandles, value);
     }
 
     public static bool ShowEntityModels
     {
-        get => _showEntityModels;
-        set => Set(ref _showEntityModels, value);
+        get => UserDefaults.DevEntityModels.Value;
+        set => Set(UserDefaults.DevEntityModels, value);
     }
 
     public static bool ShowNetworkOwners
     {
-        get => _showNetworkOwners;
-        set => Set(ref _showNetworkOwners, value);
+        get => UserDefaults.DevNetworkOwners.Value;
+        set => Set(UserDefaults.DevNetworkOwners, value);
     }
 
     /// <summary>Slider position, not a distance. See <see cref="DrawRadiusMetres"/>.</summary>
+    /// <remarks>
+    /// Clamped on read. A stored position can fall outside the slider if the bounds above are
+    /// narrowed in a later version, or if the value is edited by hand — either would hand MenuAPI a
+    /// position its slider has no room for.
+    /// </remarks>
     public static int DrawRadius
     {
-        get => _drawRadius;
-        set => Set(ref _drawRadius, value);
+        get => Math.Clamp(UserDefaults.DevDrawRadius.Value, MinDrawRadius, MaxDrawRadius);
+        set => Set(UserDefaults.DevDrawRadius, Math.Clamp(value, MinDrawRadius, MaxDrawRadius));
     }
 
     public static int DrawRadiusMetres => DrawRadius * MetresPerStep;
 
     /// <summary>Slider position, not a percentage. See <see cref="BoxOpacityPercent"/>.</summary>
+    /// <inheritdoc cref="DrawRadius" path="/remarks"/>
     public static int BoxOpacity
     {
-        get => _boxOpacity;
-        set => Set(ref _boxOpacity, value);
+        get => Math.Clamp(UserDefaults.DevBoxOpacity.Value, MinBoxOpacity, MaxBoxOpacity);
+        set => Set(UserDefaults.DevBoxOpacity, Math.Clamp(value, MinBoxOpacity, MaxBoxOpacity));
     }
 
     public static int BoxOpacityPercent => BoxOpacity * OpacityPercentPerStep;
@@ -115,26 +111,26 @@ public static class DeveloperFeaturesState
     public static bool AnyOutlineEnabled =>
         ShowVehicleDimensions || ShowPropDimensions || ShowPedDimensions;
 
-    private static void Set(ref bool field, bool value)
+    private static void Set(BoolDefault preference, bool value)
     {
-        if (field == value)
+        if (preference.Value == value)
         {
             return;
         }
 
-        field = value;
+        preference.Value = value;
 
         Changed?.Invoke();
     }
 
-    private static void Set(ref int field, int value)
+    private static void Set(IntDefault preference, int value)
     {
-        if (field == value)
+        if (preference.Value == value)
         {
             return;
         }
 
-        field = value;
+        preference.Value = value;
 
         Changed?.Invoke();
     }

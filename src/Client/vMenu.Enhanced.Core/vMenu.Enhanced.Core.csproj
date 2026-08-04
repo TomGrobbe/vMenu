@@ -15,6 +15,7 @@
     <ProjectReference Include="..\vMenu.Enhanced.NoClip\vMenu.Enhanced.NoClip.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Storage\vMenu.Enhanced.Storage.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks\vMenu.Enhanced.Ticks.csproj" />
   </ItemGroup>
 </Project>

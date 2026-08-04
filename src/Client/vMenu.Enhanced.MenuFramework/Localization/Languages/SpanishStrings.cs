@@ -53,6 +53,7 @@ internal static class SpanishStrings
             [Loc.MiscSettings.LanguageDescription] = "Selecciona un idioma y pulsa intro para aplicarlo.",
             [Loc.MiscSettings.MenuRightAlignment] = "Alinear el menú a la derecha",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Pulsa intro para alinear el menú a la izquierda o a la derecha.",
+            [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "La alineación a la derecha no es compatible aquí, por lo que el menú se ha alineado a la izquierda.",
 
             [Loc.DeveloperFeatures.Title] = "Funciones de desarrollo",
             [Loc.DeveloperFeatures.Subtitle] = "Funciones de desarrollo",

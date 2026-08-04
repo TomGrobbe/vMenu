@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.FiveM.Client" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
+  </ItemGroup>
+</Project>

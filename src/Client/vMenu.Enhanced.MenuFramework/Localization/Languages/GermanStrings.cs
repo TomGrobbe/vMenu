@@ -53,6 +53,7 @@ internal static class GermanStrings
             [Loc.MiscSettings.LanguageDescription] = "Wähle eine Sprache und drücke Enter, um sie anzuwenden.",
             [Loc.MiscSettings.MenuRightAlignment] = "Menü rechts ausrichten",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Drücke Enter, um das Menü links oder rechts auszurichten.",
+            [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "Eine rechtsbündige Ausrichtung wird hier nicht unterstützt, daher wurde das Menü links ausgerichtet.",
 
             [Loc.DeveloperFeatures.Title] = "Entwicklerfunktionen",
             [Loc.DeveloperFeatures.Subtitle] = "Entwicklerfunktionen",

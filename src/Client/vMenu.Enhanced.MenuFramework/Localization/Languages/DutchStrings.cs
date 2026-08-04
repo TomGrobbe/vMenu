@@ -54,6 +54,7 @@ internal static class DutchStrings
             [Loc.MiscSettings.LanguageDescription] = "Selecteer een taal en druk op enter om deze toe te passen.",
             [Loc.MiscSettings.MenuRightAlignment] = "Menu rechts uitlijnen",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Druk op enter om het menu links of rechts uit te lijnen.",
+            [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "Een rechts uitgelijnd menu wordt hier niet ondersteund, dus het menu is links uitgelijnd.",
 
             [Loc.DeveloperFeatures.Title] = "Ontwikkelaarsfuncties",
             [Loc.DeveloperFeatures.Subtitle] = "Ontwikkelaarsfuncties",

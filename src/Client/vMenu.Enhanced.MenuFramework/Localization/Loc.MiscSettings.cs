@@ -17,5 +17,7 @@ public static partial class Loc
         public const string MenuRightAlignment = "miscsettings.rightaligned";
 
         public const string MenuRightAlignmentDescription = "miscsettings.rightaligned.desc";
+
+        public const string MenuRightAlignmentUnsupported = "miscsettings.rightaligned.unsupported";
     }
 }

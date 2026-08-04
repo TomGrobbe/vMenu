@@ -53,6 +53,7 @@ internal static class FrenchStrings
             [Loc.MiscSettings.LanguageDescription] = "Sélectionnez une langue et appuyez sur Entrée pour l'appliquer.",
             [Loc.MiscSettings.MenuRightAlignment] = "Aligner le menu à droite",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Appuyez sur Entrée pour aligner le menu à gauche ou à droite.",
+            [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "L'alignement à droite n'est pas pris en charge ici, le menu a donc été aligné à gauche.",
 
             [Loc.DeveloperFeatures.Title] = "Fonctions de développement",
             [Loc.DeveloperFeatures.Subtitle] = "Fonctions de développement",
