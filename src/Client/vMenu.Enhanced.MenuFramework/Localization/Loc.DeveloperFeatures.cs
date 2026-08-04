@@ -41,5 +41,9 @@ public static partial class Loc
         public const string BoxOpacity = "devfeatures.boxopacity";
 
         public const string BoxOpacityDescription = "devfeatures.boxopacity.desc";
+
+        public const string TicksOverlay = "devfeatures.ticksoverlay";
+
+        public const string TicksOverlayDescription = "devfeatures.ticksoverlay.desc";
     }
 }

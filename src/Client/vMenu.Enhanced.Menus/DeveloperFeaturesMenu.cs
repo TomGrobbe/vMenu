@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Developer;
+using vMenu.Enhanced.Ticks;
 
 using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.DeveloperFeatures;
 
@@ -111,6 +112,16 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
 
                 moved.Item.Description = BoxOpacityDescription.Resolve(Localizer.Current);
             },
+        });
+
+        // button on purpose, don't want a checkbox cause that'll be confusing
+        // since this one doesn't have a user defaults that stays on/off, it's
+        // always off by default.
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.DeveloperFeatures.TicksOverlay),
+            Description = MenuText.Key(Loc.DeveloperFeatures.TicksOverlayDescription),
+            OnSelected = _ => TickOverlay.Toggle(),
         });
     }
 }

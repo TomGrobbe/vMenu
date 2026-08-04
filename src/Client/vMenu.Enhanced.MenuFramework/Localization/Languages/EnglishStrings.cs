@@ -76,5 +76,7 @@ internal static class EnglishStrings
             [Loc.DeveloperFeatures.DrawRadiusDescription] = "How far away entities are still outlined and labelled. Currently {radius}.",
             [Loc.DeveloperFeatures.BoxOpacity] = "Dimensions Box Opacity",
             [Loc.DeveloperFeatures.BoxOpacityDescription] = "How solidly the coloured boxes are filled in. The outlines and labels around them are not affected. Currently {opacity}.",
+            [Loc.DeveloperFeatures.TicksOverlay] = "Toggle Ticks Overlay",
+            [Loc.DeveloperFeatures.TicksOverlayDescription] = "Shows a panel listing every loop vMenu is running and whether it's currently on. Handy for checking a feature actually started. This one is not remembered, so it's always off again next time you join.",
         });
 }
