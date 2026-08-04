@@ -57,6 +57,8 @@ internal static class EnglishStrings
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
             [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "A right aligned menu is not supported here, so the menu has been left aligned.",
 
+            [Loc.NoClip.ToggleDenied] = "You are not allowed to toggle noclip.",
+
             [Loc.DeveloperFeatures.Title] = "Developer Features",
             [Loc.DeveloperFeatures.Subtitle] = "Developer Features",
             [Loc.DeveloperFeatures.LinkDescription] = "Development and debugging tools.",

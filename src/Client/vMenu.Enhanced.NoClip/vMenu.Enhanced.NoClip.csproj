@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration\vMenu.Enhanced.Configuration.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.MenuFramework\vMenu.Enhanced.MenuFramework.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks\vMenu.Enhanced.Ticks.csproj" />
   </ItemGroup>

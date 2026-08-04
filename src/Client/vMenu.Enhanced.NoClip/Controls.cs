@@ -21,9 +21,9 @@ internal static class Controls
     internal const int DecreaseSpeed = 36;     // Control.Duck (Left Ctrl)
     internal const int MoveUp = 44;            // Control.Cover (Q)
     internal const int ToggleFollowCam = 74;   // Control.VehicleHeadlight (H)
-    internal const int VehicleRadioWheel = 81;
-    internal const int RadioWheel = 85;
-    internal const int MultiplayerInfo = 244;
+    internal const int VehicleRadioWheel = 81; // Move up
+    internal const int RadioWheel = 85;        // Move up
+    internal const int MultiplayerInfo = 244;  // Move Down
 
     /// <summary>Disabled by the game whenever the F8 console has focus, so it doubles as a console check.</summary>
     internal const int ConsoleProbe = 360;
