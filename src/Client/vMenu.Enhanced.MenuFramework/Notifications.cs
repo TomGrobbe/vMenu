@@ -21,6 +21,11 @@ public static class Notifications
 
     private const float BigmapHeight = 1f / 2.35f;
 
+    private const int VisibilityCheckMs = 500;
+
+    /// <summary>Thirty seconds of waiting for a spawn, after which the message is shown regardless.</summary>
+    private const int MaxVisibilityChecks = 60;
+
     public static void Info(MenuText text, int durationMs = DefaultDurationMs) =>
         Show(NotificationStyle.Info, text, durationMs);
 
@@ -32,6 +37,28 @@ public static class Notifications
 
     public static void Error(MenuText text, int durationMs = DefaultDurationMs) =>
         Show(NotificationStyle.Error, text, durationMs);
+
+    /// <summary>Shows once the player can actually see the screen.</summary>
+    // For anything raised during startup. The page is not listening that early, and the stack draws
+    // above the minimap, which is behind the loading screen anyway. Returns immediately when the
+    // player is already in, so a caller that runs both at startup and at runtime can use this
+    // unconditionally.
+    public static async Task ShowWhenVisibleAsync(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
+    {
+        for (var attempt = 0; attempt < MaxVisibilityChecks; attempt++)
+        {
+            if (Native.NetworkIsSessionStarted() && !Native.IsScreenFadedOut())
+            {
+                break;
+            }
+
+            await API.Delay(VisibilityCheckMs);
+        }
+
+        // Shown even if the checks never passed. A player stuck on a black screen has bigger
+        // problems, and a message they might miss beats one that is silently never sent.
+        Show(style, text, durationMs);
+    }
 
     public static void Show(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
     {
