@@ -52,6 +52,44 @@
   </Target>
 
   <!--
+    Overwritten like the UI rather than preserved like config: these are vMenu's own translations,
+    and an update has to be able to deliver keys added since. A language an owner adds themselves is
+    never listed here, so it is never touched.
+  -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceLanguageFile Include="$(RepoRoot)assets\enhanced\language\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceLanguageFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ResourceLanguageFile)"
+          Outputs="@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')">
+
+    <Copy SourceFiles="@(ResourceLanguageFile)"
+          DestinationFiles="@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
+    language/example.json is generated rather than checked in, so that the template a translator
+    copies always matches the strings this build actually has. Reads the English table straight out
+    of the built menu framework, so it cannot drift from it.
+
+    Runs only when that assembly is newer than the template, which on a normal rebuild is never.
+  -->
+  <Target Name="GenerateLanguageTemplate"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="$(ResourceRoot)client\vMenu.Enhanced.MenuFramework.dll"
+          Outputs="$(ResourceRoot)language\example.json">
+
+    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)client&quot; &quot;$(ResourceRoot)language\example.json&quot;"
+          WorkingDirectory="$(RepoRoot)"
+          StandardOutputImportance="normal" />
+  </Target>
+
+  <!--
     Config files are defaults for a server owner to edit in place, so they are only copied when
     missing. Delete one in build/vMenu.Enhanced/config/ to get the default back.
   -->

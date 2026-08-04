@@ -21,6 +21,9 @@ ui_page 'ui/index.html'
 files {
     'ui/**/*',
 
+    -- A wildcard, so a language an owner adds is picked up without touching this file.
+    'language/*.json',
+
     'client/CitizenFX.Base.dll',
     'client/CitizenFX.FiveM.Shared.dll',
     'client/CitizenFX.FiveM.Client.dll',

@@ -7,6 +7,7 @@ using MenuAPI;
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Vehicles;
@@ -65,6 +66,10 @@ public sealed class Main : IScript
         // Before the build, so the gate pass at the end of it reads real values rather than
         // treating every convar backed menu as switched off.
         ClientConfig.Initialize();
+
+        // After the config, whose convar names the languages, and before the build, since the
+        // picker's options are fixed once its item exists.
+        LanguageLoader.Load();
 
         // Every gated tick answers to the same two events the menu gates do, so a convar edit or an
         // ACL change starts and stops loops without anything else having to subscribe.

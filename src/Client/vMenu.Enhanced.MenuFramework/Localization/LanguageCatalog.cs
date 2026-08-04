@@ -5,8 +5,9 @@ using vMenu.Enhanced.MenuFramework.Localization.Languages;
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
 /// <summary>Every language vMenu can display.</summary>
-// Tables are compiled C#. A file backed set is possible through ClientJson, and the way there is to
-// replace CompiledLocalizer with a file backed ILocalizer rather than add a loader here.
+// English is compiled in and every other language is a file, loaded by LanguageLoader. That split is
+// deliberate: English is the fallback for every key another language leaves out, so it has to be
+// complete and present before anything can render, which a file on disk cannot guarantee.
 // Keyed with an explicit comparer, so no lookup reaches EqualityComparer<T>.Default, whose internal
 // string comparer the sandbox blocks.
 public static class LanguageCatalog
@@ -19,12 +20,8 @@ public static class LanguageCatalog
     {
         English = EnglishStrings.Table;
 
-        // Registration order is the order the language picker lists them, English first.
+        // First, so the picker always lists it first whatever order the convar names the rest in.
         Register(English);
-        Register(SpanishStrings.Table);
-        Register(GermanStrings.Table);
-        Register(FrenchStrings.Table);
-        Register(DutchStrings.Table);
     }
 
     /// <summary>Always present, and the fallback for every key another language has not translated.</summary>
