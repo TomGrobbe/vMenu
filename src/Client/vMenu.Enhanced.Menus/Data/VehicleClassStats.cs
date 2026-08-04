@@ -7,10 +7,8 @@ namespace vMenu.Enhanced.Menus.Data;
 /// <summary>
 /// Turns a vehicle's raw handling figures into the 0..1 values the stats panel draws.
 /// </summary>
-/// <remarks>
-/// The panel is relative, not absolute: each figure is scaled against the best in that vehicle's own
-/// class, which is why every table below is indexed by class id and why that order is not cosmetic.
-/// </remarks>
+// The panel is relative, each figure being scaled against the best in that vehicle's own class,
+// which is why every table is indexed by class id and why that order is not cosmetic.
 internal static class VehicleClassStats
 {
     private static readonly float[] MaxSpeed =

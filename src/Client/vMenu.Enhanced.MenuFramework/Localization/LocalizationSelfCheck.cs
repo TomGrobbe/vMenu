@@ -7,11 +7,8 @@ namespace vMenu.Enhanced.MenuFramework.Localization;
 /// <summary>
 /// Reports localization gaps once at startup.
 /// </summary>
-/// <remarks>
-/// A <see cref="Loc"/> constant guarantees the key exists in code, not that any table has text for
-/// it. Without this the first sign of a gap is a marker appearing in a menu nobody opened yet, so
-/// this turns it into one console line at boot.
-/// </remarks>
+// A Loc constant guarantees the key exists in code, not that any table has text for it. Without this
+// the first sign of a gap is a marker in a menu nobody opened yet.
 public static class LocalizationSelfCheck
 {
     public static void Run()

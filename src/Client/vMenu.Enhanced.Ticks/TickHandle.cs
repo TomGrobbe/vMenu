@@ -2,19 +2,13 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Ticks;
 
-/// <summary>
-/// One registered tick, and the only way to start or stop it.
-/// </summary>
-/// <remarks>
-/// Stopping ends the loop rather than idling it, so a feature that is switched off costs nothing at
-/// all, not even a per frame branch. That is why gating belongs here instead of inside handlers.
-/// </remarks>
+/// <summary>One registered tick, and the only way to start or stop it.</summary>
+// Stopping ends the loop rather than idling it, so a feature switched off costs nothing, not even a
+// per frame branch. That is why gating belongs here instead of inside handlers.
 public sealed class TickHandle : IDisposable
 {
-    /// <summary>
-    /// A handler that keeps throwing is a bug, and a per frame tick would write sixty error lines a
-    /// second while it stays broken. Five is enough to prove it was not a one off.
-    /// </summary>
+    // A per frame tick would write sixty error lines a second while broken. Five is enough to prove
+    // it was not a one off.
     private const int MaxFailures = 5;
 
     private readonly Func<Task> _handler;
@@ -68,10 +62,9 @@ public sealed class TickHandle : IDisposable
         Apply();
     }
 
-    /// <summary>
-    /// Re-runs the condition. A tick stopped by <see cref="MaxFailures"/> is re-armed by this, so a
-    /// permanently broken handler costs another five log lines every time it is called.
-    /// </summary>
+    /// <summary>Re-runs the condition.</summary>
+    // This re-arms a tick stopped by MaxFailures, so a permanently broken handler costs another five
+    // log lines every time it is called.
     public void Reevaluate() => Apply();
 
     public void Dispose()
@@ -114,17 +107,15 @@ public sealed class TickHandle : IDisposable
         Notify(OnStarted);
 
         // A restart inside one frame leaves the previous driver suspended mid await, and a second
-        // one here is the overlap this type exists to prevent. The survivor picks the flag back up.
+        // here is the overlap this type exists to prevent.
         if (!_driverInFlight)
         {
             Drive();
         }
     }
 
-    /// <summary>
-    /// Fails closed, like <c>MenuGate.Evaluate</c>: a throwing condition must not leave a tick
-    /// stuck on, and a registry wide re-evaluation must not abort partway through.
-    /// </summary>
+    // Fails closed: a throwing condition must not leave a tick stuck on, and a registry wide
+    // re-evaluation must not abort partway through.
     private bool EvaluateCondition()
     {
         try
@@ -145,9 +136,8 @@ public sealed class TickHandle : IDisposable
 
         try
         {
-            // The first iteration waits for the next frame rather than running here, so that a tick
-            // body always runs from the tick pump. What starts a tick is usually a callback, and a
-            // draw loop firing its first frame from inside a checkbox handler is a surprise.
+            // So a tick body always runs from the tick pump. What starts a tick is usually a
+            // callback, and a draw loop firing its first frame inside a checkbox handler surprises.
             await API.Yield();
 
             while (_running)
@@ -185,10 +175,8 @@ public sealed class TickHandle : IDisposable
         }
     }
 
-    /// <summary>
-    /// The lifecycle callbacks are the teardown path, so one throwing must not leave an entity
-    /// frozen or a scaleform loaded.
-    /// </summary>
+    // The lifecycle callbacks are the teardown path, so one throwing must not leave an entity frozen
+    // or a scaleform loaded.
     private void Notify(Action? callback)
     {
         try

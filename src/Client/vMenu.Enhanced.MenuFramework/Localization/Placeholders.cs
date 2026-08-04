@@ -5,11 +5,8 @@ namespace vMenu.Enhanced.MenuFramework.Localization;
 /// <summary>
 /// Named <c>{placeholder}</c> substitution.
 /// </summary>
-/// <remarks>
-/// Named rather than <see cref="string.Format(string, object?[])"/>'s positional <c>{0}</c>, because
-/// a translator editing another language sees what the slot holds. Reordering, repeating and
-/// omitting a placeholder are all free consequences.
-/// </remarks>
+// Named rather than positional, so a translator editing another language sees what the slot holds.
+// Reordering, repeating and omitting a placeholder are free consequences.
 internal static class Placeholders
 {
     internal static string Substitute(string template, (string Name, MenuText Value)[]? arguments, ILocalizer localizer)

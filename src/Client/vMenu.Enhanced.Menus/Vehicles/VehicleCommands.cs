@@ -15,15 +15,13 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 /// <summary>
 /// Chat commands for vehicle options, kept in step with the settings and permissions behind them.
 /// </summary>
-/// <remarks>
-/// Registered unrestricted: FiveM's own restricted flag answers to an ACE on the client's own
-/// principal, which is not what decides this. vMenu checks its own permission instead.
-/// </remarks>
+// Registered unrestricted, because FiveM's restricted flag answers to an ACE on the client's own
+// principal. vMenu checks its own permission instead.
 public static class VehicleCommands
 {
     private const string DeleteCommand = "dv";
 
-    /// <summary>Cached: the func ref registry keys on the delegate, so a new lambda per cycle leaks one each time.</summary>
+    // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
     private static readonly Action<int, MessagePackBuffer, string> DeleteHandler = (_, _, _) => RunDelete();
 
     /// <summary>Null while the command is not registered.</summary>

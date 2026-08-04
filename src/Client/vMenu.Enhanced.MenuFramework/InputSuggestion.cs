@@ -4,10 +4,8 @@ namespace vMenu.Enhanced.MenuFramework;
 /// One row the input prompt can offer while the player types. <see cref="Value"/> lands in the box
 /// when it is picked, <see cref="Label"/> is what the player reads, and both are matched against.
 /// </summary>
-/// <remarks>
-/// A class, not a record: the generated equality members route through
-/// <c>EqualityComparer&lt;string&gt;.Default</c>, which the FiveM sandbox refuses to load.
-/// </remarks>
+// A class, not a record: the generated equality routes through EqualityComparer<string>.Default,
+// which the sandbox refuses to load.
 public sealed class InputSuggestion
 {
     public required string Value { get; init; }

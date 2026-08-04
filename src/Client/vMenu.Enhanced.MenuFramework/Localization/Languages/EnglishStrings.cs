@@ -4,10 +4,7 @@ namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 /// <summary>
 /// The English strings, and the fallback for every other language.
 /// </summary>
-/// <remarks>
-/// This table is required to be complete: anything missing here renders as a marker in game and is
-/// reported by <see cref="LocalizationSelfCheck"/> at startup. Other tables may be partial.
-/// </remarks>
+// Required to be complete. Anything missing renders as a marker in game and is reported at startup.
 internal static class EnglishStrings
 {
     internal static LanguageTable Table { get; } = new(

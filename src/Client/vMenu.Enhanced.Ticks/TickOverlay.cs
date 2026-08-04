@@ -10,12 +10,9 @@ namespace vMenu.Enhanced.Ticks;
 /// <summary>
 /// <see cref="TickRegistry.Dump"/> as a panel on screen, redrawn whenever a tick starts or stops.
 /// </summary>
-/// <remarks>
-/// Redraws are driven by a tick of its own rather than by <see cref="TickRegistry.Changed"/> directly,
-/// because one <see cref="TickRegistry.Reevaluate"/> pass raises that event once per tick it flips —
-/// a convar edit would otherwise post a message per affected loop. The flag collapses a burst into a
-/// single snapshot, and the tick stops with the panel, so a hidden overlay costs nothing.
-/// </remarks>
+// Redraws run on a tick of its own rather than off TickRegistry.Changed, because one Reevaluate pass
+// raises that event once per tick it flips, so a convar edit would post a message per affected loop.
+// The flag collapses a burst into one snapshot, and the tick stops with the panel.
 public static class TickOverlay
 {
     private const string ToggleCommand = "vmenu_ticks_overlay";

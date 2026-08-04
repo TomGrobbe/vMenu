@@ -2,14 +2,9 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Ticks;
 
-/// <summary>
-/// How long a tick waits between iterations.
-/// </summary>
-/// <remarks>
-/// The wait happens after the handler returns rather than on a timer, so an iteration that takes
-/// longer than the rate delays the next one instead of overlapping with it. That is the whole
-/// difference from <c>API.SetInterval</c>.
-/// </remarks>
+/// <summary>How long a tick waits between iterations.</summary>
+// The wait happens after the handler returns rather than on a timer, so a slow iteration delays the
+// next instead of overlapping with it. That is the whole difference from API.SetInterval.
 public readonly struct TickRate
 {
     private readonly long _milliseconds;

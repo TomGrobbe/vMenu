@@ -4,21 +4,11 @@ using vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Every language vMenu can display.
-/// </summary>
-/// <remarks>
-/// Tables are compiled C# rather than files on disk because the CitizenFX Enhanced sandbox cannot
-/// currently parse JSON on the client. Do not "fix" this by adding a file loader here: it is the
-/// runtime that is missing, not the code. When client side JSON works, replace
-/// <see cref="CompiledLocalizer"/> with a file backed <see cref="ILocalizer"/> — no menu declaration
-/// has to change.
-/// <para>
-/// Keyed by the raw code with an explicit comparer, so no lookup ever reaches
-/// <c>EqualityComparer&lt;T&gt;.Default</c>. The sandbox blocks the internal string comparer it
-/// resolves to.
-/// </para>
-/// </remarks>
+/// <summary>Every language vMenu can display.</summary>
+// Tables are compiled C#. A file backed set is possible through ClientJson, and the way there is to
+// replace CompiledLocalizer with a file backed ILocalizer rather than add a loader here.
+// Keyed with an explicit comparer, so no lookup reaches EqualityComparer<T>.Default, whose internal
+// string comparer the sandbox blocks.
 public static class LanguageCatalog
 {
     private static readonly Dictionary<string, LanguageTable> Tables = new(StringComparer.Ordinal);

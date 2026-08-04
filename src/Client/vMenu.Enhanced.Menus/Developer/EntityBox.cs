@@ -9,16 +9,9 @@ namespace vMenu.Enhanced.Menus.Developer;
 /// <summary>
 /// Draws an entity's model bounding box: shaded faces in the caller's colour, white edges.
 /// </summary>
-/// <remarks>
-/// Allocation free on purpose. This runs for every tracked entity on every frame, and the legacy
-/// version built a fresh eight corner array plus twenty-four jagged sub-arrays each time it was
-/// called. The corners go in a shared buffer instead, and the faces and edges are described once as
-/// index tables into it.
-/// <para>
-/// Sharing the buffer is safe because a draw never spans an await, and the client only ever runs one
-/// tick body at a time.
-/// </para>
-/// </remarks>
+// Allocation free on purpose, running for every tracked entity on every frame. Corners go in a
+// shared buffer and the faces and edges are index tables into it. Sharing is safe because a draw
+// never spans an await and the client runs one tick body at a time.
 internal static class EntityBox
 {
     /// <summary>Keeps coplanar faces of touching boxes from fighting over the same pixels.</summary>

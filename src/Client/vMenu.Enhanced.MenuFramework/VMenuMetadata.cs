@@ -9,12 +9,9 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// A <see cref="VMenuAttribute"/> turned into the types the framework actually uses.
 /// </summary>
-/// <remarks>
-/// Cached per type. Reflection here is one attribute lookup on a type that has already been
-/// instantiated — not an assembly scan, which would be the wrong cost to pay in the client runtime
-/// and would not work anyway, since CitizenFX only discovers types in the assembly named as the
-/// <c>client_script</c>.
-/// </remarks>
+// Cached per type. One attribute lookup on an already instantiated type, not an assembly scan, which
+// would be the wrong cost and would not work anyway since CitizenFX only discovers types in the
+// assembly named as the client_script.
 internal sealed class VMenuMetadata
 {
     private VMenuMetadata(VMenuAttribute? attribute)
@@ -45,11 +42,9 @@ internal sealed class VMenuMetadata
     /// static <c>Dictionary&lt;Type, ...&gt;</c> would be one more default comparer for the sandbox
     /// to object to.
     /// </summary>
-    /// <remarks>
-    /// Guarded because the FiveM sandbox decides at call time which framework members an assembly may
-    /// touch, and a refusal here would otherwise take the whole resource down during startup. A menu
-    /// that loses its metadata still builds; it just falls back to whatever it overrides itself.
-    /// </remarks>
+    // Guarded because the sandbox decides at call time which framework members an assembly may
+    // touch, and a refusal here would take the resource down during startup. A menu that loses its
+    // metadata still builds, falling back to whatever it overrides itself.
     public static VMenuMetadata For(Type type)
     {
         try

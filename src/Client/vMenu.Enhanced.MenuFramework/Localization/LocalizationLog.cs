@@ -5,10 +5,8 @@ namespace vMenu.Enhanced.MenuFramework.Localization;
 /// <summary>
 /// Deduplicated reporting for localization gaps.
 /// </summary>
-/// <remarks>
-/// Every relabel pass walks every entry, so an unguarded log would repeat the same line on every
-/// permission resync and language switch. Reporting each gap once keeps it findable.
-/// </remarks>
+// Every relabel pass walks every entry, so an unguarded log would repeat the same line on every
+// permission resync and language switch.
 internal static class LocalizationLog
 {
     private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);

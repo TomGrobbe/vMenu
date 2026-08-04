@@ -5,10 +5,8 @@ namespace vMenu.Enhanced.MenuFramework.Localization;
 /// <summary>
 /// One language's strings.
 /// </summary>
-/// <remarks>
-/// Only <see cref="LanguageId.English"/> is expected to be complete; every other table may be
-/// partial and falls back to English key by key, so a half-finished translation is still usable.
-/// </remarks>
+// Only English is expected to be complete. Every other table may be partial and falls back key by
+// key, so a half finished translation is still usable.
 public sealed class LanguageTable(LanguageId id, string nativeName, IReadOnlyDictionary<string, string> strings)
 {
     private readonly Dictionary<string, string> _strings = new(strings, StringComparer.Ordinal);

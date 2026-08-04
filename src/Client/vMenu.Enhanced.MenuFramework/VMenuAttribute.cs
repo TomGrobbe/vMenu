@@ -3,15 +3,8 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// Static metadata for a <see cref="MenuDefinition"/>.
 /// </summary>
-/// <remarks>
-/// The attribute is the single source for a menu's identity; the registration list is the single
-/// source for its order and instantiation. They describe different things, so there is nothing to
-/// keep in sync between them.
-/// <para>
-/// A constant cannot express text that is computed at runtime, so a subclass may override the
-/// matching <see cref="MenuDefinition"/> property instead; the override wins.
-/// </para>
-/// </remarks>
+// A constant cannot express text computed at runtime, so a subclass may override the matching
+// MenuDefinition property instead, and the override wins.
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 public sealed class VMenuAttribute : Attribute
 {

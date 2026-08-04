@@ -7,11 +7,8 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// A row whose value is chosen from a fixed list.
 /// </summary>
-/// <remarks>
-/// Options are <see cref="MenuText"/> so they translate with everything else. Values that are data
-/// rather than prose — model names, scenario names — must be declared with
-/// <see cref="MenuText.Literal"/>, otherwise a language change will report them as missing keys.
-/// </remarks>
+// Options are MenuText so they translate. Values that are data rather than prose, such as model
+// names, must use MenuText.Literal or a language change reports them as missing keys.
 public sealed class ListEntry : MenuEntry<MenuListItem>
 {
     public required IReadOnlyList<MenuText> Options { get; init; }

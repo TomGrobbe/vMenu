@@ -5,23 +5,11 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// Payloads handed to entry callbacks.
 /// </summary>
-/// <remarks>
-/// One struct per event rather than a parameter list, so a handler stays a single parameter lambda
-/// and a payload can gain a field later without breaking every call site.
-/// <para>
-/// <c>ItemIndex</c> is MenuAPI's index and is relative to the active filter, so it is fine to show
-/// but must never be used to identify an item. The framework itself dispatches on object identity.
-/// </para>
-/// <para>
-/// Item references are declared nullable where MenuAPI can genuinely hand over null. MenuAPI is not
-/// nullable annotated, so the compiler will not warn about any of this.
-/// </para>
-/// <para>
-/// Do not compare two payloads. The generated equality members route through
-/// <c>EqualityComparer&lt;T&gt;.Default</c>, and the FiveM sandbox throws rather than load the
-/// internal comparers behind it. They exist only because the type is a record; nothing calls them.
-/// </para>
-/// </remarks>
+// ItemIndex is MenuAPI's index and is relative to the active filter, so it is fine to show but must
+// never identify an item. Item references are nullable where MenuAPI can genuinely hand over null,
+// which it is not annotated for, so the compiler will not warn.
+// Never compare two payloads. The generated equality routes through EqualityComparer<T>.Default, and
+// the sandbox throws rather than load the comparers behind it.
 public readonly record struct ItemSelected(Menu Menu, MenuItem Item, int ItemIndex);
 
 public readonly record struct CheckboxChanged(Menu Menu, MenuCheckboxItem Item, int ItemIndex, bool Checked);

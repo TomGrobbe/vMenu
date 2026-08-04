@@ -3,15 +3,9 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// Values for MenuAPI's vehicle stats panel, each 0..1.
 /// </summary>
-/// <remarks>
-/// Modelled here because the panel is a MenuAPI feature, not vMenu domain logic. Doing so keeps
-/// <c>MenuItem.ItemData</c> free: it is <see langword="dynamic"/>, and every access to it emits a
-/// DLR call site that needs <c>Microsoft.CSharp.dll</c> — which the resource manifest does not ship.
-/// <para>
-/// The upgrade overlay is a second value of this same type rather than a property, because a struct
-/// cannot contain itself. See <c>MenuEntry.VehicleUpgradeStats</c>.
-/// </para>
-/// </remarks>
+// Modelled here to keep MenuItem.ItemData free. It is dynamic, and every access emits a DLR call
+// site needing Microsoft.CSharp.dll, which the manifest does not ship. The upgrade overlay is a
+// second value of this type rather than a property, because a struct cannot contain itself.
 public readonly record struct VehicleStats(float TopSpeed, float Acceleration, float Braking, float Traction)
 {
     public static VehicleStats None => default;

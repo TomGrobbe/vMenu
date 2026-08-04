@@ -7,11 +7,8 @@ namespace vMenu.Enhanced.MenuFramework;
 /// <summary>
 /// A row that opens a child menu.
 /// </summary>
-/// <remarks>
-/// One declaration produces the child <see cref="Menu"/>, the link item and the binding between
-/// them. The gate applies to the link item, which is enough to close the door: MenuAPI checks
-/// <c>Enabled</c> before it consults its bound-submenu table, so a locked link cannot open anything.
-/// </remarks>
+// The gate applies to the link item, which is enough to close the door: MenuAPI checks Enabled
+// before consulting its bound submenu table, so a locked link cannot open anything.
 public sealed class SubmenuEntry : MenuEntry<MenuItem>
 {
     /// <summary>Defaults to <see cref="MenuEntry.Text"/>, so most declarations name the menu once.</summary>

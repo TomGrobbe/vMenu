@@ -3,17 +3,11 @@ namespace vMenu.Enhanced.MenuFramework.Localization;
 /// <summary>
 /// A piece of display text that is resolved late rather than baked in at declaration time.
 /// </summary>
-/// <remarks>
-/// Menus declare this instead of <see cref="string"/> so every label can be re-resolved when the
-/// player switches language. Rebuilding menus is not an option: MenuAPI's <c>MenuController</c> has
-/// no way to remove a menu once added, so the only way to change text is to write it back onto the
-/// existing items.
-/// <para>
-/// A plain struct rather than a <see langword="record"/>: the generated equality members would route
-/// through <c>EqualityComparer&lt;string&gt;.Default</c>, which the FiveM sandbox refuses to load,
-/// and nothing here needs to compare two pieces of text.
-/// </para>
-/// </remarks>
+// Declared instead of a string so every label can be re-resolved on a language switch. Rebuilding is
+// not an option, MenuController having no way to remove a menu once added, so text must be written
+// back onto the existing items.
+// A plain struct, not a record: the generated equality would route through
+// EqualityComparer<string>.Default, which the sandbox refuses to load.
 public readonly struct MenuText
 {
     private enum Kind : byte
