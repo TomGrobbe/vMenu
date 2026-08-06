@@ -1,0 +1,13 @@
+namespace vMenu.Enhanced.Data.Permissions.Menus;
+
+[PermissionCategory]
+public static class TimeOptions
+{
+    public const string All = "vMenu.Enhanced.Menus.TimeOptions.All";
+
+    /// <summary>Not <c>[StaffOnly]</c>: reading the clock changes nothing.</summary>
+    public const string Menu = "vMenu.Enhanced.Menus.TimeOptions.Menu";
+
+    [StaffOnly]
+    public const string SetTime = "vMenu.Enhanced.Menus.TimeOptions.SetTime";
+}

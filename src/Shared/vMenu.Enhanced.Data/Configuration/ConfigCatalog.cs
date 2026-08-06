@@ -26,6 +26,8 @@ public static class ConfigCatalog
         new("About", [About.DocumentationUrl, About.DiscordUrl]),
         new("Key Bindings", [KeyBindings.MenuToggleKey, KeyBindings.NoClipToggleKey]),
         new("Vehicle Options", [VehicleOptions.DeleteVehicleDistance, VehicleOptions.DeleteVehicleCommand]),
+        new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.TransitionSeconds]),
+        new("Time Options", [TimeOptions.Enabled, TimeOptions.TransitionSeconds]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
     ];
 

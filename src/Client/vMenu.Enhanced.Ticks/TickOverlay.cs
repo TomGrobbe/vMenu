@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Ticks;
