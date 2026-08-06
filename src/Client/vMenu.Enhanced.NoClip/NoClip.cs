@@ -189,20 +189,15 @@ public static class NoClip
 
     private static readonly InstructionalButton[] InstructionalButtons =
     [
-        new(() => $"Speed: {MoveSpeeds[MovingSpeed].Label}x", static () => "~~"),
-        new(() => "Increase speed", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.SpeedUpControl, true)),
-        new(() => "Decrease speed", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.SpeedDownControl, true)),
-        new(() => "Up", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.UpControl, true)),
-        new(() => "Down", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.DownControl, true)),
-        new(() => "Backward", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.BackwardControl, true)),
-        new(() => "Forward", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.ForwardControl, true)),
+        new(() => $"Change Speed ({MoveSpeeds[MovingSpeed].Label}x)", static () => $"{Native.GetControlInstructionalButton(0, NoClipKeyBindings.SpeedDownControl, true)}%b_998%{Native.GetControlInstructionalButton(0, NoClipKeyBindings.SpeedUpControl, true)}"),
+        new(() => "Up / Down", static () => $"{Native.GetControlInstructionalButton(0, NoClipKeyBindings.DownControl, true)}%b_998%{Native.GetControlInstructionalButton(0, NoClipKeyBindings.UpControl, true)}"),
+        new(() => "Forward / Backward", static () => $"{Native.GetControlInstructionalButton(0, NoClipKeyBindings.BackwardControl, true)}%b_998%{Native.GetControlInstructionalButton(0, NoClipKeyBindings.ForwardControl, true)}"),
         new(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.FollowCamControl, true))
     ];
 
     /// <summary>Only shown when the entity isn't following the camera, see <see cref="FollowCamMode"/>.</summary>
     private static readonly InstructionalButton[] TurnButtons = [
-        new (() => "Turn Right", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnRightControl, true)),
-        new (() =>"Turn Left", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnLeftControl, true))
+        new (() => "Turn Left / Right", static () => $"{Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnLeftControl, true)}%b_998%{Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnRightControl, true)}"),
     ];
 
     private static void DisplayInstructionalButtons()
