@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Data.Diagnostics;
 
 namespace vMenu.Enhanced.Configuration;
 
@@ -33,7 +34,7 @@ public static class ClientConfig
             NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);
         }
 
-        SharedAPI.Commands.RegisterCommand(DumpCommand, false, new Action(Dump));
+        SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
 
     /// <summary>Prints what this client currently reads for every setting.</summary>

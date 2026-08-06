@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;

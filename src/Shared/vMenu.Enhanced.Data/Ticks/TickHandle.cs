@@ -1,6 +1,4 @@
-using CitizenFX.FiveM.Client;
-
-namespace vMenu.Enhanced.Ticks;
+namespace vMenu.Enhanced.Data.Ticks;
 
 /// <summary>One registered tick, and the only way to start or stop it.</summary>
 // Stopping ends the loop rather than idling it, so a feature switched off costs nothing, not even a
@@ -11,6 +9,7 @@ public sealed class TickHandle : IDisposable
     // it was not a one off.
     private const int MaxFailures = 5;
 
+    private readonly TickEngine _engine;
     private readonly Func<Task> _handler;
     private readonly TickRate _rate;
     private readonly Func<bool>? _condition;
@@ -27,8 +26,15 @@ public sealed class TickHandle : IDisposable
     private int _failures;
     private bool _disposed;
 
-    internal TickHandle(string name, Func<Task> handler, TickRate rate, Func<bool>? condition, bool autoStart)
+    internal TickHandle(
+        TickEngine engine,
+        string name,
+        Func<Task> handler,
+        TickRate rate,
+        Func<bool>? condition,
+        bool autoStart)
     {
+        _engine = engine;
         Name = name;
         _handler = handler;
         _rate = rate;
@@ -78,7 +84,7 @@ public sealed class TickHandle : IDisposable
 
         Stop();
 
-        TickRegistry.Unregister(this);
+        _engine.Unregister(this);
     }
 
     internal void Apply()
@@ -93,7 +99,7 @@ public sealed class TickHandle : IDisposable
 
         _running = shouldRun;
 
-        TickRegistry.NotifyChanged();
+        _engine.NotifyChanged();
 
         if (!shouldRun)
         {
@@ -124,7 +130,7 @@ public sealed class TickHandle : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Tick] {Name} condition threw and is being treated as off: {exception}");
+            _engine.Log(TickLog.Error, $"{Name} condition threw and is being treated as off: {exception}");
 
             return false;
         }
@@ -138,7 +144,7 @@ public sealed class TickHandle : IDisposable
         {
             // So a tick body always runs from the tick pump. What starts a tick is usually a
             // callback, and a draw loop firing its first frame inside a checkbox handler surprises.
-            await API.Yield();
+            await _engine.YieldAsync();
 
             while (_running)
             {
@@ -150,15 +156,15 @@ public sealed class TickHandle : IDisposable
                 }
                 catch (Exception exception)
                 {
-                    API.Log.Error($"[Tick] {Name} threw: {exception}");
+                    _engine.Log(TickLog.Error, $"{Name} threw: {exception}");
 
                     if (++_failures >= MaxFailures)
                     {
-                        API.Log.Error($"[Tick] {Name} stopped after {MaxFailures} consecutive failures.");
+                        _engine.Log(TickLog.Error, $"{Name} stopped after {MaxFailures} consecutive failures.");
 
                         _running = false;
 
-                        TickRegistry.NotifyChanged();
+                        _engine.NotifyChanged();
 
                         Notify(OnStopped);
 
@@ -166,7 +172,7 @@ public sealed class TickHandle : IDisposable
                     }
                 }
 
-                await _rate.WaitAsync();
+                await _engine.DelayAsync(_rate.Milliseconds);
             }
         }
         finally
@@ -185,7 +191,7 @@ public sealed class TickHandle : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Tick] {Name} lifecycle callback threw: {exception}");
+            _engine.Log(TickLog.Error, $"{Name} lifecycle callback threw: {exception}");
         }
     }
 }

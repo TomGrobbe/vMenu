@@ -4,7 +4,10 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
+using vMenu.Enhanced.Data.Configuration;
+
 using AboutSetting = vMenu.Enhanced.Data.Configuration.Settings.About;
+using DebuggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Debugging;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -32,18 +35,18 @@ public sealed class AboutMenu : MenuDefinition
 
         menu.Entries.Add(Fact(
             "Client Debug Mode",
-            "Whether the client is logging extra detail. Set in the resource manifest.",
-            MenuText.From(State("client_debug_mode"))));
+            "Whether vMenu's diagnostic commands work in your own console.",
+            MenuText.From(State(DebuggingSettings.Client))));
 
         menu.Entries.Add(Fact(
             "Server Debug Mode",
-            "Whether the server is logging extra detail. Set in the resource manifest.",
-            MenuText.From(State("server_debug_mode"))));
+            "Whether vMenu's diagnostic commands work in the server console.",
+            MenuText.From(State(DebuggingSettings.Server))));
 
         menu.Entries.Add(Fact(
             "Experimental Features",
-            "Whether unfinished features are switched on. Set in the resource manifest.",
-            MenuText.From(State("experimental_features_enabled"))));
+            "Whether unfinished features are switched on.",
+            MenuText.From(State(DebuggingSettings.ExperimentalFeatures))));
 
         menu.Entries.Add(new ButtonEntry
         {
@@ -77,17 +80,9 @@ public sealed class AboutMenu : MenuDefinition
     /// <summary>A manifest value, or a marker when the key is absent.</summary>
     private static Func<string> Metadata(string key) => () => Read(key) ?? "Unknown";
 
-    /// <summary>A manifest flag as words rather than as whatever the manifest happens to spell it.</summary>
-    // The three flags are not written consistently: two are 'false' and one is '0'.
-    private static Func<string> State(string key) => () => Read(key)?.ToLowerInvariant() switch
-    {
-        "true" or "1" or "yes" => "Enabled",
-        "false" or "0" or "no" => "Disabled",
-        null => "Unknown",
-
-        // Shown as written rather than guessed at, so a typo in the manifest is visible.
-        _ => Read(key)!,
-    };
+    /// <summary>A flag as words rather than as true or false.</summary>
+    private static Func<string> State(BoolSetting setting) =>
+        () => ClientConfig.Value(setting) ? "Enabled" : "Disabled";
 
     private static string? Read(string key)
     {

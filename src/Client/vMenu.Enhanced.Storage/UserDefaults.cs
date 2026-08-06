@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
+using vMenu.Enhanced.Data.Diagnostics;
+
 namespace vMenu.Enhanced.Storage;
 
 /// <summary>Every preference vMenu remembers for the player.</summary>
@@ -68,8 +70,8 @@ public static class UserDefaults
     /// <summary>Call once, after <c>ClientJson.Verify</c>.</summary>
     public static void Initialize()
     {
-        SharedAPI.Commands.RegisterCommand(DumpCommand, false, new Action(Dump));
-        SharedAPI.Commands.RegisterCommand(ResetCommand, false, new Action(ResetAll));
+        SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
+        SharedAPI.Commands.RegisterCommand(ResetCommand, false, DebugCommands.Gate(ResetAll));
     }
 
     public static void Dump()

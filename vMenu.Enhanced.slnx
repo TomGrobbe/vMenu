@@ -35,6 +35,7 @@
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
+    <Project Path="src/Server/vMenu.Enhanced.Ticks.Server/vMenu.Enhanced.Ticks.Server.csproj" />
   </Folder>
   <Folder Name="/src/Shared/">
     <File Path="src/Shared/Directory.Build.props" />

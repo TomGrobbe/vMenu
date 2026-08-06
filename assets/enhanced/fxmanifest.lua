@@ -9,13 +9,6 @@ version 'versiongoeshere'
 author 'Tom Grobbe'
 url 'https://github.com/TomGrobbe/vMenu/'
 
--- Adds additional logging, useful when debugging issues.
-client_debug_mode 'false'
-server_debug_mode 'false'
-
--- Adds extra commands for testing and development
-experimental_features_enabled '0'
-
 ui_page 'ui/index.html'
 
 files {
@@ -53,5 +46,8 @@ files {
 -- Client assembly
 client_script 'client/vMenu.Enhanced.Core.dll'
 
--- Server assembly
-server_script 'server/vMenu.Enhanced.Core.Server.dll'
+-- Server assembly. The Lua file is listed first because the assembly calls its export.
+server_scripts {
+    'server/host_clock.lua',
+    'server/vMenu.Enhanced.Core.Server.dll',
+}

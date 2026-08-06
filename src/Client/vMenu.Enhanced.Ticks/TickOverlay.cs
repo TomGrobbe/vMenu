@@ -3,6 +3,8 @@ using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Ticks;
@@ -31,7 +33,7 @@ public static class TickOverlay
 
     internal static void Initialize()
     {
-        SharedAPI.Commands.RegisterCommand(ToggleCommand, false, new Action(Toggle));
+        SharedAPI.Commands.RegisterCommand(ToggleCommand, false, DebugCommands.Gate(Toggle));
 
         TickRegistry.Changed += MarkDirty;
 

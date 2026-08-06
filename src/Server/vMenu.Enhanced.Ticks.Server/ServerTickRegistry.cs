@@ -1,17 +1,17 @@
-using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 
-namespace vMenu.Enhanced.Ticks;
+namespace vMenu.Enhanced.Ticks.Server;
 
-/// <summary>Every per frame loop in the client, so each one can be named, gated and stopped.</summary>
-public static class TickRegistry
+/// <summary>Every loop on the server, so each one can be named, gated and stopped.</summary>
+public static class ServerTickRegistry
 {
     private const string DumpCommand = "vmenu_ticks";
 
-    private static readonly TickEngine Engine = new(ms => API.Delay(ms), () => API.Yield(), Write);
+    private static readonly TickEngine Engine = new(ms => API.Delay(ms), () => API.Delay(0), Write);
 
     public static IReadOnlyList<TickHandle> Handles => Engine.Handles;
 
@@ -21,12 +21,8 @@ public static class TickRegistry
         remove => Engine.Changed -= value;
     }
 
-    public static void Initialize()
-    {
-        SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
-
-        TickOverlay.Initialize();
-    }
+    public static void Initialize() =>
+        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 
     public static TickHandle Register(
         string name,

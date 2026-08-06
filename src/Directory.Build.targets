@@ -90,6 +90,26 @@
   </Target>
 
   <!--
+    Lua that ships alongside the server assemblies. Overwritten every build like the UI: it is
+    vMenu's own code, not something an owner edits. The server projects write their DLLs into the
+    same folder, which is why this copies into server/ rather than a folder of its own.
+  -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceServerScriptFile Include="$(RepoRoot)assets\enhanced\server\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceServerScriptFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ResourceServerScriptFile)"
+          Outputs="@(ResourceServerScriptFile -> '$(ResourceRoot)server\%(RecursiveDir)%(Filename)%(Extension)')">
+
+    <Copy SourceFiles="@(ResourceServerScriptFile)"
+          DestinationFiles="@(ResourceServerScriptFile -> '$(ResourceRoot)server\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
     Config files are defaults for a server owner to edit in place, so they are only copied when
     missing. Delete one in build/vMenu.Enhanced/config/ to get the default back.
   -->

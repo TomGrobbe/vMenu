@@ -7,11 +7,13 @@ using MenuAPI;
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration.Settings;
+using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
@@ -68,6 +70,11 @@ public sealed class Main : IScript
         // treating every convar backed menu as switched off.
         ClientConfig.Initialize();
 
+        DebugCommands.Source(
+            () => ClientConfig.Value(Debugging.Client),
+            Debugging.Client.Name,
+            message => API.Log.Info($"[vMenu] {message}"));
+
         // MenuAPI registers its key mappings on the first tick, and nothing here awaits before then,
         // so this lands in time. It is only the starting key: a player who has rebound it keeps theirs.
         MenuController.MenuToggleKeyDefault = ClientConfig.Value(KeyBindings.MenuToggleKey);
@@ -81,10 +88,14 @@ public sealed class Main : IScript
         ClientConfig.Changed += TickRegistry.Reevaluate;
         ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
 
-        // All three watch their own setting and permission, so they need no particular order here.
+        // All four watch their own setting and permission, so they need no particular order here.
         VehicleCommands.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
+
+        // Before the wait below, so the sky and the clock are right on the player's first frame
+        // rather than snapping into place after they spawn.
+        WorldSync.Initialize();
 
         while (!ClientPermissions.HasReceivedPermissions)
         {

@@ -4,6 +4,7 @@ using System.Text;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Ticks;
 

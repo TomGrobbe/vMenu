@@ -11,6 +11,7 @@ public static class MainMenuComposition
     [
         new VehicleOptionsMenu(),
         new VehicleSpawnerMenu(),
+        new WorldMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
         new AboutMenu(),
