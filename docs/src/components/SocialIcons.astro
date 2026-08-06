@@ -1,0 +1,60 @@
+---
+// Override: prepend a "Back to all docs" pill (linking to the vMenu version
+// selector) to the header nav, then render Starlight's default social icons.
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+
+// One level up from this doc set: /vmenu/legacy/ -> /vmenu/.
+const chooser = import.meta.env.BASE_URL.replace(/\/(legacy|enhanced|redm)\/?$/, '/');
+---
+
+<a class="back-nav-link" href={chooser}>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+  <span class="label">Back to all docs</span>
+</a>
+
+<Default><slot /></Default>
+
+<style>
+  .back-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Fredoka', system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1;
+    color: #1a1523;
+    background: #fff;
+    border: 2px solid #1a1523;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    box-shadow: 3px 3px 0 #1a1523;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+  }
+  .back-nav-link:hover {
+    transform: translate(-1px, -2px);
+    box-shadow: 5px 6px 0 #1a1523;
+    background: #7fe0c8;
+  }
+  .back-nav-link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #1a1523;
+  }
+  .back-nav-link svg {
+    transition: transform 0.2s ease;
+  }
+  .back-nav-link:hover svg {
+    transform: translateX(-3px);
+  }
+  /* keep the header uncramped on narrow viewports */
+  @media (max-width: 50rem) {
+    .back-nav-link .label {
+      display: none;
+    }
+    .back-nav-link {
+      padding: 0.4rem 0.55rem;
+    }
+  }
+</style>

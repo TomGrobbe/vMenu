@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - "**"
+    # Docs live in /docs and deploy via docs.yml — don't trigger the .NET
+    # build/release pipeline (and cut a spurious release) on docs-only commits.
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
   pull_request:
 
 permissions:
@@ -246,6 +251,7 @@ jobs:
         shell: bash
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           if [ -z "$DISCORD_WEBHOOK_URL" ]; then
             echo "DISCORD_WEBHOOK_URL not configured, skipping."
@@ -283,6 +289,14 @@ jobs:
           SHA="${{ github.sha }}"
           SHORT_SHA="${SHA:0:7}"
 
+          # Discord caps embed field values at 1024 chars. Use only the commit
+          # subject (first line) and truncate it so the payload is never rejected
+          # with HTTP 400 on long, multi-line (e.g. squash-merged) messages.
+          COMMIT_SUBJECT=$(printf '%s' "$COMMIT_MSG" | head -n 1)
+          if [ "${#COMMIT_SUBJECT}" -gt 256 ]; then
+            COMMIT_SUBJECT="${COMMIT_SUBJECT:0:253}..."
+          fi
+
           PAYLOAD=$(jq -n \
             --arg  title       "vMenu (v${DISPLAY_VERSION})" \
             --arg  desc        "$STATUS_TEXT" \
@@ -294,7 +308,7 @@ jobs:
             --arg  link_url    "$LINK_URL" \
             --arg  short_sha   "$SHORT_SHA" \
             --arg  commit_url  "https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
-            --arg  commit_msg  "${{ github.event.head_commit.message }}" \
+            --arg  commit_msg  "$COMMIT_SUBJECT" \
             '{
               embeds: [{
                 title:       $title,

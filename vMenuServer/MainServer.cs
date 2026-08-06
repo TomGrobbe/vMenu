@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -185,6 +186,7 @@ namespace vMenuServer
             "XMAS",
             "HALLOWEEN"
         };
+        
         #endregion
 
         #region Constructor
@@ -224,16 +226,33 @@ namespace vMenuServer
                 }));
 
                 // check addons file for errors
+                Dictionary<string, List<string>> addonsData = new();
                 var addons = LoadResourceFile(GetCurrentResourceName(), "config/addons.json") ?? "{}";
                 try
                 {
-                    JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
+                    addonsData = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(addons);
                     // If the above crashes, then the json is invalid and it'll throw warnings in the console.
                 }
                 catch (JsonReaderException ex)
                 {
                     Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your addons.json file contains a problem! Error details: {ex.Message}\n\n");
                 }
+
+                // check model-whitelists file for errors
+                Dictionary<string, List<string>> whitelistData = new();
+                var whitelist = LoadResourceFile(GetCurrentResourceName(), "config/model-whitelists.json") ?? "{}";
+                try
+                {
+                    whitelistData = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(whitelist);
+                    // If the above crashes, then the json is invalid and it'll throw warnings in the console.
+                }
+                catch (JsonReaderException ex)
+                {
+                    Debug.WriteLine($"\n\n^1[vMenu] [ERROR] ^7Your model-whitelists.json file contains a problem! Error details: {ex.Message}\n\n");
+                }
+
+                // setup addon permissions
+                SetupAddonPerms(whitelistData, addonsData);
 
                 // check extras file for errors
                 string extras = LoadResourceFile(GetCurrentResourceName(), "config/extras.json") ?? "{}";
@@ -528,7 +547,7 @@ namespace vMenuServer
         [EventHandler("vMenu:GetOutOfCar")]
         internal void GetOutOfCar([FromSource] Player source, int vehicleNetId)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.PVKickPassengers, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.PVAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.PVKickPassengers, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -707,7 +726,7 @@ namespace vMenuServer
         [EventHandler("vMenu:UpdateServerWeather")]
         internal void UpdateWeather([FromSource] Player source, string newWeather, bool dynamicWeatherNew, bool enableSnow)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOSetWeather, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOSetWeather, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -731,7 +750,7 @@ namespace vMenuServer
         [EventHandler("vMenu:UpdateServerBlackout")]
         internal void UpdateBlackout([FromSource] Player source, bool value)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOBlackout, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOBlackout, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -743,7 +762,7 @@ namespace vMenuServer
         [EventHandler("vMenu:UpdateServerVehicleBlackout")]
         internal void UpdateVehicleBlackout([FromSource] Player source, bool value)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOVehBlackout, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WOVehBlackout, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -759,11 +778,10 @@ namespace vMenuServer
         [EventHandler("vMenu:UpdateServerWeatherCloudsType")]
         internal void UpdateWeatherCloudsType([FromSource] Player source, bool removeClouds)
         {
-            bool allWOPermissions = PermissionsManager.IsAllowed(PermissionsManager.Permission.WOAll, source);
 
             if (removeClouds)
             {
-                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORemoveClouds, source) && !allWOPermissions)
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORemoveClouds, source))
                 {
                     BanManager.BanCheater(source);
                     return;
@@ -773,7 +791,7 @@ namespace vMenuServer
             }
             else
             {
-                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORandomizeClouds, source) && !allWOPermissions)
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.WORandomizeClouds, source))
                 {
                     BanManager.BanCheater(source);
                     return;
@@ -790,15 +808,43 @@ namespace vMenuServer
         /// </summary>
         /// <param name="newHours"></param>
         /// <param name="newMinutes"></param>
+        /// <param name="newFreezeTime"></param>
         [EventHandler("vMenu:UpdateServerTime")]
-        internal void UpdateTime([FromSource] Player source, int newHours, int newMinutes)
+        internal async void UpdateTime([FromSource] Player source, int newHours, int newMinutes, bool newFreezeTime)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOSetTime, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.TOAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOSetTime, source))
             {
                 BanManager.BanCheater(source);
                 return;
             }
 
+            if (GetSettingsBool(Setting.vmenu_smooth_time_transitions))
+            {
+                CurrentHours = CurrentHours;
+                CurrentMinutes = CurrentMinutes;
+                FreezeTime = true;
+                while (newHours != CurrentHours)
+                {
+                    if ((CurrentMinutes + 1) > 59)
+                    {
+                        CurrentMinutes = 0;
+                        if ((CurrentHours + 1) > 23)
+                        {
+                            CurrentHours = 0;
+                        }
+                        else
+                        {
+                            CurrentHours++;
+                        }
+                    }
+                    else
+                    {
+                        CurrentMinutes = CurrentMinutes + 5;
+                    }
+                    await Delay(0);
+                }
+                FreezeTime = newFreezeTime;   
+            }
             CurrentHours = newHours;
             CurrentMinutes = newMinutes;
         }
@@ -811,7 +857,7 @@ namespace vMenuServer
         [EventHandler("vMenu:FreezeServerTime")]
         internal void FreezeServerTime([FromSource] Player source, bool freezeTime)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOFreezeTime, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.TOAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.TOFreezeTime, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -831,7 +877,7 @@ namespace vMenuServer
         [EventHandler("vMenu:KickPlayer")]
         internal void KickPlayer([FromSource] Player source, int target, string kickReason = "You have been kicked from the server.")
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKick, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKick, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -866,7 +912,7 @@ namespace vMenuServer
         [EventHandler("vMenu:KillPlayer")]
         internal void KillPlayer([FromSource] Player source, int target)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKill, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPKill, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -890,7 +936,7 @@ namespace vMenuServer
         [EventHandler("vMenu:SummonPlayer")]
         internal async void SummonPlayer([FromSource] Player source, int target, int numberOfSeats)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSummon, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSummon, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -968,7 +1014,7 @@ namespace vMenuServer
         [EventHandler("vMenu:SendMessageToPlayer")]
         internal void SendPrivateMessage([FromSource] Player source, int target, string message)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSendMessage, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSendMessage, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -1002,7 +1048,7 @@ namespace vMenuServer
 
             foreach (string playerHandle in joinedPlayers)
             {
-                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSeePrivateMessages, playerHandle) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, playerHandle))
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPSeePrivateMessages, playerHandle))
                 {
                     continue;
                 }
@@ -1044,7 +1090,7 @@ namespace vMenuServer
         [EventHandler("vMenu:SaveTeleportLocation")]
         internal void AddTeleportLocation([FromSource] Player source, string locationJson)
         {
-            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSTeleportSaveLocation, source) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.MSAll, source))
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSTeleportSaveLocation, source))
             {
                 BanManager.BanCheater(source);
                 return;
@@ -1094,7 +1140,7 @@ namespace vMenuServer
         {
             var coords = Vector3.Zero;
 
-            if (PermissionsManager.IsAllowed(PermissionsManager.Permission.OPTeleport, source) || PermissionsManager.IsAllowed(PermissionsManager.Permission.OPAll, source))
+            if (PermissionsManager.IsAllowed(PermissionsManager.Permission.OPTeleport, source))
             {
                 Player targetPlayer = GetPlayerFromServerId(playerId);
 
@@ -1122,7 +1168,7 @@ namespace vMenuServer
 
             foreach (string playerHandle in joinedPlayers)
             {
-                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSJoinQuitNotifs, playerHandle) && !PermissionsManager.IsAllowed(PermissionsManager.Permission.MSAll, playerHandle))
+                if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.MSJoinQuitNotifs, playerHandle))
                 {
                     continue;
                 }
@@ -1150,6 +1196,7 @@ namespace vMenuServer
                 joinedPlayers.Add(player.Handle);
 
                 PermissionsManager.SetPermissionsForPlayer(player);
+                SupplementaryPermissionManager.SetPermissionsForPlayer(player);
             }
         }
 
@@ -1159,6 +1206,7 @@ namespace vMenuServer
             joinedPlayers.Add(sourcePlayer.Handle);
 
             PermissionsManager.SetPermissionsForPlayer(sourcePlayer);
+            SupplementaryPermissionManager.SetPermissionsForPlayer(sourcePlayer);
 
             string sourcePlayerName = sourcePlayer.Name;
 
@@ -1188,6 +1236,52 @@ namespace vMenuServer
         #endregion
 
         #region Utilities
+        private void SetupAddonPerms(Dictionary<string, List<string>> whitelists, Dictionary<string, List<string>> addons)
+        {
+            if (whitelists.ContainsKey("whitelistedweapons"))
+            {
+                foreach (var whitelist in whitelists["whitelistedweapons"])
+                {
+                    if (!SupplementaryPermissionManager.Permission.Contains("WW" + whitelist.ToLower().Replace("weapon_", "")))
+                    {
+                        SupplementaryPermissionManager.Permission.Add("WW" + whitelist.ToLower().Replace("weapon_", ""));
+                    }
+                }
+            }
+            if (whitelists.ContainsKey("whitelistedvehicle"))
+            {
+                foreach (var whitelist in whitelists["whitelistedvehicle"])
+                {
+                    if (!SupplementaryPermissionManager.Permission.Contains("VW" + whitelist.ToLower()))
+                    {
+                        SupplementaryPermissionManager.Permission.Add("VW" + whitelist.ToLower());
+                    }
+                }
+            }
+            if (whitelists.ContainsKey("whitelistedpeds"))
+            {
+                foreach (var whitelist in whitelists["whitelistedpeds"])
+                {
+                    if (!SupplementaryPermissionManager.Permission.Contains("PW" + whitelist.ToLower()))
+                    {
+                        SupplementaryPermissionManager.Permission.Add("PW" + whitelist.ToLower());
+                    }
+                }
+            }
+            
+            List<string> supplementaryPermissions = [
+                "#################################################################",
+                "#                   THIS IS A TEMPLATE FILE.                    #",
+                "#          DO NOT EDIT, MAKE A COPY AND EDIT THE COPY.          #",
+                "#################################################################",
+            ];
+            foreach (string permission in SupplementaryPermissionManager.Permission)
+            {
+                supplementaryPermissions.Add("add_ace builtin.everyone \"" + SupplementaryPermissionManager.GetAceName(permission) + "\" allow");
+            }
+            Directory.CreateDirectory(Path.Combine(GetResourcePath(GetCurrentResourceName()), "config", "templates"));
+            File.WriteAllLines(Path.Combine(GetResourcePath(GetCurrentResourceName()), "config", "templates", "SupplementaryPermissionTemplate.cfg"), supplementaryPermissions.ToArray());
+        }
         private Player GetPlayerFromServerId(string serverId)
         {
             if (!int.TryParse(serverId, out int serverIdInt))

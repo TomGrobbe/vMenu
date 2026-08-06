@@ -159,7 +159,7 @@ namespace vMenuClient.menus
                 currentCharacter.PropVariations.props = new Dictionary<int, KeyValuePair<int, int>>();
                 currentCharacter.PedHeadBlendData = Game.PlayerPed.GetHeadBlendData();
                 currentCharacter.Version = 1;
-                currentCharacter.ModelHash = male ? (uint)GetHashKey("mp_m_freemode_01") : (uint)GetHashKey("mp_f_freemode_01");
+                currentCharacter.ModelHash = male ? Game.GenerateHashASCII("mp_m_freemode_01") : Game.GenerateHashASCII("mp_f_freemode_01");
                 currentCharacter.IsMale = male;
 
                 // Places the sliders in the middle by default
@@ -1626,13 +1626,13 @@ namespace vMenuClient.menus
 
                 foreach (var tattoo in allTattoos)
                 {
-                    AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                    AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tattoo.Key), Game.GenerateHashASCII(tattoo.Value));
                 }
 
                 if (!string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Key) && !string.IsNullOrEmpty(currentCharacter.PedAppearance.HairOverlay.Value))
                 {
                     // reset hair value
-                    AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Key), (uint)GetHashKey(currentCharacter.PedAppearance.HairOverlay.Value));
+                    AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(currentCharacter.PedAppearance.HairOverlay.Key), Game.GenerateHashASCII(currentCharacter.PedAppearance.HairOverlay.Value));
                 }
             }
 
@@ -1653,7 +1653,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.HairTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 1) // head
@@ -1662,7 +1662,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.HeadTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 2) // torso
@@ -1671,7 +1671,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.TorsoTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 3) // left arm
@@ -1680,7 +1680,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.LeftArmTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 4) // right arm
@@ -1689,7 +1689,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.RightArmTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 5) // left leg
@@ -1698,7 +1698,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.LeftLegTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 6) // right leg
@@ -1707,7 +1707,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.RightLegTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 7) // badges
@@ -1716,7 +1716,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.BadgeTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
                 else if (menuIndex == 8) // addon
@@ -1725,7 +1725,7 @@ namespace vMenuClient.menus
                     var tat = new KeyValuePair<string, string>(Tattoo.collectionName, Tattoo.name);
                     if (!currentCharacter.PedTatttoos.AddonTattoos.Contains(tat))
                     {
-                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, (uint)GetHashKey(tat.Key), (uint)GetHashKey(tat.Value));
+                        AddPedDecorationFromHashes(Game.PlayerPed.Handle, Game.GenerateHashASCII(tat.Key), Game.GenerateHashASCII(tat.Value));
                     }
                 }
             };
@@ -2232,7 +2232,7 @@ namespace vMenuClient.menus
             {
                 if (item == createMaleBtn)
                 {
-                    var model = (uint)GetHashKey("mp_m_freemode_01");
+                    var model = Game.GenerateHashASCII("mp_m_freemode_01");
 
                     if (!HasModelLoaded(model))
                     {
@@ -2267,7 +2267,7 @@ namespace vMenuClient.menus
                 }
                 else if (item == createFemaleBtn)
                 {
-                    var model = (uint)GetHashKey("mp_f_freemode_01");
+                    var model = Game.GenerateHashASCII("mp_f_freemode_01");
 
                     if (!HasModelLoaded(model))
                     {
@@ -3213,7 +3213,7 @@ namespace vMenuClient.menus
                 currentCharacter.PedAppearance.hairStyle = newHairIndex;
                 if (hairOverlays.ContainsKey(newHairIndex))
                 {
-                    SetPedFacialDecoration(Game.PlayerPed.Handle, (uint)GetHashKey(hairOverlays[newHairIndex].Key), (uint)GetHashKey(hairOverlays[newHairIndex].Value));
+                    SetPedFacialDecoration(Game.PlayerPed.Handle, Game.GenerateHashASCII(hairOverlays[newHairIndex].Key), Game.GenerateHashASCII(hairOverlays[newHairIndex].Value));
                     currentCharacter.PedAppearance.HairOverlay = new KeyValuePair<string, string>(hairOverlays[newHairIndex].Key, hairOverlays[newHairIndex].Value);
                 }
             }
@@ -3366,7 +3366,7 @@ namespace vMenuClient.menus
             SetPedHairColor(pedHandle, appData.hairColor, appData.hairHighlightColor);
             if (!string.IsNullOrEmpty(appData.HairOverlay.Key) && !string.IsNullOrEmpty(appData.HairOverlay.Value))
             {
-                SetPedFacialDecoration(pedHandle, (uint)GetHashKey(appData.HairOverlay.Key), (uint)GetHashKey(appData.HairOverlay.Value));
+                SetPedFacialDecoration(pedHandle, Game.GenerateHashASCII(appData.HairOverlay.Key), Game.GenerateHashASCII(appData.HairOverlay.Value));
             }
             // blemishes
             SetPedHeadOverlay(pedHandle, 0, appData.blemishesStyle, appData.blemishesOpacity);
@@ -3470,7 +3470,7 @@ namespace vMenuClient.menus
 
             foreach (var tattoo in allTattoos)
             {
-                AddPedDecorationFromHashes(pedHandle, (uint)GetHashKey(tattoo.Key), (uint)GetHashKey(tattoo.Value));
+                AddPedDecorationFromHashes(pedHandle, Game.GenerateHashASCII(tattoo.Key), Game.GenerateHashASCII(tattoo.Value));
             }
             #endregion
         }

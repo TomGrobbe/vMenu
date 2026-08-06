@@ -47,7 +47,7 @@ namespace vMenuClient
         /// <returns>true spawn was succesful</returns>
         public static void SpawnEntity(string model, Vector3 coords)
         {
-            SpawnEntity((uint)GetHashKey(model), coords);
+            SpawnEntity(Game.GenerateHashASCII(model), coords);
         }
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace vMenuClient.menus
         public bool UnlimitedParachutes { get; private set; } = UserDefaults.WeaponsUnlimitedParachutes;
 
         public static Dictionary<string, uint> AddonWeapons = new();
+        public static Dictionary<string, uint> WeaponWhitelist = new();
 
         private Dictionary<Menu, ValidWeapon> weaponInfo;
         private Dictionary<Menu, ValidAddonWeapon> addonWeaponInfo;
@@ -113,6 +114,16 @@ namespace vMenuClient.menus
                         ItemData = stats
                     };
 
+                    string spawnName = addonWeapon.SpawnName;
+
+                    if (!vMenuShared.SupplementaryPermissionManager.IsAllowed("WW" + spawnName.ToLower().Replace("weapon_", "")))
+                    {
+                        addonWeaponItem.Enabled = false;
+                        addonWeaponItem.LeftIcon = MenuItem.Icon.LOCK;
+                        addonWeaponItem.Description = "Access to this has been restricted by the server owner.";
+                    }
+                    
+                    
                     addonWeaponInfo.Add(addonWeaponMenu, addonWeapon);
 
                     var getOrRemoveWeapon = new MenuItem("Equip/Remove Weapon", "Add or remove this weapon to/form your inventory.")
@@ -363,15 +374,15 @@ namespace vMenuClient.menus
                 {
                     if (item == togglePrimary)
                     {
-                        if (HasPedGotWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), false))
+                        if (HasPedGotWeapon(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), false))
                         {
                             Subtitle.Custom("Primary parachute removed.");
-                            RemoveWeaponFromPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"));
+                            RemoveWeaponFromPed(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"));
                         }
                         else
                         {
                             Subtitle.Custom("Primary parachute added.");
-                            GiveWeaponToPed(Game.PlayerPed.Handle, (uint)GetHashKey("gadget_parachute"), 0, false, false);
+                            GiveWeaponToPed(Game.PlayerPed.Handle, Game.GenerateHashASCII("gadget_parachute"), 0, false, false);
                         }
                     }
                     else if (item == toggleReserve)
@@ -801,7 +812,7 @@ namespace vMenuClient.menus
                         SetPedAmmo(Game.PlayerPed.Handle, avw.Hash, ammo);
                     }
 
-                    SetCurrentPedWeapon(Game.PlayerPed.Handle, (uint)GetHashKey("weapon_unarmed"), true);
+                    SetCurrentPedWeapon(Game.PlayerPed.Handle, Game.GenerateHashASCII("weapon_unarmed"), true);
                 }
                 else if (item == removeAllWeapons)
                 {

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vMenu Docs</title>
+  <meta name="description" content="Documentation for vMenu — a server-sided trainer/menu for FiveM." />
+  <link rel="icon" type="image/png" href="/vmenu/legacy/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GXWQVLZ8Z"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5GXWQVLZ8Z');
+  </script>
+  <style>
+    :root {
+      --ink: #1a1523;
+      --cream: #fef3d9;
+      --dot: #f4dfb0;
+      --violet: #b79bff;
+      --mint: #7fe0c8;
+      --muted: #cdc6bb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Fredoka', system-ui, sans-serif;
+      background-color: var(--cream);
+      background-image: radial-gradient(var(--dot) 2.5px, transparent 2.5px);
+      background-size: 30px 30px;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .head {
+      text-align: center;
+      margin-bottom: 2.4rem;
+      animation: pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .head .logo {
+      width: 84px;
+      height: 84px;
+      border: 4px solid var(--ink);
+      border-radius: 22px;
+      background: var(--violet);
+      box-shadow: 6px 6px 0 var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .head .logo svg { width: 42px; height: 42px; }
+    .head h1 { font-size: 2.6rem; font-weight: 700; line-height: 1; }
+    .head p { font-size: 1.1rem; font-weight: 500; opacity: 0.7; margin-top: 0.4rem; }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: stretch;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .card {
+      position: relative;
+      flex: 1 1 260px;
+      max-width: 320px;
+      text-decoration: none;
+      color: var(--ink);
+      background: #fff;
+      border: 4px solid var(--ink);
+      border-radius: 26px;
+      padding: 2.4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 8px 8px 0 var(--ink);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+      animation: pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .card.legacy  { animation-delay: 0.05s; }
+    .card.enhanced { animation-delay: 0.15s; }
+
+    .card.legacy:hover {
+      transform: translate(-2px, -4px);
+      box-shadow: 12px 14px 0 var(--ink);
+      background: var(--violet);
+    }
+    .card.legacy:active {
+      transform: translate(6px, 6px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .card.enhanced:hover {
+      transform: translate(-2px, -4px);
+      box-shadow: 12px 14px 0 var(--ink);
+      background: var(--mint);
+    }
+    .card.enhanced:active {
+      transform: translate(6px, 6px);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    .blob {
+      width: 96px;
+      height: 96px;
+      border: 4px solid var(--ink);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.4rem;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .card.legacy .blob   { background: var(--violet); box-shadow: 4px 4px 0 var(--ink); }
+    .card.enhanced .blob { background: var(--mint); box-shadow: 4px 4px 0 var(--ink); }
+    .card:hover .blob { transform: rotate(-8deg) scale(1.05); }
+    .blob svg { width: 46px; height: 46px; }
+
+    .name { font-size: 1.7rem; font-weight: 700; line-height: 1; margin-bottom: 0.4rem; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+    .card:hover .tag { opacity: 1; }
+    .tag svg { transition: transform 0.2s ease; }
+    .card:hover .tag svg { transform: translateX(4px); }
+
+    .badge {
+      position: absolute;
+      top: -14px;
+      right: -10px;
+      background: var(--mint);
+      color: var(--ink);
+      border: 3px solid var(--ink);
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 3px 3px 0 var(--ink);
+      transform: rotate(6deg);
+    }
+
+    .back {
+      margin-top: 2.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 1rem;
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 999px;
+      padding: 0.6rem 1.2rem;
+      box-shadow: 4px 4px 0 var(--ink);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+      animation: pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+      animation-delay: 0.25s;
+    }
+    .back:hover {
+      transform: translate(-2px, -3px);
+      box-shadow: 7px 8px 0 var(--ink);
+      background: var(--mint);
+    }
+    .back:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+    .back svg { transition: transform 0.2s ease; }
+    .back:hover svg { transform: translateX(-3px); }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(24px) scale(0.9); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1523" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/><line x1="7" y1="17" x2="13" y2="17"/></svg>
+    </div>
+    <h1>vMenu</h1>
+    <p>Documentation</p>
+  </div>
+
+  <main class="cards">
+    <a class="card legacy" href="/vmenu/legacy/">
+      <div class="blob">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1523" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div class="name">vMenu for FiveM Legacy</div>
+      <span class="tag">
+        Browse documentation
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </span>
+    </a>
+
+    <a class="card enhanced" href="/vmenu/enhanced/">
+      <div class="blob">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1523" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="name">vMenu for FiveM Enhanced</div>
+      <span class="tag">
+        Browse documentation
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </span>
+    </a>
+  </main>
+
+  <a class="back" href="/">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to all docs
+  </a>
+</body>
+</html>

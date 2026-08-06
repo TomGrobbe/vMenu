@@ -89,12 +89,12 @@ namespace vMenuClient.data
                     var realName = addonWeapon.Key;
                     var localizedName = addonWeapon.Value;
                     if (realName == "weapon_unarmed") continue;
-                    var hash = (uint)GetHashKey(realName);
+                    var hash = Game.GenerateHashASCII(realName);
                     var componentHashes = new Dictionary<string, uint>();
                     var weaponComponents = ValidWeapons.GetWeaponComponents();
                     foreach (var comp in weaponComponents.Keys)
                     {
-                        uint componentHash = (uint)GetHashKey(comp);
+                        uint componentHash = Game.GenerateHashASCII(comp);
                         if (DoesWeaponTakeWeaponComponent(hash, componentHash))
                         {
                             string componentName = weaponComponents[comp];

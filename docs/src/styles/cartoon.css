@@ -1,0 +1,328 @@
+:root {
+  --ink: #1a1523;
+  --cream: #fef3d9;
+  --cream-deep: #fbe9c7;
+  --dot: #f4dfb0;
+  --paper: #ffffff;
+  --violet: #b79bff;
+  --violet-deep: #6b46e0;
+  --violet-ink: #4a2fb0;
+  --violet-tint: #efe8ff;
+  --mint: #7fe0c8;
+  --mint-deep: #159e80;
+  --mint-tint: #e2f8f2;
+  --gold: #f6c453;
+  --rose: #ff8f8f;
+  --rose-deep: #d64545;
+
+  /* cartoon primitives */
+  --toon-border: 3px solid var(--ink);
+  --toon-radius: 18px;
+  --toon-radius-lg: 26px;
+  --toon-shadow: 6px 6px 0 var(--ink);
+  --toon-shadow-sm: 4px 4px 0 var(--ink);
+  --toon-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---- Starlight variable overrides (applied to every theme state) -------- */
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  --sl-font: 'Fredoka', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* text */
+  --sl-color-white: var(--ink);        /* brightest text -> ink on light bg */
+  --sl-color-gray-1: #241f2e;
+  --sl-color-gray-2: #332d3f;
+  --sl-color-gray-3: #574f63;          /* muted body text */
+  --sl-color-gray-4: #7c7488;
+  --sl-color-gray-5: #b3aabf;
+  --sl-color-gray-6: #eadfcd;          /* subtle surface on cream */
+  --sl-color-gray-7: #f6eeda;
+  --sl-color-black: var(--cream);      /* darkest bg -> cream in light land */
+  --sl-color-text: var(--ink);
+  --sl-color-text-invert: var(--cream);
+
+  /* accent (violet) */
+  --sl-color-accent-low: var(--violet-tint);
+  --sl-color-accent: var(--violet-deep);
+  --sl-color-accent-high: var(--violet-ink);
+  --sl-color-text-accent: var(--violet-deep);
+
+  /* backgrounds */
+  --sl-color-bg: var(--cream);
+  --sl-color-bg-nav: var(--cream);
+  --sl-color-bg-sidebar: var(--cream);
+  --sl-color-bg-inline-code: var(--paper);
+  --sl-color-bg-accent: var(--violet-deep);
+
+  /* borders — keep Starlight's own hairlines subtle; the bold cartoon borders
+     are applied explicitly per element (header, sidebar, cards, etc.) */
+  --sl-color-hairline: rgba(26, 21, 35, 0.12);
+  --sl-color-hairline-shade: rgba(26, 21, 35, 0.1);
+  --sl-color-hairline-light: rgba(26, 21, 35, 0.14);
+
+  /* type scale bump for the playful feel */
+  --sl-text-h1: 2.6rem;
+  --sl-text-h2: 1.9rem;
+  --sl-text-h3: 1.45rem;
+}
+
+/* solid cream background (no polka dots behind docs text — keeps it readable) */
+html {
+  background-color: var(--cream);
+  scroll-behavior: smooth;
+}
+body {
+  background: transparent;
+}
+
+/* Fredoka everywhere + chunky headings */
+body,
+.sl-markdown-content {
+  font-family: var(--sl-font);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6,
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.site-title {
+  font-family: var(--sl-font);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* =========================== Header ===================================== */
+/* Only the OUTER page header. Starlight's inner Header.astro root is also a
+   `<div class="header">`, so scope by the <header> tag to avoid a doubled
+   border bar under the navbar. */
+header.header {
+  background: var(--cream);
+  border-bottom: var(--toon-border);
+}
+
+/* Starlight's mobile "On this page" bar sits flush under the header on narrower
+   viewports — drop its own top border so it doesn't read as a second navbar. */
+mobile-starlight-toc nav {
+  border-top: none;
+  background: var(--cream);
+}
+.site-title {
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--ink);
+}
+/* logo chip */
+.site-title img {
+  border: var(--toon-border);
+  border-radius: 12px;
+  background: var(--violet);
+  padding: 2px;
+  box-shadow: var(--toon-shadow-sm);
+}
+
+/* hide the (now no-op) light/dark toggle — cartoon look is light-only */
+starlight-theme-select {
+  display: none;
+}
+
+/* social icons */
+.social-icons a {
+  color: var(--ink);
+  transition: transform 0.15s var(--toon-pop);
+}
+/* playful tilt for the round GitHub/Discord icons only — not the Enhanced pill */
+.social-icons a:not(.back-nav-link):hover {
+  color: var(--violet-deep);
+  transform: translateY(-2px) rotate(-6deg);
+}
+
+/* search button — cartoon pill */
+site-search button,
+.sl-flex button[aria-label*='Search'] {
+  border: var(--toon-border) !important;
+  border-radius: 999px !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  box-shadow: var(--toon-shadow-sm);
+}
+
+/* =========================== Sidebar ==================================== */
+.sidebar-pane {
+  background: var(--cream);
+  border-inline-end: var(--toon-border);
+}
+.sidebar-content a {
+  border-radius: 12px;
+  font-weight: 500;
+  transition: transform 0.12s var(--toon-pop), background 0.15s ease;
+}
+.sidebar-content a:hover {
+  background: var(--violet-tint);
+  transform: translateX(3px);
+}
+/* current page */
+.sidebar-content a[aria-current='page'] {
+  background: var(--violet);
+  color: var(--ink);
+  font-weight: 600;
+  border: 2px solid var(--ink);
+  box-shadow: var(--toon-shadow-sm);
+}
+.sidebar-content summary .group-label span {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* =========================== Content ==================================== */
+.sl-markdown-content {
+  line-height: 1.7;
+}
+.sl-markdown-content a {
+  color: var(--violet-deep);
+  text-decoration-color: var(--violet);
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+.sl-markdown-content a:hover {
+  color: var(--violet-ink);
+}
+
+/* h2 gets a playful underline accent */
+.sl-markdown-content h2 {
+  padding-bottom: 0.3rem;
+  border-bottom: 3px dashed var(--violet);
+}
+
+/* horizontal rules as dotted dividers */
+.sl-markdown-content hr {
+  border: none;
+  border-top: 3px dotted var(--ink);
+  opacity: 0.35;
+}
+
+/* inline code */
+.sl-markdown-content :not(pre) > code {
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--violet-ink);
+  padding: 0.1em 0.4em;
+  font-weight: 500;
+}
+
+/* code block frames */
+.sl-markdown-content .expressive-code .frame {
+  border: var(--toon-border);
+  border-radius: var(--toon-radius);
+  box-shadow: var(--toon-shadow);
+  overflow: hidden;
+}
+.sl-markdown-content .expressive-code .frame pre {
+  border: none;
+}
+
+/* images */
+.sl-markdown-content img {
+  border-radius: var(--toon-radius);
+}
+
+/* =========================== Asides / notices ========================== */
+.starlight-aside {
+  border: var(--toon-border);
+  border-radius: var(--toon-radius);
+  box-shadow: var(--toon-shadow);
+  padding: 1rem 1.15rem;
+  background: var(--paper);
+}
+.starlight-aside__title {
+  font-weight: 700;
+  text-transform: none;
+  align-items: center;
+}
+.starlight-aside--note {
+  background: var(--violet-tint);
+  --sl-color-asides-text-accent: var(--violet-ink);
+}
+.starlight-aside--tip {
+  background: var(--mint-tint);
+  --sl-color-asides-text-accent: var(--mint-deep);
+}
+.starlight-aside--caution {
+  background: #fff6e0;
+  --sl-color-asides-text-accent: #a9741a;
+}
+.starlight-aside--danger {
+  background: #ffecec;
+  --sl-color-asides-text-accent: var(--rose-deep);
+}
+
+/* =========================== Tables ==================================== */
+.sl-markdown-content table {
+  /* Starlight makes content tables `display: block; overflow: auto` so wide
+     ones scroll. Shrink the box to its content so the border and header/row
+     backgrounds wrap tightly (no gap on the right), but still scroll instead
+     of clipping when a table is wider than the column. */
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border: var(--toon-border);
+  border-radius: var(--toon-radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: var(--toon-shadow);
+}
+.sl-markdown-content th {
+  background: var(--violet);
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 3px solid var(--ink);
+}
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 0.6rem 0.9rem;
+}
+.sl-markdown-content tbody tr:nth-child(even) {
+  background: var(--cream-deep);
+}
+
+/* =========================== Buttons / pagination ====================== */
+.sl-markdown-content .sl-link-button,
+a.pagination-link {
+  border: var(--toon-border);
+  border-radius: var(--toon-radius);
+  box-shadow: var(--toon-shadow-sm);
+  background: var(--paper);
+  color: var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+}
+.sl-markdown-content .sl-link-button:hover,
+a.pagination-link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--ink);
+  background: var(--violet-tint);
+}
+.sl-markdown-content .sl-link-button:active,
+a.pagination-link:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* right-hand table of contents */
+.right-sidebar a[aria-current='true'] {
+  color: var(--violet-deep);
+  font-weight: 700;
+}
+
+/* =========================== Motion ==================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 using CitizenFX.Core;
@@ -460,27 +461,8 @@ namespace vMenuClient.menus
                 }
                 else
                 {
-                    var veh = GetVehicle();
-                    if (veh != null && veh.Exists() && GetVehicle().Driver == Game.PlayerPed)
-                    {
-                        SetVehicleHasBeenOwnedByPlayer(veh.Handle, false);
-                        SetEntityAsMissionEntity(veh.Handle, false, false);
-                        veh.Delete();
-                    }
-                    else
-                    {
-                        if (!Game.PlayerPed.IsInVehicle())
-                        {
-                            Notify.Alert(CommonErrors.NoVehicle);
-                        }
-                        else
-                        {
-                            Notify.Alert("You need to be in the driver's seat if you want to delete a vehicle.");
-                        }
-
-                    }
+                    DeleteVehicle();
                     DeleteConfirmMenu.GoBack();
-                    menu.GoBack();
                 }
             };
             #endregion
@@ -2155,7 +2137,7 @@ namespace vMenuClient.menus
                 }
 
                 var headlightsButton = new MenuItem("Headlights");
-                var headlightsMenu = new Menu("Headlights");
+                var headlightsMenu = new Menu("Headlights", "headlights");
                 var xenonHeadlights = new MenuCheckboxItem("Xenon Headlights", "Enable or disable ~b~xenon ~s~headlights.", IsToggleModOn(veh.Handle, 22));
                 headlightsMenu.AddMenuItem(xenonHeadlights);
                 var currentHeadlightColor = GetHeadlightsColorForVehicle(veh);
@@ -2217,7 +2199,7 @@ namespace vMenuClient.menus
                 }
 
                 var tireSmokeButton = new MenuItem("Tire Smoke");
-                var tireSmokeMenu = new Menu("Tire Smoke");
+                var tireSmokeMenu = new Menu("Tire Smoke", "Tire Smoke");
                 // Create a list of tire smoke options.
                 var tireSmokes = new List<string>() { "Red", "Orange", "Yellow", "Gold", "Light Green", "Dark Green", "Light Blue", "Dark Blue", "Purple", "Pink", "Black" };
                 var tireSmokeColors = new Dictionary<string, int[]>()
@@ -2544,7 +2526,7 @@ namespace vMenuClient.menus
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private System.Drawing.Color GetColorFromIndex(int index)
+        private static System.Drawing.Color GetColorFromIndex(int index)
         {
             if (index is >= 0 and < 13)
             {
@@ -2589,22 +2571,22 @@ namespace vMenuClient.menus
         public static void CreateCustomColourMenu(Menu menu, RGBType type = RGBType.primaryPaint)
         {
             
-            var hexColour = new MenuItem("Hex Colour Code");
+            var hexColour = new MenuItem("Hex Color Code");
             var typeList = new MenuListItem("Paint Finish", Enum.GetNames(typeof(Colour_Types)).ToList(), 0);
             
             int r = 0,  g = 0, b = 0;     
 
-            var redColour = new MenuSliderItem("Red Colour", 0, 255, 128, true)
+            var redColour = new MenuSliderItem("Red Color", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
             };
-            var greenColour = new MenuSliderItem("Green Colour", 0, 255, 128, true)
+            var greenColour = new MenuSliderItem("Green Color", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
             };
-            var blueColour = new MenuSliderItem("Blue Colour", 0, 255, 128, true)
+            var blueColour = new MenuSliderItem("Blue Color", 0, 255, 128, true)
             {
                 BarColor = System.Drawing.Color.FromArgb(155, 0, 0, 0),
                 BackgroundColor = System.Drawing.Color.FromArgb(200, 79, 79, 79),
@@ -2637,9 +2619,10 @@ namespace vMenuClient.menus
                     {
                         if (IsToggleModOn(vehicle.Handle, 22))
                         {
-                            r = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][0];
-                            g = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][1];
-                            b = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][2]; 
+                            int headlight = GetHeadlightsColorForVehicle(vehicle) < 0 ? 0 : GetHeadlightsColorForVehicle(vehicle);
+                            r = VehicleData.NeonLightColors[headlight][0];
+                            g = VehicleData.NeonLightColors[headlight][1];
+                            b = VehicleData.NeonLightColors[headlight][2]; 
                         }
                     }
 
@@ -2648,13 +2631,13 @@ namespace vMenuClient.menus
                     GetVehicleTyreSmokeColor(vehicle.Handle, ref r, ref g, ref b);
 
 
-                redColour.Text = $"Red Colour ({r})";
+                redColour.Text = $"Red Color ({r})";
                 redColour.Position = r;
 
-                greenColour.Text = $"Green Colour ({g})";
+                greenColour.Text = $"Green Color ({g})";
                 greenColour.Position = g;
 
-                blueColour.Text = $"Blue Colour ({b})";
+                blueColour.Text = $"Blue Color ({b})";
                 blueColour.Position = b;
 
                 redColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
@@ -2668,7 +2651,7 @@ namespace vMenuClient.menus
                 if (item == hexColour)
                 {
                     string hexValue = redColour.Position.ToString("X2") + greenColour.Position.ToString("X2") + blueColour.Position.ToString("X2");
-                    var result = await GetUserInput(windowTitle: "Enter Colour Hex", defaultText: (hexValue).Replace("#", ""), maxInputLength: 6);
+                    var result = await GetUserInput(windowTitle: "Enter Color Hex", defaultText: (hexValue).Replace("#", ""), maxInputLength: 6);
                     if (!string.IsNullOrEmpty(result))
                     {
                         if (IsHex(result))
@@ -2693,13 +2676,13 @@ namespace vMenuClient.menus
                             greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                             blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                            redColour.Text = $"Red Colour ({red})";
+                            redColour.Text = $"Red Color ({red})";
                             redColour.Position = red;
 
-                            greenColour.Text = $"Green Colour ({green})";
+                            greenColour.Text = $"Green Color ({green})";
                             greenColour.Position = green;
 
-                            blueColour.Text = $"Blue Colour ({blue})";
+                            blueColour.Text = $"Blue Color ({blue})";
                             blueColour.Position = blue;
                         }
                     }
@@ -2725,9 +2708,10 @@ namespace vMenuClient.menus
                     {
                         if (IsToggleModOn(vehicle.Handle, 22))
                         {
-                            r = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][0];
-                            g = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][1];
-                            b = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][2]; 
+                            int headlight = GetHeadlightsColorForVehicle(vehicle) < 0 ? 0 : GetHeadlightsColorForVehicle(vehicle);
+                            r = VehicleData.NeonLightColors[headlight][0];
+                            g = VehicleData.NeonLightColors[headlight][1];
+                            b = VehicleData.NeonLightColors[headlight][2]; 
                         }
                     }
 
@@ -2749,7 +2733,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, newPosition, g, b);
 
-                    redColour.Text = $"Red Colour ({newPosition})";
+                    redColour.Text = $"Red Color ({newPosition})";
                 }
                 if (sliderItem == greenColour)
                 {
@@ -2764,7 +2748,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, r, newPosition, b);
 
-                    greenColour.Text = $"Green Colour ({newPosition})";
+                    greenColour.Text = $"Green Color ({newPosition})";
                 }
                 if (sliderItem == blueColour)
                 {
@@ -2779,7 +2763,7 @@ namespace vMenuClient.menus
                     else if (type == RGBType.tiresmoke)
                         vehicle.Mods.TireSmokeColor = System.Drawing.Color.FromArgb(255, r, g, newPosition);
 
-                    blueColour.Text = $"Blue Colour ({newPosition})";
+                    blueColour.Text = $"Blue Color ({newPosition})";
                 }
                 redColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
                 greenColour.BarColor = System.Drawing.Color.FromArgb(255, redColour.Position, greenColour.Position, blueColour.Position);
@@ -2810,42 +2794,43 @@ namespace vMenuClient.menus
                 }
                 else if (type == RGBType.underglow)
                 {
-                    int red = vehicle.Mods.TireSmokeColor.R;
-                    int green = vehicle.Mods.NeonLightsColor.G;
-                    int blue = vehicle.Mods.NeonLightsColor.B; 
+                    Color underglow = GetColorFromIndex(newIndex);
+                    int red = underglow.R;
+                    int green = underglow.G;
+                    int blue = underglow.B;
                     
                     redColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Colour ({red})";
+                    redColour.Text = $"Red Color ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Colour ({green})";
+                    greenColour.Text = $"Green Color ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Colour ({blue})";
+                    blueColour.Text = $"Blue Color ({blue})";
                     blueColour.Position = blue; 
                 }
                 else if (type == RGBType.headlight)
                 {
-                    
-                    int red = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][0];
-                    int green = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][1];
-                    int blue = VehicleData.NeonLightColors[GetHeadlightsColorForVehicle(vehicle)][2];
+                    int headlight = GetHeadlightsColorForVehicle(vehicle) < 0 ? 0 : GetHeadlightsColorForVehicle(vehicle);
+                    int red = VehicleData.NeonLightColors[headlight][0];
+                    int green = VehicleData.NeonLightColors[headlight][1];
+                    int blue = VehicleData.NeonLightColors[headlight][2];
                     
 
                     redColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Colour ({red})";
+                    redColour.Text = $"Red Color ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Colour ({green})";
+                    greenColour.Text = $"Green Color ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Colour ({blue})";
+                    blueColour.Text = $"Blue Color ({blue})";
                     blueColour.Position = blue; 
                 }
                 else if (type == RGBType.tiresmoke)
@@ -2858,13 +2843,13 @@ namespace vMenuClient.menus
                     greenColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
                     blueColour.BarColor = System.Drawing.Color.FromArgb(255, red, green, blue);
 
-                    redColour.Text = $"Red Colour ({red})";
+                    redColour.Text = $"Red Color ({red})";
                     redColour.Position = red;
 
-                    greenColour.Text = $"Green Colour ({green})";
+                    greenColour.Text = $"Green Color ({green})";
                     greenColour.Position = green;
 
-                    blueColour.Text = $"Blue Colour ({blue})";
+                    blueColour.Text = $"Blue Color ({blue})";
                     blueColour.Position = blue; 
                 }
     

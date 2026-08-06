@@ -268,3 +268,5 @@ external/
 
 # VS Build Output
 build/
+
+*.lscache
