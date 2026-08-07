@@ -14,6 +14,7 @@ public static class MainMenuComposition
         new WorldMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
+        new RecordingMenu(),
         new AboutMenu(),
     ];
 }
