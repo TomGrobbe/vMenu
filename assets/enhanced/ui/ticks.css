@@ -16,10 +16,16 @@
     border-radius: 0.3rem;
     box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
     pointer-events: none;
+    transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
 #ticks.shown {
     display: block;
+}
+
+#ticks.paused {
+    filter: blur(2px);
+    opacity: 0.75;
 }
 
 #ticks.left {

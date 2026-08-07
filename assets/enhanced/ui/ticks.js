@@ -79,6 +79,7 @@
         render(Array.isArray(data.ticks) ? data.ticks : []);
 
         listEl.classList.toggle("left", data.side === "left");
+        listEl.classList.toggle("paused", data.paused === true);
         listEl.classList.add("shown");
     });
 })();
