@@ -3,7 +3,6 @@ using CitizenFX.FiveM.Client;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
-using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Ticks;
 
 using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.WeatherOptions;
@@ -23,8 +22,6 @@ public static class WorldWeather
     /// <summary>How long before a scheduled change the sky starts moving, in in-game hours.</summary>
     private const double BoundaryWindowGameHours = 0.5;
 
-    private static readonly MenuGate Condition = MenuGate.Setting(WeatherOptionsSettings.Enabled);
-
     private static readonly uint[] Hashes = BuildHashes();
 
     private static WeatherType _from;
@@ -34,13 +31,19 @@ public static class WorldWeather
     private static bool _settled;
     private static bool _wasForced;
 
+    /// <summary>Whether the server wants a shared sky at all.</summary>
+    // The convar and nothing else. Not a MenuGate, and never a permission: the weather is one value
+    // shared by everyone connected, so a player who may not change it still has to see the same sky
+    // as the player who can. Permissions belong on the menu entries that ask the server to change it.
+    private static bool IsEnabled() => ClientConfig.Value(WeatherOptionsSettings.Enabled);
+
     public static void Initialize()
     {
         TickRegistry.Register(
             "World.Weather",
             Apply,
             TickRate.Every(IntervalMs),
-            Condition.Evaluate,
+            IsEnabled,
             onStarted: () =>
             {
                 _started = false;

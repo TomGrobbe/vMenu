@@ -8,5 +8,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
+
+    <!-- Only for the tick overlay's remembered on/off state. -->
+    <ProjectReference Include="..\vMenu.Enhanced.Storage\vMenu.Enhanced.Storage.csproj" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@ using MenuAPI;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Storage;
+using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -22,6 +23,9 @@ public static class UserPreferences
         RestoreLanguage();
 
         ApplyRightAligned(UserDefaults.MiscRightAlignMenu.Value, persist: false);
+
+        // After the alignment, which decides the side the panel sits on.
+        TickOverlay.Restore();
     }
 
     /// <summary>Whether the menu is currently right aligned. The live value, not the stored one.</summary>

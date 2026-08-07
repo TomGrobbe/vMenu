@@ -52,6 +52,15 @@ public static class UserDefaults
 
     #endregion
 
+    #region Ticks Overlay
+
+    /// <summary>Deliberately outside the Developer Features region, being gated by neither its convar nor a permission.</summary>
+    // The panel only names vMenu's own loops, and its toggle command is open to everyone, so a player
+    // who left it on gets it back wherever they play and can always switch it off again.
+    public static BoolDefault TicksOverlay { get; } = new("ticksOverlay") { Default = false };
+
+    #endregion
+
     public static IReadOnlyList<UserDefault> All { get; } =
     [
         MiscRightAlignMenu,
@@ -65,6 +74,8 @@ public static class UserDefaults
         DevNetworkOwners,
         DevDrawRadius,
         DevBoxOpacity,
+
+        TicksOverlay,
     ];
 
     /// <summary>Call once, after <c>ClientJson.Verify</c>.</summary>

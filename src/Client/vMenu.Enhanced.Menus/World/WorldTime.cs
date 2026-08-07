@@ -3,7 +3,6 @@ using CitizenFX.FiveM.Client;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
-using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Ticks;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -18,13 +17,15 @@ public static class WorldTime
     // moved. At this rate the sun advances a fiftieth of a degree per step, which cannot be seen.
     private const int IntervalMs = 50;
 
-    private static readonly MenuGate Condition = MenuGate.Setting(TimeOptionsSettings.Enabled);
-
     private static double _shownOffset;
     private static double _rampFrom;
     private static double _rampTo;
     private static int _rampStartMs;
     private static bool _started;
+
+    /// <summary>Whether the server wants a shared clock at all.</summary>
+    // See the matching note in WorldWeather: the convar decides, never a permission.
+    private static bool IsEnabled() => ClientConfig.Value(TimeOptionsSettings.Enabled);
 
     public static void Initialize()
     {
@@ -32,7 +33,7 @@ public static class WorldTime
             "World.Time",
             Apply,
             TickRate.Every(IntervalMs),
-            Condition.Evaluate,
+            IsEnabled,
             onStarted: () => _started = false,
             onStopped: Native.NetworkClearClockTimeOverride);
 

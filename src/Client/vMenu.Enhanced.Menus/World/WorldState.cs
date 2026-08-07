@@ -1,10 +1,14 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Ticks;
+
+using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
+using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.WeatherOptions;
 
 namespace vMenu.Enhanced.Menus.World;
 
@@ -56,17 +60,33 @@ public static class WorldState
     /// <summary>The type actually in force.</summary>
     public static WeatherType Weather => WeatherOverride ?? Schedule.Current;
 
+    /// <summary>Whether either sync feature wants the clock. The same condition the server publishes on.</summary>
+    // Convars only, and deliberately no permission: the sky and the clock are the same for everybody
+    // on the server, so they cannot depend on what any one player is allowed to change.
+    public static bool IsNeeded() =>
+        ClientConfig.Value(WeatherOptionsSettings.Enabled) || ClientConfig.Value(TimeOptionsSettings.Enabled);
+
     public static void Initialize()
     {
-        Poll();
-
-        TickRegistry.Register("World.State", Poll, TickRate.Every(PollIntervalMs));
+        // Gated to match the server, which publishes nothing while both features are off. Without
+        // this every client on such a server falls back to its own machine clock and says so.
+        TickRegistry.Register(
+            "World.State",
+            Poll,
+            TickRate.Every(PollIntervalMs),
+            IsNeeded,
+            onStarted: Poll);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
 
     public static void Dump()
     {
+        if (!IsNeeded())
+        {
+            API.Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
+        }
+
         API.Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
         API.Log.Info($"[World] {WorldStateConvars.Weather} = '{Native.GetConvar(WorldStateConvars.Weather, string.Empty)}'");
         API.Log.Info(

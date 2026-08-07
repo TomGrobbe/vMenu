@@ -3,9 +3,9 @@ using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
-using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Serialization;
+using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Ticks;
 
@@ -31,9 +31,15 @@ public static class TickOverlay
 
     private static bool _onRight = true;
 
+    /// <summary>Whether the panel is on screen. The live state, not the stored preference.</summary>
+    public static bool Visible => _visible;
+
     internal static void Initialize()
     {
-        SharedAPI.Commands.RegisterCommand(ToggleCommand, false, DebugCommands.Gate(Toggle));
+        // Ungated on purpose, unlike every other command in here. This one is the way back out of an
+        // overlay a player left switched on, so it has to work on a server that offers neither the
+        // developer features menu nor the client debugging convar.
+        SharedAPI.Commands.RegisterCommand(ToggleCommand, false, new Action(Toggle));
 
         TickRegistry.Changed += MarkDirty;
 
@@ -44,9 +50,28 @@ public static class TickOverlay
             () => _visible);
     }
 
-    public static void Toggle()
+    /// <summary>Puts the panel back the way the player left it. Call once at startup.</summary>
+    // Not read by the tick condition directly, because that runs while the resource is still starting
+    // and the page would miss the first snapshot.
+    public static void Restore() => Apply(UserDefaults.TicksOverlay.Value, persist: false);
+
+    public static void Toggle() => Set(!_visible);
+
+    public static void Set(bool visible) => Apply(visible, persist: true);
+
+    private static void Apply(bool visible, bool persist)
     {
-        _visible = !_visible;
+        if (persist)
+        {
+            UserDefaults.TicksOverlay.Value = visible;
+        }
+
+        if (_visible == visible)
+        {
+            return;
+        }
+
+        _visible = visible;
 
         // Nothing else re-runs the condition, and hiding stops the tick before it could post the
         // message that empties the panel, so that one is sent from here.
