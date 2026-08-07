@@ -3,7 +3,9 @@ using System.Globalization;
 using MenuAPI;
 
 using vMenu.Enhanced.Actions;
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.MenuFramework;
@@ -57,11 +59,25 @@ public sealed class WorldMenu : MenuDefinition
             ReadSelectedIndex = () => WorldState.WeatherOverride is { } type ? (int)type + 1 : 0,
             OnSelectedAsync = async selected =>
             {
-                var argument = selected.SelectedIndex <= 0
-                    ? WorldStateConvars.Dynamic
-                    : WeatherTypes.NameOf(WeatherTypes.Selectable[selected.SelectedIndex - 1]);
+                if (selected.SelectedIndex <= 0)
+                {
+                    await SendAsync(
+                        ActionIds.WeatherOptions.SetWeather,
+                        WorldStateConvars.Dynamic,
+                        Loc.World.WeatherReset,
+                        WeatherOptionsSettings.TransitionSeconds);
 
-                await SendAsync(ActionIds.WeatherOptions.SetWeather, argument, Loc.World.WeatherSet);
+                    return;
+                }
+
+                var type = WeatherTypes.Selectable[selected.SelectedIndex - 1];
+
+                await SendAsync(
+                    ActionIds.WeatherOptions.SetWeather,
+                    WeatherTypes.NameOf(type),
+                    Loc.World.WeatherSet,
+                    WeatherOptionsSettings.TransitionSeconds,
+                    MenuText.Key(Loc.World.WeatherName(type)));
             },
         });
 
@@ -78,8 +94,11 @@ public sealed class WorldMenu : MenuDefinition
             Text = MenuText.Key(Loc.World.ResetWeather),
             Description = MenuText.Key(Loc.World.ResetWeatherDescription),
             Gate = WeatherAllowed,
-            OnSelectedAsync = _ =>
-                SendAsync(ActionIds.WeatherOptions.SetWeather, WorldStateConvars.Dynamic, Loc.World.WeatherReset),
+            OnSelectedAsync = _ => SendAsync(
+                ActionIds.WeatherOptions.SetWeather,
+                WorldStateConvars.Dynamic,
+                Loc.World.WeatherReset,
+                WeatherOptionsSettings.TransitionSeconds),
         });
 
         menu.Entries.Add(new ButtonEntry
@@ -87,7 +106,11 @@ public sealed class WorldMenu : MenuDefinition
             Text = MenuText.Key(Loc.World.ResetTime),
             Description = MenuText.Key(Loc.World.ResetTimeDescription),
             Gate = TimeAllowed,
-            OnSelectedAsync = _ => SendAsync(ActionIds.TimeOptions.SetTime, "0", Loc.World.TimeReset),
+            OnSelectedAsync = _ => SendAsync(
+                ActionIds.TimeOptions.SetTime,
+                "0",
+                Loc.World.TimeReset,
+                TimeOptionsSettings.TransitionSeconds),
         });
     }
 
@@ -119,18 +142,28 @@ public sealed class WorldMenu : MenuDefinition
             ActionIds.TimeOptions.SetTime,
             offset.ToString(CultureInfo.InvariantCulture),
             Loc.World.TimeSet,
+            TimeOptionsSettings.TransitionSeconds,
             MenuText.Literal(TimeText.Format(secondOfDay)));
     }
 
-    private static async Task SendAsync(string action, string argument, string successKey, MenuText? value = null)
+    /// <param name="transition">
+    /// How long the sky takes to get there, named in the notification. Neither change is instant, and
+    /// without saying so the weather blend in particular reads as nothing having happened.
+    /// </param>
+    private static async Task SendAsync(
+        string action,
+        string argument,
+        string successKey,
+        IntSetting transition,
+        MenuText? value = null)
     {
         var result = await ServerActions.InvokeAsync(action, argument);
 
         if (result.Status == ActionStatus.Ok)
         {
             Notifications.Success(value is { } text
-                ? MenuText.Key(successKey, ("value", text))
-                : MenuText.Key(successKey));
+                ? MenuText.Key(successKey, ("value", text), ("transition", Transition(transition)))
+                : MenuText.Key(successKey, ("transition", Transition(transition))));
 
             return;
         }
@@ -141,6 +174,21 @@ public sealed class WorldMenu : MenuDefinition
             ActionStatus.Refused => Loc.World.Disabled,
             _ => Loc.World.Failed,
         }));
+    }
+
+    /// <summary>
+    /// Empty when the owner has set the blend to zero, so the message never promises a wait that is
+    /// not coming. That leaves a trailing space in the sentence, which nobody can see.
+    /// </summary>
+    private static MenuText Transition(IntSetting setting)
+    {
+        var seconds = Math.Max(0, ClientConfig.Value(setting));
+
+        return seconds == 0
+            ? MenuText.Empty
+            : MenuText.Key(
+                Loc.World.Transition,
+                ("duration", MenuText.Literal(seconds.ToString(CultureInfo.InvariantCulture) + "s")));
     }
 
     private static IReadOnlyList<MenuText> WeatherOptions()

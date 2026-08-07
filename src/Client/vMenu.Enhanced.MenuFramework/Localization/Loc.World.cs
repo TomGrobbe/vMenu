@@ -50,6 +50,9 @@ public static partial class Loc
 
         public const string TimeNotUnderstood = "world.time.notunderstood";
 
+        /// <summary>Tail of every change notification, left out when the blend is set to zero.</summary>
+        public const string Transition = "world.transition";
+
         public const string Denied = "world.denied";
 
         public const string Disabled = "world.disabled";
