@@ -31,25 +31,41 @@ public static class VehicleTargeting
     /// <param name="reach">How far ahead to look when the player is on foot, in metres.</param>
     public static async Task<VehicleTarget> ResolveAsync(Ped ped, float reach)
     {
-        if (ped.IsPedInAnyVehicle())
+        var current = Current(ped);
+
+        if (current.Found)
         {
-            var vehicle = ped.Vehicle;
-
-            if (vehicle is null || !vehicle.Exists)
-            {
-                return VehicleTarget.None;
-            }
-
-            var kind = Native.GetPedInVehicleSeat(vehicle.Handle, DriverSeat, false) == ped.Handle
-                ? VehicleTargetKind.Driving
-                : VehicleTargetKind.Passenger;
-
-            return new VehicleTarget(vehicle.Handle, kind);
+            return current;
         }
 
         var entity = await FindInFrontAsync(ped, reach);
 
         return entity == 0 ? VehicleTarget.None : new VehicleTarget(entity, VehicleTargetKind.InFront);
+    }
+
+    /// <summary>
+    /// Only the vehicle the player is sitting in. Nothing is searched for, so this needs no await,
+    /// which is what options that act on your own vehicle want.
+    /// </summary>
+    public static VehicleTarget Current(Ped ped)
+    {
+        if (!ped.IsPedInAnyVehicle())
+        {
+            return VehicleTarget.None;
+        }
+
+        var vehicle = ped.Vehicle;
+
+        if (vehicle is null || !vehicle.Exists)
+        {
+            return VehicleTarget.None;
+        }
+
+        var kind = Native.GetPedInVehicleSeat(vehicle.Handle, DriverSeat, false) == ped.Handle
+            ? VehicleTargetKind.Driving
+            : VehicleTargetKind.Passenger;
+
+        return new VehicleTarget(vehicle.Handle, kind);
     }
 
     private static async Task<int> FindInFrontAsync(Ped ped, float reach)

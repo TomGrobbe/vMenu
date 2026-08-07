@@ -17,6 +17,22 @@ public sealed class VehicleOptionsMenu : MenuDefinition
     {
         menu.Entries.Add(new ButtonEntry
         {
+            Text = MenuText.Key(Loc.VehicleOptions.RepairVehicle),
+            Description = MenuText.Key(Loc.VehicleOptions.RepairVehicleDescription),
+            Gate = VehicleOptionsPermissions.RepairVehicle,
+            OnSelected = _ => VehicleRepair.RepairCurrent(),
+        });
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.WashVehicle),
+            Description = MenuText.Key(Loc.VehicleOptions.WashVehicleDescription),
+            Gate = VehicleOptionsPermissions.WashVehicle,
+            OnSelected = _ => VehicleWash.WashCurrent(),
+        });
+
+        menu.Entries.Add(new ButtonEntry
+        {
             Text = MenuText.Key(Loc.VehicleOptions.DeleteVehicle),
             Description = MenuText.Key(Loc.VehicleOptions.DeleteVehicleDescription),
             Gate = VehicleOptionsPermissions.DeleteVehicle,

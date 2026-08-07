@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
@@ -19,13 +20,36 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 // principal. vMenu checks its own permission instead.
 public static class VehicleCommands
 {
-    private const string DeleteCommand = "dv";
+    private static readonly ToggledCommand[] Commands =
+    [
+        new("dv",
+            VehicleOptionsSettings.DeleteVehicleCommand,
+            VehicleOptionsPermissions.DeleteVehicle,
+            Loc.VehicleOptions.DeleteDenied,
+            VehicleDeletion.DeleteTargetAsync),
 
-    // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
-    private static readonly Action<int, MessagePackBuffer, string> DeleteHandler = (_, _, _) => RunDelete();
+        new("fixveh",
+            VehicleOptionsSettings.RepairVehicleCommand,
+            VehicleOptionsPermissions.RepairVehicle,
+            Loc.VehicleOptions.RepairDenied,
+            () =>
+            {
+                VehicleRepair.RepairCurrent();
 
-    /// <summary>Null while the command is not registered.</summary>
-    private static int? _deleteCommandId;
+                return Task.CompletedTask;
+            }),
+
+        new("washveh",
+            VehicleOptionsSettings.WashVehicleCommand,
+            VehicleOptionsPermissions.WashVehicle,
+            Loc.VehicleOptions.WashDenied,
+            () =>
+            {
+                VehicleWash.WashCurrent();
+
+                return Task.CompletedTask;
+            }),
+    ];
 
     /// <summary>Call after <see cref="ClientConfig.Initialize"/>.</summary>
     public static void Initialize()
@@ -38,44 +62,75 @@ public static class VehicleCommands
 
     private static void Apply()
     {
-        var shouldRegister = ClientConfig.Value(VehicleOptionsSettings.DeleteVehicleCommand)
-            && ClientPermissions.IsAllowed(VehicleOptionsPermissions.DeleteVehicle);
-
-        var registered = _deleteCommandId;
-
-        if (shouldRegister && registered is null)
+        foreach (var command in Commands)
         {
-            _deleteCommandId = NativeFixer.RegisterCommand(DeleteCommand, restricted: false, DeleteHandler);
-
-            API.Log.Debug($"[VehicleOptions] Registered /{DeleteCommand}.");
-        }
-        else if (!shouldRegister && registered is not null)
-        {
-            Native.UnregisterCommand(registered.Value);
-            _deleteCommandId = null;
-
-            API.Log.Debug($"[VehicleOptions] Unregistered /{DeleteCommand}.");
+            command.Apply();
         }
     }
 
-    /// <summary>A command handler cannot await, so this is the fire and forget boundary.</summary>
-    private static async void RunDelete()
+    /// <summary>A command that exists only while its setting is on and its permission is granted.</summary>
+    private sealed class ToggledCommand
     {
-        try
+        private readonly string _name;
+        private readonly BoolSetting _setting;
+        private readonly string _permission;
+        private readonly string _deniedKey;
+        private readonly Func<Task> _run;
+
+        // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
+        private readonly Action<int, MessagePackBuffer, string> _handler;
+
+        /// <summary>Null while the command is not registered.</summary>
+        private int? _id;
+
+        public ToggledCommand(string name, BoolSetting setting, string permission, string deniedKey, Func<Task> run)
         {
-            // Registration follows the permission, but a revoke can land between the two.
-            if (!ClientPermissions.IsAllowed(VehicleOptionsPermissions.DeleteVehicle))
-            {
-                Notifications.Error(MenuText.Key(Loc.VehicleOptions.DeleteDenied));
-
-                return;
-            }
-
-            await VehicleDeletion.DeleteTargetAsync();
+            _name = name;
+            _setting = setting;
+            _permission = permission;
+            _deniedKey = deniedKey;
+            _run = run;
+            _handler = (_, _, _) => Run();
         }
-        catch (Exception exception)
+
+        public void Apply()
         {
-            API.Log.Error($"[VehicleOptions] /{DeleteCommand} threw: {exception}");
+            var shouldRegister = ClientConfig.Value(_setting) && ClientPermissions.IsAllowed(_permission);
+
+            if (shouldRegister && _id is null)
+            {
+                _id = NativeFixer.RegisterCommand(_name, restricted: false, _handler);
+
+                API.Log.Debug($"[VehicleOptions] Registered /{_name}.");
+            }
+            else if (!shouldRegister && _id is not null)
+            {
+                Native.UnregisterCommand(_id.Value);
+                _id = null;
+
+                API.Log.Debug($"[VehicleOptions] Unregistered /{_name}.");
+            }
+        }
+
+        /// <summary>A command handler cannot await, so this is the fire and forget boundary.</summary>
+        private async void Run()
+        {
+            try
+            {
+                // Registration follows the permission, but a revoke can land between the two.
+                if (!ClientPermissions.IsAllowed(_permission))
+                {
+                    Notifications.Error(MenuText.Key(_deniedKey));
+
+                    return;
+                }
+
+                await _run();
+            }
+            catch (Exception exception)
+            {
+                API.Log.Error($"[VehicleOptions] /{_name} threw: {exception}");
+            }
         }
     }
 }

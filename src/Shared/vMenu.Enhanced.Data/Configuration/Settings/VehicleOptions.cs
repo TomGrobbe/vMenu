@@ -19,4 +19,22 @@ public static class VehicleOptions
             "name and another resource on your server may already register it.",
         Default = false,
     };
+
+    public static readonly BoolSetting RepairVehicleCommand = new("vMenu.Enhanced.VehicleOptions.RepairVehicleCommand")
+    {
+        Description =
+            "Registers a /fixveh command that does the same thing as the Repair Vehicle menu option, " +
+            "including the same permission check. On by default, /fixveh being an unusual enough name " +
+            "that another resource is unlikely to have claimed it already. Turn it off if one has.",
+        Default = true,
+    };
+
+    public static readonly BoolSetting WashVehicleCommand = new("vMenu.Enhanced.VehicleOptions.WashVehicleCommand")
+    {
+        Description =
+            "Registers a /washveh command that does the same thing as the Wash Vehicle menu option, " +
+            "including the same permission check. On by default, /washveh being an unusual enough name " +
+            "that another resource is unlikely to have claimed it already. Turn it off if one has.",
+        Default = true,
+    };
 }
