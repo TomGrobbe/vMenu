@@ -401,7 +401,7 @@ internal sealed class MenuHost : IDisposable
         }
     }
 
-    private void HandleDynamicChanged(Menu menu, MenuDynamicListItem item, string oldValue, string newValue)
+    private void HandleDynamicChanged(Menu menu, MenuDynamicListItem item, string? oldValue, string newValue)
     {
         if (!_byItem.TryGetValue(item, out var entry))
         {
@@ -422,7 +422,7 @@ internal sealed class MenuHost : IDisposable
         Guard(() => dynamicList.OnChanged?.Invoke(new DynamicListChanged(menu, item, oldValue, newValue)), item);
     }
 
-    private async void HandleDynamicSelect(Menu menu, MenuDynamicListItem item, string value)
+    private async void HandleDynamicSelect(Menu menu, MenuDynamicListItem item, string? value)
     {
         if (!_byItem.TryGetValue(item, out var entry) || !item.Enabled || entry is not DynamicListEntry dynamicList)
         {
@@ -474,7 +474,7 @@ internal sealed class MenuHost : IDisposable
 
     private void HandleMenuClose(Menu menu) => Guard(() => Builder.OnClosed?.Invoke(menu), null);
 
-    private void HandleIndexChange(Menu menu, MenuItem oldItem, MenuItem newItem, int oldIndex, int newIndex)
+    private void HandleIndexChange(Menu menu, MenuItem oldItem, MenuItem? newItem, int oldIndex, int newIndex)
     {
         ApplyHighlight(newItem);
 

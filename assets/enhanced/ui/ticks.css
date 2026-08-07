@@ -38,6 +38,11 @@
     color: var(--accent);
 }
 
+/* One head per scheduler, so every head after the first needs a line above it to split the groups. */
+#ticks .head:not(:first-child) {
+    border-top: 1px solid var(--edge);
+}
+
 #ticks .row {
     display: flex;
     align-items: center;

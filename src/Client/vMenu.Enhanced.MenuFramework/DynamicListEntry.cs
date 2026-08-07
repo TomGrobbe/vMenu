@@ -38,6 +38,12 @@ public sealed class DynamicListEntry : MenuEntry<MenuDynamicListItem>
         }
     }
 
-    private string Guarded(MenuDynamicListItem item, bool left) =>
-        item.Enabled ? Change(new DynamicListChanging(item, item.CurrentItem, left)) : item.CurrentItem;
+    private string Guarded(MenuDynamicListItem item, bool left)
+    {
+        // MenuAPI allows CurrentItem to be null. Every entry the framework builds seeds it from
+        // ReadValue, which cannot be, so this only covers a row something else re-seeded.
+        var current = item.CurrentItem ?? string.Empty;
+
+        return item.Enabled ? Change(new DynamicListChanging(item, current, left)) : current;
+    }
 }

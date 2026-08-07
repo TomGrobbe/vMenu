@@ -6,8 +6,8 @@ namespace vMenu.Enhanced.MenuFramework;
 /// Payloads handed to entry callbacks.
 /// </summary>
 // ItemIndex is MenuAPI's index and is relative to the active filter, so it is fine to show but must
-// never identify an item. Item references are nullable where MenuAPI can genuinely hand over null,
-// which it is not annotated for, so the compiler will not warn.
+// never identify an item. References are nullable where MenuAPI can genuinely hand over null, which
+// its own annotations now agree with.
 // Never compare two payloads. The generated equality routes through EqualityComparer<T>.Default, and
 // the sandbox throws rather than load the comparers behind it.
 public readonly record struct ItemSelected(Menu Menu, MenuItem Item, int ItemIndex);
@@ -28,9 +28,9 @@ public readonly record struct SliderSelected(Menu Menu, MenuSliderItem Item, int
 /// <summary>Raised before the value moves, so a handler can decide what the next one is.</summary>
 public readonly record struct DynamicListChanging(MenuDynamicListItem Item, string CurrentValue, bool Left);
 
-public readonly record struct DynamicListChanged(Menu Menu, MenuDynamicListItem Item, string OldValue, string NewValue);
+public readonly record struct DynamicListChanged(Menu Menu, MenuDynamicListItem Item, string? OldValue, string NewValue);
 
-public readonly record struct DynamicListSelected(Menu Menu, MenuDynamicListItem Item, string Value);
+public readonly record struct DynamicListSelected(Menu Menu, MenuDynamicListItem Item, string? Value);
 
 public readonly record struct MenuOpened(Menu Menu, MenuItem? CurrentItem);
 

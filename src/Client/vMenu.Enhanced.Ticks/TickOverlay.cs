@@ -11,6 +11,8 @@ namespace vMenu.Enhanced.Ticks;
 
 /// <summary>
 /// <see cref="TickRegistry.Dump"/> as a panel on screen, redrawn whenever a tick starts or stops.
+/// MenuAPI runs its own copy of this scheduler and exposes it read only, so its loops are listed here
+/// too rather than needing a panel of their own.
 /// </summary>
 // Redraws run on a tick of its own rather than off TickRegistry.Changed, because one Reevaluate pass
 // raises that event once per tick it flips, so a convar edit would post a message per affected loop.
@@ -42,6 +44,7 @@ public static class TickOverlay
         SharedAPI.Commands.RegisterCommand(ToggleCommand, false, new Action(Toggle));
 
         TickRegistry.Changed += MarkDirty;
+        MenuTicks.Changed += MarkDirty;
 
         _tick = TickRegistry.Register(
             "Ticks.Overlay",
@@ -112,15 +115,30 @@ public static class TickOverlay
 
     private static string BuildMessage()
     {
-        var handles = TickRegistry.Handles;
-        var rows = new TickRow[handles.Count];
+        var ours = TickRegistry.Handles;
+        var theirs = MenuTicks.Handles;
 
-        for (var index = 0; index < handles.Count; index++)
+        var rows = new TickRow[ours.Count + theirs.Count];
+        var index = 0;
+
+        foreach (var handle in ours)
         {
-            var handle = handles[index];
-
-            rows[index] = new TickRow
+            rows[index++] = new TickRow
             {
+                Source = "vMenu",
+                Name = handle.Name,
+                Rate = handle.Rate.ToString(),
+                Running = handle.IsRunning,
+            };
+        }
+
+        // Same shape, different assembly: MenuTickHandle and TickHandle share no base type, so this
+        // is a second loop rather than one over a common interface.
+        foreach (var handle in theirs)
+        {
+            rows[index++] = new TickRow
+            {
+                Source = "MenuAPI",
                 Name = handle.Name,
                 Rate = handle.Rate.ToString(),
                 Running = handle.IsRunning,
@@ -147,6 +165,9 @@ public static class TickOverlay
 
     private sealed class TickRow
     {
+        /// <summary>Which scheduler the tick belongs to, so the panel can group them.</summary>
+        public required string Source { get; init; }
+
         public required string Name { get; init; }
 
         public required string Rate { get; init; }
