@@ -79,7 +79,7 @@ public static class NativeFixer
     /// <summary>
     /// Replacement call for <c>SharedAPI.Commands.RegisterCommand</c>, which throws away the id
     /// <see cref="Native.UnregisterCommand(int)" /> needs, so a command registered through it can
-    /// never be removed.
+    /// never be removed. Use the normal one unless the command has to come and go at runtime.
     /// </summary>
     /// <param name="handler">Invoked with the source, the arguments, and the raw command text.</param>
     /// <returns>The command id.</returns>

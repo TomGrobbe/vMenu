@@ -66,56 +66,28 @@ public static class NoClip
 
     public static void Initialize()
     {
-        SharedAPI.Commands.RegisterCommand("nc", false, () =>
-        {
-            if (!IsAllowed)
-            {
-                Notifications.Warning(MenuText.Key(Loc.NoClip.ToggleDenied));
-                return;
-            }
-            if (!Native.IsPauseMenuActive())
-            {
-                SetNoclipActive(!NoclipActive);
-            }
-        });
+        SharedAPI.Commands.RegisterCommand("nc", false, ToggleRequested);
 
         NoClipKeyBindings.Register(
+            isActive: () => NoclipActive,
             onToggle: new Action(() =>
             {
                 // We need to run this on the main thread, if we try to request a scaleform
                 // (which happens down the line of SetNoclipActive(true) somewhere)
                 // inside a thread executed by a command handler/keybind handler, it will fail
-                SharedAPI.RunOnMainThread(() =>
-                {
-                    if (!Native.IsPauseMenuActive())
-                    {
-                        SetNoclipActive(!NoclipActive);
-                    }
-                });
+                SharedAPI.RunOnMainThread(ToggleRequested);
             }),
-            onSpeedUp: () =>
-            {
-                if (!Native.IsPauseMenuActive())
-                {
-                    MovingSpeed = ((MovingSpeed + 1) + MoveSpeeds.Length) % MoveSpeeds.Length;
-                    _rebuildInstructionalButtons = true;
-                }
-            },
-            onSpeedDown: () =>
-            {
-                if (!Native.IsPauseMenuActive())
-                {
-                    MovingSpeed = ((MovingSpeed - 1) + MoveSpeeds.Length) % MoveSpeeds.Length;
-                    _rebuildInstructionalButtons = true;
-                }
-            },
+            onSpeedUp: () => AdjustSpeed(1),
+            onSpeedDown: () => AdjustSpeed(-1),
             onFollowCam: () =>
             {
-                if (!Native.IsPauseMenuActive())
+                if (Native.IsPauseMenuActive())
                 {
-                    FollowCamMode = !FollowCamMode;
-                    _rebuildInstructionalButtons = true;
+                    return;
                 }
+
+                FollowCamMode = !FollowCamMode;
+                _rebuildInstructionalButtons = true;
             });
 
         _move = TickRegistry.Register(
@@ -248,6 +220,33 @@ public static class NoClip
     }
     #endregion
 
+    /// <summary>Shared by the /nc command and the toggle key, so both answer a refusal the same way.</summary>
+    private static void ToggleRequested()
+    {
+        if (!IsAllowed)
+        {
+            Notifications.Warning(MenuText.Key(Loc.NoClip.ToggleDenied));
+
+            return;
+        }
+
+        if (!Native.IsPauseMenuActive())
+        {
+            SetNoclipActive(!NoclipActive);
+        }
+    }
+
+    private static void AdjustSpeed(int steps)
+    {
+        if (Native.IsPauseMenuActive())
+        {
+            return;
+        }
+
+        MovingSpeed = (MovingSpeed + steps + MoveSpeeds.Length) % MoveSpeeds.Length;
+        _rebuildInstructionalButtons = true;
+    }
+
     private static void OnPermissionsChanged()
     {
         if (!IsAllowed)
@@ -294,8 +293,6 @@ public static class NoClip
 
         ResetEntity(_noclipPed, _noclipEntity);
         ReleaseInstructionalButtons();
-
-        NoClipKeyBindings.ClearHeld();
     }
 
     private static async Task NoClipFrame()

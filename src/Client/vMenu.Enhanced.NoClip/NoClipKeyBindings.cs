@@ -51,7 +51,17 @@ internal static class NoClipKeyBindings
 
     private static bool _registered;
 
-    internal static void Register(Action onToggle, Action onSpeedUp, Action onSpeedDown, Action onFollowCam)
+    /// <summary>Never null once <see cref="Register"/> has run, which is the only time keys exist.</summary>
+    private static Func<bool> _isActive = static () => false;
+
+    /// <param name="isActive">
+    /// Asked before every key that changes something. A FiveM key mapping is a normal binding that
+    /// fires whenever the key is pressed, noclip or not, and these sit on keys the player uses
+    /// constantly: without this, sprinting would quietly wind the noclip speed up while you walk
+    /// around. The toggle is exempt for the obvious reason, and the movement keys are exempt because
+    /// they only record which way you are holding, which nothing reads until noclip is running.
+    /// </param>
+    internal static void Register(Func<bool> isActive, Action onToggle, Action onSpeedUp, Action onSpeedDown, Action onFollowCam)
     {
         if (_registered)
         {
@@ -59,6 +69,7 @@ internal static class NoClipKeyBindings
         }
 
         _registered = true;
+        _isActive = isActive;
 
         var toggleKey = ClientConfig.Value(KeyBindings.NoClipToggleKey);
         if (string.IsNullOrWhiteSpace(toggleKey))
@@ -67,9 +78,9 @@ internal static class NoClipKeyBindings
         }
 
         RegisterPress(Toggle, "vMenu NoClip: Toggle on/off", toggleKey, onToggle);
-        RegisterPress(SpeedUp, "vMenu NoClip: Increase speed", "LSHIFT", onSpeedUp);
-        RegisterPress(SpeedDown, "vMenu NoClip: Decrease speed", "LCONTROL", onSpeedDown);
-        RegisterPress(FollowCam, "vMenu NoClip: Toggle follow cam", "H", onFollowCam);
+        RegisterPress(SpeedUp, "vMenu NoClip: Increase speed", "LSHIFT", WhileActive(onSpeedUp));
+        RegisterPress(SpeedDown, "vMenu NoClip: Decrease speed", "LCONTROL", WhileActive(onSpeedDown));
+        RegisterPress(FollowCam, "vMenu NoClip: Toggle follow cam", "H", WhileActive(onFollowCam));
 
         RegisterHold(Forward, "vMenu NoClip: Move forward", "W", held => ForwardHeld = held);
         RegisterHold(Backward, "vMenu NoClip: Move backward", "S", held => BackwardHeld = held);
@@ -79,15 +90,13 @@ internal static class NoClipKeyBindings
         RegisterHold(Down, "vMenu NoClip: Move down", "Z", held => DownHeld = held);
     }
 
-    internal static void ClearHeld()
+    private static Action WhileActive(Action handler) => () =>
     {
-        ForwardHeld = false;
-        BackwardHeld = false;
-        TurnLeftHeld = false;
-        TurnRightHeld = false;
-        UpHeld = false;
-        DownHeld = false;
-    }
+        if (_isActive())
+        {
+            handler();
+        }
+    };
 
     private static void RegisterPress(string command, string description, string defaultKey, Action onPressed)
     {
@@ -95,6 +104,11 @@ internal static class NoClipKeyBindings
         Native.RegisterKeyMapping(command, description, "keyboard", defaultKey);
     }
 
+    /// <summary>
+    /// Deliberately not gated on noclip being active. These track the key itself, so a player who is
+    /// already holding W when they switch noclip on carries straight on moving instead of having to
+    /// let go and press it again.
+    /// </summary>
     private static void RegisterHold(string command, string description, string defaultKey, Action<bool> setHeld)
     {
         SharedAPI.Commands.RegisterCommand($"+{command}", false, new Action(() => setHeld(true)));
