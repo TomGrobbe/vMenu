@@ -1,0 +1,33 @@
+{
+    // Your own vehicle categories for the Vehicle Spawner.
+    //
+    // By default the spawner groups every vehicle by the class the game itself gives it, so
+    // Compacts, Sedans, Helicopters and so on. Here you can add categories of your own on top of
+    // those. Any vehicle you list below is taken out of its game class and only shows up in your
+    // category instead. Your categories and the game's classes sit in the same list, sorted
+    // alphabetically together.
+    //
+    // The name on the left is what players see in the menu. The list on the right is the vehicle
+    // model names that belong in it. A vehicle can only be in one category, so if you list the same
+    // model twice, the first category wins and the server console tells you about it.
+    //
+    // Every category also gets its own permission, generated for you when the server starts. The
+    // example below would create these two:
+    //
+    //     vMenu.Enhanced.Menus.VehicleSpawner.Categories.police
+    //     vMenu.Enhanced.Menus.VehicleSpawner.Categories.emergency_services
+    //
+    // As you can see, the permission is your category name in lowercase, with anything that is not
+    // a letter, a digit or an underscore turned into an underscore. You never have to write those
+    // out yourself: they are listed for you in config/permissions.cfg.example, right next to all
+    // the normal ones, each marked with a note saying it came from this file. Granting
+    // vMenu.Enhanced.Menus.VehicleSpawner.Categories.All grants your own categories too.
+    //
+    // One thing to keep in mind: the menu is built once when a player joins, so after changing this
+    // file you have to restart the resource before anybody sees the difference.
+    //
+    // Remove the // in front of the two lines below to try it out.
+    //
+    // "Police": ["police", "police2", "police3", "policeb"],
+    // "Emergency Services": ["ambulance", "firetruk"]
+}

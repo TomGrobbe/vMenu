@@ -21,6 +21,7 @@ public static class ServerPermissions
 
         PermissionRegistry.Build(typeof(Global).Assembly);
         ModelWhitelist.LoadAndRegister();
+        VehicleCategories.LoadAndRegister();
 
         IsReady = true;
     }
@@ -101,14 +102,16 @@ public static class ServerPermissions
 
         var granted = GetGrantedPermissions(source);
         var whitelistedVehicles = ModelWhitelist.GetModels(SupplementalModelKind.Vehicle);
+        var categorisedVehicles = VehicleCategories.GetCategorisedModels();
+        var vehicleCategories = VehicleCategories.GetCategoryNames();
 
         if (latentBytesPerSecond > 0)
         {
-            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles);
+            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories);
         }
         else
         {
-            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles);
+            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories);
         }
 
         API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {source}: {string.Join(", ", granted)}");
@@ -122,7 +125,7 @@ public static class ServerPermissions
         {
             var indent = new string(' ', (depth + 1) * 2);
             var extras = node.ExtraParents.Count > 0 ? $"  (also granted by {string.Join(", ", node.ExtraParents)})" : string.Empty;
-            var dynamic = node.IsDynamic ? " [runtime]" : string.Empty;
+            var dynamic = node.Source is not null ? $" [runtime, from {node.Source}]" : string.Empty;
 
             API.Log.Info($"{indent}{node.Name}{dynamic}{extras}");
         }

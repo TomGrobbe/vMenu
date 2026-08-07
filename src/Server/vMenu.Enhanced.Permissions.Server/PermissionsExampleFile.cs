@@ -20,7 +20,7 @@ public static class PermissionsExampleFile
             .Select(static entry => new PermissionExampleEntry(
                 entry.Node.Name,
                 entry.Depth,
-                entry.Node.IsDynamic,
+                entry.Node.Source,
                 entry.Node.IsStaffOnly,
                 entry.Node.ExtraParents));
 

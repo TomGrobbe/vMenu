@@ -15,7 +15,8 @@ using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleS
 namespace vMenu.Enhanced.Menus;
 
 /// <summary>
-/// Spawns vehicles, grouped by the game's own vehicle classes.
+/// Spawns vehicles, grouped by category: the game's own vehicle classes, plus whatever the server
+/// owner defined in <c>config/vehicle-categories.json</c>.
 /// </summary>
 [VMenu(
     TitleKey = Loc.VehicleSpawner.Title,
@@ -26,9 +27,9 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 {
     private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
 
-    private IGrouping<int, string>[] _vehiclesPerClass = [];
+    private VehicleCategory[] _categories = [];
 
-    private (string Model, int Class, string Label, string ClassName, string Icon)[] _describedVehicles = [];
+    private (string Model, int Class, string Label, string CategoryName, string Icon)[] _describedVehicles = [];
 
     public override Task PrepareAsync()
     {
@@ -36,25 +37,55 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
         if (vehicles is null)
         {
-            // The menu still exists, it just has no classes in it. Leaving it half-built would be
+            // The menu still exists, it just has no categories in it. Leaving it half-built would be
             // worse than leaving it empty.
             return Task.CompletedTask;
         }
 
-        _vehiclesPerClass = [.. vehicles
+        var described = vehicles
             .Where(vehicle => !string.IsNullOrWhiteSpace(vehicle))
-            .Select(vehicle => vehicle.Trim())
-            .OrderBy(vehicle => GetVehicleDisplayName(API.Hash(vehicle)))
-                .ThenBy(vehicle => vehicle)
-            .GroupBy(vehicle => Native.GetVehicleClassFromName(API.Hash(vehicle)))
-            .OrderBy(category => ClassName(category.Key))];
+            .Select(vehicle =>
+            {
+                var model = vehicle.Trim();
+                var hash = API.Hash(model);
 
-        _describedVehicles = [.. _vehiclesPerClass.SelectMany(category => category.Select(model =>
-        {
-            var hash = API.Hash(model);
+                return (
+                    Model: model,
+                    Class: Native.GetVehicleClassFromName(hash),
+                    Custom: ClientVehiclePermissions.CategoryOfModel(model),
+                    Label: GetVehicleDisplayName(hash));
+            })
+            .OrderBy(vehicle => vehicle.Label)
+                .ThenBy(vehicle => vehicle.Model)
+            .ToArray();
 
-            return (model, category.Key, GetVehicleDisplayName(hash), ClassName(category.Key), VehicleIcon(hash, category.Key));
-        }))];
+        // A game class every model left behind produces no group at all, so it gets no submenu.
+        var gameClasses = described
+            .Where(vehicle => vehicle.Custom is null)
+            .GroupBy(vehicle => vehicle.Class)
+            .Select(group => new VehicleCategory
+            {
+                Name = ClassName(group.Key),
+                Title = MenuText.From(() => ClassName(group.Key)),
+                Gate = () => ClientVehiclePermissions.CanSpawnVehicleClass(group.Key),
+                Vehicles = [.. group.Select(vehicle => (vehicle.Model, vehicle.Class, vehicle.Label))],
+            });
+
+        var custom = described
+            .Where(vehicle => vehicle.Custom is not null)
+            .GroupBy(vehicle => vehicle.Custom!, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new VehicleCategory
+            {
+                Name = group.Key,
+                Title = MenuText.Literal(group.Key),
+                Gate = () => ClientVehiclePermissions.CanSpawnCustomCategory(group.Key),
+                Vehicles = [.. group.Select(vehicle => (vehicle.Model, vehicle.Class, vehicle.Label))],
+            });
+
+        _categories = [.. gameClasses.Concat(custom).OrderBy(category => category.Name)];
+
+        _describedVehicles = [.. _categories.SelectMany(category => category.Vehicles.Select(vehicle =>
+            (vehicle.Model, vehicle.Class, vehicle.Label, category.Name, VehicleIcon(API.Hash(vehicle.Model), vehicle.Class))))];
 
         return Task.CompletedTask;
     }
@@ -63,11 +94,11 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
     {
         menu.Entries.Add(new SubmenuEntry
         {
-            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByClass),
-            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByClassDescription),
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByCategory),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByCategoryDescription),
             MenuTitle = MenuText.Key(Loc.VehicleSpawner.Title),
-            MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByClassSubtitle),
-            Build = BuildClassList,
+            MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByCategorySubtitle),
+            Build = BuildCategoryList,
         });
 
         menu.Entries.Add(new ButtonEntry
@@ -79,41 +110,44 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         });
     }
 
-    private void BuildClassList(MenuBuilder byClass)
+    private void BuildCategoryList(MenuBuilder byCategory)
     {
-        foreach (var category in _vehiclesPerClass)
+        foreach (var category in _categories)
         {
-            // Copied out of the loop variable so each entry's callbacks capture its own class.
-            var classId = category.Key;
-            var models = category.ToArray();
+            // Copied out of the loop variable so each entry's callbacks capture its own category.
+            var current = category;
 
-            byClass.Entries.Add(new SubmenuEntry
+            byCategory.Entries.Add(new SubmenuEntry
             {
-                Text = MenuText.From(() => ClassName(classId)),
+                Text = current.Title,
                 Description = MenuText.Key(
-                    Loc.VehicleSpawner.ClassDescription,
-                    ("class", MenuText.From(() => ClassName(classId)))),
+                    Loc.VehicleSpawner.CategoryDescription,
+                    ("category", current.Title)),
                 Label = MenuText.Literal("→"),
-                MenuTitle = MenuText.From(() => ClassName(classId)),
-                MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.ClassSubtitle),
-                Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicleClass(classId)),
-                Build = classMenu => BuildClassMenu(classMenu, classId, models),
+                MenuTitle = current.Title,
+                MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.CategorySubtitle),
+                Gate = MenuGate.When(current.Gate),
+                Build = categoryMenu => BuildCategoryMenu(categoryMenu, current.Vehicles),
             });
         }
     }
 
-    private static void BuildClassMenu(MenuBuilder classMenu, int classId, string[] models)
+    /// <summary>
+    /// Vehicles keep their own class id here, whichever category they ended up in, because the stats
+    /// and the icon are read off the game's class rather than off the grouping.
+    /// </summary>
+    private static void BuildCategoryMenu(MenuBuilder categoryMenu, (string Model, int Class, string Label)[] vehicles)
     {
-        foreach (var model in models)
+        foreach (var vehicle in vehicles)
         {
-            var modelName = model;
-            var hash = API.Hash(modelName);
-            var stats = VehicleClassStats.Normalise(hash, classId);
+            var modelName = vehicle.Model;
+            var classId = vehicle.Class;
+            var stats = VehicleClassStats.Normalise(API.Hash(modelName), classId);
 
-            classMenu.Entries.Add(new ButtonEntry
+            categoryMenu.Entries.Add(new ButtonEntry
             {
                 // Model names are data, not prose, so they are never looked up as a key.
-                Text = MenuText.Literal(GetVehicleDisplayName(hash)),
+                Text = MenuText.Literal(vehicle.Label),
                 Label = MenuText.Literal(modelName),
                 Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicle(modelName, classId)),
                 VehicleStats = () => stats,
@@ -163,7 +197,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
                 Value = vehicle.Model,
                 Label = vehicle.Label,
                 Icon = vehicle.Icon,
-                Detail = vehicle.ClassName,
+                Detail = vehicle.CategoryName,
             })];
 
     /// <summary>
@@ -230,6 +264,23 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
     /// <summary>The game already returns these in the player's game language.</summary>
     private static string ClassName(int vehicleClass) => Native.GetLabelText($"VEH_CLASS_{vehicleClass}");
+
+    /// <summary>
+    /// One submenu's worth of vehicles, either a game class or one the server owner defined.
+    /// </summary>
+    // A plain class rather than a record: the generated equality would route through
+    // EqualityComparer<string>.Default, which the sandbox refuses to load.
+    private sealed class VehicleCategory
+    {
+        /// <summary>Resolved once, for the alphabetical ordering and the by name suggestions.</summary>
+        public required string Name { get; init; }
+
+        public required MenuText Title { get; init; }
+
+        public required Func<bool> Gate { get; init; }
+
+        public required (string Model, int Class, string Label)[] Vehicles { get; init; }
+    }
 
     private static string GetVehicleDisplayName(uint hash)
     {

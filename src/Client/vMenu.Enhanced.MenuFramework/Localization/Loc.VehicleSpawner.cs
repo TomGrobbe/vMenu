@@ -10,11 +10,11 @@ public static partial class Loc
 
         public const string LinkDescription = "vehiclespawner.link.desc";
 
-        public const string SpawnByClass = "vehiclespawner.byclass";
+        public const string SpawnByCategory = "vehiclespawner.bycategory";
 
-        public const string SpawnByClassDescription = "vehiclespawner.byclass.desc";
+        public const string SpawnByCategoryDescription = "vehiclespawner.bycategory.desc";
 
-        public const string SpawnByClassSubtitle = "vehiclespawner.byclass.subtitle";
+        public const string SpawnByCategorySubtitle = "vehiclespawner.bycategory.subtitle";
 
         public const string SpawnByName = "vehiclespawner.byname";
 
@@ -28,8 +28,8 @@ public static partial class Loc
 
         public const string Spawned = "vehiclespawner.spawned";
 
-        public const string ClassDescription = "vehiclespawner.class.desc";
+        public const string CategoryDescription = "vehiclespawner.category.desc";
 
-        public const string ClassSubtitle = "vehiclespawner.class.subtitle";
+        public const string CategorySubtitle = "vehiclespawner.category.subtitle";
     }
 }

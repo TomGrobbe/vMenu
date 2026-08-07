@@ -6,7 +6,7 @@ namespace vMenu.Enhanced.Data.Permissions;
 public sealed class PermissionExampleEntry(
     string name,
     int depth,
-    bool isDynamic,
+    string? source,
     bool isStaffOnly,
     IReadOnlyList<string> extraParents)
 {
@@ -14,7 +14,8 @@ public sealed class PermissionExampleEntry(
 
     public int Depth { get; } = depth;
 
-    public bool IsDynamic { get; } = isDynamic;
+    /// <summary>The config file this permission came from, or null when vMenu declares it itself.</summary>
+    public string? Source { get; } = source;
 
     public bool IsStaffOnly { get; } = isStaffOnly;
 
@@ -103,9 +104,9 @@ public static class PermissionsExample
     {
         List<string> notes = [];
 
-        if (entry.IsDynamic)
+        if (entry.Source is not null)
         {
-            notes.Add("from config/model-whitelists.json");
+            notes.Add("from " + entry.Source);
         }
 
         if (entry.ExtraParents.Count > 0)

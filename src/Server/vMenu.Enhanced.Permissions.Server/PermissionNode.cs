@@ -13,7 +13,8 @@ public sealed class PermissionNode
 {
     public required string Name { get; init; }
 
-    public bool IsDynamic { get; init; }
+    /// <summary>The config file this permission came from, or null when vMenu declares it itself.</summary>
+    public string? Source { get; init; }
 
     /// <summary>Only steers which principal the generated example suggests, never a live check.</summary>
     public bool IsStaffOnly { get; internal set; }

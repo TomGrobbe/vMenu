@@ -57,7 +57,8 @@ public static class PermissionRegistry
     }
 
     /// <summary>Registers a permission whose name comes from configuration.</summary>
-    public static bool RegisterDynamic(string permission)
+    /// <param name="source">The config file it came from, named in the generated example.</param>
+    public static bool RegisterDynamic(string permission, string source)
     {
         if (!PermissionPath.IsValidPermission(permission))
         {
@@ -81,13 +82,18 @@ public static class PermissionRegistry
         var node = new PermissionNode
         {
             Name = permission,
-            IsDynamic = true,
+            Source = source,
             IsStaffOnly = parent.IsStaffOnly,
             ExtraParents = parent.ExtraParents,
             StructuralParent = parent,
         };
 
         parent.StructuralChildren.Add(node);
+
+        // Re-sorted because this runs after Build already ordered the tree, and the generated
+        // example would otherwise list these in whatever order the config file happened to use.
+        parent.StructuralChildren.Sort(static (left, right) => string.CompareOrdinal(left.Name, right.Name));
+
         Nodes[permission] = node;
 
         ChainCache.Clear();

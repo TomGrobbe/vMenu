@@ -13,13 +13,21 @@ namespace vMenu.Enhanced.Permissions.Server;
 public static class VehiclePermissions
 {
     /// <summary>
-    /// A whitelisted model answers only to its own permission; the class permission is not
-    /// consulted. Broader grants are picked up by the inheritance chain.
+    /// A whitelisted model answers only to its own permission, then a custom category answers for
+    /// the models it claimed, and only what is left over falls back to its game class. Broader
+    /// grants are picked up by the inheritance chain.
     /// </summary>
-    public static bool CanSpawnVehicleModel(string source, string modelName, int vehicleClass) =>
-        ModelWhitelist.IsWhitelistedVehicle(modelName)
-            ? ServerPermissions.IsPlayerAllowed(source, VehicleModels.ForModel(modelName))
-            : ServerPermissions.IsPlayerAllowed(source, VehicleSpawnerClasses.FromClassId(vehicleClass));
+    public static bool CanSpawnVehicleModel(string source, string modelName, int vehicleClass)
+    {
+        if (ModelWhitelist.IsWhitelistedVehicle(modelName))
+        {
+            return ServerPermissions.IsPlayerAllowed(source, VehicleModels.ForModel(modelName));
+        }
+
+        return VehicleCategories.CategoryOfModel(modelName) is { } category
+            ? ServerPermissions.IsPlayerAllowed(source, VehicleCategories.PermissionOfCategory(category))
+            : ServerPermissions.IsPlayerAllowed(source, VehicleSpawnerCategories.FromClassId(vehicleClass));
+    }
 
     /// <inheritdoc cref="CanSpawnVehicleModel(string, string, int)"/>
     public static bool CanSpawnVehicleModel(Player player, string modelName, int vehicleClass) =>

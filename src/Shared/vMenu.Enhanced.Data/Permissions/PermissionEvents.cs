@@ -9,8 +9,9 @@ public static class PermissionEvents
     public const string Request = "vMenu.Enhanced:Permissions:Request";
 
     /// <summary>
-    /// Server to client. Carries the granted permissions and the whitelisted vehicle models as two
-    /// <see cref="string"/> arrays, in that order.
+    /// Server to client. Carries four <see cref="string"/> arrays, in this order: the granted
+    /// permissions, the whitelisted vehicle models, the models a custom category claimed, and the
+    /// category each of those models belongs to. The last two are index aligned.
     /// </summary>
     public const string Set = "vMenu.Enhanced:Permissions:Set";
 }

@@ -110,7 +110,7 @@ public static class ModelWhitelist
 
             if (descriptor.PermissionFactory is not null)
             {
-                PermissionRegistry.RegisterDynamic(descriptor.PermissionFactory(model));
+                PermissionRegistry.RegisterDynamic(descriptor.PermissionFactory(model), ConfigFile);
             }
         }
 

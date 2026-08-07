@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/assets/config/">
     <File Path="assets/enhanced/config/model-whitelists.json" />
+    <File Path="assets/enhanced/config/vehicle-categories.json" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="README.md" />

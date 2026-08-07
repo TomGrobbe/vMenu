@@ -17,7 +17,7 @@ public static class PermissionsSync
     /// <summary>Call before building menus.</summary>
     public static void RegisterEventHandlers()
     {
-        API.OnNetEvent(PermissionEvents.Set, new Action<string[], string[]>(OnPermissionsReceived), false);
+        API.OnNetEvent(PermissionEvents.Set, new Action<string[], string[], string[], string[]>(OnPermissionsReceived), false);
 
         RequestPermissions();
     }
@@ -41,12 +41,17 @@ public static class PermissionsSync
         API.Log.Error($"[Permissions] No permissions received after {MaxRequestAttempts} attempts. Everything stays locked.");
     }
 
-    private static void OnPermissionsReceived(string[] granted, string[] whitelistedVehicles)
+    private static void OnPermissionsReceived(
+        string[] granted,
+        string[] whitelistedVehicles,
+        string[] categorisedVehicles,
+        string[] vehicleCategories)
     {
-        // Whitelist first, so the single change notification sees consistent state.
+        // Vehicle data first, so the single change notification sees consistent state.
         ClientVehiclePermissions.ApplyWhitelistedVehicleModels(whitelistedVehicles);
+        ClientVehiclePermissions.ApplyCustomCategories(categorisedVehicles, vehicleCategories);
         ClientPermissions.ApplyPermissions(granted);
 
-        API.Log.Debug($"[Permissions] Received {granted.Length} permission(s) and {whitelistedVehicles.Length} whitelisted vehicle(s).");
+        API.Log.Debug($"[Permissions] Received {granted.Length} permission(s), {whitelistedVehicles.Length} whitelisted vehicle(s) and {categorisedVehicles.Length} categorised vehicle(s).");
     }
 }
