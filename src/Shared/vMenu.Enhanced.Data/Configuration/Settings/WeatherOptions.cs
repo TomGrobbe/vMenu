@@ -12,6 +12,16 @@ public static class WeatherOptions
         Default = true,
     };
 
+    public static readonly BoolSetting SyncClouds = new("vMenu.Enhanced.WeatherOptions.SyncClouds")
+    {
+        Description =
+            "Also picks the cloud shape in the sky to match the weather, so every player sees the " +
+            "same clouds. Left to itself the game picks a shape at random on each player's machine " +
+            "and swaps it every few minutes, so everybody ends up under a different sky. Turn this " +
+            "off if another resource on your server sets the clouds.",
+        Default = true,
+    };
+
     public static readonly IntSetting TransitionSeconds = new("vMenu.Enhanced.WeatherOptions.TransitionSeconds")
     {
         Description =

@@ -19,7 +19,12 @@ public static class ActionIds
 
     public static class TimeOptions
     {
-        /// <summary>Takes in-game seconds to offset the clock by, 0 to reset.</summary>
+        /// <summary>Takes in-game seconds to offset the clock by, or <see cref="RealTime"/> to reset.</summary>
         public const string SetTime = "TimeOptions.SetTime";
+
+        /// <summary>Asks the server for whatever offset lands the clock back on real time.</summary>
+        // A word rather than a number, because only the server knows the clock speed and the exact
+        // moment the reset lands, and both of those decide what the offset has to be.
+        public const string RealTime = "realtime";
     }
 }

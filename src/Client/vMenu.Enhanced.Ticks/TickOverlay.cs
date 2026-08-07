@@ -33,6 +33,8 @@ public static class TickOverlay
 
     private static bool _onRight = true;
 
+    private static bool _paused;
+
     /// <summary>Whether the panel is on screen. The live state, not the stored preference.</summary>
     public static bool Visible => _visible;
 
@@ -103,6 +105,16 @@ public static class TickOverlay
             _dirty = true;
         }
 
+        // Polled for the same reason. The game blurs the world behind the pause menu and the panel
+        // is meant to look like it belongs to that world, so it blurs with it.
+        var paused = Native.IsPauseMenuActive();
+
+        if (paused != _paused)
+        {
+            _paused = paused;
+            _dirty = true;
+        }
+
         if (!_dirty)
         {
             return;
@@ -148,6 +160,7 @@ public static class TickOverlay
         return ClientJson.Serialize(new TicksMessage
         {
             Side = _onRight ? "right" : "left",
+            Paused = _paused,
             Ticks = rows,
         });
     }
@@ -159,6 +172,9 @@ public static class TickOverlay
         public bool Visible { get; } = true;
 
         public required string Side { get; init; }
+
+        /// <summary>Whether the pause menu is up, so the panel can blur along with the world.</summary>
+        public required bool Paused { get; init; }
 
         public required IReadOnlyList<TickRow> Ticks { get; init; }
     }

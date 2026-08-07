@@ -59,6 +59,8 @@ public static class WorldWeather
             {
                 Native.ClearWeatherTypePersist();
 
+                WorldClouds.Release(TransitionSeconds());
+
                 // Handed back, so switching the feature off leaves the weather where it was found.
                 Native.SetWeatherOwnedByNetwork(true);
             });
@@ -99,8 +101,9 @@ public static class WorldWeather
         var forced = WorldState.WeatherOverride;
         var schedule = WorldState.Schedule;
         var desired = forced ?? schedule.Current;
+        var first = !_started;
 
-        if (!_started)
+        if (first)
         {
             _started = true;
             _from = desired;
@@ -119,9 +122,19 @@ public static class WorldWeather
 
         _wasForced = forced is not null;
 
+        // A joining player gets the sky it should already be under, so no fade on the first pass.
+        if (ClientConfig.Value(WeatherOptionsSettings.SyncClouds))
+        {
+            WorldClouds.Apply(CloudTarget(forced, schedule), first ? 0.0f : TransitionSeconds());
+        }
+        else
+        {
+            WorldClouds.Release(TransitionSeconds());
+        }
+
         if (!_settled)
         {
-            var seconds = Math.Max(0, ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds));
+            var seconds = TransitionSeconds();
             var progress = seconds <= 0
                 ? 1.0
                 : Math.Clamp(unchecked(Native.GetGameTimer() - _changedAtMs) / 1000.0 / seconds, 0.0, 1.0);
@@ -148,6 +161,14 @@ public static class WorldWeather
 
     private static void Set(WeatherType from, WeatherType to, double percent) =>
         Native.SetWeatherTypeTransition(Hashes[(int)from], Hashes[(int)to], (float)percent);
+
+    private static float TransitionSeconds() =>
+        Math.Max(0, ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds));
+
+    // Swaps at the moment the sky starts moving rather than when the schedule flips, so the clouds
+    // and the weather arrive together instead of the clouds lagging a boundary window behind.
+    private static WeatherType CloudTarget(WeatherType? forced, CycleResolution schedule) =>
+        forced ?? (schedule.GameHoursUntilNext < BoundaryWindowGameHours ? schedule.Next : schedule.Current);
 
     private static double Smooth(double t) => t * t * (3.0 - (2.0 * t));
 

@@ -71,8 +71,25 @@ public static class WorldActions
             return ActionResponse.Refused();
         }
 
-        if (args.Length < 1
-            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
+        if (args.Length < 1)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        // Worked out on the server, not sent as a number, so the offset matches the moment it lands
+        // and the speed the server is actually running at.
+        if (string.Equals(args[0], ActionIds.TimeOptions.RealTime, StringComparison.OrdinalIgnoreCase))
+        {
+            ServerState.SetTimeOffset(ServerClock.RealTimeOffset());
+
+            API.Log.Info(
+                $"[State] {source} put the clock back on the server's own time, " +
+                $"offset {ServerState.TimeOffsetSeconds}s.");
+
+            return ActionResponse.Ok();
+        }
+
+        if (!int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
         {
             return ActionResponse.InvalidRequest();
         }

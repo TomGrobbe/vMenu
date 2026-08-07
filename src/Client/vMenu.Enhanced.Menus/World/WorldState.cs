@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
@@ -50,12 +52,18 @@ public static class WorldState
     public static double UnixSeconds =>
         _anchored ? _anchorUnix + (unchecked(Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
 
+    /// <summary>How fast the clock runs, which the weather schedule follows as well.</summary>
+    // Read live rather than cached, so raising it takes effect without a restart. The same convar
+    // reaches every client, so nobody's sky runs at a different speed from anybody else's.
+    public static double TimeSpeed =>
+        GameClock.ClampSpeed(ClientConfig.Value(TimeOptionsSettings.SpeedMultiplier));
+
     /// <summary>The clock with the server's offset applied, as an in-game second of day.</summary>
     public static double SecondOfDay =>
-        GameClock.Mod(GameClock.SecondOfDay(UnixSeconds) + TimeOffsetSeconds, GameClock.SecondsPerGameDay);
+        GameClock.Mod(GameClock.SecondOfDay(UnixSeconds, TimeSpeed) + TimeOffsetSeconds, GameClock.SecondsPerGameDay);
 
     /// <summary>What the schedule says right now, ignoring any override.</summary>
-    public static CycleResolution Schedule => WeatherCycle.Resolve(GameClock.CycleGameHours(UnixSeconds));
+    public static CycleResolution Schedule => WeatherCycle.Resolve(GameClock.CycleGameHours(UnixSeconds, TimeSpeed));
 
     /// <summary>The type actually in force.</summary>
     public static WeatherType Weather => WeatherOverride ?? Schedule.Current;
@@ -95,7 +103,8 @@ public static class WorldState
         API.Log.Info(
             "[World] clock: " + (_anchored
                 ? _heardFromServer ? "anchored to the server" : "anchored to THIS MACHINE, no server time has arrived"
-                : "not anchored"));
+                : "not anchored") +
+            $", running at {TimeSpeed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
         API.Log.Info(
             $"[World] override: {(WeatherOverride is { } forced ? WeatherTypes.NameOf(forced) : "none")}, " +
             $"schedule: {WeatherTypes.NameOf(Schedule.Current)}, " +
@@ -103,6 +112,10 @@ public static class WorldState
 
         // Everything above is what vMenu believes. This is what the game actually has.
         API.Log.Info($"[World] game reports: {WorldWeather.Describe()}");
+        API.Log.Info($"[World] clouds: {WorldClouds.Describe()}");
+        API.Log.Info($"[World] game clock: {WorldTime.Describe()}");
+        API.Log.Info($"[World] date: {WorldTime.DescribeDate()}");
+        API.Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
     }
 
     private static void Poll()

@@ -32,8 +32,8 @@ public static class ConfigCatalog
             VehicleOptions.RepairVehicleCommand,
             VehicleOptions.WashVehicleCommand,
         ]),
-        new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.TransitionSeconds]),
-        new("Time Options", [TimeOptions.Enabled, TimeOptions.TransitionSeconds]),
+        new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds]),
+        new("Time Options", [TimeOptions.Enabled, TimeOptions.SpeedMultiplier, TimeOptions.TransitionSeconds]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
         new("Debugging", [Debugging.Client, Debugging.Server, Debugging.ExperimentalFeatures]),
     ];

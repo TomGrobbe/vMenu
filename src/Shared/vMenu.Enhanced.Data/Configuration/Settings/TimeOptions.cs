@@ -11,6 +11,20 @@ public static class TimeOptions
         Default = true,
     };
 
+    public static readonly FloatSetting SpeedMultiplier = new("vMenu.Enhanced.TimeOptions.SpeedMultiplier")
+    {
+        Description =
+            "How fast the in-game clock runs compared to how GTA normally runs it, where one in-game " +
+            "hour takes two real minutes and a full in-game day takes 48 real minutes. Leave this at " +
+            "1 to keep that normal speed. Set it to 2 and the day passes twice as fast, 5.5 makes it " +
+            "five and a half times as fast, and 0.5 slows it down to half speed. The dynamic weather " +
+            "schedule is measured in in-game hours, so it follows the same speed and the weather " +
+            "changes faster too. Anything below 0.01 or above 1000 is pulled back to those limits, " +
+            "so a typo can never stop the clock or spin it out of control. This only does anything " +
+            "while the option above is on, because otherwise vMenu is not driving the clock at all.",
+        Default = 1.0f,
+    };
+
     public static readonly IntSetting TransitionSeconds = new("vMenu.Enhanced.TimeOptions.TransitionSeconds")
     {
         Description =

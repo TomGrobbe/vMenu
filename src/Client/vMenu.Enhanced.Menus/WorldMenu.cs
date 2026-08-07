@@ -108,7 +108,7 @@ public sealed class WorldMenu : MenuDefinition
             Gate = TimeAllowed,
             OnSelectedAsync = _ => SendAsync(
                 ActionIds.TimeOptions.SetTime,
-                "0",
+                ActionIds.TimeOptions.RealTime,
                 Loc.World.TimeReset,
                 TimeOptionsSettings.TransitionSeconds),
         });
@@ -135,7 +135,7 @@ public sealed class WorldMenu : MenuDefinition
 
         // Stored as an offset from the derived clock, not as a fixed time, so the day keeps running.
         var offset = (int)GameClock.Mod(
-            secondOfDay - GameClock.SecondOfDay(WorldState.UnixSeconds),
+            secondOfDay - GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed),
             GameClock.SecondsPerGameDay);
 
         await SendAsync(
