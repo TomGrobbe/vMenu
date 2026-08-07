@@ -70,7 +70,22 @@ internal static class EnglishStrings
             [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "A right aligned menu is not supported here, so the menu has been left aligned.",
 
             [Loc.NoClip.ToggleDenied] = "You are not allowed to toggle noclip.",
-
+            
+            [Loc.RecordingMenu.Title] = "Recording",
+            [Loc.RecordingMenu.Subtitle] = "Recording",
+            [Loc.RecordingMenu.LinkDescription] = "A menu that lets you record and take screenshots.",
+            [Loc.RecordingMenu.TakePic] = "Take Screenshot",
+            [Loc.RecordingMenu.TakePicDescription] = "Takes a high quality screenshot.",
+            [Loc.RecordingMenu.OpenGallery] = "Open Gallery",
+            [Loc.RecordingMenu.OpenGalleryDescription] = "Opens the gallery in the pause menu.",
+            [Loc.RecordingMenu.StartStopRecording] = "Start/Stop Recording",
+            [Loc.RecordingMenu.StartStopRecordingDescription] = "Starts or Stops recording.",
+            [Loc.RecordingMenu.CancelRecording] = "Cancel Recording",
+            [Loc.RecordingMenu.CancelRecordingDescription] = "Cancels the current recording.",
+            [Loc.RecordingMenu.OpenRockstarEditor] = "Open Rockstar Editor",
+            [Loc.RecordingMenu.OpenRockstarEditorDescription] = "Opens Rockstar editor.",
+            [Loc.RecordingMenu.CanceledRockstarEditor] = "You canceled Rockstar editor.",
+            
             [Loc.DeveloperFeatures.Title] = "Developer Features",
             [Loc.DeveloperFeatures.Subtitle] = "Developer Features",
             [Loc.DeveloperFeatures.LinkDescription] = "Development and debugging tools.",
