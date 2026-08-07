@@ -18,7 +18,7 @@
     "devfeatures.propdimensions.desc": "Dibuja el contorno del modelo de cada prop que tengas cerca.",
     "devfeatures.subtitle": "Funciones de desarrollo",
     "devfeatures.ticksoverlay": "Superposición de ticks",
-    "devfeatures.ticksoverlay.desc": "Muestra un panel con todos los bucles que vMenu está ejecutando y si están activos en este momento. También puedes usar el comando <C>/vmenu_ticks_overlay</C> para activar o desactivar esta superposición.",
+    "devfeatures.ticksoverlay.desc": "Muestra un panel con todos los bucles que vMenu está ejecutando y si están activos en este momento. También puedes usar el comando ~d~/vmenu_ticks_overlay~s~ para activar o desactivar esta superposición.",
     "devfeatures.title": "Funciones de desarrollo",
     "devfeatures.vehicledimensions": "Mostrar dimensiones de vehículos",
     "devfeatures.vehicledimensions.desc": "Dibuja el contorno del modelo de cada vehículo que tengas cerca.",

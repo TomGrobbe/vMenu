@@ -18,7 +18,7 @@
     "devfeatures.propdimensions.desc": "Zeichnet die Modellumrisse jedes Props in deiner Nähe.",
     "devfeatures.subtitle": "Entwicklerfunktionen",
     "devfeatures.ticksoverlay": "Ticks-Overlay",
-    "devfeatures.ticksoverlay.desc": "Zeigt ein Panel mit jedem Loop, den vMenu ausführt, und ob er gerade läuft. Du kannst dieses Overlay auch mit dem Befehl <C>/vmenu_ticks_overlay</C> ein- und ausschalten.",
+    "devfeatures.ticksoverlay.desc": "Zeigt ein Panel mit jedem Loop, den vMenu ausführt, und ob er gerade läuft. Du kannst dieses Overlay auch mit dem Befehl ~d~/vmenu_ticks_overlay~s~ ein- und ausschalten.",
     "devfeatures.title": "Entwicklerfunktionen",
     "devfeatures.vehicledimensions": "Fahrzeugabmessungen anzeigen",
     "devfeatures.vehicledimensions.desc": "Zeichnet die Modellumrisse jedes Fahrzeugs in deiner Nähe.",

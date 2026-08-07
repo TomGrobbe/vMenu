@@ -18,7 +18,7 @@
     "devfeatures.propdimensions.desc": "Tekent de modelomlijning van elke prop die op dit moment bij je in de buurt is.",
     "devfeatures.subtitle": "Ontwikkelaarsfuncties",
     "devfeatures.ticksoverlay": "Ticks-overlay",
-    "devfeatures.ticksoverlay.desc": "Toont een paneel met elke loop die vMenu draait en of die op dit moment aan staat. Je kunt ook het commando <C>/vmenu_ticks_overlay</C> gebruiken om deze overlay aan of uit te zetten.",
+    "devfeatures.ticksoverlay.desc": "Toont een paneel met elke loop die vMenu draait en of die op dit moment aan staat. Je kunt ook het commando ~d~/vmenu_ticks_overlay~s~ gebruiken om deze overlay aan of uit te zetten.",
     "devfeatures.title": "Ontwikkelaarsfuncties",
     "devfeatures.vehicledimensions": "Voertuigafmetingen tonen",
     "devfeatures.vehicledimensions.desc": "Tekent de modelomlijning van elk voertuig dat op dit moment bij je in de buurt is.",

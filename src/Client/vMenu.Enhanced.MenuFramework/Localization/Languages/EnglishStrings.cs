@@ -79,7 +79,7 @@ internal static class EnglishStrings
             [Loc.DeveloperFeatures.BoxOpacity] = "Dimensions Box Opacity",
             [Loc.DeveloperFeatures.BoxOpacityDescription] = "How solidly the coloured boxes are filled in. The outlines and labels around them are not affected. Currently {opacity}.",
             [Loc.DeveloperFeatures.TicksOverlay] = "Ticks Overlay",
-            [Loc.DeveloperFeatures.TicksOverlayDescription] = "Shows a panel listing every loop vMenu is running and whether it's currently on. You can also use the <C>/vmenu_ticks_overlay</C> command to toggle this overlay.",
+            [Loc.DeveloperFeatures.TicksOverlayDescription] = "Shows a panel listing every loop vMenu is running and whether it's currently on. You can also use the ~d~/vmenu_ticks_overlay~s~ command to toggle this overlay.",
 
             [Loc.World.Title] = "World",
             [Loc.World.Subtitle] = "Weather & Time",
