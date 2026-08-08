@@ -15,6 +15,12 @@ public static class ActionIds
         /// Takes a category name, a name, a description, then an x, y and z, and optionally a heading.
         /// </summary>
         public const string AddLocation = "TeleportMenu.AddLocation";
+
+        /// <summary>Takes a category name. Everything in it goes with it.</summary>
+        public const string RemoveCategory = "TeleportMenu.RemoveCategory";
+
+        /// <summary>Takes a category name and the name of the location in it.</summary>
+        public const string RemoveLocation = "TeleportMenu.RemoveLocation";
     }
 
     public static class VehicleOptions

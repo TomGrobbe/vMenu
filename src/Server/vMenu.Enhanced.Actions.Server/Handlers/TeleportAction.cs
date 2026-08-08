@@ -45,6 +45,16 @@ public static class TeleportActions
             TeleportMenuPermissions.Manage,
             AddLocation);
 
+        ActionRegistry.Register(
+            ActionIds.TeleportMenu.RemoveCategory,
+            TeleportMenuPermissions.Manage,
+            RemoveCategory);
+
+        ActionRegistry.Register(
+            ActionIds.TeleportMenu.RemoveLocation,
+            TeleportMenuPermissions.Manage,
+            RemoveLocation);
+
         API.OnNetEvent(TeleportEvents.Request, new Action<Player>(OnRequested), false);
     }
 
@@ -124,6 +134,57 @@ public static class TeleportActions
             () => category.Locations.Remove(added));
     }
 
+    private static ActionResponse RemoveCategory(Player source, string[] args)
+    {
+        if (args.Length < 1 || Trimmed(args[0]) is not { } name)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        var at = IndexOfCategory(name);
+
+        if (at < 0)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var removed = Categories[at];
+
+        Categories.RemoveAt(at);
+
+        // Put back where it was rather than appended, so a failed write leaves the order alone too.
+        return Commit(source, $"removed category '{removed.Name}'", () => Categories.Insert(at, removed));
+    }
+
+    private static ActionResponse RemoveLocation(Player source, string[] args)
+    {
+        if (args.Length < 2 || Trimmed(args[1]) is not { } name)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (Find(args[0]) is not { } category || category.Locations is not { } locations)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var at = IndexOfLocation(locations, name);
+
+        if (at < 0)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var removed = locations[at];
+
+        locations.RemoveAt(at);
+
+        return Commit(
+            source,
+            $"removed '{removed.Name}' from '{category.Name}'",
+            () => locations.Insert(at, removed));
+    }
+
     /// <summary>
     /// Writes the file, then republishes the list. Puts the change back if the write failed, so what
     /// the clients hold always matches what is on disk.
@@ -190,20 +251,40 @@ public static class TeleportActions
 
     private static Category? Find(string? name)
     {
+        var at = IndexOfCategory(name);
+
+        return at >= 0 ? Categories[at] : null;
+    }
+
+    private static int IndexOfCategory(string? name)
+    {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return null;
+            return -1;
         }
 
-        foreach (var category in Categories)
+        for (var index = 0; index < Categories.Count; index++)
         {
-            if (string.Equals(category.Name, name.Trim(), StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(Categories[index].Name, name.Trim(), StringComparison.OrdinalIgnoreCase))
             {
-                return category;
+                return index;
             }
         }
 
-        return null;
+        return -1;
+    }
+
+    private static int IndexOfLocation(List<Location> locations, string name)
+    {
+        for (var index = 0; index < locations.Count; index++)
+        {
+            if (string.Equals(locations[index].Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     private static string? Trimmed(string? value) =>

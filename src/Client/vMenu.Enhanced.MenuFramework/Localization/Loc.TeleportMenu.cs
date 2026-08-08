@@ -58,6 +58,26 @@ public static partial class Loc
 
         public const string CreatePositionDescription = "teleportmenu.categories.position.desc";
 
+        public const string DeleteCategory = "teleportmenu.categories.delete";
+
+        public const string DeleteCategoryDescription = "teleportmenu.categories.delete.desc";
+
+        public const string DeleteCategoryConfirm = "teleportmenu.categories.delete.confirm";
+
+        public const string DeletePosition = "teleportmenu.categories.position.delete";
+
+        public const string DeletePositionDescription = "teleportmenu.categories.position.delete.desc";
+
+        public const string DeletePositionConfirm = "teleportmenu.categories.position.delete.confirm";
+
+        public const string Deleted = "teleportmenu.deleted";
+
+        public const string DeleteDenied = "teleportmenu.delete.denied";
+
+        public const string DeleteGone = "teleportmenu.delete.gone";
+
+        public const string DeleteFailed = "teleportmenu.delete.failed";
+
         public const string PositionName = "teleportmenu.categories.add.position.name";
 
         public const string PositionDescription = "teleportmenu.categories.add.position.desc";

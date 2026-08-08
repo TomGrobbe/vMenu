@@ -16,6 +16,6 @@ public static class TeleportMenu
     /// <summary>Receiving the locations a server owner set up, and teleporting to them.</summary>
     public const string Category = "vMenu.Enhanced.Menus.TeleportMenu.Category";
 
-    /// <summary>Adding a category or a location, which writes the config file for everybody.</summary>
+    /// <summary>Adding or removing a category or a location, which writes the config file for everybody.</summary>
     public const string Manage = "vMenu.Enhanced.Menus.TeleportMenu.Manage";
 }

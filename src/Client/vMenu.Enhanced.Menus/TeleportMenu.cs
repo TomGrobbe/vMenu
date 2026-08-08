@@ -176,8 +176,46 @@ public sealed class TeleportMenu : MenuDefinition
             OnSelectedAsync = _ => CreateCategoryAsync(),
         });
 
+        // Left out entirely when there is nothing to pick, rather than offered as an empty list.
+        if (TeleportSync.Categories.Count > 0)
+        {
+            rows.Add(DeleteCategoryRow());
+        }
+
         Fill(categoryMenu, rows, keepIndex: true);
     }
+
+    private static MenuEntry DeleteCategoryRow()
+    {
+        // A snapshot, because the row lives until the next rebuild and the shared list is replaced
+        // wholesale every time the server sends a new one.
+        var categories = TeleportSync.Categories.ToList();
+
+        var options = new List<MenuText>(categories.Count);
+
+        foreach (var category in categories)
+        {
+            options.Add(MenuText.Literal(category.Name));
+        }
+
+        var picked = 0;
+
+        return new ConfirmListEntry
+        {
+            Text = MenuText.Key(Loc.TeleportMenu.DeleteCategory),
+            Description = MenuText.Key(Loc.TeleportMenu.DeleteCategoryDescription),
+            ConfirmationDescription = MenuText.Key(
+                Loc.TeleportMenu.DeleteCategoryConfirm,
+                ("name", MenuText.From(() => NameAt(categories, picked)))),
+            Options = options,
+            Gate = TeleportMenuPermissions.Manage,
+            OnIndexChanged = changed => picked = changed.NewIndex,
+            OnConfirmedAsync = confirmed => DeleteCategoryAsync(NameAt(categories, confirmed.SelectedIndex)),
+        };
+    }
+
+    private static string NameAt(List<TeleportCategory> categories, int index) =>
+        index >= 0 && index < categories.Count ? categories[index].Name : string.Empty;
 
     private void RebuildLocations(bool keepIndex)
     {
@@ -213,8 +251,44 @@ public sealed class TeleportMenu : MenuDefinition
             OnSelectedAsync = _ => CreatePositionAsync(),
         });
 
+        if (_selected is { Locations.Count: > 0 } category)
+        {
+            rows.Add(DeletePositionRow(category));
+        }
+
         Fill(locationMenu, rows, keepIndex);
     }
+
+    private static MenuEntry DeletePositionRow(TeleportCategory category)
+    {
+        var locations = category.Locations.ToList();
+
+        var options = new List<MenuText>(locations.Count);
+
+        foreach (var location in locations)
+        {
+            options.Add(MenuText.Literal(location.Name));
+        }
+
+        var picked = 0;
+
+        return new ConfirmListEntry
+        {
+            Text = MenuText.Key(Loc.TeleportMenu.DeletePosition),
+            Description = MenuText.Key(Loc.TeleportMenu.DeletePositionDescription),
+            ConfirmationDescription = MenuText.Key(
+                Loc.TeleportMenu.DeletePositionConfirm,
+                ("name", MenuText.From(() => NameAt(locations, picked)))),
+            Options = options,
+            Gate = TeleportMenuPermissions.Manage,
+            OnIndexChanged = changed => picked = changed.NewIndex,
+            OnConfirmedAsync = confirmed =>
+                DeletePositionAsync(category.Name, NameAt(locations, confirmed.SelectedIndex)),
+        };
+    }
+
+    private static string NameAt(List<TeleportLocation> locations, int index) =>
+        index >= 0 && index < locations.Count ? locations[index].Name : string.Empty;
 
     // Rebuilding drops every item, and MenuAPI puts the highlight back on the first one, so a rebuild
     // under a menu the player is already looking at moves their selection out from under them.
@@ -281,6 +355,29 @@ public sealed class TeleportMenu : MenuDefinition
             Coord(heading)));
     }
 
+    private static async Task DeleteCategoryAsync(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return;
+        }
+
+        ReportDeleted(await ServerActions.InvokeAsync(ActionIds.TeleportMenu.RemoveCategory, name));
+    }
+
+    private static async Task DeletePositionAsync(string category, string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return;
+        }
+
+        ReportDeleted(await ServerActions.InvokeAsync(
+            ActionIds.TeleportMenu.RemoveLocation,
+            category,
+            name));
+    }
+
     private static string Coord(float value) => value.ToString("0.##", CultureInfo.InvariantCulture);
 
     // A row rather than an empty menu: MenuAPI ignores every direction key while a menu has no items.
@@ -308,4 +405,20 @@ public sealed class TeleportMenu : MenuDefinition
         }));
     }
 
+    private static void ReportDeleted(ActionResult result)
+    {
+        if (result.IsOk)
+        {
+            Notifications.Success(MenuText.Key(Loc.TeleportMenu.Deleted));
+
+            return;
+        }
+
+        Notifications.Error(MenuText.Key(result.Status switch
+        {
+            ActionStatus.Denied => Loc.TeleportMenu.DeleteDenied,
+            ActionStatus.NotFound => Loc.TeleportMenu.DeleteGone,
+            _ => Loc.TeleportMenu.DeleteFailed,
+        }));
+    }
 }
