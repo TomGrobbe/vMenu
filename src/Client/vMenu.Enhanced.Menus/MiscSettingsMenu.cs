@@ -40,6 +40,22 @@ public sealed class MiscSettingsMenu : MenuDefinition
             ReadState = () => UserPreferences.IsRightAligned,
             OnChanged = changed => UserPreferences.SetRightAligned(changed.Checked),
         });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.DisableIdleCamera),
+            Description = MenuText.Key(Loc.MiscSettings.DisableIdleCameraDescription),
+            ReadState = () => UserPreferences.IsIdleCameraDisabled,
+            OnChanged = changed => UserPreferences.SetIdleCameraDisabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCamera),
+            Description = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCameraDescription),
+            ReadState = () => UserPreferences.IsVehicleIdleCameraDisabled,
+            OnChanged = changed => UserPreferences.SetVehicleIdleCameraDisabled(changed.Checked),
+        });
     }
 
     private static MenuText NativeLanguageName(LanguageId language) =>

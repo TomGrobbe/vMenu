@@ -17,11 +17,15 @@ public static class UserDefaults
     public static BoolDefault MiscRightAlignMenu { get; } =
         new("miscRightAlignMenu") { Default = true };
 
-    /// <summary>A <c>LanguageId</c> code.</summary>
-    // A code rather than an index, which would point at a different language once one is added. A
-    // plain string because the localizer sits above this assembly.
+    
     public static StringDefault Language { get; } =
         new("language") { Default = "en" };
+
+    public static BoolDefault MiscDisableIdleCamera { get; } =
+        new("miscDisableIdleCamera") { Default = false };
+
+    public static BoolDefault MiscDisableVehicleIdleCamera { get; } =
+        new("miscDisableVehicleIdleCamera") { Default = false };
 
     #endregion
 
@@ -74,6 +78,8 @@ public static class UserDefaults
     [
         MiscRightAlignMenu,
         Language,
+        MiscDisableIdleCamera,
+        MiscDisableVehicleIdleCamera,
 
         TeleportKeyAction,
 

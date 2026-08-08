@@ -24,6 +24,9 @@ public static class UserPreferences
 
         ApplyRightAligned(UserDefaults.MiscRightAlignMenu.Value, persist: false);
 
+        SetIdleCameraDisabled(UserDefaults.MiscDisableIdleCamera.Value);
+        SetVehicleIdleCameraDisabled(UserDefaults.MiscDisableVehicleIdleCamera.Value);
+
         // After the alignment, which decides the side the panel sits on.
         TickOverlay.Restore();
     }
@@ -35,6 +38,31 @@ public static class UserPreferences
     public static void SetRightAligned(bool rightAligned) => ApplyRightAligned(rightAligned, persist: true);
 
     public static void SetLanguage(LanguageId language) => UserDefaults.Language.Value = language.Code;
+
+    /// <summary>
+    /// The stored value rather than the game's, unlike the alignment above: neither native has a
+    /// matching getter, so what was last set is the only account of it there is.
+    /// </summary>
+    public static bool IsIdleCameraDisabled => UserDefaults.MiscDisableIdleCamera.Value;
+
+    /// <inheritdoc cref="IsIdleCameraDisabled"/>
+    public static bool IsVehicleIdleCameraDisabled => UserDefaults.MiscDisableVehicleIdleCamera.Value;
+
+    // Both natives are plain flags the game remembers, so they are set when the value moves rather
+    // than held down by a tick.
+    public static void SetIdleCameraDisabled(bool disabled)
+    {
+        Native.DisableIdleCamera(disabled);
+
+        UserDefaults.MiscDisableIdleCamera.Value = disabled;
+    }
+
+    public static void SetVehicleIdleCameraDisabled(bool disabled)
+    {
+        Native.DisableVehiclePassengerIdleCamera(disabled);
+
+        UserDefaults.MiscDisableVehicleIdleCamera.Value = disabled;
+    }
 
     private static void RestoreLanguage()
     {

@@ -125,6 +125,10 @@ internal static class EnglishStrings
             [Loc.MiscSettings.MenuRightAlignment] = "Right Align Menu",
             [Loc.MiscSettings.MenuRightAlignmentDescription] = "Press Enter to toggle left or right aligned menu.",
             [Loc.MiscSettings.MenuRightAlignmentUnsupported] = "A right aligned menu is not supported here, so the menu has been left aligned.",
+            [Loc.MiscSettings.DisableIdleCamera] = "Disable Idle Camera",
+            [Loc.MiscSettings.DisableIdleCameraDescription] = "Stops the camera drifting around on its own when you stop touching the controls on foot.",
+            [Loc.MiscSettings.DisableVehicleIdleCamera] = "Disable Vehicle Idle Camera",
+            [Loc.MiscSettings.DisableVehicleIdleCameraDescription] = "Stops the camera drifting around on its own while you sit in a vehicle. ~y~Note:~s~ this also stops you turning the cinematic camera on yourself.",
 
             [Loc.NoClip.ToggleDenied] = "You are not allowed to toggle noclip.",
             

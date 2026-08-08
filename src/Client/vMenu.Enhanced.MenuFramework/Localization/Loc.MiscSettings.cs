@@ -21,5 +21,13 @@ public static partial class Loc
         public const string MenuRightAlignmentDescription = "miscsettings.rightaligned.desc";
 
         public const string MenuRightAlignmentUnsupported = "miscsettings.rightaligned.unsupported";
+
+        public const string DisableIdleCamera = "miscsettings.idlecam";
+
+        public const string DisableIdleCameraDescription = "miscsettings.idlecam.desc";
+
+        public const string DisableVehicleIdleCamera = "miscsettings.idlecam.vehicle";
+
+        public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";
     }
 }
