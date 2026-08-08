@@ -122,16 +122,67 @@ public static class MenuRegistry
     /// <summary>Materialises an entry added after its menu was already built.</summary>
     internal static void MaterialiseLate(MenuHost host, MenuEntry entry)
     {
+        MaterialiseOne(host, entry, Localizer.Current);
+
+        // Whole tree, so a submenu created here is gated too.
+        RefreshAll();
+    }
+
+    /// <summary>Materialises a batch of late entries, gating the tree once at the end.</summary>
+    // RefreshAll walks every menu in the resource, so doing it per row turns adding a thousand rows
+    // into a thousand full tree passes.
+    internal static void MaterialiseLateBatch(MenuHost host, IEnumerable<MenuEntry> entries)
+    {
         var localizer = Localizer.Current;
+
+        foreach (var entry in entries)
+        {
+            MaterialiseOne(host, entry, localizer);
+        }
+
+        RefreshAll();
+
+        host.RefreshFilter();
+    }
+
+    /// <summary>
+    /// Creates a child menu that no row points at, opened from code through the returned handle.
+    /// </summary>
+    internal static DetachedMenu CreateDetached(
+        MenuHost parent,
+        MenuText title,
+        MenuText subtitle,
+        MenuGate gate,
+        Action<MenuBuilder> build,
+        GateBehaviour? defaultBehaviour)
+    {
+        var localizer = Localizer.Current;
+
+        var menu = new Menu(title.Resolve(localizer), subtitle.Resolve(localizer));
+
+        MenuController.AddSubmenu(parent.Menu, menu);
+
+        var child = Track(new MenuHost(menu, parent, gate, title, subtitle, defaultBehaviour));
+
+        parent.Children.Add(child);
+
+        build(child.Builder);
+
+        // Nothing walks this menu on the parent's behalf, the parent having no entry for it, so it
+        // materialises itself here.
+        MaterialiseSync(child, localizer);
+
+        return new DetachedMenu(child);
+    }
+
+    private static void MaterialiseOne(MenuHost host, MenuEntry entry, ILocalizer localizer)
+    {
         var item = host.Materialise(entry, localizer);
 
         if (entry is SubmenuEntry submenu && Prepared(submenu) && CreateChild(host, submenu, item, localizer) is { } child)
         {
             MaterialiseSync(child, localizer);
         }
-
-        // Whole tree, so a submenu created here is gated too.
-        RefreshAll();
     }
 
     // For entries added once the menu is live. There is nowhere to await from there, so a definition

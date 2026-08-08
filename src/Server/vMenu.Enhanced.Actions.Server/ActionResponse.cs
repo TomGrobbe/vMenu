@@ -21,5 +21,7 @@ public sealed class ActionResponse(ActionStatus status, string[] data)
 
     public static ActionResponse NotFound() => new(ActionStatus.NotFound, []);
 
+    public static ActionResponse NotReady() => new(ActionStatus.NotReady, []);
+
     public static ActionResponse TooFar() => new(ActionStatus.TooFar, []);
 }

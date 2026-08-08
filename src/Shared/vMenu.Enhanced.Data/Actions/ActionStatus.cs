@@ -24,6 +24,13 @@ public enum ActionStatus
 
     NotFound = 4,
 
+    /// <summary>
+    /// The target is there, but not in a state where this can be done to it yet.
+    /// </summary>
+    // A player who is still connecting has a server id already and no character in the world yet, so
+    // without this they are indistinguishable from one who has left.
+    NotReady = 9,
+
     TooFar = 5,
 
     Failed = 6,

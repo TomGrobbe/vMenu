@@ -9,6 +9,7 @@ public static class MainMenuComposition
 {
     public static IReadOnlyList<MenuDefinition> Definitions =>
     [
+        new OnlinePlayersMenu(),
         new VehicleOptionsMenu(),
         new VehicleSpawnerMenu(),
         new WorldMenu(),

@@ -39,6 +39,7 @@ public class CoreServer : IScript
 
         VehicleActions.Register();
         WorldActions.Register();
+        OnlinePlayerActions.Register();
         ActionRegistry.RegisterEventHandlers();
 
         API.Log.Info("Server started");

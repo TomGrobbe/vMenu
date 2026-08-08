@@ -12,6 +12,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
+using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
@@ -92,6 +93,10 @@ public sealed class Main : IScript
         VehicleCommands.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
+
+        // Being killed, summoned or messaged can arrive at any time, including before the menus are
+        // built, so this listens from here rather than from the menu that sends them.
+        PlayerPushEvents.Initialize();
 
         // Before the wait below, so the sky and the clock are right on the player's first frame
         // rather than snapping into place after they spawn.

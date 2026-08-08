@@ -79,6 +79,32 @@ internal sealed class MenuHost : IDisposable
     /// <summary>Whether the menu is already built, so a late entry has to be materialised on the spot.</summary>
     internal bool IsLive => _attached;
 
+    /// <summary>Drops every row, so the caller can declare a fresh set.</summary>
+    // For a menu whose contents are runtime data rather than a fixed declaration. Everything that
+    // remembers an item has to be emptied together, or a later refresh would gate rows the menu no
+    // longer has.
+    internal void ClearEntries()
+    {
+        foreach (var entry in Builder.Entries)
+        {
+            if (entry is SubmenuEntry submenu)
+            {
+                // The child menu it opens lives in MenuController's static tables, which have no way
+                // to remove a menu, so clearing the row would leave the menu behind it stranded.
+                API.Log.Error($"[Menu] ClearEntries dropped the submenu row '{submenu.Text.Resolve(Localizer.Current)}'. The menu it opens cannot be removed and is now unreachable.");
+            }
+        }
+
+        Menu.ClearMenuItems();
+
+        Builder.Entries.Clear();
+        _byItem.Clear();
+        _hidden.Clear();
+        _inFlight.Clear();
+
+        _filterDirty = false;
+    }
+
     internal void Attach()
     {
         if (_attached)
@@ -176,6 +202,9 @@ internal sealed class MenuHost : IDisposable
 
         ApplyFilter();
     }
+
+    /// <summary>Puts the filter back after the item list was replaced underneath it.</summary>
+    internal void RefreshFilter() => ApplyFilter();
 
     internal void SortItems(Comparison<MenuItem> comparison)
     {

@@ -17,6 +17,44 @@ public static class ActionIds
         public const string SetWeather = "WeatherOptions.SetWeather";
     }
 
+    public static class OnlinePlayers
+    {
+        /// <summary>
+        /// Takes a search query, or an empty string for everybody. Answers with one
+        /// <see cref="Data.OnlinePlayers.PlayerRow"/> per matching player.
+        /// </summary>
+        // Searching happens here rather than on the client because it matches against identifiers,
+        // and those are nobody's business but the server's.
+        public const string GetList = "OnlinePlayers.GetList";
+
+        /// <summary>Takes a server id, answers with x, y and z.</summary>
+        // Two ids for one answer, because the dispatcher checks a permission per action id and being
+        // allowed to teleport to somebody is not the same as being allowed to point at them.
+        public const string GetCoordsForTeleport = "OnlinePlayers.GetCoordsForTeleport";
+
+        /// <inheritdoc cref="GetCoordsForTeleport"/>
+        public const string GetCoordsForWaypoint = "OnlinePlayers.GetCoordsForWaypoint";
+
+        /// <summary>Takes a server id and a reason.</summary>
+        public const string Kick = "OnlinePlayers.Kick";
+
+        /// <summary>Takes a server id.</summary>
+        public const string Kill = "OnlinePlayers.Kill";
+
+        /// <summary>Takes a server id. Brings that player to whoever asked.</summary>
+        public const string Summon = "OnlinePlayers.Summon";
+
+        /// <summary>Takes a server id and the message.</summary>
+        public const string SendMessage = "OnlinePlayers.SendMessage";
+
+        /// <summary>
+        /// Takes a server id, answers with one identifier per entry.
+        /// </summary>
+        // The only thing that ever sends identifiers to a client, and it is gated on a permission of
+        // its own. The player list itself never carries them.
+        public const string GetIdentifiers = "OnlinePlayers.GetIdentifiers";
+    }
+
     public static class TimeOptions
     {
         /// <summary>Takes in-game seconds to offset the clock by, or <see cref="RealTime"/> to reset.</summary>
