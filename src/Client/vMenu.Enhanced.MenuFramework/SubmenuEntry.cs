@@ -29,7 +29,12 @@ public sealed class SubmenuEntry : MenuEntry<MenuItem>
 
     public Action<MenuOpened>? OnOpened { get; init; }
 
+    public Func<MenuOpened, Task>? OnOpenedAsync { get; init; }
+
     public Action<ItemSelected>? OnSelected { get; init; }
+
+    /// <summary>The host built for this row, so dropping the row can drop the menu behind it too.</summary>
+    internal MenuHost? Child { get; set; }
 
     protected override MenuText DefaultLabel => "→";
 

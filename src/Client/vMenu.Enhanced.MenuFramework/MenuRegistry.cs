@@ -115,6 +115,10 @@ public static class MenuRegistry
         Hosts.Clear();
         HostsByMenu.Clear();
 
+        // Leaves MenuAPI holding nothing either, so a rebuild starts from an empty menu list rather
+        // than one that still has every menu from before it in.
+        MenuController.RemoveAllMenus();
+
         _root = null;
         _built = false;
     }
@@ -290,8 +294,60 @@ public static class MenuRegistry
         // Combined rather than assigned, so declaring OnOpened on the entry does not silently
         // replace whatever the menu itself set during Build.
         child.Builder.OnOpened += submenu.OnOpened;
+        child.Builder.OnOpenedAsync += submenu.OnOpenedAsync;
+
+        submenu.Child = child;
 
         return child;
+    }
+
+    /// <summary>
+    /// Forgets a host and everything below it, for a menu MenuAPI has taken back out.
+    /// </summary>
+    // MenuAPI removes the menu behind a row when that row is dropped, so without this the framework
+    // would keep walking a host whose menu no longer exists on every gate refresh.
+    internal static void Untrack(MenuHost host)
+    {
+        if (host.Parent is { } parent)
+        {
+            RemoveByReference(parent.Children, host);
+        }
+
+        Drop(host);
+    }
+
+    private static void Drop(MenuHost host)
+    {
+        // Over a copy, because dropping a child takes it out of this list.
+        foreach (var child in host.Children.ToArray())
+        {
+            Drop(child);
+        }
+
+        host.Children.Clear();
+        host.Dispose();
+
+        // A detached child has no row pointing at it, so MenuAPI cannot work out on its own that it
+        // went with its parent. Harmless for a bound one, which MenuAPI has already dropped.
+        MenuController.RemoveMenu(host.Menu);
+
+        RemoveByReference(Hosts, host);
+
+        HostsByMenu.Remove(host.Menu);
+    }
+
+    // By reference rather than List.Remove, which would reach for EqualityComparer<MenuHost>.Default.
+    private static void RemoveByReference(List<MenuHost> hosts, MenuHost host)
+    {
+        for (var index = hosts.Count - 1; index >= 0; index--)
+        {
+            if (ReferenceEquals(hosts[index], host))
+            {
+                hosts.RemoveAt(index);
+
+                return;
+            }
+        }
     }
 
     /// <summary>Returns the player to the nearest menu they can still reach.</summary>

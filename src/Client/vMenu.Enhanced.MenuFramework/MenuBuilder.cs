@@ -24,6 +24,8 @@ public sealed class MenuBuilder
 
     public Action<MenuOpened>? OnOpened { get; set; }
 
+    public Func<MenuOpened, Task>? OnOpenedAsync { get; set; }
+
     public Action<Menu>? OnClosed { get; set; }
 
     public Action<MenuIndexChanged>? OnIndexChanged { get; set; }
@@ -70,8 +72,8 @@ public sealed class MenuBuilder
     /// Removes every row, so the menu can be filled with a fresh set. For a menu whose contents are
     /// runtime data rather than a fixed declaration.
     /// </summary>
-    // Submenu rows cannot come back from this: MenuController's tables are append only, so the menu
-    // behind a dropped row would stay registered and unreachable. Clearing one logs an error.
+    // A submenu row takes its child menu with it, since nothing could reach that menu once the row
+    // opening it is gone. Declare the row again to get a fresh one.
     public void ClearEntries() => _host.ClearEntries();
 
     /// <summary>

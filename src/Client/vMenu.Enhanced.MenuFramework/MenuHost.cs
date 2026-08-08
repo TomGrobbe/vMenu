@@ -18,6 +18,10 @@ internal sealed class MenuHost : IDisposable
 
     private readonly HashSet<MenuEntry> _inFlight = new(ReferenceComparer<MenuEntry>.Instance);
 
+    // Closing and reopening while the previous refresh is still awaiting would otherwise run two
+    // handlers over the same menu, and both would append their rows to it.
+    private bool _openInFlight;
+
     private Func<MenuItem, bool>? _userFilter;
 
     private bool _filterDirty;
@@ -85,13 +89,13 @@ internal sealed class MenuHost : IDisposable
     // longer has.
     internal void ClearEntries()
     {
+        // MenuAPI drops the menu a bound row opened along with the row, so the host for it is
+        // untracked to match. Before the entries, which is what ClearMenuItems reads.
         foreach (var entry in Builder.Entries)
         {
-            if (entry is SubmenuEntry submenu)
+            if (entry is SubmenuEntry { Child: { } child })
             {
-                // The child menu it opens lives in MenuController's static tables, which have no way
-                // to remove a menu, so clearing the row would leave the menu behind it stranded.
-                API.Log.Error($"[Menu] ClearEntries dropped the submenu row '{submenu.Text.Resolve(Localizer.Current)}'. The menu it opens cannot be removed and is now unreachable.");
+                MenuRegistry.Untrack(child);
             }
         }
 
@@ -477,7 +481,7 @@ internal sealed class MenuHost : IDisposable
         }
     }
 
-    private void HandleMenuOpen(Menu menu)
+    private async void HandleMenuOpen(Menu menu)
     {
         // The bound item table is static and rebindable, and any code can call OpenMenu directly, so
         // the menu re-checks its own gate rather than trusting the door.
@@ -498,7 +502,33 @@ internal sealed class MenuHost : IDisposable
 
         ApplyHighlight(current);
 
-        Guard(() => Builder.OnOpened?.Invoke(new MenuOpened(menu, current)), current);
+        var opened = new MenuOpened(menu, current);
+
+        Guard(() => Builder.OnOpened?.Invoke(opened), current);
+
+        if (Builder.OnOpenedAsync is not { } handler || _openInFlight)
+        {
+            return;
+        }
+
+        _openInFlight = true;
+
+        try
+        {
+            // Awaiting the delegate itself would only await the last one it was combined from.
+            foreach (var subscriber in handler.GetInvocationList())
+            {
+                await ((Func<MenuOpened, Task>)subscriber)(opened);
+            }
+        }
+        catch (Exception exception)
+        {
+            API.Log.Error($"[Menu] '{Menu.MenuTitle}' open handler threw: {exception}");
+        }
+        finally
+        {
+            _openInFlight = false;
+        }
     }
 
     private void HandleMenuClose(Menu menu) => Guard(() => Builder.OnClosed?.Invoke(menu), null);

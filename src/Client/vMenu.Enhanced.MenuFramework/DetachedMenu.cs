@@ -47,4 +47,17 @@ public sealed class DetachedMenu
     // Called by Open, so most menus never need this. It is here for a title that changes while the
     // menu is already on screen.
     public void Refresh() => _host.Refresh(Localizer.Current);
+
+    /// <summary>
+    /// Takes this menu, and everything declared under it, back out of the framework and MenuAPI.
+    /// </summary>
+    // A detached menu is the one kind nothing can clean up by itself: no row points at it, so
+    // dropping rows can never make it unreachable. Whoever asked for it has to say when it is done.
+    public void Remove()
+    {
+        // Through the host, so the framework untracks the hosts behind any submenu rows it had.
+        _host.ClearEntries();
+
+        MenuRegistry.Untrack(_host);
+    }
 }
