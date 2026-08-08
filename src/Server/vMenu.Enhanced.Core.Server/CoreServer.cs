@@ -38,6 +38,7 @@ public class CoreServer : IScript
         PermissionsSync.RegisterEventHandlers();
 
         VehicleActions.Register();
+        TeleportActions.Register();
         WorldActions.Register();
         OnlinePlayerActions.Register();
         ActionRegistry.RegisterEventHandlers();

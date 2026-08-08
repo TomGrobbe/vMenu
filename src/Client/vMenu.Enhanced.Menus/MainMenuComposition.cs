@@ -13,6 +13,7 @@ public static class MainMenuComposition
         new VehicleOptionsMenu(),
         new VehicleSpawnerMenu(),
         new WorldMenu(),
+        new TeleportMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
         new RecordingMenu(),
