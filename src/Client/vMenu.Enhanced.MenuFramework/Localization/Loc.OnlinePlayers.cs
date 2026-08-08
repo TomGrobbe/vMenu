@@ -98,6 +98,10 @@ public static partial class Loc
 
         public const string IdentifierPrinted = "onlineplayers.identifier.printed";
 
+        public const string TxAdmin = "onlineplayers.txadmin";
+
+        public const string TxAdminDescription = "onlineplayers.txadmin.desc";
+
         public const string Denied = "onlineplayers.denied";
 
         public const string NotFound = "onlineplayers.notfound";

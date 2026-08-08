@@ -315,7 +315,25 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Gate = OnlinePlayersPermissions.Identifiers,
             OnSelectedAsync = _ => ShowIdentifiersAsync(),
         });
+
+        actions.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.TxAdmin),
+            Description = MenuText.Key(Loc.OnlinePlayers.TxAdminDescription),
+            Gate = MenuGate.Permission(OnlinePlayersPermissions.TxAdmin) & MenuGate.When(TxAdminRunning),
+            Behaviour = GateBehaviour.Hide,
+            OnSelected = _ =>
+            {
+                if (_selected is { } player)
+                {
+                    Native.ExecuteCommand($"tx {Id(player)}");
+                }
+            },
+        });
     }
+
+    private static bool TxAdminRunning() =>
+        string.Equals(Native.GetResourceState("txadmin"), "started", StringComparison.OrdinalIgnoreCase);
 
     private async Task ShowIdentifiersAsync()
     {

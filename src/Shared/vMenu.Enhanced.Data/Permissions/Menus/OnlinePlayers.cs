@@ -27,10 +27,7 @@ public static class OnlinePlayers
 
     public const string Waypoint = "vMenu.Enhanced.Menus.OnlinePlayers.Waypoint";
 
-    /// <summary>
-    /// Reading somebody's licence, Steam, Discord and other account ids.
-    /// </summary>
-    // Its own permission, and not part of Menu, because these identify the person behind the player
-    // rather than the player in the game.
     public const string Identifiers = "vMenu.Enhanced.Menus.OnlinePlayers.Identifiers";
+
+    public const string TxAdmin = "vMenu.Enhanced.Menus.OnlinePlayers.TxAdmin";
 }
