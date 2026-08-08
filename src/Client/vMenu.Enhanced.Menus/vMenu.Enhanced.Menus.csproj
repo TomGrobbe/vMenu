@@ -11,4 +11,7 @@
     <ProjectReference Include="..\vMenu.Enhanced.Storage\vMenu.Enhanced.Storage.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks\vMenu.Enhanced.Ticks.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PlayerOptions\" />
+  </ItemGroup>
 </Project>

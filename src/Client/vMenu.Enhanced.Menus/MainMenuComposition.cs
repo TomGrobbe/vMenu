@@ -10,13 +10,14 @@ public static class MainMenuComposition
     public static IReadOnlyList<MenuDefinition> Definitions =>
     [
         new OnlinePlayersMenu(),
+        new PlayerOptions(),
         new VehicleOptionsMenu(),
         new VehicleSpawnerMenu(),
         new WorldMenu(),
         new TeleportMenu(),
+        new RecordingMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
-        new RecordingMenu(),
         new AboutMenu(),
     ];
 }
