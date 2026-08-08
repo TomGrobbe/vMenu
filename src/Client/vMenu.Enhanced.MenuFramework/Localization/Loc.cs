@@ -12,6 +12,8 @@ public static partial class Loc
     {
         public const string RestrictedDescription = "framework.restricted";
 
+        public const string ConfirmDescription = "framework.confirm";
+
         public const string InputPlaceholder = "framework.input.placeholder";
 
         public const string InputHint = "framework.input.hint";

@@ -13,6 +13,7 @@ internal static class EnglishStrings
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             [Loc.Framework.RestrictedDescription] = "Access to this has been restricted by the server owner.",
+            [Loc.Framework.ConfirmDescription] = "~r~Are you sure you want to do this? Press enter again to confirm.",
             [Loc.Framework.InputPlaceholder] = "Start typing…",
             [Loc.Framework.InputHint] = "Enter to confirm · Esc to cancel · ↑↓ to pick a suggestion · Tab to complete",
             [Loc.Framework.InputNoMatches] = "No matches",

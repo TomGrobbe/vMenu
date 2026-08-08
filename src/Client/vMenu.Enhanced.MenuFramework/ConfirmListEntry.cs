@@ -5,11 +5,11 @@ using vMenu.Enhanced.MenuFramework.Localization;
 namespace vMenu.Enhanced.MenuFramework;
 
 /// <summary>
-/// A row whose value is chosen from a fixed list.
+/// A row that picks a value from a list and asks before it acts on it. The first press only turns
+/// its description into a warning; the second one runs the handler. Scrolling the value away puts
+/// the row back to asking, so nobody confirms one thing and deletes another.
 /// </summary>
-// Options are MenuText so they translate. Values that are data rather than prose, such as model
-// names, must use MenuText.Literal or a language change reports them as missing keys.
-public sealed class ListEntry : MenuEntry<MenuListItem>
+public sealed class ConfirmListEntry : ConfirmEntry<MenuListItem>
 {
     public required IReadOnlyList<MenuText> Options { get; init; }
 
@@ -18,9 +18,10 @@ public sealed class ListEntry : MenuEntry<MenuListItem>
 
     public Func<int>? ReadSelectedIndex { get; init; }
 
-    public Action<ListSelected>? OnSelected { get; init; }
+    public Action<ListSelected>? OnConfirmed { get; init; }
 
-    public Func<ListSelected, Task>? OnSelectedAsync { get; init; }
+    /// <summary>Runs after <see cref="OnConfirmed"/>. Exceptions are logged, never left unobserved.</summary>
+    public Func<ListSelected, Task>? OnConfirmedAsync { get; init; }
 
     public Action<ListIndexChanged>? OnIndexChanged { get; init; }
 

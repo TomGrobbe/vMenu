@@ -22,6 +22,11 @@ internal sealed class MenuHost : IDisposable
     // handlers over the same menu, and both would append their rows to it.
     private bool _openInFlight;
 
+    /// <summary>The one row waiting for its confirming press, if any.</summary>
+    // Remembered rather than looked for, so putting a row back to asking never walks the entry list.
+    // A menu can hold thousands of rows and this happens on every arrow key.
+    private IConfirmable? _awaitingConfirmation;
+
     private Func<MenuItem, bool>? _userFilter;
 
     private bool _filterDirty;
@@ -106,6 +111,7 @@ internal sealed class MenuHost : IDisposable
         _hidden.Clear();
         _inFlight.Clear();
 
+        _awaitingConfirmation = null;
         _filterDirty = false;
     }
 
@@ -261,6 +267,23 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
+        if (entry is ConfirmButtonEntry confirm)
+        {
+            if (!Arm(confirm))
+            {
+                return;
+            }
+
+            Guard(() => confirm.OnConfirmed?.Invoke(arguments), item);
+
+            if (confirm.OnConfirmedAsync is { } confirmed)
+            {
+                await RunAsync(entry, confirm.SingleFlight, () => confirmed(arguments), item);
+            }
+
+            return;
+        }
+
         if (entry is not ButtonEntry button)
         {
             return;
@@ -273,16 +296,48 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        var tracked = button.SingleFlight;
+        await RunAsync(entry, button.SingleFlight, () => handler(arguments), item);
+    }
 
-        if (tracked && !_inFlight.Add(entry))
+    /// <summary>Answers whether this press was the confirming one, remembering the row when it was not.</summary>
+    private bool Arm<TItem>(ConfirmEntry<TItem> entry)
+        where TItem : MenuItem
+    {
+        if (entry.Press())
+        {
+            _awaitingConfirmation = null;
+
+            return true;
+        }
+
+        _awaitingConfirmation = entry;
+
+        return false;
+    }
+
+    /// <summary>Puts whichever row is waiting for a confirming press back to asking.</summary>
+    private void ClearConfirmation()
+    {
+        if (_awaitingConfirmation is not { } entry)
+        {
+            return;
+        }
+
+        _awaitingConfirmation = null;
+
+        entry.ResetConfirmation();
+    }
+
+    private async Task RunAsync(MenuEntry entry, bool singleFlight, Func<Task> handler, MenuItem item)
+    {
+        if (singleFlight && !_inFlight.Add(entry))
         {
             return;
         }
 
         try
         {
-            await handler(arguments);
+            await handler();
         }
         catch (Exception exception)
         {
@@ -292,7 +347,7 @@ internal sealed class MenuHost : IDisposable
         }
         finally
         {
-            if (tracked)
+            if (singleFlight)
             {
                 _inFlight.Remove(entry);
             }
@@ -353,22 +408,56 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
+        // Scrolling to another value is leaving whatever was confirmed, so the row asks again.
+        ClearConfirmation();
+
+        var changed = new ListIndexChanged(menu, item, itemIndex, oldIndex, newIndex);
+
+        if (entry is ConfirmListEntry confirmList)
+        {
+            Guard(() => confirmList.OnIndexChanged?.Invoke(changed), item);
+
+            return;
+        }
+
         if (entry is not ListEntry list)
         {
             return;
         }
 
-        Guard(() => list.OnIndexChanged?.Invoke(new ListIndexChanged(menu, item, itemIndex, oldIndex, newIndex)), item);
+        Guard(() => list.OnIndexChanged?.Invoke(changed), item);
     }
 
     private async void HandleListSelect(Menu menu, MenuListItem item, int selectedIndex, int itemIndex)
     {
-        if (!_byItem.TryGetValue(item, out var entry) || !item.Enabled || entry is not ListEntry list)
+        if (!_byItem.TryGetValue(item, out var entry) || !item.Enabled)
         {
             return;
         }
 
         var arguments = new ListSelected(menu, item, itemIndex, selectedIndex);
+
+        if (entry is ConfirmListEntry confirm)
+        {
+            if (!Arm(confirm))
+            {
+                return;
+            }
+
+            Guard(() => confirm.OnConfirmed?.Invoke(arguments), item);
+
+            if (confirm.OnConfirmedAsync is { } confirmed)
+            {
+                await RunAsync(entry, confirm.SingleFlight, () => confirmed(arguments), item);
+            }
+
+            return;
+        }
+
+        if (entry is not ListEntry list)
+        {
+            return;
+        }
 
         Guard(() => list.OnSelected?.Invoke(arguments), item);
 
@@ -483,6 +572,8 @@ internal sealed class MenuHost : IDisposable
 
     private async void HandleMenuOpen(Menu menu)
     {
+        ClearConfirmation();
+
         // The bound item table is static and rebindable, and any code can call OpenMenu directly, so
         // the menu re-checks its own gate rather than trusting the door.
         if (!IsReachable())
@@ -531,10 +622,19 @@ internal sealed class MenuHost : IDisposable
         }
     }
 
-    private void HandleMenuClose(Menu menu) => Guard(() => Builder.OnClosed?.Invoke(menu), null);
+    // Opening a submenu closes this one, so this covers walking away from the menu as well as
+    // shutting the whole thing.
+    private void HandleMenuClose(Menu menu)
+    {
+        ClearConfirmation();
+
+        Guard(() => Builder.OnClosed?.Invoke(menu), null);
+    }
 
     private void HandleIndexChange(Menu menu, MenuItem oldItem, MenuItem? newItem, int oldIndex, int newIndex)
     {
+        ClearConfirmation();
+
         ApplyHighlight(newItem);
 
         Guard(() => Builder.OnIndexChanged?.Invoke(new MenuIndexChanged(menu, oldItem, newItem, oldIndex, newIndex)), newItem);
