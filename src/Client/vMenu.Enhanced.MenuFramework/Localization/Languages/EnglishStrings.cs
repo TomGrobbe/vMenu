@@ -98,6 +98,7 @@ internal static class EnglishStrings
             [Loc.VehicleOptions.LinkDescription] = "Options for your current vehicle.",
             [Loc.VehicleOptions.DeleteVehicle] = "Delete Vehicle",
             [Loc.VehicleOptions.DeleteVehicleDescription] = "Deletes the vehicle you're driving, or the one in front of you.",
+            [Loc.VehicleOptions.DeleteVehicleConfirm] = "~r~Are you sure you want to delete this vehicle? Press enter again to confirm.",
             [Loc.VehicleOptions.DeleteNotDriver] = "You have to be the ~y~driver~s~ to delete this vehicle.",
             [Loc.VehicleOptions.DeleteNoVehicle] = "~r~No vehicle found~s~ in front of you.",
             [Loc.VehicleOptions.DeleteDenied] = "You do not have permission to delete vehicles.",

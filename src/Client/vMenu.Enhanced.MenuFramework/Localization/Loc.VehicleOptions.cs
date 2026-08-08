@@ -14,6 +14,8 @@ public static partial class Loc
 
         public const string DeleteVehicleDescription = "vehicleoptions.delete.desc";
 
+        public const string DeleteVehicleConfirm = "vehicleoptions.delete.confirm";
+
         public const string DeleteNotDriver = "vehicleoptions.delete.notdriver";
 
         public const string DeleteNoVehicle = "vehicleoptions.delete.novehicle";

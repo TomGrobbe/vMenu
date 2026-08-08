@@ -31,12 +31,13 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             OnSelected = _ => VehicleWash.WashCurrent(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry
         {
             Text = MenuText.Key(Loc.VehicleOptions.DeleteVehicle),
             Description = MenuText.Key(Loc.VehicleOptions.DeleteVehicleDescription),
+            ConfirmationDescription = MenuText.Key(Loc.VehicleOptions.DeleteVehicleConfirm),
             Gate = VehicleOptionsPermissions.DeleteVehicle,
-            OnSelectedAsync = _ => VehicleDeletion.DeleteTargetAsync(),
+            OnConfirmedAsync = _ => VehicleDeletion.DeleteTargetAsync(),
         });
     }
 }
