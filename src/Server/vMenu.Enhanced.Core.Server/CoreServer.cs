@@ -7,6 +7,7 @@ using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
 
 namespace vMenu.Enhanced.Core.Server;
@@ -15,6 +16,8 @@ public class CoreServer : IScript
 {
     public void Initialize()
     {
+        ServerJson.Verify();
+
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
 

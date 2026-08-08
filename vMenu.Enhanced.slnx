@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/assets/config/">
     <File Path="assets/enhanced/config/model-whitelists.json" />
+    <File Path="assets/enhanced/config/teleport-categories.json" />
     <File Path="assets/enhanced/config/vehicle-categories.json" />
   </Folder>
   <Folder Name="/Solution Items/">
@@ -36,6 +37,7 @@
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
+    <Project Path="src/Server/vMenu.Enhanced.Serialization.Server/vMenu.Enhanced.Serialization.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Ticks.Server/vMenu.Enhanced.Ticks.Server.csproj" />
   </Folder>
   <Folder Name="/src/Shared/">

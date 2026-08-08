@@ -77,6 +77,33 @@ public static class NativeFixer
     }
 
     /// <summary>
+    /// Replacement call for <see cref="Native.TestVerticalProbeAgainstAllWater(float, float, float, int, out float)" />
+    /// because both generated forms read the height back before checking whether there is one.
+    /// </summary>
+    /// <param name="blockingFlags">What is allowed to block the probe before it reaches water.</param>
+    /// <param name="height">Where the probe stopped, whether that was water or the thing that blocked it.</param>
+    /// <returns>0 nothing found, 1 reached water, 2 blocked short of it. <paramref name="height"/> is good for 1 and 2.</returns>
+    // Fires straight down from the given point, and unlike the ground Z natives it answers for land
+    // and water in one call. The game only fills the height when it found something, and reading an
+    // unfilled slot throws "Failed to get result", which is what both generated forms do first.
+    public static int TestVerticalProbeAgainstAllWater(float x, float y, float z, int blockingFlags, out float height)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(x);
+        nativeApi.PushArg(y);
+        nativeApi.PushArg(z);
+        nativeApi.PushArg(blockingFlags);
+        nativeApi.PushArg(0f);
+        nativeApi.Invoke(6018883233978920895uL, "TestVerticalProbeAgainstAllWater");
+
+        var result = nativeApi.GetResInt(0);
+
+        height = result == 0 ? default : nativeApi.GetResFloat(1);
+
+        return result;
+    }
+
+    /// <summary>
     /// Replacement call for <c>SharedAPI.Commands.RegisterCommand</c>, which throws away the id
     /// <see cref="Native.UnregisterCommand(int)" /> needs, so a command registered through it can
     /// never be removed. Use the normal one unless the command has to come and go at runtime.

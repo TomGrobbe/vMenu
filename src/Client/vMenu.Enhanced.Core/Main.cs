@@ -13,6 +13,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
@@ -61,6 +62,8 @@ public sealed class Main : IScript
 
         ServerActions.RegisterEventHandlers();
 
+        TeleportSync.RegisterEventHandlers();
+
         ClientConfig.Initialize();
 
         DebugCommands.Source(
@@ -87,6 +90,8 @@ public sealed class Main : IScript
         {
             await API.Yield();
         }
+
+        TeleportSync.Request();
 
         UserPreferences.Restore();
 

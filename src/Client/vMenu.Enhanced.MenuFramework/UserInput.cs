@@ -37,6 +37,7 @@ public static class UserInput
 
     private static bool _callbacksRegistered;
     private static bool _handshaken;
+    private static bool _open;
     private static TaskCompletionSource<string?>? _pending;
     private static TaskCompletionSource<bool>? _ready;
 
@@ -47,18 +48,28 @@ public static class UserInput
         string initialValue = "",
         IReadOnlyList<InputSuggestion>? suggestions = null)
     {
-        if (_pending is not null)
+        var answers = await GetTextAsync(new InputPrompt(title, maxLength, initialValue, suggestions));
+
+        return answers?[0];
+    }
+
+    /// <summary>Asks for several things one after another.</summary>
+    /// <returns>
+    /// One answer per prompt in the order asked, or <see langword="null"/> if the player cancelled
+    /// any of them.
+    /// </returns>
+    // One session rather than repeated GetTextAsync calls: the page is only closed and NUI focus only
+    // dropped at the end, so the next prompt does not need a delay in front of it to come up focused.
+    public static async Task<string[]?> GetTextAsync(params InputPrompt[] prompts)
+    {
+        if (prompts.Length == 0 || _open)
         {
             return null;
         }
 
         EnsureCallbacks();
 
-        var pending = new TaskCompletionSource<string?>();
-        var ready = new TaskCompletionSource<bool>();
-
-        _pending = pending;
-        _ready = ready;
+        _open = true;
 
         var buttonsWereEnabled = !MenuController.DisableMenuButtons;
 
@@ -66,7 +77,50 @@ public static class UserInput
 
         try
         {
-            Native.SendNuiMessage(BuildOpenMessage(title.Resolve(Localizer.Current), maxLength, initialValue, suggestions));
+            var answers = new string[prompts.Length];
+
+            for (var index = 0; index < prompts.Length; index++)
+            {
+                if (await AskAsync(prompts[index]) is not { } answer)
+                {
+                    return null;
+                }
+
+                answers[index] = answer;
+            }
+
+            return answers;
+        }
+        finally
+        {
+            _open = false;
+
+            Native.SetNuiFocus(hasFocus: false, hasCursor: false);
+            Native.SendNuiMessage(CloseMessage);
+
+            if (buttonsWereEnabled)
+            {
+                _ = ReleaseMenuButtonsAsync();
+            }
+        }
+    }
+
+    private static async Task<string?> AskAsync(InputPrompt prompt)
+    {
+        var pending = new TaskCompletionSource<string?>();
+        var ready = new TaskCompletionSource<bool>();
+
+        _pending = pending;
+        _ready = ready;
+
+        try
+        {
+            Native.SendNuiMessage(BuildOpenMessage(
+                prompt.Title.Resolve(Localizer.Current),
+                prompt.MaxLength,
+                prompt.InitialValue,
+                prompt.Suggestions));
+
             Native.SetNuiFocus(hasFocus: true, hasCursor: true);
 
             var timeout = _handshaken ? ReadyTimeoutMs : FirstReadyTimeoutMs;
@@ -84,14 +138,6 @@ public static class UserInput
         {
             _pending = null;
             _ready = null;
-
-            Native.SetNuiFocus(hasFocus: false, hasCursor: false);
-            Native.SendNuiMessage(CloseMessage);
-
-            if (buttonsWereEnabled)
-            {
-                _ = ReleaseMenuButtonsAsync();
-            }
         }
     }
 
@@ -103,7 +149,7 @@ public static class UserInput
     {
         await API.Delay(ButtonGraceMs);
 
-        if (_pending is null)
+        if (!_open)
         {
             MenuController.DisableMenuButtons = false;
         }

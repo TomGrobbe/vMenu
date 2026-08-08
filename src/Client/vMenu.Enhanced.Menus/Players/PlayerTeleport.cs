@@ -7,11 +7,6 @@ namespace vMenu.Enhanced.Menus.Players;
 /// <summary>
 /// Moves the local player to a set of coordinates, waiting for the world there to exist first.
 /// </summary>
-/// <remarks>
-/// The height is used exactly as given. These coordinates come off another player who is standing at
-/// them, so there is nothing to look up: hunting for the ground would only find the roof of whatever
-/// they happen to be standing inside.
-/// </remarks>
 internal static class PlayerTeleport
 {
     private const int LoadSceneTimeoutMs = 3000;
@@ -23,11 +18,25 @@ internal static class PlayerTeleport
 
     private const int FadeMs = 500;
 
-    public static async Task ToCoordsAsync(Vector3 destination)
+    /// <summary>
+    /// Moves to the exact height given. For coordinates that come off another player standing at
+    /// them, where hunting for the ground would only find the roof of whatever they are inside.
+    /// </summary>
+    /// <param name="heading">Which way to face on arrival. Null keeps whichever way they already face.</param>
+    public static Task ToCoordsAsync(Vector3 destination, float? heading = null) =>
+        GoAsync(destination, findGround: false, heading);
+
+    /// <summary>Moves to the spot on the map, working out how high the ground there is.</summary>
+    /// <returns><see langword="false"/> if no ground was found, in which case nobody was moved.</returns>
+    /// <inheritdoc cref="ToCoordsAsync(Vector3, float?)"/>
+    public static Task<bool> ToGroundAsync(float x, float y, float? heading = null) =>
+        GoAsync(new Vector3(x, y, 0f), findGround: true, heading);
+
+    private static async Task<bool> GoAsync(Vector3 destination, bool findGround, float? heading)
     {
         if (API.Players.Local.Ped is not { } ped)
         {
-            return;
+            return false;
         }
 
         var pedHandle = ped.Handle;
@@ -57,7 +66,7 @@ internal static class PlayerTeleport
 
         try
         {
-            await PlaceAsync(pedHandle, moving, driving, destination);
+            return await PlaceAsync(pedHandle, moving, driving, destination, findGround, heading);
         }
         finally
         {
@@ -68,7 +77,7 @@ internal static class PlayerTeleport
         }
     }
 
-    private static async Task PlaceAsync(int pedHandle, int moving, bool driving, Vector3 destination)
+    private static async Task<bool> PlaceAsync(int pedHandle, int moving, bool driving, Vector3 destination, bool findGround, float? heading)
     {
         Native.RequestCollisionAtCoord(destination.X, destination.Y, destination.Z);
         Native.SetFocusPosAndVel(destination.X, destination.Y, destination.Z, 0f, 0f, 0f);
@@ -92,7 +101,22 @@ internal static class PlayerTeleport
         // flat brown mud.
         Native.NewLoadSceneStop();
 
+        if (findGround)
+        {
+            if (await GroundHeight.FindAsync(moving, destination.X, destination.Y) is not { } ground)
+            {
+                return false;
+            }
+
+            destination.Z = ground;
+        }
+
         Native.SetEntityCoords(moving, destination.X, destination.Y, destination.Z, false, false, false, true);
+
+        if (heading is { } facing)
+        {
+            Native.SetEntityHeading(moving, facing);
+        }
 
         started = Native.GetGameTimer();
 
@@ -103,12 +127,14 @@ internal static class PlayerTeleport
 
         if (!driving)
         {
-            return;
+            return true;
         }
 
         // A frozen vehicle does not settle onto its wheels, so it has to be let go for a moment.
         Native.FreezeEntityPosition(moving, false);
         Native.SetVehicleOnGroundProperly(moving, 5f);
         Native.FreezeEntityPosition(moving, true);
+
+        return true;
     }
 }

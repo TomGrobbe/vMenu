@@ -8,8 +8,15 @@ public static class ActionIds
 {
     public static class TeleportMenu
     {
-        public const string TeleportCategories = "TeleportMenu.TeleportCategories";
+        /// <summary>Takes a name and a description.</summary>
+        public const string AddCategory = "TeleportMenu.AddCategory";
+
+        /// <summary>
+        /// Takes a category name, a name, a description, then an x, y and z, and optionally a heading.
+        /// </summary>
+        public const string AddLocation = "TeleportMenu.AddLocation";
     }
+
     public static class VehicleOptions
     {
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";
