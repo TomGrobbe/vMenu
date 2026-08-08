@@ -181,6 +181,12 @@ internal static class EnglishStrings
             [Loc.TeleportMenu.PositionDescription] = "Description of the position you are creating.",
             [Loc.TeleportMenu.CategoryName] = "Name of the category you are creating",
             [Loc.TeleportMenu.CategoryDescription] = "Description of the category you are creating.",
+            [Loc.TeleportMenu.KeyAction] = "Teleport Key",
+            [Loc.TeleportMenu.KeyActionDescription] = "What your teleport key does. Rebind the key itself under Settings, Key Bindings, vMenu: Teleport.",
+            [Loc.TeleportMenu.KeyActionDisabled] = "Disabled",
+            [Loc.TeleportMenu.KeyActionWaypoint] = "To Waypoint",
+            [Loc.TeleportMenu.KeyActionCoords] = "To Coords",
+            [Loc.TeleportMenu.KeyActionDenied] = "You are not allowed to use the teleport your key is set to.",
 
             [Loc.DeveloperFeatures.Title] = "Developer Features",
             [Loc.DeveloperFeatures.Subtitle] = "Developer Features",

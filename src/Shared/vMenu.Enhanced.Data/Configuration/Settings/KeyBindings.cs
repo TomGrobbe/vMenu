@@ -18,4 +18,12 @@ public static class KeyBindings
         Description = "The key that turns noclip on and off, for players allowed to use it. " + KeyNote,
         Default = "F2",
     };
+
+    public static readonly StringSetting TeleportKey = new("vMenu.Enhanced.KeyBindings.TeleportKey")
+    {
+        Description =
+            "The key that runs the teleport each player picked for it under the teleport menu. It does " +
+            "nothing until they pick one, and only teleports them if they are allowed to. " + KeyNote,
+        Default = "F11",
+    };
 }

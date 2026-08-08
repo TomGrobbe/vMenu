@@ -10,6 +10,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Teleport;
+using vMenu.Enhanced.Storage;
 
 using TeleportMenuPermissions = vMenu.Enhanced.Data.Permissions.Menus.TeleportMenu;
 
@@ -92,6 +93,25 @@ public sealed class TeleportMenu : MenuDefinition
             // from just finds an empty menu instead of a locked row.
             Gate = TeleportMenuPermissions.Category,
             OnSelected = _ => _categoryMenu?.Open(),
+        });
+
+        // Ungated, and always all three, because this only says what the key should try. Whether the
+        // player is allowed to do it is the key's business, when they press it.
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.TeleportMenu.KeyAction),
+            Description = MenuText.Key(Loc.TeleportMenu.KeyActionDescription),
+            Options =
+            [
+                MenuText.Key(Loc.TeleportMenu.KeyActionDisabled),
+                MenuText.Key(Loc.TeleportMenu.KeyActionWaypoint),
+                MenuText.Key(Loc.TeleportMenu.KeyActionCoords),
+            ],
+            ReadSelectedIndex = () => UserDefaults.TeleportKeyAction.Value,
+
+            // On scroll rather than on select: it is three cheap options and nothing has to be
+            // applied, so asking for a confirming press would only be a step to forget.
+            OnIndexChanged = changed => UserDefaults.TeleportKeyAction.Value = changed.NewIndex,
         });
     }
 

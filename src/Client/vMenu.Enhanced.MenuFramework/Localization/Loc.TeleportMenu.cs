@@ -65,5 +65,17 @@ public static partial class Loc
         public const string CategoryName = "teleportmenu.categories.add.category.name";
 
         public const string CategoryDescription = "teleportmenu.categories.add.category.desc";
+
+        public const string KeyAction = "teleportmenu.key.action";
+
+        public const string KeyActionDescription = "teleportmenu.key.action.desc";
+
+        public const string KeyActionDisabled = "teleportmenu.key.action.disabled";
+
+        public const string KeyActionWaypoint = "teleportmenu.key.action.waypoint";
+
+        public const string KeyActionCoords = "teleportmenu.key.action.coords";
+
+        public const string KeyActionDenied = "teleportmenu.key.action.denied";
     }
 }

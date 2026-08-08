@@ -25,6 +25,15 @@ public static class UserDefaults
 
     #endregion
 
+    #region Teleport
+
+    /// <summary>What the teleport key does: 0 nothing, 1 to the waypoint, 2 to typed coordinates.</summary>
+    // Stored whether or not the server grants the matching permission, so a player who sets this on
+    // one server still has their choice on the next. The key checks the permission when it is pressed.
+    public static IntDefault TeleportKeyAction { get; } = new("teleportKeyAction") { Default = 0 };
+
+    #endregion
+
     #region Developer Features
 
     // Stored regardless of the DeveloperFeatures.Enabled convar. The overlay's tick condition
@@ -65,6 +74,8 @@ public static class UserDefaults
     [
         MiscRightAlignMenu,
         Language,
+
+        TeleportKeyAction,
 
         DevVehicleDimensions,
         DevPropDimensions,

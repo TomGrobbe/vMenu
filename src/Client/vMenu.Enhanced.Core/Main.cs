@@ -82,6 +82,8 @@ public sealed class Main : IScript
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 
+        TeleportKeyBinding.Initialize();
+
         PlayerPushEvents.Initialize();
 
         WorldSync.Initialize();
