@@ -1,0 +1,41 @@
+[
+  {
+    "name": "City",
+    "description": "City locations",
+    "locations": [
+      {
+        "name": "Legion Square",
+        "description": "Downtown Legion Square",
+        "position": {
+          "x": 215.76,
+          "y": -810.12,
+          "z": 30.73
+        }
+      },
+      {
+        "name": "Airport",
+        "description": "Los Santos International Airport",
+        "position": {
+          "x": -1034.65,
+          "y": -2733.21,
+          "z": 20.17
+        }
+      }
+    ]
+  },
+  {
+    "name": "Sandy Shores",
+    "description": "Locations around Sandy Shores",
+    "locations": [
+      {
+        "name": "Sandy Shores Airfield",
+        "description": "Sandy Shores airfield",
+        "position": {
+          "x": 1747.5,
+          "y": 3273.6,
+          "z": 41.15
+        }
+      }
+    ]
+  }
+]

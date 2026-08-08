@@ -6,6 +6,10 @@ namespace vMenu.Enhanced.Data.Actions;
 /// </summary>
 public static class ActionIds
 {
+    public static class TeleportMenu
+    {
+        public const string TeleportCategories = "TeleportMenu.TeleportCategories";
+    }
     public static class VehicleOptions
     {
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";
