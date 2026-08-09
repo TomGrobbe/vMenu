@@ -32,6 +32,7 @@ public static class ConfigCatalog
             VehicleOptions.RepairVehicleCommand,
             VehicleOptions.WashVehicleCommand,
         ]),
+        new("Saved Vehicles", [SavedVehicles.MaxSavedVehicles]),
         new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds]),
         new("Time Options", [TimeOptions.Enabled, TimeOptions.SpeedMultiplier, TimeOptions.TransitionSeconds]),
         new("Developer Features", [DeveloperFeatures.Enabled]),

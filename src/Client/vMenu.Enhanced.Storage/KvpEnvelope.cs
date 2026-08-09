@@ -26,15 +26,17 @@ internal sealed class KvpHeader
     public int Version { get; init; }
 }
 
-internal static class KvpValueType
+/// <summary>What a stored value is, so a key read as the wrong type is caught rather than guessed at.</summary>
+public static class KvpValueType
 {
-    internal const string Bool = "bool";
+    public const string Bool = "bool";
 
-    internal const string Int = "int";
+    public const string Int = "int";
 
-    internal const string Float = "float";
+    public const string Float = "float";
 
-    internal const string String = "string";
+    public const string String = "string";
 
-    internal const string Json = "json";
+    /// <summary>Anything with a shape of its own, such as a saved vehicle.</summary>
+    public const string Json = "json";
 }
