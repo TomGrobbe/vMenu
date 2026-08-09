@@ -24,14 +24,21 @@ public static class LocalVehicleTicks
     /// <summary>Same reasoning as the player's health: damage is the one thing here that arrives in bursts.</summary>
     private const long DamageIntervalMs = 100;
 
+    /// <summary>Dirt builds up over seconds of driving, so it is the one thing here that can be watched slowly.</summary>
+    private const long DirtIntervalMs = 500;
+
     /// <summary>
     /// Below this a change is noise rather than damage: ownership changing hands re-syncs the three
     /// numbers with a wobble of a fraction of a point.
     /// </summary>
     private const float DamageThreshold = 1f;
 
+    /// <summary>Below this a change is float noise rather than dirt, on a scale that runs 0 to 15.</summary>
+    private const float DirtThreshold = 0.01f;
+
     private static TickHandle? _seatTick;
     private static TickHandle? _damageTick;
+    private static TickHandle? _dirtTick;
 
     private static Action<VehicleEntered>? _entered;
     private static Func<VehicleEntered, Task>? _enteredAsync;
@@ -45,6 +52,8 @@ public static class LocalVehicleTicks
     private static Func<VehicleChanged, Task>? _changedAsync;
     private static Action<VehicleDamaged>? _damaged;
     private static Func<VehicleDamaged, Task>? _damagedAsync;
+    private static Action<VehicleDirtied>? _dirtied;
+    private static Func<VehicleDirtied, Task>? _dirtiedAsync;
 
     private static int _vehicle;
     private static int _seat = NoSeat;
@@ -53,6 +62,9 @@ public static class LocalVehicleTicks
     private static float _body;
     private static float _engine;
     private static float _tank;
+
+    private static int _dirtyVehicle;
+    private static float _dirt;
 
     /// <summary>The player got into a vehicle from on foot.</summary>
     public static event Action<VehicleEntered>? VehicleEntered
@@ -259,6 +271,40 @@ public static class LocalVehicleTicks
         }
     }
 
+    /// <summary>The vehicle the player is in has picked up dirt.</summary>
+    public static event Action<VehicleDirtied>? VehicleDirtied
+    {
+        add
+        {
+            _dirtied += value;
+
+            _dirtTick?.Reevaluate();
+        }
+        remove
+        {
+            _dirtied -= value;
+
+            _dirtTick?.Reevaluate();
+        }
+    }
+
+    /// <summary>As <see cref="VehicleDirtied"/>, for a handler that needs to await something.</summary>
+    public static event Func<VehicleDirtied, Task>? VehicleDirtiedAsync
+    {
+        add
+        {
+            _dirtiedAsync += value;
+
+            _dirtTick?.Reevaluate();
+        }
+        remove
+        {
+            _dirtiedAsync -= value;
+
+            _dirtTick?.Reevaluate();
+        }
+    }
+
     internal static void Initialize()
     {
         _seatTick = TickRegistry.Register(
@@ -274,6 +320,13 @@ public static class LocalVehicleTicks
             TickRate.Every(DamageIntervalMs),
             DamageWanted,
             SeedDamage);
+
+        _dirtTick = TickRegistry.Register(
+            "Events.Vehicle.Dirt",
+            PollDirt,
+            TickRate.Every(DirtIntervalMs),
+            DirtWanted,
+            SeedDirt);
     }
 
     private static bool SeatWanted() =>
@@ -285,6 +338,8 @@ public static class LocalVehicleTicks
 
     private static bool DamageWanted() => _damaged is not null || _damagedAsync is not null;
 
+    private static bool DirtWanted() => _dirtied is not null || _dirtiedAsync is not null;
+
     /// <summary>The state the first poll compares against, so subscribing while already in a car is silent.</summary>
     private static void SeedSeat() => Read(out _vehicle, out _seat);
 
@@ -293,6 +348,13 @@ public static class LocalVehicleTicks
         Read(out _damagedVehicle, out _);
 
         ReadCondition(_damagedVehicle, out _body, out _engine, out _tank);
+    }
+
+    private static void SeedDirt()
+    {
+        Read(out _dirtyVehicle, out _);
+
+        _dirt = ReadDirt(_dirtyVehicle);
     }
 
     private static void PollSeat()
@@ -396,6 +458,39 @@ public static class LocalVehicleTicks
         Dispatch.RaiseAsync(_damagedAsync, damage, nameof(VehicleDamaged));
     }
 
+    private static void PollDirt()
+    {
+        Read(out var vehicle, out _);
+
+        var dirt = ReadDirt(vehicle);
+
+        // A different vehicle is a different number, so it is seeded rather than compared. Getting
+        // into an already dirty car is not getting dirty, and a listener that cares hears about the
+        // vehicle changing anyway.
+        if (vehicle != _dirtyVehicle)
+        {
+            _dirtyVehicle = vehicle;
+            _dirt = dirt;
+
+            return;
+        }
+
+        var gained = dirt - _dirt;
+
+        _dirt = dirt;
+
+        // Washing moves the same number downwards, which is not getting dirty.
+        if (vehicle == 0 || gained < DirtThreshold)
+        {
+            return;
+        }
+
+        var dirtied = new VehicleDirtied(vehicle, dirt, gained);
+
+        Dispatch.Raise(_dirtied, dirtied, nameof(VehicleDirtied));
+        Dispatch.RaiseAsync(_dirtiedAsync, dirtied, nameof(VehicleDirtied));
+    }
+
     /// <summary>The sentinel this watcher tracks internally, as the null a payload hands out.</summary>
     private static int? Absent(int value, int none = 0) => value == none ? null : value;
 
@@ -474,4 +569,6 @@ public static class LocalVehicleTicks
         engine = Native.GetVehicleEngineHealth(vehicle);
         tank = Native.GetVehiclePetrolTankHealth(vehicle);
     }
+
+    private static float ReadDirt(int vehicle) => vehicle == 0 ? 0f : Native.GetVehicleDirtLevel(vehicle);
 }

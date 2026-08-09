@@ -49,4 +49,7 @@ public readonly record struct VehicleDamaged(
     float EngineLost,
     float PetrolTankLost);
 
+/// <summary>The vehicle has picked up dust or dirt. The scale runs 0 to 15.</summary>
+public readonly record struct VehicleDirtied(int Vehicle, float DirtLevel, float DirtGained);
+
 #endregion

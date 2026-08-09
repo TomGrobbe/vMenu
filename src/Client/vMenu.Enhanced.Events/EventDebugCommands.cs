@@ -65,6 +65,10 @@ public static class EventDebugCommands
             "Vehicle.Damaged",
             handler => LocalVehicleTicks.VehicleDamaged += handler,
             handler => LocalVehicleTicks.VehicleDamaged -= handler),
+        Hook.For<VehicleDirtied>(
+            "Vehicle.Dirtied",
+            handler => LocalVehicleTicks.VehicleDirtied += handler,
+            handler => LocalVehicleTicks.VehicleDirtied -= handler),
     ];
 
     internal static void Initialize() =>
