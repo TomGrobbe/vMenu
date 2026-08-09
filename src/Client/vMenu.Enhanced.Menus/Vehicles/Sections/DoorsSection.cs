@@ -144,6 +144,32 @@ internal static class DoorsSection
             ? Localizer.Current.Get(present[index].TextKey)
             : string.Empty;
 
+    internal static void ToggleAll()
+    {
+        if (SectionRows.Driven() is not { } handle)
+        {
+            return;
+        }
+
+        var present = Present(handle);
+        var open = true;
+
+        foreach (var door in present)
+        {
+            if (IsOpen(door.Index))
+            {
+                open = false;
+
+                break;
+            }
+        }
+
+        foreach (var door in present)
+        {
+            Set(door.Index, open);
+        }
+    }
+
     private static bool IsOpen(int index) =>
         SectionRows.Driven() is { } handle && Native.GetVehicleDoorAngleRatio(handle, index) > OpenAngle;
 

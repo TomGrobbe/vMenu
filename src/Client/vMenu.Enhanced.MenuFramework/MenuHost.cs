@@ -168,6 +168,11 @@ internal sealed class MenuHost : IDisposable
         Menu.MenuTitle = Title.Resolve(localizer);
         Menu.MenuSubtitle = Subtitle.Resolve(localizer);
 
+        foreach (var button in Builder.InstructionalButtons)
+        {
+            Menu.InstructionalButtons[button.Control] = button.Text.Resolve(localizer);
+        }
+
         var fallback = Builder.DefaultGateBehaviour ?? MenuFrameworkOptions.DefaultGateBehaviour;
         var visibilityChanged = false;
 

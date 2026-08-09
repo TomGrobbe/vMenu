@@ -1,5 +1,7 @@
 using CitizenFX.FiveM.Client;
 
+using MenuAPI;
+
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Appearance;
@@ -18,6 +20,14 @@ internal static class ModsSection
     public static void Build(MenuBuilder menu)
     {
         menu.AddRange(Rows());
+
+        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
+            Control.Jump,
+            Menu.ControlPressCheckType.JUST_PRESSED,
+            (_, _) => DoorsSection.ToggleAll(),
+            true));
+
+        menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.VehicleOptions.ToggleDoorsButton)));
 
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }

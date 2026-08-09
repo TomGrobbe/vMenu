@@ -161,7 +161,7 @@ public static class WorldTime
             return _shownOffset;
         }
 
-        var progress = unchecked(Native.GetGameTimer() - _rampStartMs) / 1000.0 / seconds;
+        var progress = (Native.GetGameTimer() - _rampStartMs) / 1000.0 / seconds;
 
         _shownOffset = progress >= 1.0
             ? _rampTo

@@ -74,7 +74,7 @@ public static class WorldWeather
         Native.GetWeatherTypeTransition(out var prev, out var next, out var percent);
 
         // The native hands the hashes back signed, so the cast is only reinterpreting the same bits.
-        return $"{NameOfHash(unchecked((uint)prev))} to {NameOfHash(unchecked((uint)next))} at {percent * 100.0f:0}%";
+        return $"{NameOfHash((uint)prev)} to {NameOfHash((uint)next)} at {percent * 100.0f:0}%";
     }
 
     // An unknown hash also means the game gained a weather type that WeatherType does not have yet.
@@ -137,7 +137,7 @@ public static class WorldWeather
             var seconds = TransitionSeconds();
             var progress = seconds <= 0
                 ? 1.0
-                : Math.Clamp(unchecked(Native.GetGameTimer() - _changedAtMs) / 1000.0 / seconds, 0.0, 1.0);
+                : Math.Clamp((Native.GetGameTimer() - _changedAtMs) / 1000.0 / seconds, 0.0, 1.0);
 
             if (progress < 1.0)
             {

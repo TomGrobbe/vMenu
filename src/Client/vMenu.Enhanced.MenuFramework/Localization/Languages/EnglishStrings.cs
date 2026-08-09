@@ -302,6 +302,7 @@ internal static class EnglishStrings
             [Loc.VehicleOptions.OpenAllDoorsDescription] = "Opens every door this vehicle has, including the hood and trunk.",
             [Loc.VehicleOptions.CloseAllDoors] = "Close All Doors",
             [Loc.VehicleOptions.CloseAllDoorsDescription] = "Shuts every door this vehicle has.",
+            [Loc.VehicleOptions.ToggleDoorsButton] = "Toggle vehicle doors",
             [Loc.VehicleOptions.RemoveDoor] = "Remove Door",
             [Loc.VehicleOptions.RemoveDoorDescription] = "Rips the chosen door off the vehicle. Repairing the vehicle puts it back.",
             [Loc.VehicleOptions.RemoveDoorConfirm] = "~r~Rip {name} off this vehicle? Press enter again to confirm.",

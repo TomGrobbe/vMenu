@@ -267,7 +267,7 @@ public static class DeveloperOverlay
             return label;
         }
 
-        label = $"Hash {unchecked((int)model)} / {model} / 0x{model:X8}";
+        label = $"Hash {(int)model} / {model} / 0x{model:X8}";
         ModelLabels[model] = label;
 
         return label;

@@ -281,6 +281,7 @@
     "vehicleoptions.doors": "Deuren",
     "vehicleoptions.doors.closeall": "Alle deuren sluiten",
     "vehicleoptions.doors.closeall.desc": "Sluit elke deur die dit voertuig heeft.",
+    "vehicleoptions.doors.toggleall.button": "Deuren openen/sluiten",
     "vehicleoptions.doors.desc": "Open, sluit en verwijder de deuren van dit voertuig.",
     "vehicleoptions.doors.extraleft": "Extra deur 1",
     "vehicleoptions.doors.extraright": "Extra deur 2",

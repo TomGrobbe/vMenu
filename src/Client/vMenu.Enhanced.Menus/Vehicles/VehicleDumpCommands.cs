@@ -117,7 +117,8 @@ public static class VehicleDumpCommands
 
                 // The identifier hash is what names a horn, and is the only handle a developer has on
                 // a part whose artist supplied no label at all.
-                var identifier = Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
+                // Unsigned, so it reads the same way round as the hashes VehicleHornLabels matches on.
+                var identifier = (uint)Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
 
                 API.Log.Info(
                     $"[Vehicle]   [{index}] id {identifier}, GetModTextLabel '{raw}' {Reports(raw)}"

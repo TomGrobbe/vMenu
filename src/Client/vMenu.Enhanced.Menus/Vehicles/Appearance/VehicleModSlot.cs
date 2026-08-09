@@ -28,9 +28,9 @@ public enum VehicleModSlot
     Suspension = 15,
     Armour = 16,
 
-    /// <summary>Present in the game's data but does nothing, so vMenu never offers it.</summary>
+    // Seventeen through twenty two are the game's MOD_TOGGLE_ block: switched on or off, never picked
+    // from a list.
     Nitrous = 17,
-
     Turbo = 18,
     Subwoofer = 19,
     TyreSmoke = 20,

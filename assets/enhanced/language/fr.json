@@ -281,6 +281,7 @@
     "vehicleoptions.doors": "Portes",
     "vehicleoptions.doors.closeall": "Fermer toutes les portes",
     "vehicleoptions.doors.closeall.desc": "Ferme toutes les portes que ce véhicule possède.",
+    "vehicleoptions.doors.toggleall.button": "Ouvrir/fermer portes",
     "vehicleoptions.doors.desc": "Ouvre, ferme et arrache les portes de ce véhicule.",
     "vehicleoptions.doors.extraleft": "Porte supplémentaire 1",
     "vehicleoptions.doors.extraright": "Porte supplémentaire 2",

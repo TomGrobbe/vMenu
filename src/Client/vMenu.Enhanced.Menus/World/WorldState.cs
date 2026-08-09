@@ -50,7 +50,7 @@ public static class WorldState
     public static event Action? Changed;
 
     public static double UnixSeconds =>
-        _anchored ? _anchorUnix + (unchecked(Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
+        _anchored ? _anchorUnix + ((Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
 
     /// <summary>How fast the clock runs, which the weather schedule follows as well.</summary>
     // Read live rather than cached, so raising it takes effect without a restart. The same convar

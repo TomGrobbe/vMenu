@@ -281,6 +281,7 @@
     "vehicleoptions.doors": "Türen",
     "vehicleoptions.doors.closeall": "Alle Türen schließen",
     "vehicleoptions.doors.closeall.desc": "Schließt jede Tür, die dieses Fahrzeug hat.",
+    "vehicleoptions.doors.toggleall.button": "Türen umschalten",
     "vehicleoptions.doors.desc": "Öffne, schließe und entferne die Türen dieses Fahrzeugs.",
     "vehicleoptions.doors.extraleft": "Zusatztür 1",
     "vehicleoptions.doors.extraright": "Zusatztür 2",

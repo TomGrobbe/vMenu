@@ -38,7 +38,7 @@ public static class VehicleModLabels
     /// </summary>
     // The performance slots are the same thing on every vehicle in the game: eleven is always the
     // engine, twelve always the brakes. Nobody reuses them for a spoiler, so naming them is not the
-    // guess that naming, say, slot twenty one is.
+    // guess that naming, say, slot twenty seven is.
     public static bool IsFixedMeaning(VehicleModSlot slot) => slot
         is VehicleModSlot.Engine
         or VehicleModSlot.Brakes
@@ -52,8 +52,8 @@ public static class VehicleModLabels
     /// The game's name for a slot, or vMenu's marked with a star where that is a guess.
     /// </summary>
     // A slot the game will not name is usually one an add-on vehicle has reused for something else
-    // entirely, so asserting it is "Hydraulics" when the vehicle has none would be worse than
-    // admitting the guess. The star says so in one character; the row's description explains it.
+    // entirely, so asserting it is "Interior 1" when the vehicle has no such thing would be worse
+    // than admitting the guess. The star says so in one character; the row's description explains it.
     public static MenuText SlotName(int handle, VehicleModSlot slot) => MenuText.From(() =>
     {
         var bare = ResolveSlotName(handle, slot);

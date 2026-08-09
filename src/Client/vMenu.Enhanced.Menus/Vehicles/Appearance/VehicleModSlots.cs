@@ -15,8 +15,11 @@ public static class VehicleModSlots
     /// </summary>
     public static IReadOnlyList<VehicleModSlot> Toggles { get; } =
     [
+        VehicleModSlot.Nitrous,
         VehicleModSlot.Turbo,
+        VehicleModSlot.Subwoofer,
         VehicleModSlot.TyreSmoke,
+        VehicleModSlot.Hydraulics,
         VehicleModSlot.XenonLights,
     ];
 
@@ -27,8 +30,13 @@ public static class VehicleModSlots
         VehicleModSlot.RearWheels,
     ];
 
-    public static bool IsToggle(VehicleModSlot slot) =>
-        slot is VehicleModSlot.Turbo or VehicleModSlot.TyreSmoke or VehicleModSlot.XenonLights;
+    public static bool IsToggle(VehicleModSlot slot) => slot
+        is VehicleModSlot.Nitrous
+        or VehicleModSlot.Turbo
+        or VehicleModSlot.Subwoofer
+        or VehicleModSlot.TyreSmoke
+        or VehicleModSlot.Hydraulics
+        or VehicleModSlot.XenonLights;
 
     public static bool IsWheelSlot(VehicleModSlot slot) =>
         slot is VehicleModSlot.Wheels or VehicleModSlot.RearWheels;
@@ -41,7 +49,7 @@ public static class VehicleModSlots
 
         foreach (var slot in All)
         {
-            if (slot is VehicleModSlot.Nitrous || IsToggle(slot))
+            if (IsToggle(slot))
             {
                 continue;
             }

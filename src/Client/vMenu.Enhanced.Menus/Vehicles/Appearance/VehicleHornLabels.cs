@@ -88,7 +88,7 @@ public static class VehicleHornLabels
     /// <summary>The game's text key for the horn in a slot, or null when it is not one vMenu knows.</summary>
     public static string? TextKey(int handle, int index)
     {
-        var sound = Native.GetVehicleModIdentifierHash(handle, (int)VehicleModSlot.Horn, index);
+        var sound = (uint)Native.GetVehicleModIdentifierHash(handle, (int)VehicleModSlot.Horn, index);
 
         foreach (var horn in Hashed())
         {
