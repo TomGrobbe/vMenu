@@ -25,6 +25,12 @@ public static class ConfigCatalog
         new("Languages", [Localization.Languages]),
         new("About", [About.DocumentationUrl, About.DiscordUrl]),
         new("Key Bindings", [KeyBindings.MenuToggleKey, KeyBindings.NoClipToggleKey]),
+        new("Menu Appearance",
+        [
+            MenuAppearance.TitleAlignment,
+            MenuAppearance.TitleFont,
+            MenuAppearance.HeaderGlare,
+        ]),
         new("Vehicle Options",
         [
             VehicleOptions.DeleteVehicleDistance,

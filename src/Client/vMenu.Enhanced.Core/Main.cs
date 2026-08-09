@@ -73,11 +73,7 @@ public sealed class Main : IScript
 
         MenuController.MenuToggleKeyDefault = ClientConfig.Value(KeyBindings.MenuToggleKey);
 
-        // vMenu's own look rather than MenuAPI's defaults, so a menu that says nothing about its
-        // header still comes out matching every other one.
-        MenuController.DefaultTitleAlignment = Menu.TitleAlignmentOption.Left;
-        MenuController.DefaultTitleFont = MenuFont.ChaletComprimeCologne;
-        MenuController.DefaultShowHeaderGlare = true;
+        HeaderStyle.Initialize();
 
         LanguageLoader.Load();
 
