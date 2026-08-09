@@ -96,7 +96,7 @@ public static class OnlinePlayerActions
             }
         }
 
-        return ActionResponse.Ok(rows.ToArray());
+        return ActionResponse.Ok([.. rows]);
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ public static class OnlinePlayerActions
 
         API.Log.Info($"[OnlinePlayers] {source} read the identifiers of {target}.");
 
-        return ActionResponse.Ok(identifiers.ToArray());
+        return ActionResponse.Ok([.. identifiers]);
     }
 
     /// <summary>Where a player is right now, for teleporting to them or pointing a waypoint at them.</summary>

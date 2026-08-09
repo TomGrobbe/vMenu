@@ -24,17 +24,15 @@ internal static class NeonSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }
 
-    private static List<MenuEntry> Rows()
+    private static IReadOnlyList<MenuEntry> Rows()
     {
         if (SectionRows.Driven() is null)
         {
             return SectionRows.BlockedOnly();
         }
 
-        // Built by hand rather than as a collection expression, which compiles to
-        // CollectionsMarshal.SetCount when the target is a List and the client sandbox refuses it.
-        return new List<MenuEntry>
-        {
+        return
+        [
             Tube(Loc.VehicleOptions.NeonFront, Front),
             Tube(Loc.VehicleOptions.NeonRear, Back),
             Tube(Loc.VehicleOptions.NeonLeft, Left),
@@ -47,7 +45,7 @@ internal static class NeonSection
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.NeonColor),
                 Build = rgb => RgbPicker.Build(rgb, Target()),
             },
-        };
+        ];
     }
 
     private static CheckboxEntry Tube(string textKey, int side) => new()

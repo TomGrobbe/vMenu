@@ -56,7 +56,7 @@ internal static class SectionRows
     /// <summary>Replaces a section's rows, leaving the player's highlight where they left it.</summary>
     // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves
     // the selection out from under a player who is looking at the menu while it happens.
-    internal static void Fill(MenuBuilder builder, List<MenuEntry> rows)
+    internal static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
     {
         var was = builder.Menu.CurrentIndex;
         var offset = builder.Menu.ViewIndexOffset;
@@ -79,10 +79,7 @@ internal static class SectionRows
     };
 
     /// <summary>A whole section replaced by the one row saying why there is nothing to change.</summary>
-    // A list built by hand rather than a collection expression. Those compile to
-    // CollectionsMarshal.SetCount when the target is a List, and the client sandbox refuses to let
-    // this assembly call it.
-    internal static List<MenuEntry> BlockedOnly() => new() { Blocked() };
+    internal static IReadOnlyList<MenuEntry> BlockedOnly() => [Blocked()];
 
     /// <summary>The row shown instead of a section, saying why there is nothing to change.</summary>
     internal static MenuEntry Blocked()

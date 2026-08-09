@@ -81,7 +81,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     #region Rows
 
-    private List<MenuEntry> RootRows()
+    private IReadOnlyList<MenuEntry> RootRows()
     {
         var rows = new List<MenuEntry>
         {
@@ -137,7 +137,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    private List<MenuEntry> VehicleRows()
+    private IReadOnlyList<MenuEntry> VehicleRows()
     {
         var rows = new List<MenuEntry>();
 
@@ -203,20 +203,18 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             : MenuText.Key(Loc.SavedVehicles.ModelUnavailable, ("model", model));
     }
 
-    private List<MenuEntry> DetailRows()
+    private IReadOnlyList<MenuEntry> DetailRows()
     {
         if (_selected is not { } entry)
         {
-            // Built by hand rather than as a collection expression, which compiles to
-            // CollectionsMarshal.SetCount when the target is a List and the client sandbox refuses it.
-            return new List<MenuEntry>
-            {
+            return
+            [
                 new ButtonEntry
                 {
                     Text = MenuText.Key(Loc.SavedVehicles.NoVehicles),
                     Description = MenuText.Key(Loc.SavedVehicles.NoVehiclesDescription),
                 },
-            };
+            ];
         }
 
         var name = MenuText.Literal(entry.Vehicle.Name);
@@ -309,7 +307,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         };
     }
 
-    private List<MenuEntry> CategoryRows()
+    private IReadOnlyList<MenuEntry> CategoryRows()
     {
         var categories = SavedVehicleStore.Categories();
 
@@ -627,7 +625,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         Fill(_categoryMenu, CategoryRows());
     }
 
-    private static void Fill(DetachedMenu? menu, List<MenuEntry> rows)
+    private static void Fill(DetachedMenu? menu, IReadOnlyList<MenuEntry> rows)
     {
         if (menu is not { } detached)
         {
@@ -639,7 +637,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves
     // the player's selection out from under them.
-    private static void Refill(MenuBuilder builder, List<MenuEntry> rows)
+    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
     {
         var was = builder.Menu.CurrentIndex;
         var offset = builder.Menu.ViewIndexOffset;

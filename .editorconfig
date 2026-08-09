@@ -227,3 +227,14 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix = 
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+
+#### Analyzer overrides ####
+
+# CA1859: "use the concrete type instead of the interface".
+# Turned off deliberately. A collection expression whose target type is List<T> compiles to
+# CollectionsMarshal.SetCount, and the FiveM client sandbox refuses to let a resource assembly call
+# that, so it throws a SecurityException at runtime. Returning IReadOnlyList<T> makes the compiler
+# emit a plain array wrapper instead. Taking this rule's advice on anything that builds its result
+# with [ ... ] would put the crash straight back.
+dotnet_diagnostic.CA1859.severity = none

@@ -32,7 +32,7 @@ internal static class WindowsSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }
 
-    private static List<MenuEntry> Rows()
+    private static IReadOnlyList<MenuEntry> Rows()
     {
         if (SectionRows.Driven() is null)
         {

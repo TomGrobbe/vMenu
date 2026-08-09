@@ -16,17 +16,15 @@ internal static class LightsSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }
 
-    private static List<MenuEntry> Rows()
+    private static IReadOnlyList<MenuEntry> Rows()
     {
         if (SectionRows.DrivenWithModKit() is null)
         {
             return SectionRows.BlockedOnly();
         }
 
-        // Built by hand rather than as a collection expression, which compiles to
-        // CollectionsMarshal.SetCount when the target is a List and the client sandbox refuses it.
-        return new List<MenuEntry>
-        {
+        return
+        [
             new CheckboxEntry
             {
                 Text = MenuText.Key(Loc.VehicleOptions.XenonLights),
@@ -51,7 +49,7 @@ internal static class LightsSection
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.HeadlightColor),
                 Build = rgb => RgbPicker.Build(rgb, Target()),
             },
-        };
+        ];
     }
 
     private static ListEntry ColorRow()

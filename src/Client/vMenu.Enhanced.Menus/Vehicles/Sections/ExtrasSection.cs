@@ -24,7 +24,7 @@ internal static class ExtrasSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }
 
-    private static List<MenuEntry> Rows()
+    private static IReadOnlyList<MenuEntry> Rows()
     {
         if (SectionRows.Driven() is not { } handle)
         {

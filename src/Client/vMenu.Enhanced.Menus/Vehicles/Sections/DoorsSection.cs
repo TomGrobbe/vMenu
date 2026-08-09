@@ -31,7 +31,7 @@ internal static class DoorsSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows(menu));
     }
 
-    private static List<MenuEntry> Rows(MenuBuilder menu)
+    private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
     {
         if (SectionRows.Driven() is not { } handle)
         {

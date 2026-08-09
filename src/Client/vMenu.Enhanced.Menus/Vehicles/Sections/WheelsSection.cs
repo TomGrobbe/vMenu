@@ -19,7 +19,7 @@ internal static class WheelsSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
     }
 
-    private static List<MenuEntry> Rows()
+    private static IReadOnlyList<MenuEntry> Rows()
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)
         {

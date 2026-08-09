@@ -19,17 +19,15 @@ internal static class PlateSection
         menu.OnOpened = _ => SectionRows.Fill(menu, Rows(menu));
     }
 
-    private static List<MenuEntry> Rows(MenuBuilder menu)
+    private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
     {
         if (SectionRows.Driven() is not { } handle)
         {
             return SectionRows.BlockedOnly();
         }
 
-        // Built by hand rather than as a collection expression, which compiles to
-        // CollectionsMarshal.SetCount when the target is a List and the client sandbox refuses it.
-        return new List<MenuEntry>
-        {
+        return
+        [
             new ButtonEntry
             {
                 Text = MenuText.Key(Loc.VehicleOptions.PlateText),
@@ -59,7 +57,7 @@ internal static class PlateSection
                     }
                 },
             },
-        };
+        ];
     }
 
     private static async Task ChangeTextAsync(MenuBuilder menu)

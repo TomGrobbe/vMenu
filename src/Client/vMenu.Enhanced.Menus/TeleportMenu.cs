@@ -292,7 +292,7 @@ public sealed class TeleportMenu : MenuDefinition
 
     // Rebuilding drops every item, and MenuAPI puts the highlight back on the first one, so a rebuild
     // under a menu the player is already looking at moves their selection out from under them.
-    private static void Fill(DetachedMenu menu, List<MenuEntry> rows, bool keepIndex)
+    private static void Fill(DetachedMenu menu, IReadOnlyList<MenuEntry> rows, bool keepIndex)
     {
         var was = menu.Menu.CurrentIndex;
         var offset = menu.Menu.ViewIndexOffset;
