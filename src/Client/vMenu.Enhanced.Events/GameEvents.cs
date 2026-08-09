@@ -18,5 +18,7 @@ public static class GameEvents
 
         LocalPlayerTicks.Initialize();
         LocalVehicleTicks.Initialize();
+
+        EventDebugCommands.Initialize();
     }
 }
