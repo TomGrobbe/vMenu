@@ -1,3 +1,5 @@
+using vMenu.Enhanced.Data.World;
+
 namespace vMenu.Enhanced.Data.Configuration.Settings;
 
 public static class TimeOptions
@@ -23,6 +25,20 @@ public static class TimeOptions
             "so a typo can never stop the clock or spin it out of control. This only does anything " +
             "while the option above is on, because otherwise vMenu is not driving the clock at all.",
         Default = 1.0f,
+    };
+
+    public static readonly StringSetting Presets = new("vMenu.Enhanced.TimeOptions.Presets")
+    {
+        Description =
+            "The ready made times that show up as a list in the Weather & Time menu, so somebody can " +
+            "jump the clock to a common time without typing one in. Write them as a comma separated " +
+            "list of four digit 24 hour times, where 0000 is midnight, 0930 is half past nine in the " +
+            "morning and 2100 is nine in the evening. No colons, no dots and no spaces, and anything " +
+            "that is not four digits is skipped with a warning in the client console. They appear in " +
+            "the order you write them, so put the ones you use most first if you like. Leave this " +
+            "empty to hide the list entirely, which still leaves the option to type a time in. " +
+            "Choosing one needs the same permission as typing one in.",
+        Default = TimePresets.Default,
     };
 
     public static readonly IntSetting TransitionSeconds = new("vMenu.Enhanced.TimeOptions.TransitionSeconds")

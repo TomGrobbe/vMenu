@@ -534,6 +534,8 @@ internal static class EnglishStrings
             [Loc.World.SetTime] = "Set Time",
             [Loc.World.SetTimeDescription] = "Type a time of day. The clock keeps running from there, it does not freeze. Most formats work: 15:25, 3.25pm, 325pm, 1525.",
             [Loc.World.SetTimePrompt] = "Time of day",
+            [Loc.World.TimePreset] = "Preset Time",
+            [Loc.World.TimePresetDescription] = "Pick one of the times the server owner set up, then press Enter to move the clock to it. The clock keeps running from there, it does not freeze.",
             [Loc.World.ResetWeather] = "Reset To Dynamic Server Weather",
             [Loc.World.ResetWeatherDescription] = "Hands the weather back to the cycle that would currently be active in GTA Online.",
             [Loc.World.ResetTime] = "Reset To Dynamic Server Time",

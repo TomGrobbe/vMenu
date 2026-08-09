@@ -479,6 +479,8 @@
     "world.time.notunderstood": "~r~{input}~s~ no es una hora que entienda. Prueba con algo como ~y~15:25~s~, ~y~3.25pm~s~ o ~y~1525~s~.",
     "world.time.reset": "La hora vuelve a seguir al servidor. {transition}",
     "world.time.set": "La hora avanza hacia ~y~{value}~s~. {transition}",
+    "world.timepreset": "Hora predefinida",
+    "world.timepreset.desc": "Elige una de las horas que ha preparado el propietario del servidor y pulsa intro para aplicarla. El reloj sigue avanzando desde ahí, no se congela.",
     "world.title": "Clima y hora",
     "world.transition": "Tarda unos ~y~{duration}~s~.",
     "world.weather": "Clima",

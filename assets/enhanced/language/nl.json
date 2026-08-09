@@ -479,6 +479,8 @@
     "world.time.notunderstood": "~r~{input}~s~ is geen tijd die ik begrijp. Probeer iets als ~y~15:25~s~, ~y~3.25pm~s~ of ~y~1525~s~.",
     "world.time.reset": "De tijd volgt de server weer. {transition}",
     "world.time.set": "De tijd gaat naar ~y~{value}~s~. {transition}",
+    "world.timepreset": "Vooraf ingestelde tijd",
+    "world.timepreset.desc": "Kies een van de tijden die de servereigenaar heeft ingesteld en druk op enter om toe te passen. De klok loopt vanaf daar verder, hij staat niet stil.",
     "world.title": "Weer & tijd",
     "world.transition": "Dat duurt ongeveer ~y~{duration}~s~.",
     "world.weather": "Weer",

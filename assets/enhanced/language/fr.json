@@ -479,6 +479,8 @@
     "world.time.notunderstood": "~r~{input}~s~ n'est pas une heure que je comprends. Essayez quelque chose comme ~y~15:25~s~, ~y~3.25pm~s~ ou ~y~1525~s~.",
     "world.time.reset": "L'heure suit de nouveau le serveur. {transition}",
     "world.time.set": "L'heure se déplace vers ~y~{value}~s~. {transition}",
+    "world.timepreset": "Heure prédéfinie",
+    "world.timepreset.desc": "Choisissez une des heures configurées par le propriétaire du serveur, puis appuyez sur Entrée pour appliquer. L'horloge continue d'avancer à partir de là, elle ne se fige pas.",
     "world.title": "Météo et heure",
     "world.transition": "Cela prend environ ~y~{duration}~s~.",
     "world.weather": "Météo",

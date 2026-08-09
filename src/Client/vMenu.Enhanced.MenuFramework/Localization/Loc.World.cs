@@ -32,6 +32,10 @@ public static partial class Loc
 
         public const string SetTimePrompt = "world.settime.prompt";
 
+        public const string TimePreset = "world.timepreset";
+
+        public const string TimePresetDescription = "world.timepreset.desc";
+
         public const string ResetWeather = "world.resetweather";
 
         public const string ResetWeatherDescription = "world.resetweather.desc";

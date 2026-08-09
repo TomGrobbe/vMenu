@@ -33,6 +33,11 @@ public sealed class WorldMenu : MenuDefinition
     private static readonly MenuGate TimeAllowed =
         MenuGate.Setting(TimeOptionsSettings.Enabled) & MenuGate.Permission(TimeOptionsPermissions.SetTime);
 
+    private static readonly TimePresetOptions Presets = new();
+
+    /// <summary>Hides the row rather than showing an empty list when an owner clears the convar.</summary>
+    private static readonly MenuGate PresetsAllowed = TimeAllowed & MenuGate.When(() => Presets.Count > 0);
+
     private static TickHandle? _status;
 
     private static Menu? _open;
@@ -89,6 +94,17 @@ public sealed class WorldMenu : MenuDefinition
             OnSelectedAsync = _ => PromptForTimeAsync(),
         });
 
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.World.TimePreset),
+            Description = MenuText.Key(Loc.World.TimePresetDescription),
+            Gate = PresetsAllowed,
+            Options = Presets,
+            OnSelectedAsync = selected => Presets.SecondOfDay(selected.SelectedIndex) is { } secondOfDay
+                ? SetTimeAsync(secondOfDay)
+                : Task.CompletedTask,
+        });
+
         menu.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.World.ResetWeather),
@@ -133,12 +149,17 @@ public sealed class WorldMenu : MenuDefinition
             return;
         }
 
+        await SetTimeAsync(secondOfDay);
+    }
+
+    private static Task SetTimeAsync(int secondOfDay)
+    {
         // Stored as an offset from the derived clock, not as a fixed time, so the day keeps running.
         var offset = (int)GameClock.Mod(
             secondOfDay - GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed),
             GameClock.SecondsPerGameDay);
 
-        await SendAsync(
+        return SendAsync(
             ActionIds.TimeOptions.SetTime,
             offset.ToString(CultureInfo.InvariantCulture),
             Loc.World.TimeSet,

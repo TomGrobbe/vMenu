@@ -479,6 +479,8 @@
     "world.time.notunderstood": "~r~{input}~s~ ist keine Zeit, die ich verstehe. Versuch etwas wie ~y~15:25~s~, ~y~3.25pm~s~ oder ~y~1525~s~.",
     "world.time.reset": "Die Zeit folgt wieder dem Server. {transition}",
     "world.time.set": "Die Zeit wandert zu ~y~{value}~s~. {transition}",
+    "world.timepreset": "Voreingestellte Zeit",
+    "world.timepreset.desc": "Wähle eine der Zeiten, die der Serverbesitzer eingerichtet hat, und drücke Enter zum Anwenden. Die Uhr läuft von dort weiter, sie bleibt nicht stehen.",
     "world.title": "Wetter & Zeit",
     "world.transition": "Das dauert etwa ~y~{duration}~s~.",
     "world.weather": "Wetter",
