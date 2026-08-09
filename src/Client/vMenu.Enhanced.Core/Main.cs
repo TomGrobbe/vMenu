@@ -8,6 +8,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
@@ -28,6 +29,8 @@ public sealed class Main : IScript
     public async void Initialize()
     {
         TickRegistry.Initialize();
+
+        GameEvents.Initialize();
 
         SharedAPI.Commands.RegisterCommand("give", false, async (string? weapon) =>
         {

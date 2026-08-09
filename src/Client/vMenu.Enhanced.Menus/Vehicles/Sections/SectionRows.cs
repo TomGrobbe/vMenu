@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
 
+using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
@@ -69,6 +70,32 @@ internal static class SectionRows
         // The scroll offset as well as the index, or a player partway down a long list keeps their
         // row but has the list scrolled back to the top under them.
         builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
+    }
+
+    /// <summary>
+    /// Refills a section when it opens, and again whenever the player changes what they are in.
+    /// </summary>
+    internal static void AutoFill(MenuBuilder builder, Func<IReadOnlyList<MenuEntry>> rows) =>
+        AutoRefresh(builder, () => Fill(builder, rows()));
+
+    /// <summary>As <see cref="AutoFill"/>, for a menu whose rows are declared rather than generated.</summary>
+    internal static void AutoRefresh(MenuBuilder builder, Action refresh)
+    {
+        void OnChanged(VehicleChanged _) => refresh();
+
+        builder.OnOpened = _ =>
+        {
+            refresh();
+
+            // Dropped before it is added, because MenuAPI raises the open callback again when a
+            // deferred filter puts the menu back up, and a section subscribed twice refills twice.
+            LocalVehicleTicks.VehicleChanged -= OnChanged;
+            LocalVehicleTicks.VehicleChanged += OnChanged;
+        };
+
+        // MenuAPI closes a menu in order to open its child, so walking into a submenu unsubscribes
+        // here and the child subscribes for itself.
+        builder.OnClosed = _ => LocalVehicleTicks.VehicleChanged -= OnChanged;
     }
 
     /// <summary>Shown instead of an empty menu, which MenuAPI will not let the player leave with the arrow keys.</summary>

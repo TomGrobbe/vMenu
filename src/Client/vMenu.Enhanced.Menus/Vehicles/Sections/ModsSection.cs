@@ -29,7 +29,7 @@ internal static class ModsSection
 
         menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.VehicleOptions.ToggleDoorsButton)));
 
-        menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
+        SectionRows.AutoFill(menu, Rows);
     }
 
     private static IReadOnlyList<MenuEntry> Rows()

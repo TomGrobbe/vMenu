@@ -114,6 +114,8 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             Gate = VehicleOptionsPermissions.DeleteVehicle,
             OnConfirmedAsync = _ => VehicleDeletion.DeleteTargetAsync(),
         });
+
+        SectionRows.AutoRefresh(menu, MenuRegistry.RefreshAll);
     }
 
     private static SubmenuEntry Section(

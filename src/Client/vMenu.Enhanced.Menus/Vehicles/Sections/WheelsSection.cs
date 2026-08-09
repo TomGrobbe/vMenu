@@ -16,7 +16,7 @@ internal static class WheelsSection
     {
         menu.AddRange(Rows());
 
-        menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
+        SectionRows.AutoFill(menu, Rows);
     }
 
     private static IReadOnlyList<MenuEntry> Rows()

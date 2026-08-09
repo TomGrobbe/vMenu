@@ -16,7 +16,7 @@ internal static class PlateSection
     {
         menu.AddRange(Rows(menu));
 
-        menu.OnOpened = _ => SectionRows.Fill(menu, Rows(menu));
+        SectionRows.AutoFill(menu, () => Rows(menu));
     }
 
     private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)

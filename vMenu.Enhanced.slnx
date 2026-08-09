@@ -21,6 +21,7 @@
     <Project Path="src/Client/vMenu.Enhanced.Actions/vMenu.Enhanced.Actions.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.BrokenNatives/vMenu.Enhanced.BrokenNatives.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
+    <Project Path="src/Client/vMenu.Enhanced.Events/vMenu.Enhanced.Events.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />

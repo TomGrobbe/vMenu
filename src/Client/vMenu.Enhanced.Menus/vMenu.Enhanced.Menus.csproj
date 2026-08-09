@@ -6,6 +6,7 @@
     <ProjectReference Include="..\vMenu.Enhanced.Actions\vMenu.Enhanced.Actions.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives\vMenu.Enhanced.BrokenNatives.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration\vMenu.Enhanced.Configuration.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Events\vMenu.Enhanced.Events.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.MenuFramework\vMenu.Enhanced.MenuFramework.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions\vMenu.Enhanced.Permissions.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization\vMenu.Enhanced.Serialization.csproj" />
