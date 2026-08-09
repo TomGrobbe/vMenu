@@ -177,7 +177,7 @@ internal static class ColorsSection
         });
     }
 
-    private static MenuEntry FinishRow(Func<int> read, Action<int> write)
+    private static ListEntry FinishRow(Func<int> read, Action<int> write)
     {
         var options = new List<MenuText>(VehicleOptionTables.PaintFinishKeys.Count);
 
@@ -209,7 +209,7 @@ internal static class ColorsSection
     /// chameleon paint. Picking an ordinary colour afterwards puts the finish back, which is what
     /// makes the two directions behave the same way.
     /// </remarks>
-    private static MenuEntry ChameleonRow()
+    private static ListEntry ChameleonRow()
     {
         var colors = VehicleColorTables.Chameleon;
 
@@ -274,7 +274,7 @@ internal static class ColorsSection
 
     #region Rows built from a colour table
 
-    private static MenuEntry ColorRow(
+    private static ListEntry ColorRow(
         string textKey,
         string descriptionKey,
         IReadOnlyList<VehicleColorOption> colors,
@@ -307,7 +307,7 @@ internal static class ColorsSection
         };
     }
 
-    private static MenuEntry WheelColorRow()
+    private static ListEntry WheelColorRow()
     {
         // The default is not in any table, so it is prepended and everything else shifts by one.
         var options = new List<MenuText>(VehicleColorTables.Classic.Count + 1)
@@ -344,7 +344,7 @@ internal static class ColorsSection
         };
     }
 
-    private static MenuEntry CombinationRow(int combinations)
+    private static ListEntry CombinationRow(int combinations)
     {
         var options = new List<MenuText>(combinations);
 

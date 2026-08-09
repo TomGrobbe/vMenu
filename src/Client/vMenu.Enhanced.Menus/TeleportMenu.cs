@@ -185,7 +185,7 @@ public sealed class TeleportMenu : MenuDefinition
         Fill(categoryMenu, rows, keepIndex: true);
     }
 
-    private static MenuEntry DeleteCategoryRow()
+    private static ConfirmListEntry DeleteCategoryRow()
     {
         // A snapshot, because the row lives until the next rebuild and the shared list is replaced
         // wholesale every time the server sends a new one.
@@ -259,7 +259,7 @@ public sealed class TeleportMenu : MenuDefinition
         Fill(locationMenu, rows, keepIndex);
     }
 
-    private static MenuEntry DeletePositionRow(TeleportCategory category)
+    private static ConfirmListEntry DeletePositionRow(TeleportCategory category)
     {
         var locations = category.Locations.ToList();
 

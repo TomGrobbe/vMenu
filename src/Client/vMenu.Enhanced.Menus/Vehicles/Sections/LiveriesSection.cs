@@ -67,7 +67,7 @@ internal static class LiveriesSection
         return rows;
     }
 
-    private static MenuEntry LiveryRow(
+    private static ListEntry LiveryRow(
         int handle,
         string textKey,
         string descriptionKey,

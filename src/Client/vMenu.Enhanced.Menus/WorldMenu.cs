@@ -191,7 +191,7 @@ public sealed class WorldMenu : MenuDefinition
                 ("duration", MenuText.Literal(seconds.ToString(CultureInfo.InvariantCulture) + "s")));
     }
 
-    private static IReadOnlyList<MenuText> WeatherOptions()
+    private static List<MenuText> WeatherOptions()
     {
         var options = new List<MenuText>(WeatherTypes.Selectable.Count + 1)
         {

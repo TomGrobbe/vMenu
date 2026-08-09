@@ -89,7 +89,7 @@ internal static class WheelsSection
         return rows;
     }
 
-    private static MenuEntry WheelTypeRow(CheckboxEntry customTyres)
+    private static ListEntry WheelTypeRow(CheckboxEntry customTyres)
     {
         var options = new List<MenuText>(VehicleOptionTables.WheelTypeKeys.Count);
 
@@ -158,7 +158,7 @@ internal static class WheelsSection
     /// time it moves instead, so the row is always right without the menu being rebuilt underneath
     /// the player.
     /// </remarks>
-    private static MenuEntry RimRow(int handle, VehicleModSlot slot, CheckboxEntry customTyres)
+    private static DynamicListEntry RimRow(int handle, VehicleModSlot slot, CheckboxEntry customTyres)
     {
         var description = VehicleModLabels.SlotDescription(
             handle,

@@ -69,12 +69,12 @@ internal static class RgbPicker
         }
     }
 
-    private static MenuEntry Channel(
+    private static SliderEntry Channel(
         string textKey,
         RgbValue current,
         RgbTarget target,
         Action<int> set,
-        Func<int> get) => new SliderEntry
+        Func<int> get) => new ()
         {
             Text = MenuText.Key(textKey),
             Description = MenuText.Key(Loc.VehicleOptions.ChannelDescription),

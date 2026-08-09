@@ -51,7 +51,7 @@ internal static class ExtrasSection
         return rows;
     }
 
-    private static MenuEntry ExtraRow(int id)
+    private static CheckboxEntry ExtraRow(int id)
     {
         var number = MenuText.Literal(id.ToString(CultureInfo.InvariantCulture));
 

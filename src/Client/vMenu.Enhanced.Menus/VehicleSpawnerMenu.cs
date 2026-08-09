@@ -132,16 +132,16 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
     /// </summary>
     private static void BuildCategoryMenu(MenuBuilder categoryMenu, (string Model, int Class, string Label)[] vehicles)
     {
-        foreach (var vehicle in vehicles)
+        foreach (var (Model, Class, Label) in vehicles)
         {
-            var modelName = vehicle.Model;
-            var classId = vehicle.Class;
+            var modelName = Model;
+            var classId = Class;
             var stats = VehicleClassStats.Normalise(API.Hash(modelName), classId);
 
             categoryMenu.Entries.Add(new ButtonEntry
             {
                 // Model names are data, not prose, so they are never looked up as a key.
-                Text = MenuText.Literal(vehicle.Label),
+                Text = MenuText.Literal(Label),
                 Label = MenuText.Literal(modelName),
                 Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicle(modelName, classId)),
                 VehicleStats = () => stats,

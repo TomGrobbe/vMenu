@@ -163,7 +163,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    private MenuEntry VehicleRow(SavedVehicleEntry entry)
+    private ButtonEntry VehicleRow(SavedVehicleEntry entry)
     {
         var appearance = entry.Vehicle.Appearance;
         var model = MenuText.Literal(VehicleModelNames.Resolve(appearance.ModelHash, appearance.ModelName));
@@ -276,7 +276,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    private MenuEntry MoveRow(SavedVehicleEntry entry)
+    private ListEntry MoveRow(SavedVehicleEntry entry)
     {
         var groups = GroupNames(SavedVehicleStore.All());
 
@@ -348,7 +348,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    private MenuEntry DeleteCategoryRow(List<SavedVehicleCategory> categories)
+    private ConfirmListEntry DeleteCategoryRow(List<SavedVehicleCategory> categories)
     {
         var options = new List<MenuText>(categories.Count);
 
@@ -453,7 +453,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         Report(outcome, entry.Vehicle.Name);
     }
 
-    private async Task SpawnAsync(SavedVehicleEntry entry)
+    private static async Task SpawnAsync(SavedVehicleEntry entry)
     {
         var appearance = entry.Vehicle.Appearance;
         var modelName = VehicleModelNames.Resolve(appearance.ModelHash, appearance.ModelName);

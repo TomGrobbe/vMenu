@@ -50,7 +50,7 @@ internal static class NeonSection
         };
     }
 
-    private static MenuEntry Tube(string textKey, int side) => new CheckboxEntry
+    private static CheckboxEntry Tube(string textKey, int side) => new()
     {
         Text = MenuText.Key(textKey),
         Description = MenuText.Key(Loc.VehicleOptions.NeonSideDescription),
@@ -92,7 +92,7 @@ internal static class NeonSection
         }
     }
 
-    private static MenuEntry ColorRow()
+    private static ListEntry ColorRow()
     {
         var options = new List<MenuText>(VehicleLightColors.All.Count);
 

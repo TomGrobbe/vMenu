@@ -95,7 +95,7 @@ internal static class DoorsSection
         return present;
     }
 
-    private static MenuEntry DoorRow(int index, string textKey) => new CheckboxEntry
+    private static CheckboxEntry DoorRow(int index, string textKey) => new()
     {
         Text = MenuText.Key(textKey),
         Description = MenuText.Key(Loc.VehicleOptions.DoorDescription),
@@ -103,7 +103,7 @@ internal static class DoorsSection
         OnChanged = changed => Set(index, changed.Checked),
     };
 
-    private static MenuEntry RemoveDoorRow(List<(int Index, string TextKey)> present)
+    private static ConfirmListEntry RemoveDoorRow(List<(int Index, string TextKey)> present)
     {
         var options = new List<MenuText>(present.Count);
 

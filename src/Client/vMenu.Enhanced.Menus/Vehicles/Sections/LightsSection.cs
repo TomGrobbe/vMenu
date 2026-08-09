@@ -54,7 +54,7 @@ internal static class LightsSection
         };
     }
 
-    private static MenuEntry ColorRow()
+    private static ListEntry ColorRow()
     {
         // The headlights the vehicle came with are not one of the thirteen, so they are added at the
         // end and mapped to the value the game uses for them.

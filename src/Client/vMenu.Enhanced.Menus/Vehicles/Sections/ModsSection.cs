@@ -73,7 +73,7 @@ internal static class ModsSection
     }
 
     /// <summary>One upgrade slot, with the stock part first and everything the game offers after it.</summary>
-    private static MenuEntry SlotRow(int handle, VehicleModSlot slot)
+    private static ListEntry SlotRow(int handle, VehicleModSlot slot)
     {
         var count = Native.GetNumVehicleMods(handle, (int)slot);
 
@@ -122,7 +122,7 @@ internal static class ModsSection
             ? VehicleModLabels.Position(handle, slot)
             : string.Empty;
 
-    private static MenuEntry TyreSmokeColorRow()
+    private static ListEntry TyreSmokeColorRow()
     {
         var options = new List<MenuText>(VehicleSmokeColors.All.Count);
 
@@ -141,7 +141,7 @@ internal static class ModsSection
         };
     }
 
-    private static MenuEntry WindowTintRow()
+    private static ListEntry WindowTintRow()
     {
         var options = new List<MenuText>(VehicleOptionTables.WindowTints.Count);
 

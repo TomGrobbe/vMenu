@@ -664,7 +664,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         return $"~HUD_COLOUR_FREEMODE~{text} ~HUD_COLOUR_RED~{localizer.Get(Loc.OnlinePlayers.SubtitleOutdated)}";
     }
 
-    private void Report(ActionStatus status, MenuText player)
+    private static void Report(ActionStatus status, MenuText player)
     {
         var key = status switch
         {
