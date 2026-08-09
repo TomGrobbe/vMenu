@@ -95,7 +95,7 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             Text = MenuText.Key(Loc.VehicleOptions.RepairVehicle),
             Description = MenuText.Key(Loc.VehicleOptions.RepairVehicleDescription),
             Gate = VehicleOptionsPermissions.RepairVehicle,
-            OnSelected = _ => VehicleRepair.RepairCurrent(),
+            OnSelectedAsync = _ => VehicleRepair.RepairCurrentAsync(),
         });
 
         menu.Entries.Add(new ButtonEntry

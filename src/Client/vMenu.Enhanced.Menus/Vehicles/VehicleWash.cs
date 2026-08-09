@@ -10,7 +10,7 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 /// </summary>
 public static class VehicleWash
 {
-    /// <inheritdoc cref="VehicleRepair.RepairCurrent"/>
+    /// <inheritdoc cref="VehicleRepair.RepairCurrentAsync"/>
     public static void WashCurrent()
     {
         var vehicle = OwnVehicle.RequireDriven(Loc.VehicleOptions.WashNoVehicle, Loc.VehicleOptions.WashNotDriver);

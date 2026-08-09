@@ -32,12 +32,7 @@ public static class VehicleCommands
             VehicleOptionsSettings.RepairVehicleCommand,
             VehicleOptionsPermissions.RepairVehicle,
             Loc.VehicleOptions.RepairDenied,
-            () =>
-            {
-                VehicleRepair.RepairCurrent();
-
-                return Task.CompletedTask;
-            }),
+            VehicleRepair.RepairCurrentAsync),
 
         new("washveh",
             VehicleOptionsSettings.WashVehicleCommand,
