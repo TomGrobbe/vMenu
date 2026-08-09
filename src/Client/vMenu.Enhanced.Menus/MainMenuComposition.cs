@@ -11,9 +11,7 @@ public static class MainMenuComposition
     [
         new OnlinePlayersMenu(),
         new PlayerOptionsMenu(),
-        new VehicleOptionsMenu(),
-        new VehicleSpawnerMenu(),
-        new SavedVehiclesMenu(),
+        new VehiclesMenu(),
         new WorldMenu(),
         new TeleportMenu(),
         new RecordingMenu(),

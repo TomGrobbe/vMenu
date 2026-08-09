@@ -58,15 +58,8 @@ public static class MenuRegistry
             }
 
             // A submenu entry so the link, its gate and its child menu go through the same path as
-            // every nested submenu. No Gate here, since a submenu entry folds in its definition's.
-            _root.Builder.Entries.Add(new SubmenuEntry
-            {
-                Text = definition.LinkText,
-                Description = definition.LinkDescription,
-                Label = definition.LinkLabel,
-                Behaviour = definition.LinkBehaviour,
-                Definition = definition,
-            });
+            // every nested submenu.
+            _root.Builder.Entries.Add(SubmenuEntry.For(definition));
         }
 
         await MaterialiseAsync(_root, localizer);

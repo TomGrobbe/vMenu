@@ -21,6 +21,10 @@ internal static class EnglishStrings
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Main Menu",
 
+            [Loc.VehiclesMenu.Title] = "Vehicles Menu",
+            [Loc.VehiclesMenu.Subtitle] = "Vehicles Menu",
+            [Loc.VehiclesMenu.LinkDescription] = "Everything to do with vehicles: options for the one you are in, spawning a new one, and the ones you saved.",
+
             [Loc.VehicleSpawner.Title] = "Vehicle Spawner",
             [Loc.VehicleSpawner.Subtitle] = "Vehicle Spawner Menu",
             [Loc.VehicleSpawner.LinkDescription] = "Spawn a vehicle.",

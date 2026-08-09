@@ -26,10 +26,7 @@ public abstract class MenuDefinition
     /// <summary>Null inherits <see cref="MenuFrameworkOptions.DefaultGateBehaviour"/>.</summary>
     public virtual GateBehaviour? DefaultGateBehaviour => null;
 
-    /// <summary>
-    /// What the item that opens this menu looks like when <see cref="Gate"/> denies. Top level menus
-    /// only, since a nested menu's link is a <see cref="SubmenuEntry"/> with its own behaviour.
-    /// </summary>
+    /// <summary>What the item that opens this menu looks like when <see cref="Gate"/> denies.</summary>
     public virtual GateBehaviour? LinkBehaviour => null;
 
     /// <summary>Anything to fetch or compute before <see cref="Build"/> can declare entries.</summary>

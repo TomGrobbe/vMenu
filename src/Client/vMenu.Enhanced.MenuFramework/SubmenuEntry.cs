@@ -36,6 +36,17 @@ public sealed class SubmenuEntry : MenuEntry<MenuItem>
     /// <summary>The host built for this row, so dropping the row can drop the menu behind it too.</summary>
     internal MenuHost? Child { get; set; }
 
+    /// <summary>The row that opens a menu class, taking its text and gate from the definition.</summary>
+    // No Gate here, since EffectiveGate folds the definition's in.
+    public static SubmenuEntry For(MenuDefinition definition) => new()
+    {
+        Text = definition.LinkText,
+        Description = definition.LinkDescription,
+        Label = definition.LinkLabel,
+        Behaviour = definition.LinkBehaviour,
+        Definition = definition,
+    };
+
     protected override MenuText DefaultLabel => "→";
 
     /// <summary>
