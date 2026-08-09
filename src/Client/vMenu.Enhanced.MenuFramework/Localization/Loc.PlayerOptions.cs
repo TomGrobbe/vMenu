@@ -7,9 +7,11 @@ public static partial class Loc
         public const string Title = "playeroptions.title";
 
         public const string Subtitle = "playeroptions.subtitle";
-        
+
         public const string LinkDescription = "playeroptions.link.desc";
-        
-        public const string EmptyMenu = "playeroptions.emptymenu";
+
+        public const string GodMode = "playeroptions.godmode";
+
+        public const string GodModeDescription = "playeroptions.godmode.desc";
     }
 }

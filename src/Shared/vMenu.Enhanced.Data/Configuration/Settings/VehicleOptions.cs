@@ -37,4 +37,13 @@ public static class VehicleOptions
             "that another resource is unlikely to have claimed it already. Turn it off if one has.",
         Default = true,
     };
+
+    public static readonly BoolSetting ClearGodModeOnExit = new("vMenu.Enhanced.VehicleOptions.ClearGodModeOnExit")
+    {
+        Description =
+            "Takes the god mode protection back off a vehicle when the player gets out of it, so a car " +
+            "left at the roadside is an ordinary car again. Turn it off if you want a vehicle somebody " +
+            "made invincible to stay invincible after they walk away from it.",
+        Default = true,
+    };
 }

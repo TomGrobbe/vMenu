@@ -44,4 +44,27 @@ public static class OwnVehicle
 
         return ped.Vehicle;
     }
+
+    /// <summary>The handle of the vehicle the player is driving, or 0. Silent, unlike <see cref="RequireDriven"/>.</summary>
+    // A menu that opens on a row explaining the problem beats one that fires a notification the
+    // moment it appears, and a feature applying itself in the background has nobody to tell at all.
+    public static int Driven()
+    {
+        var ped = API.Players.Local.Ped;
+
+        if (ped is null || ped.IsDeadOrDying)
+        {
+            return 0;
+        }
+
+        var target = VehicleTargeting.Current(ped);
+
+        // Passengers do not get to touch somebody else's car, and would not have control of it anyway.
+        if (!target.Found || target.Kind is VehicleTargetKind.Passenger)
+        {
+            return 0;
+        }
+
+        return target.Handle;
+    }
 }

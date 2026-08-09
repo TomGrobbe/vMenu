@@ -97,7 +97,6 @@
     "onlineplayers.waypoint": "Placer un point de passage",
     "onlineplayers.waypoint.desc": "Place un point de passage sur la carte là où ce joueur est en ce moment. Il ne le suit pas.",
     "onlineplayers.waypoint.done": "Point de passage placé sur ~g~{player}~s~.",
-    "playeroptions.emptymenu": "Menu vide",
     "playeroptions.link.desc": "Options pour ton joueur.",
     "playeroptions.subtitle": "Options du joueur",
     "playeroptions.title": "Options du joueur",

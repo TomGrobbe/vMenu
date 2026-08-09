@@ -17,26 +17,12 @@ namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 /// </remarks>
 internal static class SectionRows
 {
-    /// <summary>The vehicle the player is driving, or null. Silent, unlike <see cref="OwnVehicle"/>.</summary>
-    // A menu that opens on a row explaining the problem beats one that fires a notification the
-    // moment it appears, so nothing is said here.
+    /// <summary>The vehicle the player is driving, or null.</summary>
     internal static int? Driven()
     {
-        var ped = API.Players.Local.Ped;
+        var handle = OwnVehicle.Driven();
 
-        if (ped is null || ped.IsDeadOrDying)
-        {
-            return null;
-        }
-
-        var target = VehicleTargeting.Current(ped);
-
-        if (!target.Found || target.Kind is VehicleTargetKind.Passenger)
-        {
-            return null;
-        }
-
-        return target.Handle;
+        return handle == 0 ? null : handle;
     }
 
     /// <summary>

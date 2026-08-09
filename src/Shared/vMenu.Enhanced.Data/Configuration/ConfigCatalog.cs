@@ -31,6 +31,7 @@ public static class ConfigCatalog
             VehicleOptions.DeleteVehicleCommand,
             VehicleOptions.RepairVehicleCommand,
             VehicleOptions.WashVehicleCommand,
+            VehicleOptions.ClearGodModeOnExit,
         ]),
         new("Saved Vehicles", [SavedVehicles.MaxSavedVehicles]),
         new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds]),

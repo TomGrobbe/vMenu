@@ -97,7 +97,6 @@
     "onlineplayers.waypoint": "Wegpunkt setzen",
     "onlineplayers.waypoint.desc": "Setzt einen Wegpunkt auf der Karte, wo dieser Spieler gerade ist. Er bewegt sich nicht mit.",
     "onlineplayers.waypoint.done": "Wegpunkt auf ~g~{player}~s~ gesetzt.",
-    "playeroptions.emptymenu": "Leeres Menü",
     "playeroptions.link.desc": "Optionen für deinen Spieler.",
     "playeroptions.subtitle": "Spieleroptionen",
     "playeroptions.title": "Spieleroptionen",

@@ -16,6 +16,25 @@ public sealed class VehicleOptionsMenu : MenuDefinition
 {
     protected override void Build(MenuBuilder menu)
     {
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.GodMode),
+            Description = MenuText.Key(Loc.VehicleOptions.GodModeDescription),
+            Gate = VehicleOptionsPermissions.God,
+            ReadState = () => VehicleGodMode.Enabled,
+            OnChanged = changed => VehicleGodMode.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.GodModeOptions),
+            Description = MenuText.Key(Loc.VehicleOptions.GodModeOptionsDescription),
+            MenuTitle = MenuText.Key(Loc.VehicleOptions.Title),
+            MenuSubtitle = MenuText.Key(Loc.VehicleOptions.GodModeSubtitle),
+            Gate = VehicleOptionsPermissions.God,
+            Build = GodModeSection.Build,
+        });
+
         // Every section fills itself from the vehicle the player is in when it opens, so the rows
         // here only say which menu goes where and who may open it.
         menu.Entries.Add(Section(
@@ -89,6 +108,15 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             WindowsSection.Build));
 
         menu.Entries.Add(DirtSection.Row(VehicleOptionsPermissions.Dirt));
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.KeepClean),
+            Description = MenuText.Key(Loc.VehicleOptions.KeepCleanDescription),
+            Gate = VehicleOptionsPermissions.KeepClean,
+            ReadState = () => VehicleKeepClean.Enabled,
+            OnChanged = changed => VehicleKeepClean.SetEnabled(changed.Checked),
+        });
 
         menu.Entries.Add(new ButtonEntry
         {

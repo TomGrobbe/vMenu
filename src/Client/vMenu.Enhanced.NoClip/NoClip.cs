@@ -54,6 +54,11 @@ public static class NoClip
 
     private static bool _rebuildInstructionalButtons = true;
 
+    /// <summary>Noclip has let go of an entity and put its flags back the way it found them.</summary>
+    // The hand-back is blanket, so it also clears anything another feature was deliberately holding
+    // on. Whoever was holding one needs to hear about it and write it again.
+    public static event Action<int>? EntityReleased;
+
     private static bool IsAllowed => ClientPermissions.IsAllowed(MiscSettings.NoClip);
 
     private static int _noclipEntity;
@@ -438,5 +443,7 @@ public static class NoClip
             Native.SetEveryoneIgnorePlayer(playerPed, false);
             Native.SetPoliceIgnorePlayer(playerPed, false);
         }
+
+        EntityReleased?.Invoke(noclipEntity);
     }
 }

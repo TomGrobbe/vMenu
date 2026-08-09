@@ -495,6 +495,48 @@ public static partial class Loc
 
         public const string DirtValue = "vehicleoptions.dirt.value";
 
+        public const string KeepClean = "vehicleoptions.keepclean";
+
+        public const string KeepCleanDescription = "vehicleoptions.keepclean.desc";
+
+        #endregion
+
+        #region God mode
+
+        public const string GodMode = "vehicleoptions.god";
+
+        public const string GodModeDescription = "vehicleoptions.god.desc";
+
+        public const string GodModeOptions = "vehicleoptions.god.options";
+
+        public const string GodModeOptionsDescription = "vehicleoptions.god.options.desc";
+
+        public const string GodModeSubtitle = "vehicleoptions.god.subtitle";
+
+        public const string GodInvincible = "vehicleoptions.god.invincible";
+
+        public const string GodInvincibleDescription = "vehicleoptions.god.invincible.desc";
+
+        public const string GodEngine = "vehicleoptions.god.engine";
+
+        public const string GodEngineDescription = "vehicleoptions.god.engine.desc";
+
+        public const string GodVisual = "vehicleoptions.god.visual";
+
+        public const string GodVisualDescription = "vehicleoptions.god.visual.desc";
+
+        public const string GodStrongWheels = "vehicleoptions.god.strongwheels";
+
+        public const string GodStrongWheelsDescription = "vehicleoptions.god.strongwheels.desc";
+
+        public const string GodRamp = "vehicleoptions.god.ramp";
+
+        public const string GodRampDescription = "vehicleoptions.god.ramp.desc";
+
+        public const string GodAutoRepair = "vehicleoptions.god.autorepair";
+
+        public const string GodAutoRepairDescription = "vehicleoptions.god.autorepair.desc";
+
         #endregion
     }
 }

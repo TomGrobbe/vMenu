@@ -97,7 +97,6 @@
     "onlineplayers.waypoint": "Waypoint zetten",
     "onlineplayers.waypoint.desc": "Zet een waypoint op de kaart waar deze speler nu is. Het beweegt niet met ze mee.",
     "onlineplayers.waypoint.done": "Waypoint gezet op ~g~{player}~s~.",
-    "playeroptions.emptymenu": "Leeg menu",
     "playeroptions.link.desc": "Opties voor je speler.",
     "playeroptions.subtitle": "Spelersopties",
     "playeroptions.title": "Spelersopties",

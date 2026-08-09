@@ -97,7 +97,6 @@
     "onlineplayers.waypoint": "Poner marcador",
     "onlineplayers.waypoint.desc": "Pone un marcador en el mapa donde está este jugador ahora. No se mueve con él.",
     "onlineplayers.waypoint.done": "Marcador puesto en ~g~{player}~s~.",
-    "playeroptions.emptymenu": "Menú vacío",
     "playeroptions.link.desc": "Opciones para tu jugador.",
     "playeroptions.subtitle": "Opciones de jugador",
     "playeroptions.title": "Opciones de jugador",

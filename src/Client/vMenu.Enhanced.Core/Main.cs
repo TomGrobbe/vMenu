@@ -89,6 +89,18 @@ public sealed class Main : IScript
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 
+        PlayerGodMode.Initialize();
+        VehicleGodMode.Initialize();
+        VehicleKeepClean.Initialize();
+
+        // Noclip puts every flag on the entity it was moving back to the game's defaults, which takes
+        // god mode with it. Both are idempotent and find their own entity, so the handle is ignored.
+        NoClip.NoClip.EntityReleased += _ =>
+        {
+            PlayerGodMode.Reapply();
+            VehicleGodMode.Reapply();
+        };
+
         TeleportKeyBinding.Initialize();
 
         PlayerPushEvents.Initialize();

@@ -29,6 +29,39 @@ public static class UserDefaults
 
     #endregion
 
+    #region Player Options
+
+    // Stored whether or not the server grants the matching permission, for the reason on UserDefault:
+    // a player who set this on one server still has their choice on the next. Whoever applies it
+    // checks the permission.
+    public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
+
+    #endregion
+
+    #region Vehicle Options
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault VehicleGodMode { get; } = new("vehicleGodMode") { Default = false };
+
+    // The six below answer to the master toggle above, which is why five of them start on: switching
+    // god mode on and getting nothing would read as broken.
+    public static BoolDefault VehicleGodInvincible { get; } = new("vehicleGodInvincible") { Default = true };
+
+    public static BoolDefault VehicleGodEngine { get; } = new("vehicleGodEngine") { Default = true };
+
+    public static BoolDefault VehicleGodVisual { get; } = new("vehicleGodVisual") { Default = true };
+
+    public static BoolDefault VehicleGodStrongWheels { get; } = new("vehicleGodStrongWheels") { Default = true };
+
+    public static BoolDefault VehicleGodRamp { get; } = new("vehicleGodRamp") { Default = true };
+
+    /// <summary>The exception: it fixes the car out from under the player, so it is opt in.</summary>
+    public static BoolDefault VehicleGodAutoRepair { get; } = new("vehicleGodAutoRepair") { Default = false };
+
+    public static BoolDefault VehicleKeepClean { get; } = new("vehicleKeepClean") { Default = false };
+
+    #endregion
+
     #region Teleport
 
     /// <summary>What the teleport key does: 0 nothing, 1 to the waypoint, 2 to typed coordinates.</summary>
@@ -80,6 +113,17 @@ public static class UserDefaults
         Language,
         MiscDisableIdleCamera,
         MiscDisableVehicleIdleCamera,
+
+        PlayerGodMode,
+
+        VehicleGodMode,
+        VehicleGodInvincible,
+        VehicleGodEngine,
+        VehicleGodVisual,
+        VehicleGodStrongWheels,
+        VehicleGodRamp,
+        VehicleGodAutoRepair,
+        VehicleKeepClean,
 
         TeleportKeyAction,
 
