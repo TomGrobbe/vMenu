@@ -1,13 +1,9 @@
-using System.Globalization;
-using System.Numerics;
-
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Client.Extensions;
-using CitizenFX.FiveM.Shared.Data;
 
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Data;
+using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Permissions;
 
 using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;
@@ -25,8 +21,6 @@ namespace vMenu.Enhanced.Menus;
     Permission = VehicleSpawnerPermissions.Menu)]
 public sealed class VehicleSpawnerMenu : MenuDefinition
 {
-    private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
-
     private VehicleCategory[] _categories = [];
 
     private (string Model, int Class, string Label, string CategoryName, string Icon)[] _describedVehicles = [];
@@ -282,26 +276,10 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         public required (string Model, int Class, string Label)[] Vehicles { get; init; }
     }
 
-    private static string GetVehicleDisplayName(uint hash)
-    {
-        var displayName = Native.GetDisplayNameFromVehicleModel(hash);
-        var labelText = Native.GetLabelText(displayName);
-
-        return TitleCase.ToTitleCase(labelText == "NULL" ? displayName : labelText);
-    }
+    private static string GetVehicleDisplayName(uint hash) => VehicleSpawning.DisplayName(hash);
 
     private static async Task SpawnVehicleAsync(string modelName, int vehicleClass)
     {
-        var hash = API.Hash(modelName);
-
-        // Manually checking and requesting the model because API.Vehicles.RequestAndCreate uses
-        // DateTime, which is currently broken and crashes the game.
-        // https://github.com/citizenfx/rfc/discussions/328
-        if (!Native.IsModelValid(hash))
-        {
-            return;
-        }
-
         // Re-checked because a permission refresh can land between drawing and selecting. The server
         // decides for real; this only avoids doing the work.
         if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
@@ -309,76 +287,13 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             return;
         }
 
-        Native.RequestModel(hash);
-
-        while (!Native.HasModelLoaded(hash))
-        {
-            await API.Delay(0);
-        }
-
-        var ped = API.Players.Local.Ped!;
-
-        var position = ped.Position;
-        Vector3? velocity = null;
-        var rpm = 100f;
-        var speed = 0f;
-
-        if (ped.IsPedInAnyVehicle())
-        {
-            var currentVehicle = ped.Vehicle!;
-
-            BrokenNatives.NativeFixer.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
-            BrokenNatives.NativeFixer.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
-
-            var yOffset = (Math.Abs((currentMin - currentMax).Y) / 2) + (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
-            position = Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, yOffset, 0f);
-
-            velocity = currentVehicle.Velocity;
-            speed = Native.GetEntitySpeedVector(currentVehicle.Handle, true).Y;
-            rpm = Native.GetVehicleCurrentRpm(currentVehicle.Handle);
-
-            var handle = currentVehicle.Handle;
-            Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
-        }
-
-        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
-
-        Native.SetModelAsNoLongerNeeded(hash);
-
-        if (newVehicle is null)
+        if (await VehicleSpawning.SpawnAsync(modelName) is null)
         {
             return;
         }
 
-        Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
-
-        if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
-        {
-            newVehicle.HeliBladesSpeed = 1f;
-
-            if (isHeli)
-            {
-                Native.SetHeliTurbulenceScalar(newVehicle.Handle, 0f);
-            }
-            else
-            {
-                Native.SetPlaneTurbulenceMultiplier(newVehicle.Handle, 0f);
-            }
-        }
-
-        Native.SetVehicleForwardSpeed(newVehicle.Handle, speed);
-
-        if (velocity.HasValue)
-        {
-            newVehicle.Velocity = velocity.Value;
-        }
-
-        Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
-
-        ped.SetPedIntoVehicle(newVehicle.Handle, -1);
-
         Notifications.Success(MenuText.Key(
             Loc.VehicleSpawner.Spawned,
-            ("vehicle", MenuText.Literal(GetVehicleDisplayName(hash)))));
+            ("vehicle", MenuText.Literal(GetVehicleDisplayName(API.Hash(modelName))))));
     }
 }
