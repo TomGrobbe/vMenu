@@ -21,12 +21,13 @@ public static class VehicleSpawning
 {
     private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
 
+    /// <inheritdoc cref="SpawnAsync(uint)"/>
+    public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(API.Hash(modelName));
+
     /// <summary>Spawns a vehicle beside the one the player is in, and puts them in the driver's seat.</summary>
     /// <returns>Null when the model is not valid or the game refused to create it.</returns>
-    public static async Task<Vehicle?> SpawnAsync(string modelName)
+    public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
-        var hash = API.Hash(modelName);
-
         // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which
         // is currently broken and crashes the game.
         // https://github.com/citizenfx/rfc/discussions/328

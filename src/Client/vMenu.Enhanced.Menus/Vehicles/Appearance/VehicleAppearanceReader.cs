@@ -40,7 +40,7 @@ public static class VehicleAppearanceReader
 
         var appearance = new VehicleAppearance
         {
-            ModelName = Native.GetDisplayNameFromVehicleModel(model),
+            ModelName = VehicleModelNames.Resolve(model),
             ModelHash = model,
             WheelType = Native.GetVehicleWheelType(handle),
             CustomTyres = Native.GetVehicleModVariation(handle, (int)VehicleModSlot.Wheels) != 0,

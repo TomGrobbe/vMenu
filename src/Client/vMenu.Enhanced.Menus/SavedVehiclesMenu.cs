@@ -166,7 +166,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
     private MenuEntry VehicleRow(SavedVehicleEntry entry)
     {
         var appearance = entry.Vehicle.Appearance;
-        var model = MenuText.Literal(appearance.ModelName);
+        var model = MenuText.Literal(VehicleModelNames.Resolve(appearance.ModelHash, appearance.ModelName));
         var available = Native.IsModelInCdimage(appearance.ModelHash);
 
         // A model this server does not have cannot be asked for its class, let alone its handling.
@@ -456,7 +456,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
     private async Task SpawnAsync(SavedVehicleEntry entry)
     {
         var appearance = entry.Vehicle.Appearance;
-        var model = MenuText.Literal(appearance.ModelName);
+        var modelName = VehicleModelNames.Resolve(appearance.ModelHash, appearance.ModelName);
+        var model = MenuText.Literal(modelName);
 
         if (!Native.IsModelInCdimage(appearance.ModelHash))
         {
@@ -469,14 +470,14 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         // The saved vehicles menu is not a way around a restricted vehicle list, so the spawner's
         // own rules still apply.
-        if (!ClientVehiclePermissions.CanSpawnVehicle(appearance.ModelName, vehicleClass))
+        if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
         {
             Notifications.Warning(MenuText.Key(Loc.SavedVehicles.SpawnDenied, ("model", model)));
 
             return;
         }
 
-        if (await VehicleSpawning.SpawnAsync(appearance.ModelName) is not { } spawned)
+        if (await VehicleSpawning.SpawnAsync(appearance.ModelHash) is not { } spawned)
         {
             Notifications.Error(MenuText.Key(Loc.SavedVehicles.SpawnModelMissing, ("model", model)));
 
