@@ -8,6 +8,21 @@
     position: fixed;
     top: 2%;
     right: 2%;
+    gap: 0.5rem;
+    align-items: flex-start;
+    pointer-events: none;
+    transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+#ticks.shown {
+    display: flex;
+}
+
+/*
+   One column per scheduler, always in the order they arrive, so the columns read the same way round
+   whichever edge the panel is anchored to.
+*/
+#ticks .group {
     width: 20rem;
     max-height: 60vh;
     overflow-y: auto;
@@ -15,12 +30,6 @@
     border: 1px solid var(--edge);
     border-radius: 0.3rem;
     box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
-    pointer-events: none;
-    transition: filter 0.25s ease, opacity 0.25s ease;
-}
-
-#ticks.shown {
-    display: block;
 }
 
 #ticks.paused {
@@ -33,20 +42,19 @@
     left: 2%;
 }
 
+/* Sticky, so the scheduler's name stays put while a long column scrolls under it. */
 #ticks .head {
+    position: sticky;
+    top: 0;
     padding: 0.35rem 0.6rem;
-    background: rgba(59, 139, 245, 0.16);
+    /* Layered over the panel colour rather than tinting it, so the rows scrolling under stay hidden. */
+    background: linear-gradient(rgba(59, 139, 245, 0.16), rgba(59, 139, 245, 0.16)), var(--panel);
     border-bottom: 1px solid rgba(59, 139, 245, 0.35);
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--accent);
-}
-
-/* One head per scheduler, so every head after the first needs a line above it to split the groups. */
-#ticks .head:not(:first-child) {
-    border-top: 1px solid var(--edge);
 }
 
 #ticks .row {

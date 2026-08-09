@@ -27,11 +27,14 @@
         for (const [source, rows] of group(ticks)) {
             const running = rows.filter(tick => tick.running).length;
 
+            const column = document.createElement("div");
+            column.className = "group";
+
             const head = document.createElement("div");
             head.className = "head";
             head.textContent = `${source} · ${running}/${rows.length} running`;
 
-            listEl.appendChild(head);
+            column.appendChild(head);
 
             for (const tick of rows) {
                 const row = document.createElement("div");
@@ -49,8 +52,10 @@
                 rate.textContent = String(tick.rate ?? "");
 
                 row.append(dot, name, rate);
-                listEl.appendChild(row);
+                column.appendChild(row);
             }
+
+            listEl.appendChild(column);
         }
     }
 
