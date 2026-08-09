@@ -76,6 +76,7 @@ public sealed class Main : IScript
         ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
 
         VehicleCommands.Initialize();
+        VehicleDumpCommands.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 

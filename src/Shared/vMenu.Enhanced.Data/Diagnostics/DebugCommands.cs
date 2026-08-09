@@ -36,4 +36,18 @@ public static class DebugCommands
 
         dump();
     };
+
+    /// <inheritdoc cref="Gate(Action)"/>
+    /// <typeparam name="T">The single argument the command takes.</typeparam>
+    public static Action<T> Gate<T>(Action<T> dump) => argument =>
+    {
+        if (!_enabled())
+        {
+            _write($"This command only reports while {_convar} is set to true.");
+
+            return;
+        }
+
+        dump(argument);
+    };
 }
