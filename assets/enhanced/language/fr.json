@@ -164,7 +164,6 @@
     "savedvehicles.save.category": "Dans quelle catégorie le mettre ? Laisse vide pour aucune",
     "savedvehicles.save.desc": "Enregistre sur cet ordinateur le véhicule que tu conduis, avec tout ce que tu y as changé.",
     "savedvehicles.save.failed": "~r~Impossible d'enregistrer~s~ ce véhicule.",
-    "savedvehicles.save.limit": "Tu as atteint la limite de ~y~{limit}~s~ véhicules enregistrés de ce serveur. Supprimes-en un pour faire de la place.",
     "savedvehicles.save.name": "Donne un nom à ce véhicule",
     "savedvehicles.save.nametaken": "Tu as déjà un véhicule enregistré qui s'appelle ~y~{name}~s~.",
     "savedvehicles.save.notdriver": "Tu dois être le ~y~conducteur~s~ pour enregistrer ce véhicule.",

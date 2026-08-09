@@ -164,7 +164,6 @@
     "savedvehicles.save.category": "In welche Kategorie soll es? Leer lassen für keine",
     "savedvehicles.save.desc": "Speichert das Fahrzeug, in dem du fährst, mit allem, was du daran verändert hast, auf diesem Rechner.",
     "savedvehicles.save.failed": "~r~Konnte dieses Fahrzeug nicht speichern~s~.",
-    "savedvehicles.save.limit": "Du hast das Limit dieses Servers von ~y~{limit}~s~ gespeicherten Fahrzeugen erreicht. Lösche eines, um Platz zu schaffen.",
     "savedvehicles.save.name": "Gib diesem Fahrzeug einen Namen",
     "savedvehicles.save.nametaken": "Du hast schon ein gespeichertes Fahrzeug namens ~y~{name}~s~.",
     "savedvehicles.save.notdriver": "Du musst der ~y~Fahrer~s~ sein, um dieses Fahrzeug zu speichern.",

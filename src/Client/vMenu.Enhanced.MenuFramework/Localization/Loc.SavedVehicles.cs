@@ -30,8 +30,6 @@ public static partial class Loc
 
         public const string NameTaken = "savedvehicles.save.nametaken";
 
-        public const string LimitReached = "savedvehicles.save.limit";
-
         #endregion
 
         #region Browsing

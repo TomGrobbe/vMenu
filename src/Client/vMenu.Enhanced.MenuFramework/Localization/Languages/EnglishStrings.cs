@@ -359,7 +359,6 @@ internal static class EnglishStrings
             [Loc.SavedVehicles.Saved] = "Saved as ~g~{name}~s~.",
             [Loc.SavedVehicles.SaveFailed] = "~r~Could not save~s~ that vehicle.",
             [Loc.SavedVehicles.NameTaken] = "You already have a saved vehicle called ~y~{name}~s~.",
-            [Loc.SavedVehicles.LimitReached] = "You have reached this server's limit of ~y~{limit}~s~ saved vehicles. Delete one to make room.",
             [Loc.SavedVehicles.Uncategorised] = "Uncategorised",
             [Loc.SavedVehicles.CategoryRowDescription] = "The ~y~{count}~s~ vehicle(s) you saved into this category.",
             [Loc.SavedVehicles.VehicleRowDescription] = "A ~y~{model}~s~. Press enter for what you can do with it.",

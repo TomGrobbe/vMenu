@@ -164,7 +164,6 @@
     "savedvehicles.save.category": "In welke categorie moet het? Laat leeg voor geen",
     "savedvehicles.save.desc": "Slaat het voertuig waarin je rijdt op deze computer op, met alles wat je eraan veranderd hebt.",
     "savedvehicles.save.failed": "~r~Kon dat voertuig niet opslaan~s~.",
-    "savedvehicles.save.limit": "Je zit aan de limiet van ~y~{limit}~s~ opgeslagen voertuigen van deze server. Verwijder er een om ruimte te maken.",
     "savedvehicles.save.name": "Geef dit voertuig een naam",
     "savedvehicles.save.nametaken": "Je hebt al een opgeslagen voertuig dat ~y~{name}~s~ heet.",
     "savedvehicles.save.notdriver": "Je moet de ~y~bestuurder~s~ zijn om dit voertuig op te slaan.",

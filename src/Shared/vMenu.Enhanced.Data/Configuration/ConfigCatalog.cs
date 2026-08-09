@@ -39,7 +39,6 @@ public static class ConfigCatalog
             VehicleOptions.WashVehicleCommand,
             VehicleOptions.ClearGodModeOnExit,
         ]),
-        new("Saved Vehicles", [SavedVehicles.MaxSavedVehicles]),
         new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds]),
         new("Time Options",
         [

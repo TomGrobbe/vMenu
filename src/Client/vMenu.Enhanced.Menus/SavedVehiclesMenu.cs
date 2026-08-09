@@ -2,7 +2,6 @@ using System.Globalization;
 
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Data;
@@ -12,7 +11,6 @@ using vMenu.Enhanced.Menus.Vehicles.Saved;
 using vMenu.Enhanced.Permissions;
 
 using SavedVehiclesPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedVehicles;
-using SavedVehiclesSettings = vMenu.Enhanced.Data.Configuration.Settings.SavedVehicles;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -421,8 +419,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
                     Category = answers[1].Trim(),
                     Appearance = appearance,
                 },
-                replacing: false,
-                limit: ClientConfig.Value(SavedVehiclesSettings.MaxSavedVehicles)),
+                replacing: false),
             name);
     }
 
@@ -435,7 +432,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         entry.Vehicle.Appearance = VehicleAppearanceReader.Read(vehicle);
 
-        var outcome = SavedVehicleStore.Save(entry.Vehicle, replacing: true, limit: 0);
+        var outcome = SavedVehicleStore.Save(entry.Vehicle, replacing: true);
 
         if (outcome is SaveOutcome.Saved)
         {
@@ -601,12 +598,9 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             {
                 SaveOutcome.NameTaken => Loc.SavedVehicles.NameTaken,
                 SaveOutcome.Refused => Loc.SavedVehicles.OverwriteRefused,
-                SaveOutcome.LimitReached => Loc.SavedVehicles.LimitReached,
                 _ => Loc.SavedVehicles.SaveFailed,
             },
-            ("name", named),
-            ("limit", MenuText.From(() =>
-                ClientConfig.Value(SavedVehiclesSettings.MaxSavedVehicles).ToString(CultureInfo.InvariantCulture)))));
+            ("name", named)));
     }
 
     #endregion

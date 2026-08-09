@@ -15,9 +15,6 @@ public enum SaveOutcome
     /// that version added. Nothing was changed.
     /// </summary>
     Refused,
-
-    /// <summary>The player is already at this server's limit.</summary>
-    LimitReached,
 }
 
 /// <summary>
@@ -65,19 +62,13 @@ public static class SavedVehicleStore
     /// True when the caller means to overwrite an existing save, which is the difference between
     /// "replace this one" and "save a new one".
     /// </param>
-    public static SaveOutcome Save(SavedVehicle vehicle, bool replacing, int limit)
+    public static SaveOutcome Save(SavedVehicle vehicle, bool replacing)
     {
         var key = VehicleKey(vehicle.Name);
-        var existing = Read(key);
 
-        if (existing is not null && !replacing)
+        if (Read(key) is not null && !replacing)
         {
             return SaveOutcome.NameTaken;
-        }
-
-        if (existing is null && limit > 0 && KvpStore.Keys(VehiclePrefix).Count >= limit)
-        {
-            return SaveOutcome.LimitReached;
         }
 
         return KvpStore.TryWrite(key, KvpValueType.Json, SavedVehicle.SchemaVersion, vehicle)
@@ -100,7 +91,7 @@ public static class SavedVehicleStore
 
         vehicle.Name = newName;
 
-        if (Save(vehicle, replacing: false, limit: 0) is not SaveOutcome.Saved)
+        if (Save(vehicle, replacing: false) is not SaveOutcome.Saved)
         {
             vehicle.Name = oldName;
 
@@ -117,7 +108,7 @@ public static class SavedVehicleStore
     {
         vehicle.Category = category;
 
-        return Save(vehicle, replacing: true, limit: 0) is SaveOutcome.Saved;
+        return Save(vehicle, replacing: true) is SaveOutcome.Saved;
     }
 
     #endregion

@@ -164,7 +164,6 @@
     "savedvehicles.save.category": "¿En qué categoría debería ir? Déjalo vacío para ninguna",
     "savedvehicles.save.desc": "Guarda en este ordenador el vehículo que estás conduciendo, con todo lo que le hayas cambiado.",
     "savedvehicles.save.failed": "~r~No se ha podido guardar~s~ ese vehículo.",
-    "savedvehicles.save.limit": "Has llegado al límite de ~y~{limit}~s~ vehículos guardados de este servidor. Elimina uno para hacer sitio.",
     "savedvehicles.save.name": "Dale un nombre a este vehículo",
     "savedvehicles.save.nametaken": "Ya tienes un vehículo guardado que se llama ~y~{name}~s~.",
     "savedvehicles.save.notdriver": "Tienes que ser el ~y~conductor~s~ para guardar este vehículo.",
