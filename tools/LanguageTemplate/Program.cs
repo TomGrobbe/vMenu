@@ -35,15 +35,16 @@ const string Header = """
 
 """;
 
-if (args.Length != 2)
+if (args.Length is not (2 or 3))
 {
-    Console.Error.WriteLine("usage: LanguageTemplate <client-assembly-folder> <output-file>");
+    Console.Error.WriteLine("usage: LanguageTemplate <client-assembly-folder> <output-file> [coverage-file]");
 
     return 1;
 }
 
 var clientFolder = args[0];
 var outputPath = args[1];
+var coveragePath = args.Length == 3 ? args[2] : null;
 var assemblyPath = Path.Combine(clientFolder, "vMenu.Enhanced.MenuFramework.dll");
 
 if (!File.Exists(assemblyPath))
@@ -95,10 +96,17 @@ try
         new { nativeName, strings },
         Formatting.Indented);
 
-    Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
+    var languageFolder = Path.GetDirectoryName(outputPath)!;
+
+    Directory.CreateDirectory(languageFolder);
     File.WriteAllText(outputPath, Header + body + Environment.NewLine);
 
     Console.WriteLine($"LanguageTemplate: wrote {strings.Count} key(s) to {outputPath}");
+
+    if (coveragePath is not null)
+    {
+        WriteCoverage(languageFolder, outputPath, strings.Keys, coveragePath);
+    }
 
     return 0;
 }
@@ -107,4 +115,67 @@ catch (Exception exception)
     Console.Error.WriteLine($"LanguageTemplate: {exception.Message}");
 
     return 1;
+}
+
+// How much of the English table each shipped language actually covers. Written to a file as well as
+// logged, so a build that skips this tool because nothing localizable changed can still echo the
+// last known numbers without paying to start a process. A JSON copy goes next to it for CI, which
+// wants the numbers rather than the sentence.
+static void WriteCoverage(string languageFolder, string templatePath, IEnumerable<string> englishKeys, string coveragePath)
+{
+    var keys = englishKeys.ToArray();
+    var lines = new List<string>();
+    var report = new List<object>();
+
+    var files = Directory.EnumerateFiles(languageFolder, "*.json")
+        .Where(file => !string.Equals(Path.GetFullPath(file), Path.GetFullPath(templatePath), StringComparison.OrdinalIgnoreCase))
+        .OrderBy(Path.GetFileName, StringComparer.Ordinal);
+
+    foreach (var file in files)
+    {
+        var code = Path.GetFileNameWithoutExtension(file);
+
+        LanguageFile? read;
+
+        try
+        {
+            // Newtonsoft accepts // comments, which every one of these files opens with.
+            read = JsonConvert.DeserializeObject<LanguageFile>(File.ReadAllText(file));
+        }
+        catch (JsonException exception)
+        {
+            lines.Add($"{code}: could not be read, {exception.Message}");
+            report.Add(new { code, nativeName = code, translated = 0, missing = keys.Length, orphans = 0, unreadable = true });
+            continue;
+        }
+
+        var translated = read?.Strings ?? [];
+        var missing = keys.Count(key => !translated.ContainsKey(key));
+        var orphans = translated.Keys.Count(key => !keys.Contains(key));
+
+        var native = string.IsNullOrWhiteSpace(read?.NativeName) ? code : read!.NativeName;
+        var orphanNote = orphans > 0 ? $", {orphans} key(s) no longer in English" : string.Empty;
+
+        lines.Add($"{code} ({native}): {keys.Length - missing}/{keys.Length} translated, {missing} missing{orphanNote}");
+        report.Add(new { code, nativeName = native, translated = keys.Length - missing, missing, orphans, unreadable = false });
+    }
+
+    foreach (var line in lines)
+    {
+        Console.WriteLine($"LanguageTemplate: {line}");
+    }
+
+    Directory.CreateDirectory(Path.GetDirectoryName(coveragePath)!);
+    File.WriteAllLines(coveragePath, lines);
+
+    File.WriteAllText(
+        Path.ChangeExtension(coveragePath, ".json"),
+        JsonConvert.SerializeObject(new { totalKeys = keys.Length, languages = report }, Formatting.Indented));
+}
+
+internal sealed class LanguageFile
+{
+    public string NativeName { get; init; } = string.Empty;
+
+    public Dictionary<string, string> Strings { get; } = new(StringComparer.Ordinal);
 }

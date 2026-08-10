@@ -25,6 +25,8 @@ on:
 
 permissions:
   contents: write
+  # So the build can leave its translation coverage table on a pull request.
+  pull-requests: write
 
 # Cancel any in-progress run on the same branch
 concurrency:
@@ -98,6 +100,104 @@ jobs:
             -p:Version="${{ needs.version.outputs.semver }}" \
             -p:AssemblyVersion="${{ needs.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ needs.version.outputs.assembly_ver }}"
+
+      # The build works out how much of the English string table each language
+      # covers and drops it in build/intermediate (see GenerateLanguageTemplate
+      # in src/Directory.Build.targets). Surfaced here so a PR that adds English
+      # strings without translations is visible without reading the build log.
+      - name: Translation coverage
+        if: always()
+        shell: pwsh
+        run: |
+          $path = 'build/intermediate/translation-coverage.json'
+
+          if (-not (Test-Path $path)) {
+            Write-Host 'No translation coverage was produced by this build.'
+            exit 0
+          }
+
+          $report = Get-Content $path -Raw | ConvertFrom-Json
+          $total = $report.totalKeys
+          $behind = @($report.languages | Where-Object { $_.missing -gt 0 -or $_.orphans -gt 0 -or $_.unreadable })
+
+          $lines = @()
+          $lines += "## Translation coverage"
+          $lines += ""
+          $lines += if ($behind.Count -eq 0) {
+            "All languages cover every one of the $total English keys."
+          } else {
+            "$($behind.Count) of $($report.languages.Count) languages are behind the $total English keys."
+          }
+          $lines += ""
+          $lines += "| Language | Translated | Missing | Stale keys |"
+          $lines += "| --- | ---: | ---: | ---: |"
+
+          foreach ($language in $report.languages) {
+            $name = "$($language.nativeName) (``$($language.code)``)"
+
+            if ($language.unreadable) {
+              $lines += "| $name | file could not be read | | |"
+              continue
+            }
+
+            $mark = if ($language.missing -eq 0) { '0' } else { "**$($language.missing)**" }
+            $lines += "| $name | $($language.translated)/$total | $mark | $($language.orphans) |"
+          }
+
+          $lines += ""
+          $lines += "_Missing keys fall back to English, so nothing is broken by a gap here._"
+
+          $summary = $lines -join "`n"
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          Write-Host $summary
+
+      # Posted as a comment as well, so it shows up in the PR conversation
+      # rather than only under the check. Skipped for pull requests from forks,
+      # whose token cannot write comments.
+      - name: Comment translation coverage on the PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $path = 'build/intermediate/translation-coverage.json'
+
+          if (-not (Test-Path $path)) {
+            exit 0
+          }
+
+          $report = Get-Content $path -Raw | ConvertFrom-Json
+          $total = $report.totalKeys
+
+          # A marker so each run edits its own comment instead of adding another.
+          $marker = '<!-- vmenu-translation-coverage -->'
+          $body = @($marker, '## Translation coverage', '',
+                    '| Language | Translated | Missing | Stale keys |',
+                    '| --- | ---: | ---: | ---: |')
+
+          foreach ($language in $report.languages) {
+            $name = "$($language.nativeName) (``$($language.code)``)"
+            $mark = if ($language.missing -eq 0) { '0' } else { "**$($language.missing)**" }
+            $body += "| $name | $($language.translated)/$total | $mark | $($language.orphans) |"
+          }
+
+          $body += ''
+          $body += '_Missing keys fall back to English, so nothing is broken by a gap here._'
+
+          $file = New-TemporaryFile
+          ($body -join "`n") | Out-File -FilePath $file -Encoding utf8
+
+          $existing = gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" --paginate |
+            ConvertFrom-Json |
+            Where-Object { $_.body -like "*$marker*" } |
+            Select-Object -First 1
+
+          if ($existing) {
+            gh api --method PATCH "repos/${{ github.repository }}/issues/comments/$($existing.id)" -F "body=@$file"
+          } else {
+            gh api --method POST "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" -F "body=@$file"
+          }
 
       # fxmanifest.lua, README.md and LICENSE.md are copied into the resource
       # root by the build itself (CopyResourceRootFiles, see

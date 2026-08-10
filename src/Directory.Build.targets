@@ -60,11 +60,15 @@
     <ResourceLanguageFile Include="$(RepoRoot)assets\enhanced\language\**\*" />
   </ItemGroup>
 
+  <!--
+    No Inputs/Outputs, for the same reason as the config copy below. Those skip whenever the output
+    is newer, so restoring an older translation (a checkout, a stash pop, switching branch) left the
+    shipped copy on the newer, wrong content. SkipUnchangedFiles compares size and timestamp for
+    equality instead, so anything that differs is copied back either way.
+  -->
   <Target Name="CopyResourceLanguageFiles"
           AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="@(ResourceLanguageFile)"
-          Outputs="@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')">
+          Condition="'$(IsResourceRootProject)' == 'true'">
 
     <Copy SourceFiles="@(ResourceLanguageFile)"
           DestinationFiles="@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
@@ -74,19 +78,47 @@
   <!--
     language/example.json is generated rather than checked in, so that the template a translator
     copies always matches the strings this build actually has. Reads the English table straight out
-    of the built menu framework, so it cannot drift from it.
+    of the built menu framework, so it cannot drift from it. The same pass counts how much of that
+    table each shipped language covers and writes it to TranslationCoverageFile.
 
-    Runs only when that assembly is newer than the template, which on a normal rebuild is never.
+    The translations are inputs too, not just the assembly: a build that only changes a language
+    file still has to recount, or the numbers reported below go stale. It watches the copies rather
+    than the originals on purpose. The copy above stamps a fresh timestamp on anything whose content
+    differs, so an older translation restored over a newer one still counts as a change here, which
+    watching the originals by timestamp alone would miss.
+
+    Runs only when one of those is newer than what it produced, which on a normal rebuild is never.
+    Starting this tool costs well over a second, which is far too much to pay on every build.
   -->
-  <Target Name="GenerateLanguageTemplate"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="$(ResourceRoot)client\vMenu.Enhanced.MenuFramework.dll"
-          Outputs="$(ResourceRoot)language\example.json">
+  <PropertyGroup>
+    <TranslationCoverageFile>$(RepoRoot)build\intermediate\translation-coverage.txt</TranslationCoverageFile>
+  </PropertyGroup>
 
-    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)client&quot; &quot;$(ResourceRoot)language\example.json&quot;"
+  <Target Name="GenerateLanguageTemplate"
+          AfterTargets="Build;CopyResourceLanguageFiles"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="$(ResourceRoot)client\vMenu.Enhanced.MenuFramework.dll;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
+          Outputs="$(ResourceRoot)language\example.json;$(TranslationCoverageFile)">
+
+    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)client&quot; &quot;$(ResourceRoot)language\example.json&quot; &quot;$(TranslationCoverageFile)&quot;"
           WorkingDirectory="$(RepoRoot)"
           StandardOutputImportance="normal" />
+  </Target>
+
+  <!--
+    Echoes the counts the target above worked out, on every build rather than only the ones that
+    recount. Reading a handful of lines from a file costs nothing measurable, so the numbers are
+    always in the log without a process being started to produce them.
+  -->
+  <Target Name="ReportTranslationCoverage"
+          AfterTargets="GenerateLanguageTemplate"
+          Condition="'$(IsResourceRootProject)' == 'true' And Exists('$(TranslationCoverageFile)')">
+
+    <ReadLinesFromFile File="$(TranslationCoverageFile)">
+      <Output TaskParameter="Lines" ItemName="TranslationCoverageLine" />
+    </ReadLinesFromFile>
+
+    <Message Importance="high" Text="Translations: %(TranslationCoverageLine.Identity)" />
   </Target>
 
   <!--
