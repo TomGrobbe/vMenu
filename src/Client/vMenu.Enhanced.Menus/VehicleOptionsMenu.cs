@@ -35,8 +35,33 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             Build = GodModeSection.Build,
         });
 
-        // Every section fills itself from the vehicle the player is in when it opens, so the rows
-        // here only say which menu goes where and who may open it.
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.RepairVehicle),
+            Description = MenuText.Key(Loc.VehicleOptions.RepairVehicleDescription),
+            Gate = VehicleOptionsPermissions.RepairVehicle,
+            OnSelectedAsync = _ => VehicleRepair.RepairCurrentAsync(),
+        });
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.WashVehicle),
+            Description = MenuText.Key(Loc.VehicleOptions.WashVehicleDescription),
+            Gate = VehicleOptionsPermissions.WashVehicle,
+            OnSelected = _ => VehicleWash.WashCurrent(),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.KeepClean),
+            Description = MenuText.Key(Loc.VehicleOptions.KeepCleanDescription),
+            Gate = VehicleOptionsPermissions.KeepClean,
+            ReadState = () => VehicleKeepClean.Enabled,
+            OnChanged = changed => VehicleKeepClean.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(DirtSection.Row(VehicleOptionsPermissions.Dirt));
+
         menu.Entries.Add(Section(
             Loc.VehicleOptions.Modifications,
             Loc.VehicleOptions.ModificationsDescription,
@@ -106,33 +131,6 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             Loc.VehicleOptions.WindowsSubtitle,
             VehicleOptionsPermissions.Windows,
             WindowsSection.Build));
-
-        menu.Entries.Add(DirtSection.Row(VehicleOptionsPermissions.Dirt));
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.KeepClean),
-            Description = MenuText.Key(Loc.VehicleOptions.KeepCleanDescription),
-            Gate = VehicleOptionsPermissions.KeepClean,
-            ReadState = () => VehicleKeepClean.Enabled,
-            OnChanged = changed => VehicleKeepClean.SetEnabled(changed.Checked),
-        });
-
-        menu.Entries.Add(new ButtonEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.RepairVehicle),
-            Description = MenuText.Key(Loc.VehicleOptions.RepairVehicleDescription),
-            Gate = VehicleOptionsPermissions.RepairVehicle,
-            OnSelectedAsync = _ => VehicleRepair.RepairCurrentAsync(),
-        });
-
-        menu.Entries.Add(new ButtonEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.WashVehicle),
-            Description = MenuText.Key(Loc.VehicleOptions.WashVehicleDescription),
-            Gate = VehicleOptionsPermissions.WashVehicle,
-            OnSelected = _ => VehicleWash.WashCurrent(),
-        });
 
         menu.Entries.Add(new ConfirmButtonEntry
         {
