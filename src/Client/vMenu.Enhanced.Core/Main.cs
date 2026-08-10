@@ -90,6 +90,12 @@ public sealed class Main : IScript
         NoClip.NoClip.Initialize();
 
         PlayerGodMode.Initialize();
+        PlayerSuperJump.Initialize();
+        PlayerFastRun.Initialize();
+        PlayerFastSwim.Initialize();
+        PlayerUnlimitedStamina.Initialize();
+        PlayerUnlimitedOxygen.Initialize();
+        PlayerNoRagdoll.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
 

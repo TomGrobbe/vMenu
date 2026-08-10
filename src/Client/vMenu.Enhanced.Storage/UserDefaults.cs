@@ -36,6 +36,24 @@ public static class UserDefaults
     // checks the permission.
     public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
 
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerSuperJump { get; } = new("playerSuperJump") { Default = false };
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerFastRun { get; } = new("playerFastRun") { Default = false };
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerFastSwim { get; } = new("playerFastSwim") { Default = false };
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerUnlimitedStamina { get; } = new("playerUnlimitedStamina") { Default = false };
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerUnlimitedOxygen { get; } = new("playerUnlimitedOxygen") { Default = false };
+
+    /// <inheritdoc cref="PlayerGodMode"/>
+    public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
+
     #endregion
 
     #region Vehicle Options
@@ -115,6 +133,12 @@ public static class UserDefaults
         MiscDisableVehicleIdleCamera,
 
         PlayerGodMode,
+        PlayerSuperJump,
+        PlayerFastRun,
+        PlayerFastSwim,
+        PlayerUnlimitedStamina,
+        PlayerUnlimitedOxygen,
+        PlayerNoRagdoll,
 
         VehicleGodMode,
         VehicleGodInvincible,
