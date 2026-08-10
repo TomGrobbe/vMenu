@@ -26,6 +26,10 @@ internal static class EnglishStrings
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Main Menu",
 
+            [Loc.PlayerMenu.Title] = "Player Menu",
+            [Loc.PlayerMenu.Subtitle] = "Player Menu",
+            [Loc.PlayerMenu.LinkDescription] = "Everything to do with your own character: what you can do, and which ped you look like.",
+
             [Loc.PedModels.Title] = "Ped Models",
             [Loc.PedModels.Subtitle] = "Ped Models Menu",
             [Loc.PedModels.LinkDescription] = "Turn yourself into a different ped.",
