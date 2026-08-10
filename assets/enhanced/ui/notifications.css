@@ -64,7 +64,6 @@
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.09em;
-    text-transform: uppercase;
     color: var(--tone);
 }
 
@@ -74,10 +73,38 @@
     height: 0.8rem;
 }
 
+/* Pushed to the far end of the strip, opposite the source name, where it never crowds the wording. */
+.toast .count {
+    flex: none;
+    margin-left: auto;
+    padding: 0.02rem 0.28rem;
+    border: 1px solid var(--tone-edge);
+    border-radius: 0.6rem;
+    background: var(--tone-soft);
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    animation: toast-bump 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* A single message carries no count, and an empty pill would still draw its own border. */
+.toast .count:empty {
+    display: none;
+}
+
 .toast .body {
     padding: 0.45rem 0.6rem 0.5rem;
     font-size: 0.82rem;
     line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+/* Quieter than anything above it: it says where a message came from, which is only read on purpose. */
+.toast .footer {
+    padding: 0.25rem 0.6rem 0.35rem;
+    border-top: 1px solid var(--edge);
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--muted);
     overflow-wrap: anywhere;
 }
 
@@ -117,6 +144,29 @@
         max-height: 14rem;
         margin-top: 0;
         transform: none;
+    }
+}
+
+/* Overshoots on the way out and once on the way back, so a count going up is caught out of the corner of an eye. */
+@keyframes toast-bump {
+    0% {
+        transform: scale(1) rotate(0);
+    }
+
+    30% {
+        transform: scale(1.35) rotate(-7deg);
+    }
+
+    55% {
+        transform: scale(0.94) rotate(5deg);
+    }
+
+    78% {
+        transform: scale(1.1) rotate(-2deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
     }
 }
 

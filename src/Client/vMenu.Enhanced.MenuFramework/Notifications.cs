@@ -60,7 +60,11 @@ public static class Notifications
         Show(style, text, durationMs);
     }
 
-    public static void Show(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
+    public static void Show(
+        NotificationStyle style,
+        MenuText text,
+        int durationMs = DefaultDurationMs,
+        string? source = null)
     {
         var message = text.Resolve(Localizer.Current);
 
@@ -69,7 +73,7 @@ public static class Notifications
             return;
         }
 
-        Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs));
+        Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs, source));
     }
 
     /// <summary>The box the stack grows out of, as fractions of the screen, lined up with the minimap.</summary>
@@ -95,7 +99,7 @@ public static class Notifications
         return aspect > 0f ? 1f / (4f * aspect) : 1f / 4f;
     }
 
-    private static string BuildMessage(string style, string text, int durationMs)
+    private static string BuildMessage(string style, string text, int durationMs, string? source)
     {
         var (left, bottom, width) = Anchor();
 
@@ -104,6 +108,7 @@ public static class Notifications
             Style = style,
             Text = text,
             Duration = durationMs,
+            Footer = string.IsNullOrWhiteSpace(source) ? null : source,
             Anchor = new AnchorBox
             {
                 Left = Fraction(left),
@@ -125,6 +130,8 @@ public static class Notifications
         public required string Text { get; init; }
 
         public required int Duration { get; init; }
+
+        public string? Footer { get; init; }
 
         public required AnchorBox Anchor { get; init; }
     }

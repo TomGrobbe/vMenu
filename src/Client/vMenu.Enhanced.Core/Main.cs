@@ -64,6 +64,8 @@ public sealed class Main : IScript
 
         TeleportSync.RegisterEventHandlers();
 
+        NotificationEvents.RegisterEventHandlers();
+
         ClientConfig.Initialize();
 
         DebugCommands.Source(

@@ -30,6 +30,9 @@
     };
 
     const listEl = document.getElementById("toasts");
+
+    /* Rows on screen and rows still waiting, together, so a repeat can find either of them. */
+    const tracked = new Map();
     const queued = [];
 
     let shown = 0;
@@ -101,7 +104,7 @@
                 bold = false;
             } else if (name === "h") {
                 bold = !bold;
-            } else if (COLOURS[name]) {
+            } else if (Object.hasOwn(COLOURS, name)) {
                 colour = COLOURS[name];
             }
         }
@@ -111,7 +114,8 @@
         return fragment;
     }
 
-    // Built through a wrapper because innerHTML on a bare <svg> is not reliable.
+    // Built through a wrapper because innerHTML on a bare <svg> is not reliable. The only markup this
+    // file ever parses, and every piece of it is a constant from ICONS.
     function iconFor(style) {
         const wrapper = document.createElement("div");
 
@@ -120,15 +124,46 @@
         return wrapper.firstElementChild;
     }
 
-    function dismiss(toast) {
-        if (toast.classList.contains("leaving")) {
-            return;
+    /* Two messages are the same one only when every part the player can see matches. */
+    // Joined on a character no message can contain, so two different messages cannot share a key.
+    function keyFor(style, footer, text) {
+        return [style, footer, text].join("\u0000");
+    }
+
+    // A CSS animation only plays again once the element has been through a layout without it.
+    function replay(element) {
+        element.style.animation = "none";
+        void element.offsetWidth;
+        element.style.animation = "";
+    }
+
+    function count(entry) {
+        entry.badge.textContent = `x${entry.repeats}`;
+        replay(entry.badge);
+    }
+
+    /* Puts the row back on a full timer, so a repeat keeps the message on screen instead of ending it sooner. */
+    function restart(entry) {
+        clearTimeout(entry.timer);
+        entry.timer = setTimeout(() => dismiss(entry), entry.duration);
+
+        replay(entry.progress);
+        entry.progress.style.animationDuration = `${entry.duration}ms`;
+    }
+
+    function dismiss(entry) {
+        clearTimeout(entry.timer);
+
+        // Untracked before it has finished fading, so a repeat arriving now opens a fresh row rather
+        // than reviving one that is already on its way out.
+        if (tracked.get(entry.key) === entry) {
+            tracked.delete(entry.key);
         }
 
-        toast.classList.add("leaving");
+        entry.toast.classList.add("leaving");
 
         setTimeout(() => {
-            toast.remove();
+            entry.toast.remove();
             shown--;
 
             const next = queued.shift();
@@ -139,37 +174,62 @@
         }, EXIT_MS);
     }
 
-    function show(notification) {
+    function show(entry) {
         shown++;
 
         const toast = document.createElement("div");
-        toast.className = `toast ${notification.style}`;
+        toast.className = `toast ${entry.style}`;
 
         const source = document.createElement("span");
+        source.className = "source";
         source.textContent = SOURCE;
+
+        const badge = document.createElement("span");
+        badge.className = "count";
 
         const bar = document.createElement("div");
         bar.className = "bar";
-        bar.append(iconFor(notification.style), source);
+        bar.append(iconFor(entry.style), source, badge);
 
         const body = document.createElement("div");
         body.className = "body";
-        body.appendChild(markup(notification.text));
+        body.appendChild(markup(entry.text));
 
         const progress = document.createElement("span");
         progress.className = "progress";
-        progress.style.animationDuration = `${notification.duration}ms`;
+        progress.style.animationDuration = `${entry.duration}ms`;
 
-        toast.append(bar, body, progress);
+        toast.append(bar, body);
+
+        if (entry.footer) {
+            const footer = document.createElement("div");
+            footer.className = "footer";
+            footer.textContent = `From: ${entry.footer}`;
+
+            toast.appendChild(footer);
+        }
+
+        toast.appendChild(progress);
         listEl.appendChild(toast);
 
-        setTimeout(() => dismiss(toast), notification.duration);
+        entry.toast = toast;
+        entry.badge = badge;
+        entry.progress = progress;
+        entry.timer = setTimeout(() => dismiss(entry), entry.duration);
+
+        // Carried over from the wait, where a row can pick up repeats before it ever reaches the screen.
+        if (entry.repeats > 1) {
+            badge.textContent = `x${entry.repeats}`;
+        }
     }
 
     function notify(data) {
-        const style = ICONS[data.style] ? data.style : "info";
+        // Own properties only. A style of "constructor" finds one on the prototype and would otherwise
+        // pass for a real style, putting whatever that returns into the markup the icon is built from.
+        const style = Object.hasOwn(ICONS, data.style) ? data.style : "info";
         const duration = data.duration > 0 ? data.duration : DEFAULT_DURATION;
         const text = String(data.text ?? "");
+        const footer = String(data.footer ?? "");
 
         if (text.length === 0) {
             return;
@@ -177,15 +237,43 @@
 
         place(data.anchor);
 
-        const notification = { style, duration, text };
+        const key = keyFor(style, footer, text);
+        const repeat = tracked.get(key);
 
-        // Over the cap the message waits rather than being dropped, so nothing is silently lost.
-        if (shown >= MAX_SHOWN) {
-            queued.push(notification);
+        if (repeat) {
+            repeat.repeats++;
+
+            // Nothing to redraw while it is still waiting; it is built with the count it has by then.
+            if (repeat.toast) {
+                count(repeat);
+                restart(repeat);
+            }
+
             return;
         }
 
-        show(notification);
+        const entry = {
+            key,
+            style,
+            duration,
+            text,
+            footer,
+            repeats: 1,
+            toast: null,
+            badge: null,
+            progress: null,
+            timer: 0,
+        };
+
+        tracked.set(key, entry);
+
+        // Over the cap the message waits rather than being dropped, so nothing is silently lost.
+        if (shown >= MAX_SHOWN) {
+            queued.push(entry);
+            return;
+        }
+
+        show(entry);
     }
 
     window.addEventListener("message", event => {
