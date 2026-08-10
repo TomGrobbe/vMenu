@@ -186,11 +186,11 @@ internal static class EnglishStrings
             [Loc.VehicleOptions.WindowsDescription] = "Roll the windows up and down, or smash them.",
             [Loc.VehicleOptions.WindowsSubtitle] = "Vehicle Windows",
 
-            [Loc.VehicleOptions.ModSlotDescription] = "Choose a ~y~{slot}~s~ upgrade. It is fitted straight away. Mod slot {number}, showing [{position}].",
+            [Loc.VehicleOptions.ModSlotDescription] = "~b~[{position}]~s~ Choose a ~y~{slot}~s~ upgrade. It is fitted straight away. Mod slot {number}.",
             [Loc.VehicleOptions.ModStock] = "Stock {slot}",
             [Loc.VehicleOptions.ModNumbered] = "{slot} #{number}",
             [Loc.VehicleOptions.ModSlotUnnamed] = "*{name}",
-            [Loc.VehicleOptions.ModSlotGuessedDescription] = "Choose an upgrade for mod slot {number}, showing [{position}]. It is fitted straight away. The ~y~*~s~ in front of the name means the game gave this slot no name of its own, so vMenu named it from the slot number. Some vehicles reuse a slot for something else entirely, so the name may not match what actually changes.",
+            [Loc.VehicleOptions.ModSlotGuessedDescription] = "~b~[{position}]~s~ Choose an upgrade for mod slot {number}. It is fitted straight away.~n~The ~y~*~s~ means vMenu named this slot itself, so it may not match what really changes.",
             [Loc.VehicleOptions.Turbo] = "Turbo",
             [Loc.VehicleOptions.TurboDescription] = "Fit a turbo charger. Mod slot {number}.",
             [Loc.VehicleOptions.TyreSmoke] = "Tyre Smoke",
