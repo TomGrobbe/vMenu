@@ -22,6 +22,7 @@ public static class ServerPermissions
         PermissionRegistry.Build(typeof(Global).Assembly);
         ModelWhitelist.LoadAndRegister();
         VehicleCategories.LoadAndRegister();
+        PedCategories.LoadAndRegister();
 
         IsReady = true;
     }
@@ -104,14 +105,15 @@ public static class ServerPermissions
         var whitelistedVehicles = ModelWhitelist.GetModels(SupplementalModelKind.Vehicle);
         var categorisedVehicles = VehicleCategories.GetCategorisedModels();
         var vehicleCategories = VehicleCategories.GetCategoryNames();
+        var whitelistedPeds = ModelWhitelist.GetModels(SupplementalModelKind.Ped);
 
         if (latentBytesPerSecond > 0)
         {
-            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories);
+            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds);
         }
         else
         {
-            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories);
+            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds);
         }
 
         API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {source}: {string.Join(", ", granted)}");

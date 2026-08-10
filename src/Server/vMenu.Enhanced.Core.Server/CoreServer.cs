@@ -39,6 +39,7 @@ public class CoreServer : IScript
         PermissionsExampleFile.Write();
 
         PermissionsSync.RegisterEventHandlers();
+        PedCategories.RegisterEventHandlers();
 
         VehicleActions.Register();
         TeleportActions.Register();

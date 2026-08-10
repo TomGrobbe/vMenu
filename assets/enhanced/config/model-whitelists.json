@@ -1,10 +1,36 @@
 {
-    // Models listed here are taken out of the reach of the class permissions and get their own
-    // permission instead: vMenu.Enhanced.SupplementalPermissions.VehicleModels.<modelname>
-    // Names must be lowercase, and may only contain letters, digits and underscores.
+    // Models you want to hand out one at a time.
+    //
+    // Normally a model is covered by the permission for the group it sits in, so anybody allowed to
+    // spawn the Sports class gets every sports car, and anybody allowed the Animals ped group gets
+    // every animal. List a model here and it is taken back out of that group's reach and given a
+    // permission of its own instead, which you then grant to whoever should have it.
+    //
+    // Nothing else changes. The model stays in the same place in the menu, it just answers to its
+    // own permission now, so everyone else sees it locked.
+    //
+    // Names are lowercased for you, but they may only contain letters, digits and underscores. A
+    // name with a space or a dot in it would produce a permission nobody could write, so it is
+    // skipped and the server console tells you about it.
+    //
+    // Each name below creates one permission, listed for you in config/permissions.cfg.example so
+    // you never have to write it out yourself:
+    //
+    //     "vehicles": ["adder"]  ->  vMenu.Enhanced.SupplementalPermissions.VehicleModels.adder
+    //     "peds": ["a_c_chop"]   ->  vMenu.Enhanced.SupplementalPermissions.Peds.a_c_chop
+    //
+    // Granting vMenu.Enhanced.SupplementalPermissions.VehicleModels.All gives someone every
+    // whitelisted vehicle at once, and the same goes for ...SupplementalPermissions.Peds.All. Both
+    // are also covered by the spawner's own All permission, so somebody who already has
+    // vMenu.Enhanced.Menus.VehicleSpawner.All or vMenu.Enhanced.Menus.PedModels.All keeps
+    // everything.
+    //
+    // These are read once when the server starts, so restart the resource after changing this file.
+
     "vehicles": [],
 
-    // Read and validated, but not wired up to permissions yet.
     "peds": [],
+
+    // Read and checked over, but weapons are not in the menu yet, so nothing is generated for these.
     "weapons": []
 }

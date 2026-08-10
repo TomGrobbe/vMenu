@@ -64,6 +64,8 @@ public sealed class Main : IScript
 
         TeleportSync.RegisterEventHandlers();
 
+        PedModelSync.RegisterEventHandlers();
+
         NotificationEvents.RegisterEventHandlers();
 
         ClientConfig.Initialize();
@@ -111,6 +113,8 @@ public sealed class Main : IScript
         }
 
         TeleportSync.Request();
+
+        PedModelSync.Request();
 
         UserPreferences.Restore();
 

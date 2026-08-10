@@ -21,11 +21,11 @@ public static class ModelWhitelist
         AllowTrailingCommas = true,
     };
 
-    /// <summary>Wiring up peds or weapons later means supplying a factory here.</summary>
+    /// <summary>Wiring up weapons later means supplying a factory here.</summary>
     private static readonly KindDescriptor[] Descriptors =
     [
         new(SupplementalModelKind.Vehicle, "vehicles", VehicleModels.ForModel),
-        new(SupplementalModelKind.Ped, "peds", null),
+        new(SupplementalModelKind.Ped, "peds", Peds.ForModel),
         new(SupplementalModelKind.Weapon, "weapons", null),
     ];
 

@@ -17,7 +17,7 @@ public static class PermissionsSync
     /// <summary>Call before building menus.</summary>
     public static void RegisterEventHandlers()
     {
-        API.OnNetEvent(PermissionEvents.Set, new Action<string[], string[], string[], string[]>(OnPermissionsReceived), false);
+        API.OnNetEvent(PermissionEvents.Set, new Action<string[], string[], string[], string[], string[]>(OnPermissionsReceived), false);
 
         RequestPermissions();
     }
@@ -45,13 +45,15 @@ public static class PermissionsSync
         string[] granted,
         string[] whitelistedVehicles,
         string[] categorisedVehicles,
-        string[] vehicleCategories)
+        string[] vehicleCategories,
+        string[] whitelistedPeds)
     {
-        // Vehicle data first, so the single change notification sees consistent state.
+        // Model data first, so the single change notification sees consistent state.
         ClientVehiclePermissions.ApplyWhitelistedVehicleModels(whitelistedVehicles);
         ClientVehiclePermissions.ApplyCustomCategories(categorisedVehicles, vehicleCategories);
+        ClientPedPermissions.ApplyWhitelistedPedModels(whitelistedPeds);
         ClientPermissions.ApplyPermissions(granted);
 
-        API.Log.Debug($"[Permissions] Received {granted.Length} permission(s), {whitelistedVehicles.Length} whitelisted vehicle(s) and {categorisedVehicles.Length} categorised vehicle(s).");
+        API.Log.Debug($"[Permissions] Received {granted.Length} permission(s), {whitelistedVehicles.Length} whitelisted vehicle(s), {categorisedVehicles.Length} categorised vehicle(s) and {whitelistedPeds.Length} whitelisted ped(s).");
     }
 }
