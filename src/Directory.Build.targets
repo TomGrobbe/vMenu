@@ -110,24 +110,28 @@
   </Target>
 
   <!--
-    Config files are defaults for a server owner to edit in place, so they are only copied when
-    missing. Delete one in build/vMenu.Enhanced/config/ to get the default back.
+    Overwritten on every build like the UI and the languages. These are the defaults this build
+    ships, and an update has to be able to deliver entries added since, which a copy-only-when-
+    missing rule can never do. Edits made in build/vMenu.Enhanced/config/ do not survive a build;
+    edit assets/enhanced/config/ instead.
   -->
   <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
     <ResourceConfigFile Include="$(RepoRoot)assets\enhanced\config\**\*" />
   </ItemGroup>
 
+  <!--
+    No Inputs/Outputs, unlike the targets above. Those skip on timestamps alone, which means a file
+    edited in build/vMenu.Enhanced/config/ is newer than the one it came from and would never be put
+    back. SkipUnchangedFiles compares size and timestamp for equality instead, so an edited file is
+    replaced and an untouched one still costs nothing.
+  -->
   <Target Name="CopyResourceConfigFiles"
           AfterTargets="Build"
           Condition="'$(IsResourceRootProject)' == 'true'">
 
-    <ItemGroup>
-      <MissingResourceConfigFile Include="@(ResourceConfigFile)"
-                                 Condition="!Exists('$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')" />
-    </ItemGroup>
-
-    <Copy SourceFiles="@(MissingResourceConfigFile)"
-          DestinationFiles="@(MissingResourceConfigFile -> '$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(ResourceConfigFile)"
+          DestinationFiles="@(ResourceConfigFile -> '$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
