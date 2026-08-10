@@ -3,14 +3,10 @@ using System.Text;
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
 /// <summary>
-/// Turns a category name a server owner typed into something usable as a permission segment.
+/// Turns a category name a server owner typed into something usable as a permission segment. Used
+/// by the vehicle spawner and the ped models menu alike.
 /// </summary>
-/// <remarks>
-/// Shared by both sides on purpose: the server decides which permission to register from a name,
-/// and the client decides which permission to check from that same name, so the two can never
-/// disagree about what "Police Cars" resolves to.
-/// </remarks>
-public static class VehicleCategoryName
+public static class CategoryName
 {
     /// <summary>
     /// Lowercased, with every run of unusable characters collapsed into one underscore. Empty when

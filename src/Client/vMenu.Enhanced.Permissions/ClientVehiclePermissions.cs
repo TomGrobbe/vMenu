@@ -68,5 +68,5 @@ public static class ClientVehiclePermissions
     /// <inheritdoc cref="CanSpawnVehicleClass(int)"/>
     public static bool CanSpawnCustomCategory(string categoryName) =>
         ClientPermissions.IsAllowed(
-            VehicleSpawnerCategories.ForCustom(VehicleCategoryName.ToPermissionSegment(categoryName)));
+            VehicleSpawnerCategories.ForCustom(CategoryName.ToPermissionSegment(categoryName)));
 }

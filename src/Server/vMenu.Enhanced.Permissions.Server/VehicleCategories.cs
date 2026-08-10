@@ -74,7 +74,7 @@ public static class VehicleCategories
         CategoryByModel.TryGetValue(modelName, out var category) ? category : null;
 
     public static string PermissionOfCategory(string categoryName) =>
-        VehicleSpawnerCategories.ForCustom(VehicleCategoryName.ToPermissionSegment(categoryName));
+        VehicleSpawnerCategories.ForCustom(CategoryName.ToPermissionSegment(categoryName));
 
     /// <summary>Every categorised model, for sending to clients. Aligned with <see cref="GetCategoryNames"/>.</summary>
     public static string[] GetCategorisedModels() => _models;
@@ -91,7 +91,7 @@ public static class VehicleCategories
         foreach (var property in root.EnumerateObject())
         {
             var name = property.Name.Trim();
-            var segment = VehicleCategoryName.ToPermissionSegment(name);
+            var segment = CategoryName.ToPermissionSegment(name);
 
             if (segment.Length == 0)
             {

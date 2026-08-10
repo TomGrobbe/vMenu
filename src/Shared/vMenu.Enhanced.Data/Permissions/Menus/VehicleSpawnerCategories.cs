@@ -95,7 +95,7 @@ public static class VehicleSpawnerCategories
 
     /// <summary>
     /// The permission for a category a server owner defined. Feed it a segment from
-    /// <see cref="VehicleCategoryName.ToPermissionSegment"/>, never a raw name.
+    /// <see cref="CategoryName.ToPermissionSegment"/>, never a raw name.
     /// </summary>
     public static string ForCustom(string segment) =>
         $"{Prefix}{PermissionPath.Separator}{segment}";
