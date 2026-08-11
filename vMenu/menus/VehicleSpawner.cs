@@ -43,7 +43,10 @@ namespace vMenuClient.menus
                 menu.AddMenuItem(spawnByName);
             }
             menu.AddMenuItem(spawnInVeh);
-            menu.AddMenuItem(replacePrev);
+            if (IsAllowed(Permission.VSDisableReplacePrevious))
+            {
+                menu.AddMenuItem(replacePrev);
+            }
             #endregion
 
             #region addon cars menu
