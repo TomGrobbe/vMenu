@@ -126,6 +126,7 @@ public sealed class Main : IScript
         };
 
         TeleportKeyBinding.Initialize();
+        VisorKeyBinding.Initialize();
 
         PlayerPushEvents.Initialize();
 

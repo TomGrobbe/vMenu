@@ -24,7 +24,14 @@ public static class ConfigCatalog
     [
         new("Languages", [Localization.Languages]),
         new("About", [About.DocumentationUrl, About.DiscordUrl]),
-        new("Key Bindings", [KeyBindings.MenuToggleKey, KeyBindings.NoClipToggleKey]),
+        new("Key Bindings",
+        [
+            KeyBindings.MenuToggleKey,
+            KeyBindings.NoClipToggleKey,
+            KeyBindings.TeleportKey,
+            KeyBindings.VisorToggleKey,
+            KeyBindings.VisorToggleButton,
+        ]),
         new("Menu Appearance",
         [
             MenuAppearance.TitleAlignment,

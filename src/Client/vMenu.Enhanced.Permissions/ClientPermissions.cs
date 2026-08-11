@@ -21,6 +21,9 @@ public static class ClientPermissions
     /// <summary>Until a set arrives every check fails, so menus start locked rather than briefly open.</summary>
     public static bool HasReceivedPermissions { get; private set; }
 
+    public static bool HasAnyPermission =>
+        HasReceivedPermissions && (_grantsEverything || GrantedExact.Count > 0 || GrantedSubtrees.Count > 0);
+
     /// <summary>Menus should build once and re-evaluate here.</summary>
     public static event Action? PermissionsChanged;
 

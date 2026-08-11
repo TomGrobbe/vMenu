@@ -31,7 +31,7 @@ public static class TeleportKeyBinding
     private const string Command = "vmenu:teleport";
 
     /// <summary>Used when a server owner blanks the convar rather than leaving it alone.</summary>
-    private const string FallbackKey = "F11";
+    private const string FallbackKey = "F10";
 
     private static bool _registered;
 
