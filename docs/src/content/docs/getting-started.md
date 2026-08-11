@@ -127,16 +127,8 @@ ensure vMenu.Enhanced
 
 Restart your server and join it.
 
-The default keys are:
-
-| Key | What it does |
-| --- | --- |
-| `M` | Opens the menu |
-| `F2` | Toggles noclip |
-| `F11` | Teleport keybind |
-
-The teleport keybind does nothing on its own. You first have to assign an action to it, which you can
-do from inside the teleportation menu.
+Press `M` to open the menu. For everything else vMenu puts on a key, and for how you and your players
+can change any of it, see [Key Bindings](/vmenu/enhanced/key-bindings/).
 
 ## Something not working?
 

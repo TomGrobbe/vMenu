@@ -60,6 +60,7 @@ export default defineConfig({
       sidebar: [
         { label: 'Home', link: '/' },
         { label: 'Getting Started', link: '/getting-started/' },
+        { label: 'Key Bindings', link: '/key-bindings/' },
         {
           label: 'Links',
           items: [
