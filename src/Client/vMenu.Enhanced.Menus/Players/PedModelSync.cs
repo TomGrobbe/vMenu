@@ -25,6 +25,25 @@ public static class PedModelSync
 
     public static bool HasReceived { get; private set; }
 
+    /// <summary>The listed ped with this model name, or null when the owner never listed it.</summary>
+    // Here rather than in the menu that browses the list, because the saved peds menu has to ask the
+    // same question to know which category permission a saved ped answers to.
+    public static (string Model, string Label, string Category)? Find(string model)
+    {
+        foreach (var category in Cached)
+        {
+            foreach (var ped in category.Peds)
+            {
+                if (string.Equals(ped.Model, model, StringComparison.OrdinalIgnoreCase))
+                {
+                    return (ped.Model, ped.Label, category.Name);
+                }
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>Call before building menus, so a list arriving during startup is not dropped.</summary>
     public static void RegisterEventHandlers() =>
         API.OnNetEvent(PedModelEvents.Set, new Action<string>(OnReceived), false);

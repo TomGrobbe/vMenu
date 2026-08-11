@@ -2,7 +2,9 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
 using PedModelsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PedModels;
+using PlayerAppearancePermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerAppearance;
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using SavedPedsPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedPeds;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -16,11 +18,18 @@ public sealed class PlayerMenu : MenuDefinition
     /// <summary>Open to anybody who can reach at least one of the menus inside it.</summary>
     public override MenuGate Gate { get; } =
         MenuGate.Permission(PlayerOptionsPermissions.Menu)
-        | MenuGate.Permission(PedModelsPermissions.Menu);
+        | MenuGate.Permission(PedModelsPermissions.Menu)
+        | MenuGate.Permission(PlayerAppearancePermissions.Menu)
+        | MenuGate.Permission(SavedPedsPermissions.Menu);
 
     protected override void Build(MenuBuilder menu)
     {
         menu.Entries.Add(SubmenuEntry.For(new PlayerOptionsMenu()));
         menu.Entries.Add(SubmenuEntry.For(new PedModelsMenu()));
+
+        // Straight after the ped models, because changing the ped and then changing what it wears is
+        // the order people do it in, and putting the result away comes last.
+        menu.Entries.Add(SubmenuEntry.For(new PlayerAppearanceMenu()));
+        menu.Entries.Add(SubmenuEntry.For(new SavedPedsMenu()));
     }
 }

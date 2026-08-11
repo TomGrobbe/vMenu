@@ -51,8 +51,11 @@ public class CoreServer : IScript
         ConfigurationExampleFile.Write();
         PermissionsExampleFile.Write();
 
+        WalkingStyles.Load();
+
         PermissionsSync.RegisterEventHandlers();
         PedCategories.RegisterEventHandlers();
+        WalkingStyles.RegisterEventHandlers();
 
         VehicleActions.Register();
         TeleportActions.Register();

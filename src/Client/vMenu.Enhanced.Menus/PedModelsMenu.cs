@@ -147,7 +147,7 @@ public sealed class PedModelsMenu : MenuDefinition
 
         // A ped that is in the list answers to its category, and one that is not is only reachable
         // through this row, which has already been gated.
-        var known = Find(model);
+        var known = PedModelSync.Find(model);
 
         if (known is { } found && !ClientPedPermissions.CanSpawnPed(found.Model, found.Category))
         {
@@ -169,22 +169,6 @@ public sealed class PedModelsMenu : MenuDefinition
                 Label = ped.Label,
                 Detail = ped.Name,
             })];
-
-    private (string Model, string Label, string Category)? Find(string model)
-    {
-        foreach (var category in _categories)
-        {
-            foreach (var ped in category.Peds)
-            {
-                if (string.Equals(ped.Model, model, StringComparison.OrdinalIgnoreCase))
-                {
-                    return (ped.Model, ped.Label, category.Name);
-                }
-            }
-        }
-
-        return null;
-    }
 
     private static async Task SpawnAsync(string model, string label, string categoryName)
     {

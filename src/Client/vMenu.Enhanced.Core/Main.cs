@@ -15,6 +15,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.World;
@@ -79,6 +80,8 @@ public sealed class Main : IScript
 
         PedModelSync.RegisterEventHandlers();
 
+        WalkingStyleSync.RegisterEventHandlers();
+
         NotificationEvents.RegisterEventHandlers();
 
         ClientConfig.Initialize();
@@ -99,6 +102,7 @@ public sealed class Main : IScript
 
         VehicleCommands.Initialize();
         VehicleDumpCommands.Initialize();
+        PedDumpCommands.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 
@@ -109,6 +113,7 @@ public sealed class Main : IScript
         PlayerUnlimitedStamina.Initialize();
         PlayerUnlimitedOxygen.Initialize();
         PlayerNoRagdoll.Initialize();
+        PedIlluminatedClothing.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
 
@@ -134,6 +139,8 @@ public sealed class Main : IScript
         TeleportSync.Request();
 
         PedModelSync.Request();
+
+        WalkingStyleSync.Request();
 
         UserPreferences.Restore();
 

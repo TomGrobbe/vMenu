@@ -54,6 +54,15 @@ public static class UserDefaults
     /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
 
+    /// <summary>The movement clip set the player picked, or empty for the ped's own walk.</summary>
+    // Stored rather than read back off the ped, because the game offers no way to ask which clip set
+    // a ped is using. It is also why this survives a model change: nothing else remembers.
+    public static StringDefault PlayerWalkingStyle { get; } =
+        new("playerWalkingStyle") { Default = string.Empty };
+
+    /// <summary>How the player's glowing clothes behave: 0 off, 1 solid, 2 fade, 3 flash.</summary>
+    public static IntDefault PlayerClothingGlow { get; } = new("playerClothingGlow") { Default = 0 };
+
     #endregion
 
     #region Vehicle Options
@@ -139,6 +148,8 @@ public static class UserDefaults
         PlayerUnlimitedStamina,
         PlayerUnlimitedOxygen,
         PlayerNoRagdoll,
+        PlayerWalkingStyle,
+        PlayerClothingGlow,
 
         VehicleGodMode,
         VehicleGodInvincible,

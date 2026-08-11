@@ -1,5 +1,8 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Menus.Players.Appearance;
+using vMenu.Enhanced.Permissions;
+
 namespace vMenu.Enhanced.Menus.Players;
 
 public static class PedSpawning
@@ -17,21 +20,54 @@ public static class PedSpawning
 
     private static readonly uint FreemodeFemale = API.Hash("mp_f_freemode_01");
 
-    /// <summary>Whether a model name is a ped this client could actually turn into.</summary>
-    public static bool IsSpawnable(string modelName)
-    {
-        var hash = API.Hash(modelName);
+    /// <summary>
+    /// One of the two models the online character creator builds on.
+    /// </summary>
+    /// <remarks>
+    /// These carry a face, hair colour, overlays and tattoos that live nowhere near the clothes, and
+    /// vMenu has no way to read or write any of it yet. Everything that would only half work on one
+    /// of them asks here first.
+    /// </remarks>
+    public static bool IsFreemode(uint hash) => hash == FreemodeMale || hash == FreemodeFemale;
 
-        return Native.IsModelValid(hash) && Native.IsModelInCdimage(hash) && Native.IsModelAPed(hash);
+    /// <summary>Whether the player is wearing one right now.</summary>
+    public static bool IsWearingFreemode() =>
+        IsFreemode((uint)Native.GetEntityModel(Native.PlayerPedId()));
+
+    /// <summary>Whether a model name is a ped this client could actually turn into.</summary>
+    public static bool IsSpawnable(string modelName) => IsSpawnable(API.Hash(modelName));
+
+    /// <inheritdoc cref="IsSpawnable(string)"/>
+    public static bool IsSpawnable(uint hash) =>
+        Native.IsModelValid(hash) && Native.IsModelInCdimage(hash) && Native.IsModelAPed(hash);
+
+    /// <summary>Whether this client may turn into a model that did not come from a row of its own.</summary>
+    // The saved peds menu is not a way around a restricted ped list, so the ped list's own rules
+    // still apply: a whitelisted model needs its own permission, and a listed one needs its category.
+    // A model in neither is one the owner never restricted, so nothing stands in the way of it.
+    public static bool IsPermitted(string modelName)
+    {
+        if (ClientPedPermissions.IsWhitelisted(modelName))
+        {
+            return ClientPedPermissions.CanSpawnPed(modelName, string.Empty);
+        }
+
+        return PedModelSync.Find(modelName) is not { } known
+            || ClientPedPermissions.CanSpawnCategory(known.Category);
     }
 
     /// <summary>Swaps the player onto a model and resets its appearance to the game's defaults.</summary>
     /// <returns>False when the model is not a ped, or is not streamed in on this client.</returns>
-    public static async Task<bool> SetPlayerModelAsync(string modelName)
-    {
-        var hash = API.Hash(modelName);
+    public static async Task<bool> SetPlayerModelAsync(string modelName) =>
+        await SetPlayerModelAsync(API.Hash(modelName));
 
-        if (!IsSpawnable(modelName))
+    /// <inheritdoc cref="SetPlayerModelAsync(string)"/>
+    // By hash as well as by name, because a saved ped only ever stored the hash. The game has no
+    // reverse lookup for a ped model, so a save whose model the owner never listed has no name left
+    // to spawn from and would otherwise be stuck in the collection unusable.
+    public static async Task<bool> SetPlayerModelAsync(uint hash)
+    {
+        if (!IsSpawnable(hash))
         {
             return false;
         }
@@ -54,6 +90,10 @@ public static class PedSpawning
         }
 
         await ResetAppearanceAsync(hash);
+
+        // A new ped walks the way its model walks, so the choice the player made has to be put back
+        // on by hand. A saved ped applied on top of this brings its own and wins, which is right.
+        await PedWalkingStyle.ReapplyAsync();
 
         Native.SetModelAsNoLongerNeeded(hash);
 
@@ -138,7 +178,7 @@ public static class PedSpawning
         Native.ClearPedDecorations(ped);
         Native.ClearPedFacialDecorations(ped);
 
-        if (hash != FreemodeMale && hash != FreemodeFemale)
+        if (!IsFreemode(hash))
         {
             return;
         }

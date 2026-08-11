@@ -1,0 +1,49 @@
+// The ways of walking players can pick from, under Player, Player Appearance, Walking Style.
+//
+// The name on the left is the clip set the game loads. The text on the right is what players see on
+// the row, so write it however you like.
+//
+// You can add your own. Anything on this list is passed straight to the game, so a clip set your
+// server streams itself works exactly like one that ships with GTA.
+//
+// A word of warning about which peds these suit. A clip set is animation, and animation is made for
+// one shape of skeleton. The move_m@ ones were made for men, the move_f@ ones for women, and none of
+// them were made for a dog. vMenu will let a player try any of them on any ped, and if the game has
+// nothing to load it says so rather than pretending it worked. So feel free to offer everything and
+// let people find out what looks right.
+//
+// Players always get a "Normal" choice on top of this list, which puts back the walk their ped came
+// with. You do not need to add it yourself.
+{
+  // Men
+  "move_m@casual@a": "Casual",
+  "move_m@business@a": "Business",
+  "move_m@tough_guy@": "Tough Guy",
+  "move_m@gangster@a": "Gangster",
+  "move_m@posh@": "Posh",
+  "move_m@hipster@a": "Hipster",
+  "move_m@brave": "Brave",
+  "move_m@sad@a": "Sad",
+  "move_m@drunk@a": "Tipsy",
+  "move_m@drunk@verydrunk": "Very Drunk",
+  "move_m@injured": "Injured",
+  "move_m@hurry@a": "In A Hurry",
+  "move_m@money": "Loaded",
+
+  // Women
+  "move_f@casual@a": "Casual (Feminine)",
+  "move_f@business@a": "Business (Feminine)",
+  "move_f@sexy@a": "Sassy",
+  "move_f@femme@": "Femme",
+  "move_f@gangster@ng": "Gangster (Feminine)",
+  "move_f@posh@": "Posh (Feminine)",
+  "move_f@sad@a": "Sad (Feminine)",
+  "move_f@drunk@a": "Tipsy (Feminine)",
+  "move_f@injured": "Injured (Feminine)",
+  "move_f@maneater@": "Maneater",
+
+  // Anyone
+  "move_ped_crouched": "Crouched",
+  "move_heels@": "Heels",
+  "move_lester_caneup": "With A Cane"
+}
