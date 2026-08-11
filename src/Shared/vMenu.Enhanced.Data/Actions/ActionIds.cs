@@ -26,6 +26,7 @@ public static class ActionIds
     public static class VehicleOptions
     {
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";
+        public const string SpawnVehicle = "VehicleOptions.SpawnVehicle";
     }
 
     public static class WeatherOptions

@@ -14,6 +14,8 @@ public static class VehicleOptions
     /// <summary>Not <c>[StaffOnly]</c>: the server refuses anything outside the player's own reach.</summary>
     public const string DeleteVehicle = "vMenu.Enhanced.Menus.VehicleOptions.DeleteVehicle";
 
+    public const string SpawnVehicle = "vMenu.Enhanced.Menus.VehicleOptions.SpawnVehicle";
+    
     public const string RepairVehicle = "vMenu.Enhanced.Menus.VehicleOptions.RepairVehicle";
 
     public const string WashVehicle = "vMenu.Enhanced.Menus.VehicleOptions.WashVehicle";

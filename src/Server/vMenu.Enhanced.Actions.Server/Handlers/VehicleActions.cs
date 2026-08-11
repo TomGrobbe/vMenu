@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Serialization.Server;
 
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleOptions;
@@ -28,12 +29,49 @@ public static class VehicleActions
     /// </summary>
     private const float RangeSlack = 10f;
 
-    public static void Register() =>
+    public static void Register()
+    {
         ActionRegistry.Register(
             ActionIds.VehicleOptions.DeleteVehicle,
             VehicleOptionsPermissions.DeleteVehicle,
             DeleteVehicle);
+        ActionRegistry.Register(
+            ActionIds.VehicleOptions.SpawnVehicle,
+            VehicleOptionsPermissions.SpawnVehicle,
+            SpawnVehicle);
+        
+    }
 
+    public class Vector3Veh()
+    {
+        public float X;
+        public float Y;
+        public float Z;
+    }
+    public class VehicleData
+    {
+        public uint Hash;
+        public Vector3Veh Position = new();
+        public int Heading;
+        public string ModelType = string.Empty;
+    }
+
+    private static ActionResponse SpawnVehicle(Player source, string[] args)
+    {
+        API.Log.Info(ServerJson.Serialize(args));
+        if (ServerJson.TryDeserialize(args[0], out VehicleData? vehicle, out var error))
+        {
+            if (vehicle != null)
+            {
+                API.Log.Debug($"spawning vehicle {vehicle.Hash}");
+                var spawnedVehicle = Native.CreateVehicleServerSetter(vehicle.Hash, vehicle.ModelType, vehicle.Position.X, vehicle.Position.Y, vehicle.Position.Z, vehicle.Heading);
+                
+                return new ActionResponse(ActionStatus.Ok, [Native.NetworkGetNetworkIdFromEntity(spawnedVehicle).ToString()]);
+            }
+        }
+
+        return ActionResponse.Failed();
+    }
     /// <summary>
     /// Deletes a vehicle the client picked out, once it is really a vehicle and the player is either
     /// driving it or standing near enough to it. Without those two checks this is a delete-anything

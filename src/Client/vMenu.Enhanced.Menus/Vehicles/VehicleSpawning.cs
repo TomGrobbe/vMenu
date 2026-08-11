@@ -6,7 +6,10 @@ using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared.Data;
 
+using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
@@ -19,6 +22,23 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 /// </remarks>
 public static class VehicleSpawning
 {
+    public static Dictionary<int, string> modelType = new()
+    {
+        [8] = "bike",
+        [11] = "trailer",
+        [13] = "bike",
+        [14] = "boat",
+        [15] = "heli",
+        [16] = "plane",
+        [21] = "train",
+    };
+    public class VehicleData
+    {
+        public uint Hash;
+        public Vector3 Position;
+        public int Heading;
+        public string ModelType = string.Empty;
+    }
     private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
 
     /// <inheritdoc cref="SpawnAsync(uint)"/>
@@ -68,43 +88,66 @@ public static class VehicleSpawning
             Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
         }
 
-        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
-
-        Native.SetModelAsNoLongerNeeded(hash);
-
-        if (newVehicle is null)
+        var ModelType = Native.GetVehicleClassFromName(hash);
+        var data = new VehicleData {Hash =  hash, Heading = (int)ped.Heading, Position = position, ModelType = modelType.ContainsKey(ModelType) ? modelType[ModelType] : "automobile"};
+        
+        var vehicleServer = await ServerActions.InvokeAsync(ActionIds.VehicleOptions.SpawnVehicle, [ClientJson.Serialize(data)]);
+        API.Log.Debug(ClientJson.Serialize(vehicleServer));
+        if (!vehicleServer.IsOk)
         {
             return null;
         }
-
-        Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
-
-        if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
+        
+        if (int.TryParse(vehicleServer.Data[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var vehicleServerId))
         {
-            newVehicle.HeliBladesSpeed = 1f;
-
-            if (isHeli)
+            int tries = 0;
+            while (!(Native.NetworkDoesEntityExistWithNetworkId(vehicleServerId) || tries > 10))
             {
-                Native.SetHeliTurbulenceScalar(newVehicle.Handle, 0f);
+                tries++;
+                await API.Delay(5);
             }
-            else
+            var vehicle = Native.NetworkGetEntityFromNetworkId(vehicleServerId);
+            Vehicle? newVehicle = API.Vehicles.GetOrCreate(vehicle);
+            if (newVehicle != null)
             {
-                Native.SetPlaneTurbulenceMultiplier(newVehicle.Handle, 0f);
+                Native.SetVehicleOnGroundProperly(newVehicle.Handle, 5.0f);
+                
+                Native.SetModelAsNoLongerNeeded(hash);
+
+                Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
+
+                if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
+                {
+                    newVehicle.HeliBladesSpeed = 1f;
+
+                    if (isHeli)
+                    {
+                        Native.SetHeliTurbulenceScalar(newVehicle.Handle, 0f);
+                    }
+                    else
+                    {
+                        Native.SetPlaneTurbulenceMultiplier(newVehicle.Handle, 0f);
+                    }
+                }
+
+                Native.SetVehicleForwardSpeed(newVehicle.Handle, speed);
+
+                if (velocity.HasValue)
+                {
+                    newVehicle.Velocity = velocity.Value;
+                }
+
+                Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
+
+                ped.SetPedIntoVehicle(newVehicle.Handle, -1);
+
+                return newVehicle;
+                
             }
         }
 
-        Native.SetVehicleForwardSpeed(newVehicle.Handle, speed);
-
-        if (velocity.HasValue)
-        {
-            newVehicle.Velocity = velocity.Value;
-        }
-
-        Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
-
-        ped.SetPedIntoVehicle(newVehicle.Handle, -1);
-
-        return newVehicle;
+        return null;
+        //var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
     }
 
     /// <summary>The game's own name for a model, falling back to the model name itself.</summary>
