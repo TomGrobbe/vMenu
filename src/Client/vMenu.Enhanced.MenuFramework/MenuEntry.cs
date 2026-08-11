@@ -23,6 +23,11 @@ public abstract class MenuEntry
 
     public MenuGate Gate { get; init; } = MenuGate.Always;
 
+    /// <summary>
+    /// What to say while this entry is locked. Empty falls back to the framework's own wording
+    /// </summary>
+    public MenuText LockedDescription { get; init; }
+
     /// <summary>Null inherits the menu's default, which inherits <see cref="MenuFrameworkOptions"/>.</summary>
     public GateBehaviour? Behaviour { get; init; }
 
@@ -80,7 +85,9 @@ public abstract class MenuEntry
         item.RightIcon = RightIcon;
 
         item.Description = locked
-            ? localizer.Get(Loc.Framework.RestrictedDescription)
+            ? (LockedDescription.IsEmpty
+                ? localizer.Get(Loc.Framework.RestrictedDescription)
+                : LockedDescription.Resolve(localizer))
             : Description.Resolve(localizer);
 
         var label = Label.IsEmpty ? DefaultLabel : Label;
