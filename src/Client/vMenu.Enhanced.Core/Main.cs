@@ -6,6 +6,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Events;
@@ -28,6 +29,18 @@ public sealed class Main : IScript
 {
     public async void Initialize()
     {
+        var resource = Native.GetCurrentResourceName();
+
+        if (!ResourceIdentity.IsCorrectlyNamed(resource))
+        {
+            foreach (var line in ResourceIdentity.MismatchReport(resource, "client"))
+            {
+                API.Log.Error(line);
+            }
+
+            return;
+        }
+
         TickRegistry.Initialize();
 
         GameEvents.Initialize();

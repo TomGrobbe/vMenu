@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared.Script;
 using vMenu.Enhanced.Actions.Server;
 using vMenu.Enhanced.Actions.Server.Handlers;
 using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Permissions.Server;
@@ -16,6 +17,18 @@ public class CoreServer : IScript
 {
     public void Initialize()
     {
+        var resource = Native.GetCurrentResourceName();
+
+        if (!ResourceIdentity.IsCorrectlyNamed(resource))
+        {
+            foreach (var line in ResourceIdentity.MismatchReport(resource, "server"))
+            {
+                API.Log.Error(line);
+            }
+
+            return;
+        }
+
         ServerJson.Verify();
 
         ServerPermissions.Initialize();
