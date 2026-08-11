@@ -15,9 +15,14 @@ namespace vMenu.Enhanced.Menus.Vehicles.Saved;
 public sealed class SavedVehicle
 {
     /// <summary>What this build understands the shape below to be.</summary>
-    public const int SchemaVersion = 1;
+    // Version 2 added Description. A version 1 save still reads fine, it simply comes back without
+    // one, which is the default value tolerance this codebase uses in place of migration code.
+    public const int SchemaVersion = 2;
 
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>Whatever the player wants to remember about this one. Empty is normal.</summary>
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>Empty means uncategorised, which is a real place rather than a missing one.</summary>
     public string Category { get; set; } = string.Empty;
@@ -35,8 +40,8 @@ public sealed class SavedVehicleEntry(SavedVehicle vehicle, int storedVersion)
     public int StoredVersion { get; } = storedVersion;
 
     /// <summary>
-    /// Written by a newer vMenu than this one. It can still be spawned, renamed and deleted, but not
-    /// overwritten, since this build would drop whatever that version added.
+    /// Written by a newer vMenu than this one. It can still be spawned, duplicated and deleted, but
+    /// not edited or overwritten, since either would drop whatever that version added.
     /// </summary>
     public bool IsFromNewerBuild => StoredVersion > SavedVehicle.SchemaVersion;
 }

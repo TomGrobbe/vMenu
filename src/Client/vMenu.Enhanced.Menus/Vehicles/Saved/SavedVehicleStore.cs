@@ -1,21 +1,7 @@
+using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Saved;
-
-/// <summary>What happened when a save was attempted.</summary>
-public enum SaveOutcome
-{
-    Saved,
-
-    /// <summary>A save under that name already exists and the caller did not mean to replace it.</summary>
-    NameTaken,
-
-    /// <summary>
-    /// The stored save was written by a newer vMenu, so overwriting it would throw away whatever
-    /// that version added. Nothing was changed.
-    /// </summary>
-    Refused,
-}
 
 /// <summary>
 /// Where saved vehicles live: the player's own machine, not the server.
@@ -78,30 +64,60 @@ public static class SavedVehicleStore
 
     public static void Delete(string name) => KvpStore.Delete(VehicleKey(name));
 
-    /// <summary>Stores a vehicle under a new name and forgets the old one.</summary>
-    /// <returns>False when the new name is taken, or the stored save is newer than this build.</returns>
-    public static bool Rename(SavedVehicle vehicle, string newName)
+    /// <summary>Stores a vehicle under a new name and description, and forgets the old name.</summary>
+    /// <returns>False when the new name is taken, or the save came from a newer build.</returns>
+    // A newer build's save is refused rather than moved. Renaming writes a key that holds nothing
+    // yet, which no version check can guard, and what would be written is only the fields this build
+    // knows about. That is the silent downgrade the whole refusal mechanism exists to prevent.
+    public static bool Edit(SavedVehicleEntry entry, string newName, string description)
     {
-        if (Exists(newName))
+        if (entry.IsFromNewerBuild)
         {
             return false;
         }
 
-        var oldName = vehicle.Name;
+        var oldName = entry.Vehicle.Name;
+        var renaming = !string.Equals(oldName, newName, StringComparison.Ordinal);
 
-        vehicle.Name = newName;
-
-        if (Save(vehicle, replacing: false) is not SaveOutcome.Saved)
+        if (renaming && Exists(newName))
         {
-            vehicle.Name = oldName;
+            return false;
+        }
+
+        var oldDescription = entry.Vehicle.Description;
+
+        entry.Vehicle.Name = newName;
+        entry.Vehicle.Description = description;
+
+        if (Save(entry.Vehicle, replacing: !renaming) is not SaveOutcome.Saved)
+        {
+            entry.Vehicle.Name = oldName;
+            entry.Vehicle.Description = oldDescription;
 
             return false;
         }
 
-        Delete(oldName);
+        if (renaming)
+        {
+            Delete(oldName);
+        }
 
         return true;
     }
+
+    /// <summary>Stores a copy of a vehicle under another name, leaving the original alone.</summary>
+    // The copy is written at this build's schema version even when the original came from a newer
+    // one. That is honest rather than lossy: it is a new save holding what this build could read.
+    public static SaveOutcome Duplicate(SavedVehicleEntry entry, string newName) =>
+        Save(
+            new SavedVehicle
+            {
+                Name = newName,
+                Description = entry.Vehicle.Description,
+                Category = entry.Vehicle.Category,
+                Appearance = entry.Vehicle.Appearance,
+            },
+            replacing: false);
 
     /// <summary>Moves a vehicle into another category, or out of all of them when empty.</summary>
     public static bool MoveToCategory(SavedVehicle vehicle, string category)
@@ -136,18 +152,71 @@ public static class SavedVehicleStore
 
     public static bool AddCategory(string name, string description)
     {
-        var key = CategoryPrefix + name;
-
-        if (KvpStore.TryRead<SavedVehicleCategory>(key, KvpValueType.Json, SavedVehicle.SchemaVersion, out _, out _))
+        if (HasCategory(name))
         {
             return false;
         }
 
         return KvpStore.TryWrite(
-            key,
+            CategoryPrefix + name,
             KvpValueType.Json,
             SavedVehicle.SchemaVersion,
             new SavedVehicleCategory { Name = name, Description = description });
+    }
+
+    public static bool HasCategory(string name) =>
+        KvpStore.TryRead<SavedVehicleCategory>(
+            CategoryPrefix + name,
+            KvpValueType.Json,
+            SavedVehicle.SchemaVersion,
+            out _,
+            out _);
+
+    /// <summary>Renames a category and moves everything in it across.</summary>
+    /// <returns>False when the new name is already a category.</returns>
+    public static bool EditCategory(string oldName, string newName, string description)
+    {
+        var renaming = !string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase);
+
+        if (renaming && HasCategory(newName))
+        {
+            return false;
+        }
+
+        KvpStore.Delete(CategoryPrefix + oldName);
+
+        if (!KvpStore.TryWrite(
+            CategoryPrefix + newName,
+            KvpValueType.Json,
+            SavedVehicle.SchemaVersion,
+            new SavedVehicleCategory { Name = newName, Description = description }))
+        {
+            return false;
+        }
+
+        if (!renaming)
+        {
+            return true;
+        }
+
+        foreach (var entry in All())
+        {
+            if (!string.Equals(entry.Vehicle.Category, oldName, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            // A save from a newer build cannot be rewritten, so it keeps naming the old category.
+            // The menu already treats an unknown category as a group of its own.
+            if (entry.IsFromNewerBuild)
+            {
+                continue;
+            }
+
+            MoveToCategory(entry.Vehicle, newName);
+        }
+
+        return true;
     }
 
     /// <summary>

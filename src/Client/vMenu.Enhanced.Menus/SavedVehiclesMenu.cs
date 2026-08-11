@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Client;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Data;
+using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.Vehicles.Appearance;
 using vMenu.Enhanced.Menus.Vehicles.Saved;
@@ -18,9 +19,15 @@ namespace vMenu.Enhanced.Menus;
 /// Vehicles the player put away, kept on their own machine.
 /// </summary>
 /// <remarks>
-/// Laid out like the teleport menu: one shared child menu for the vehicles in a category and one for
-/// what can be done to a vehicle, rather than a menu per row. The rows are runtime data and there
-/// could be a great many of them, and MenuAPI cannot take a menu back out once it has been added.
+/// Three levels: the categories, the vehicles in one of them, and what can be done to one vehicle.
+/// Categories are made, renamed and deleted from the top level only, because managing a category
+/// from inside it is how you end up deleting the page you are standing on.
+///
+/// <para>
+/// Laid out like the teleport menu: one shared child menu per level rather than a menu per row. The
+/// rows are runtime data and there could be a great many of them, and MenuAPI cannot take a menu back
+/// out once it has been added.
+/// </para>
 /// </remarks>
 [VMenu(
     TitleKey = Loc.SavedVehicles.Title,
@@ -31,13 +38,13 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 {
     private const int NameLength = 30;
 
+    private const int DescriptionLength = 100;
+
     private MenuBuilder? _root;
 
     private DetachedMenu? _vehicleMenu;
 
     private DetachedMenu? _detailMenu;
-
-    private DetachedMenu? _categoryMenu;
 
     /// <summary>Empty is the uncategorised group, which is a real place rather than a missing one.</summary>
     private string _category = string.Empty;
@@ -62,14 +69,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         _detailMenu.Builder.OnOpened = _ => Fill(_detailMenu, DetailRows());
 
-        _categoryMenu = menu.AddDetachedMenu(
-            MenuText.Key(Loc.SavedVehicles.Categories),
-            MenuText.Key(Loc.SavedVehicles.Categories),
-            _ => { },
-            SavedVehiclesPermissions.Manage);
-
-        _categoryMenu.Builder.OnOpened = _ => Fill(_categoryMenu, CategoryRows());
-
         menu.AddRange(RootRows());
 
         // The store changes from inside this menu, so the rows are rebuilt whenever the player comes
@@ -81,6 +80,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private IReadOnlyList<MenuEntry> RootRows()
     {
+        var categories = SavedVehicleStore.Categories();
+
         var rows = new List<MenuEntry>
         {
             new ButtonEntry
@@ -92,16 +93,25 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             },
             new ButtonEntry
             {
-                Text = MenuText.Key(Loc.SavedVehicles.Categories),
-                Description = MenuText.Key(Loc.SavedVehicles.CategoriesDescription),
+                Text = MenuText.Key(Loc.SavedVehicles.CreateCategory),
+                Description = MenuText.Key(Loc.SavedVehicles.CreateCategoryDescription),
                 Gate = SavedVehiclesPermissions.Manage,
-                OnSelected = _ => _categoryMenu?.Open(),
+                OnSelectedAsync = _ => CreateCategoryAsync(),
             },
         };
 
-        var vehicles = SavedVehicleStore.All();
+        // Nothing to pick from until a category exists, and a list row with no options is a row that
+        // cannot do anything.
+        if (categories.Count > 0)
+        {
+            rows.Add(EditCategoryRow(categories));
+            rows.Add(DeleteCategoryRow(categories));
+        }
 
-        if (vehicles.Count == 0)
+        var vehicles = SavedVehicleStore.All();
+        var groups = GroupNames(vehicles);
+
+        if (groups.Count == 0)
         {
             rows.Add(new ButtonEntry
             {
@@ -112,7 +122,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             return rows;
         }
 
-        foreach (var name in GroupNames(vehicles))
+        foreach (var name in groups)
         {
             var group = name;
             var count = Count(vehicles, group);
@@ -120,9 +130,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             rows.Add(new ButtonEntry
             {
                 Text = group.Length == 0 ? MenuText.Key(Loc.SavedVehicles.Uncategorised) : MenuText.Literal(group),
-                Description = MenuText.Key(
-                    Loc.SavedVehicles.CategoryRowDescription,
-                    ("count", MenuText.Literal(count.ToString(CultureInfo.InvariantCulture)))),
+                Label = MenuText.Literal($"({count.ToString(CultureInfo.InvariantCulture)})"),
+                Description = CategoryDescription(categories, group, count),
                 OnSelected = _ =>
                 {
                     _category = group;
@@ -133,6 +142,81 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         }
 
         return rows;
+    }
+
+    /// <summary>What the owner wrote about the group, or a count when they wrote nothing.</summary>
+    private static MenuText CategoryDescription(List<SavedVehicleCategory> categories, string group, int count)
+    {
+        foreach (var category in categories)
+        {
+            if (string.Equals(category.Name, group, StringComparison.OrdinalIgnoreCase)
+                && category.Description.Length > 0)
+            {
+                return MenuText.Literal(category.Description);
+            }
+        }
+
+        return MenuText.Key(
+            Loc.SavedVehicles.CategoryRowDescription,
+            ("count", MenuText.Literal(count.ToString(CultureInfo.InvariantCulture))));
+    }
+
+    private ListEntry EditCategoryRow(List<SavedVehicleCategory> categories)
+    {
+        var options = new List<MenuText>(categories.Count);
+
+        foreach (var category in categories)
+        {
+            options.Add(MenuText.Literal(category.Name));
+        }
+
+        return new ListEntry
+        {
+            Text = MenuText.Key(Loc.SavedVehicles.EditCategory),
+            Description = MenuText.Key(Loc.SavedVehicles.EditCategoryDescription),
+            Options = options,
+            Gate = SavedVehiclesPermissions.Manage,
+            OnSelectedAsync = selected => EditCategoryAsync(categories, selected.SelectedIndex),
+        };
+    }
+
+    private ConfirmListEntry DeleteCategoryRow(List<SavedVehicleCategory> categories)
+    {
+        var options = new List<MenuText>(categories.Count);
+
+        foreach (var category in categories)
+        {
+            options.Add(MenuText.Literal(category.Name));
+        }
+
+        var picked = 0;
+
+        return new ConfirmListEntry
+        {
+            Text = MenuText.Key(Loc.SavedVehicles.DeleteCategory),
+            Description = MenuText.Key(Loc.SavedVehicles.DeleteCategoryDescription),
+            ConfirmationDescription = MenuText.Key(
+                Loc.SavedVehicles.DeleteCategoryConfirm,
+                ("name", MenuText.From(() => NameAt(categories, picked)))),
+            Options = options,
+            Gate = SavedVehiclesPermissions.Manage,
+            OnIndexChanged = changed => picked = changed.NewIndex,
+            OnConfirmed = confirmed =>
+            {
+                var name = NameAt(categories, confirmed.SelectedIndex);
+
+                if (name.Length == 0)
+                {
+                    return;
+                }
+
+                SavedVehicleStore.DeleteCategory(name);
+
+                Notifications.Success(MenuText.Key(Loc.SavedVehicles.CategoryDeleted));
+
+                RebuildEverything();
+            },
+        };
     }
 
     private IReadOnlyList<MenuEntry> VehicleRows()
@@ -189,6 +273,11 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         };
     }
 
+    /// <summary>
+    /// What the player wrote about this one, falling back to the model when they wrote nothing.
+    /// </summary>
+    // Their own words win over ours: a description is only there because somebody typed it, so it is
+    // the more useful of the two.
     private static MenuText Describe(SavedVehicleEntry entry, bool available, MenuText model)
     {
         if (entry.IsFromNewerBuild)
@@ -196,9 +285,14 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             return MenuText.Key(Loc.SavedVehicles.NewerBuildDescription);
         }
 
-        return available
-            ? MenuText.Key(Loc.SavedVehicles.VehicleRowDescription, ("model", model))
-            : MenuText.Key(Loc.SavedVehicles.ModelUnavailable, ("model", model));
+        if (!available)
+        {
+            return MenuText.Key(Loc.SavedVehicles.ModelUnavailable, ("model", model));
+        }
+
+        return entry.Vehicle.Description.Length > 0
+            ? MenuText.Literal(entry.Vehicle.Description)
+            : MenuText.Key(Loc.SavedVehicles.VehicleRowDescription, ("model", model));
     }
 
     private IReadOnlyList<MenuEntry> DetailRows()
@@ -226,14 +320,15 @@ public sealed class SavedVehiclesMenu : MenuDefinition
                 Gate = SavedVehiclesPermissions.Spawn,
                 OnSelectedAsync = _ => SpawnAsync(entry),
             },
+            EditRow(entry),
+            MoveRow(entry),
             new ButtonEntry
             {
-                Text = MenuText.Key(Loc.SavedVehicles.Rename),
-                Description = MenuText.Key(Loc.SavedVehicles.RenameDescription),
-                Gate = SavedVehiclesPermissions.Manage,
-                OnSelectedAsync = _ => RenameAsync(entry),
+                Text = MenuText.Key(Loc.SavedVehicles.Duplicate),
+                Description = MenuText.Key(Loc.SavedVehicles.DuplicateDescription),
+                Gate = SavedVehiclesPermissions.Save,
+                OnSelectedAsync = _ => DuplicateAsync(entry),
             },
-            MoveRow(entry),
         };
 
         // Overwriting a save this build cannot fully read would silently drop whatever the newer
@@ -272,6 +367,24 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
+    /// <summary>Renaming and re-describing. Locked for a save this build cannot fully read.</summary>
+    // Editing rewrites the whole save, so a newer build's extra fields would be dropped on the way
+    // through. Locked rather than hidden, so the reason is on screen.
+    private ButtonEntry EditRow(SavedVehicleEntry entry) => entry.IsFromNewerBuild
+        ? new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.SavedVehicles.Edit),
+            Description = MenuText.Key(Loc.SavedVehicles.NewerBuildDescription),
+            Gate = MenuGate.Never,
+        }
+        : new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.SavedVehicles.Edit),
+            Description = MenuText.Key(Loc.SavedVehicles.EditDescription),
+            Gate = SavedVehiclesPermissions.Manage,
+            OnSelectedAsync = _ => EditAsync(entry),
+        };
+
     private ListEntry MoveRow(SavedVehicleEntry entry)
     {
         var groups = GroupNames(SavedVehicleStore.All());
@@ -305,83 +418,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         };
     }
 
-    private IReadOnlyList<MenuEntry> CategoryRows()
-    {
-        var categories = SavedVehicleStore.Categories();
-
-        var rows = new List<MenuEntry>();
-
-        foreach (var category in categories)
-        {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Literal(category.Name),
-                Description = MenuText.Literal(category.Description),
-            });
-        }
-
-        if (rows.Count == 0)
-        {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.SavedVehicles.NoCategories),
-                Description = MenuText.Key(Loc.SavedVehicles.NoCategoriesDescription),
-            });
-        }
-
-        rows.Add(new ButtonEntry
-        {
-            Text = MenuText.Key(Loc.SavedVehicles.CreateCategory),
-            Description = MenuText.Key(Loc.SavedVehicles.CreateCategoryDescription),
-            OnSelectedAsync = _ => CreateCategoryAsync(),
-        });
-
-        if (categories.Count > 0)
-        {
-            rows.Add(DeleteCategoryRow(categories));
-        }
-
-        return rows;
-    }
-
-    private ConfirmListEntry DeleteCategoryRow(List<SavedVehicleCategory> categories)
-    {
-        var options = new List<MenuText>(categories.Count);
-
-        foreach (var category in categories)
-        {
-            options.Add(MenuText.Literal(category.Name));
-        }
-
-        var picked = 0;
-
-        return new ConfirmListEntry
-        {
-            Text = MenuText.Key(Loc.SavedVehicles.DeleteCategory),
-            Description = MenuText.Key(Loc.SavedVehicles.DeleteCategoryDescription),
-            ConfirmationDescription = MenuText.Key(
-                Loc.SavedVehicles.DeleteCategoryConfirm,
-                ("name", MenuText.From(() => NameAt(categories, picked)))),
-            Options = options,
-            OnIndexChanged = changed => picked = changed.NewIndex,
-            OnConfirmed = confirmed =>
-            {
-                var name = NameAt(categories, confirmed.SelectedIndex);
-
-                if (name.Length == 0)
-                {
-                    return;
-                }
-
-                SavedVehicleStore.DeleteCategory(name);
-
-                Notifications.Success(MenuText.Key(Loc.SavedVehicles.CategoryDeleted));
-
-                RebuildEverything();
-            },
-        };
-    }
-
     #endregion
 
     #region Actions
@@ -399,6 +435,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         if (await UserInput.GetTextAsync(
             new InputPrompt(MenuText.Key(Loc.SavedVehicles.NamePrompt), NameLength),
+            new InputPrompt(MenuText.Key(Loc.SavedVehicles.DescriptionPrompt), DescriptionLength),
             new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryPrompt), NameLength)) is not { } answers)
         {
             return;
@@ -416,7 +453,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
                 new SavedVehicle
                 {
                     Name = name,
-                    Category = answers[1].Trim(),
+                    Description = answers[1].Trim(),
+                    Category = answers[2].Trim(),
                     Appearance = appearance,
                 },
                 replacing: false),
@@ -495,10 +533,41 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             ("count", MenuText.Literal(differences.Count.ToString(CultureInfo.InvariantCulture)))));
     }
 
-    private async Task RenameAsync(SavedVehicleEntry entry)
+    private async Task EditAsync(SavedVehicleEntry entry)
+    {
+        if (await UserInput.GetTextAsync(
+            new InputPrompt(MenuText.Key(Loc.SavedVehicles.NamePrompt), NameLength, entry.Vehicle.Name),
+            new InputPrompt(
+                MenuText.Key(Loc.SavedVehicles.DescriptionPrompt),
+                DescriptionLength,
+                entry.Vehicle.Description)) is not { } answers)
+        {
+            return;
+        }
+
+        var name = answers[0].Trim();
+
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        if (!SavedVehicleStore.Edit(entry, name, answers[1].Trim()))
+        {
+            Notifications.Error(MenuText.Key(Loc.SavedVehicles.NameTaken, ("name", MenuText.Literal(name))));
+
+            return;
+        }
+
+        Notifications.Success(MenuText.Key(Loc.SavedVehicles.Edited, ("name", MenuText.Literal(name))));
+
+        RebuildEverything();
+    }
+
+    private async Task DuplicateAsync(SavedVehicleEntry entry)
     {
         var typed = await UserInput.GetTextAsync(
-            MenuText.Key(Loc.SavedVehicles.RenamePrompt, ("name", MenuText.Literal(entry.Vehicle.Name))),
+            MenuText.Key(Loc.SavedVehicles.DuplicatePrompt, ("name", MenuText.Literal(entry.Vehicle.Name))),
             NameLength,
             entry.Vehicle.Name);
 
@@ -508,15 +577,16 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         }
 
         var name = typed.Trim();
+        var outcome = SavedVehicleStore.Duplicate(entry, name);
 
-        if (!SavedVehicleStore.Rename(entry.Vehicle, name))
+        if (outcome is not SaveOutcome.Saved)
         {
-            Notifications.Error(MenuText.Key(Loc.SavedVehicles.NameTaken, ("name", MenuText.Literal(name))));
+            Report(outcome, name);
 
             return;
         }
 
-        Notifications.Success(MenuText.Key(Loc.SavedVehicles.Renamed, ("name", MenuText.Literal(name))));
+        Notifications.Success(MenuText.Key(Loc.SavedVehicles.Duplicated, ("name", MenuText.Literal(name))));
 
         RebuildEverything();
     }
@@ -556,7 +626,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
     {
         if (await UserInput.GetTextAsync(
             new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryName), NameLength),
-            new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryDescriptionPrompt), NameLength)) is not { } answers)
+            new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryDescriptionPrompt), DescriptionLength)) is not { } answers)
         {
             return;
         }
@@ -576,6 +646,51 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         }
 
         Notifications.Success(MenuText.Key(Loc.SavedVehicles.CategoryCreated, ("name", MenuText.Literal(name))));
+
+        RebuildEverything();
+    }
+
+    private async Task EditCategoryAsync(List<SavedVehicleCategory> categories, int index)
+    {
+        if (index < 0 || index >= categories.Count)
+        {
+            return;
+        }
+
+        var category = categories[index];
+
+        if (await UserInput.GetTextAsync(
+            new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryName), NameLength, category.Name),
+            new InputPrompt(
+                MenuText.Key(Loc.SavedVehicles.CategoryDescriptionPrompt),
+                DescriptionLength,
+                category.Description)) is not { } answers)
+        {
+            return;
+        }
+
+        var name = answers[0].Trim();
+
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        if (!SavedVehicleStore.EditCategory(category.Name, name, answers[1].Trim()))
+        {
+            Notifications.Error(MenuText.Key(Loc.SavedVehicles.CategoryNameTaken, ("name", MenuText.Literal(name))));
+
+            return;
+        }
+
+        // The player may be standing in a category that just changed its name, and the vehicle menu
+        // filters on that name.
+        if (string.Equals(_category, category.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            _category = name;
+        }
+
+        Notifications.Success(MenuText.Key(Loc.SavedVehicles.CategoryEdited, ("name", MenuText.Literal(name))));
 
         RebuildEverything();
     }
@@ -616,7 +731,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         Fill(_vehicleMenu, VehicleRows());
         Fill(_detailMenu, DetailRows());
-        Fill(_categoryMenu, CategoryRows());
     }
 
     private static void Fill(DetachedMenu? menu, IReadOnlyList<MenuEntry> rows)

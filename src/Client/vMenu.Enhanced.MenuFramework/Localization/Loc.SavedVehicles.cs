@@ -18,6 +18,8 @@ public static partial class Loc
 
         public const string NamePrompt = "savedvehicles.save.name";
 
+        public const string DescriptionPrompt = "savedvehicles.save.description";
+
         public const string CategoryPrompt = "savedvehicles.save.category";
 
         public const string NoVehicle = "savedvehicles.save.novehicle";
@@ -50,14 +52,6 @@ public static partial class Loc
 
         #region Categories
 
-        public const string Categories = "savedvehicles.categories";
-
-        public const string CategoriesDescription = "savedvehicles.categories.desc";
-
-        public const string NoCategories = "savedvehicles.categories.empty";
-
-        public const string NoCategoriesDescription = "savedvehicles.categories.empty.desc";
-
         public const string CreateCategory = "savedvehicles.categories.create";
 
         public const string CreateCategoryDescription = "savedvehicles.categories.create.desc";
@@ -65,6 +59,12 @@ public static partial class Loc
         public const string CategoryName = "savedvehicles.categories.name";
 
         public const string CategoryDescriptionPrompt = "savedvehicles.categories.description";
+
+        public const string EditCategory = "savedvehicles.categories.edit";
+
+        public const string EditCategoryDescription = "savedvehicles.categories.edit.desc";
+
+        public const string CategoryEdited = "savedvehicles.categories.edited";
 
         public const string DeleteCategory = "savedvehicles.categories.delete";
 
@@ -94,13 +94,19 @@ public static partial class Loc
 
         public const string RestoredPartially = "savedvehicles.spawn.partial";
 
-        public const string Rename = "savedvehicles.rename";
+        public const string Edit = "savedvehicles.edit";
 
-        public const string RenameDescription = "savedvehicles.rename.desc";
+        public const string EditDescription = "savedvehicles.edit.desc";
 
-        public const string RenamePrompt = "savedvehicles.rename.prompt";
+        public const string Edited = "savedvehicles.edit.success";
 
-        public const string Renamed = "savedvehicles.rename.success";
+        public const string Duplicate = "savedvehicles.duplicate";
+
+        public const string DuplicateDescription = "savedvehicles.duplicate.desc";
+
+        public const string DuplicatePrompt = "savedvehicles.duplicate.prompt";
+
+        public const string Duplicated = "savedvehicles.duplicate.success";
 
         public const string MoveToCategory = "savedvehicles.move";
 
