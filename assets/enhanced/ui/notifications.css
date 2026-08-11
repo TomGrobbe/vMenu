@@ -16,6 +16,13 @@
     flex-direction: column;
     gap: var(--toast-gap);
     pointer-events: none;
+    transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+/* The game blurs the world behind the pause menu, and the stack sits in that world, so it blurs with it. */
+#toasts.paused {
+    filter: blur(2px);
+    opacity: 0.75;
 }
 
 .toast {

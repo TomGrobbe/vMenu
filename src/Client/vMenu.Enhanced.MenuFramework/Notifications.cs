@@ -1,7 +1,9 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Serialization;
+using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.MenuFramework;
 
@@ -25,6 +27,27 @@ public static class Notifications
 
     /// <summary>Thirty seconds of waiting for a spawn, after which the message is shown regardless.</summary>
     private const int MaxVisibilityChecks = 60;
+
+    /// <summary>What the page hands a frozen message back when the pause menu closes, mirrored here.</summary>
+    private const int PauseGraceMs = 2000;
+
+    /// <summary>Covers the fade the page plays after a message's time is up.</summary>
+    private const int ExitGraceMs = 500;
+
+    private const long PauseCheckIntervalMs = 100;
+
+    private const string PausedMessage = """{"type":"notify_pause","paused":true}""";
+
+    private const string ResumedMessage = """{"type":"notify_pause","paused":false}""";
+
+    private static TickHandle? _pauseTick;
+
+    private static bool _paused;
+
+    /// <summary>Game time by which every message sent so far has had its say.</summary>
+    private static long _liveUntil;
+
+    private static long _polledAt;
 
     public static void Info(MenuText text, int durationMs = DefaultDurationMs) =>
         Show(NotificationStyle.Info, text, durationMs);
@@ -73,7 +96,75 @@ public static class Notifications
             return;
         }
 
-        Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs, source));
+        // Read once and sent with the message, so a notification raised during a pause is drawn the
+        // way the ones already on screen are instead of waiting for the next poll to catch up.
+        var paused = Native.IsPauseMenuActive();
+
+        Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs, source, paused));
+
+        Watch(durationMs, paused);
+    }
+
+    /// <summary>Keeps the pause menu watch alive for as long as this message can still be on screen.</summary>
+    // An estimate, never the truth: the page owns the timers, and this side only needs to know when
+    // watching is pointless. It rounds up on a repeat, which restarts the row and this window with
+    // it, and falls short only when messages arrive faster than the page shows them, where the ones
+    // still queued go without their blur and their extra time.
+    private static void Watch(int durationMs, bool paused)
+    {
+        var until = Native.GetGameTimer() + durationMs + ExitGraceMs;
+
+        if (until > _liveUntil)
+        {
+            _liveUntil = until;
+        }
+
+        // Registered on the first message rather than from an Initialize, so a client that never
+        // notifies never lists a loop, and nothing has to be ordered in front of this.
+        _pauseTick ??= TickRegistry.Register(
+            "Notifications.Pause",
+            PollPause,
+            TickRate.Every(PauseCheckIntervalMs),
+            () => _liveUntil > Native.GetGameTimer(),
+            () => _polledAt = Native.GetGameTimer());
+
+        // The page is told the state on every message, so the poll has nothing left to announce.
+        _paused = paused;
+
+        _pauseTick.Reevaluate();
+    }
+
+    private static void PollPause()
+    {
+        var now = Native.GetGameTimer();
+        var paused = Native.IsPauseMenuActive();
+
+        // The page holds its messages for as long as the pause menu is up, so this window holds with them.
+        if (paused)
+        {
+            _liveUntil += now - _polledAt;
+        }
+
+        _polledAt = now;
+
+        if (paused != _paused)
+        {
+            _paused = paused;
+
+            // Mirrors the grace the page hands back, so watching does not end while a message is still living on it.
+            if (!paused)
+            {
+                _liveUntil += PauseGraceMs;
+            }
+
+            Native.SendNuiMessage(paused ? PausedMessage : ResumedMessage);
+        }
+
+        // Conditions are only re-run on demand, so the loop has to be the one to notice it is done.
+        if (now >= _liveUntil)
+        {
+            _pauseTick?.Reevaluate();
+        }
     }
 
     /// <summary>The box the stack grows out of, as fractions of the screen, lined up with the minimap.</summary>
@@ -99,7 +190,7 @@ public static class Notifications
         return aspect > 0f ? 1f / (4f * aspect) : 1f / 4f;
     }
 
-    private static string BuildMessage(string style, string text, int durationMs, string? source)
+    private static string BuildMessage(string style, string text, int durationMs, string? source, bool paused)
     {
         var (left, bottom, width) = Anchor();
 
@@ -109,6 +200,7 @@ public static class Notifications
             Text = text,
             Duration = durationMs,
             Footer = string.IsNullOrWhiteSpace(source) ? null : source,
+            Paused = paused,
             Anchor = new AnchorBox
             {
                 Left = Fraction(left),
@@ -132,6 +224,9 @@ public static class Notifications
         public required int Duration { get; init; }
 
         public string? Footer { get; init; }
+
+        /// <summary>Whether the pause menu is up, which is also the state the page as a whole goes into.</summary>
+        public required bool Paused { get; init; }
 
         public required AnchorBox Anchor { get; init; }
     }

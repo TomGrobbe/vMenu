@@ -8,6 +8,9 @@
     /* Long enough for `.leaving` to finish; the row is only removed once it has faded out. */
     const EXIT_MS = 200;
 
+    /* Handed back to a row the pause menu froze, so there is time to read it once the game returns. */
+    const PAUSE_GRACE_MS = 2000;
+
     const ICONS = {
         info: '<circle cx="12" cy="12" r="9"/><path d="M12 11.2v5"/><path d="M12 7.6h.01"/>',
         success: '<circle cx="12" cy="12" r="9"/><path d="M7.9 12.3l2.8 2.8 5.4-5.6"/>',
@@ -36,6 +39,7 @@
     const queued = [];
 
     let shown = 0;
+    let paused = false;
 
     /*
        Written per message rather than per frame: the client only recalculates where the map ends
@@ -142,13 +146,68 @@
         replay(entry.badge);
     }
 
-    /* Puts the row back on a full timer, so a repeat keeps the message on screen instead of ending it sooner. */
-    function restart(entry) {
+    /*
+       Starts, or restarts, a row's countdown with `remaining` of its duration left to run. The bar's
+       keyframe always spans the whole duration and is wound forward with a negative delay, so a row
+       coming back from a pause picks up at the width its remaining time deserves rather than
+       snapping back to full.
+    */
+    function run(entry, remaining) {
         clearTimeout(entry.timer);
-        entry.timer = setTimeout(() => dismiss(entry), entry.duration);
+
+        entry.remaining = remaining;
 
         replay(entry.progress);
         entry.progress.style.animationDuration = `${entry.duration}ms`;
+        entry.progress.style.animationDelay = `-${entry.duration - remaining}ms`;
+
+        if (paused) {
+            entry.progress.style.animationPlayState = "paused";
+            entry.timer = 0;
+
+            return;
+        }
+
+        entry.endsAt = performance.now() + remaining;
+        entry.timer = setTimeout(() => dismiss(entry), remaining);
+    }
+
+    /* Keeps what is left of a row's time instead of spending it behind the pause menu. */
+    function freeze(entry) {
+        clearTimeout(entry.timer);
+
+        entry.timer = 0;
+        entry.remaining = Math.max(0, entry.endsAt - performance.now());
+        entry.progress.style.animationPlayState = "paused";
+    }
+
+    /* Never past the time the row was given, so pausing over and over cannot keep it on screen. */
+    function thaw(entry) {
+        run(entry, Math.min(entry.remaining + PAUSE_GRACE_MS, entry.duration));
+    }
+
+    function setPaused(next) {
+        if (next === paused) {
+            return;
+        }
+
+        paused = next;
+
+        // Blurred along with the world the pause menu draws over.
+        listEl.classList.toggle("paused", paused);
+
+        for (const entry of tracked.values()) {
+            // A row still waiting its turn has no time to hold; it is started when it reaches the screen.
+            if (!entry.toast) {
+                continue;
+            }
+
+            if (paused) {
+                freeze(entry);
+            } else {
+                thaw(entry);
+            }
+        }
     }
 
     function dismiss(entry) {
@@ -197,7 +256,6 @@
 
         const progress = document.createElement("span");
         progress.className = "progress";
-        progress.style.animationDuration = `${entry.duration}ms`;
 
         toast.append(bar, body);
 
@@ -215,7 +273,8 @@
         entry.toast = toast;
         entry.badge = badge;
         entry.progress = progress;
-        entry.timer = setTimeout(() => dismiss(entry), entry.duration);
+
+        run(entry, entry.duration);
 
         // Carried over from the wait, where a row can pick up repeats before it ever reaches the screen.
         if (entry.repeats > 1) {
@@ -246,7 +305,9 @@
             // Nothing to redraw while it is still waiting; it is built with the count it has by then.
             if (repeat.toast) {
                 count(repeat);
-                restart(repeat);
+
+                // Back on a full timer, so a repeat keeps the message on screen instead of ending it sooner.
+                run(repeat, repeat.duration);
             }
 
             return;
@@ -263,6 +324,8 @@
             badge: null,
             progress: null,
             timer: 0,
+            remaining: duration,
+            endsAt: 0,
         };
 
         tracked.set(key, entry);
@@ -287,7 +350,20 @@
             }
         }
 
-        if (data && typeof data === "object" && data.type === "notify") {
+        if (!data || typeof data !== "object") {
+            return;
+        }
+
+        if (data.type === "notify_pause") {
+            setPaused(data.paused === true);
+
+            return;
+        }
+
+        if (data.type === "notify") {
+            // Carried on the message itself, so one arriving during a pause is frozen from the start.
+            setPaused(data.paused === true);
+
             notify(data);
         }
     });
