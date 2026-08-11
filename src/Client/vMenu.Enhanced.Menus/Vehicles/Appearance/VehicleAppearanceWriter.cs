@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Entities;
 
+using vMenu.Enhanced.Menus.Appearance;
+
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 /// <summary>

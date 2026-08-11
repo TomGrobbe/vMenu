@@ -1,18 +1,8 @@
 using System.Globalization;
 
+using vMenu.Enhanced.Menus.Appearance;
+
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
-
-/// <summary>One setting that did not come out the way it went in.</summary>
-public sealed class AppearanceDifference(string field, string expected, string actual)
-{
-    public string Field { get; } = field;
-
-    public string Expected { get; } = expected;
-
-    public string Actual { get; } = actual;
-
-    public override string ToString() => $"{Field}: expected {Expected}, got {Actual}";
-}
 
 /// <summary>
 /// Compares what a vehicle was asked to look like against what it actually looks like.
