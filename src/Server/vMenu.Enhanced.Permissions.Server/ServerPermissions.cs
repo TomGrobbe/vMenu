@@ -23,6 +23,7 @@ public static class ServerPermissions
         ModelWhitelist.LoadAndRegister();
         VehicleCategories.LoadAndRegister();
         PedCategories.LoadAndRegister();
+        WeaponCatalog.LoadAndRegister();
 
         IsReady = true;
     }
@@ -106,14 +107,15 @@ public static class ServerPermissions
         var categorisedVehicles = VehicleCategories.GetCategorisedModels();
         var vehicleCategories = VehicleCategories.GetCategoryNames();
         var whitelistedPeds = ModelWhitelist.GetModels(SupplementalModelKind.Ped);
+        var whitelistedWeapons = ModelWhitelist.GetModels(SupplementalModelKind.Weapon);
 
         if (latentBytesPerSecond > 0)
         {
-            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds);
+            API.EmitClientLatent(handle, latentBytesPerSecond, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds, whitelistedWeapons);
         }
         else
         {
-            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds);
+            API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds, whitelistedWeapons);
         }
 
         API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {source}: {string.Join(", ", granted)}");

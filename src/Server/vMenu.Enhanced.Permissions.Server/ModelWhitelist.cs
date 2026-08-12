@@ -21,12 +21,11 @@ public static class ModelWhitelist
         AllowTrailingCommas = true,
     };
 
-    /// <summary>Wiring up weapons later means supplying a factory here.</summary>
     private static readonly KindDescriptor[] Descriptors =
     [
         new(SupplementalModelKind.Vehicle, "vehicles", VehicleModels.ForModel),
         new(SupplementalModelKind.Ped, "peds", Peds.ForModel),
-        new(SupplementalModelKind.Weapon, "weapons", null),
+        new(SupplementalModelKind.Weapon, "weapons", Weapons.ForModel),
     ];
 
     private static readonly Dictionary<SupplementalModelKind, HashSet<string>> Whitelists = [];

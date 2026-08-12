@@ -30,28 +30,24 @@ public static class UserDefaults
     #endregion
 
     #region Player Options
-
     // Stored whether or not the server grants the matching permission, for the reason on UserDefault:
     // a player who set this on one server still has their choice on the next. Whoever applies it
     // checks the permission.
+
     public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
+    
     public static BoolDefault PlayerSuperJump { get; } = new("playerSuperJump") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
+    
     public static BoolDefault PlayerFastRun { get; } = new("playerFastRun") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault PlayerFastSwim { get; } = new("playerFastSwim") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault PlayerUnlimitedStamina { get; } = new("playerUnlimitedStamina") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault PlayerUnlimitedOxygen { get; } = new("playerUnlimitedOxygen") { Default = false };
 
-    /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
 
     /// <summary>The movement clip set the player picked, or empty for the ped's own walk.</summary>
@@ -67,7 +63,6 @@ public static class UserDefaults
 
     #region Vehicle Options
 
-    /// <inheritdoc cref="PlayerGodMode"/>
     public static BoolDefault VehicleGodMode { get; } = new("vehicleGodMode") { Default = false };
 
     // The six below answer to the master toggle above, which is why five of them start on: switching
@@ -134,6 +129,31 @@ public static class UserDefaults
 
     #endregion
 
+    #region Weapons
+
+    public static BoolDefault WeaponsUnlimitedAmmo { get; } = new("weaponsUnlimitedAmmo") { Default = false };
+
+    public static BoolDefault WeaponsNoReload { get; } = new("weaponsNoReload") { Default = false };
+
+    public static BoolDefault WeaponsAutoEquipParachute { get; } = new("weaponsAutoEquipParachute") { Default = false };
+
+    public static BoolDefault WeaponsUnlimitedParachutes { get; } = new("weaponsUnlimitedParachutes") { Default = false };
+
+    public static BoolDefault WeaponLoadoutOnRespawn { get; } = new("weaponLoadoutOnRespawn") { Default = false };
+
+    /// <summary>Whether the weapons already held are carried through a change of ped.</summary>
+    // The only preference here that starts on. Changing ped has always kept the player's weapons, so
+    // defaulting this off would take something away from everybody who upgrades.
+    public static BoolDefault WeaponsKeepOnPedChange { get; } = new("weaponsKeepOnPedChange") { Default = true };
+
+    /// <summary>The name of the loadout to hand back on respawn, or empty for none.</summary>
+    // A name rather than the loadout itself, so renaming or replacing one keeps the choice pointing
+    // at the right thing.
+    public static StringDefault WeaponLoadoutDefaultName { get; } =
+        new("weaponLoadoutDefaultName") { Default = string.Empty };
+
+    #endregion
+
     public static IReadOnlyList<UserDefault> All { get; } =
     [
         MiscRightAlignMenu,
@@ -159,6 +179,14 @@ public static class UserDefaults
         VehicleGodRamp,
         VehicleGodAutoRepair,
         VehicleKeepClean,
+
+        WeaponsUnlimitedAmmo,
+        WeaponsNoReload,
+        WeaponsAutoEquipParachute,
+        WeaponsUnlimitedParachutes,
+        WeaponLoadoutOnRespawn,
+        WeaponLoadoutDefaultName,
+        WeaponsKeepOnPedChange,
 
         TeleportKeyAction,
 

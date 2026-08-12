@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Menus.Players.Appearance;
+using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.Menus.Players;
@@ -86,7 +87,14 @@ public static class PedSpawning
         // out of whatever it was doing for no gain.
         if ((uint)Native.GetEntityModel(Native.PlayerPedId()) != hash)
         {
+            // Read before the swap and handed back after it, alongside the health and armour
+            // SwapAsync already carries over. Nothing is raised until the swap is done, by which
+            // point the ped holding the weapons is gone, so this is the last chance to read them.
+            var carried = WeaponCarryOver.Capture();
+
             await SwapAsync(hash);
+
+            await WeaponCarryOver.RestoreAsync(carried);
         }
 
         await ResetAppearanceAsync(hash);

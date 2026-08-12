@@ -16,14 +16,19 @@
     // Each name below creates one permission, listed for you in config/permissions.cfg.example so
     // you never have to write it out yourself:
     //
-    //     "vehicles": ["adder"]  ->  vMenu.Enhanced.SupplementalPermissions.VehicleModels.adder
-    //     "peds": ["a_c_chop"]   ->  vMenu.Enhanced.SupplementalPermissions.Peds.a_c_chop
+    //     "vehicles": ["adder"]        ->  vMenu.Enhanced.SupplementalPermissions.VehicleModels.adder
+    //     "peds": ["a_c_chop"]         ->  vMenu.Enhanced.SupplementalPermissions.Peds.a_c_chop
+    //     "weapons": ["weapon_rpg"]    ->  vMenu.Enhanced.SupplementalPermissions.Weapons.weapon_rpg
     //
     // Granting vMenu.Enhanced.SupplementalPermissions.VehicleModels.All gives someone every
-    // whitelisted vehicle at once, and the same goes for ...SupplementalPermissions.Peds.All. Both
-    // are also covered by the spawner's own All permission, so somebody who already has
-    // vMenu.Enhanced.Menus.VehicleSpawner.All or vMenu.Enhanced.Menus.PedModels.All keeps
+    // whitelisted vehicle at once, and the same goes for ...SupplementalPermissions.Peds.All and
+    // ...SupplementalPermissions.Weapons.All. All three are also covered by the menu's own All
+    // permission, so somebody who already has vMenu.Enhanced.Menus.VehicleSpawner.All,
+    // vMenu.Enhanced.Menus.PedModels.All or vMenu.Enhanced.Menus.WeaponOptions.All keeps
     // everything.
+    //
+    // A weapon goes here under the same spawn name it has in config/weapons.json, so
+    // "weapon_rpg", not "rpg".
     //
     // These are read once when the server starts, so restart the resource after changing this file.
 
@@ -31,6 +36,5 @@
 
     "peds": [],
 
-    // Read and checked over, but weapons are not in the menu yet, so nothing is generated for these.
     "weapons": []
 }

@@ -1,0 +1,175 @@
+using CitizenFX.FiveM.Client;
+
+using vMenu.Enhanced.Permissions;
+
+namespace vMenu.Enhanced.Menus.Weapons.Saved;
+
+/// <summary>What happened while a loadout was being handed back.</summary>
+/// <param name="Given">Weapons the player actually ended up with.</param>
+/// <param name="Skipped">
+/// Weapons that were in the loadout but could not be given, either because the server no longer has
+/// them or because this player is not allowed them.
+/// </param>
+public readonly record struct ApplyReport(int Given, int Skipped);
+
+/// <summary>
+/// Handing a saved loadout back to the player.
+/// </summary>
+public static class WeaponLoadoutApply
+{
+    private const string Unarmed = "weapon_unarmed";
+
+    /// <summary>How long to keep asking the game to fit a component before moving on.</summary>
+    private const int ComponentTimeoutMs = 1000;
+
+    /// <summary>
+    /// How long to keep re-applying an ammo count. The natives do not always take on the frame they
+    /// are called, but a weapon whose maximum is below the saved number would never agree, so this
+    /// gives up rather than spinning.
+    /// </summary>
+    private const int AmmoTimeoutMs = 500;
+
+    /// <param name="append">Keeps what the player is already carrying instead of clearing it first.</param>
+    /// <param name="ignorePermissions">
+    /// For handing back what the player was already carrying a moment ago, where the question of
+    /// whether they may have it was settled when they picked it up.
+    /// </param>
+    public static async Task<ApplyReport> ApplyAsync(WeaponLoadout loadout, bool append, bool ignorePermissions)
+    {
+        if (!append)
+        {
+            WeaponInventory.RemoveAll();
+        }
+
+        var given = 0;
+        var skipped = 0;
+
+        foreach (var saved in loadout.Weapons)
+        {
+            var hash = API.Hash(saved.SpawnName);
+
+            // A weapon whose model has left the game files since the loadout was saved. Giving it
+            // would do nothing at best, so it is named in the log and passed over.
+            if (!Native.IsWeaponValid(hash))
+            {
+                API.Log.Info($"[Weapons] Skipping '{saved.SpawnName}' from loadout '{loadout.Name}': this game no longer has that weapon.");
+
+                skipped++;
+
+                continue;
+            }
+
+            if (!ignorePermissions && !IsAllowed(saved.SpawnName))
+            {
+                skipped++;
+
+                continue;
+            }
+
+            await GiveAsync(saved, hash);
+
+            given++;
+        }
+
+        // Left unarmed rather than holding whatever came last, which would otherwise be a loaded
+        // weapon pointed at whoever is standing there.
+        Native.SetCurrentPedWeapon(Native.PlayerPedId(), API.Hash(Unarmed), true);
+
+        return new ApplyReport(given, skipped);
+    }
+
+    /// <summary>
+    /// A weapon the owner has since taken out of config/weapons.json is treated as not allowed, so a
+    /// loadout cannot be used to keep something the server has stopped handing out.
+    /// </summary>
+    private static bool IsAllowed(string spawnName) =>
+        WeaponSync.Find(spawnName) is { } known
+        && ClientWeaponPermissions.CanUseWeapon(known.SpawnName, known.Category);
+
+    private static async Task GiveAsync(SavedWeapon saved, uint hash)
+    {
+        var ped = Native.PlayerPedId();
+
+        // Handed over loaded rather than empty. A weapon given with no rounds is one the game has no
+        // reason to build, and components asked of it in that state are the ones that go missing.
+        Native.GiveWeaponToPed(ped, hash, Wanted(hash, saved.Ammo), false, false);
+
+        foreach (var component in saved.Components)
+        {
+            var componentHash = API.Hash(component);
+
+            // A component this weapon no longer takes could never report as fitted, so without this
+            // the retry below spends its whole second on it before moving on to the next one.
+            if (!Native.DoesWeaponTakeWeaponComponent(hash, componentHash))
+            {
+                API.Log.Debug($"[Weapons] '{saved.SpawnName}' no longer takes '{component}', so it was left off.");
+
+                continue;
+            }
+
+            if (!await FitAsync(ped, hash, componentHash))
+            {
+                API.Log.Debug($"[Weapons] '{component}' would not fit on '{saved.SpawnName}' within {ComponentTimeoutMs}ms.");
+            }
+        }
+
+        if (saved.Tint > 0)
+        {
+            Native.SetPedWeaponTintIndex(ped, hash, saved.Tint);
+        }
+
+        await FillAsync(ped, hash, saved.Ammo);
+    }
+
+    /// <returns>False when the component never took, which is the caller's cue to say so.</returns>
+    private static async Task<bool> FitAsync(int ped, uint weaponHash, uint componentHash)
+    {
+        var deadline = Native.GetGameTimer() + ComponentTimeoutMs;
+
+        Native.GiveWeaponComponentToPed(ped, weaponHash, componentHash);
+
+        while (!Native.HasPedGotWeaponComponent(ped, weaponHash, componentHash))
+        {
+            if (Native.GetGameTimer() > deadline)
+            {
+                return false;
+            }
+
+            Native.GiveWeaponComponentToPed(ped, weaponHash, componentHash);
+
+            await API.Delay(0);
+        }
+
+        return true;
+    }
+
+    private static async Task FillAsync(int ped, uint weaponHash, int ammo)
+    {
+        var wanted = Wanted(weaponHash, ammo);
+        var deadline = Native.GetGameTimer() + AmmoTimeoutMs;
+
+        Native.SetPedAmmo(ped, weaponHash, wanted, false);
+
+        // More than asked for is fine and is left alone. Unlimited ammo holds the count at the
+        // weapon's maximum, and an equality check would put every weapon through the loop below,
+        // forcing each one into the player's hands in turn on the way past.
+        while (Native.GetAmmoInPedWeapon(ped, weaponHash) < wanted)
+        {
+            if (Native.GetGameTimer() > deadline)
+            {
+                return;
+            }
+
+            Native.SetCurrentPedWeapon(ped, weaponHash, true);
+            Native.SetPedAmmo(ped, weaponHash, wanted, false);
+
+            await API.Delay(0);
+        }
+    }
+
+    /// <summary>
+    /// Clamped, because a component may have changed what this weapon can hold, and asking for more
+    /// than that is what would make <see cref="FillAsync"/> never agree.
+    /// </summary>
+    private static int Wanted(uint weaponHash, int ammo) => Math.Min(ammo, WeaponInventory.MaxAmmo(weaponHash));
+}

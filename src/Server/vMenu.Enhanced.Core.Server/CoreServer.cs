@@ -52,9 +52,11 @@ public class CoreServer : IScript
         PermissionsExampleFile.Write();
 
         WalkingStyles.Load();
+        WeaponComponentCatalog.Load();
 
         PermissionsSync.RegisterEventHandlers();
         PedCategories.RegisterEventHandlers();
+        WeaponCatalog.RegisterEventHandlers();
         WalkingStyles.RegisterEventHandlers();
 
         VehicleActions.Register();

@@ -104,6 +104,47 @@ public static class NativeFixer
     }
 
     /// <summary>
+    /// Replacement call for <see cref="Native.GetWeaponHudStats(uint, int)" />, whose second
+    /// parameter is the forty byte struct the game writes into, generated as a raw <em>int</em>
+    /// with no way to produce one.
+    /// </summary>
+    /// <param name="stats">Not filled in by the time this returns. See the remarks.</param>
+    /// <returns>False when the game has no stats for this weapon.</returns>
+    /// <remarks>
+    /// An int argument reserves a single value slot, so the game's forty byte write runs off the end
+    /// of it and takes the client down. <see cref="INativeStruct" /> is the only push that reserves
+    /// the real size: the runtime allocates a buffer of <em>Marshal.SizeOf</em>, hands the game that,
+    /// and copies it back into <paramref name="stats"/> at the start of its next tick. So the values
+    /// are readable from the following frame onwards, not from this call.
+    /// </remarks>
+    public static bool GetWeaponHudStats(uint weaponHash, WeaponHudStatsData stats)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(weaponHash);
+        nativeApi.PushArg(stats);
+        nativeApi.Invoke(8675070465420327855uL, "GetWeaponHudStats");
+
+        return nativeApi.GetResBool(0);
+    }
+
+    /// <summary>
+    /// Replacement call for <see cref="Native.GetWeaponComponentHudStats(uint, int)" />, broken and
+    /// fixed the same way <see cref="GetWeaponHudStats" /> is, down to the delayed
+    /// <paramref name="stats"/>.
+    /// </summary>
+    /// <param name="stats">How much this component moves each bar, positive or negative.</param>
+    /// <returns>False when the game has no stats for this component.</returns>
+    public static bool GetWeaponComponentHudStats(uint componentHash, WeaponHudStatsData stats)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(componentHash);
+        nativeApi.PushArg(stats);
+        nativeApi.Invoke(17640523594652482560uL, "GetWeaponComponentHudStats");
+
+        return nativeApi.GetResBool(0);
+    }
+
+    /// <summary>
     /// Replacement call for <c>SharedAPI.Commands.RegisterCommand</c>, which throws away the id
     /// <see cref="Native.UnregisterCommand(int)" /> needs, so a command registered through it can
     /// never be removed. Use the normal one unless the command has to come and go at runtime.

@@ -35,6 +35,11 @@ public abstract class MenuEntry
 
     public MenuItem.Icon RightIcon { get; init; } = MenuItem.Icon.NONE;
 
+    public Func<MenuItem.Icon>? ReadLeftIcon { get; init; }
+
+    /// <inheritdoc cref="ReadLeftIcon"/>
+    public Func<MenuItem.Icon>? ReadRightIcon { get; init; }
+
     /// <summary>Shows MenuAPI's vehicle stats panel while this entry is highlighted.</summary>
     public Func<VehicleStats?>? VehicleStats { get; init; }
 
@@ -81,8 +86,8 @@ public abstract class MenuEntry
 
         item.Text = Text.Resolve(localizer);
         item.Enabled = IsAllowed;
-        item.LeftIcon = locked ? MenuItem.Icon.LOCK : LeftIcon;
-        item.RightIcon = RightIcon;
+        item.LeftIcon = locked ? MenuItem.Icon.LOCK : (ReadLeftIcon?.Invoke() ?? LeftIcon);
+        item.RightIcon = ReadRightIcon?.Invoke() ?? RightIcon;
 
         item.Description = locked
             ? (LockedDescription.IsEmpty

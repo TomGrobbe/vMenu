@@ -1,0 +1,187 @@
+{
+    // Every weapon a player can be given, and the groups they show up in.
+    //
+    // This is the whole list. There is no way to ask the game which weapons exist, so vMenu reads
+    // them from here instead. That also means adding your own addon weapons is easy: put them in
+    // one of the groups below, or make a group of your own for them. There is no separate list and
+    // no separate menu for addon weapons, they sit right alongside the rest.
+    //
+    // The name on the left of each group, so "Handguns" or "Melee", is what players see in the
+    // menu. Nothing in vMenu depends on these eight groups existing, so delete them and write your
+    // own if you would rather.
+    //
+    // Inside a group, the name on the left is the weapon's spawn name. The text on the right is
+    // what shows next to it. If that text happens to be one of the game's own label keys, such as
+    // "WT_PIST", the game's own translation of it is shown, which means the menu follows whatever
+    // language the player is playing in without you doing anything. Anything else is shown exactly
+    // as you wrote it, which is usually what an addon weapon wants.
+    //
+    // The order in this file is the order in the menu, for the groups and for the weapons inside
+    // them. If you want your own weapons at the very top, move their group to the top of this file.
+    //
+    // Every group also gets its own permission, generated for you when the server starts. The
+    // groups below would create these eight:
+    //
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.handguns
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.assault_rifles
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.shotguns
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.sub_light_machine_guns
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.throwables
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.melee
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.heavy_weapons
+    //     vMenu.Enhanced.Menus.WeaponOptions.Categories.sniper_rifles
+    //
+    // As you can see, the permission is your group name in lowercase, with anything that is not a
+    // letter, a digit or an underscore turned into an underscore. You never have to write those out
+    // yourself: they are listed for you in config/permissions.cfg.example, right next to all the
+    // normal ones, each marked with a note saying it came from this file. Granting
+    // vMenu.Enhanced.Menus.WeaponOptions.Categories.All grants your own groups too.
+    //
+    // If you want to hand out one weapon on its own rather than a whole group, put it in the
+    // "weapons" list in config/model-whitelists.json instead. It stays in the same place in the
+    // menu, it just answers to a permission of its own.
+    //
+    // A weapon can only be in one group. If you list the same one twice, the first group wins and
+    // the server console tells you about it. Spawn names may only contain letters, digits and
+    // underscores, because the same name is what a whitelist permission would be named after.
+    //
+    // weapon_unarmed is deliberately not here. Every player already has it.
+    //
+    // One thing to keep in mind: the menu is built once when a player joins, so after changing this
+    // file you have to restart the resource before anybody sees the difference.
+
+    "Handguns": {
+        "weapon_pistol": "WT_PIST",
+        "weapon_pistol_mk2": "WT_PIST2",
+        "weapon_combatpistol": "WT_PIST_CBT",
+        "weapon_appistol": "WT_PIST_AP",
+        "weapon_pistol50": "WT_PIST_50",
+        "weapon_snspistol": "WT_SNSPISTOL",
+        "weapon_snspistol_mk2": "WT_SNSPISTOL2",
+        "weapon_heavypistol": "WT_HEAVYPSTL",
+        "weapon_vintagepistol": "WT_VPISTOL",
+        "weapon_marksmanpistol": "WT_MKPISTOL",
+        "weapon_revolver": "WT_REVOLVER",
+        "weapon_revolver_mk2": "WT_REVOLVER2",
+        "weapon_doubleaction": "WT_REV_DA",
+        "weapon_navyrevolver": "WT_REV_NV",
+        "weapon_ceramicpistol": "WT_CERPST",
+        "weapon_gadgetpistol": "WT_GDGTPST",
+        "weapon_pistolxm3": "WT_PISTOLXM3",
+        "weapon_tecpistol": "WT_TECPISTOL",
+        "weapon_raypistol": "WT_RAYPISTOL",
+        "weapon_flaregun": "WT_FLAREGUN",
+        "weapon_stungun": "WT_STUN",
+        "weapon_stungun_mp": "WT_STNGUNMP"
+    },
+
+    "Assault Rifles": {
+        "weapon_assaultrifle": "WT_RIFLE_ASL",
+        "weapon_assaultrifle_mk2": "WT_RIFLE_ASL2",
+        "weapon_carbinerifle": "WT_RIFLE_CBN",
+        "weapon_carbinerifle_mk2": "WT_RIFLE_CBN2",
+        "weapon_advancedrifle": "WT_RIFLE_ADV",
+        "weapon_specialcarbine": "WT_RIFLE_SCBN",
+        "weapon_specialcarbine_mk2": "WT_SPCARBINE2",
+        "weapon_bullpuprifle": "WT_BULLRIFLE",
+        "weapon_bullpuprifle_mk2": "WT_BULLRIFLE2",
+        "weapon_compactrifle": "WT_CMPRIFLE",
+        "weapon_militaryrifle": "WT_MLTRYRFL",
+        "weapon_heavyrifle": "WT_HEAVYRIFLE",
+        "weapon_tacticalrifle": "WT_TACRIFLE",
+        "weapon_battlerifle": "WT_BATTLERIFLE"
+    },
+
+    "Shotguns": {
+        "weapon_pumpshotgun": "WT_SG_PMP",
+        "weapon_pumpshotgun_mk2": "WT_SG_PMP2",
+        "weapon_sawnoffshotgun": "WT_SG_SOF",
+        "weapon_assaultshotgun": "WT_SG_ASL",
+        "weapon_bullpupshotgun": "WT_SG_BLP",
+        "weapon_heavyshotgun": "WT_HVYSHOT",
+        "weapon_dbshotgun": "WT_DBSHGN",
+        "weapon_autoshotgun": "WT_AUTOSHGN",
+        "weapon_combatshotgun": "WT_CMBSHGN",
+        "weapon_musket": "WT_MUSKET"
+    },
+
+    "Sub-/Light Machine Guns": {
+        "weapon_microsmg": "WT_SMG_MCR",
+        "weapon_smg": "WT_SMG",
+        "weapon_smg_mk2": "WT_SMG2",
+        "weapon_assaultsmg": "WT_SMG_ASL",
+        "weapon_combatpdw": "WT_COMBATPDW",
+        "weapon_machinepistol": "WT_MCHPIST",
+        "weapon_minismg": "WT_MINISMG",
+        "weapon_gusenberg": "WT_GUSENBERG",
+        "weapon_mg": "WT_MG",
+        "weapon_combatmg": "WT_MG_CBT",
+        "weapon_combatmg_mk2": "WT_MG_CBT2",
+        "weapon_raycarbine": "WT_RAYCARBINE"
+    },
+
+    "Throwables": {
+        "weapon_grenade": "WT_GNADE",
+        "weapon_stickybomb": "WT_GNADE_STK",
+        "weapon_smokegrenade": "WT_GNADE_SMK",
+        "weapon_bzgas": "WT_BZGAS",
+        "weapon_molotov": "WT_MOLOTOV",
+        "weapon_proxmine": "WT_PRXMINE",
+        "weapon_pipebomb": "WT_PIPEBOMB",
+        "weapon_ball": "WT_BALL",
+        "weapon_snowball": "WT_SNWBALL",
+        "weapon_flare": "WT_FLARE",
+        "weapon_acidpackage": "WT_ACIDPACKAGE",
+        "weapon_petrolcan": "WT_PETROL",
+        "weapon_fireextinguisher": "WT_FIRE",
+        "weapon_hazardcan": "WT_HAZARDCAN",
+        "weapon_fertilizercan": "WT_FERTILIZERCAN"
+    },
+
+    "Melee": {
+        "weapon_knife": "WT_KNIFE",
+        "weapon_dagger": "WT_DAGGER",
+        "weapon_switchblade": "WT_SWBLADE",
+        "weapon_machete": "WT_MACHETE",
+        "weapon_hatchet": "WT_HATCHET",
+        "weapon_stone_hatchet": "WT_SHATCHET",
+        "weapon_battleaxe": "WT_BATTLEAXE",
+        "weapon_bat": "WT_BAT",
+        "weapon_golfclub": "WT_GOLFCLUB",
+        "weapon_poolcue": "WT_POOLCUE",
+        "weapon_crowbar": "WT_CROWBAR",
+        "weapon_wrench": "WT_WRENCH",
+        "weapon_hammer": "WT_HAMMER",
+        "weapon_nightstick": "WT_NGTSTK",
+        "weapon_knuckle": "WT_KNUCKLE",
+        "weapon_bottle": "WT_BOTTLE",
+        "weapon_flashlight": "WT_FLASHLIGHT",
+        "weapon_candycane": "WT_CANDYCANE",
+        "weapon_stunrod": "WT_STUNROD",
+        "weapon_newspaper": "WT_NEWSPAPER",
+        "weapon_hackingdevice": "WT_HACKDEVICE"
+    },
+
+    "Heavy Weapons": {
+        "weapon_rpg": "WT_RPG",
+        "weapon_grenadelauncher": "WT_GL",
+        "weapon_compactlauncher": "WT_CMPGL",
+        "weapon_hominglauncher": "WT_HOMLNCH",
+        "weapon_emplauncher": "WT_EMPL",
+        "weapon_firework": "WT_FWRKLNCHR",
+        "weapon_snowlauncher": "WT_SNOWLNCHR",
+        "weapon_minigun": "WT_MINIGUN",
+        "weapon_rayminigun": "WT_RAYMINIGUN",
+        "weapon_railgun": "WT_RAILGUN",
+        "weapon_railgunxm3": "WT_RAILGUNXM3"
+    },
+
+    "Sniper Rifles": {
+        "weapon_sniperrifle": "WT_SNIP_RIF",
+        "weapon_heavysniper": "WT_SNIP_HVY",
+        "weapon_heavysniper_mk2": "WT_SNIP_HVY2",
+        "weapon_marksmanrifle": "WT_MKRIFLE",
+        "weapon_marksmanrifle_mk2": "WT_MKRIFLE2",
+        "weapon_precisionrifle": "WT_PRCSRIFLE"
+    }
+}

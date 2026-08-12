@@ -18,6 +18,8 @@ using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Menus.Weapons;
+using vMenu.Enhanced.Menus.Weapons.Saved;
 using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;
@@ -46,26 +48,6 @@ public sealed class Main : IScript
 
         GameEvents.Initialize();
 
-        SharedAPI.Commands.RegisterCommand("give", false, async (string? weapon) =>
-        {
-            var ped = Native.PlayerPedId();
-            if (string.IsNullOrWhiteSpace(weapon))
-            {
-                API.Log.Error("Invalid weapon");
-                return;
-            }
-            var weaponHash = API.Hash(weapon);
-            if (!Native.IsWeaponValid(weaponHash))
-            {
-                API.Log.Error("Invalid weapon hash: {0}", weaponHash);
-                return;
-            }
-
-            Native.RequestModel(weaponHash);
-
-            Native.GiveWeaponToPed(ped, weaponHash, 1000, true, true);
-        });
-
         ClientJson.Verify();
 
         UserDefaults.Initialize();
@@ -79,6 +61,8 @@ public sealed class Main : IScript
         TeleportSync.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
+
+        WeaponSync.RegisterEventHandlers();
 
         WalkingStyleSync.RegisterEventHandlers();
 
@@ -117,8 +101,11 @@ public sealed class Main : IScript
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
 
-        // Noclip puts every flag on the entity it was moving back to the game's defaults, which takes
-        // god mode with it. Both are idempotent and find their own entity, so the handle is ignored.
+        WeaponUnlimitedAmmo.Initialize();
+        WeaponNoReload.Initialize();
+        ParachuteOptions.Initialize();
+        WeaponLoadoutRespawn.Initialize();
+
         NoClip.NoClip.EntityReleased += _ =>
         {
             PlayerGodMode.Reapply();
@@ -141,10 +128,14 @@ public sealed class Main : IScript
 
         PedModelSync.Request();
 
+        WeaponSync.Request();
+
         WalkingStyleSync.Request();
 
         UserPreferences.Restore();
 
         await MenuRegistry.BuildAsync(MainMenuComposition.Definitions);
+
+        await WeaponLoadoutRespawn.RestoreOnJoinAsync();
     }
 }
