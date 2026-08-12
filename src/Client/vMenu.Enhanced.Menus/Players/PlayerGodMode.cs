@@ -11,14 +11,10 @@ namespace vMenu.Enhanced.Menus.Players;
 /// <summary>
 /// Nothing hurts the player.
 /// </summary>
-/// <remarks>
-/// Invincibility on its own still lets somebody pull the player out of a car or shoot them through
-/// its window, so the three ped flags come with it.
-/// </remarks>
 public static class PlayerGodMode
 {
     private const PedProtections Protections =
-        PedProtections.NotDraggedOut | PedProtections.NotShotInVehicle | PedProtections.NotKnockedOffBike;
+        PedProtections.NotDraggedOut | PedProtections.NotShotInVehicle;
 
     private static readonly PedProtection.Claim Protection = PedProtection.Register();
 

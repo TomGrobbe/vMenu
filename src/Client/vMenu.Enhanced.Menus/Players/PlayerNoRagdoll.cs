@@ -13,6 +13,8 @@ namespace vMenu.Enhanced.Menus.Players;
 /// </summary>
 public static class PlayerNoRagdoll
 {
+    private static readonly PedProtection.Claim Protection = PedProtection.Register();
+
     private static bool _watching;
 
     /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
@@ -44,6 +46,8 @@ public static class PlayerNoRagdoll
     private static void Apply()
     {
         var on = Enabled;
+
+        Protection.Set(on, PedProtections.NotKnockedOffBike);
 
         Watch(on);
 
