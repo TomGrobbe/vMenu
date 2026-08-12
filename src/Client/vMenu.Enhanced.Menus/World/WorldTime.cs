@@ -14,11 +14,7 @@ namespace vMenu.Enhanced.Menus.World;
 /// <summary>Drives the in-game clock from the server's time.</summary>
 public static class WorldTime
 {
-    // NetworkOverrideClockTime takes whole seconds and the clock runs at 30x, so the value it is
-    // given can only change once every 33ms. Running per frame just re-sent a number that had not
-    // moved. At this rate the sun advances a fiftieth of a degree per step, which cannot be seen.
-    // A speed multiplier makes each step that much bigger, which is the point of raising it.
-    private const int IntervalMs = 50;
+    private const int IntervalMs = 100;
 
     private static long _shownDay = long.MinValue;
 
@@ -104,6 +100,7 @@ public static class WorldTime
             GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed) + offset,
             GameClock.SecondsPerGameDay);
 
+        Native.SetMillisecondsPerGameMinute((int)(2000 / GameClock.ClampSpeed(WorldState.TimeSpeed)));
         Native.NetworkOverrideClockTime((int)(total / 3600), (int)(total % 3600 / 60), (int)(total % 60));
 
         ApplyDate(offset);
