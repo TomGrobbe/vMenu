@@ -11,7 +11,12 @@ public static class TickRegistry
 {
     private const string DumpCommand = "vmenu_ticks";
 
-    private static readonly TickEngine Engine = new(ms => API.Delay(ms), () => API.Yield(), Write);
+    private static readonly TickEngine Engine = new(
+        ms => API.Delay(ms),
+        () => API.Yield(),
+        Write,
+        Native.ProfilerEnterScope,
+        Native.ProfilerExitScope);
 
     public static IReadOnlyList<TickHandle> Handles => Engine.Handles;
 

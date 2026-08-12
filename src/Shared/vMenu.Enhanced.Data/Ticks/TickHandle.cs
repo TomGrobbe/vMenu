@@ -14,6 +14,9 @@ public sealed class TickHandle : IDisposable
     private readonly TickRate _rate;
     private readonly Func<bool>? _condition;
 
+    /// <summary>Built once, not per iteration: a per frame tick would otherwise allocate this 60 times a second.</summary>
+    private readonly string _scope;
+
     /// <summary>The loop's exit condition: the state <see cref="Apply"/> committed to, not the state it wants.</summary>
     private bool _running;
 
@@ -40,6 +43,7 @@ public sealed class TickHandle : IDisposable
         _rate = rate;
         _condition = condition;
         _manuallyStarted = autoStart;
+        _scope = $"vMenu.Enhanced.Tick.{name}";
     }
 
     public string Name { get; }
@@ -148,6 +152,11 @@ public sealed class TickHandle : IDisposable
 
             while (_running)
             {
+                // Opened outside the try and closed in the finally, so a handler that throws still
+                // leaves the profiler balanced. An unbalanced scope corrupts every reading after it,
+                // not just this tick's.
+                _engine.EnterScope(_scope);
+
                 try
                 {
                     await _handler();
@@ -170,6 +179,10 @@ public sealed class TickHandle : IDisposable
 
                         break;
                     }
+                }
+                finally
+                {
+                    _engine.ExitScope();
                 }
 
                 await _engine.DelayAsync(_rate.Milliseconds);

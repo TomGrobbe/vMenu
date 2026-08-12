@@ -12,9 +12,14 @@ public enum TickLog
 // Neither runtime has a tick registration that awaits its handler. ScheduleRepeated takes an Action,
 // so an async Task handler re-arms the timer at its first await and the next invocation starts while
 // the previous is still suspended. That leaves driving the loop by hand, which TickHandle does.
-// Both sides own an instance and supply their own waiting and logging. Conditions are a bare
-// Func<bool> so this stays free of the configuration and permission modules.
-public sealed class TickEngine(Func<long, Task> delay, Func<Task> yield, Action<TickLog, string> write)
+// Both sides own an instance and supply their own waiting, logging and profiler scopes. Conditions
+// are a bare Func<bool> so this stays free of the configuration and permission modules.
+public sealed class TickEngine(
+    Func<long, Task> delay,
+    Func<Task> yield,
+    Action<TickLog, string> write,
+    Action<string> enterScope,
+    Action exitScope)
 {
     private readonly List<TickHandle> _registered = [];
 
@@ -103,6 +108,14 @@ public sealed class TickEngine(Func<long, Task> delay, Func<Task> yield, Action<
     internal Task YieldAsync() => yield();
 
     internal void Log(TickLog level, string message) => write(level, message);
+
+    /// <summary>Opens a profiler scope around one iteration, so a slow tick is named in the trace.</summary>
+    // Injected like the rest, because the profiler natives live in each side's own binding and this
+    // assembly deliberately references neither.
+    internal void EnterScope(string scope) => enterScope(scope);
+
+    /// <inheritdoc cref="EnterScope"/>
+    internal void ExitScope() => exitScope();
 
     internal void Unregister(TickHandle handle)
     {
