@@ -215,46 +215,86 @@ public static class WeatherCycle
         new(381, WeatherType.Smog),
     ];
 
+    /// <summary>Where the next different type starts, per entry, or -1 if the table holds only one.</summary>
+    // Declared after Entries because a static initialiser reads the fields above it, and built once
+    // rather than walked per resolve: the walk it replaces ran on every call only to skip repeats.
+    private static readonly int[] NextDifferent = BuildNextDifferent();
+
     public static CycleResolution Resolve(double cycleGameHours)
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
-
-        var index = Entries.Length - 1;
-
-        for (var i = 0; i < Entries.Length; i++)
-        {
-            if (Entries[i].GameHour > position)
-            {
-                index = i - 1;
-
-                break;
-            }
-        }
-
+        var index = BlockAt(position);
         var current = Entries[index].Type;
+        var nextIndex = NextDifferent[index];
 
-        // Neighbouring entries often repeat a type, so index + 1 would announce a change that never
-        // happens on screen. Skipping to the next different type spans the whole run instead.
-        for (var step = 1; step <= Entries.Length; step++)
+        if (nextIndex < 0)
         {
-            var next = Entries[(index + step) % Entries.Length];
-
-            if (next.Type == current)
-            {
-                continue;
-            }
-
-            var until = next.GameHour - position;
-
-            if (until <= 0.0)
-            {
-                until += GameClock.GameHoursPerCycle;
-            }
-
-            return new CycleResolution(current, next.Type, until);
+            return new CycleResolution(current, current, GameClock.GameHoursPerCycle);
         }
 
-        return new CycleResolution(current, current, GameClock.GameHoursPerCycle);
+        var next = Entries[nextIndex];
+        var until = next.GameHour - position;
+
+        // Negative once the next block is back round the start of the cycle.
+        if (until <= 0.0)
+        {
+            until += GameClock.GameHoursPerCycle;
+        }
+
+        return new CycleResolution(current, next.Type, until);
+    }
+
+    /// <summary>The entry in force at <paramref name="position"/>: the last one starting at or before it.</summary>
+    // A binary search over 173 entries, so eight comparisons rather than up to a hundred and seventy
+    // three. It needs the table sorted ascending and starting at hour zero, which is nothing new:
+    // Validate asserts both, and the scan this replaces was equally wrong without them.
+    private static int BlockAt(double position)
+    {
+        var low = 0;
+        var high = Entries.Length - 1;
+
+        while (low < high)
+        {
+            // Rounded up, so low always advances and a two entry range cannot spin.
+            var middle = (low + high + 1) / 2;
+
+            if (Entries[middle].GameHour <= position)
+            {
+                low = middle;
+            }
+            else
+            {
+                high = middle - 1;
+            }
+        }
+
+        return low;
+    }
+
+    // Neighbouring entries often repeat a type, so index + 1 would announce a change that never
+    // happens on screen. Skipping to the next different type spans the whole run instead.
+    private static int[] BuildNextDifferent()
+    {
+        var next = new int[Entries.Length];
+
+        for (var index = 0; index < Entries.Length; index++)
+        {
+            next[index] = -1;
+
+            for (var step = 1; step < Entries.Length; step++)
+            {
+                var candidate = (index + step) % Entries.Length;
+
+                if (Entries[candidate].Type != Entries[index].Type)
+                {
+                    next[index] = candidate;
+
+                    break;
+                }
+            }
+        }
+
+        return next;
     }
 
     /// <summary>Checks the table against every structural property the schedule is known to have.</summary>
