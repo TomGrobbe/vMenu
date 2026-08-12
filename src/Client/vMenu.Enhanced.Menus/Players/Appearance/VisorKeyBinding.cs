@@ -71,7 +71,7 @@ public static class VisorKeyBinding
         // The same command under both mappers, which is how FiveM gives one action a key and a
         // button. Rebinding either one in the game's own settings leaves the other alone.
         Native.RegisterKeyMapping($"+{Command}", Description, "keyboard", key);
-        Native.RegisterKeyMapping($"+{Command}", Description, "PAD_DIGITALBUTTON", button);
+        Native.RegisterKeyMapping($"+{Command}", Description, "PAD_DIGITALBUTTONANY", button);
     }
 
     /// <summary>
