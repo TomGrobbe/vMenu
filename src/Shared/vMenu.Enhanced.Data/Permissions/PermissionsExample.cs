@@ -37,6 +37,9 @@ public static class PermissionsExample
 
     public static string Render(IEnumerable<PermissionExampleEntry> entries)
     {
+        var ordered = entries.ToList();
+        var staffOnly = ResolveStaffOnly(ordered);
+
         var file = new StringBuilder();
 
         file.Append(ExampleFile.Banner(
@@ -52,9 +55,11 @@ public static class PermissionsExample
         file.Append('\n');
         file.Append(ExampleFile.Comment(
             "Give a player a group by one of their identifiers. "
-            + "Use whichever you can look up most easily. For example:"));
-        file.Append("add_principal identifier.steam:110000105959047 group.admin\n");
-        file.Append("add_principal identifier.license:4510587c13e0b645eb8d24bc104601792277ab98 group.admin\n");
+            + "Use whichever you can look up most easily. These two stay commented out because the "
+            + "identifiers in them are made up examples, and running them would hand admin to "
+            + "whoever those actually belong to. Put your own identifier in and remove the #."));
+        file.Append("# add_principal identifier.steam:110000105959047 group.admin\n");
+        file.Append("# add_principal identifier.license:4510587c13e0b645eb8d24bc104601792277ab98 group.admin\n");
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
@@ -64,15 +69,25 @@ public static class PermissionsExample
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
-            "Every permission vMenu Enhanced knows about is listed below, commented out. Uncomment "
-            + "the ones you want to grant, and change the principal if somebody else should have "
-            + "them. Each line already suggests one: " + EveryoneGroup + " for the permissions that "
-            + "are fine for any player, and " + StaffGroup + " for the ones that should stay with "
-            + "your staff. "
-            + "A permission ending in .All grants everything nested underneath it, so granting the "
-            + ".All is usually all you need, unless you want to restrict some features (then don't " +
-            "use .All, and only give the specific permissions you want)." +
-            "Checkout https://docs.vespura.com/vMenu/Enhanced/ for more permissions information."));
+            "Every permission vMenu Enhanced knows about is listed below, ready to run as it is. "
+            + "Each line already suggests who gets it: " + EveryoneGroup + " for the permissions "
+            + "that are fine for any player, and " + StaffGroup + " for the few that should stay "
+            + "with your staff. Change that principal if somebody else should have them."));
+
+        file.Append("#\n");
+        file.Append(ExampleFile.Comment(
+            "A line that has other lines indented under it hands out every one of them, so it is "
+            + "suggested to " + StaffGroup + " as soon as anything below it is. That is why a .All "
+            + "can say " + StaffGroup + " while most of what sits under it says " + EveryoneGroup
+            + ". Those lines are still there on their own, so your players keep them."));
+
+        file.Append("#\n");
+        file.Append(ExampleFile.Comment(
+            "A permission ending in .All grants everything nested underneath it, so keeping only the "
+            + ".All line is usually all you need. When you want to restrict some features, delete "
+            + "the .All and keep only the specific lines below it instead, or put a # in front of "
+            + "the ones you do not want. "
+            + "Checkout https://docs.vespura.com/vMenu/Enhanced/ for more permissions information."));
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
@@ -81,24 +96,64 @@ public static class PermissionsExample
             "permissions.cfg like this to function correctly while executing the file. " +
             "It doesn't make a difference when executing the permissions.cfg from your server.cfg."));
 
-        foreach (var entry in entries)
+        for (var index = 0; index < ordered.Count; index++)
         {
+            var entry = ordered[index];
+
             if (entry.Depth <= SpacedDepth)
             {
                 file.Append('\n');
             }
 
-            file.Append("# ").Append(' ', entry.Depth * 2);
-            file.Append("add_ace " + Principal(entry) + " \"" + entry.Name + "\" allow");
-            file.Append(Annotation(entry));
+            // On its own line above rather than trailing the command, so the command is the whole
+            // line and nothing depends on the console treating a mid line # as a comment.
+            if (Annotation(entry) is { Length: > 0 } note)
+            {
+                file.Append(' ', entry.Depth * 2).Append("# ").Append(note).Append('\n');
+            }
+
+            file.Append(' ', entry.Depth * 2);
+            file.Append("add_ace " + Principal(staffOnly[index]) + " \"" + entry.Name + "\" allow");
             file.Append('\n');
         }
 
         return file.ToString();
     }
 
-    private static string Principal(PermissionExampleEntry entry) =>
-        entry.IsStaffOnly ? StaffGroup : EveryoneGroup;
+    /// <summary>
+    /// Which lines should be suggested to staff rather than to everybody.
+    /// </summary>
+    // A permission grants everything nested underneath it, so one staff only permission anywhere
+    // below a container makes that container staff only too. Without this the file would hand a
+    // container to everybody and quietly undo the restriction on something inside it, which is
+    // exactly what a reader trusting these suggestions would not expect.
+    private static bool[] ResolveStaffOnly(List<PermissionExampleEntry> ordered)
+    {
+        var staffOnly = new bool[ordered.Count];
+
+        // The tree arrives flattened in pre-order, so everything nested under an entry sits directly
+        // after it while the depth stays greater. Walked backwards, so by the time an entry is
+        // reached its own children already answer for their whole subtree and one pass is enough
+        // however deep the nesting goes.
+        for (var index = ordered.Count - 1; index >= 0; index--)
+        {
+            staffOnly[index] = ordered[index].IsStaffOnly;
+
+            for (var below = index + 1; below < ordered.Count && ordered[below].Depth > ordered[index].Depth; below++)
+            {
+                if (ordered[below].Depth == ordered[index].Depth + 1 && staffOnly[below])
+                {
+                    staffOnly[index] = true;
+                    break;
+                }
+            }
+        }
+
+        return staffOnly;
+    }
+
+    private static string Principal(bool isStaffOnly) =>
+        isStaffOnly ? StaffGroup : EveryoneGroup;
 
     private static string Annotation(PermissionExampleEntry entry)
     {
@@ -114,6 +169,6 @@ public static class PermissionsExample
             notes.Add($"also granted by {string.Join(", ", entry.ExtraParents)}");
         }
 
-        return notes.Count > 0 ? $"  # {string.Join(", ", notes)}" : string.Empty;
+        return notes.Count > 0 ? string.Join(", ", notes) : string.Empty;
     }
 }
