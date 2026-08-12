@@ -26,6 +26,10 @@ public static partial class Loc
 
         public const string DisableIdleCameraDescription = "miscsettings.idlecam.desc";
 
+        public const string DeathNotifications = "miscsettings.deathnotifications";
+
+        public const string DeathNotificationsDescription = "miscsettings.deathnotifications.desc";
+
         public const string DisableVehicleIdleCamera = "miscsettings.idlecam.vehicle";
 
         public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";

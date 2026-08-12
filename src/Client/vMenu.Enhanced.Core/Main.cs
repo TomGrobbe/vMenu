@@ -90,6 +90,8 @@ public sealed class Main : IScript
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 
+        PvpMode.Initialize();
+
         PlayerGodMode.Initialize();
         PlayerSuperJump.Initialize();
         PlayerFastRun.Initialize();
@@ -116,6 +118,8 @@ public sealed class Main : IScript
         VisorKeyBinding.Initialize();
 
         PlayerPushEvents.Initialize();
+
+        DeathNotifications.Initialize();
 
         WorldSync.Initialize();
 

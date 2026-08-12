@@ -51,6 +51,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
 
         menu.Entries.Add(new CheckboxEntry
         {
+            Text = MenuText.Key(Loc.MiscSettings.DeathNotifications),
+            Description = MenuText.Key(Loc.MiscSettings.DeathNotificationsDescription),
+            ReadState = () => UserPreferences.AreDeathNotificationsEnabled,
+            OnChanged = changed => UserPreferences.SetDeathNotificationsEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
             Text = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCamera),
             Description = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCameraDescription),
             ReadState = () => UserPreferences.IsVehicleIdleCameraDisabled,

@@ -37,7 +37,6 @@ public abstract class MenuEntry
 
     public Func<MenuItem.Icon>? ReadLeftIcon { get; init; }
 
-    /// <inheritdoc cref="ReadLeftIcon"/>
     public Func<MenuItem.Icon>? ReadRightIcon { get; init; }
 
     /// <summary>Shows MenuAPI's vehicle stats panel while this entry is highlighted.</summary>

@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Shared.Script;
 
 using vMenu.Enhanced.Actions.Server;
+using vMenu.Enhanced.Actions.Server.Events;
 using vMenu.Enhanced.Actions.Server.Handlers;
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data;
@@ -64,6 +65,8 @@ public class CoreServer : IScript
         WorldActions.Register();
         OnlinePlayerActions.Register();
         ActionRegistry.RegisterEventHandlers();
+
+        PedDeathBroadcast.Register();
 
         API.Log.Info("Server started");
     }

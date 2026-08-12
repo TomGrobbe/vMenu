@@ -111,6 +111,8 @@ public static class WeaponSync
         // every answer it already gave meaningless.
         WeaponComponentProbe.Forget();
 
+        WeaponHashNames.Forget();
+
         HasReceived = true;
 
         API.Log.Debug($"[Weapons] Received {CachedCategories.Count} category/categories and {CachedComponents.Count} component(s).");

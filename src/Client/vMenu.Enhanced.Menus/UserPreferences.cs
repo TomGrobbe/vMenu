@@ -39,14 +39,14 @@ public static class UserPreferences
 
     public static void SetLanguage(LanguageId language) => UserDefaults.Language.Value = language.Code;
 
-    /// <summary>
-    /// The stored value rather than the game's, unlike the alignment above: neither native has a
-    /// matching getter, so what was last set is the only account of it there is.
-    /// </summary>
     public static bool IsIdleCameraDisabled => UserDefaults.MiscDisableIdleCamera.Value;
 
-    /// <inheritdoc cref="IsIdleCameraDisabled"/>
     public static bool IsVehicleIdleCameraDisabled => UserDefaults.MiscDisableVehicleIdleCamera.Value;
+
+    public static bool AreDeathNotificationsEnabled => UserDefaults.MiscDeathNotifications.Value;
+
+    public static void SetDeathNotificationsEnabled(bool enabled) =>
+        UserDefaults.MiscDeathNotifications.Value = enabled;
 
     // Both natives are plain flags the game remembers, so they are set when the value moves rather
     // than held down by a tick.

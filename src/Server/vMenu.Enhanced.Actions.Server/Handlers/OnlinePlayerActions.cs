@@ -88,7 +88,7 @@ public static class OnlinePlayerActions
 
         var rows = new List<string>();
 
-        foreach (var player in ConnectedPlayers())
+        foreach (var player in ConnectedPlayers.All())
         {
             if (Matches(player, query))
             {
@@ -127,43 +127,6 @@ public static class OnlinePlayerActions
         }
 
         return MatchesIdentifier(player.ServerId, query);
-    }
-
-    /// <summary>
-    /// Everybody actually connected right now.
-    /// </summary>
-    /// <remarks>
-    /// Read straight from the game rather than from <c>API.Players.All</c>. That is a cache the
-    /// runtime fills on demand and never prunes, so it keeps handing back players who have already
-    /// left: they come through with an empty name, they fail every action, and nothing ever notices
-    /// they are gone.
-    /// </remarks>
-    private static List<ConnectedPlayer> ConnectedPlayers()
-    {
-        var count = Native.GetNumPlayerIndices();
-        var players = new List<ConnectedPlayer>(count);
-
-        for (var index = 0; index < count; index++)
-        {
-            var handle = Native.GetPlayerFromIndex(index);
-
-            if (string.IsNullOrEmpty(handle)
-                || !int.TryParse(handle, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
-                || !Native.DoesPlayerExist(handle))
-            {
-                continue;
-            }
-
-            var name = Native.GetPlayerName(handle);
-
-            // Falls back to the server id so a row is never blank. Somebody you cannot see is
-            // somebody you cannot pick.
-            players.Add(new ConnectedPlayer(
-                serverId,
-                string.IsNullOrWhiteSpace(name) ? $"#{serverId}" : name));
-        }
-
-        return players;
     }
 
     private static bool MatchesIdentifier(int handle, string query)
@@ -441,16 +404,6 @@ public static class OnlinePlayerActions
         return ped != 0 && Native.DoesEntityExist(ped) ? ped : null;
     }
 
-    /// <summary>One connected player, as the list sees them.</summary>
-    // A plain class rather than a record, matching the rest of this codebase: the generated equality
-    // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
-    private sealed class ConnectedPlayer(int serverId, string name)
-    {
-        public int ServerId { get; } = serverId;
-
-        public string Name { get; } = name;
-    }
-
     private sealed class PendingMessage(int target, TaskCompletionSource<bool> delivered)
     {
         public int Target { get; } = target;
@@ -479,7 +432,7 @@ public static class OnlinePlayerActions
     {
         var current = new HashSet<int>();
 
-        foreach (var player in ConnectedPlayers())
+        foreach (var player in ConnectedPlayers.All())
         {
             current.Add(player.ServerId);
         }

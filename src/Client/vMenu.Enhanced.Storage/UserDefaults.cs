@@ -27,6 +27,9 @@ public static class UserDefaults
     public static BoolDefault MiscDisableVehicleIdleCamera { get; } =
         new("miscDisableVehicleIdleCamera") { Default = false };
 
+    public static BoolDefault MiscDeathNotifications { get; } =
+        new("miscDeathNotifications") { Default = true };
+
     #endregion
 
     #region Player Options
@@ -160,6 +163,7 @@ public static class UserDefaults
         Language,
         MiscDisableIdleCamera,
         MiscDisableVehicleIdleCamera,
+        MiscDeathNotifications,
 
         PlayerGodMode,
         PlayerSuperJump,

@@ -38,6 +38,7 @@ public static class ConfigCatalog
             MenuAppearance.TitleFont,
             MenuAppearance.HeaderGlare,
         ]),
+        new("Gameplay", [Gameplay.PvpMode]),
         new("Vehicle Options",
         [
             VehicleOptions.DeleteVehicleDistance,
