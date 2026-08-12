@@ -1,8 +1,9 @@
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
+using vMenu.Enhanced.Ticks;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
 
@@ -16,9 +17,11 @@ public static class PlayerGodMode
     private const PedProtections Protections =
         PedProtections.NotDraggedOut | PedProtections.NotShotInVehicle;
 
+    private const int RepairIntervalMs = 1000;
+
     private static readonly PedProtection.Claim Protection = PedProtection.Register();
 
-    private static bool _watching;
+    private static TickHandle? _tick;
 
     /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
     public static bool Enabled => UserDefaults.PlayerGodMode.Value && IsAllowed;
@@ -29,6 +32,9 @@ public static class PlayerGodMode
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;
+
+        _tick = TickRegistry.Register(
+            "Player.GodMode", Hold, TickRate.Every(RepairIntervalMs), () => Enabled);
 
         Apply();
     }
@@ -60,42 +66,30 @@ public static class PlayerGodMode
 
         Protection.Set(on, Protections);
 
-        Watch(on);
+        Write(on);
 
+        if (!on)
+        {
+            ClearPedInvincibility();
+        }
+
+        _tick?.Reevaluate();
+    }
+
+    private static void Hold() => Write(true);
+
+    
+    private static void Write(bool on) =>
+        Native.SetPlayerInvincibleKeepRagdollEnabled(Native.PlayerId(), on);
+
+    
+    private static void ClearPedInvincibility()
+    {
         var ped = Native.PlayerPedId();
 
-        if (ped == 0 || !Native.DoesEntityExist(ped))
+        if (ped != 0 && Native.DoesEntityExist(ped))
         {
-            return;
+            Native.SetEntityInvincible(ped, false, false);
         }
-
-        Native.SetEntityInvincible(ped, on, false);
     }
-
-    private static void Watch(bool watching)
-    {
-        if (watching == _watching)
-        {
-            return;
-        }
-
-        _watching = watching;
-
-        if (watching)
-        {
-            LocalPlayerTicks.PlayerPedIdChanged += OnPedChanged;
-            LocalPlayerTicks.PlayerPedRevived += OnRevived;
-
-            return;
-        }
-
-        LocalPlayerTicks.PlayerPedIdChanged -= OnPedChanged;
-        LocalPlayerTicks.PlayerPedRevived -= OnRevived;
-    }
-
-    // A respawn hands the player a new ped, on the game's defaults, so the answer has to be written again.
-    private static void OnPedChanged(PlayerPedIdChanged _) => Apply();
-
-    // Getting back up in the same body keeps the handle, so the change above never fires for it.
-    private static void OnRevived(PlayerPedRevived _) => Apply();
 }
