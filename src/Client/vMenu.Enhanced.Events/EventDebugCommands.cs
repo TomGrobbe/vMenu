@@ -134,7 +134,7 @@ public static class EventDebugCommands
             where TPayload : struct
         {
             // Kept in a variable so detaching hands back the very delegate that was attached.
-            Action<TPayload> log = payload => API.Log.Info($"[Events] {payload}");
+            Action<TPayload> log = payload => API.Log.Info($"[Events] [{Native.GetGameTimer()}] {payload}");
 
             return new Hook
             {
