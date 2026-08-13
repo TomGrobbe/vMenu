@@ -16,26 +16,24 @@ in your `server.cfg`.
 | Turn noclip on and off | `F2` | not bound | `vMenu.Enhanced.KeyBindings.NoClipToggleKey` |
 | Run the teleport the player picked | `F10` | not bound | `vMenu.Enhanced.KeyBindings.TeleportKey` |
 | Flip a helmet visor, held | `F11` | D-pad right | `vMenu.Enhanced.KeyBindings.VisorToggleKey` and `vMenu.Enhanced.KeyBindings.VisorToggleButton` |
+| Expand or zoom the minimap | `Z` | D-pad down | none, see below |
 
 Noclip also uses `W`, `S`, `A`, `D`, `Q`, `Z`, `Left Shift`, `Left Ctrl` and `H` while it is switched
 on. Those are ordinary bindings too, so they show up in the same settings list and can be changed the
 same way.
 
-## About the visor key
+## The minimap key
 
-This one is held rather than tapped, and there is a good reason for it.
+This one has no convar, and it won't get one either. Your players can choose what the key does
+under **Misc Settings**, and they can change the keybind themselves in the pause menu settings.
 
-On a controller the default is D-pad right, which is also the button that works your headlights when
-you are on a bike. That is not an accident. It is what GTA itself does: tap the button for the
-headlights, hold it for your visor. vMenu does the same, and while it is working out which one you
-meant it holds the headlights off for that fraction of a second so a hold does not flick them on and
-off on the way past.
+Depending on what option they chose in the Misc Settings, the radar will either expand or zoom out.
+The effect lasts for 10 seconds or until the key is pressed again.
 
-It only does anything if you are wearing a helmet that actually has a visor. Most hats do not, and
-pressing the key while wearing one of those does nothing at all, which is not an error.
+## The visor key
+Some helmets on the multiplayer peds have a visor or gadget that can be flipped up or down. Holding down
+the Visor key while on foot or on a motorcyle will allow you to flip your visor/gadget. Just like in GTA Online.
 
-Goggles are a special case. The game only has an animation for pushing goggles up while you are
-standing, so trying it while riding tells you so rather than playing the wrong animation.
 
 ## Changing a default
 

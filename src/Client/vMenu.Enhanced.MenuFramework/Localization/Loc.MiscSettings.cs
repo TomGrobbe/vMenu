@@ -33,5 +33,27 @@ public static partial class Loc
         public const string DisableVehicleIdleCamera = "miscsettings.idlecam.vehicle";
 
         public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";
+
+        public const string MinimapAction = "miscsettings.minimap.action";
+
+        public const string MinimapActionDescription = "miscsettings.minimap.action.desc";
+
+        public const string MinimapActionOff = "miscsettings.minimap.action.off";
+
+        public const string MinimapActionExpand = "miscsettings.minimap.action.expand";
+
+        public const string MinimapActionZoom = "miscsettings.minimap.action.zoom";
+
+        public const string MinimapZoom = "miscsettings.minimap.zoom";
+
+        public const string MinimapZoomDescription = "miscsettings.minimap.zoom.desc";
+
+        public const string MinimapZoomLocked = "miscsettings.minimap.zoom.locked";
+
+        public const string MinimapAlwaysOn = "miscsettings.minimap.alwayson";
+
+        public const string MinimapAlwaysOnDescription = "miscsettings.minimap.alwayson.desc";
+
+        public const string MinimapAlwaysOnLocked = "miscsettings.minimap.alwayson.locked";
     }
 }

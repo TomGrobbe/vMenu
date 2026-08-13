@@ -4,6 +4,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -26,6 +27,8 @@ public static class UserPreferences
 
         SetIdleCameraDisabled(UserDefaults.MiscDisableIdleCamera.Value);
         SetVehicleIdleCameraDisabled(UserDefaults.MiscDisableVehicleIdleCamera.Value);
+
+        MinimapControls.Apply();
 
         // After the alignment, which decides the side the panel sits on.
         TickOverlay.Restore();

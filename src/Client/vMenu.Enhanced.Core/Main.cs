@@ -14,6 +14,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
+using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Teleport;
@@ -116,6 +117,7 @@ public sealed class Main : IScript
 
         TeleportKeyBinding.Initialize();
         VisorKeyBinding.Initialize();
+        MinimapControls.Initialize();
 
         PlayerPushEvents.Initialize();
 

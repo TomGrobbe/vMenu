@@ -1,11 +1,10 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Misc;
 
 namespace vMenu.Enhanced.Menus;
 
 /// <summary>Settings that belong to the player rather than to the server.</summary>
-// Ungated on purpose. Everything here changes how vMenu presents itself to one player, and gating
-// the language picker would let a server lock someone out of reading their own menu.
 [VMenu(
     TitleKey = Loc.MiscSettings.Title,
     SubtitleKey = Loc.MiscSettings.Subtitle,
@@ -63,6 +62,47 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Description = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCameraDescription),
             ReadState = () => UserPreferences.IsVehicleIdleCameraDisabled,
             OnChanged = changed => UserPreferences.SetVehicleIdleCameraDisabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.MinimapAction),
+            Description = MenuText.Key(Loc.MiscSettings.MinimapActionDescription),
+            Options =
+            [
+                MenuText.Key(Loc.MiscSettings.MinimapActionOff),
+                MenuText.Key(Loc.MiscSettings.MinimapActionExpand),
+                MenuText.Key(Loc.MiscSettings.MinimapActionZoom),
+            ],
+            ReadSelectedIndex = () => MinimapControls.Action,
+            OnIndexChanged = changed =>
+            {
+                MinimapControls.Action = changed.NewIndex;
+
+                MenuRegistry.Refresh(changed.Menu);
+            },
+        });
+
+        menu.Entries.Add(new SliderEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.MinimapZoom),
+            Description = MenuText.Key(Loc.MiscSettings.MinimapZoomDescription),
+            LockedDescription = MenuText.Key(Loc.MiscSettings.MinimapZoomLocked),
+            Gate = MenuGate.When(() => MinimapControls.Action == MinimapControls.Zoom),
+            Min = MinimapControls.MinZoom,
+            Max = MinimapControls.MaxZoom,
+            ReadPosition = () => MinimapControls.ZoomAmount,
+            OnMoved = moved => MinimapControls.ZoomAmount = moved.NewPosition,
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.MinimapAlwaysOn),
+            Description = MenuText.Key(Loc.MiscSettings.MinimapAlwaysOnDescription),
+            LockedDescription = MenuText.Key(Loc.MiscSettings.MinimapAlwaysOnLocked),
+            Gate = MenuGate.When(() => MinimapControls.Action != MinimapControls.Off),
+            ReadState = () => MinimapControls.AlwaysOn,
+            OnChanged = changed => MinimapControls.AlwaysOn = changed.Checked,
         });
     }
 

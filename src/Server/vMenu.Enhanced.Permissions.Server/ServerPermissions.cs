@@ -118,7 +118,7 @@ public static class ServerPermissions
             API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds, whitelistedWeapons);
         }
 
-        API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {source}: {string.Join(", ", granted)}");
+        API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {Native.GetPlayerName(source)}: {string.Join(", ", granted)}");
     }
 
     public static void LogTree()

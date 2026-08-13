@@ -30,6 +30,15 @@ public static class UserDefaults
     public static BoolDefault MiscDeathNotifications { get; } =
         new("miscDeathNotifications") { Default = true };
 
+    public static IntDefault MiscMinimapAction { get; } =
+        new("miscMinimapAction") { Default = 0 };
+
+    public static IntDefault MiscMinimapZoom { get; } =
+        new("miscMinimapZoom") { Default = 5 };
+
+    public static BoolDefault MiscMinimapAlwaysOn { get; } =
+        new("miscMinimapAlwaysOn") { Default = false };
+
     #endregion
 
     #region Player Options
@@ -164,6 +173,9 @@ public static class UserDefaults
         MiscDisableIdleCamera,
         MiscDisableVehicleIdleCamera,
         MiscDeathNotifications,
+        MiscMinimapAction,
+        MiscMinimapZoom,
+        MiscMinimapAlwaysOn,
 
         PlayerGodMode,
         PlayerSuperJump,

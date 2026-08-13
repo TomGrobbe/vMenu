@@ -88,6 +88,14 @@ public static class MenuRegistry
         BackOutOfUnreachableMenu();
     }
 
+    public static void Refresh(Menu menu)
+    {
+        if (HostsByMenu.TryGetValue(menu, out var host))
+        {
+            host.Refresh(Localizer.Current);
+        }
+    }
+
     /// <summary>Detaches every subscription. Call when the resource is shutting down or reloading.</summary>
     public static void Dispose()
     {
