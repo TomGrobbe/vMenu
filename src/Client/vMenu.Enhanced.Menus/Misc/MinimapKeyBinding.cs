@@ -1,4 +1,3 @@
-using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 namespace vMenu.Enhanced.Menus.Misc;
@@ -21,11 +20,11 @@ public static class MinimapKeyBinding
 
         _registered = true;
 
+        var padCommand = KeyMapping.Pad(Command);
+
         SharedAPI.Commands.RegisterCommand(Command, false, onPressed);
+        SharedAPI.Commands.RegisterCommand(padCommand, false, onPressed);
 
-        const string Description = "vMenu: Expand or zoom the minimap";
-
-        Native.RegisterKeyMapping(Command, Description, "keyboard", DefaultKey);
-        Native.RegisterKeyMapping(Command, Description, "PAD_DIGITALBUTTONANY", DefaultButton);
+        KeyMapping.Register(Command, padCommand, "vMenu: Expand or zoom the minimap", DefaultKey, DefaultButton);
     }
 }

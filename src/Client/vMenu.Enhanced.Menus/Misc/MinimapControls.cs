@@ -148,16 +148,12 @@ public static class MinimapControls
             "Minimap.Zoom",
             ZoomFrame,
             TickRate.PerFrame,
-            // Kept alive past the moment the zoom is no longer wanted, because the way back to the
-            // normal radar is a glide and not calling the native at all is where that glide ends.
             condition: () => ZoomWanted || IsGliding);
 
         _state = TickRegistry.Register(
             "Minimap.State",
             StateFrame,
             TickRate.Every(250),
-            // Zoom needs nothing re-asserted, the per frame tick above being the whole of it, so this
-            // one only runs for an expansion or to time a key press out.
             condition: () => _temporary || ExpandWanted);
     }
 
@@ -183,7 +179,7 @@ public static class MinimapControls
         && Native.IsRadarPreferenceSwitchedOn()
         && !Native.IsPlayerSwitchInProgress()
         && Native.IsScreenFadedIn();
-    
+
     // Main thread needed for some natives.
     private static void OnPressed() => SharedAPI.RunOnMainThread(Toggle);
 

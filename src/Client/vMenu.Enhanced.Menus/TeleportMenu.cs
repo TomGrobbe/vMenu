@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Numerics;
 
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Client.Extensions;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;

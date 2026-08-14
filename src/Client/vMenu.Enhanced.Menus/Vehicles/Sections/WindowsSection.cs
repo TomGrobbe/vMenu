@@ -82,7 +82,7 @@ internal static class WindowsSection
         return rows;
     }
 
-    private static ListEntry WindowRow(int index, string textKey) => new ()
+    private static ListEntry WindowRow(int index, string textKey) => new()
     {
         Text = MenuText.Key(textKey),
         Description = MenuText.Key(Loc.VehicleOptions.WindowDescription),

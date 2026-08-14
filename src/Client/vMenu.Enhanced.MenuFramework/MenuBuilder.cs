@@ -1,5 +1,3 @@
-using CitizenFX.FiveM.Client;
-
 using MenuAPI;
 
 using vMenu.Enhanced.MenuFramework.Localization;

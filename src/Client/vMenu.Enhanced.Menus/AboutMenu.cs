@@ -1,10 +1,9 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
-
-using vMenu.Enhanced.Data.Configuration;
 
 using AboutSetting = vMenu.Enhanced.Data.Configuration.Settings.About;
 using DebuggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Debugging;

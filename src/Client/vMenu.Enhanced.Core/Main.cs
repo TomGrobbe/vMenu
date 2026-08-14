@@ -1,5 +1,4 @@
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Script;
 
 using MenuAPI;

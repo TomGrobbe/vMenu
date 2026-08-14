@@ -74,7 +74,7 @@ internal static class RgbPicker
         RgbValue current,
         RgbTarget target,
         Action<int> set,
-        Func<int> get) => new ()
+        Func<int> get) => new()
         {
             Text = MenuText.Key(textKey),
             Description = MenuText.Key(Loc.VehicleOptions.ChannelDescription),

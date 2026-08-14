@@ -17,7 +17,7 @@ public static class UserDefaults
     public static BoolDefault MiscRightAlignMenu { get; } =
         new("miscRightAlignMenu") { Default = true };
 
-    
+
     public static StringDefault Language { get; } =
         new("language") { Default = "en" };
 
@@ -48,10 +48,10 @@ public static class UserDefaults
 
     public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
 
-    
+
     public static BoolDefault PlayerSuperJump { get; } = new("playerSuperJump") { Default = false };
 
-    
+
     public static BoolDefault PlayerFastRun { get; } = new("playerFastRun") { Default = false };
 
     public static BoolDefault PlayerFastSwim { get; } = new("playerFastSwim") { Default = false };

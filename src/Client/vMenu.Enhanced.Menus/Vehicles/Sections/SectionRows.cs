@@ -1,5 +1,4 @@
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Client.Extensions;
 
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;

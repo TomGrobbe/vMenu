@@ -66,7 +66,7 @@ public static class WeaponCatalog
         _payload = ServerJson.Serialize(Categories);
     }
 
-    
+
     public static void RegisterEventHandlers() =>
         API.OnNetEvent(WeaponEvents.Request, new Action<Player>(OnRequested), false);
 

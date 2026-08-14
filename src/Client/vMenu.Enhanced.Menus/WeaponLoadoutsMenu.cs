@@ -7,7 +7,6 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;
-using vMenu.Enhanced.Permissions;
 
 using WeaponLoadoutsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponLoadouts;
 

@@ -63,15 +63,19 @@ public static class VisorKeyBinding
             button = FallbackButton;
         }
 
+        var padCommand = KeyMapping.Pad(Command);
+
         SharedAPI.Commands.RegisterCommand($"+{Command}", false, new Action(OnPressed));
         SharedAPI.Commands.RegisterCommand($"-{Command}", false, new Action(() => _held = false));
+        SharedAPI.Commands.RegisterCommand($"+{padCommand}", false, new Action(OnPressed));
+        SharedAPI.Commands.RegisterCommand($"-{padCommand}", false, new Action(() => _held = false));
 
-        const string Description = "vMenu: Toggle helmet visor (hold)";
-
-        // The same command under both mappers, which is how FiveM gives one action a key and a
-        // button. Rebinding either one in the game's own settings leaves the other alone.
-        Native.RegisterKeyMapping($"+{Command}", Description, "keyboard", key);
-        Native.RegisterKeyMapping($"+{Command}", Description, "PAD_DIGITALBUTTONANY", button);
+        KeyMapping.Register(
+            $"+{Command}",
+            $"+{padCommand}",
+            "vMenu: Toggle helmet visor (hold)",
+            key,
+            button);
     }
 
     /// <summary>

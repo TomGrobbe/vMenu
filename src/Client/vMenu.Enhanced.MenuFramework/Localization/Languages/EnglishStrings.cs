@@ -778,7 +778,7 @@ internal static class EnglishStrings
             [Loc.DeathNotifications.BeatenBy] = "was beaten to death by ~y~{killer}~s~",
 
             [Loc.NoClip.ToggleDenied] = "You are not allowed to toggle noclip.",
-            
+
             [Loc.RecordingMenu.Title] = "Pictures & Recording",
             [Loc.RecordingMenu.Subtitle] = "Recording Options",
             [Loc.RecordingMenu.LinkDescription] = "A menu that lets you record and take screenshots.",
@@ -800,7 +800,7 @@ internal static class EnglishStrings
             [Loc.RecordingMenu.OpenRockstarEditor] = "Open Rockstar Editor",
             [Loc.RecordingMenu.OpenRockstarEditorDescription] = "Opens the Rockstar Editor.",
             [Loc.RecordingMenu.LeftRockstarEditor] = "You left the Rockstar Editor.",
-            
+
             [Loc.TeleportMenu.Title] = "Teleportation Menu",
             [Loc.TeleportMenu.Subtitle] = "Teleportation Menu",
             [Loc.TeleportMenu.LinkDescription] = "Teleport around the map.",
@@ -870,7 +870,7 @@ internal static class EnglishStrings
             [Loc.DeveloperFeatures.BoxOpacityDescription] = "How solidly the coloured boxes are filled in. The outlines and labels around them are not affected. Currently {opacity}.",
             [Loc.DeveloperFeatures.TicksOverlay] = "Ticks Overlay",
             [Loc.DeveloperFeatures.TicksOverlayDescription] = "Shows a panel listing every loop vMenu is running and whether it's currently on. You can also use the ~d~/vmenu_ticks_overlay~s~ command to toggle this overlay.",
-            
+
             [Loc.PlayerOptions.Title] = "Player Options",
             [Loc.PlayerOptions.Subtitle] = "Player Options",
             [Loc.PlayerOptions.LinkDescription] = "Menu containing player options",

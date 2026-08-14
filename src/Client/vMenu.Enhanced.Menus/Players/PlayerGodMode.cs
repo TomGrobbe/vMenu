@@ -78,11 +78,11 @@ public static class PlayerGodMode
 
     private static void Hold() => Write(true);
 
-    
+
     private static void Write(bool on) =>
         Native.SetPlayerInvincibleKeepRagdollEnabled(Native.PlayerId(), on);
 
-    
+
     private static void ClearPedInvincibility()
     {
         var ped = Native.PlayerPedId();
