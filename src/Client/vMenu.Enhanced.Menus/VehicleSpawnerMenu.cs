@@ -292,8 +292,10 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             return;
         }
 
-        Notifications.Success(MenuText.Key(
-            Loc.VehicleSpawner.Spawned,
-            ("vehicle", MenuText.Literal(GetVehicleDisplayName(API.Hash(modelName))))));
+        Notifications.Success(
+            MenuText.Key(
+                Loc.VehicleSpawner.Spawned,
+                ("vehicle", MenuText.Literal(GetVehicleDisplayName(API.Hash(modelName))))),
+            Notifications.SpawnDurationMs);
     }
 }

@@ -49,6 +49,8 @@ public sealed class PedModelsMenu : MenuDefinition
             // Copied out of the loop variable so each entry's callbacks capture its own category.
             var current = category;
 
+            var filter = new PedCategoryFilter(current);
+
             menu.Entries.Add(new SubmenuEntry
             {
                 Text = MenuText.Literal(current.Name),
@@ -56,9 +58,9 @@ public sealed class PedModelsMenu : MenuDefinition
                     Loc.PedModels.CategoryDescription,
                     ("category", MenuText.Literal(current.Name))),
                 MenuTitle = MenuText.Literal(current.Name),
-                MenuSubtitle = MenuText.Key(Loc.PedModels.CategorySubtitle),
+                MenuSubtitle = MenuText.From(filter.Subtitle),
                 Gate = MenuGate.When(() => ClientPedPermissions.CanSpawnCategory(current.Name)),
-                Build = categoryMenu => BuildCategoryMenu(categoryMenu, current),
+                Build = categoryMenu => BuildCategoryMenu(categoryMenu, current, filter),
             });
         }
 
@@ -82,14 +84,17 @@ public sealed class PedModelsMenu : MenuDefinition
         });
     }
 
-    private static void BuildCategoryMenu(MenuBuilder categoryMenu, PedModelCategory category)
+    private static void BuildCategoryMenu(MenuBuilder categoryMenu, PedModelCategory category, PedCategoryFilter filter)
     {
         var categoryName = category.Name;
+
+        filter.Attach(categoryMenu);
 
         foreach (var ped in category.Peds)
         {
             var model = ped.Model;
             var label = ped.Label;
+            var searchText = PedCategoryFilter.SearchText(model, label);
 
             categoryMenu.Entries.Add(new ButtonEntry
             {
@@ -102,6 +107,7 @@ public sealed class PedModelsMenu : MenuDefinition
                     ("model", MenuText.Literal(model)),
                     ("label", MenuText.Literal(label))),
                 Gate = MenuGate.When(() => ClientPedPermissions.CanSpawnPed(model, categoryName)),
+                Configure = item => item.ItemData = searchText,
                 OnSelectedAsync = _ => SpawnAsync(model, label, categoryName),
             });
         }
@@ -185,6 +191,8 @@ public sealed class PedModelsMenu : MenuDefinition
             return;
         }
 
-        Notifications.Success(MenuText.Key(Loc.PedModels.Spawned, ("ped", MenuText.Literal(label))));
+        Notifications.Success(
+            MenuText.Key(Loc.PedModels.Spawned, ("ped", MenuText.Literal(label))),
+            Notifications.SpawnDurationMs);
     }
 }

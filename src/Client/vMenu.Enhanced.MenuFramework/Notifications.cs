@@ -17,6 +17,8 @@ public static class Notifications
     /// <summary>Long enough to read a sentence without hurrying, short enough not to sit in the way.</summary>
     public const int DefaultDurationMs = 8500;
 
+    public const int SpawnDurationMs = 4000;
+
     // Measured off the game's own HUD. No native reports either, the map being a scaleform rather
     // than a HUD component whose size could be asked for.
     private const float MinimapHeight = 1f / 5.674f;

@@ -552,15 +552,19 @@ public sealed class SavedPedsMenu : MenuDefinition
 
         if (differences.Count == 0)
         {
-            Notifications.Success(MenuText.Key(Loc.SavedPeds.RestoredExactly, ("name", name)));
+            Notifications.Success(
+                MenuText.Key(Loc.SavedPeds.RestoredExactly, ("name", name)),
+                Notifications.SpawnDurationMs);
 
             return;
         }
 
-        Notifications.Warning(MenuText.Key(
-            Loc.SavedPeds.RestoredPartially,
-            ("name", name),
-            ("count", MenuText.Literal(differences.Count.ToString(CultureInfo.InvariantCulture)))));
+        Notifications.Warning(
+            MenuText.Key(
+                Loc.SavedPeds.RestoredPartially,
+                ("name", name),
+                ("count", MenuText.Literal(differences.Count.ToString(CultureInfo.InvariantCulture)))),
+            Notifications.SpawnDurationMs);
     }
 
     private async Task EditAsync(SavedPedEntry entry)

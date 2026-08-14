@@ -29,8 +29,6 @@ public static class ConfigCatalog
             KeyBindings.MenuToggleKey,
             KeyBindings.NoClipToggleKey,
             KeyBindings.TeleportKey,
-            KeyBindings.VisorToggleKey,
-            KeyBindings.VisorToggleButton,
         ]),
         new("Menu Appearance",
         [

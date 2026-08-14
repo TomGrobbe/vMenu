@@ -39,6 +39,9 @@ public static class UserDefaults
     public static BoolDefault MiscMinimapAlwaysOn { get; } =
         new("miscMinimapAlwaysOn") { Default = false };
 
+    public static BoolDefault MiscFingerPointing { get; } =
+        new("miscFingerPointing") { Default = true };
+
     #endregion
 
     #region Player Options
@@ -141,6 +144,16 @@ public static class UserDefaults
 
     #endregion
 
+    #region Pointing Debug
+
+    /// <summary>Outside the Developer Features region for the same reason <see cref="TicksOverlay"/> is.</summary>
+    // It draws where pointing thinks the player's shoulder is and whether the arm is blocked. Its
+    // toggle command is open to everyone, so a player who left it on gets it back wherever they play
+    // and can always switch it off again.
+    public static BoolDefault PointingDebug { get; } = new("pointingDebug") { Default = false };
+
+    #endregion
+
     #region Weapons
 
     public static BoolDefault WeaponsUnlimitedAmmo { get; } = new("weaponsUnlimitedAmmo") { Default = false };
@@ -176,6 +189,7 @@ public static class UserDefaults
         MiscMinimapAction,
         MiscMinimapZoom,
         MiscMinimapAlwaysOn,
+        MiscFingerPointing,
 
         PlayerGodMode,
         PlayerSuperJump,
@@ -216,6 +230,8 @@ public static class UserDefaults
         DevBoxOpacity,
 
         TicksOverlay,
+
+        PointingDebug,
     ];
 
     /// <summary>Call once, after <c>ClientJson.Verify</c>.</summary>

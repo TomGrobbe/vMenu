@@ -45,5 +45,9 @@ public static partial class Loc
         public const string TicksOverlay = "devfeatures.ticksoverlay";
 
         public const string TicksOverlayDescription = "devfeatures.ticksoverlay.desc";
+
+        public const string PointingProbe = "devfeatures.pointingprobe";
+
+        public const string PointingProbeDescription = "devfeatures.pointingprobe.desc";
     }
 }

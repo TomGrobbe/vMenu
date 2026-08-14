@@ -16,6 +16,18 @@ public static partial class Loc
 
         public const string CategorySubtitle = "pedmodels.category.subtitle";
 
+        public const string CategorySubtitleFiltered = "pedmodels.category.subtitle.filtered";
+
+        public const string FilterButton = "pedmodels.filter.button";
+
+        public const string FilterPrompt = "pedmodels.filter.prompt";
+
+        public const string FilterApplied = "pedmodels.filter.applied";
+
+        public const string FilterNoMatches = "pedmodels.filter.nomatches";
+
+        public const string FilterCleared = "pedmodels.filter.cleared";
+
         public const string SpawnByName = "pedmodels.byname";
 
         public const string SpawnByNameDescription = "pedmodels.byname.desc";

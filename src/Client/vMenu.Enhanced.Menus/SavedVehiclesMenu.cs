@@ -522,15 +522,19 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         if (differences.Count == 0)
         {
-            Notifications.Success(MenuText.Key(Loc.SavedVehicles.RestoredExactly, ("name", name)));
+            Notifications.Success(
+                MenuText.Key(Loc.SavedVehicles.RestoredExactly, ("name", name)),
+                Notifications.SpawnDurationMs);
 
             return;
         }
 
-        Notifications.Warning(MenuText.Key(
-            Loc.SavedVehicles.RestoredPartially,
-            ("name", name),
-            ("count", MenuText.Literal(differences.Count.ToString(CultureInfo.InvariantCulture)))));
+        Notifications.Warning(
+            MenuText.Key(
+                Loc.SavedVehicles.RestoredPartially,
+                ("name", name),
+                ("count", MenuText.Literal(differences.Count.ToString(CultureInfo.InvariantCulture)))),
+            Notifications.SpawnDurationMs);
     }
 
     private async Task EditAsync(SavedVehicleEntry entry)

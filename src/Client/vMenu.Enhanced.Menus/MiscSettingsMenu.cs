@@ -94,6 +94,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
             ReadState = () => MinimapControls.AlwaysOn,
             OnChanged = changed => MinimapControls.AlwaysOn = changed.Checked,
         });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.FingerPointing),
+            Description = MenuText.Key(Loc.MiscSettings.FingerPointingDescription),
+            ReadState = () => FingerPointing.Enabled,
+            OnChanged = changed => FingerPointing.SetEnabled(changed.Checked),
+        });
     }
 
     private static MenuText NativeLanguageName(LanguageId language) =>

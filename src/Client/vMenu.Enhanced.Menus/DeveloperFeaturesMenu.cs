@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Developer;
+using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Ticks;
 
 using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.DeveloperFeatures;
@@ -122,6 +123,16 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
             Description = MenuText.Key(Loc.DeveloperFeatures.TicksOverlayDescription),
             ReadState = () => TickOverlay.Visible,
             OnChanged = changed => TickOverlay.Set(changed.Checked),
+        });
+
+        // Here for convenience too, and read live for the same reason: its own command can flip it
+        // while this menu is open.
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DeveloperFeatures.PointingProbe),
+            Description = MenuText.Key(Loc.DeveloperFeatures.PointingProbeDescription),
+            ReadState = () => FingerPointing.DebugVisible,
+            OnChanged = changed => FingerPointing.SetDebug(changed.Checked),
         });
     }
 }

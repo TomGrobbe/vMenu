@@ -117,6 +117,7 @@ public sealed class Main : IScript
         TeleportKeyBinding.Initialize();
         VisorKeyBinding.Initialize();
         MinimapControls.Initialize();
+        FingerPointing.Initialize();
 
         PlayerPushEvents.Initialize();
 

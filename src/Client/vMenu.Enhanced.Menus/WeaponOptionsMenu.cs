@@ -110,9 +110,11 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             Text = MenuText.Key(Loc.WeaponOptions.GetAll),
             Description = MenuText.Key(Loc.WeaponOptions.GetAllDescription),
             Gate = WeaponOptionsPermissions.GetAll,
-            OnSelected = _ => Notifications.Success(MenuText.Key(
-                Loc.WeaponOptions.GetAllDone,
-                ("count", MenuText.Literal(WeaponInventory.GiveAll().ToString(CultureInfo.InvariantCulture))))),
+            OnSelected = _ => Notifications.Success(
+                MenuText.Key(
+                    Loc.WeaponOptions.GetAllDone,
+                    ("count", MenuText.Literal(WeaponInventory.GiveAll().ToString(CultureInfo.InvariantCulture)))),
+                Notifications.SpawnDurationMs),
         });
 
         menu.Entries.Add(new ButtonEntry

@@ -234,15 +234,19 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
         // not allow does not bury the player in messages.
         if (report.Skipped > 0)
         {
-            Notifications.Warning(MenuText.Key(
-                Loc.WeaponLoadouts.EquippedWithSkipped,
-                ("name", MenuText.Literal(loadout.Name)),
-                ("count", MenuText.Literal(report.Skipped.ToString(CultureInfo.InvariantCulture)))));
+            Notifications.Warning(
+                MenuText.Key(
+                    Loc.WeaponLoadouts.EquippedWithSkipped,
+                    ("name", MenuText.Literal(loadout.Name)),
+                    ("count", MenuText.Literal(report.Skipped.ToString(CultureInfo.InvariantCulture)))),
+                Notifications.SpawnDurationMs);
 
             return;
         }
 
-        Notifications.Success(MenuText.Key(Loc.WeaponLoadouts.Equipped, ("name", MenuText.Literal(loadout.Name))));
+        Notifications.Success(
+            MenuText.Key(Loc.WeaponLoadouts.Equipped, ("name", MenuText.Literal(loadout.Name))),
+            Notifications.SpawnDurationMs);
     }
 
     private async Task RenameAsync()

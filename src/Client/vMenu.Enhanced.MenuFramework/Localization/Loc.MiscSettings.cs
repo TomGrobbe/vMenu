@@ -55,5 +55,9 @@ public static partial class Loc
         public const string MinimapAlwaysOnDescription = "miscsettings.minimap.alwayson.desc";
 
         public const string MinimapAlwaysOnLocked = "miscsettings.minimap.alwayson.locked";
+
+        public const string FingerPointing = "miscsettings.pointing";
+
+        public const string FingerPointingDescription = "miscsettings.pointing.desc";
     }
 }
