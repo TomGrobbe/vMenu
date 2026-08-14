@@ -42,6 +42,7 @@ files {
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',
     'client/vMenu.Enhanced.Ticks.dll',
+    'client/vMenu.Enhanced.NativeHooks.dll',
 }
 
 -- Client assembly

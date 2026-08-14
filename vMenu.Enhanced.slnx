@@ -1,4 +1,9 @@
 <Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="NativeHooks" />
+  </Configurations>
   <Folder Name="/assets/">
     <File Path="assets/enhanced/fxmanifest.lua" />
   </Folder>
@@ -27,6 +32,7 @@
     <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
+    <Project Path="src/Client/vMenu.Enhanced.NativeHooks/vMenu.Enhanced.NativeHooks.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Serialization/vMenu.Enhanced.Serialization.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Storage/vMenu.Enhanced.Storage.csproj" />
@@ -48,5 +54,6 @@
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/LanguageTemplate/LanguageTemplate.csproj" />
+    <Project Path="tools/vMenu.Enhanced.NativeHooks.Generator/vMenu.Enhanced.NativeHooks.Generator.csproj" />
   </Folder>
 </Solution>

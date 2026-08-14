@@ -21,4 +21,17 @@
     <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\client\</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'NativeHooks'">
+    <NativeHooks>true</NativeHooks>
+    <DefineConstants>$(DefineConstants);NATIVE_HOOKS</DefineConstants>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(NativeHooks)' == 'true' And '$(MSBuildProjectName)' != 'vMenu.Enhanced.NativeHooks'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\tools\vMenu.Enhanced.NativeHooks.Generator\vMenu.Enhanced.NativeHooks.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)vMenu.Enhanced.NativeHooks\vMenu.Enhanced.NativeHooks.csproj" />
+  </ItemGroup>
+
 </Project>
