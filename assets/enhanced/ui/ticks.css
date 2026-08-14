@@ -20,11 +20,15 @@
 
 /*
    One column per scheduler, always in the order they arrive, so the columns read the same way round
-   whichever edge the panel is anchored to.
+   whichever edge the panel is anchored to. A scheduler with more loops than fit gets extra columns
+   next to its first, which ticks.js works out from the height it measures on screen.
+
+   The cap here is a backstop for that measurement, not the layout: on a screen too short for even one
+   row per column the panel would otherwise run off the bottom.
 */
 #ticks .group {
     width: 20rem;
-    max-height: 60vh;
+    max-height: 96vh;
     overflow-y: auto;
     background: var(--panel);
     border: 1px solid var(--edge);
@@ -42,7 +46,7 @@
     left: 2%;
 }
 
-/* Sticky, so the scheduler's name stays put while a long column scrolls under it. */
+/* Sticky, so the scheduler's name stays put if a column is ever short enough to scroll. */
 #ticks .head {
     position: sticky;
     top: 0;
