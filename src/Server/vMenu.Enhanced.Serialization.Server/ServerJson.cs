@@ -1,9 +1,9 @@
 using System.Reflection;
 
-using CitizenFX.FiveM.Server;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Serialization.Server;
 
@@ -74,12 +74,12 @@ public static class ServerJson
     {
         if (Failure is null)
         {
-            API.Log.Debug("[Json] Newtonsoft.Json is on the late bound path.");
+            Log.Debug("[Json] Newtonsoft.Json is on the late bound path.");
 
             return;
         }
 
-        API.Log.Error(
+        Log.Error(
             $"[Json] Newtonsoft.Json could not be moved off Reflection.Emit ({Failure}). Every "
             + "server side serialize will now fail. Check whether the pinned Newtonsoft.Json "
             + "version changed.");

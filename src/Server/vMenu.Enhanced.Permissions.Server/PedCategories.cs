@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
@@ -44,7 +45,7 @@ public static class PedCategories
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Permissions] No {ConfigFile} found. The ped models menu starts empty.");
+            Log.Warning($"[Permissions] No {ConfigFile} found. The ped models menu starts empty.");
             return;
         }
 
@@ -56,7 +57,7 @@ public static class PedCategories
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Permissions] {ConfigFile} could not be parsed, so the ped models menu starts empty: {exception.Message}");
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so the ped models menu starts empty: {exception.Message}");
             return;
         }
 
@@ -64,7 +65,7 @@ public static class PedCategories
         {
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so the ped models menu starts empty.");
+                Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so the ped models menu starts empty.");
                 return;
             }
 
@@ -97,7 +98,7 @@ public static class PedCategories
 
             if (segment.Length == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping ped category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
+                Log.Warning($"[Permissions] Skipping ped category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
                 continue;
             }
 
@@ -106,19 +107,19 @@ public static class PedCategories
             // A name matching one vMenu declares itself would quietly hijack that permission.
             if (PermissionRegistry.TryGet(permission, out _))
             {
-                API.Log.Warn($"[Permissions] Skipping ped category '{name}': '{permission}' is a permission vMenu already declares, so pick a different name.");
+                Log.Warning($"[Permissions] Skipping ped category '{name}': '{permission}' is a permission vMenu already declares, so pick a different name.");
                 continue;
             }
 
             if (!segments.Add(segment))
             {
-                API.Log.Warn($"[Permissions] Skipping ped category '{name}': another category already claims '{permission}'.");
+                Log.Warning($"[Permissions] Skipping ped category '{name}': another category already claims '{permission}'.");
                 continue;
             }
 
             if (property.Value.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Warn($"[Permissions] Skipping ped category '{name}': its value has to be a list of ped model names and the text to show for them.");
+                Log.Warning($"[Permissions] Skipping ped category '{name}': its value has to be a list of ped model names and the text to show for them.");
                 continue;
             }
 
@@ -126,7 +127,7 @@ public static class PedCategories
 
             if (peds.Count == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping ped category '{name}': it has no peds in it, so it would show up empty.");
+                Log.Warning($"[Permissions] Skipping ped category '{name}': it has no peds in it, so it would show up empty.");
                 continue;
             }
 
@@ -134,7 +135,7 @@ public static class PedCategories
 
             PermissionRegistry.RegisterDynamic(permission, ConfigFile);
 
-            API.Log.Info($"[Permissions] Ped category '{name}' holds {peds.Count} ped(s) and is granted by '{permission}'.");
+            Log.Debug($"[Permissions] Ped category '{name}' holds {peds.Count} ped(s) and is granted by '{permission}'.");
         }
     }
 
@@ -151,13 +152,13 @@ public static class PedCategories
 
             if (ped.Value.ValueKind != JsonValueKind.String)
             {
-                API.Log.Warn($"[Permissions] Skipping '{model}' in ped category '{category}': the text to show for it has to be written in quotes.");
+                Log.Warning($"[Permissions] Skipping '{model}' in ped category '{category}': the text to show for it has to be written in quotes.");
                 continue;
             }
 
             if (!claimedModels.Add(model))
             {
-                API.Log.Warn($"[Permissions] '{model}' is listed in more than one ped category, so it stays in the first one.");
+                Log.Warning($"[Permissions] '{model}' is listed in more than one ped category, so it stays in the first one.");
                 continue;
             }
 

@@ -1,5 +1,6 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.Menus.Weapons.Saved;
@@ -52,7 +53,7 @@ public static class WeaponLoadoutApply
             // would do nothing at best, so it is named in the log and passed over.
             if (!Native.IsWeaponValid(hash))
             {
-                API.Log.Info($"[Weapons] Skipping '{saved.SpawnName}' from loadout '{loadout.Name}': this game no longer has that weapon.");
+                Log.Debug($"[Weapons] Skipping '{saved.SpawnName}' from loadout '{loadout.Name}': this game no longer has that weapon.");
 
                 skipped++;
 
@@ -102,14 +103,14 @@ public static class WeaponLoadoutApply
             // the retry below spends its whole second on it before moving on to the next one.
             if (!Native.DoesWeaponTakeWeaponComponent(hash, componentHash))
             {
-                API.Log.Debug($"[Weapons] '{saved.SpawnName}' no longer takes '{component}', so it was left off.");
+                Log.Debug($"[Weapons] '{saved.SpawnName}' no longer takes '{component}', so it was left off.");
 
                 continue;
             }
 
             if (!await FitAsync(ped, hash, componentHash))
             {
-                API.Log.Debug($"[Weapons] '{component}' would not fit on '{saved.SpawnName}' within {ComponentTimeoutMs}ms.");
+                Log.Debug($"[Weapons] '{component}' would not fit on '{saved.SpawnName}' within {ComponentTimeoutMs}ms.");
             }
         }
 

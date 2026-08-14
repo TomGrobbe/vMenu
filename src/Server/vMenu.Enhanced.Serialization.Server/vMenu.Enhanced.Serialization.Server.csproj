@@ -3,4 +3,7 @@
     <PackageReference Include="CitizenFX.FiveM.Server" />
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+  </ItemGroup>
 </Project>

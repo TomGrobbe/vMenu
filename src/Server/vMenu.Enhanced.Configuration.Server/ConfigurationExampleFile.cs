@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
@@ -18,11 +19,11 @@ public static class ConfigurationExampleFile
 
         if (NativeFixer.SaveResourceFile(resource, path, ConfigurationExample.Render()))
         {
-            API.Log.Info($"[Config] Wrote {path}.");
+            Log.Debug($"[Config] Wrote {path}.");
             return;
         }
 
-        API.Log.Error(
+        Log.Error(
             $"[Config] Could not write {path}. Add "
             + $"'add_filesystem_permission {resource} write {resource}' to your server.cfg, above the "
             + $"line that starts {resource}.");

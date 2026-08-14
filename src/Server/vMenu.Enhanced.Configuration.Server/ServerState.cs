@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
@@ -44,7 +45,7 @@ public static class ServerState
 
     public static void Dump()
     {
-        API.Log.Info(
+        Log.Info(
             $"[State] weather: {(_weather is { } type ? WeatherTypes.NameOf(type) : "dynamic")}, " +
             $"time offset: {_timeOffsetSeconds}s");
     }

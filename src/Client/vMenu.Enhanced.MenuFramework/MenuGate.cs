@@ -1,7 +1,6 @@
-using CitizenFX.FiveM.Client;
-
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
@@ -48,7 +47,7 @@ public sealed class MenuGate
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] A gate threw and is being treated as denied: {exception}");
+            Log.Error($"[Menu] A gate threw and is being treated as denied: {exception}");
 
             return false;
         }

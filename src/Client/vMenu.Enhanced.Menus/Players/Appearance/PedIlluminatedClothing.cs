@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
@@ -93,7 +94,7 @@ public static class PedIlluminatedClothing
 
         if (!Native.DecorIsRegisteredAsType(Decorator, IntegerDecorator))
         {
-            API.Log.Error(
+            Log.Error(
                 $"[Appearance] The '{Decorator}' decorator could not be registered, most likely because "
                 + "another resource has used up the game's supply of them. Glowing clothes will not be "
                 + "shared between players until that is sorted out.");

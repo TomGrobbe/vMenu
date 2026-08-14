@@ -1,7 +1,6 @@
-using CitizenFX.FiveM.Client;
-
 using MenuAPI;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
@@ -348,7 +347,7 @@ internal sealed class MenuHost : IDisposable
         {
             // MenuAPI's events are multicast and return void, so an unobserved throw would take the
             // rest of the invocation list with it.
-            API.Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
+            Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
         finally
         {
@@ -393,7 +392,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{item.Text}' change handler threw: {exception}");
+            Log.Error($"[Menu] '{item.Text}' change handler threw: {exception}");
         }
     }
 
@@ -477,7 +476,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
+            Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
     }
 
@@ -524,7 +523,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
+            Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
     }
 
@@ -571,7 +570,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
+            Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
     }
 
@@ -619,7 +618,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{Menu.MenuTitle}' open handler threw: {exception}");
+            Log.Error($"[Menu] '{Menu.MenuTitle}' open handler threw: {exception}");
         }
         finally
         {
@@ -694,7 +693,7 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] '{item?.Text ?? "<menu>"}' handler threw: {exception}");
+            Log.Error($"[Menu] '{item?.Text ?? "<menu>"}' handler threw: {exception}");
         }
     }
 }

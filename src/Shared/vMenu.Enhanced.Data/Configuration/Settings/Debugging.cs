@@ -21,6 +21,19 @@ public static class Debugging
         Default = false,
     };
 
+    public static readonly StringSetting LogLevel = new("vMenu.Enhanced.Debugging.LogLevel")
+    {
+        Description =
+            "How much vMenu writes to the console, on both the client and the server. Pick Trace, " +
+            "Debug or Info. Trace prints everything, Debug leaves out the noisiest of it, and Info " +
+            "prints only the handful of lines worth reading during normal play. Anything below the " +
+            "level you pick is dropped and never reaches a console. Warnings and errors are always " +
+            "printed whichever you choose, because something has gone wrong by the time vMenu writes " +
+            "one. Use Trace or Debug while you are chasing a problem, and leave it on Info the rest " +
+            "of the time.",
+        Default = "Info",
+    };
+
     public static readonly BoolSetting ExperimentalFeatures = new("vMenu.Enhanced.Debugging.ExperimentalFeatures")
     {
         Description =

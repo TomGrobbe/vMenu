@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Ticks;
 
@@ -57,11 +58,11 @@ public static class TickRegistry
 
     public static void Dump()
     {
-        API.Log.Info($"[Tick] {Engine.Handles.Count} registered:");
+        Log.Info($"[Tick] {Engine.Handles.Count} registered:");
 
         foreach (var line in Engine.Describe())
         {
-            API.Log.Info("[Tick]   " + line);
+            Log.Info("[Tick]   " + line);
         }
     }
 
@@ -70,16 +71,16 @@ public static class TickRegistry
         switch (level)
         {
             case TickLog.Error:
-                API.Log.Error($"[Tick] {message}");
+                Log.Error($"[Tick] {message}");
                 break;
             case TickLog.Warn:
-                API.Log.Warn($"[Tick] {message}");
+                Log.Warning($"[Tick] {message}");
                 break;
             case TickLog.Info:
-                API.Log.Info($"[Tick] {message}");
+                Log.Info($"[Tick] {message}");
                 break;
             default:
-                API.Log.Debug($"[Tick] {message}");
+                Log.Debug($"[Tick] {message}");
                 break;
         }
     }

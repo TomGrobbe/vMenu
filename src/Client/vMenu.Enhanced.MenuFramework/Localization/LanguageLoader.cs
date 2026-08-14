@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 using LocalizationSetting = vMenu.Enhanced.Data.Configuration.Settings.Localization;
@@ -51,7 +52,7 @@ public static class LanguageLoader
 
             if (string.Equals(code, LanguageId.English.Code, StringComparison.Ordinal))
             {
-                API.Log.Warn(
+                Log.Warning(
                     $"[i18n] '{LocalizationSetting.Languages.Name}' lists 'en', which is being "
                     + "skipped. English is built into vMenu and is always available, so it does not "
                     + "come from a file and cannot be overridden by one. Renaming a file to "
@@ -62,7 +63,7 @@ public static class LanguageLoader
 
             if (string.Equals(code, Template, StringComparison.Ordinal))
             {
-                API.Log.Warn(
+                Log.Warning(
                     $"[i18n] '{LocalizationSetting.Languages.Name}' lists '{Template}', which is "
                     + $"being skipped. {Folder}/{Template}.json is a generated template to copy, "
                     + "and it is overwritten on every build.");
@@ -72,7 +73,7 @@ public static class LanguageLoader
 
             if (!seen.Add(code))
             {
-                API.Log.Warn($"[i18n] '{LocalizationSetting.Languages.Name}' lists '{code}' more than once.");
+                Log.Warning($"[i18n] '{LocalizationSetting.Languages.Name}' lists '{code}' more than once.");
 
                 continue;
             }
@@ -90,21 +91,21 @@ public static class LanguageLoader
 
         if (string.IsNullOrWhiteSpace(raw))
         {
-            API.Log.Error($"[i18n] '{code}' is listed but {path} is missing or empty, so it is not available.");
+            Log.Error($"[i18n] '{code}' is listed but {path} is missing or empty, so it is not available.");
 
             return null;
         }
 
         if (!ClientJson.TryDeserialize<LanguageFile>(raw, out var file) || file is null)
         {
-            API.Log.Error($"[i18n] {path} is not readable as JSON, so '{code}' is not available.");
+            Log.Error($"[i18n] {path} is not readable as JSON, so '{code}' is not available.");
 
             return null;
         }
 
         if (file.Strings.Count == 0)
         {
-            API.Log.Error($"[i18n] {path} has no strings, so '{code}' is not available.");
+            Log.Error($"[i18n] {path} has no strings, so '{code}' is not available.");
 
             return null;
         }

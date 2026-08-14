@@ -1,4 +1,4 @@
-using CitizenFX.FiveM.Client;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Events;
 
@@ -23,7 +23,7 @@ internal static class Dispatch
             }
             catch (Exception exception)
             {
-                API.Log.Error($"[Events] a {name} subscriber threw: {exception}");
+                Log.Error($"[Events] a {name} subscriber threw: {exception}");
             }
         }
     }
@@ -48,7 +48,7 @@ internal static class Dispatch
             }
             catch (Exception exception)
             {
-                API.Log.Error($"[Events] a {name} subscriber threw: {exception}");
+                Log.Error($"[Events] a {name} subscriber threw: {exception}");
 
                 continue;
             }
@@ -68,7 +68,7 @@ internal static class Dispatch
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Events] a {name} subscriber threw: {exception}");
+            Log.Error($"[Events] a {name} subscriber threw: {exception}");
         }
     }
 }

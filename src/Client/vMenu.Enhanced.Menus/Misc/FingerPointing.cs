@@ -5,6 +5,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
@@ -183,7 +184,7 @@ public static class FingerPointing
     {
         SetDebug(!_debug);
 
-        API.Log.Info($"[vMenu] Pointing probe overlay: {(_debug ? "on" : "off")}");
+        Log.Info($"[vMenu] Pointing probe overlay: {(_debug ? "on" : "off")}");
     }
 
     private static void OnPressed() => SharedAPI.RunOnMainThread(Toggle);

@@ -1,5 +1,6 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Storage;
@@ -77,7 +78,7 @@ public static class KvpStore
     {
         if (StoredVersion(key) is { } stored && stored > version)
         {
-            API.Log.Warn(
+            Log.Warning(
                 $"[Storage] '{key}' was saved by a newer version of vMenu (version {stored}, this "
                 + $"build understands {version}). Refusing to overwrite it, because doing so would "
                 + "discard whatever that version added.");
@@ -177,7 +178,7 @@ public static class KvpStore
     {
         if (Reported.Add(key))
         {
-            API.Log.Warn($"[Storage] '{key}' {problem}.");
+            Log.Warning($"[Storage] '{key}' {problem}.");
         }
     }
 

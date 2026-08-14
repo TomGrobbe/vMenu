@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Actions;
 
@@ -40,7 +41,7 @@ public static class ServerActions
         if (!_registered)
         {
             // The reply would arrive with nothing listening, then be waited out to the timeout.
-            API.Log.Error($"[Actions] '{actionId}' was invoked before RegisterEventHandlers ran.");
+            Log.Error($"[Actions] '{actionId}' was invoked before RegisterEventHandlers ran.");
 
             return ActionResult.From(ActionStatus.Failed);
         }
@@ -61,7 +62,7 @@ public static class ServerActions
 
             if (finishedFirst == timeout)
             {
-                API.Log.Error($"[Actions] '{actionId}' got no answer within {TimeoutMs}ms.");
+                Log.Error($"[Actions] '{actionId}' got no answer within {TimeoutMs}ms.");
 
                 return ActionResult.From(ActionStatus.Timeout);
             }
@@ -79,7 +80,7 @@ public static class ServerActions
         if (!Pending.TryGetValue(requestId, out var pending))
         {
             // A reply that lost the race with the timeout. Its caller has already been told.
-            API.Log.Debug($"[Actions] Reply {requestId} arrived with nothing waiting for it.");
+            Log.Debug($"[Actions] Reply {requestId} arrived with nothing waiting for it.");
 
             return;
         }

@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions;
 
@@ -38,7 +39,7 @@ public static class PermissionsSync
             }
         }
 
-        API.Log.Error($"[Permissions] No permissions received after {MaxRequestAttempts} attempts. Everything stays locked.");
+        Log.Error($"[Permissions] No permissions received after {MaxRequestAttempts} attempts. Everything stays locked.");
     }
 
     private static void OnPermissionsReceived(
@@ -56,6 +57,6 @@ public static class PermissionsSync
         ClientWeaponPermissions.ApplyWhitelistedWeapons(whitelistedWeapons);
         ClientPermissions.ApplyPermissions(granted);
 
-        API.Log.Debug($"[Permissions] Received {granted.Length} permission(s), {whitelistedVehicles.Length} whitelisted vehicle(s), {categorisedVehicles.Length} categorised vehicle(s), {whitelistedPeds.Length} whitelisted ped(s) and {whitelistedWeapons.Length} whitelisted weapon(s).");
+        Log.Debug($"[Permissions] Received {granted.Length} permission(s), {whitelistedVehicles.Length} whitelisted vehicle(s), {categorisedVehicles.Length} categorised vehicle(s), {whitelistedPeds.Length} whitelisted ped(s) and {whitelistedWeapons.Length} whitelisted weapon(s).");
     }
 }

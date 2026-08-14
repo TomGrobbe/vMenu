@@ -3,6 +3,7 @@ using System.Text.Json;
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -41,7 +42,7 @@ public static class VehicleCategories
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Permissions] No {ConfigFile} found. Every vehicle stays in its own game class.");
+            Log.Warning($"[Permissions] No {ConfigFile} found. Every vehicle stays in its own game class.");
             return;
         }
 
@@ -53,7 +54,7 @@ public static class VehicleCategories
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no custom categories exist: {exception.Message}");
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no custom categories exist: {exception.Message}");
             return;
         }
 
@@ -61,7 +62,7 @@ public static class VehicleCategories
         {
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so no custom categories exist.");
+                Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so no custom categories exist.");
                 return;
             }
 
@@ -95,7 +96,7 @@ public static class VehicleCategories
 
             if (segment.Length == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
+                Log.Warning($"[Permissions] Skipping category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
                 continue;
             }
 
@@ -104,19 +105,19 @@ public static class VehicleCategories
             // A name matching one vMenu declares itself would quietly hijack that permission.
             if (PermissionRegistry.TryGet(permission, out _))
             {
-                API.Log.Warn($"[Permissions] Skipping category '{name}': '{permission}' is a permission vMenu already declares, so pick a name that is not one of the game's own vehicle classes.");
+                Log.Warning($"[Permissions] Skipping category '{name}': '{permission}' is a permission vMenu already declares, so pick a name that is not one of the game's own vehicle classes.");
                 continue;
             }
 
             if (!segments.Add(segment))
             {
-                API.Log.Warn($"[Permissions] Skipping category '{name}': another category already claims '{permission}'.");
+                Log.Warning($"[Permissions] Skipping category '{name}': another category already claims '{permission}'.");
                 continue;
             }
 
             if (property.Value.ValueKind != JsonValueKind.Array)
             {
-                API.Log.Warn($"[Permissions] Skipping category '{name}': its value has to be a list of vehicle model names.");
+                Log.Warning($"[Permissions] Skipping category '{name}': its value has to be a list of vehicle model names.");
                 continue;
             }
 
@@ -124,13 +125,13 @@ public static class VehicleCategories
 
             if (claimed == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping category '{name}': it has no vehicles in it, so it would show up empty.");
+                Log.Warning($"[Permissions] Skipping category '{name}': it has no vehicles in it, so it would show up empty.");
                 continue;
             }
 
             PermissionRegistry.RegisterDynamic(permission, ConfigFile);
 
-            API.Log.Info($"[Permissions] Category '{name}' holds {claimed} vehicle(s) and is granted by '{permission}'.");
+            Log.Info($"[Permissions] Category '{name}' holds {claimed} vehicle(s) and is granted by '{permission}'.");
         }
 
         _models = [.. models];
@@ -152,7 +153,7 @@ public static class VehicleCategories
 
             if (CategoryByModel.TryGetValue(model, out var owner))
             {
-                API.Log.Warn($"[Permissions] '{model}' is listed under both '{owner}' and '{category}', so it stays in '{owner}'.");
+                Log.Warning($"[Permissions] '{model}' is listed under both '{owner}' and '{category}', so it stays in '{owner}'.");
                 continue;
             }
 

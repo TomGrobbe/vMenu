@@ -1,7 +1,7 @@
-using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Storage;
 
@@ -243,18 +243,18 @@ public static class UserDefaults
 
     public static void Dump()
     {
-        API.Log.Info("[Defaults] Declared:");
+        Log.Info("[Defaults] Declared:");
 
         foreach (var preference in All)
         {
-            API.Log.Info($"[Defaults]   {preference.Name} = {preference.CurrentText} (default {preference.DefaultText})");
+            Log.Info($"[Defaults]   {preference.Name} = {preference.CurrentText} (default {preference.DefaultText})");
         }
 
-        API.Log.Info("[Defaults] Stored:");
+        Log.Info("[Defaults] Stored:");
 
         foreach (var line in KvpStore.Describe(UserDefault.KeyPrefix))
         {
-            API.Log.Info("[Defaults]   " + line);
+            Log.Info("[Defaults]   " + line);
         }
     }
 
@@ -271,6 +271,6 @@ public static class UserDefaults
             KvpStore.Delete(key);
         }
 
-        API.Log.Info("[Defaults] Every stored preference has been reset.");
+        Log.Info("[Defaults] Every stored preference has been reset.");
     }
 }

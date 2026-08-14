@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Menus.Vehicles.Appearance;
 using vMenu.Enhanced.Menus.Vehicles.Saved;
 using vMenu.Enhanced.Serialization;
@@ -45,7 +46,7 @@ public static class VehicleDumpCommands
 
         if (!target.Found)
         {
-            API.Log.Info("[Vehicle] You have to be in a vehicle for this command to report anything.");
+            Log.Info("[Vehicle] You have to be in a vehicle for this command to report anything.");
 
             return null;
         }
@@ -62,27 +63,18 @@ public static class VehicleDumpCommands
 
         var appearance = VehicleAppearanceReader.Read(handle);
 
-        API.Log.Info("[Vehicle] Live state, read from the game:");
+        Log.Info("[Vehicle] Live state, read from the game:");
 
         foreach (var line in VehicleAppearanceReport.Describe(appearance, handle))
         {
-            API.Log.Info("[Vehicle] " + line);
+            Log.Info("[Vehicle] " + line);
         }
 
-        API.Log.Info("[Vehicle] As stored:");
-        API.Log.Info(ClientJson.SerializeIndented(appearance));
+        Log.Info("[Vehicle] As stored:");
+        Log.Info(ClientJson.SerializeIndented(appearance));
     }
 
-    /// <summary>
-    /// Reports what the game will and will not name on this vehicle.
-    /// </summary>
-    /// <remarks>
-    /// For every slot it prints the key <c>GetModSlotName</c> handed back, whether the game has text
-    /// under it, and the same for every part in the slot. A part showing as a number in the menu
-    /// shows here as the key that came back empty, which is the difference between "vMenu is not
-    /// asking properly" and "the game genuinely has no name for this". It also reports whether the
-    /// mod kit has finished streaming, since nothing can be named before it has.
-    /// </remarks>
+    
     private static void Labels()
     {
         if (CurrentVehicle() is not { } handle)
@@ -92,8 +84,8 @@ public static class VehicleDumpCommands
 
         Native.SetVehicleModKit(handle, 0);
 
-        API.Log.Info($"[Vehicle] Mod kit {Native.GetVehicleModKit(handle)}, type {Native.GetVehicleModKitType(handle)}.");
-        API.Log.Info($"[Vehicle] Mods streamed in: {Native.HaveVehicleModsStreamedIn(handle)}.");
+        Log.Debug($"[Vehicle] Mod kit {Native.GetVehicleModKit(handle)}, type {Native.GetVehicleModKitType(handle)}.");
+        Log.Debug($"[Vehicle] Mods streamed in: {Native.HaveVehicleModsStreamedIn(handle)}.");
 
         foreach (var slot in VehicleModSlots.All)
         {
@@ -106,7 +98,7 @@ public static class VehicleDumpCommands
 
             var slotKey = Native.GetModSlotName(handle, (int)slot);
 
-            API.Log.Info(
+            Log.Debug(
                 $"[Vehicle] Slot {(int)slot} ({VehicleModSlots.TechnicalName(slot)}): {count} part(s), "
                 + $"slot name key '{slotKey}' {Reports(slotKey)}");
 
@@ -120,7 +112,7 @@ public static class VehicleDumpCommands
                 // Unsigned, so it reads the same way round as the hashes VehicleHornLabels matches on.
                 var identifier = (uint)Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
 
-                API.Log.Info(
+                Log.Debug(
                     $"[Vehicle]   [{index}] id {identifier}, GetModTextLabel '{raw}' {Reports(raw)}"
                     + $", vMenu uses '{used ?? "<numbered fallback>"}' {Reports(used ?? string.Empty)}");
             }
@@ -138,14 +130,14 @@ public static class VehicleDumpCommands
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            API.Log.Info($"[Vehicle] Usage: {DiffCommand} <saved vehicle name>");
+            Log.Info($"[Vehicle] Usage: {DiffCommand} <saved vehicle name>");
 
             return;
         }
 
         if (SavedVehicleStore.Load(name.Trim()) is not { } entry)
         {
-            API.Log.Info($"[Vehicle] There is no saved vehicle called '{name}'.");
+            Log.Info($"[Vehicle] There is no saved vehicle called '{name}'.");
 
             return;
         }
@@ -157,7 +149,7 @@ public static class VehicleDumpCommands
 
         if (entry.IsFromNewerBuild)
         {
-            API.Log.Warn(
+            Log.Warning(
                 $"[Vehicle] '{entry.Vehicle.Name}' was saved by a newer version of vMenu (version "
                 + $"{entry.StoredVersion}, this build understands {SavedVehicle.SchemaVersion}). Anything "
                 + "that version added is not in the comparison below.");
@@ -167,16 +159,16 @@ public static class VehicleDumpCommands
 
         if (differences.Count == 0)
         {
-            API.Log.Info($"[Vehicle] The vehicle you are in is identical to '{entry.Vehicle.Name}'.");
+            Log.Info($"[Vehicle] The vehicle you are in is identical to '{entry.Vehicle.Name}'.");
 
             return;
         }
 
-        API.Log.Info($"[Vehicle] {differences.Count} difference(s) from '{entry.Vehicle.Name}':");
+        Log.Info($"[Vehicle] {differences.Count} difference(s) from '{entry.Vehicle.Name}':");
 
         foreach (var difference in differences)
         {
-            API.Log.Info("[Vehicle]   " + difference);
+            Log.Info("[Vehicle]   " + difference);
         }
     }
 }

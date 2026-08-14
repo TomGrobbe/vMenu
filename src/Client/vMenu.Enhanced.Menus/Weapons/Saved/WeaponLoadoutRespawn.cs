@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 
@@ -81,7 +82,7 @@ public static class WeaponLoadoutRespawn
         // player being handed weapons fresh and the server's answer is the one that counts.
         var report = await WeaponLoadoutApply.ApplyAsync(loadout, append: true, ignorePermissions: false);
 
-        API.Log.Debug($"[Weapons] Restored {report.Given} weapon(s) from loadout '{name}' on join, {report.Skipped} skipped.");
+        Log.Debug($"[Weapons] Restored {report.Given} weapon(s) from loadout '{name}' on join, {report.Skipped} skipped.");
     }
 
     public static void SetEnabled(bool enabled)
@@ -168,6 +169,6 @@ public static class WeaponLoadoutRespawn
 
         WeaponLoadoutStore.ClearPending();
 
-        API.Log.Debug($"[Weapons] Restored {report.Given} weapon(s) after respawn, {report.Skipped} skipped.");
+        Log.Debug($"[Weapons] Restored {report.Given} weapon(s) after respawn, {report.Skipped} skipped.");
     }
 }

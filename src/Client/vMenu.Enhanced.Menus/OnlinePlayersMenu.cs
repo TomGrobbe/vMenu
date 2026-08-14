@@ -9,6 +9,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
@@ -385,7 +386,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                     ("identifier", MenuText.Literal(identifier))),
                 OnSelected = _ =>
                 {
-                    API.Log.Info($"[OnlinePlayers] {player.Name} (#{player.ServerId}): {identifier}");
+                    Log.Info($"[OnlinePlayers] {player.Name} (#{player.ServerId}): {identifier}");
 
                     Notifications.Info(MenuText.Key(Loc.OnlinePlayers.IdentifierPrinted));
                 },

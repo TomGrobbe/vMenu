@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -26,11 +27,11 @@ public static class PermissionsExampleFile
 
         if (NativeFixer.SaveResourceFile(resource, path, PermissionsExample.Render(entries)))
         {
-            API.Log.Info($"[Permissions] Wrote {path}, describing {PermissionRegistry.Count} permission(s).");
+            Log.Debug($"[Permissions] Wrote {path}, describing {PermissionRegistry.Count} permission(s).");
             return;
         }
 
-        API.Log.Error(
+        Log.Error(
             $"[Permissions] Could not write {path}. Add "
             + $"'add_filesystem_permission {resource} write {resource}' to your server.cfg, above the "
             + $"line that starts {resource}.");

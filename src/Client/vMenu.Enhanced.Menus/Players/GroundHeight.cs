@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Menus.Players;
 
@@ -84,7 +85,7 @@ internal static class GroundHeight
         {
             // Answered as "no ground" rather than left to unwind, because the entity is sitting at a
             // probe height by now and a throw would leave the player standing there.
-            API.Log.Error($"[Teleport] Looking for the ground at {x}, {y} threw: {exception}");
+            Log.Error($"[Teleport] Looking for the ground at {x}, {y} threw: {exception}");
         }
 
         Native.SetEntityCoords(entity, origin.X, origin.Y, origin.Z, false, false, false, true);
@@ -124,7 +125,7 @@ internal static class GroundHeight
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Teleport] Looking for water at {x}, {y} threw, so the solid ground stands: {exception}");
+            Log.Error($"[Teleport] Looking for water at {x}, {y} threw, so the solid ground stands: {exception}");
 
             return null;
         }

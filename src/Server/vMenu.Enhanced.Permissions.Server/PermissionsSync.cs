@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -35,7 +36,7 @@ public static class PermissionsSync
     {
         if (!ServerPermissions.IsReady)
         {
-            API.Log.Error("[Permissions] Cannot refresh permissions: the registry is not ready yet.");
+            Log.Error("[Permissions] Cannot refresh permissions: the registry is not ready yet.");
             return;
         }
 
@@ -47,7 +48,7 @@ public static class PermissionsSync
             refreshed++;
         }
 
-        API.Log.Info($"[Permissions] Refreshed permissions for {refreshed} player(s).");
+        Log.Info($"[Permissions] Refreshed permissions for {refreshed} player(s).");
     }
 
     private static void OnPermissionsRequested([FromSource] Player source) =>

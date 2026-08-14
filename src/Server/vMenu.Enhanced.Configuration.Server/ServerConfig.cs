@@ -3,7 +3,9 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
@@ -24,6 +26,11 @@ public static class ServerConfig
     {
         Store.Prime();
 
+        ApplyLogLevel();
+
+        // Any convar moving re-reads the level, because Changed does not say which one moved.
+        Store.Changed += ApplyLogLevel;
+
         // One listener per convar rather than a single wildcard filter: an exact name cannot be
         // matched wrongly, and a filter that silently matches nothing would look like the whole
         // module quietly not working.
@@ -38,11 +45,11 @@ public static class ServerConfig
     /// <summary>Prints what the server currently reads for every setting.</summary>
     public static void Dump()
     {
-        API.Log.Info("[Config] Current values:");
+        Log.Info("[Config] Current values:");
 
         foreach (var line in Store.Describe())
         {
-            API.Log.Info("[Config]   " + line);
+            Log.Info("[Config]   " + line);
         }
     }
 
@@ -72,21 +79,23 @@ public static class ServerConfig
 
     private static void OnConvarChanged(string convar, object? reserved) => Store.NotifyChanged(convar);
 
+    private static void ApplyLogLevel() => Log.SetLevel(Store.Value(Debugging.LogLevel));
+
     private static void Write(ConfigLog level, string message)
     {
         switch (level)
         {
             case ConfigLog.Error:
-                API.Log.Error($"[Config] {message}");
+                Log.Error($"[Config] {message}");
                 break;
             case ConfigLog.Warn:
-                API.Log.Warn($"[Config] {message}");
+                Log.Warning($"[Config] {message}");
                 break;
             case ConfigLog.Info:
-                API.Log.Info($"[Config] {message}");
+                Log.Info($"[Config] {message}");
                 break;
             default:
-                API.Log.Debug($"[Config] {message}");
+                Log.Debug($"[Config] {message}");
                 break;
         }
     }

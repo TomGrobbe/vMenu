@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Misc;
@@ -81,11 +82,8 @@ public static class UserPreferences
             return;
         }
 
-        // Kept rather than corrected. Preferences are keyed by resource name and follow the player
-        // between servers, so one server not offering their language must not cost them the choice
-        // on every server that does.
-        API.Log.Info(
-            $"[i18n] '{stored}' is not available here, so English is being used. The preference is "
+        Log.Debug(
+            $"[Localization] '{stored}' is not available here, so English is being used. The preference is "
             + "kept for servers that do offer it.");
 
         Localizer.TrySetLanguage(LanguageId.English);

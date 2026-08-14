@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.PedModels;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Players;
@@ -75,7 +76,7 @@ public static class PedModelSync
 
         if (!HasReceived)
         {
-            API.Log.Error($"[PedModels] No ped models received after {WaitTimeout}ms, so the menu is being built empty.");
+            Log.Error($"[PedModels] No ped models received after {WaitTimeout}ms, so the menu is being built empty.");
         }
     }
 
@@ -83,7 +84,7 @@ public static class PedModelSync
     {
         if (!ClientJson.TryDeserialize<List<PedModelCategory>>(payload, out var read) || read is null)
         {
-            API.Log.Error("[PedModels] The ped models the server sent could not be read.");
+            Log.Error("[PedModels] The ped models the server sent could not be read.");
 
             return;
         }
@@ -93,6 +94,6 @@ public static class PedModelSync
 
         HasReceived = true;
 
-        API.Log.Debug($"[PedModels] Received {Cached.Count} category/categories.");
+        Log.Debug($"[PedModels] Received {Cached.Count} category/categories.");
     }
 }

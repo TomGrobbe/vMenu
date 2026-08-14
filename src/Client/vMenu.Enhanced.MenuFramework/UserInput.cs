@@ -5,6 +5,7 @@ using MenuAPI;
 
 using Newtonsoft.Json;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Serialization;
 
@@ -127,7 +128,7 @@ public static class UserInput
 
             if (await Task.WhenAny(ready.Task, API.Delay(timeout)) != ready.Task)
             {
-                API.Log.Error($"[Input] The prompt did not answer within {timeout}ms. Is ui/index.html part of the resource?");
+                Log.Error($"[Input] The prompt did not answer within {timeout}ms. Is ui/index.html part of the resource?");
 
                 return null;
             }
@@ -204,14 +205,14 @@ public static class UserInput
             return text ?? string.Empty;
         }
 
-        API.Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
+        Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
 
         return string.Empty;
     }
 
     private static string Unreadable(object? request)
     {
-        API.Log.Error($"[Input] A callback arrived as {request?.GetType().FullName ?? "null"}, which has no body this can read.");
+        Log.Error($"[Input] A callback arrived as {request?.GetType().FullName ?? "null"}, which has no body this can read.");
 
         return string.Empty;
     }

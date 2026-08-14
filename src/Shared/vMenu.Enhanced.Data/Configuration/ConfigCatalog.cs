@@ -54,7 +54,13 @@ public static class ConfigCatalog
             TimeOptions.TransitionSeconds,
         ]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
-        new("Debugging", [Debugging.Client, Debugging.Server, Debugging.ExperimentalFeatures]),
+        new("Debugging",
+        [
+            Debugging.LogLevel,
+            Debugging.Client,
+            Debugging.Server,
+            Debugging.ExperimentalFeatures,
+        ]),
     ];
 
     public static IEnumerable<Setting> All => Sections.SelectMany(static section => section.Settings);

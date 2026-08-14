@@ -3,7 +3,9 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration;
 
@@ -14,7 +16,7 @@ public static class ClientConfig
 {
     private const string DumpCommand = "vmenu_config";
 
-    private static readonly ConfigStore Store = new(Native.GetConvar, Write);
+    private static readonly ConfigStore Store = new(Native.GetConvar, ForwardLog);
 
     public static event Action? Changed
     {
@@ -26,6 +28,11 @@ public static class ClientConfig
     public static void Initialize()
     {
         Store.Prime();
+
+        ApplyLogLevel();
+
+        // Any convar moving re-reads the level, because Changed does not say which one moved.
+        Store.Changed += ApplyLogLevel;
 
         // One listener per convar rather than a wildcard filter, which if it matched nothing would
         // look like the module quietly not working.
@@ -40,11 +47,11 @@ public static class ClientConfig
     /// <summary>Prints what this client currently reads for every setting.</summary>
     public static void Dump()
     {
-        API.Log.Info("[Config] Current values:");
+        Log.Debug("[Config] Current values:");
 
         foreach (var line in Store.Describe())
         {
-            API.Log.Info("[Config]   " + line);
+            Log.Debug("[Config]   " + line);
         }
     }
 
@@ -74,21 +81,23 @@ public static class ClientConfig
 
     private static void OnConvarChanged(string convar, object? reserved) => Store.NotifyChanged(convar);
 
-    private static void Write(ConfigLog level, string message)
+    private static void ApplyLogLevel() => Log.SetLevel(Store.Value(Debugging.LogLevel));
+
+    private static void ForwardLog(ConfigLog level, string message)
     {
         switch (level)
         {
             case ConfigLog.Error:
-                API.Log.Error($"[Config] {message}");
+                Log.Error($"[Config] {message}");
                 break;
             case ConfigLog.Warn:
-                API.Log.Warn($"[Config] {message}");
+                Log.Warning($"[Config] {message}");
                 break;
             case ConfigLog.Info:
-                API.Log.Info($"[Config] {message}");
+                Log.Info($"[Config] {message}");
                 break;
             default:
-                API.Log.Debug($"[Config] {message}");
+                Log.Debug($"[Config] {message}");
                 break;
         }
     }

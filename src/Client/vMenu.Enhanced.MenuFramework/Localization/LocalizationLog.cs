@@ -1,4 +1,4 @@
-using CitizenFX.FiveM.Client;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
@@ -15,7 +15,7 @@ internal static class LocalizationLog
     {
         if (Reported.Add($"key:{key}"))
         {
-            API.Log.Error($"[i18n] No '{LanguageId.English}' text for key '{key}'. Add it to the English table.");
+            Log.Error($"[i18n] No '{LanguageId.English}' text for key '{key}'. Add it to the English table.");
         }
     }
 
@@ -23,7 +23,7 @@ internal static class LocalizationLog
     {
         if (Reported.Add($"arg:{name}:{template}"))
         {
-            API.Log.Error($"[i18n] No argument named '{name}' was supplied for \"{template}\".");
+            Log.Error($"[i18n] No argument named '{name}' was supplied for \"{template}\".");
         }
     }
 

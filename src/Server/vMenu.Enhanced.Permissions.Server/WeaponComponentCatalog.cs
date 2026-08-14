@@ -3,6 +3,7 @@ using System.Text.Json;
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Weapons;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
@@ -30,7 +31,7 @@ public static class WeaponComponentCatalog
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Permissions] No {ConfigFile} found. No weapon offers any components.");
+            Log.Warning($"[Permissions] No {ConfigFile} found. No weapon offers any components.");
             return;
         }
 
@@ -42,7 +43,7 @@ public static class WeaponComponentCatalog
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no weapon offers any components: {exception.Message}");
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no weapon offers any components: {exception.Message}");
             return;
         }
 
@@ -50,7 +51,7 @@ public static class WeaponComponentCatalog
         {
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Error($"[Permissions] {ConfigFile} has to hold a single object of component names, so no weapon offers any components.");
+                Log.Error($"[Permissions] {ConfigFile} has to hold a single object of component names, so no weapon offers any components.");
                 return;
             }
 
@@ -61,7 +62,7 @@ public static class WeaponComponentCatalog
 
         if (Components.Count > 0)
         {
-            API.Log.Info($"[Permissions] Loaded {Components.Count} weapon component(s) from '{ConfigFile}'.");
+            Log.Debug($"[Permissions] Loaded {Components.Count} weapon component(s) from '{ConfigFile}'.");
         }
     }
 
@@ -78,13 +79,13 @@ public static class WeaponComponentCatalog
 
             if (component.Value.ValueKind != JsonValueKind.String)
             {
-                API.Log.Warn($"[Permissions] Skipping component '{spawnName}': the text to show for it has to be written in quotes.");
+                Log.Warning($"[Permissions] Skipping component '{spawnName}': the text to show for it has to be written in quotes.");
                 continue;
             }
 
             if (!claimed.Add(spawnName))
             {
-                API.Log.Warn($"[Permissions] '{spawnName}' is listed more than once in {ConfigFile}, so only the first one is used.");
+                Log.Warning($"[Permissions] '{spawnName}' is listed more than once in {ConfigFile}, so only the first one is used.");
                 continue;
             }
 

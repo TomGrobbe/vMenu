@@ -1,11 +1,11 @@
 using System.Globalization;
 
-using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Logging;
 
 using TimeOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.TimeOptions;
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -47,7 +47,7 @@ public static class WorldActions
         {
             ServerState.SetWeather(null);
 
-            API.Log.Info($"[State] {source} handed the weather back to the schedule.");
+            Log.Debug($"[State] {source} handed the weather back to the schedule.");
 
             return ActionResponse.Ok();
         }
@@ -59,7 +59,7 @@ public static class WorldActions
 
         ServerState.SetWeather(type);
 
-        API.Log.Info($"[State] {source} forced the weather to {WeatherTypes.NameOf(type)}.");
+        Log.Debug($"[State] {source} forced the weather to {WeatherTypes.NameOf(type)}.");
 
         return ActionResponse.Ok();
     }
@@ -82,7 +82,7 @@ public static class WorldActions
         {
             ServerState.SetTimeOffset(ServerClock.RealTimeOffset());
 
-            API.Log.Info(
+            Log.Debug(
                 $"[State] {source} put the clock back on the server's own time, " +
                 $"offset {ServerState.TimeOffsetSeconds}s.");
 
@@ -96,7 +96,7 @@ public static class WorldActions
 
         ServerState.SetTimeOffset(seconds);
 
-        API.Log.Info($"[State] {source} set the clock offset to {ServerState.TimeOffsetSeconds}s.");
+        Log.Debug($"[State] {source} set the clock offset to {ServerState.TimeOffsetSeconds}s.");
 
         return ActionResponse.Ok();
     }

@@ -7,6 +7,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Ticks;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -92,30 +93,30 @@ public static class WorldState
     {
         if (!IsNeeded())
         {
-            API.Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
+            Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
         }
 
-        API.Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
-        API.Log.Info($"[World] {WorldStateConvars.Weather} = '{Native.GetConvar(WorldStateConvars.Weather, string.Empty)}'");
-        API.Log.Info(
+        Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
+        Log.Info($"[World] {WorldStateConvars.Weather} = '{Native.GetConvar(WorldStateConvars.Weather, string.Empty)}'");
+        Log.Info(
             $"[World] {WorldStateConvars.TimeOffset} = '{Native.GetConvar(WorldStateConvars.TimeOffset, string.Empty)}'");
 
-        API.Log.Info(
+        Log.Info(
             "[World] clock: " + (_anchored
                 ? _heardFromServer ? "anchored to the server" : "anchored to THIS MACHINE, no server time has arrived"
                 : "not anchored") +
             $", running at {TimeSpeed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
-        API.Log.Info(
+        Log.Info(
             $"[World] override: {(WeatherOverride is { } forced ? WeatherTypes.NameOf(forced) : "none")}, " +
             $"schedule: {WeatherTypes.NameOf(Schedule.Current)}, " +
             $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s");
 
         // Everything above is what vMenu believes. This is what the game actually has.
-        API.Log.Info($"[World] game reports: {WorldWeather.Describe()}");
-        API.Log.Info($"[World] clouds: {WorldClouds.Describe()}");
-        API.Log.Info($"[World] game clock: {WorldTime.Describe()}");
-        API.Log.Info($"[World] date: {WorldTime.DescribeDate()}");
-        API.Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
+        Log.Info($"[World] game reports: {WorldWeather.Describe()}");
+        Log.Info($"[World] clouds: {WorldClouds.Describe()}");
+        Log.Info($"[World] game clock: {WorldTime.Describe()}");
+        Log.Info($"[World] date: {WorldTime.DescribeDate()}");
+        Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
     }
 
     private static void Poll()
@@ -208,7 +209,7 @@ public static class WorldState
         {
             _warnedAboutFallback = true;
 
-            API.Log.Warn("[World] No server time yet, falling back to this machine's clock.");
+            Log.Warning("[World] No server time yet, falling back to this machine's clock.");
         }
 
         _anchorUnix = CivilTime.ToUnixSeconds(year, month, day, hour, minute, second);

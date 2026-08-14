@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Weapons;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Weapons;
@@ -79,7 +80,7 @@ public static class WeaponSync
 
         if (!HasReceived)
         {
-            API.Log.Error($"[Weapons] No weapons received after {WaitTimeout}ms, so the menu is being built empty.");
+            Log.Error($"[Weapons] No weapons received after {WaitTimeout}ms, so the menu is being built empty.");
         }
     }
 
@@ -87,7 +88,7 @@ public static class WeaponSync
     {
         if (!ClientJson.TryDeserialize<List<WeaponCategory>>(categories, out var readCategories) || readCategories is null)
         {
-            API.Log.Error("[Weapons] The weapons the server sent could not be read.");
+            Log.Error("[Weapons] The weapons the server sent could not be read.");
 
             return;
         }
@@ -96,7 +97,7 @@ public static class WeaponSync
         // reported and left empty rather than dropping the weapons with it.
         if (!ClientJson.TryDeserialize<List<WeaponComponentEntry>>(components, out var readComponents) || readComponents is null)
         {
-            API.Log.Error("[Weapons] The weapon components the server sent could not be read, so no weapon offers any.");
+            Log.Error("[Weapons] The weapon components the server sent could not be read, so no weapon offers any.");
 
             readComponents = [];
         }
@@ -115,6 +116,6 @@ public static class WeaponSync
 
         HasReceived = true;
 
-        API.Log.Debug($"[Weapons] Received {CachedCategories.Count} category/categories and {CachedComponents.Count} component(s).");
+        Log.Debug($"[Weapons] Received {CachedCategories.Count} category/categories and {CachedComponents.Count} component(s).");
     }
 }

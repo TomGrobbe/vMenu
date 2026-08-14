@@ -1,9 +1,8 @@
 using System.Collections;
 
-using CitizenFX.FiveM.Client;
-
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -84,7 +83,7 @@ internal sealed class TimePresetOptions : IReadOnlyList<MenuText>
 
         if (rejected.Count > 0)
         {
-            API.Log.Warn(
+            Log.Warning(
                 $"[World] Ignoring {rejected.Count} time preset(s) in {TimeOptionsSettings.Presets.Name}: " +
                 string.Join(", ", rejected) +
                 ". Every preset has to be four digits on a 24 hour clock, such as 0930 or 2130.");

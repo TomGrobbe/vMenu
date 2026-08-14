@@ -5,6 +5,7 @@
   <ItemGroup>
     <!-- TickRate, and the TickHandle that TickRegistry hands back. -->
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks\vMenu.Enhanced.Ticks.csproj" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
@@ -96,14 +97,14 @@ public static class VehicleCommands
             {
                 _id = NativeFixer.RegisterCommand(_name, restricted: false, _handler);
 
-                API.Log.Debug($"[VehicleOptions] Registered /{_name}.");
+                Log.Debug($"[VehicleOptions] Registered /{_name}.");
             }
             else if (!shouldRegister && _id is not null)
             {
                 Native.UnregisterCommand(_id.Value);
                 _id = null;
 
-                API.Log.Debug($"[VehicleOptions] Unregistered /{_name}.");
+                Log.Debug($"[VehicleOptions] Unregistered /{_name}.");
             }
         }
 
@@ -124,7 +125,7 @@ public static class VehicleCommands
             }
             catch (Exception exception)
             {
-                API.Log.Error($"[VehicleOptions] /{_name} threw: {exception}");
+                Log.Error($"[VehicleOptions] /{_name} threw: {exception}");
             }
         }
     }

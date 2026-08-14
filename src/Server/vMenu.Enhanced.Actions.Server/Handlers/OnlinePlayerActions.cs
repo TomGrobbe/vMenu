@@ -7,6 +7,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Ticks.Server;
 
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
@@ -184,7 +185,7 @@ public static class OnlinePlayerActions
             identifiers.Add(identifier);
         }
 
-        API.Log.Info($"[OnlinePlayers] {source} read the identifiers of {target}.");
+        Log.Info($"[OnlinePlayers] {source.Name} read the identifiers of {Native.GetPlayerName(target.ToString())}.");
 
         return ActionResponse.Ok([.. identifiers]);
     }
@@ -224,7 +225,7 @@ public static class OnlinePlayerActions
 
         var reason = args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]) ? args[1].Trim() : DefaultKickReason;
 
-        API.Log.Info($"[OnlinePlayers] {source} kicked {target}: {reason}");
+        Log.Info($"[OnlinePlayers] {source.Name} kicked {Native.GetPlayerName(target.ToString())}: {reason}");
 
         Native.DropPlayer(target.ToString(CultureInfo.InvariantCulture), reason);
 
@@ -248,7 +249,7 @@ public static class OnlinePlayerActions
             return ActionResponse.NotReady();
         }
 
-        API.Log.Info($"[OnlinePlayers] {source} killed {target}.");
+        Log.Info($"[OnlinePlayers] {source.Name} killed {Native.GetPlayerName(target.ToString())}.");
 
         API.EmitClient(target, PlayerEvents.Kill, source.Name);
 
@@ -291,7 +292,7 @@ public static class OnlinePlayerActions
 
         var coords = Native.GetEntityCoords(ped);
 
-        API.Log.Info($"[OnlinePlayers] {source} summoned {target}.");
+        Log.Info($"[OnlinePlayers] {source.Name} summoned {Native.GetPlayerName(target.ToString())}.");
 
         // Strings, like every other argument that crosses the wire here, so a float never arrives as
         // something the receiving delegate refuses to bind.
@@ -350,7 +351,7 @@ public static class OnlinePlayerActions
 
             if (await Task.WhenAny(delivered.Task, timeout) == timeout)
             {
-                API.Log.Info($"[OnlinePlayers] {source}'s message to {target} was never acknowledged.");
+                Log.Warning($"[OnlinePlayers] {source.Name}'s message to {Native.GetPlayerName(target.ToString())} was never acknowledged.");
 
                 return ActionResponse.NotReady();
             }
@@ -384,7 +385,8 @@ public static class OnlinePlayerActions
         // of a message they never received.
         if (pending.Target != source.Handle)
         {
-            API.Log.Warn($"[OnlinePlayers] {source} acknowledged message {id}, which was sent to {pending.Target}. Ignored.");
+            Log.Warning($"[OnlinePlayers] {source.Name} acknowledged message {id}, which was sent to {Native.GetPlayerName(pending.Target.ToString
+                ())}. Ignored.");
 
             return;
         }

@@ -1,7 +1,6 @@
 using System.Reflection;
 
-using CitizenFX.FiveM.Client;
-
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
@@ -53,7 +52,7 @@ internal sealed class VMenuMetadata
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Menu] Could not read [VMenu] from {type.Name}, falling back to its own properties: {exception}");
+            Log.Error($"[Menu] Could not read [VMenu] from {type.Name}, falling back to its own properties: {exception}");
 
             return new VMenuMetadata(null);
         }

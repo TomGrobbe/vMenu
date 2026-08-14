@@ -3,6 +3,7 @@ using System.Globalization;
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Deaths;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -37,7 +38,7 @@ public static class PedDeathBroadcast
         {
             _reported = true;
 
-            API.Log.Debug(
+            Log.Trace(
                 $"[Deaths] onPedDeath is firing. First one: entity {entity}, attacker {attacker}, "
                 + $"cause {cause}, entity is a player: {Native.IsPedAPlayer(victimPed)}.");
         }
@@ -63,7 +64,7 @@ public static class PedDeathBroadcast
             killer = null;
         }
 
-        API.Log.Debug(
+        Log.Trace(
             $"[Deaths] {victim.Name} ({victim.ServerId}) died. "
             + $"Attacker entity {attackerPed}, killer {killer?.Name ?? "none"}, cause {cause}.");
 

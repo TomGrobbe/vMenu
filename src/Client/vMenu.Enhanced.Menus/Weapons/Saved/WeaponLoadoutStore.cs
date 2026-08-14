@@ -1,5 +1,6 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Storage;
 
@@ -171,7 +172,7 @@ public static class WeaponLoadoutStore
 
         // Counted here as well as where it is handed back, so a restore that comes up short says
         // which of the two lost it: the snapshot taken off a ped that has just died, or the giving.
-        API.Log.Debug(
+        Log.Debug(
             $"[Weapons] Put {loadout.Weapons.Count} weapon(s) aside for the respawn, "
             + $"{loadout.Weapons.Sum(weapon => weapon.Components.Count)} component(s) between them.");
     }

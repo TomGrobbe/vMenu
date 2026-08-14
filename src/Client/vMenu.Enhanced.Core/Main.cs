@@ -9,6 +9,7 @@ using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
@@ -38,7 +39,7 @@ public sealed class Main : IScript
         {
             foreach (var line in ResourceIdentity.MismatchReport(resource, "client"))
             {
-                API.Log.Error(line);
+                Log.Error(line);
             }
 
             return;
@@ -73,7 +74,7 @@ public sealed class Main : IScript
         DebugCommands.Source(
             () => ClientConfig.Value(Debugging.Client),
             Debugging.Client.Name,
-            message => API.Log.Info($"[vMenu] {message}"));
+            message => Log.Info($"[vMenu] {message}"));
 
         MenuController.MenuToggleKeyDefault = ClientConfig.Value(KeyBindings.MenuToggleKey);
 

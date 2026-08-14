@@ -1,8 +1,7 @@
 using System.Reflection;
 
-using CitizenFX.FiveM.Server;
-
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -53,7 +52,7 @@ public static class PermissionRegistry
         LinkNodes();
         ValidateExtraParents();
 
-        API.Log.Info($"[Permissions] Registered {Nodes.Count} permissions across {RootNodes.Count} roots.");
+        Log.Debug($"[Permissions] Registered {Nodes.Count} permissions across {RootNodes.Count} roots.");
     }
 
     /// <summary>Registers a permission whose name comes from configuration.</summary>
@@ -62,7 +61,7 @@ public static class PermissionRegistry
     {
         if (!PermissionPath.IsValidPermission(permission))
         {
-            API.Log.Warn($"[Permissions] Ignoring runtime permission '{permission}': not a valid permission name.");
+            Log.Warning($"[Permissions] Ignoring runtime permission '{permission}': not a valid permission name.");
             return false;
         }
 
@@ -75,7 +74,7 @@ public static class PermissionRegistry
 
         if (parent is null)
         {
-            API.Log.Warn($"[Permissions] Ignoring runtime permission '{permission}': no registered container grant above it.");
+            Log.Warning($"[Permissions] Ignoring runtime permission '{permission}': no registered container grant above it.");
             return false;
         }
 
@@ -186,13 +185,13 @@ public static class PermissionRegistry
 
                 if (!PermissionPath.IsValidPermission(value))
                 {
-                    API.Log.Error($"[Permissions] {type.Name}.{field.Name} is not a valid permission name: '{value}'. Segments may only contain letters, digits and underscores.");
+                    Log.Error($"[Permissions] {type.Name}.{field.Name} is not a valid permission name: '{value}'. Segments may only contain letters, digits and underscores.");
                     continue;
                 }
 
                 if (owners.TryGetValue(value, out var existing))
                 {
-                    API.Log.Error($"[Permissions] Duplicate permission '{value}' declared by both {existing} and {type.Name}.{field.Name}.");
+                    Log.Error($"[Permissions] Duplicate permission '{value}' declared by both {existing} and {type.Name}.{field.Name}.");
                     continue;
                 }
 
@@ -207,7 +206,7 @@ public static class PermissionRegistry
             // A single-permission category has nothing to group, so no container grant is expected.
             if (!hasContainerGrant && declaredInCategory > 1)
             {
-                API.Log.Warn($"[Permissions] Category {type.Name} has no '{PermissionPath.All}' permission, so it cannot be granted as a whole.");
+                Log.Warning($"[Permissions] Category {type.Name} has no '{PermissionPath.All}' permission, so it cannot be granted as a whole.");
             }
         }
 
@@ -286,7 +285,7 @@ public static class PermissionRegistry
             {
                 if (!Nodes.ContainsKey(extra))
                 {
-                    API.Log.Error($"[Permissions] '{node.Name}' names unregistered permission '{extra}' as an additional parent.");
+                    Log.Error($"[Permissions] '{node.Name}' names unregistered permission '{extra}' as an additional parent.");
                 }
             }
         }

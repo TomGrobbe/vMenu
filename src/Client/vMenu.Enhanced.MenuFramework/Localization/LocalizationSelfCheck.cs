@@ -1,6 +1,6 @@
 using System.Reflection;
 
-using CitizenFX.FiveM.Client;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
@@ -19,7 +19,7 @@ public static class LocalizationSelfCheck
 
         if (missing.Length > 0)
         {
-            API.Log.Error($"[i18n] The English table is missing {missing.Length} key(s): {string.Join(", ", missing)}");
+            Log.Error($"[Localization] The English table is missing {missing.Length} key(s): {string.Join(", ", missing)}");
         }
 
         foreach (var language in LanguageCatalog.Available)
@@ -35,11 +35,11 @@ public static class LocalizationSelfCheck
 
             if (orphans.Length > 0)
             {
-                API.Log.Warn($"[i18n] '{language}' has {orphans.Length} entrie(s) no Loc constant names: {string.Join(", ", orphans)}");
+                Log.Warning($"[Localization] '{language}' has {orphans.Length} entrie(s) no Loc constant names: {string.Join(", ", orphans)}");
             }
 
             // Partial translations are by design, so coverage is reported rather than warned about.
-            API.Log.Debug($"[i18n] '{language}' ({table.NativeName}): {keys.Count(table.ContainsKey)}/{keys.Count} key(s).");
+            Log.Debug($"[Localization] '{language}' ({table.NativeName}): {keys.Count(table.ContainsKey)}/{keys.Count} key(s).");
         }
     }
 

@@ -1,17 +1,13 @@
-using CitizenFX.FiveM.Client;
-
 using MenuAPI;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Logging;
 
 using AppearanceSettings = vMenu.Enhanced.Data.Configuration.Settings.MenuAppearance;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Keeps MenuAPI's banner defaults in step with the appearance settings.</summary>
-// Nothing is rebuilt when one changes: MenuAPI resolves these defaults every frame it draws a
-// banner, so a menu that already exists picks the new look up on its own.
 public static class HeaderStyle
 {
     private static readonly (string Name, int Id)[] Fonts =
@@ -98,8 +94,6 @@ public static class HeaderStyle
         return MenuFont.ChaletComprimeCologne;
     }
 
-    // Every setting change runs Apply, so without this one bad value complains again on every
-    // unrelated change.
     private static void Report(ref string? reported, string raw, string message)
     {
         if (string.Equals(reported, raw, StringComparison.Ordinal))
@@ -109,6 +103,6 @@ public static class HeaderStyle
 
         reported = raw;
 
-        API.Log.Warn($"[Menu] {message}");
+        Log.Warning($"[Menu] {message}");
     }
 }

@@ -7,6 +7,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Permissions.Menus;
 using vMenu.Enhanced.Data.Weapons;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
@@ -36,7 +37,7 @@ public static class WeaponCatalog
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Permissions] No {ConfigFile} found. The weapon options menu starts empty.");
+            Log.Warning($"[Permissions] No {ConfigFile} found. The weapon options menu starts empty.");
             return;
         }
 
@@ -48,7 +49,7 @@ public static class WeaponCatalog
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Permissions] {ConfigFile} could not be parsed, so the weapon options menu starts empty: {exception.Message}");
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so the weapon options menu starts empty: {exception.Message}");
             return;
         }
 
@@ -56,7 +57,7 @@ public static class WeaponCatalog
         {
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so the weapon options menu starts empty.");
+                Log.Error($"[Permissions] {ConfigFile} has to hold a single object of categories, so the weapon options menu starts empty.");
                 return;
             }
 
@@ -85,7 +86,7 @@ public static class WeaponCatalog
 
             if (segment.Length == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping weapon category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
+                Log.Warning($"[Permissions] Skipping weapon category '{property.Name}': its name has no letters or digits in it, so it could never be granted.");
                 continue;
             }
 
@@ -94,19 +95,19 @@ public static class WeaponCatalog
             // A name matching one vMenu declares itself would quietly hijack that permission.
             if (PermissionRegistry.TryGet(permission, out _))
             {
-                API.Log.Warn($"[Permissions] Skipping weapon category '{name}': '{permission}' is a permission vMenu already declares, so pick a different name.");
+                Log.Warning($"[Permissions] Skipping weapon category '{name}': '{permission}' is a permission vMenu already declares, so pick a different name.");
                 continue;
             }
 
             if (!segments.Add(segment))
             {
-                API.Log.Warn($"[Permissions] Skipping weapon category '{name}': another category already claims '{permission}'.");
+                Log.Warning($"[Permissions] Skipping weapon category '{name}': another category already claims '{permission}'.");
                 continue;
             }
 
             if (property.Value.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Warn($"[Permissions] Skipping weapon category '{name}': its value has to be a list of weapon spawn names and the text to show for them.");
+                Log.Warning($"[Permissions] Skipping weapon category '{name}': its value has to be a list of weapon spawn names and the text to show for them.");
                 continue;
             }
 
@@ -114,7 +115,7 @@ public static class WeaponCatalog
 
             if (weapons.Count == 0)
             {
-                API.Log.Warn($"[Permissions] Skipping weapon category '{name}': it has no weapons in it, so it would show up empty.");
+                Log.Warning($"[Permissions] Skipping weapon category '{name}': it has no weapons in it, so it would show up empty.");
                 continue;
             }
 
@@ -122,7 +123,7 @@ public static class WeaponCatalog
 
             PermissionRegistry.RegisterDynamic(permission, ConfigFile);
 
-            API.Log.Info($"[Permissions] Weapon category '{name}' holds {weapons.Count} weapon(s) and is granted by '{permission}'.");
+            Log.Debug($"[Permissions] Weapon category '{name}' holds {weapons.Count} weapon(s) and is granted by '{permission}'.");
         }
     }
 
@@ -139,25 +140,25 @@ public static class WeaponCatalog
 
             if (spawnName == Unarmed)
             {
-                API.Log.Warn($"[Permissions] Skipping '{Unarmed}' in weapon category '{category}': every player already has it, so there would be nothing to hand out.");
+                Log.Warning($"[Permissions] Skipping '{Unarmed}' in weapon category '{category}': every player already has it, so there would be nothing to hand out.");
                 continue;
             }
 
             if (!PermissionPath.IsValidSegment(spawnName))
             {
-                API.Log.Warn($"[Permissions] Skipping '{spawnName}' in weapon category '{category}': only letters, digits and underscores are usable in a permission, so this one could never be whitelisted.");
+                Log.Warning($"[Permissions] Skipping '{spawnName}' in weapon category '{category}': only letters, digits and underscores are usable in a permission, so this one could never be whitelisted.");
                 continue;
             }
 
             if (weapon.Value.ValueKind != JsonValueKind.String)
             {
-                API.Log.Warn($"[Permissions] Skipping '{spawnName}' in weapon category '{category}': the text to show for it has to be written in quotes.");
+                Log.Warning($"[Permissions] Skipping '{spawnName}' in weapon category '{category}': the text to show for it has to be written in quotes.");
                 continue;
             }
 
             if (!claimedWeapons.Add(spawnName))
             {
-                API.Log.Warn($"[Permissions] '{spawnName}' is listed in more than one weapon category, so it stays in the first one.");
+                Log.Warning($"[Permissions] '{spawnName}' is listed in more than one weapon category, so it stays in the first one.");
                 continue;
             }
 

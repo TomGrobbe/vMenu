@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Events;
 
@@ -92,7 +93,7 @@ public static class EventDebugCommands
 
         if (matches.Length == 0)
         {
-            API.Log.Info($"[Events] Nothing here is called '{target}'.");
+            Log.Warning($"[Events] Nothing here is called '{target}'.");
 
             Report();
 
@@ -107,16 +108,16 @@ public static class EventDebugCommands
             hook.Set(on);
         }
 
-        API.Log.Info($"[Events] Logging {(on ? "on" : "off")} for {matches.Length} event(s).");
+        Log.Info($"[Events] Logging {(on ? "on" : "off")} for {matches.Length} event(s).");
     }
 
     private static void Report()
     {
-        API.Log.Info($"[Events] Usage: {Command} <all | name | name prefix>, which switches logging on or off.");
+        Log.Info($"[Events] Usage: {Command} <all | name | name prefix>, which switches logging on or off.");
 
         foreach (var hook in Hooks)
         {
-            API.Log.Info($"[Events]   [{(hook.Attached ? "on" : "  ")}] {hook.Name}");
+            Log.Info($"[Events]   [{(hook.Attached ? "on" : "  ")}] {hook.Name}");
         }
     }
 
@@ -134,7 +135,10 @@ public static class EventDebugCommands
             where TPayload : struct
         {
             // Kept in a variable so detaching hands back the very delegate that was attached.
-            Action<TPayload> log = payload => API.Log.Info($"[Events] [{Native.GetGameTimer()}] {payload}");
+            static void log(TPayload payload)
+            {
+                Log.Info($"[Events] [{Native.GetGameTimer()}] {payload}");
+            }
 
             return new Hook
             {

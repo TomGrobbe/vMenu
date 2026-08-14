@@ -35,6 +35,7 @@ files {
     'client/vMenu.Enhanced.Configuration.dll',
     'client/vMenu.Enhanced.Data.dll',
     'client/vMenu.Enhanced.Events.dll',
+    'client/vMenu.Enhanced.Logging.dll',
     'client/vMenu.Enhanced.Permissions.dll',
     'client/vMenu.Enhanced.Serialization.dll',
     'client/vMenu.Enhanced.Storage.dll',

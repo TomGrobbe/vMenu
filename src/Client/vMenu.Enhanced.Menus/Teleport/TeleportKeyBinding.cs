@@ -3,6 +3,7 @@ using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration.Settings;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
@@ -103,7 +104,7 @@ public static class TeleportKeyBinding
         }
         catch (Exception exception)
         {
-            API.Log.Error($"[Teleport] The teleport key threw: {exception}");
+            Log.Error($"[Teleport] The teleport key threw: {exception}");
         }
         finally
         {

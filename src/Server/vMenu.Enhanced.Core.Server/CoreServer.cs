@@ -8,6 +8,7 @@ using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
@@ -24,7 +25,7 @@ public class CoreServer : IScript
         {
             foreach (var line in ResourceIdentity.MismatchReport(resource, "server"))
             {
-                API.Log.Error(line);
+                Log.Error(line);
             }
 
             return;
@@ -38,7 +39,7 @@ public class CoreServer : IScript
         DebugCommands.Source(
             () => ServerConfig.Value(Debugging.Server),
             Debugging.Server.Name,
-            message => API.Log.Info($"[vMenu] {message}"));
+            message => Log.Info($"[vMenu] {message}"));
 
         ServerTickRegistry.Initialize();
 
@@ -68,6 +69,6 @@ public class CoreServer : IScript
 
         PedDeathBroadcast.Register();
 
-        API.Log.Info("Server started");
+        Log.Debug("vMenu Server side started");
     }
 }

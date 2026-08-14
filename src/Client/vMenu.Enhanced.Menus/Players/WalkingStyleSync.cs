@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.PedModels;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Players;
@@ -74,7 +75,7 @@ public static class WalkingStyleSync
     {
         if (!ClientJson.TryDeserialize<List<WalkingStyle>>(payload, out var read) || read is null)
         {
-            API.Log.Error("[WalkingStyles] The walking styles the server sent could not be read.");
+            Log.Error("[WalkingStyles] The walking styles the server sent could not be read.");
 
             return;
         }
@@ -84,6 +85,6 @@ public static class WalkingStyleSync
 
         HasReceived = true;
 
-        API.Log.Debug($"[WalkingStyles] Received {Cached.Count} style(s).");
+        Log.Debug($"[WalkingStyles] Received {Cached.Count} style(s).");
     }
 }

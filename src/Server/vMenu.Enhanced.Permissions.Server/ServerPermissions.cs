@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -98,7 +99,7 @@ public static class ServerPermissions
 
         if (!IsReady)
         {
-            API.Log.Error($"[Permissions] Refusing to send permissions to {source}: the registry is not ready yet.");
+            Log.Error($"[Permissions] Refusing to send permissions to {source}: the registry is not ready yet.");
             return;
         }
 
@@ -118,12 +119,12 @@ public static class ServerPermissions
             API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds, whitelistedWeapons);
         }
 
-        API.Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {Native.GetPlayerName(source)}: {string.Join(", ", granted)}");
+        Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {Native.GetPlayerName(source)}: {string.Join(", ", granted)}");
     }
 
     public static void LogTree()
     {
-        API.Log.Info($"[Permissions] {PermissionRegistry.Count} permission(s):");
+        Log.Info($"[Permissions] {PermissionRegistry.Count} permission(s):");
 
         foreach (var (node, depth) in PermissionRegistry.EnumerateTree())
         {
@@ -131,7 +132,7 @@ public static class ServerPermissions
             var extras = node.ExtraParents.Count > 0 ? $"  (also granted by {string.Join(", ", node.ExtraParents)})" : string.Empty;
             var dynamic = node.Source is not null ? $" [runtime, from {node.Source}]" : string.Empty;
 
-            API.Log.Info($"{indent}{node.Name}{dynamic}{extras}");
+            Log.Info($"{indent}{node.Name}{dynamic}{extras}");
         }
     }
 

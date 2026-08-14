@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Logging;
 
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleOptions;
@@ -78,7 +79,7 @@ public static class VehicleActions
 
         if (Vector3.DistanceSquared(Native.GetEntityCoords(ped), Native.GetEntityCoords(entity)) > reach * reach)
         {
-            API.Log.Warn($"[Actions] {source} asked to delete a vehicle further than {reach}m away. Refused.");
+            Log.Warning($"[Actions] {source} asked to delete a vehicle further than {reach}m away. Refused.");
 
             return ActionResponse.TooFar();
         }

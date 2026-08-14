@@ -1,8 +1,7 @@
-using CitizenFX.FiveM.Client;
-
 using MenuAPI;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
 
@@ -31,7 +30,7 @@ public static class MenuRegistry
     {
         if (_built)
         {
-            API.Log.Error("[Menu] BuildAsync was called twice. MenuAPI cannot drop the menus already registered, so this call is being ignored.");
+            Log.Error("[Menu] BuildAsync was called twice. MenuAPI cannot drop the menus already registered, so this call is being ignored.");
             return;
         }
 
@@ -54,7 +53,7 @@ public static class MenuRegistry
         {
             if (definition.Title.IsEmpty)
             {
-                API.Log.Error($"[Menu] {definition.GetType().Name} has no title: add a [VMenu(TitleKey = ...)] attribute or override Title.");
+                Log.Error($"[Menu] {definition.GetType().Name} has no title: add a [VMenu(TitleKey = ...)] attribute or override Title.");
             }
 
             // A submenu entry so the link, its gate and its child menu go through the same path as
@@ -72,7 +71,7 @@ public static class MenuRegistry
         // permission set lands.
         RefreshAll();
 
-        API.Log.Debug($"[Menu] Built {Hosts.Count} menu(s).");
+        Log.Debug($"[Menu] Built {Hosts.Count} menu(s).");
     }
 
     /// <summary>Re-evaluates every gate and rewrites every label.</summary>
@@ -220,7 +219,7 @@ public static class MenuRegistry
             return true;
         }
 
-        API.Log.Error($"[Menu] '{definition.GetType().Name}' needs asynchronous preparation, so it cannot be added after its parent menu was built. Declare it during Build instead.");
+        Log.Error($"[Menu] '{definition.GetType().Name}' needs asynchronous preparation, so it cannot be added after its parent menu was built. Declare it during Build instead.");
 
         return false;
     }
@@ -261,7 +260,7 @@ public static class MenuRegistry
 
         if (definition is null && submenu.Build is null)
         {
-            API.Log.Error($"[Menu] Submenu '{submenu.Text.Resolve(localizer)}' declares neither a Definition nor a Build, so it opens nothing.");
+            Log.Error($"[Menu] Submenu '{submenu.Text.Resolve(localizer)}' declares neither a Definition nor a Build, so it opens nothing.");
             return null;
         }
 

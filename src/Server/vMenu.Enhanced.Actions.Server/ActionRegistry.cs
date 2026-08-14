@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 
 namespace vMenu.Enhanced.Actions.Server;
@@ -40,7 +41,7 @@ public static class ActionRegistry
     {
         if (!Actions.TryAdd(actionId, new RegisteredAction(permission, handler)))
         {
-            API.Log.Error($"[Actions] '{actionId}' is registered twice. The second registration is ignored.");
+            Log.Error($"[Actions] '{actionId}' is registered twice. The second registration is ignored.");
         }
     }
 
@@ -64,7 +65,7 @@ public static class ActionRegistry
 
         API.OnNetEvent(ActionEvents.Invoke, new Action<Player, string, int, string[]>(OnInvoke), false);
 
-        API.Log.Debug($"[Actions] Listening with {Actions.Count} action(s) registered.");
+        Log.Debug($"[Actions] Listening with {Actions.Count} action(s) registered.");
     }
 
     /// <summary>
@@ -91,7 +92,7 @@ public static class ActionRegistry
         {
             if (!Actions.TryGetValue(actionId, out var action))
             {
-                API.Log.Warn($"[Actions] {source} asked for '{actionId}', which nothing is registered for.");
+                Log.Warning($"[Actions] {source} asked for '{actionId}', which nothing is registered for.");
 
                 Reply(source, requestId, ActionStatus.UnknownAction, []);
 
@@ -101,7 +102,7 @@ public static class ActionRegistry
             if (!ServerPermissions.IsPlayerAllowed(source, action.Permission))
             {
                 // Not a warning: a stale menu reaches this as readily as somebody poking at the event.
-                API.Log.Info($"[Actions] {source} was denied '{actionId}': missing {action.Permission}.");
+                Log.Info($"[Actions] {source.Name} was denied '{actionId}': missing {action.Permission}.");
 
                 Reply(source, requestId, ActionStatus.Denied, []);
 
@@ -117,7 +118,7 @@ public static class ActionRegistry
             catch (Exception exception)
             {
                 // Every other action, for every other player, is registered against this same event.
-                API.Log.Error($"[Actions] '{actionId}' threw for {source}: {exception}");
+                Log.Error($"[Actions] '{actionId}' threw for {source.Name}: {exception}");
 
                 response = ActionResponse.Failed();
             }
@@ -127,7 +128,7 @@ public static class ActionRegistry
         catch (Exception exception)
         {
             // No reply attempt: whatever just failed may well be the reply. The caller times out.
-            API.Log.Error($"[Actions] Dispatching '{actionId}' for {source} failed: {exception}");
+            Log.Error($"[Actions] Dispatching '{actionId}' for {source} failed: {exception}");
         }
     }
 
@@ -139,7 +140,7 @@ public static class ActionRegistry
     {
         if (!Native.DoesPlayerExist(source.Handle.ToString(CultureInfo.InvariantCulture)))
         {
-            API.Log.Debug($"[Actions] Dropping reply {requestId}: {source} is gone.");
+            Log.Debug($"[Actions] Dropping reply {requestId}: {source} is gone.");
 
             return;
         }

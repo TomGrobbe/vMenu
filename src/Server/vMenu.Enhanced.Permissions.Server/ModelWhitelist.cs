@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Permissions.SupplementalPermissions;
+using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -50,7 +51,7 @@ public static class ModelWhitelist
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Permissions] No {ConfigFile} found. Every model is governed by its class permission.");
+            Log.Warning($"[Permissions] No {ConfigFile} found. Every model is governed by its class permission.");
             return;
         }
 
@@ -62,7 +63,7 @@ public static class ModelWhitelist
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no models are whitelisted: {exception.Message}");
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no models are whitelisted: {exception.Message}");
             return;
         }
 
@@ -97,13 +98,13 @@ public static class ModelWhitelist
             // A name with a space or a dot would produce an ACE nobody could write.
             if (!PermissionPath.IsValidSegment(model))
             {
-                API.Log.Warn($"[Permissions] Skipping whitelisted {descriptor.JsonProperty} entry '{model}': only letters, digits and underscores are usable in a permission.");
+                Log.Warning($"[Permissions] Skipping whitelisted {descriptor.JsonProperty} entry '{model}': only letters, digits and underscores are usable in a permission.");
                 continue;
             }
 
             if (!accepted.Add(model))
             {
-                API.Log.Warn($"[Permissions] '{model}' is listed more than once under '{descriptor.JsonProperty}'.");
+                Log.Warning($"[Permissions] '{model}' is listed more than once under '{descriptor.JsonProperty}'.");
                 continue;
             }
 
@@ -117,7 +118,7 @@ public static class ModelWhitelist
 
         if (accepted.Count > 0)
         {
-            API.Log.Info($"[Permissions] Loaded {accepted.Count} whitelisted model(s) from '{descriptor.JsonProperty}'.");
+            Log.Debug($"[Permissions] Loaded {accepted.Count} whitelisted model(s) from '{descriptor.JsonProperty}'.");
         }
     }
 

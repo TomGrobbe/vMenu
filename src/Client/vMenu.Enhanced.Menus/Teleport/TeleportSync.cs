@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Teleport;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Teleport;
@@ -32,7 +33,7 @@ public static class TeleportSync
     {
         if (!ClientJson.TryDeserialize<List<TeleportCategory>>(payload, out var read) || read is null)
         {
-            API.Log.Error($"[Teleport] The locations the server sent could not be read: {payload}");
+            Log.Error($"[Teleport] The locations the server sent could not be read: {payload}");
 
             return;
         }
@@ -40,7 +41,7 @@ public static class TeleportSync
         Cached.Clear();
         Cached.AddRange(read);
 
-        API.Log.Debug($"[Teleport] Received {Cached.Count} category/categories.");
+        Log.Debug($"[Teleport] Received {Cached.Count} category/categories.");
 
         Changed?.Invoke();
     }

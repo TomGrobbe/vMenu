@@ -4,6 +4,7 @@ using System.Numerics;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
@@ -71,7 +72,7 @@ public static class PlayerPushEvents
     {
         if (!TryParse(x, out var px) || !TryParse(y, out var py) || !TryParse(z, out var pz))
         {
-            API.Log.Error($"[OnlinePlayers] Ignoring a summon to coordinates that did not parse: {x}, {y}, {z}");
+            Log.Error($"[OnlinePlayers] Ignoring a summon to coordinates that did not parse: {x}, {y}, {z}");
 
             return;
         }

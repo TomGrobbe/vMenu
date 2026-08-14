@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Teleport;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Serialization.Server;
 
@@ -202,7 +203,7 @@ public static class TeleportActions
 
         Broadcast();
 
-        API.Log.Info($"[Teleport] {source} {what}.");
+        Log.Debug($"[Teleport] {source} {what}.");
 
         return ActionResponse.Ok();
     }
@@ -218,14 +219,14 @@ public static class TeleportActions
                 return true;
             }
 
-            API.Log.Error($"[Teleport] {ConfigFile} could not be written, so nothing was added.");
+            Log.Error($"[Teleport] {ConfigFile} could not be written, so nothing was added.");
         }
         catch (Exception exception)
         {
             // Answered as a failed write rather than left to the dispatcher, so the caller still
             // undoes what it added. A throw that escaped here would leave the list holding something
             // that is not on disk and that nobody was told about.
-            API.Log.Error($"[Teleport] Writing {ConfigFile} threw, so nothing was added: {exception}");
+            Log.Error($"[Teleport] Writing {ConfigFile} threw, so nothing was added: {exception}");
         }
 
         return false;
@@ -303,19 +304,19 @@ public static class TeleportActions
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Teleport] No {ConfigFile} found, so the category menu starts empty.");
+            Log.Info($"[Teleport] No {ConfigFile} found, so the category menu starts empty.");
             return;
         }
 
         if (!ServerJson.TryDeserialize<List<Category>>(contents, out var read, out var error))
         {
-            API.Log.Error($"[Teleport] {ConfigFile} could not be parsed, so the category menu starts empty: {error}");
+            Log.Error($"[Teleport] {ConfigFile} could not be parsed, so the category menu starts empty: {error}");
             return;
         }
 
         if (read is null)
         {
-            API.Log.Error($"[Teleport] {ConfigFile} has to hold a list of categories, so the category menu starts empty.");
+            Log.Error($"[Teleport] {ConfigFile} has to hold a list of categories, so the category menu starts empty.");
             return;
         }
 
@@ -323,7 +324,7 @@ public static class TeleportActions
         {
             if (string.IsNullOrWhiteSpace(category.Name))
             {
-                API.Log.Warn($"[Teleport] Skipping a category in {ConfigFile}: it has no name.");
+                Log.Warning($"[Teleport] Skipping a category in {ConfigFile}: it has no name.");
                 continue;
             }
 
@@ -332,7 +333,7 @@ public static class TeleportActions
 
             Categories.Add(category);
 
-            API.Log.Info($"[Teleport] Category '{category.Name}' holds {category.Locations.Count} location(s).");
+            Log.Trace($"[Teleport] Category '{category.Name}' holds {category.Locations.Count} location(s).");
         }
 
         _payload = ServerJson.Serialize(Categories);
@@ -346,13 +347,13 @@ public static class TeleportActions
         {
             if (string.IsNullOrWhiteSpace(location.Name))
             {
-                API.Log.Warn($"[Teleport] Skipping a location in '{category}': it has no name.");
+                Log.Warning($"[Teleport] Skipping a location in '{category}': it has no name.");
                 continue;
             }
 
             if (location.Position is null)
             {
-                API.Log.Warn($"[Teleport] Skipping '{location.Name}' in '{category}': it has no position.");
+                Log.Warning($"[Teleport] Skipping '{location.Name}' in '{category}': it has no position.");
                 continue;
             }
 

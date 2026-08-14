@@ -1,5 +1,4 @@
-using CitizenFX.FiveM.Client;
-
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Menus.Weapons.Saved;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
@@ -63,6 +62,6 @@ public static class WeaponCarryOver
         // landing mid swap should not be what disarms them.
         var report = await WeaponLoadoutApply.ApplyAsync(carried, append: false, ignorePermissions: true);
 
-        API.Log.Debug($"[Weapons] Carried {report.Given} weapon(s) through the ped change, {report.Skipped} skipped.");
+        Log.Debug($"[Weapons] Carried {report.Given} weapon(s) through the ped change, {report.Skipped} skipped.");
     }
 }

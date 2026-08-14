@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Data.PedModels;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
@@ -46,7 +47,7 @@ public static class WalkingStyles
 
         if (string.IsNullOrWhiteSpace(contents))
         {
-            API.Log.Info($"[Config] No {ConfigFile} found, so players are offered no walking styles.");
+            Log.Warning($"[Config] No {ConfigFile} found, so players are offered no walking styles.");
             return;
         }
 
@@ -58,7 +59,7 @@ public static class WalkingStyles
         }
         catch (JsonException exception)
         {
-            API.Log.Error($"[Config] {ConfigFile} could not be parsed, so players are offered no walking styles: {exception.Message}");
+            Log.Error($"[Config] {ConfigFile} could not be parsed, so players are offered no walking styles: {exception.Message}");
             return;
         }
 
@@ -66,7 +67,7 @@ public static class WalkingStyles
         {
             if (document.RootElement.ValueKind != JsonValueKind.Object)
             {
-                API.Log.Error($"[Config] {ConfigFile} has to hold a single object of clip sets, so players are offered no walking styles.");
+                Log.Error($"[Config] {ConfigFile} has to hold a single object of clip sets, so players are offered no walking styles.");
                 return;
             }
 
@@ -75,7 +76,7 @@ public static class WalkingStyles
 
         _payload = ServerJson.Serialize(Styles);
 
-        API.Log.Info($"[Config] {Styles.Count} walking style(s) loaded from {ConfigFile}.");
+        Log.Debug($"[Config] {Styles.Count} walking style(s) loaded from {ConfigFile}.");
     }
 
     /// <summary>Call once the config has been read.</summary>
@@ -102,13 +103,13 @@ public static class WalkingStyles
 
             if (property.Value.ValueKind != JsonValueKind.String)
             {
-                API.Log.Warn($"[Config] Skipping walking style '{clipset}': the text to show for it has to be written in quotes.");
+                Log.Warning($"[Config] Skipping walking style '{clipset}': the text to show for it has to be written in quotes.");
                 continue;
             }
 
             if (!claimed.Add(clipset))
             {
-                API.Log.Warn($"[Config] '{clipset}' is listed more than once, so only the first one is offered.");
+                Log.Warning($"[Config] '{clipset}' is listed more than once, so only the first one is offered.");
                 continue;
             }
 
