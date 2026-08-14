@@ -14,7 +14,9 @@ namespace vMenu.Enhanced.Menus.World;
 /// <summary>Drives the in-game clock from the server's time.</summary>
 public static class WorldTime
 {
-    private const int IntervalMs = 100;
+    // NetworkOverrideClockTime takes whole seconds and the clock runs at 30x, so a clock that is only
+    // keeping up with the server has nothing new to send more often than this.
+    private const int SteadyIntervalMs = 100;
 
     private static long _shownDay = long.MinValue;
 
@@ -23,6 +25,7 @@ public static class WorldTime
     private static double _rampTo;
     private static int _rampStartMs;
     private static bool _started;
+    private static bool _ramping;
 
     /// <summary>Whether the server wants a shared clock at all.</summary>
     // See the matching note in WorldWeather: the convar decides, never a permission.
@@ -33,11 +36,14 @@ public static class WorldTime
         TickRegistry.Register(
             "World.Time",
             Apply,
-            TickRate.Every(IntervalMs),
+            // A manual time change sweeps hours in a couple of seconds, and at the steady rate that
+            // sweep is visibly steppy, so the ramp gets a frame each instead.
+            TickRate.Varying(() => _ramping ? TickRate.PerFrame : TickRate.Every(SteadyIntervalMs)),
             IsEnabled,
             onStarted: () =>
             {
                 _started = false;
+                _ramping = false;
                 _shownDay = long.MinValue;
             },
             onStopped: Native.NetworkClearClockTimeOverride);
@@ -135,6 +141,7 @@ public static class WorldTime
         if (!_started)
         {
             _started = true;
+            _ramping = false;
             _shownOffset = target;
             _rampFrom = target;
             _rampTo = target;
@@ -147,12 +154,14 @@ public static class WorldTime
             _rampFrom = _shownOffset;
             _rampTo = target;
             _rampStartMs = Native.GetGameTimer();
+            _ramping = true;
         }
 
         var seconds = Math.Max(0, ClientConfig.Value(TimeOptionsSettings.TransitionSeconds));
 
         if (seconds <= 0)
         {
+            _ramping = false;
             _shownOffset = _rampTo;
 
             return _shownOffset;
@@ -160,9 +169,15 @@ public static class WorldTime
 
         var progress = (Native.GetGameTimer() - _rampStartMs) / 1000.0 / seconds;
 
-        _shownOffset = progress >= 1.0
-            ? _rampTo
-            : _rampFrom + (Shortest(_rampTo - _rampFrom) * Smooth(progress));
+        if (progress >= 1.0)
+        {
+            _ramping = false;
+            _shownOffset = _rampTo;
+
+            return _shownOffset;
+        }
+
+        _shownOffset = _rampFrom + (Shortest(_rampTo - _rampFrom) * Smooth(progress));
 
         return _shownOffset;
     }

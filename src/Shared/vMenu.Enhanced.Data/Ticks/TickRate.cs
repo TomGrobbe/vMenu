@@ -7,14 +7,26 @@ public readonly struct TickRate
 {
     private readonly long _milliseconds;
 
+    private readonly Func<TickRate>? _varying;
+
     private TickRate(long milliseconds) => _milliseconds = milliseconds;
+
+    private TickRate(Func<TickRate> varying) => _varying = varying;
 
     /// <summary>Once per frame on the client, once per server tick on the server.</summary>
     public static TickRate PerFrame => default;
 
     public static TickRate Every(long milliseconds) => new(milliseconds);
 
-    public long Milliseconds => _milliseconds;
+    /// <summary>Asked again after every iteration, for a loop that only sometimes needs the fast rate.</summary>
+    public static TickRate Varying(Func<TickRate> rate) => new(rate);
 
-    public override string ToString() => _milliseconds <= 0 ? "per frame" : $"every {_milliseconds}ms";
+    public long Milliseconds => _varying is null ? _milliseconds : _varying().Milliseconds;
+
+    public override string ToString()
+    {
+        var milliseconds = Milliseconds;
+
+        return milliseconds <= 0 ? "per frame" : $"every {milliseconds}ms";
+    }
 }

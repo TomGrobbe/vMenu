@@ -124,6 +124,20 @@ public sealed class TickHandle : IDisposable
         }
     }
 
+    private long WaitMilliseconds()
+    {
+        try
+        {
+            return _rate.Milliseconds;
+        }
+        catch (Exception exception)
+        {
+            _engine.Log(TickLog.Error, $"{Name} rate threw and is being treated as per frame: {exception}");
+
+            return 0;
+        }
+    }
+
     // Fails closed: a throwing condition must not leave a tick stuck on, and a registry wide
     // re-evaluation must not abort partway through.
     private bool EvaluateCondition()
@@ -185,7 +199,7 @@ public sealed class TickHandle : IDisposable
                     _engine.ExitScope();
                 }
 
-                await _engine.DelayAsync(_rate.Milliseconds);
+                await _engine.DelayAsync(WaitMilliseconds());
             }
         }
         finally
