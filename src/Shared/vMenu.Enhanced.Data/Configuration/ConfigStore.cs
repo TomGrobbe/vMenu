@@ -52,7 +52,7 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
         _tracked = [.. _cache.Keys];
 
-        log(ConfigLog.Info, $"Tracking {_tracked.Length} setting(s).");
+        log(ConfigLog.Debug, $"Tracking {_tracked.Length} setting(s).");
     }
 
     /// <summary>Re-reads <paramref name="convar"/> and raises <see cref="Changed"/> if it moved.</summary>
