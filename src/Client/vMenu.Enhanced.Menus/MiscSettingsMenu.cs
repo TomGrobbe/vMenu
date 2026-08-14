@@ -4,7 +4,6 @@ using vMenu.Enhanced.Menus.Misc;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Settings that belong to the player rather than to the server.</summary>
 [VMenu(
     TitleKey = Loc.MiscSettings.Title,
     SubtitleKey = Loc.MiscSettings.Subtitle,
@@ -17,15 +16,8 @@ public sealed class MiscSettingsMenu : MenuDefinition
         {
             Text = MenuText.Key(Loc.MiscSettings.Language),
             Description = MenuText.Key(Loc.MiscSettings.LanguageDescription),
-
-            // Endonyms, so these are literals and never looked up as keys.
             Options = [.. Localizer.Current.AvailableLanguages.Select(NativeLanguageName)],
-
-            // Read, so the highlighted row follows the language even when something else changed it.
             ReadSelectedIndex = CurrentIndex,
-
-            // On select, not on scroll: applying a language relabels every menu, which on each arrow
-            // press would rebuild thousands of vehicle rows per keystroke.
             OnSelected = Apply,
         });
 
@@ -34,18 +26,8 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Text = MenuText.Key(Loc.MiscSettings.MenuRightAlignment),
             Description = MenuText.Key(Loc.MiscSettings.MenuRightAlignmentDescription),
 
-            // What MenuAPI is actually doing rather than what was stored, so an alignment it
-            // declined shows as off instead of as a tick that does nothing.
             ReadState = () => UserPreferences.IsRightAligned,
             OnChanged = changed => UserPreferences.SetRightAligned(changed.Checked),
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.DisableIdleCamera),
-            Description = MenuText.Key(Loc.MiscSettings.DisableIdleCameraDescription),
-            ReadState = () => UserPreferences.IsIdleCameraDisabled,
-            OnChanged = changed => UserPreferences.SetIdleCameraDisabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry
@@ -54,6 +36,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Description = MenuText.Key(Loc.MiscSettings.DeathNotificationsDescription),
             ReadState = () => UserPreferences.AreDeathNotificationsEnabled,
             OnChanged = changed => UserPreferences.SetDeathNotificationsEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.DisableIdleCamera),
+            Description = MenuText.Key(Loc.MiscSettings.DisableIdleCameraDescription),
+            ReadState = () => UserPreferences.IsIdleCameraDisabled,
+            OnChanged = changed => UserPreferences.SetIdleCameraDisabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry
