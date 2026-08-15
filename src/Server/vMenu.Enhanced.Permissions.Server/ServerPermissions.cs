@@ -4,7 +4,9 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
@@ -104,6 +106,9 @@ public static class ServerPermissions
         }
 
         var granted = GetGrantedPermissions(source);
+
+        PublishStaffFlag(handle, source);
+
         var whitelistedVehicles = ModelWhitelist.GetModels(SupplementalModelKind.Vehicle);
         var categorisedVehicles = VehicleCategories.GetCategorisedModels();
         var vehicleCategories = VehicleCategories.GetCategoryNames();
@@ -135,6 +140,9 @@ public static class ServerPermissions
             Log.Info($"{indent}{node.Name}{dynamic}{extras}");
         }
     }
+
+    private static void PublishStaffFlag(int handle, string source) =>
+        ServerStateBags.SetPlayer(handle, PlayerStateKeys.Staff, IsPlayerAllowed(source, Global.Staff));
 
     private static void Collect(string source, PermissionNode node, List<string> granted, Dictionary<string, bool> probed)
     {
