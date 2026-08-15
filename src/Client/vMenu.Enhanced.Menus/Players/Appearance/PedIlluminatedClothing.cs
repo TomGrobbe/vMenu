@@ -1,7 +1,8 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
@@ -28,24 +29,8 @@ public enum ClothingGlow
 /// <summary>
 /// The glow on clothes that light up, and the animation the player chose for it.
 /// </summary>
-/// <remarks>
-/// Glow intensity is drawn by each machine for itself, so a player choosing one has to tell everyone
-/// else what they picked. That goes on an entity decorator, which the game syncs for us, and every
-/// client reads it off the peds around them and does the drawing.
-///
-/// <para>
-/// Only clothes that were made to light up are affected, which on most outfits is nothing at all.
-/// That is the game's doing and not something vMenu can widen.
-/// </para>
-/// </remarks>
 public static class PedIlluminatedClothing
 {
-    /// <summary>The decorator every vMenu client reads other players' choices from.</summary>
-    public const string Decorator = "vmenu_enhanced_clothing_glow";
-
-    /// <summary>The game's decorator type number for a whole number.</summary>
-    private const int IntegerDecorator = 3;
-
     /// <summary>How long one brighten-and-dim takes.</summary>
     private const int CycleMs = 2000;
 
@@ -54,12 +39,11 @@ public static class PedIlluminatedClothing
     // second late to a light show is nobody's problem.
     private const int ScanMs = 1000;
 
-    /// <summary>The highest player slot the game will hand out.</summary>
-    private const int PlayerSlots = 256;
-
-    private static readonly List<int> Glowing = [];
+    private static readonly List<Glowing> Lit = [];
 
     private static TickHandle? _draw;
+
+    private static int? _published;
 
     public static ClothingGlow Style
     {
@@ -84,71 +68,49 @@ public static class PedIlluminatedClothing
     /// <summary>Call once at startup, before permissions have arrived.</summary>
     public static void Initialize()
     {
-        // Registering can fail when another resource has already used up the game's decorator budget,
-        // which is that resource's bug rather than something vMenu can work around. Said once and
-        // then left alone, rather than retried forever.
-        if (!Native.DecorIsRegisteredAsType(Decorator, IntegerDecorator))
-        {
-            Native.DecorRegister(Decorator, IntegerDecorator);
-        }
-
-        if (!Native.DecorIsRegisteredAsType(Decorator, IntegerDecorator))
-        {
-            Log.Error(
-                $"[Appearance] The '{Decorator}' decorator could not be registered, most likely because "
-                + "another resource has used up the game's supply of them. Glowing clothes will not be "
-                + "shared between players until that is sorted out.");
-
-            return;
-        }
-
         // Always on, but only once a second. It is also what wakes the drawing tick up when somebody
         // with a glow walks past, which nothing else would notice.
         TickRegistry.Register("Player.ClothingGlow.Scan", Scan, TickRate.Every(ScanMs));
 
         // Per frame, because a fade that only moves once a second is a stutter rather than a fade.
         // Asleep whenever there is nobody in sight to draw one on, which is most of the time.
-        _draw = TickRegistry.Register("Player.ClothingGlow", Draw, TickRate.PerFrame, () => Glowing.Count > 0);
+        _draw = TickRegistry.Register("Player.ClothingGlow", Draw, TickRate.PerFrame, () => Lit.Count > 0);
     }
 
-    /// <summary>Tells everyone else what this player picked.</summary>
-    // Written again after every model change as well, because a new ped is a new entity and carries
-    // none of the old one's decorators.
+    /// <summary>Tells everyone else what this player picked, if they do not already know.</summary>
     public static void Publish()
     {
-        if (!Native.DecorIsRegisteredAsType(Decorator, IntegerDecorator))
+        var style = (int)Style;
+
+        if (_published == style)
         {
             return;
         }
 
-        Native.DecorSetInt(Native.PlayerPedId(), Decorator, (int)Style);
+        if (StateBags.Set(StateBags.LocalPlayerBag, PlayerStateKeys.ClothingGlow, style))
+        {
+            _published = style;
+        }
     }
 
     private static void Scan()
     {
+        // Here rather than in Initialize, which runs before there is a server id to write against.
         Publish();
 
-        Glowing.Clear();
+        PlayerRoster.Refresh();
 
-        for (var slot = 0; slot < PlayerSlots; slot++)
+        Lit.Clear();
+
+        foreach (var player in PlayerRoster.All)
         {
-            if (!Native.NetworkIsPlayerActive(slot))
-            {
-                continue;
-            }
-
-            var ped = Native.GetPlayerPed(slot);
-
-            if (ped == 0 || !Native.DoesEntityExist(ped) || !Native.DecorExistOn(ped, Decorator))
-            {
-                continue;
-            }
+            var style = (ClothingGlow)StateBags.GetPlayer<int>(player.ServerId, PlayerStateKeys.ClothingGlow);
 
             // Off is the common case and needs no drawing at all, so it does not keep the per frame
             // tick awake.
-            if (Native.DecorGetInt(ped, Decorator) != (int)ClothingGlow.Off)
+            if (style != ClothingGlow.Off)
             {
-                Glowing.Add(ped);
+                Lit.Add(new Glowing(player.Ped, style));
             }
         }
 
@@ -159,14 +121,14 @@ public static class PedIlluminatedClothing
     {
         var phase = Phase();
 
-        foreach (var ped in Glowing)
+        foreach (var glowing in Lit)
         {
-            if (!Native.DoesEntityExist(ped))
+            if (!Native.DoesEntityExist(glowing.Ped))
             {
                 continue;
             }
 
-            Native.SetPedIlluminatedClothingGlowIntensity(ped, Intensity((ClothingGlow)Native.DecorGetInt(ped, Decorator), phase));
+            Native.SetPedIlluminatedClothingGlowIntensity(glowing.Ped, Intensity(glowing.Style, phase));
         }
     }
 
@@ -186,5 +148,14 @@ public static class PedIlluminatedClothing
         var position = Native.GetGameTimer() % CycleMs / (float)CycleMs;
 
         return position < 0.5f ? position * 2f : (1f - position) * 2f;
+    }
+
+    // A plain class rather than a record, matching the rest of this codebase: the generated equality
+    // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
+    private sealed class Glowing(int ped, ClothingGlow style)
+    {
+        public int Ped { get; } = ped;
+
+        public ClothingGlow Style { get; } = style;
     }
 }
