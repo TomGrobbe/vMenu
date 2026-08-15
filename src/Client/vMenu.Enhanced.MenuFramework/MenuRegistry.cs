@@ -1,9 +1,14 @@
 using MenuAPI;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
+
+using DebuggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Debugging;
+using KeyBindingSettings = vMenu.Enhanced.Data.Configuration.Settings.KeyBindings;
+using LocalizationSettings = vMenu.Enhanced.Data.Configuration.Settings.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
@@ -12,6 +17,25 @@ namespace vMenu.Enhanced.MenuFramework;
 // menu, for one place to unsubscribe and a deterministic order.
 public static class MenuRegistry
 {
+    /// <summary>
+    /// The settings that provably cannot change what any menu shows, so a refresh pass over every
+    /// gate and every label is not worth running for them.
+    /// </summary>
+    private static readonly Setting[] Ignored =
+    [
+        DebuggingSettings.LogLevel,
+
+        // Read once by LanguageLoader before the menus are built.
+        // Can't be updated at runtime because the translation files would not be
+        // streamed to the client if changed without a resource restart.
+        LocalizationSettings.Languages,
+
+        // Keybinds get registered with the game at startup, so changing one takes a restart either way.
+        KeyBindingSettings.MenuToggleKey,
+        KeyBindingSettings.NoClipToggleKey,
+        KeyBindingSettings.TeleportKey,
+    ];
+
     private static readonly List<MenuHost> Hosts = [];
 
     private static readonly Dictionary<Menu, MenuHost> HostsByMenu = new(ReferenceComparer<Menu>.Instance);
@@ -64,7 +88,7 @@ public static class MenuRegistry
         await MaterialiseAsync(_root, localizer);
 
         ClientPermissions.PermissionsChanged += RefreshAll;
-        ClientConfig.Changed += RefreshAll;
+        ClientConfig.AddEventListenerExcept(Ignored, RefreshAll);
         Localizer.Changed += RefreshAll;
 
         // Items are created enabled, so without this everything looks unlocked until the first
@@ -104,7 +128,7 @@ public static class MenuRegistry
         }
 
         ClientPermissions.PermissionsChanged -= RefreshAll;
-        ClientConfig.Changed -= RefreshAll;
+        ClientConfig.RemoveEventListenerExcept(RefreshAll);
         Localizer.Changed -= RefreshAll;
 
         foreach (var host in Hosts)

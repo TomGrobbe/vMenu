@@ -6,14 +6,13 @@ using CitizenFX.FiveM.Client;
 using MenuAPI;
 
 using vMenu.Enhanced.Actions;
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
-using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
-using vMenu.Enhanced.Ticks;
 
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
 
@@ -42,8 +41,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     /// <summary>Long enough for the longest identifier anybody actually has.</summary>
     private const int SearchMaxLength = 64;
 
-    private const int StalenessPollMs = 1000;
-
     /// <summary>How much of the search term the subtitle repeats back.</summary>
     private const int QueryDisplayLength = 16;
 
@@ -57,7 +54,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private OnlinePlayer? _selected;
 
-    private TickHandle? _staleness;
+    /// <summary>Whether the list is on screen, since the staleness notice only makes sense there.</summary>
+    private bool _open;
 
     private string _query = string.Empty;
 
@@ -106,7 +104,11 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         _actions.Builder.OnClosed = _ => _leftForActions = Native.GetGameTimer();
 
         menu.OnOpened = _ => OnOpened();
-        menu.OnClosed = _ => _staleness?.Stop();
+        menu.OnClosed = _ => _open = false;
+
+        // Not a setting, so the module has to be told about it before anything can listen for it.
+        ClientConfig.Track([PlayerEvents.RevisionConvar]);
+        ClientConfig.AddEventListenerFor([PlayerEvents.RevisionConvar], CheckStaleness);
     }
 
     private void OnOpened()
@@ -116,6 +118,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             return;
         }
 
+        _open = true;
+
         // Rewritten here rather than declared once, so they follow a language change like everything
         // else does. MenuAPI's button hints hold a plain string, not a translation key.
         var localizer = Localizer.Current;
@@ -124,16 +128,12 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         menu.Menu.PreviousPageButtonText = localizer.Get(Loc.OnlinePlayers.PreviousPageButton);
         menu.Menu.NextPageButtonText = localizer.Get(Loc.OnlinePlayers.NextPageButton);
 
-        _staleness ??= TickRegistry.Register(
-            "OnlinePlayers.Staleness",
-            CheckStaleness,
-            TickRate.Every(StalenessPollMs),
-            autoStart: false);
-
-        _staleness.Start();
-
         if (_leftForActions == Native.GetGameTimer())
         {
+            // Opening the actions menu closed this one, so anything the list missed while it was
+            // down never reached the listener. This is the one path that keeps the old snapshot.
+            CheckStaleness();
+
             UpdateSubtitle();
 
             return;
@@ -184,7 +184,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 return byName != 0 ? byName : left.ServerId.CompareTo(right.ServerId);
             });
 
-            _revisionAtBuild = Native.GetConvarInt(PlayerEvents.RevisionConvar, 0);
+            _revisionAtBuild = Revision();
             _outdated = false;
             _hasSnapshot = true;
 
@@ -600,15 +600,15 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private void CheckStaleness()
     {
-        // There is nothing to be out of date with until a list has actually arrived. This tick starts
-        // the moment the menu opens, while the first fetch is still in flight, so without this it
-        // compares the real revision against a zero nobody ever recorded.
-        if (!_hasSnapshot || _busy)
+        // There is nothing to be out of date with until a list has actually arrived, and nothing to
+        // say about it while the list is not on screen: the notice asks the player to reopen the
+        // menu, which reads as nonsense to somebody who does not have it open.
+        if (!_open || !_hasSnapshot || _busy)
         {
             return;
         }
 
-        if (_outdated || Native.GetConvarInt(PlayerEvents.RevisionConvar, 0) == _revisionAtBuild)
+        if (_outdated || Revision() == _revisionAtBuild)
         {
             return;
         }
@@ -621,6 +621,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         // the instruction goes where there is space for a sentence. Fires once, on the way stale.
         Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.OutdatedNotice));
     }
+
+    private static int Revision() => ClientConfig.GetInt(PlayerEvents.RevisionConvar) ?? 0;
 
     private void UpdateSubtitle()
     {

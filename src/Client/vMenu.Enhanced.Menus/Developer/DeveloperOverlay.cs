@@ -4,6 +4,7 @@ using System.Text;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Ticks;
@@ -84,6 +85,8 @@ public static class DeveloperOverlay
             TickRate.PerFrame,
             Condition.Evaluate,
             onStopped: Reset);
+
+        ClientConfig.AddEventListenerFor([DeveloperFeaturesSetting.Enabled], Reevaluate);
 
         DeveloperFeaturesState.Changed += Reevaluate;
     }

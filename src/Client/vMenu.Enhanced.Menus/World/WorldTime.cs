@@ -33,7 +33,7 @@ public static class WorldTime
 
     public static void Initialize()
     {
-        TickRegistry.Register(
+        var tick = TickRegistry.Register(
             "World.Time",
             Apply,
             // A manual time change sweeps hours in a couple of seconds, and at the steady rate that
@@ -47,6 +47,8 @@ public static class WorldTime
                 _shownDay = long.MinValue;
             },
             onStopped: Native.NetworkClearClockTimeOverride);
+
+        ClientConfig.AddEventListenerFor([TimeOptionsSettings.Enabled], tick.Reevaluate);
 
         WorldState.Changed += TickRegistry.Reevaluate;
     }
@@ -157,7 +159,7 @@ public static class WorldTime
             _ramping = true;
         }
 
-        var seconds = Math.Max(0, ClientConfig.Value(TimeOptionsSettings.TransitionSeconds));
+        var seconds = Math.Max(0, WorldState.TimeTransitionSeconds);
 
         if (seconds <= 0)
         {

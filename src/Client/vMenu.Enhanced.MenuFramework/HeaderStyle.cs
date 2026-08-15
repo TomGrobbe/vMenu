@@ -26,7 +26,13 @@ public static class HeaderStyle
     /// <summary>Call after <see cref="ClientConfig.Initialize"/>, before the menus are built.</summary>
     public static void Initialize()
     {
-        ClientConfig.Changed += Apply;
+        ClientConfig.AddEventListenerFor(
+            [
+                AppearanceSettings.TitleAlignment,
+                AppearanceSettings.TitleFont,
+                AppearanceSettings.HeaderGlare,
+            ],
+            Apply);
 
         Apply();
     }

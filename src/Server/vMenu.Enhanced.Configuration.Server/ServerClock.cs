@@ -45,13 +45,17 @@ public static class ServerClock
     public static void Initialize()
     {
         // onStarted rather than here, so nothing is published while both sync features are off.
-        ServerTickRegistry.Register(
+        var tick = ServerTickRegistry.Register(
             "Clock.Publish",
             Publish,
             TickRate.Every(PublishIntervalMs),
             condition: IsNeeded,
             onStarted: Publish,
             onStopped: Reset);
+
+        ServerConfig.AddEventListenerFor(
+            [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
+            tick.Reevaluate);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 
@@ -131,7 +135,7 @@ public static class ServerClock
         DumpDate(now, speed, offset, secondOfDay);
     }
 
-    
+
     private static void DumpDate(long now, double speed, int offset, double secondOfDay)
     {
         var day = (long)GameClock.Mod(GameClock.GameDay(now, offset, speed), MoonCycle.PeriodDays);

@@ -13,6 +13,9 @@ public static class WorldStateConvars
 
     public const string TimeOffset = "vMenu.Enhanced.State.TimeOffset";
 
+    /// <summary>All three, for handing to the configuration module in one go.</summary>
+    public static readonly string[] All = [Utc, Weather, TimeOffset];
+
     /// <summary>Weather is following the schedule.</summary>
     public const string Dynamic = "dynamic";
 

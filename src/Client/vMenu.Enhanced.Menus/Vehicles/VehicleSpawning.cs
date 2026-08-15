@@ -47,7 +47,7 @@ public static class VehicleSpawning
 
         var position = ped.Position;
         Vector3? velocity = null;
-        var rpm = 100f;
+        var rpm = 0f;
         var speed = 0f;
 
         if (ped.IsPedInAnyVehicle())
@@ -100,7 +100,10 @@ public static class VehicleSpawning
             newVehicle.Velocity = velocity.Value;
         }
 
-        Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
+        if (rpm > 0.2f)
+        {
+            Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
+        }
 
         ped.SetPedIntoVehicle(newVehicle.Handle, -1);
 

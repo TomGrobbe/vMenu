@@ -25,7 +25,7 @@ public static class PvpMode
 
         _initialized = true;
 
-        ClientConfig.Changed += Apply;
+        ClientConfig.AddEventListenerFor([Gameplay.PvpMode], Apply);
 
         Apply();
     }

@@ -16,35 +16,38 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 namespace vMenu.Enhanced.Menus.World;
 
 /// <summary>The server's clock and overrides, read from the replicated convars.</summary>
-// Polled rather than listened to: the clock convar changes every second, so a change listener would
-// fire on every client forever to service a value only used when re-anchoring.
 public static class WorldState
 {
     private const string DumpCommand = "vmenu_world";
 
-    // Twice the server's publish rate, which is the slowest that still sees every value it sends.
-    // Slower than this and reads start landing on the same second twice, so the clock re-anchors less
-    // often than it could.
-    private const int PollIntervalMs = 500;
+    // Only ever runs before the server's first value arrives
+    private const int FallbackIntervalMs = 500;
 
     /// <summary>Past this the server restarted or its clock jumped, so snap instead of easing.</summary>
     private const double HardResyncSeconds = 30.0;
 
     private const double DriftCorrection = 0.1;
 
+    private static float _speedMultiplier;
     private static double _anchorUnix;
     private static int _anchorTimerMs;
     private static bool _anchored;
     private static bool _warnedAboutFallback;
     private static bool _heardFromServer;
 
-    private static string _lastUtc = string.Empty;
-    private static string _lastWeather = string.Empty;
-    private static string _lastOffset = string.Empty;
+    private static TickHandle? _fallback;
 
     public static WeatherType? WeatherOverride { get; private set; }
 
     public static int TimeOffsetSeconds { get; private set; }
+
+    #region convars
+    public static int TimeTransitionSeconds { get; private set; }
+
+    public static int WeatherTransitionSeconds { get; private set; }
+
+    public static bool SyncClouds { get; private set; }
+    #endregion
 
     public static bool HasClock => _anchored;
 
@@ -54,10 +57,8 @@ public static class WorldState
         _anchored ? _anchorUnix + ((Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
 
     /// <summary>How fast the clock runs, which the weather schedule follows as well.</summary>
-    // Read live rather than cached, so raising it takes effect without a restart. The same convar
-    // reaches every client, so nobody's sky runs at a different speed from anybody else's.
     public static double TimeSpeed =>
-        GameClock.ClampSpeed(ClientConfig.Value(TimeOptionsSettings.SpeedMultiplier));
+        GameClock.ClampSpeed(_speedMultiplier);
 
     /// <summary>The clock with the server's offset applied, as an in-game second of day.</summary>
     public static double SecondOfDay =>
@@ -70,21 +71,42 @@ public static class WorldState
     public static WeatherType Weather => WeatherOverride ?? Schedule.Current;
 
     /// <summary>Whether either sync feature wants the clock. The same condition the server publishes on.</summary>
-    // Convars only, and deliberately no permission: the sky and the clock are the same for everybody
-    // on the server, so they cannot depend on what any one player is allowed to change.
     public static bool IsNeeded() =>
         ClientConfig.Value(WeatherOptionsSettings.Enabled) || ClientConfig.Value(TimeOptionsSettings.Enabled);
 
     public static void Initialize()
     {
-        // Gated to match the server, which publishes nothing while both features are off. Without
-        // this every client on such a server falls back to its own machine clock and says so.
-        TickRegistry.Register(
-            "World.State",
-            Poll,
-            TickRate.Every(PollIntervalMs),
-            IsNeeded,
-            onStarted: Poll);
+        ClientConfig.Track(WorldStateConvars.All);
+
+        ReadSettings();
+
+        // Get these values once, because listeners only trigger when values change
+        // after registering a listener for it.
+        ReadClock();
+        ReadOverrides();
+
+        ClientConfig.AddEventListenerFor(
+            [
+                TimeOptionsSettings.SpeedMultiplier,
+                TimeOptionsSettings.TransitionSeconds,
+                WeatherOptionsSettings.TransitionSeconds,
+                WeatherOptionsSettings.SyncClouds,
+            ],
+            ReadSettings);
+
+        ClientConfig.AddEventListenerFor([WorldStateConvars.Utc], ReadClock);
+        ClientConfig.AddEventListenerFor([WorldStateConvars.Weather, WorldStateConvars.TimeOffset], ReadOverrides);
+
+        // Gated to match the server, which publishes nothing while both features are off.
+        _fallback = TickRegistry.Register(
+            "World.Clock.Fallback",
+            AnchorFromLocalClock,
+            TickRate.Every(FallbackIntervalMs),
+            () => IsNeeded() && !_anchored);
+
+        ClientConfig.AddEventListenerFor(
+            [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
+            _fallback.Reevaluate);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
@@ -119,55 +141,44 @@ public static class WorldState
         Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
     }
 
-    private static void Poll()
+    private static void ReadSettings()
     {
-        var changed = false;
-
-        var utc = Native.GetConvar(WorldStateConvars.Utc, string.Empty);
-
-        if (!string.Equals(utc, _lastUtc, StringComparison.Ordinal))
-        {
-            _lastUtc = utc;
-
-            if (WorldStateConvars.TryParseUnix(utc, out var published))
-            {
-                _heardFromServer = true;
-
-                Anchor(published);
-            }
-        }
-
-        if (!_anchored)
-        {
-            AnchorFromLocalClock();
-        }
-
-        var weather = Native.GetConvar(WorldStateConvars.Weather, WorldStateConvars.Dynamic);
-
-        if (!string.Equals(weather, _lastWeather, StringComparison.Ordinal))
-        {
-            _lastWeather = weather;
-            WeatherOverride = WeatherTypes.TryParse(weather, out var type) ? type : null;
-            changed = true;
-        }
-
-        var offset = Native.GetConvar(WorldStateConvars.TimeOffset, "0");
-
-        if (!string.Equals(offset, _lastOffset, StringComparison.Ordinal))
-        {
-            _lastOffset = offset;
-            TimeOffsetSeconds = WorldStateConvars.TryParseOffset(offset, out var seconds) ? seconds : 0;
-            changed = true;
-        }
-
-        if (changed)
-        {
-            Changed?.Invoke();
-        }
+        _speedMultiplier = ClientConfig.Value(TimeOptionsSettings.SpeedMultiplier);
+        TimeTransitionSeconds = ClientConfig.Value(TimeOptionsSettings.TransitionSeconds);
+        WeatherTransitionSeconds = ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds);
+        SyncClouds = ClientConfig.Value(WeatherOptionsSettings.SyncClouds);
     }
 
-    // Corrected by a fraction of the drift rather than snapped: the server publishes once a second
-    // and this polls four times, so a snap would step the sky by up to thirty in-game seconds.
+    private static void ReadClock()
+    {
+        if (!WorldStateConvars.TryParseUnix(Native.GetConvar(WorldStateConvars.Utc, string.Empty), out var published))
+        {
+            return;
+        }
+
+        _heardFromServer = true;
+
+        Anchor(published);
+
+        // Whatever the machine clock had is now beaten by a real value, so the fallback is done.
+        _fallback?.Reevaluate();
+    }
+
+    // No comparison against what was read last, because the module only calls this when the convar
+    // actually moved.
+    private static void ReadOverrides()
+    {
+        var weather = Native.GetConvar(WorldStateConvars.Weather, WorldStateConvars.Dynamic);
+        var offset = Native.GetConvar(WorldStateConvars.TimeOffset, "0");
+
+        WeatherOverride = WeatherTypes.TryParse(weather, out var type) ? type : null;
+        TimeOffsetSeconds = WorldStateConvars.TryParseOffset(offset, out var seconds) ? seconds : 0;
+
+        Changed?.Invoke();
+    }
+
+    // Corrected by a fraction of the drift rather than snapped, because a snap on a server whose
+    // clock wobbles by a second would step the sky by thirty in-game seconds each time.
     private static void Anchor(double published)
     {
         if (!_anchored)
@@ -215,5 +226,8 @@ public static class WorldState
         _anchorUnix = CivilTime.ToUnixSeconds(year, month, day, hour, minute, second);
         _anchorTimerMs = Native.GetGameTimer();
         _anchored = true;
+
+        // The loop only checks whether it is running, not its condition, so it has to be told.
+        _fallback?.Reevaluate();
     }
 }
