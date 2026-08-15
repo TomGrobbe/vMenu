@@ -74,7 +74,7 @@ public static class VehicleDumpCommands
         Log.Info(ClientJson.SerializeIndented(appearance));
     }
 
-    
+
     private static void Labels()
     {
         if (CurrentVehicle() is not { } handle)

@@ -50,7 +50,14 @@ public static class VehicleCommands
     /// <summary>Call after <see cref="ClientConfig.Initialize"/>.</summary>
     public static void Initialize()
     {
-        ClientConfig.Changed += Apply;
+        ClientConfig.AddEventListenerFor(
+            [
+                VehicleOptionsSettings.DeleteVehicleCommand,
+                VehicleOptionsSettings.RepairVehicleCommand,
+                VehicleOptionsSettings.WashVehicleCommand,
+            ],
+            Apply);
+
         ClientPermissions.PermissionsChanged += Apply;
 
         Apply();

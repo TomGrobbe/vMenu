@@ -43,8 +43,6 @@ public class CoreServer : IScript
 
         ServerTickRegistry.Initialize();
 
-        ServerConfig.Changed += ServerTickRegistry.Reevaluate;
-
         ServerClock.Initialize();
         ServerState.Initialize();
 

@@ -18,12 +18,6 @@ public static class ClientConfig
 
     private static readonly ConfigStore Store = new(Native.GetConvar, ForwardLog);
 
-    public static event Action? Changed
-    {
-        add => Store.Changed += value;
-        remove => Store.Changed -= value;
-    }
-
     /// <summary>Call once, before the menus are built, so the first gate pass reads real values.</summary>
     public static void Initialize()
     {
@@ -31,27 +25,49 @@ public static class ClientConfig
 
         ApplyLogLevel();
 
-        // Any convar moving re-reads the level, because Changed does not say which one moved.
-        Store.Changed += ApplyLogLevel;
+        Store.Watch([Debugging.LogLevel], ApplyLogLevel);
 
-        // One listener per convar rather than a wildcard filter, which if it matched nothing would
-        // look like the module quietly not working.
-        foreach (var convar in Store.Tracked)
-        {
-            NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);
-        }
+        Listen(Store.Tracked);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
 
+    /// <summary>Starts watching convars that are not settings, so listeners can be added for them.</summary>
+    /// <remarks>See <see cref="ConfigStore.Track" /> for why these are not in the catalog.</remarks>
+    public static void Track(IReadOnlyList<string> convars) => Listen(Store.Track(convars));
+
+    /// <summary>Calls <paramref name="handler"/> whenever any of these settings changes, and nothing else.</summary>
+    public static void AddEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.Watch(settings, handler);
+
+    /// <summary>The same, for convars registered through <see cref="Track" /> rather than catalogued settings.</summary>
+    public static void AddEventListenerFor(IReadOnlyList<string> convars, Action handler) =>
+        Store.Watch(convars, handler);
+
+    /// <summary>
+    /// Calls <paramref name="handler"/> whenever any setting other than these changes. For a
+    /// subscriber that really does react to almost anything, where naming the settings it reads
+    /// would mean one added later silently never reaching it.
+    /// </summary>
+    public static void AddEventListenerExcept(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.WatchExcept(settings, handler);
+
+    public static void RemoveEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.Unwatch(settings, handler);
+
+    public static void RemoveEventListenerFor(IReadOnlyList<string> convars, Action handler) =>
+        Store.Unwatch(convars, handler);
+
+    public static void RemoveEventListenerExcept(Action handler) => Store.UnwatchExcept(handler);
+
     /// <summary>Prints what this client currently reads for every setting.</summary>
     public static void Dump()
     {
-        Log.Debug("[Config] Current values:");
+        Log.Info("[Config] Current values:");
 
         foreach (var line in Store.Describe())
         {
-            Log.Debug("[Config]   " + line);
+            Log.Info("[Config]   " + line);
         }
     }
 
@@ -78,6 +94,16 @@ public static class ClientConfig
     public static float Value(FloatSetting setting) => Store.Value(setting);
 
     public static string Value(StringSetting setting) => Store.Value(setting);
+
+    // One listener per convar rather than a wildcard filter, which if it matched nothing would look
+    // like the module quietly not working.
+    private static void Listen(IReadOnlyList<string> convars)
+    {
+        foreach (var convar in convars)
+        {
+            NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);
+        }
+    }
 
     private static void OnConvarChanged(string convar, object? reserved) => Store.NotifyChanged(convar);
 

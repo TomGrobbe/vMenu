@@ -39,7 +39,7 @@ public static class WorldWeather
 
     public static void Initialize()
     {
-        TickRegistry.Register(
+        var tick = TickRegistry.Register(
             "World.Weather",
             Apply,
             TickRate.Every(IntervalMs),
@@ -64,6 +64,8 @@ public static class WorldWeather
                 // Handed back, so switching the feature off leaves the weather where it was found.
                 Native.SetWeatherOwnedByNetwork(true);
             });
+
+        ClientConfig.AddEventListenerFor([WeatherOptionsSettings.Enabled], tick.Reevaluate);
 
         WorldState.Changed += TickRegistry.Reevaluate;
     }

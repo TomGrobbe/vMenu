@@ -15,12 +15,6 @@ public static class ServerConfig
 
     private static readonly ConfigStore Store = new(Native.GetConvar, Write);
 
-    public static event Action? Changed
-    {
-        add => Store.Changed += value;
-        remove => Store.Changed -= value;
-    }
-
     /// <summary>Call once, first, from the server entry point.</summary>
     public static void Initialize()
     {
@@ -28,8 +22,7 @@ public static class ServerConfig
 
         ApplyLogLevel();
 
-        // Any convar moving re-reads the level, because Changed does not say which one moved.
-        Store.Changed += ApplyLogLevel;
+        Store.Watch([Debugging.LogLevel], ApplyLogLevel);
 
         // One listener per convar rather than a single wildcard filter: an exact name cannot be
         // matched wrongly, and a filter that silently matches nothing would look like the whole
@@ -41,6 +34,23 @@ public static class ServerConfig
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
     }
+
+    /// <summary>Calls <paramref name="handler"/> whenever any of these settings changes, and nothing else.</summary>
+    public static void AddEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.Watch(settings, handler);
+
+    /// <summary>
+    /// Calls <paramref name="handler"/> whenever any setting other than these changes. For a
+    /// subscriber that really does react to almost anything, where naming the settings it reads
+    /// would mean one added later silently never reaching it.
+    /// </summary>
+    public static void AddEventListenerExcept(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.WatchExcept(settings, handler);
+
+    public static void RemoveEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
+        Store.Unwatch(settings, handler);
+
+    public static void RemoveEventListenerExcept(Action handler) => Store.UnwatchExcept(handler);
 
     /// <summary>Prints what the server currently reads for every setting.</summary>
     public static void Dump()

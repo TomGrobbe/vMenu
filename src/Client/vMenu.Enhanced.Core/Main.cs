@@ -82,7 +82,6 @@ public sealed class Main : IScript
 
         LanguageLoader.Load();
 
-        ClientConfig.Changed += TickRegistry.Reevaluate;
         ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
 
         VehicleCommands.Initialize();
