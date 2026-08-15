@@ -64,13 +64,15 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
     /// </summary>
     /// <returns>The names actually taken on, which is what the caller registers a native listener for.</returns>
     /// <remarks>
-    /// For the convars the server publishes world state through. Those cannot live in
+    /// For the convars the server publishes state through. Those cannot live in
     /// <see cref="ConfigCatalog"/>, which is owner authored configuration and drives the generated
     /// example file, so listing them there would invite editing state the server overwrites. They
     /// are kept quiet as well: the clock moves once a second, so announcing every change would bury
     /// the console, and <see cref="WatchExcept"/> never sees them so a subscriber that meant "any
     /// setting an owner might change" is not woken once a second by the clock.
     /// </remarks>
+    // Names already being watched are skipped rather than taken on again, so a second caller cannot
+    // leave the same convar with two listeners on it, dispatching everything twice.
     public IReadOnlyList<string> Track(IReadOnlyList<string> convars)
     {
         var taken = new List<string>();
@@ -83,11 +85,12 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
                 continue;
             }
 
-            if (!_cache.ContainsKey(convar))
+            if (_cache.ContainsKey(convar))
             {
-                _cache[convar] = Raw(convar);
+                continue;
             }
 
+            _cache[convar] = Raw(convar);
             _quiet.Add(convar);
             taken.Add(convar);
         }

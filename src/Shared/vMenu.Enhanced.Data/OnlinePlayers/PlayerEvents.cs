@@ -34,6 +34,8 @@ public static class PlayerEvents
     /// Replicated convar holding a number that changes whenever somebody joins or leaves.
     /// </summary>
     // A convar rather than a broadcast: it needs no event, and a client that connects halfway
-    // through reads the current value instead of having missed the announcement.
-    public const string RevisionConvar = "vmenu_players_revision";
+    // through reads the current value instead of having missed the announcement. Named under the
+    // same root as everything else, because the configuration module only takes convars it can
+    // recognise as vMenu's own.
+    public const string RevisionConvar = "vMenu.Enhanced.State.PlayersRevision";
 }
