@@ -31,7 +31,10 @@ public static class WorldState
     private const double HardResyncSeconds = 30.0;
 
     private const double DriftCorrection = 0.1;
-
+    private static float _speedMultiplier = ClientConfig.Value(TimeOptionsSettings.SpeedMultiplier);
+    public static int TimeTransitionSeconds = ClientConfig.Value(TimeOptionsSettings.TransitionSeconds);
+    public static int WeatherTransitionSeconds = ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds);
+    public static bool SyncClouds = ClientConfig.Value(WeatherOptionsSettings.SyncClouds);
     private static double _anchorUnix;
     private static int _anchorTimerMs;
     private static bool _anchored;
@@ -57,7 +60,7 @@ public static class WorldState
     // Read live rather than cached, so raising it takes effect without a restart. The same convar
     // reaches every client, so nobody's sky runs at a different speed from anybody else's.
     public static double TimeSpeed =>
-        GameClock.ClampSpeed(ClientConfig.Value(TimeOptionsSettings.SpeedMultiplier));
+        GameClock.ClampSpeed(_speedMultiplier);
 
     /// <summary>The clock with the server's offset applied, as an in-game second of day.</summary>
     public static double SecondOfDay =>
@@ -85,7 +88,22 @@ public static class WorldState
             TickRate.Every(PollIntervalMs),
             IsNeeded,
             onStarted: Poll);
-
+        BrokenNatives.NativeFixer.AddConvarChangeListener(TimeOptionsSettings.SpeedMultiplier.Name, (string convar, object? newValue) =>
+        {
+            _speedMultiplier = ClientConfig.GetFloat(convar) ?? _speedMultiplier;
+        });
+        BrokenNatives.NativeFixer.AddConvarChangeListener(TimeOptionsSettings.TransitionSeconds.Name, (string convar, object? newValue) =>
+        {
+            TimeTransitionSeconds = ClientConfig.GetInt(convar) ?? TimeTransitionSeconds;
+        });
+        BrokenNatives.NativeFixer.AddConvarChangeListener(WeatherOptionsSettings.TransitionSeconds.Name, (string convar, object? newValue) =>
+        {
+            WeatherTransitionSeconds = ClientConfig.GetInt(convar) ?? WeatherTransitionSeconds;
+        });
+        BrokenNatives.NativeFixer.AddConvarChangeListener(WeatherOptionsSettings.SyncClouds.Name, (string convar, object? newValue) =>
+        {
+            SyncClouds = ClientConfig.GetBool(convar) ?? SyncClouds;
+        });
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
 

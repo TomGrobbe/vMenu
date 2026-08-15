@@ -157,7 +157,7 @@ public static class WorldTime
             _ramping = true;
         }
 
-        var seconds = Math.Max(0, ClientConfig.Value(TimeOptionsSettings.TransitionSeconds));
+        var seconds = Math.Max(0, WorldState.TimeTransitionSeconds);
 
         if (seconds <= 0)
         {

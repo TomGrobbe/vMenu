@@ -123,7 +123,7 @@ public static class WorldWeather
         _wasForced = forced is not null;
 
         // A joining player gets the sky it should already be under, so no fade on the first pass.
-        if (ClientConfig.Value(WeatherOptionsSettings.SyncClouds))
+        if (WorldState.SyncClouds)
         {
             WorldClouds.Apply(CloudTarget(forced, schedule), first ? 0.0f : TransitionSeconds());
         }
@@ -163,7 +163,7 @@ public static class WorldWeather
         Native.SetWeatherTypeTransition(Hashes[(int)from], Hashes[(int)to], (float)percent);
 
     private static float TransitionSeconds() =>
-        Math.Max(0, ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds));
+        Math.Max(0, WorldState.WeatherTransitionSeconds);
 
     // Swaps at the moment the sky starts moving rather than when the schedule flips, so the clouds
     // and the weather arrive together instead of the clouds lagging a boundary window behind.
