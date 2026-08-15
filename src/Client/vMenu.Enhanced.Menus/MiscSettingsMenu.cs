@@ -1,6 +1,9 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Misc;
+using vMenu.Enhanced.Storage;
+
+using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -101,6 +104,44 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Description = MenuText.Key(Loc.MiscSettings.FingerPointingDescription),
             ReadState = () => FingerPointing.Enabled,
             OnChanged = changed => FingerPointing.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.PlayerBlips),
+            Description = MenuText.Key(Loc.MiscSettings.PlayerBlipsDescription),
+            Gate = MiscSettingsPermissions.PlayerBlips,
+            ReadState = () => UserDefaults.MiscShowPlayerBlips.Value,
+            OnChanged = changed =>
+            {
+                UserDefaults.MiscShowPlayerBlips.Value = changed.Checked;
+
+                // Also what tells the server whether to start sending us where everybody is.
+                PlayerPresence.Reevaluate();
+            },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.OverheadNames),
+            Description = MenuText.Key(Loc.MiscSettings.OverheadNamesDescription),
+            Gate = MiscSettingsPermissions.OverheadNames,
+            ReadState = () => UserDefaults.MiscShowOverheadNames.Value,
+            OnChanged = changed =>
+            {
+                UserDefaults.MiscShowOverheadNames.Value = changed.Checked;
+
+                PlayerPresence.Reevaluate();
+            },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.SeeNoClipPlayers),
+            Description = MenuText.Key(Loc.MiscSettings.SeeNoClipPlayersDescription),
+            Gate = MiscSettingsPermissions.SeeNoClipPlayers,
+            ReadState = () => UserDefaults.MiscSeeNoClipPlayers.Value,
+            OnChanged = changed => UserDefaults.MiscSeeNoClipPlayers.Value = changed.Checked,
         });
     }
 

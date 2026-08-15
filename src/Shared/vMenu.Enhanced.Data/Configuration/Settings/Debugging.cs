@@ -6,9 +6,10 @@ public static class Debugging
     {
         Description =
             "Turns on vMenu's diagnostic commands in a player's own console, the one opened with F8. " +
-            "Those commands only print what vMenu currently thinks is going on, they never change " +
-            "anything, but they are noise nobody needs during normal play. Turn this on while you are " +
-            "chasing a problem and turn it back off afterwards.",
+            "Most of them only print what vMenu currently thinks is going on. A couple also put test " +
+            "data on your own screen, such as the fake players the blip test draws, which nobody else " +
+            "can see and which go away when you switch them off. None of them change anything on the " +
+            "server. Turn this on while you are chasing a problem and turn it back off afterwards.",
         Default = false,
     };
 

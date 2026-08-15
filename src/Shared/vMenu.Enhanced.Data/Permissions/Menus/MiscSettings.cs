@@ -13,4 +13,11 @@ public static class MiscSettings
     public const string All = "vMenu.Enhanced.Menus.MiscSettings.All";
 
     public const string NoClip = "vMenu.Enhanced.Menus.MiscSettings.NoClip";
+
+    public const string PlayerBlips = "vMenu.Enhanced.Menus.MiscSettings.PlayerBlips";
+
+    public const string OverheadNames = "vMenu.Enhanced.Menus.MiscSettings.OverheadNames";
+
+    [StaffOnly]
+    public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers";
 }

@@ -42,6 +42,15 @@ public static class UserDefaults
     public static BoolDefault MiscFingerPointing { get; } =
         new("miscFingerPointing") { Default = true };
 
+    public static BoolDefault MiscShowPlayerBlips { get; } =
+        new("miscShowPlayerBlips") { Default = false };
+
+    public static BoolDefault MiscShowOverheadNames { get; } =
+        new("miscShowOverheadNames") { Default = false };
+
+    public static BoolDefault MiscSeeNoClipPlayers { get; } =
+        new("miscSeeNoClipPlayers") { Default = true };
+
     #endregion
 
     #region Player Options
@@ -190,6 +199,9 @@ public static class UserDefaults
         MiscMinimapZoom,
         MiscMinimapAlwaysOn,
         MiscFingerPointing,
+        MiscShowPlayerBlips,
+        MiscShowOverheadNames,
+        MiscSeeNoClipPlayers,
 
         PlayerGodMode,
         PlayerSuperJump,

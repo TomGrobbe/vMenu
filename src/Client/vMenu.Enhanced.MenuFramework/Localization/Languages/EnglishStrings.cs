@@ -758,6 +758,12 @@ internal static class EnglishStrings
             [Loc.MiscSettings.MinimapAlwaysOnLocked] = "Pick what the minimap key does first, then this can keep it that way.",
             [Loc.MiscSettings.FingerPointing] = "Finger Pointing",
             [Loc.MiscSettings.FingerPointingDescription] = "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.",
+            [Loc.MiscSettings.PlayerBlips] = "Show Player Blips",
+            [Loc.MiscSettings.PlayerBlipsDescription] = "Put a blip on the map for every other player, which changes shape depending on what they are driving. Players far away from you are kept off the minimap to stop it getting cluttered, and appear when you expand it.",
+            [Loc.MiscSettings.OverheadNames] = "Show Player Names",
+            [Loc.MiscSettings.OverheadNamesDescription] = "Float a name above nearby players, along with their health bar and their wanted level. Further away this shrinks to a small arrow, and past that it disappears altogether.",
+            [Loc.MiscSettings.SeeNoClipPlayers] = "Show Players In NoClip",
+            [Loc.MiscSettings.SeeNoClipPlayersDescription] = "Keep showing the blip and the name of anybody who is flying around in noclip, who everybody else has them hidden from. Their blip turns ~g~green~s~ so you can tell them apart. This does not make them visible in the world, so you still see a dot and a name over somebody who is not really there to look at.",
 
             [Loc.DeathNotifications.Sentence] = "~y~{victim}~s~ {what}.",
             [Loc.DeathNotifications.Died] = "died",

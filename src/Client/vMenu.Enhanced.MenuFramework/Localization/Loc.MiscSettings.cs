@@ -59,5 +59,17 @@ public static partial class Loc
         public const string FingerPointing = "miscsettings.pointing";
 
         public const string FingerPointingDescription = "miscsettings.pointing.desc";
+
+        public const string PlayerBlips = "miscsettings.playerblips";
+
+        public const string PlayerBlipsDescription = "miscsettings.playerblips.desc";
+
+        public const string OverheadNames = "miscsettings.overheadnames";
+
+        public const string OverheadNamesDescription = "miscsettings.overheadnames.desc";
+
+        public const string SeeNoClipPlayers = "miscsettings.seenoclipplayers";
+
+        public const string SeeNoClipPlayersDescription = "miscsettings.seenoclipplayers.desc";
     }
 }

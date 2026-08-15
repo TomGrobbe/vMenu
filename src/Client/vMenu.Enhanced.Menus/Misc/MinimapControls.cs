@@ -83,6 +83,17 @@ public static class MinimapControls
 
     private static int _glideStartedAt;
 
+    /// <summary>
+    /// Whether the minimap is currently blown up to the big square one, whoever did it.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the game rather than reported from <see cref="_expanded"/>, because the player can
+    /// also expand it themselves with the game's own control, and something reacting to the bigmap
+    /// wants to know either way. Player blips use it: distant players are kept off the ordinary
+    /// minimap and come back when it opens out, which is what GTA Online does.
+    /// </remarks>
+    public static bool IsBigmapExpanded => Native.IsBigmapActive();
+
     /// <summary>What the key does: <see cref="Off"/>, <see cref="Expand"/> or <see cref="Zoom"/>.</summary>
     public static int Action
     {

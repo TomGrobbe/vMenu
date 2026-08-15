@@ -66,6 +66,8 @@ public class CoreServer : IScript
         ActionRegistry.RegisterEventHandlers();
 
         PedDeathBroadcast.Register();
+        PlayerNoClipState.Register();
+        PlayerPresenceBroadcast.Register();
 
         Log.Debug("vMenu Server side started");
     }

@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -274,6 +275,8 @@ public static class NoClip
         }
 
         NoclipActive = active;
+
+        API.EmitServer(PlayerStateEvents.ReportNoClip, active);
 
         _move?.Reevaluate();
         _instructionalButtons?.Reevaluate();
