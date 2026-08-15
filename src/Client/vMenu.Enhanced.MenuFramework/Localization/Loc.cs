@@ -19,6 +19,10 @@ public static partial class Loc
         public const string InputHint = "framework.input.hint";
 
         public const string InputNoMatches = "framework.input.nomatches";
+
+        public const string EmptyMenu = "framework.emptymenu";
+
+        public const string EmptyMenuDescription = "framework.emptymenu.desc";
     }
 
     public static class MainMenu

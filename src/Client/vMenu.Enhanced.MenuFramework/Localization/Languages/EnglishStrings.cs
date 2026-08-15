@@ -22,6 +22,8 @@ internal static class EnglishStrings
             [Loc.Framework.InputPlaceholder] = "Start typing…",
             [Loc.Framework.InputHint] = "Enter to confirm · Esc to cancel · ↑↓ to pick a suggestion · Tab to complete",
             [Loc.Framework.InputNoMatches] = "No matches",
+            [Loc.Framework.EmptyMenu] = "No Permissions",
+            [Loc.Framework.EmptyMenuDescription] = "There is nothing in here you are allowed to use. Ask the server owner if you think you should be.",
 
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Main Menu",

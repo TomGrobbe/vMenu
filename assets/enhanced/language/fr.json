@@ -50,6 +50,8 @@
     "devfeatures.vehicledimensions": "Afficher les dimensions des véhicules",
     "devfeatures.vehicledimensions.desc": "Dessine le contour du modèle de chaque véhicule proche de vous.",
     "framework.confirm": "~r~Tu es sûr de vouloir faire ça ? Appuie encore une fois sur entrée pour confirmer.",
+    "framework.emptymenu": "Aucune permission",
+    "framework.emptymenu.desc": "Il n'y a rien ici que vous ayez le droit d'utiliser. Demandez au propriétaire du serveur si vous pensez que cela devrait être autrement.",
     "framework.input.hint": "Entrée pour confirmer · Échap pour annuler · ↑↓ pour choisir une suggestion · Tab pour compléter",
     "framework.input.nomatches": "Aucun résultat",
     "framework.input.placeholder": "Commencez à taper…",

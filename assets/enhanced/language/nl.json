@@ -50,6 +50,8 @@
     "devfeatures.vehicledimensions": "Voertuigafmetingen tonen",
     "devfeatures.vehicledimensions.desc": "Tekent de modelomlijning van elk voertuig dat op dit moment bij je in de buurt is.",
     "framework.confirm": "~r~Weet je zeker dat je dit wilt doen? Druk nog een keer op enter om te bevestigen.",
+    "framework.emptymenu": "Geen rechten",
+    "framework.emptymenu.desc": "Er staat hier niets in wat jij mag gebruiken. Vraag het de servereigenaar als je denkt dat dat wel zo hoort te zijn.",
     "framework.input.hint": "Enter om te bevestigen · Esc om te annuleren · ↑↓ om een suggestie te kiezen · Tab om aan te vullen",
     "framework.input.nomatches": "Geen resultaten",
     "framework.input.placeholder": "Begin met typen…",

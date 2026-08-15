@@ -50,6 +50,8 @@
     "devfeatures.vehicledimensions": "Fahrzeugabmessungen anzeigen",
     "devfeatures.vehicledimensions.desc": "Zeichnet die Modellumrisse jedes Fahrzeugs in deiner Nähe.",
     "framework.confirm": "~r~Willst du das wirklich tun? Drücke noch einmal Enter, um zu bestätigen.",
+    "framework.emptymenu": "Keine Rechte",
+    "framework.emptymenu.desc": "Hier drin ist nichts, was du benutzen darfst. Frag den Serverbesitzer, wenn du denkst, dass das anders sein sollte.",
     "framework.input.hint": "Enter zum Bestätigen · Esc zum Abbrechen · ↑↓ für einen Vorschlag · Tab zum Vervollständigen",
     "framework.input.nomatches": "Keine Treffer",
     "framework.input.placeholder": "Tippe los…",

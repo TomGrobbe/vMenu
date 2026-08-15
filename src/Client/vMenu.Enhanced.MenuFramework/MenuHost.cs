@@ -32,6 +32,10 @@ internal sealed class MenuHost : IDisposable
 
     private bool _attached;
 
+    private MenuItem? _emptyNotice;
+
+    private bool _noticeShown;
+
     internal MenuHost(Menu menu, MenuHost? parent, MenuGate gate, MenuText title, MenuText subtitle, GateBehaviour? defaultBehaviour)
     {
         Menu = menu;
@@ -112,6 +116,10 @@ internal sealed class MenuHost : IDisposable
 
         _awaitingConfirmation = null;
         _filterDirty = false;
+
+        // ClearMenuItems took the notice with everything else, so the record of it has to go too or
+        // it would never be added back.
+        _noticeShown = false;
     }
 
     internal void Attach()
@@ -193,7 +201,9 @@ internal sealed class MenuHost : IDisposable
             visibilityChanged |= hide ? _hidden.Add(item) : _hidden.Remove(item);
         }
 
-        if (!visibilityChanged)
+        UpdateNoticeText(localizer);
+
+        if (!visibilityChanged && _noticeShown == NoticeWanted())
         {
             // Leave the filter alone so the player's cursor does not jump.
             return;
@@ -222,27 +232,32 @@ internal sealed class MenuHost : IDisposable
 
     internal void SortItems(Comparison<MenuItem> comparison)
     {
+        ShowNotice(false);
+
         Menu.SortMenuItems(comparison);
 
         // MenuAPI's sort clears any active filter without saying so, so it has to be re-applied.
         ApplyFilter();
     }
 
-    // The only place that touches MenuAPI's filter for a managed menu. Gate hiding and a caller's
-    // predicate are combined here because MenuAPI supports exactly one.
     private void ApplyFilter()
     {
         _filterDirty = false;
 
         var restore = Menu.GetCurrentMenuItem();
+        var empty = NoticeWanted();
 
-        if (_hidden.Count == 0 && _userFilter is null)
+        ShowNotice(empty);
+
+        if (_hidden.Count == 0 && _userFilter is null && !empty)
         {
             Menu.ResetFilter();
         }
         else
         {
-            Menu.FilterMenuItems(item => !_hidden.Contains(item) && (_userFilter?.Invoke(item) ?? true));
+            Menu.FilterMenuItems(item => ReferenceEquals(item, _emptyNotice)
+                ? empty
+                : !_hidden.Contains(item) && (_userFilter?.Invoke(item) ?? true));
         }
 
         if (restore is null)
@@ -254,6 +269,64 @@ internal sealed class MenuHost : IDisposable
         var index = Menu.GetMenuItems().IndexOf(restore);
 
         Menu.RefreshIndex(index < 0 ? 0 : index);
+    }
+
+    /// <summary>Whether this menu has rows but the gate has taken every single one of them away.</summary>
+    private bool NoticeWanted()
+    {
+        var any = false;
+
+        foreach (var entry in Builder.Entries)
+        {
+            if (entry.Item is not { } item)
+            {
+                continue;
+            }
+
+            if (!_hidden.Contains(item))
+            {
+                return false;
+            }
+
+            any = true;
+        }
+
+        return any;
+    }
+
+    /// <summary>Puts the notice into the menu, or takes it back out.</summary>
+    private void ShowNotice(bool wanted)
+    {
+        if (wanted == _noticeShown)
+        {
+            return;
+        }
+
+        _noticeShown = wanted;
+
+        if (!wanted)
+        {
+            Menu.RemoveMenuItem(_emptyNotice!);
+
+            return;
+        }
+
+        _emptyNotice ??= new MenuItem(string.Empty) { Enabled = false };
+
+        UpdateNoticeText(Localizer.Current);
+
+        Menu.AddMenuItem(_emptyNotice);
+    }
+
+    private void UpdateNoticeText(ILocalizer localizer)
+    {
+        if (_emptyNotice is not { } notice)
+        {
+            return;
+        }
+
+        notice.Text = localizer.Get(Loc.Framework.EmptyMenu);
+        notice.Description = localizer.Get(Loc.Framework.EmptyMenuDescription);
     }
 
     private async void HandleItemSelect(Menu menu, MenuItem item, int itemIndex)
