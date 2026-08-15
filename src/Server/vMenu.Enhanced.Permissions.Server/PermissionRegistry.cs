@@ -204,7 +204,11 @@ public static class PermissionRegistry
             }
 
             // A single-permission category has nothing to group, so no container grant is expected.
-            if (!hasContainerGrant && declaredInCategory > 1)
+            // Neither does a category sitting straight on the root: there is no container above the
+            // root to name in a grant, and Global.Everything already covers everything there.
+            var isRootCategory = prefix.Equals(PermissionPath.Root, StringComparison.OrdinalIgnoreCase);
+
+            if (!hasContainerGrant && declaredInCategory > 1 && !isRootCategory)
             {
                 Log.Warning($"[Permissions] Category {type.Name} has no '{PermissionPath.All}' permission, so it cannot be granted as a whole.");
             }
