@@ -47,6 +47,8 @@ public sealed class Main : IScript
 
         TickRegistry.Initialize();
 
+        ResourceShutdown.Initialize(resource);
+
         GameEvents.Initialize();
 
         ClientJson.Verify();
