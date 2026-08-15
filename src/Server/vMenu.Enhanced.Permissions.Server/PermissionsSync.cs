@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared;
@@ -41,10 +43,20 @@ public static class PermissionsSync
         }
 
         var refreshed = 0;
+        var count = Native.GetNumPlayerIndices();
 
-        foreach (var player in API.Players.All)
+        for (var index = 0; index < count; index++)
         {
-            ServerPermissions.SendPermissions(player);
+            var handle = Native.GetPlayerFromIndex(index);
+
+            if (string.IsNullOrEmpty(handle)
+                || !int.TryParse(handle, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+                || !Native.DoesPlayerExist(handle))
+            {
+                continue;
+            }
+
+            ServerPermissions.SendPermissions(serverId);
             refreshed++;
         }
 
