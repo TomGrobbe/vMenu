@@ -178,4 +178,69 @@ public static class NativeFixer
 
         return Native.AddConvarChangeListener(convar, (int)reference);
     }
+
+    /// <summary>
+    /// Replacement call for <c>Native.RemoveBlip</c>, which is generated only as
+    /// <em>RemoveBlip(out int)</em> and <em>RemoveBlip(Ref&lt;int&gt;)</em>.
+    /// </summary>
+    /// <remarks>
+    /// Both generated forms reserve an empty slot and hand the game that instead of the handle being
+    /// removed, so neither can delete a blip. Without this, nothing vMenu creates can ever be taken
+    /// off the map again.
+    /// </remarks>
+    public static void RemoveBlip(int blip)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(blip);
+        nativeApi.Invoke(18326475465518923026uL, "RemoveBlip");
+    }
+
+    /// <summary>
+    /// Replacement call for <see cref="Native.GetStateBagValue(string, string)" /> because that
+    /// return type is <em>byte[]</em>.
+    /// </summary>
+    /// <returns>The stored value, or <see langword="default"/> when the key has never been written.</returns>
+    public static T? GetStateBagValue<T>(string bagName, string keyName)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(bagName);
+        nativeApi.PushArg(keyName);
+        nativeApi.Invoke(1669287029uL, "GetStateBagValue");
+
+        return nativeApi.GetResObject(0).DeserializeTo<T?>();
+    }
+
+    /// <summary>
+    /// Replacement call for <see cref="Native.AddStateBagChangeHandler(string, string, int)" />,
+    /// which can neither produce the <em>func</em> reference nor pass the nulls this native expects.
+    /// </summary>
+    /// <param name="keyName">The key to watch, or <see langword="null"/> for every key.</param>
+    /// <param name="bagName">The bag to watch, or <see langword="null"/> for every bag.</param>
+    /// <param name="handler">Called with the bag name, the key, the new value, a reserved slot, and whether the write was replicated.</param>
+    /// <returns>A cookie for <see cref="Native.RemoveStateBagChangeHandler(int)" />.</returns>
+    /// <remarks>
+    /// Null is how this native spells "anything", and it is the normal way to use it, but
+    /// <c>NativeApi.PushArg</c> matches on <em>string</em> before anything else and throws
+    /// "Unsupported type" on a null one. <see cref="StringArg" /> is the only push that carries a
+    /// null pointer through.
+    /// </remarks>
+    public static int AddStateBagChangeHandler(string? keyName, string? bagName, Delegate handler)
+    {
+        // Same registry as AddConvarChangeListener, for the same reason.
+#pragma warning disable FIVEM001
+        var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
+#pragma warning restore FIVEM001
+
+        // Freed only after the call: the game reads through these pointers during Invoke.
+        using var key = new StringArg(keyName);
+        using var bag = new StringArg(bagName);
+
+        nativeApi.ResetContext();
+        nativeApi.PushArg(key);
+        nativeApi.PushArg(bag);
+        nativeApi.PushArg((int)reference);
+        nativeApi.Invoke(1537432239uL, "AddStateBagChangeHandler");
+
+        return nativeApi.GetResInt(0);
+    }
 }
