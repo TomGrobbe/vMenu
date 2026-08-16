@@ -4,33 +4,88 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// Moves the local player to a set of coordinates, waiting for the world there to exist first.
-/// </summary>
 internal static class PlayerTeleport
 {
     private const int LoadSceneTimeoutMs = 3000;
 
     private const int CollisionTimeoutMs = 2000;
 
-    /// <summary>How much world to pull in around the destination before moving anybody into it.</summary>
     private const float LoadSceneRadius = 50f;
 
     private const int FadeMs = 500;
 
-    /// <summary>
-    /// Moves to the exact height given. For coordinates that come off another player standing at
-    /// them, where hunting for the ground would only find the roof of whatever they are inside.
-    /// </summary>
-    /// <param name="heading">Which way to face on arrival. Null keeps whichever way they already face.</param>
+    private const int VehicleStreamTimeoutMs = 3000;
+
+    private const int DriverSeat = -1;
+
     public static Task ToCoordsAsync(Vector3 destination, float? heading = null) =>
         GoAsync(destination, findGround: false, heading);
 
-    /// <summary>Moves to the spot on the map, working out how high the ground there is.</summary>
-    /// <returns><see langword="false"/> if no ground was found, in which case nobody was moved.</returns>
-    /// <inheritdoc cref="ToCoordsAsync(Vector3, float?)"/>
     public static Task<bool> ToGroundAsync(float x, float y, float? heading = null) =>
         GoAsync(new Vector3(x, y, 0f), findGround: true, heading);
+
+    public static async Task<bool> IntoVehicleAsync(int networkId, Vector3 destination)
+    {
+        await ToCoordsAsync(destination);
+
+        if (API.Players.Local.Ped is not { } ped)
+        {
+            return false;
+        }
+
+        var vehicle = await ResolveAsync(networkId);
+
+        if (vehicle == 0)
+        {
+            return false;
+        }
+
+        if (FreeSeat(vehicle) is not { } seat)
+        {
+            return false;
+        }
+
+        Native.SetPedIntoVehicle(ped.Handle, vehicle, seat);
+
+        return true;
+    }
+
+    private static async Task<int> ResolveAsync(int networkId)
+    {
+        var started = Native.GetGameTimer();
+
+        while (Native.GetGameTimer() - started < VehicleStreamTimeoutMs)
+        {
+            if (Native.NetworkDoesNetworkIdExist(networkId))
+            {
+                var vehicle = Native.NetworkGetEntityFromNetworkId(networkId);
+
+                if (vehicle != 0 && Native.DoesEntityExist(vehicle))
+                {
+                    return vehicle;
+                }
+            }
+
+            await API.Delay(0);
+        }
+
+        return 0;
+    }
+
+    private static int? FreeSeat(int vehicle)
+    {
+        var seats = Native.GetVehicleModelNumberOfSeats(Native.GetEntityModel(vehicle));
+
+        for (var seat = 0; seat < seats - 1; seat++)
+        {
+            if (Native.IsVehicleSeatFree(vehicle, seat, false))
+            {
+                return seat;
+            }
+        }
+
+        return Native.IsVehicleSeatFree(vehicle, DriverSeat, false) ? DriverSeat : null;
+    }
 
     private static async Task<bool> GoAsync(Vector3 destination, bool findGround, float? heading)
     {
@@ -41,7 +96,6 @@ internal static class PlayerTeleport
 
         var pedHandle = ped.Handle;
 
-        // Whoever is driving takes the car with them. A passenger is left to walk.
         var vehicle = Native.GetVehiclePedIsIn(pedHandle, false);
         var driving = vehicle != 0
             && Native.DoesEntityExist(vehicle)
@@ -97,8 +151,6 @@ internal static class PlayerTeleport
 
         Native.ClearFocus();
 
-        // Without this the map outside the loaded scene never renders again, and the world turns into
-        // flat brown mud.
         Native.NewLoadSceneStop();
 
         if (findGround)
@@ -130,7 +182,6 @@ internal static class PlayerTeleport
             return true;
         }
 
-        // A frozen vehicle does not settle onto its wheels, so it has to be let go for a moment.
         Native.FreezeEntityPosition(moving, false);
         Native.SetVehicleOnGroundProperly(moving, 5f);
         Native.FreezeEntityPosition(moving, true);

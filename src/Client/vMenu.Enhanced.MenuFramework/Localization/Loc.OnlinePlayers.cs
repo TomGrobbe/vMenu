@@ -62,6 +62,26 @@ public static partial class Loc
 
         public const string SummonedBy = "onlineplayers.summon.by";
 
+        public const string TeleportIntoVehicle = "onlineplayers.teleportvehicle";
+
+        public const string TeleportIntoVehicleDescription = "onlineplayers.teleportvehicle.desc";
+
+        public const string TeleportIntoVehicleDone = "onlineplayers.teleportvehicle.done";
+
+        public const string TeleportIntoVehicleOnFoot = "onlineplayers.teleportvehicle.onfoot";
+
+        public const string TeleportIntoVehicleFull = "onlineplayers.teleportvehicle.full";
+
+        public const string SetWantedLevel = "onlineplayers.wanted";
+
+        public const string SetWantedLevelDescription = "onlineplayers.wanted.desc";
+
+        public const string SetWantedLevelNone = "onlineplayers.wanted.none";
+
+        public const string SetWantedLevelDone = "onlineplayers.wanted.done";
+
+        public const string SetWantedLevelBlocked = "onlineplayers.wanted.blocked";
+
         public const string Kill = "onlineplayers.kill";
 
         public const string KillDescription = "onlineplayers.kill.desc";

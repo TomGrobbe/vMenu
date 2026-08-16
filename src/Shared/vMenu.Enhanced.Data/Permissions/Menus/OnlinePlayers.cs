@@ -22,6 +22,12 @@ public static class OnlinePlayers
     [StaffOnly]
     public const string Summon = "vMenu.Enhanced.Menus.OnlinePlayers.Summon";
 
+    [StaffOnly]
+    public const string TeleportIntoVehicle = "vMenu.Enhanced.Menus.OnlinePlayers.TeleportIntoVehicle";
+
+    [StaffOnly]
+    public const string SetWantedLevel = "vMenu.Enhanced.Menus.OnlinePlayers.SetWantedLevel";
+
     public const string SendMessage = "vMenu.Enhanced.Menus.OnlinePlayers.SendMessage";
 
     [StaffOnly]

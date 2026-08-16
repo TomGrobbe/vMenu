@@ -40,6 +40,26 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.Kill, new Action<string>(OnKilled), false);
         API.OnNetEvent(PlayerEvents.Message, new Action<string, string, string>(OnMessage), false);
         API.OnNetEvent(PlayerEvents.Teleport, new Action<string, string, string, string>(OnSummoned), false);
+        API.OnNetEvent(PlayerEvents.SetWantedLevel, new Action<string, string>(OnWantedLevelRequested), false);
+    }
+
+    private static async void OnWantedLevelRequested(string requestId, string stars)
+    {
+        if (!int.TryParse(stars, NumberStyles.Integer, CultureInfo.InvariantCulture, out var wanted))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a wanted level request that did not parse: {stars}");
+
+            return;
+        }
+
+        PlayerActions.SetWantedLevel(wanted);
+
+        await API.Delay(0);
+
+        API.EmitServer(
+            PlayerEvents.WantedLevelAck,
+            requestId,
+            PlayerActions.WantedLevel().ToString(CultureInfo.InvariantCulture));
     }
 
     private static void OnKilled(string by)

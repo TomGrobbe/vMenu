@@ -44,22 +44,39 @@ public static class OnlinePlayerActions
     // never acknowledged still comes back as a real answer rather than as a timeout.
     private const int AckTimeoutMs = 5000;
 
+    private const int MaxWantedLevel = 5;
+
     private static readonly HashSet<int> Connected = [];
 
     private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
+
+    private static readonly Dictionary<int, PendingWanted> UnansweredWanted = [];
 
     private static int _revision;
 
     private static int _lastMessageId;
 
+    private static int _lastWantedId;
+
     public static void Register()
     {
         API.OnNetEvent(PlayerEvents.MessageAck, new Action<Player, string>(OnMessageAcknowledged), false);
+        API.OnNetEvent(PlayerEvents.WantedLevelAck, new Action<Player, string, string>(OnWantedLevelAcknowledged), false);
 
         ActionRegistry.Register(ActionIds.OnlinePlayers.GetList, OnlinePlayersPermissions.Menu, GetList);
 
         ActionRegistry.Register(ActionIds.OnlinePlayers.GetCoordsForTeleport, OnlinePlayersPermissions.TeleportTo, GetCoords);
         ActionRegistry.Register(ActionIds.OnlinePlayers.GetCoordsForWaypoint, OnlinePlayersPermissions.Waypoint, GetCoords);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetVehicleForTeleport,
+            OnlinePlayersPermissions.TeleportIntoVehicle,
+            GetVehicle);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetWantedLevel,
+            OnlinePlayersPermissions.SetWantedLevel,
+            SetWantedLevel);
 
         ActionRegistry.Register(ActionIds.OnlinePlayers.Kick, OnlinePlayersPermissions.Kick, Kick);
         ActionRegistry.Register(ActionIds.OnlinePlayers.Kill, OnlinePlayersPermissions.Kill, Kill);
@@ -209,6 +226,135 @@ public static class OnlinePlayerActions
             coords.X.ToString(CultureInfo.InvariantCulture),
             coords.Y.ToString(CultureInfo.InvariantCulture),
             coords.Z.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static ActionResponse GetVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.Handle)
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+        var riding = vehicle != 0 && Native.DoesEntityExist(vehicle);
+
+        var coords = Native.GetEntityCoords(riding ? vehicle : ped);
+
+        var networkId = riding ? Native.NetworkGetNetworkIdFromEntity(vehicle) : 0;
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} is teleporting to {Native.GetPlayerName(target.ToString())}"
+            + (riding ? "'s vehicle." : ", who is on foot."));
+
+        return ActionResponse.Ok(
+            riding ? "1" : "0",
+            networkId.ToString(CultureInfo.InvariantCulture),
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static async Task<ActionResponse> SetWantedLevel(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.Handle)
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 2
+            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var stars)
+            || stars < 0
+            || stars > MaxWantedLevel)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var requestId = ++_lastWantedId;
+        var answered = new TaskCompletionSource<int>();
+
+        UnansweredWanted[requestId] = new PendingWanted(target, answered);
+
+        API.EmitClient(
+            target,
+            PlayerEvents.SetWantedLevel,
+            requestId.ToString(CultureInfo.InvariantCulture),
+            stars.ToString(CultureInfo.InvariantCulture));
+
+        int reached;
+
+        try
+        {
+            var timeout = API.Delay(AckTimeoutMs);
+
+            if (await Task.WhenAny(answered.Task, timeout) == timeout)
+            {
+                Log.Warning(
+                    $"[OnlinePlayers] {source.Name} set the wanted level of "
+                    + $"{Native.GetPlayerName(target.ToString())}, which was never acknowledged.");
+
+                return ActionResponse.NotReady();
+            }
+
+            reached = answered.Task.Result;
+        }
+        finally
+        {
+            UnansweredWanted.Remove(requestId);
+
+            // Back onto the thread the reply has to go out on, the awaits above having left it.
+            await API.Delay(0);
+        }
+
+        var landed = reached == stars ? "which stuck." : $"which landed on {reached}.";
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} set the wanted level of "
+            + $"{Native.GetPlayerName(target.ToString())} to {stars}, {landed}");
+
+        return ActionResponse.Ok(reached.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static void OnWantedLevelAcknowledged([FromSource] Player source, string requestId, string reached)
+    {
+        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !UnansweredWanted.TryGetValue(id, out var pending))
+        {
+            return;
+        }
+
+        if (pending.Target != source.Handle)
+        {
+            Log.Warning($"[OnlinePlayers] {source.Name} answered wanted level request {id}, which was not theirs. Ignored.");
+
+            return;
+        }
+
+        if (!int.TryParse(reached, NumberStyles.Integer, CultureInfo.InvariantCulture, out var level))
+        {
+            return;
+        }
+
+        pending.Answered.TrySetResult(Math.Clamp(level, 0, MaxWantedLevel));
     }
 
     private static ActionResponse Kick(Player source, string[] args)
@@ -411,6 +557,13 @@ public static class OnlinePlayerActions
         public int Target { get; } = target;
 
         public TaskCompletionSource<bool> Delivered { get; } = delivered;
+    }
+
+    private sealed class PendingWanted(int target, TaskCompletionSource<int> answered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<int> Answered { get; } = answered;
     }
 
     /// <summary>Reads a server id out of the arguments and checks that player is still here.</summary>

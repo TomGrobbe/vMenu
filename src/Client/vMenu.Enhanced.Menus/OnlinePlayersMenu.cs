@@ -270,10 +270,27 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         actions.Entries.Add(new ButtonEntry
         {
+            Text = MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicle),
+            Description = MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleDescription),
+            Gate = OnlinePlayersPermissions.TeleportIntoVehicle,
+            OnSelectedAsync = _ => TeleportIntoVehicleAsync(),
+        });
+
+        actions.Entries.Add(new ButtonEntry
+        {
             Text = MenuText.Key(Loc.OnlinePlayers.Summon),
             Description = MenuText.Key(Loc.OnlinePlayers.SummonDescription),
             Gate = OnlinePlayersPermissions.Summon,
             OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Summon, Loc.OnlinePlayers.SummonDone),
+        });
+
+        actions.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.SetWantedLevel),
+            Description = MenuText.Key(Loc.OnlinePlayers.SetWantedLevelDescription),
+            Gate = OnlinePlayersPermissions.SetWantedLevel,
+            Options = WantedLevels(),
+            OnSelectedAsync = selected => SetWantedLevelAsync(selected.SelectedIndex),
         });
 
         actions.Entries.Add(new ButtonEntry
@@ -447,6 +464,116 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         await PlayerTeleport.ToCoordsAsync(found.Coords);
 
         Notifications.Success(MenuText.Key(Loc.OnlinePlayers.TeleportToDone, ("player", MenuText.Literal(found.Player.Name))));
+    }
+
+    private async Task TeleportIntoVehicleAsync()
+    {
+        if (Target() is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.GetVehicleForTeleport, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 5)
+        {
+            Report(result.Status, name);
+
+            return;
+        }
+
+        if (!int.TryParse(result.Data[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId)
+            || !TryParse(result.Data[2], out var x)
+            || !TryParse(result.Data[3], out var y)
+            || !TryParse(result.Data[4], out var z))
+        {
+            Report(ActionStatus.Failed, name);
+
+            return;
+        }
+
+        var destination = new Vector3(x, y, z);
+
+        if (result.Data[0] != "1")
+        {
+            await PlayerTeleport.ToCoordsAsync(destination);
+
+            Notifications.Info(MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleOnFoot, ("player", name)));
+
+            return;
+        }
+
+        if (!await PlayerTeleport.IntoVehicleAsync(networkId, destination))
+        {
+            Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleFull, ("player", name)));
+
+            return;
+        }
+
+        Notifications.Success(MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleDone, ("player", name)));
+    }
+
+    private async Task SetWantedLevelAsync(int stars)
+    {
+        if (Target() is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(
+            ActionIds.OnlinePlayers.SetWantedLevel,
+            Id(player),
+            stars.ToString(CultureInfo.InvariantCulture));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            Report(result.Status, name);
+
+            return;
+        }
+
+        if (!int.TryParse(result.Data[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var reached))
+        {
+            Report(ActionStatus.Failed, name);
+
+            return;
+        }
+
+        var wanted = MenuText.Literal(stars.ToString(CultureInfo.InvariantCulture));
+
+        if (reached != stars)
+        {
+            Notifications.Warning(MenuText.Key(
+                Loc.OnlinePlayers.SetWantedLevelBlocked,
+                ("player", name),
+                ("stars", wanted),
+                ("actual", MenuText.Literal(reached.ToString(CultureInfo.InvariantCulture)))));
+
+            return;
+        }
+
+        Notifications.Success(MenuText.Key(
+            Loc.OnlinePlayers.SetWantedLevelDone,
+            ("player", name),
+            ("stars", wanted)));
+    }
+
+    private static MenuText[] WantedLevels()
+    {
+        var options = new MenuText[6];
+
+        options[0] = MenuText.Key(Loc.OnlinePlayers.SetWantedLevelNone);
+
+        for (var stars = 1; stars < options.Length; stars++)
+        {
+            options[stars] = MenuText.Literal(stars.ToString(CultureInfo.InvariantCulture));
+        }
+
+        return options;
     }
 
     private async Task SetWaypointAsync()
