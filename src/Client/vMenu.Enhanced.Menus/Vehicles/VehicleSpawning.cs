@@ -33,7 +33,7 @@ public static class VehicleSpawning
     /// <inheritdoc cref="SpawnAsync(uint)"/>
     public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(API.Hash(modelName));
 
-    
+
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
         // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which
