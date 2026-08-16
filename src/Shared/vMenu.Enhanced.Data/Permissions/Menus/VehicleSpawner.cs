@@ -12,4 +12,6 @@ public static class VehicleSpawner
     public const string Menu = "vMenu.Enhanced.Menus.VehicleSpawner.Menu";
 
     public const string SpawnByName = "vMenu.Enhanced.Menus.VehicleSpawner.SpawnByName";
+
+    public const string AllowKeepPreviousVehicle = "vMenu.Enhanced.Menus.VehicleSpawner.AllowKeepPreviousVehicle";
 }

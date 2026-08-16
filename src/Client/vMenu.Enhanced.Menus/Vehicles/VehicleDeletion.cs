@@ -89,7 +89,7 @@ public static class VehicleDeletion
         return result.Status;
     }
 
-    private static bool DeleteLocally(int entity)
+    internal static bool DeleteLocally(int entity)
     {
         Native.SetVehicleHasBeenOwnedByPlayer(entity, false);
         Native.SetEntityAsMissionEntity(entity, true, true);

@@ -31,5 +31,17 @@ public static partial class Loc
         public const string CategoryDescription = "vehiclespawner.category.desc";
 
         public const string CategorySubtitle = "vehiclespawner.category.subtitle";
+
+        public const string SpawnInside = "vehiclespawner.spawninside";
+
+        public const string SpawnInsideDescription = "vehiclespawner.spawninside.desc";
+
+        public const string ReplacePrevious = "vehiclespawner.replaceprevious";
+
+        public const string ReplacePreviousDescription = "vehiclespawner.replaceprevious.desc";
+
+        public const string ReplacePreviousLocked = "vehiclespawner.replaceprevious.locked";
+
+        public const string OldVehicleRemoved = "vehiclespawner.oldvehicleremoved";
     }
 }

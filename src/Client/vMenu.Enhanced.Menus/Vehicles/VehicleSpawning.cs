@@ -7,6 +7,11 @@ using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared.Data;
 
 using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.MenuFramework.Localization;
+
+using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleSpawner;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
@@ -19,13 +24,16 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 /// </remarks>
 public static class VehicleSpawning
 {
+    private const int DriverSeat = -1;
+
     private static readonly TextInfo TitleCase = new CultureInfo("en-US", false).TextInfo;
+
+    private static int _previousVehicle;
 
     /// <inheritdoc cref="SpawnAsync(uint)"/>
     public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(API.Hash(modelName));
 
-    /// <summary>Spawns a vehicle beside the one the player is in, and puts them in the driver's seat.</summary>
-    /// <returns>Null when the model is not valid or the game refused to create it.</returns>
+    
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
         // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which
@@ -44,37 +52,42 @@ public static class VehicleSpawning
         }
 
         var ped = API.Players.Local.Ped!;
+        var spawnInside = VehicleSpawnOptions.SpawnInside;
+        var currentVehicle = ped.IsPedInAnyVehicle() ? ped.Vehicle! : null;
 
-        var position = ped.Position;
         Vector3? velocity = null;
         var rpm = 0f;
         var speed = 0f;
 
-        if (ped.IsPedInAnyVehicle())
+        if (spawnInside && currentVehicle is not null)
         {
-            var currentVehicle = ped.Vehicle!;
-
-            NativeFixer.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
-            NativeFixer.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
-
-            var yOffset = (Math.Abs((currentMin - currentMax).Y) / 2) + (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
-            position = Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, yOffset, 0f);
-
             velocity = currentVehicle.Velocity;
             speed = Native.GetEntitySpeedVector(currentVehicle.Handle, true).Y;
             rpm = Native.GetVehicleCurrentRpm(currentVehicle.Handle);
-
-            var handle = currentVehicle.Handle;
-            Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
         }
 
-        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)ped.Heading, true, true, true);
+        var position = SpawnPosition(ped, currentVehicle, hash, spawnInside);
+
+        var heading = spawnInside ? ped.Heading : ped.Heading + 90f;
+
+        RemovePrevious(ped.Handle, currentVehicle?.Handle ?? 0);
+
+        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)heading, true, true, true);
 
         Native.SetModelAsNoLongerNeeded(hash);
 
         if (newVehicle is null)
         {
             return null;
+        }
+
+        _previousVehicle = newVehicle.Handle;
+
+        if (!spawnInside)
+        {
+            Native.SetVehicleOnGroundProperly(newVehicle.Handle, 5f);
+
+            return newVehicle;
         }
 
         Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
@@ -105,12 +118,82 @@ public static class VehicleSpawning
             Native.SetVehicleCurrentRpm(newVehicle.Handle, rpm);
         }
 
-        ped.SetPedIntoVehicle(newVehicle.Handle, -1);
+        ped.SetPedIntoVehicle(newVehicle.Handle, DriverSeat);
 
         return newVehicle;
     }
 
-    /// <summary>The game's own name for a model, falling back to the model name itself.</summary>
+    private static Vector3 SpawnPosition(Ped ped, Vehicle? currentVehicle, uint hash, bool spawnInside)
+    {
+        if (spawnInside && currentVehicle is null)
+        {
+            return ped.Position;
+        }
+
+        NativeFixer.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
+
+        var clearance = (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
+
+        if (currentVehicle is null)
+        {
+            return Native.GetOffsetFromEntityInWorldCoords(ped.Handle, 0f, clearance + 2f, 0f);
+        }
+
+        NativeFixer.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
+
+        clearance += Math.Abs((currentMin - currentMax).Y) / 2;
+
+        return Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, clearance, 0f);
+    }
+
+    private static void RemovePrevious(int ped, int currentVehicle)
+    {
+        var replace = VehicleSpawnOptions.ReplacePrevious;
+
+        if (MayRemove(_previousVehicle, ped))
+        {
+            if (replace)
+            {
+                VehicleDeletion.DeleteLocally(_previousVehicle);
+            }
+            else if (!ClientConfig.Value(VehicleSpawnerSettings.KeepSpawnedVehiclesPersistent))
+            {
+                var handle = _previousVehicle;
+                Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
+            }
+
+            _previousVehicle = 0;
+        }
+
+        if (!replace || currentVehicle == 0 || !Native.DoesEntityExist(currentVehicle))
+        {
+            return;
+        }
+
+        if (Native.GetPedInVehicleSeat(currentVehicle, DriverSeat, false) != ped)
+        {
+            return;
+        }
+
+        _previousVehicle = _previousVehicle == currentVehicle ? 0 : _previousVehicle;
+
+        VehicleDeletion.DeleteLocally(currentVehicle);
+
+        Notifications.Info(MenuText.Key(Loc.VehicleSpawner.OldVehicleRemoved));
+    }
+
+    private static bool MayRemove(int vehicle, int ped)
+    {
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || !Native.IsEntityAVehicle(vehicle))
+        {
+            return false;
+        }
+
+        var driver = Native.GetPedInVehicleSeat(vehicle, DriverSeat, false);
+
+        return driver == 0 || driver == ped;
+    }
+
     public static string DisplayName(uint hash)
     {
         var displayName = Native.GetDisplayNameFromVehicleModel(hash);

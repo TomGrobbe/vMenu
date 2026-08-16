@@ -116,6 +116,16 @@ public static class UserDefaults
 
     #endregion
 
+    #region Vehicle Spawner
+
+    public static BoolDefault VehicleSpawnerSpawnInside { get; } =
+        new("vehicleSpawnerSpawnInside") { Default = true };
+
+    public static BoolDefault VehicleSpawnerReplacePrevious { get; } =
+        new("vehicleSpawnerReplacePrevious") { Default = true };
+
+    #endregion
+
     #region Teleport
 
     /// <summary>What the teleport key does: 0 nothing, 1 to the waypoint, 2 to typed coordinates.</summary>
@@ -233,6 +243,9 @@ public static class UserDefaults
         VehicleGodRamp,
         VehicleGodAutoRepair,
         VehicleKeepClean,
+
+        VehicleSpawnerSpawnInside,
+        VehicleSpawnerReplacePrevious,
 
         WeaponsUnlimitedAmmo,
         WeaponsNoReload,

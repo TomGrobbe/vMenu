@@ -223,6 +223,12 @@ internal static class EnglishStrings
             [Loc.VehicleSpawner.Spawned] = "Spawned ~g~{vehicle}~s~.",
             [Loc.VehicleSpawner.CategoryDescription] = "Spawn a vehicle from the ~y~{category}~s~ category.",
             [Loc.VehicleSpawner.CategorySubtitle] = "Vehicle Spawner Menu",
+            [Loc.VehicleSpawner.SpawnInside] = "Spawn Inside Vehicle",
+            [Loc.VehicleSpawner.SpawnInsideDescription] = "When turned on, spawns you inside of the vehicle. Turn it off and it will spawn the car in front of you instead.",
+            [Loc.VehicleSpawner.ReplacePrevious] = "Replace Previous Vehicle",
+            [Loc.VehicleSpawner.ReplacePreviousDescription] = "Delete the vehicle you spawned last when you spawn a new one, or the one you are driving.",
+            [Loc.VehicleSpawner.ReplacePreviousLocked] = "This server always replaces your previous vehicle, so this cannot be turned off.",
+            [Loc.VehicleSpawner.OldVehicleRemoved] = "Your old vehicle was removed. Turn off ~y~Replace Previous Vehicle~s~ if you want to keep it next time.",
 
             [Loc.OnlinePlayers.Title] = "Online Players",
             [Loc.OnlinePlayers.LinkDescription] = "See who is online and act on them.",

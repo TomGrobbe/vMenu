@@ -102,6 +102,24 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             Gate = VehicleSpawnerPermissions.SpawnByName,
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnInside),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnInsideDescription),
+            ReadState = () => VehicleSpawnOptions.SpawnInside,
+            OnChanged = changed => VehicleSpawnOptions.SetSpawnInside(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.ReplacePrevious),
+            Description = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousDescription),
+            LockedDescription = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousLocked),
+            Gate = VehicleSpawnerPermissions.AllowKeepPreviousVehicle,
+            ReadState = () => VehicleSpawnOptions.ReplacePrevious,
+            OnChanged = changed => VehicleSpawnOptions.SetReplacePrevious(changed.Checked),
+        });
     }
 
     private void BuildCategoryList(MenuBuilder byCategory)
