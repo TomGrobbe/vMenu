@@ -225,7 +225,18 @@ public static class NoClip
     }
     #endregion
 
-    /// <summary>Shared by the /nc command and the toggle key, so both answer a refusal the same way.</summary>
+    public static bool Enable()
+    {
+        if (!IsAllowed)
+        {
+            return false;
+        }
+
+        SharedAPI.RunOnMainThread(() => SetNoclipActive(true));
+
+        return true;
+    }
+
     private static void ToggleRequested()
     {
         if (!IsAllowed)
