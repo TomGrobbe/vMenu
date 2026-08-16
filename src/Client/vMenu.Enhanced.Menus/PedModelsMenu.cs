@@ -42,6 +42,14 @@ public sealed class PedModelsMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.PedModels.SpawnByName),
+            Description = MenuText.Key(Loc.PedModels.SpawnByNameDescription),
+            Gate = PedModelsPermissions.SpawnByName,
+            OnSelectedAsync = _ => SpawnByNameAsync(),
+        });
+
         // Never sorted. The order in the config file is the order here, so an owner can put their own
         // peds wherever they want them.
         foreach (var category in _categories)
@@ -74,14 +82,6 @@ public sealed class PedModelsMenu : MenuDefinition
                 Description = MenuText.Key(Loc.PedModels.EmptyDescription),
             });
         }
-
-        menu.Entries.Add(new ButtonEntry
-        {
-            Text = MenuText.Key(Loc.PedModels.SpawnByName),
-            Description = MenuText.Key(Loc.PedModels.SpawnByNameDescription),
-            Gate = PedModelsPermissions.SpawnByName,
-            OnSelectedAsync = _ => SpawnByNameAsync(),
-        });
     }
 
     private static void BuildCategoryMenu(MenuBuilder categoryMenu, PedModelCategory category, PedCategoryFilter filter)
