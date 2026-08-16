@@ -74,6 +74,14 @@ public static class UserDefaults
 
     public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
 
+    public static BoolDefault PlayerInvisible { get; } = new("playerInvisible") { Default = false };
+
+    public static BoolDefault PlayerStayInVehicle { get; } = new("playerStayInVehicle") { Default = false };
+
+    public static BoolDefault PlayerEveryoneIgnores { get; } = new("playerEveryoneIgnores") { Default = false };
+
+    public static BoolDefault PlayerNeverWanted { get; } = new("playerNeverWanted") { Default = false };
+
     /// <summary>The movement clip set the player picked, or empty for the ped's own walk.</summary>
     // Stored rather than read back off the ped, because the game offers no way to ask which clip set
     // a ped is using. It is also why this survives a model change: nothing else remembers.
@@ -210,6 +218,10 @@ public static class UserDefaults
         PlayerUnlimitedStamina,
         PlayerUnlimitedOxygen,
         PlayerNoRagdoll,
+        PlayerInvisible,
+        PlayerStayInVehicle,
+        PlayerEveryoneIgnores,
+        PlayerNeverWanted,
         PlayerWalkingStyle,
         PlayerClothingGlow,
 

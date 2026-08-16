@@ -101,6 +101,10 @@ public sealed class Main : IScript
         PlayerUnlimitedStamina.Initialize();
         PlayerUnlimitedOxygen.Initialize();
         PlayerNoRagdoll.Initialize();
+        PlayerInvisible.Initialize();
+        PlayerStayInVehicle.Initialize();
+        EveryoneIgnoresPlayer.Initialize();
+        PlayerNeverWanted.Initialize();
         PedIlluminatedClothing.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
@@ -114,6 +118,8 @@ public sealed class Main : IScript
         {
             PlayerGodMode.Reapply();
             VehicleGodMode.Reapply();
+            PlayerInvisible.Reapply();
+            EveryoneIgnoresPlayer.Reapply();
         };
 
         TeleportKeyBinding.Initialize();
