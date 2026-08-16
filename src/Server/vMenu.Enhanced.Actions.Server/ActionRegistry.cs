@@ -20,20 +20,12 @@ namespace vMenu.Enhanced.Actions.Server;
 /// </remarks>
 public static class ActionRegistry
 {
+    private const string Ungated = "<ungated>";
+
     private static readonly Dictionary<string, RegisteredAction> Actions = new(StringComparer.Ordinal);
 
     private static bool _registered;
 
-    /// <param name="handler">
-    /// Starts on the main thread, having already passed the permission check. Anything it throws,
-    /// before or after an await, is logged and answered as <see cref="ActionStatus.Failed"/>.
-    /// <para>
-    /// Awaiting the runtime's own <c>API.Delay</c> resumes on the thread the reply has to go out on,
-    /// the same way every client tick in this resource calls natives after a yield. A handler that
-    /// awaits thread pool work instead (an HTTP call, a database round trip) must come back with
-    /// <c>await API.Delay(0)</c> before it returns.
-    /// </para>
-    /// </param>
     public static void Register(
         string actionId,
         string permission,
@@ -45,15 +37,15 @@ public static class ActionRegistry
         }
     }
 
-    /// <summary>
-    /// For an action that answers on the spot. It runs start to finish inside the net event, exactly
-    /// as it would have without the action layer knowing about tasks at all.
-    /// </summary>
-    /// <inheritdoc cref="Register(string, string, Func{Player, string[], Task{ActionResponse}})"/>
     public static void Register(string actionId, string permission, Func<Player, string[], ActionResponse> handler) =>
         Register(actionId, permission, (source, args) => Task.FromResult(handler(source, args)));
 
-    /// <summary>Call after every action has been registered.</summary>
+    public static void RegisterUngated(string actionId, Func<Player, string[], Task<ActionResponse>> handler) =>
+        Register(actionId, Ungated, handler);
+
+    public static void RegisterUngated(string actionId, Func<Player, string[], ActionResponse> handler) =>
+        Register(actionId, Ungated, handler);
+
     public static void RegisterEventHandlers()
     {
         if (_registered)
@@ -99,7 +91,8 @@ public static class ActionRegistry
                 return;
             }
 
-            if (!ServerPermissions.IsPlayerAllowed(source, action.Permission))
+            if (!string.Equals(action.Permission, Ungated, StringComparison.Ordinal)
+                && !ServerPermissions.IsPlayerAllowed(source, action.Permission))
             {
                 // Not a warning: a stale menu reaches this as readily as somebody poking at the event.
                 Log.Info($"[Actions] {source.Name} was denied '{actionId}': missing {action.Permission}.");
