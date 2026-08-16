@@ -51,6 +51,9 @@ public static class UserDefaults
     public static BoolDefault MiscSeeNoClipPlayers { get; } =
         new("miscSeeNoClipPlayers") { Default = true };
 
+    public static BoolDefault MiscHideStaffAlerts { get; } =
+        new("miscHideStaffAlerts") { Default = false };
+
     #endregion
 
     #region Player Options
@@ -220,6 +223,7 @@ public static class UserDefaults
         MiscShowPlayerBlips,
         MiscShowOverheadNames,
         MiscSeeNoClipPlayers,
+        MiscHideStaffAlerts,
 
         PlayerGodMode,
         PlayerSuperJump,

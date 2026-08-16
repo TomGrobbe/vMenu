@@ -1,0 +1,115 @@
+/*
+   The staff alert banner. Same family as a notification, deliberately not the same place: this one
+   sits across the top middle of the screen because it is the one message in vMenu that is somebody
+   asking for help, and it has to be seen rather than noticed.
+*/
+#staff-alerts {
+    position: fixed;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34%;
+
+    /* So it stays readable on an ultrawide, where a third of the screen is a very long line. */
+    max-width: 32rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    pointer-events: none;
+    transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+/* The game blurs the world behind the pause menu, and this sits in that world, so it blurs with it. */
+#staff-alerts.paused {
+    filter: blur(2px);
+    opacity: 0.75;
+}
+
+.staff-alert {
+    --tone: #edb44b;
+    --tone-soft: rgba(224, 163, 56, 0.16);
+    --tone-edge: rgba(224, 163, 56, 0.35);
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-top: 0.2rem solid var(--tone);
+    border-radius: 0.2rem;
+    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    animation: staff-alert-in 200ms ease-out;
+}
+
+/* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
+.staff-alert .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--tone-soft);
+    border-bottom: 1px solid var(--tone-edge);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: var(--tone);
+}
+
+.staff-alert .icon {
+    flex: none;
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+.staff-alert .body {
+    padding: 0.55rem 0.7rem 0.65rem;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.staff-alert .progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 0.125rem;
+    background: var(--tone);
+    opacity: 0.55;
+    animation-name: staff-alert-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+/* Leaving upwards, back the way it came in, so anything below it closes the gap on its own. */
+.staff-alert.leaving {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+    transition: opacity 200ms ease-in, transform 200ms ease-in;
+}
+
+/*
+   The stack grows downwards from the top, so a new one has to push the older ones down. Clipping its
+   own height open does that; the cap only has to clear the tallest banner an alert can produce.
+*/
+@keyframes staff-alert-in {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-1rem);
+    }
+
+    to {
+        opacity: 1;
+        max-height: 14rem;
+        transform: none;
+    }
+}
+
+@keyframes staff-alert-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0;
+    }
+}

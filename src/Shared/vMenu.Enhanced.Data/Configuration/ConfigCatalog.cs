@@ -1,5 +1,7 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
+using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
+
 namespace vMenu.Enhanced.Data.Configuration;
 
 public sealed class ConfigSection(string title, IReadOnlyList<Setting> settings)
@@ -37,6 +39,13 @@ public static class ConfigCatalog
             MenuAppearance.HeaderGlare,
         ]),
         new("Gameplay", [Gameplay.PvpMode]),
+        new("Staff Alerts",
+        [
+            StaffAlertSettings.Enabled,
+            StaffAlertSettings.CooldownSeconds,
+            StaffAlertSettings.ExpireSeconds,
+            StaffAlertSettings.DisplaySeconds,
+        ]),
         new("Vehicle Options",
         [
             VehicleOptions.DeleteVehicleDistance,

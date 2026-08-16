@@ -71,5 +71,39 @@ public static partial class Loc
         public const string SeeNoClipPlayers = "miscsettings.seenoclipplayers";
 
         public const string SeeNoClipPlayersDescription = "miscsettings.seenoclipplayers.desc";
+
+        public const string AlertStaff = "miscsettings.alertstaff";
+
+        public const string AlertStaffDescription = "miscsettings.alertstaff.desc";
+
+        public const string AlertStaffPrompt = "miscsettings.alertstaff.prompt";
+
+        public const string AlertStaffEmpty = "miscsettings.alertstaff.empty";
+
+        public const string AlertStaffSent = "miscsettings.alertstaff.sent";
+
+        public const string AlertStaffNobody = "miscsettings.alertstaff.nobody";
+
+        public const string AlertStaffCooldown = "miscsettings.alertstaff.cooldown";
+
+        public const string AlertStaffBanner = "miscsettings.alertstaff.banner";
+
+        public const string AlertStaffTaken = "miscsettings.alertstaff.taken";
+
+        public const string AlertRespondUsage = "miscsettings.alertrespond.usage";
+
+        public const string AlertRespondDone = "miscsettings.alertrespond.done";
+
+        public const string AlertRespondGone = "miscsettings.alertrespond.gone";
+
+        public const string AlertRespondExpired = "miscsettings.alertrespond.expired";
+
+        public const string AlertRespondAlreadyTaken = "miscsettings.alertrespond.alreadytaken";
+
+        public const string AlertStaffExpired = "miscsettings.alertstaff.expired";
+
+        public const string AlertDismissed = "miscsettings.alertdismiss.done";
+
+        public const string AlertDismissNothing = "miscsettings.alertdismiss.nothing";
     }
 }

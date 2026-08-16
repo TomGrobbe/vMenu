@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="shared.css">
     <link rel="stylesheet" href="input.css">
     <link rel="stylesheet" href="notifications.css">
+    <link rel="stylesheet" href="staff-alerts.css">
     <link rel="stylesheet" href="ticks.css">
 </head>
 
@@ -23,11 +24,15 @@
     <!-- After the prompt, so a notification is never buried under the scrim. -->
     <div id="toasts"></div>
 
+    <!-- Somebody asking for help outranks a notification, so it sits over the top of one. -->
+    <div id="staff-alerts"></div>
+
     <!-- Last, so the debugging overlay stays readable over both the prompt and the notifications. -->
     <div id="ticks"></div>
 
     <script src="input.js"></script>
     <script src="notifications.js"></script>
+    <script src="staff-alerts.js"></script>
     <script src="ticks.js"></script>
 </body>
 

@@ -27,6 +27,8 @@ using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
+using StaffAlertsFeature = vMenu.Enhanced.Menus.Misc.StaffAlerts;
+
 namespace vMenu.Enhanced.Core;
 
 public sealed class Main : IScript
@@ -130,6 +132,7 @@ public sealed class Main : IScript
         PlayerBlipsDebugCommands.Initialize();
 
         PlayerPushEvents.Initialize();
+        StaffAlertsFeature.Initialize();
 
         DeathNotifications.Initialize();
 

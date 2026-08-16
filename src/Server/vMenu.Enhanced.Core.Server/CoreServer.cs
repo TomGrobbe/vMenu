@@ -46,8 +46,6 @@ public class CoreServer : IScript
         ServerClock.Initialize();
         ServerState.Initialize();
 
-        // After the model whitelist has been loaded, so the permissions it registers at runtime are
-        // in the tree the example file describes.
         ConfigurationExampleFile.Write();
         PermissionsExampleFile.Write();
 
@@ -63,6 +61,7 @@ public class CoreServer : IScript
         TeleportActions.Register();
         WorldActions.Register();
         OnlinePlayerActions.Register();
+        StaffAlertActions.Register();
         ActionRegistry.RegisterEventHandlers();
 
         PedDeathBroadcast.Register();

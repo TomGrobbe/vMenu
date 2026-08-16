@@ -4,6 +4,7 @@ using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Storage;
 
 using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
+using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -116,7 +117,6 @@ public sealed class MiscSettingsMenu : MenuDefinition
             {
                 UserDefaults.MiscShowPlayerBlips.Value = changed.Checked;
 
-                // Also what tells the server whether to start sending us where everybody is.
                 PlayerPresence.Reevaluate();
             },
         });
@@ -142,6 +142,15 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Gate = MiscSettingsPermissions.SeeNoClipPlayers,
             ReadState = () => UserDefaults.MiscSeeNoClipPlayers.Value,
             OnChanged = changed => UserDefaults.MiscSeeNoClipPlayers.Value = changed.Checked,
+        });
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.AlertStaff),
+            Description = MenuText.Key(Loc.MiscSettings.AlertStaffDescription),
+            Gate = MenuGate.Setting(StaffAlertSettings.Enabled),
+            Behaviour = GateBehaviour.Hide,
+            OnSelectedAsync = _ => StaffAlerts.RaiseAsync(),
         });
     }
 
