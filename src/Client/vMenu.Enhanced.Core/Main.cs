@@ -23,6 +23,7 @@ using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;
 using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Plugins;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
@@ -72,6 +73,8 @@ public sealed class Main : IScript
         WalkingStyleSync.RegisterEventHandlers();
 
         NotificationEvents.RegisterEventHandlers();
+
+        PluginHost.RegisterEventHandlers();
 
         ClientConfig.Initialize();
 
@@ -154,6 +157,8 @@ public sealed class Main : IScript
         UserPreferences.Restore();
 
         await MenuRegistry.BuildAsync(MainMenuComposition.Definitions);
+
+        PluginHost.AnnounceReady();
 
         await WeaponLoadoutRespawn.RestoreOnJoinAsync();
     }

@@ -35,10 +35,13 @@ public static class PermissionsExample
 
     public static string ResourcePath => $"{ExampleFile.ConfigDirectory}/{CopyName}{ExampleFile.Extension}";
 
+    /// <summary>Where one plugin's own permission template lives.</summary>
+    public static string PluginResourcePath(string resource) =>
+        $"{ExampleFile.PluginsDirectory}/{ExampleFile.PluginCopyName(resource, CopyName)}{ExampleFile.Extension}";
+
     public static string Render(IEnumerable<PermissionExampleEntry> entries)
     {
         var ordered = entries.ToList();
-        var staffOnly = ResolveStaffOnly(ordered);
 
         var file = new StringBuilder();
 
@@ -89,6 +92,13 @@ public static class PermissionsExample
             + "the ones you do not want. "
             + "Checkout https://docs.vespura.com/vMenu/Enhanced/ for more permissions information."));
 
+        file.Append("#\n");
+        file.Append(ExampleFile.Comment(
+            "Permissions that a plugin brings along are not listed here. Every plugin gets its own "
+            + "pair of templates in " + ExampleFile.PluginsDirectory + "/, named after the resource "
+            + "they came from. The " + Plugins.All + " line below still grants all of them at once, "
+            + "so you only need those files to hand out a plugin's permissions one by one."));
+
         file.Append('\n');
         file.Append(ExampleFile.Comment(
             "Note: While some of the permissions below are indented, that's only to show you to " +
@@ -96,18 +106,71 @@ public static class PermissionsExample
             "permissions.cfg like this to function correctly while executing the file. " +
             "It doesn't make a difference when executing the permissions.cfg from your server.cfg."));
 
+        AppendEntries(file, ordered, SpacedDepth, annotate: true);
+
+        return file.ToString();
+    }
+
+    /// <summary>
+    /// One plugin's permissions on their own, for its <c>&lt;resource&gt;.permissions.cfg.example</c>
+    /// in the one shared plugins folder.
+    /// </summary>
+    public static string RenderForPlugin(string resource, string displayName, IEnumerable<PermissionExampleEntry> entries)
+    {
+        var ordered = entries.ToList();
+
+        var file = new StringBuilder();
+
+        file.Append(ExampleFile.BannerIn(
+            ExampleFile.PluginsDirectory,
+            ExampleFile.PluginCopyName(resource, CopyName),
+            "These permissions belong to the plugin '" + displayName + "', which the resource '"
+            + resource + "' provides. They are listed here and not in vMenu's own permissions.cfg, "
+            + "so removing the plugin means removing the files named after it rather than hunting "
+            + "through that one.",
+            "Nothing here is written while the plugin is not running, so start it before you read "
+            + "this. If you have removed the plugin for good, delete every file in this folder whose "
+            + "name starts with '" + resource + ".'.",
+            "The same rules as vMenu's own permissions apply: " + EveryoneGroup + " is suggested for "
+            + "what any player may have and " + StaffGroup + " for what your staff should keep, a "
+            + "line ending in .All hands out everything indented under it, and the indentation is "
+            + "only there to show you what belongs to what."));
+
+        if (ordered.Count == 0)
+        {
+            file.Append('\n');
+            file.Append(ExampleFile.Comment("This plugin declares no permissions, so there is nothing to hand out here."));
+
+            return file.ToString();
+        }
+
+        // Only the plugin's own container gets a blank line above it: everything in this file sits
+        // under that one line, so spacing them all apart would be one blank line per permission.
+        AppendEntries(file, ordered, spacedDepth: 0, annotate: false);
+
+        return file.ToString();
+    }
+
+    private static void AppendEntries(
+        StringBuilder file,
+        List<PermissionExampleEntry> ordered,
+        int spacedDepth,
+        bool annotate)
+    {
+        var staffOnly = ResolveStaffOnly(ordered);
+
         for (var index = 0; index < ordered.Count; index++)
         {
             var entry = ordered[index];
 
-            if (entry.Depth <= SpacedDepth)
+            if (entry.Depth <= spacedDepth)
             {
                 file.Append('\n');
             }
 
             // On its own line above rather than trailing the command, so the command is the whole
             // line and nothing depends on the console treating a mid line # as a comment.
-            if (Annotation(entry) is { Length: > 0 } note)
+            if (annotate && Annotation(entry) is { Length: > 0 } note)
             {
                 file.Append(' ', entry.Depth * 2).Append("# ").Append(note).Append('\n');
             }
@@ -116,8 +179,6 @@ public static class PermissionsExample
             file.Append("add_ace " + Principal(staffOnly[index]) + " \"" + entry.Name + "\" allow");
             file.Append('\n');
         }
-
-        return file.ToString();
     }
 
     /// <summary>

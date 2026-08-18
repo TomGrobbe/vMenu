@@ -34,9 +34,16 @@
     <Project Path="src/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.NativeHooks/vMenu.Enhanced.NativeHooks.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
+    <Project Path="src/Client/vMenu.Enhanced.Plugins/vMenu.Enhanced.Plugins.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Serialization/vMenu.Enhanced.Serialization.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Storage/vMenu.Enhanced.Storage.csproj" />
     <Project Path="src/Client/vMenu.Enhanced.Ticks/vMenu.Enhanced.Ticks.csproj" />
+  </Folder>
+  <Folder Name="/src/PluginApi/">
+    <File Path="src/PluginApi/Directory.Build.props" />
+    <Project Path="src/PluginApi/vMenu.Enhanced.ClientAPI/vMenu.Enhanced.ClientAPI.csproj" />
+    <Project Path="src/PluginApi/vMenu.Enhanced.PluginContracts/vMenu.Enhanced.PluginContracts.csproj" />
+    <Project Path="src/PluginApi/vMenu.Enhanced.ServerAPI/vMenu.Enhanced.ServerAPI.csproj" />
   </Folder>
   <Folder Name="/src/Server/">
     <File Path="src/Server/Directory.Build.props" />
@@ -45,6 +52,7 @@
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
+    <Project Path="src/Server/vMenu.Enhanced.Plugins.Server/vMenu.Enhanced.Plugins.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Serialization.Server/vMenu.Enhanced.Serialization.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Ticks.Server/vMenu.Enhanced.Ticks.Server.csproj" />
   </Folder>

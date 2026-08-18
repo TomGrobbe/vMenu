@@ -1,4 +1,5 @@
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Plugins;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -16,6 +17,7 @@ public static class MainMenuComposition
         new RecordingMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
+        new PluginsMenu(),
         new AboutMenu(),
     ];
 }

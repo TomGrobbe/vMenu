@@ -39,6 +39,13 @@ public abstract class MenuEntry
 
     public Func<MenuItem.Icon>? ReadRightIcon { get; init; }
 
+    /// <summary>
+    /// Greys the item out without locking or hiding it while this reads false. Independent of the
+    /// gate: a gated item is a right the player lacks, a disabled one is an action that currently
+    /// makes no sense.
+    /// </summary>
+    public Func<bool>? ReadEnabled { get; init; }
+
     /// <summary>Shows MenuAPI's vehicle stats panel while this entry is highlighted.</summary>
     public Func<VehicleStats?>? VehicleStats { get; init; }
 
@@ -84,7 +91,7 @@ public abstract class MenuEntry
         var locked = !IsAllowed && behaviour is GateBehaviour.Lock;
 
         item.Text = Text.Resolve(localizer);
-        item.Enabled = IsAllowed;
+        item.Enabled = IsAllowed && (ReadEnabled?.Invoke() ?? true);
         item.LeftIcon = locked ? MenuItem.Icon.LOCK : (ReadLeftIcon?.Invoke() ?? LeftIcon);
         item.RightIcon = ReadRightIcon?.Invoke() ?? RightIcon;
 

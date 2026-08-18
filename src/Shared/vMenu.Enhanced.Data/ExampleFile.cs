@@ -11,9 +11,21 @@ public static class ExampleFile
 
     public const string ConfigDirectory = "config";
 
+    /// <summary>Every plugin's templates live here, each one named after the resource it came from.</summary>
+    // One shipped folder rather than a folder per plugin: SaveResourceFile writes files and never
+    // folders, and no native makes one, so a folder named after a plugin could never be created.
+    public const string PluginsDirectory = ConfigDirectory + "/plugins";
+
+    /// <summary>What a plugin's copy of one of these templates should be called.</summary>
+    public static string PluginCopyName(string resource, string copyName) => resource + "." + copyName;
+
     private const string Rule = "###############################################################################";
 
-    public static string Banner(string copyName, params string[] extraNotes)
+    public static string Banner(string copyName, params string[] extraNotes) =>
+        BannerIn(ConfigDirectory, copyName, extraNotes);
+
+    /// <summary>The same banner, for a file that does not sit directly in the config directory.</summary>
+    public static string BannerIn(string directory, string copyName, params string[] extraNotes)
     {
         var banner = new StringBuilder();
 
@@ -28,7 +40,7 @@ public static class ExampleFile
         banner.Append("#    2. Edit that copy, never this one.\n");
         banner.Append("#    3. Exec it from your server.cfg ABOVE the line that starts vMenu:\n");
         banner.Append("#\n");
-        banner.Append("#         exec @vMenu.Enhanced/" + ConfigDirectory + "/" + copyName + "\n");
+        banner.Append("#         exec @vMenu.Enhanced/" + directory + "/" + copyName + "\n");
         banner.Append("#         ensure vMenu.Enhanced\n");
 
         foreach (var note in extraNotes)

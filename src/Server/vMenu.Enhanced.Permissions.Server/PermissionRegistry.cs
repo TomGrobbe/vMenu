@@ -55,9 +55,10 @@ public static class PermissionRegistry
         Log.Debug($"[Permissions] Registered {Nodes.Count} permissions across {RootNodes.Count} roots.");
     }
 
-    /// <summary>Registers a permission whose name comes from configuration.</summary>
-    /// <param name="source">The config file it came from, named in the generated example.</param>
-    public static bool RegisterDynamic(string permission, string source)
+    /// <summary>Registers a permission whose name comes from configuration or a plugin.</summary>
+    /// <param name="source">Where it came from, named in the generated example.</param>
+    /// <param name="staffOnly">Marks it staff only on top of whatever the parent already imposes.</param>
+    public static bool RegisterDynamic(string permission, string source, bool staffOnly = false)
     {
         if (!PermissionPath.IsValidPermission(permission))
         {
@@ -82,7 +83,7 @@ public static class PermissionRegistry
         {
             Name = permission,
             Source = source,
-            IsStaffOnly = parent.IsStaffOnly,
+            IsStaffOnly = parent.IsStaffOnly || staffOnly,
             ExtraParents = parent.ExtraParents,
             StructuralParent = parent,
         };
@@ -98,6 +99,60 @@ public static class PermissionRegistry
         ChainCache.Clear();
 
         return true;
+    }
+
+    /// <summary>
+    /// Drops a runtime permission and everything registered underneath it, for a plugin that has
+    /// stopped or is about to declare a different set.
+    /// </summary>
+    /// <returns>How many permissions went.</returns>
+    // Only what RegisterDynamic put there. A permission vMenu declares itself has no source, and
+    // that part of the tree is fixed for the lifetime of the resource.
+    public static int UnregisterDynamic(string permission)
+    {
+        if (!Nodes.TryGetValue(permission, out var node) || node.Source is null)
+        {
+            return 0;
+        }
+
+        if (node.StructuralParent is { } parent)
+        {
+            DetachChild(parent, node);
+        }
+
+        var removed = Drop(node);
+
+        ChainCache.Clear();
+
+        return removed;
+
+        static int Drop(PermissionNode node)
+        {
+            var removed = 1;
+
+            foreach (var child in node.StructuralChildren)
+            {
+                removed += Drop(child);
+            }
+
+            node.StructuralChildren.Clear();
+            Nodes.Remove(node.Name);
+
+            return removed;
+        }
+    }
+
+    // By reference rather than List.Remove, which would reach for EqualityComparer<PermissionNode>.
+    private static void DetachChild(PermissionNode parent, PermissionNode child)
+    {
+        for (var index = parent.StructuralChildren.Count - 1; index >= 0; index--)
+        {
+            if (ReferenceEquals(parent.StructuralChildren[index], child))
+            {
+                parent.StructuralChildren.RemoveAt(index);
+                return;
+            }
+        }
     }
 
     public static bool TryGet(string permission, out PermissionNode? node) =>
@@ -130,17 +185,24 @@ public static class PermissionRegistry
                 yield return entry;
             }
         }
+    }
 
-        static IEnumerable<(PermissionNode Node, int Depth)> Walk(PermissionNode node, int depth)
+    /// <summary>
+    /// One branch of the tree, the named permission first and depths counted from it rather than
+    /// from the root. For a file that describes one plugin instead of the whole of vMenu.
+    /// </summary>
+    public static IEnumerable<(PermissionNode Node, int Depth)> EnumerateSubtree(string permission) =>
+        Nodes.TryGetValue(permission, out var node) ? Walk(node, 0) : [];
+
+    private static IEnumerable<(PermissionNode Node, int Depth)> Walk(PermissionNode node, int depth)
+    {
+        yield return (node, depth);
+
+        foreach (var child in node.StructuralChildren)
         {
-            yield return (node, depth);
-
-            foreach (var child in node.StructuralChildren)
+            foreach (var entry in Walk(child, depth + 1))
             {
-                foreach (var entry in Walk(child, depth + 1))
-                {
-                    yield return entry;
-                }
+                yield return entry;
             }
         }
     }

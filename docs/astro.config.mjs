@@ -62,6 +62,14 @@ export default defineConfig({
         { label: 'Getting Started', link: '/getting-started/' },
         { label: 'Key Bindings', link: '/key-bindings/' },
         {
+          label: 'Plugins',
+          items: [
+            { label: 'What plugins are', link: '/plugins/' },
+            { label: 'Installing plugins', link: '/plugins/installing/' },
+            { label: 'Making a plugin', link: '/plugins/developing/' },
+          ],
+        },
+        {
           label: 'Links',
           items: [
             { label: 'vMenu Legacy docs', link: 'https://docs.vespura.com/vmenu/legacy/', attrs: { target: '_blank' } },

@@ -1,0 +1,44 @@
+<Project>
+  <!--
+    MSBuild stops at the FIRST Directory.Build.props it finds walking up from a
+    project, so this file shadows src/Directory.Build.props for everything under
+    src/PluginApi/. Import the parent explicitly to keep the shared settings.
+  -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!--
+      These are the publishable NuGet packages plugin authors reference. They build
+      outside the resource folder: vMenu itself pulls PluginContracts in through a
+      ProjectReference, which copies it next to the referencing side's assemblies.
+    -->
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\$(MSBuildProjectName)\</OutputPath>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>$(MSBuildProjectName)</PackageId>
+    <RepositoryUrl>https://github.com/TomGrobbe/vMenu</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/TomGrobbe/vMenu</PackageProjectUrl>
+    <PackageTags>fivem;vmenu;plugin</PackageTags>
+
+    <!-- Published API, so ship IntelliSense docs. CS1591 stays off: not every property needs prose. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Anchored to the project: a relative Include here would resolve next to this file instead. -->
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" />
+
+    <!--
+      The full licence text, carried inside every package next to the GPL-3.0-or-later expression
+      the parent props declares. Plain packaged content rather than PackageLicenseFile, that one
+      being mutually exclusive with the expression: a plugin author inherits this licence, so the
+      text travels with the code instead of only being named. Anchored to this file, the licence
+      belonging to the repository rather than to any one project.
+    -->
+    <None Include="$(MSBuildThisFileDirectory)..\..\LICENSE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

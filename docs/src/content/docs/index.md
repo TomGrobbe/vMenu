@@ -19,6 +19,7 @@ Looking for the current, stable version for FiveM Legacy? See the [vMenu Legacy 
 ## Next steps
 
 - [Getting Started](/vmenu/enhanced/getting-started/)
+- [Plugins](/vmenu/enhanced/plugins/), the menus other resources can add inside vMenu
 
 ## Appreciate the work?
 

@@ -172,8 +172,7 @@ internal sealed class MenuHost : IDisposable
     // already returned.
     internal void Refresh(ILocalizer localizer)
     {
-        Menu.MenuTitle = Title.Resolve(localizer);
-        Menu.MenuSubtitle = Subtitle.Resolve(localizer);
+        RefreshHeader(localizer);
 
         foreach (var button in Builder.InstructionalButtons)
         {
@@ -218,6 +217,24 @@ internal sealed class MenuHost : IDisposable
         }
 
         ApplyFilter();
+    }
+
+    /// <summary>Writes the banner text and the bar under it back from their declarations.</summary>
+    internal void RefreshHeader(ILocalizer localizer)
+    {
+        Menu.MenuTitle = Title.Resolve(localizer);
+        Menu.MenuSubtitle = ResolveSubtitle(Title, Subtitle, localizer);
+    }
+
+    /// <summary>What MenuAPI should be given as a subtitle, never an empty string.</summary>
+    // MenuAPI draws the bar under the banner whether or not there is a subtitle in it, but only
+    // moves the rows down when there is one. An empty subtitle therefore leaves the first row drawn
+    // on top of the bar, on a doubled black background.
+    internal static string ResolveSubtitle(MenuText title, MenuText subtitle, ILocalizer localizer)
+    {
+        var resolved = subtitle.Resolve(localizer);
+
+        return resolved.Length > 0 ? resolved : title.Resolve(localizer);
     }
 
     internal void SetUserFilter(Func<MenuItem, bool>? predicate)
@@ -660,6 +677,12 @@ internal sealed class MenuHost : IDisposable
 
             return;
         }
+
+        // A row bound to a submenu is opened by MenuAPI itself, so a title that depends on what the
+        // player just picked has had no refresh pass since they picked it. Without this the banner
+        // still says whatever it did when the menu was built, which for a name picked at runtime is
+        // nothing at all, and MenuAPI draws no banner for an empty title.
+        RefreshHeader(Localizer.Current);
 
         if (_filterDirty)
         {

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The shared contract between vMenu Enhanced and its plugins: event names, protocol
+    version and the JSON payload shapes. Deliberately dependency free so it can be
+    referenced from any runtime context.
+  -->
+  <PropertyGroup>
+    <PackageDescription>Protocol contracts for vMenu Enhanced plugins: event names and payload types shared between vMenu and the plugin API packages.</PackageDescription>
+  </PropertyGroup>
+
+</Project>

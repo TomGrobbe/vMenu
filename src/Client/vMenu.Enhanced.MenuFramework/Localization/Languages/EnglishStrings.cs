@@ -28,6 +28,13 @@ internal static class EnglishStrings
             [Loc.MainMenu.Title] = "vMenu Enhanced",
             [Loc.MainMenu.Subtitle] = "Main Menu",
 
+            [Loc.Plugins.Title] = "Plugins",
+            [Loc.Plugins.Subtitle] = "Plugins",
+            [Loc.Plugins.LinkDescription] = "Extra menus added by other resources on this server.",
+            [Loc.Plugins.RowDescription] = "Provided by the resource ~b~{resource}~s~.",
+            [Loc.Plugins.PlayerActions] = "Plugin Actions",
+            [Loc.Plugins.PlayerActionsDescription] = "Actions for this player, added by plugins on this server.",
+
             [Loc.PlayerMenu.Title] = "Player Menu",
             [Loc.PlayerMenu.Subtitle] = "Player Menu",
             [Loc.PlayerMenu.LinkDescription] = "Everything to do with your own character: what you can do, and which ped you look like.",
@@ -805,7 +812,7 @@ internal static class EnglishStrings
             [Loc.StaffAlerts.HideGroup] = "Your Own Settings",
             [Loc.StaffAlerts.HideGroupDescription] = "Settings that change what you see, and nobody else.",
             [Loc.StaffAlerts.Hide] = "Hide Staff Alerts",
-            [Loc.StaffAlerts.HideDescription] = "Stop putting alerts on your screen as they come in, for when you are online but not on duty. Whoever asks for help is told how many staff their alert reached, and while this is on you are not one of them. The list above still works, so you can come and look whenever you feel like it. Remembered between sessions.",
+            [Loc.StaffAlerts.HideDescription] = "No longer receive staff alerts on screen. The list above still works, so you can come and look whenever you feel like it. Remembered between sessions.",
             [Loc.StaffAlerts.RowDescription] = "~y~{player}~s~ says: {description}~n~~n~Raised as ~y~#{id}~s~, gone in ~y~{time}~s~. Press enter for what you can do about it.",
             [Loc.StaffAlerts.Empty] = "Nobody needs help",
             [Loc.StaffAlerts.EmptyDescription] = "No alerts are waiting. Anything raised from now on turns up here as well as on your screen.",

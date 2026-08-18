@@ -42,6 +42,8 @@ files {
     'client/vMenu.Enhanced.MenuFramework.dll',
     'client/vMenu.Enhanced.Menus.dll',
     'client/vMenu.Enhanced.NoClip.dll',
+    'client/vMenu.Enhanced.PluginContracts.dll',
+    'client/vMenu.Enhanced.Plugins.dll',
     'client/vMenu.Enhanced.Ticks.dll',
     'client/vMenu.Enhanced.NativeHooks.dll',
 }

@@ -13,6 +13,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Plugins;
 
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
 
@@ -347,6 +348,19 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                     Native.ExecuteCommand($"tx {Id(player)}");
                 }
             },
+        });
+
+        actions.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.Plugins.PlayerActions),
+            Description = MenuText.Key(Loc.Plugins.PlayerActionsDescription),
+            Gate = MenuGate.When(PluginPlayerActions.AnyVisible),
+            Behaviour = GateBehaviour.Hide,
+            MenuTitle = MenuText.From(() => _selected?.Name ?? string.Empty),
+            MenuSubtitle = MenuText.Key(Loc.Plugins.PlayerActions),
+            Build = builder => PluginPlayerActions.Attach(
+                builder,
+                () => _selected is { } player ? (player.ServerId, player.Name) : ((int, string)?)null),
         });
     }
 

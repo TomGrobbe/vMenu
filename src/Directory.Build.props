@@ -22,6 +22,12 @@
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 
     <!--
+      Resource assemblies are never NuGet packages. Only src/PluginApi/ flips this
+      back on, so `dotnet pack` on the solution cannot ship anything else.
+    -->
+    <IsPackable>false</IsPackable>
+
+    <!--
       Class libraries normally leave NuGet assemblies in the package cache and
       only list them in the .deps.json. FiveM has no host to resolve them, so
       every referenced assembly (MenuAPI, CitizenFX.*, MessagePack, ...) has to

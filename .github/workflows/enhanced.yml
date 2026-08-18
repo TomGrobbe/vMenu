@@ -101,6 +101,25 @@ jobs:
             -p:AssemblyVersion="${{ needs.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ needs.version.outputs.assembly_ver }}"
 
+      # The plugin API packages ship to nuget.org with the exact same version as
+      # the resource zip, so a plugin author pins the package matching whatever
+      # vMenu version their server runs.
+      - name: Pack plugin API packages
+        shell: bash
+        run: |
+          for project in vMenu.Enhanced.PluginContracts vMenu.Enhanced.ClientAPI vMenu.Enhanced.ServerAPI; do
+            dotnet pack "src/PluginApi/$project/$project.csproj" -c Release --no-build \
+              -p:Version="${{ needs.version.outputs.semver }}" \
+              -p:PackageVersion="${{ needs.version.outputs.semver }}" \
+              -o packages
+          done
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vmenu-enhanced-packages
+          path: packages/*.nupkg
+
       # The build works out how much of the English string table each language
       # covers and drops it in build/intermediate (see GenerateLanguageTemplate
       # in src/Directory.Build.targets). Surfaced here so a PR that adds English
@@ -289,6 +308,39 @@ jobs:
             "release-assets/${{ needs.version.outputs.zip_name }}")
 
           echo "release_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+
+  # ============================================================
+  # NUGET - publishes the plugin API packages, enhanced branch only
+  # ============================================================
+  publish-nuget:
+    name: Publish NuGet packages
+    needs: [version, build]
+    if: github.ref == 'refs/heads/enhanced'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vmenu-enhanced-packages
+          path: packages
+
+      - name: NuGet login (trusted publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: TomGrobbe
+          
+      - name: Push packages
+        shell: bash
+        run: |
+          dotnet nuget push "packages/*.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --skip-duplicate
 
   # ============================================================
   # DISCORD NOTIFICATION

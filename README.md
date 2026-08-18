@@ -1,8 +1,8 @@
-# vMenu
+# vMenu Enhanced
 
-vMenu is a server-side menu for FiveM servers, including full\* permission support.
-
-\*(Some features do not have permissions support as they are either harmless or it'd just be silly to deny them. However, they will be disabled if you deny access to the submenu that they are a part of (eg: unlimited stamina in Player Options will be disabled if you deny `vMenu.PlayerOptions.Menu`.))
+vMenu Enhanced is a server side menu for FiveM for GTA V Enhanced, providing full configuration and permissions support.
+It is a from-scratch remake of the original vMenu for FiveM (legacy), containing a complete refactor and performance optimized approach to how the menu is built.
+It also now supports full localization (translations) and custom plugins that anyone can write to create new menu's inside vMenu (see the bottom of this readme).
 
 ---
 
@@ -16,17 +16,21 @@ Click [here](https://github.com/TomGrobbe/vMenu/releases) to go to the releases 
 
 ## Installation
 
-Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/legacy/installation/)
+Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/enhanced/getting-started/)
 
 ## ZAP-Hosting
 
-You can use ZAP-Hosting's one-click installer for vMenu. Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura) and make sure to use `Vespura` at checkout.
+You can use ZAP-Hosting's one-click installer for vMenu.
+Right now only legacy is supported, but vMenu Enhanced will be supported later.
+Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura?voucher=Vespura) and make sure to use `Vespura` at checkout.
 
 ---
 
-## Support
+## Support my work
 
-If you like my work, please consider supporting me on [**Patreon**](https://www.patreon.com/vespura). I've put a _lot_ of my time and hard work into these and other projects.
+If you like my work, please consider supporting me on [**Patreon**](https://www.patreon.com/vespura). 
+I've put a _lot_ of my time and hard work into these and other projects, and really appreciate any support.
+All my work is open source and free to use, so please consider supporting.
 
 ---
 
@@ -34,27 +38,56 @@ If you like my work, please consider supporting me on [**Patreon**](https://www.
 
 Take a look at the docs first of all. I will ignore you if your question is answered on the docs or the forum topic.
 
-- [Docs](https://docs.vespura.com/vmenu/legacy/)
+- [Docs](https://docs.vespura.com/vmenu/enhanced/)
 - [Forum topic](https://forum.cfx.re/t/vmenu/88868)
 - [Discord](https://vespura.com/discord)
 
+**Note: support is given by the community.**
+
+I sometimes reply whenever I can.
+Pinging me in my Discord is not necessary, if I can help I will. 
+Whenever I have time. There are lots of people in my Discord server that will happily help you if you ask nicely. 
+Do not ping/mention anyone for support.
+
 ---
 
-## Permissions
+## Permissions & Configuration
 
-Click [here](https://docs.vespura.com/vmenu/legacy/permissions/permissions/) for permission information.
-
-## Configuration
-
-Click [here](https://docs.vespura.com/vmenu/legacy/configuration/) for configuration options information.
+The documentation for this has not yet been built for vMenu Enhanced.
+Take a look at the [Getting Started guide](https://docs.vespura.com/vmenu/enhanced/getting-started/) on the docs to see how to setup vMenu Enhanced.
+It tells you where to find the example permissions.cfg and configuration.cfg files to get started.
 
 ---
 
 ## MenuAPI
 
-Starting from vMenu v2.1.0, vMenu will be using [MenuAPI (MAPI)](https://github.com/TomGrobbe/MenuAPI), a custom menu API designed specifically for vMenu by me.
+Just like vMenu legacy, vMenu Enhanced will be using [MenuAPI (MAPI)](https://github.com/TomGrobbe/MenuAPI), a custom menu API designed specifically for vMenu.
 
-vMenu v2.0.0 and earlier was [using a modified version of NativeUI](https://github.com/TomGrobbe/NativeUI), originally by [Guad](https://github.com/Guad/NativeUI), but converted to FiveM by the CitizenFX Collectives and myself (updated/refactored).
+
+
+---
+
+## Plugins (vMenu Enhanced)
+
+vMenu Enhanced can be extended with **plugins**, which are separate FiveM resources that add their own menus inside vMenu. A plugin never patches vMenu, and vMenu does not need to know it exists beforehand. The two introduce themselves to each other while the server runs, in whatever order they happen to start.
+
+Two NuGet packages are all you need to write one:
+
+| Package | Used by |
+| --- | --- |
+| [`vMenu.Enhanced.ClientAPI`](https://www.nuget.org/packages/vMenu.Enhanced.ClientAPI/) | your plugin's client script, to declare its menus |
+| [`vMenu.Enhanced.ServerAPI`](https://www.nuget.org/packages/vMenu.Enhanced.ServerAPI/) | your plugin's server script, to declare its permissions and settings |
+
+Both bring [`vMenu.Enhanced.PluginContracts`](https://www.nuget.org/packages/vMenu.Enhanced.PluginContracts/) along with them. That one is the shared protocol between vMenu and a plugin, and is not something you reference yourself. Every package is published alongside the vMenu Enhanced release it belongs to and carries that release's version number, so pin them to the vMenu version your server actually runs.
+
+Where to read more:
+
+- [What plugins are](https://docs.vespura.com/vmenu/enhanced/plugins/), if you have not met one yet
+- [Installing plugins](https://docs.vespura.com/vmenu/enhanced/plugins/installing/), for server owners
+- [Making a plugin](https://docs.vespura.com/vmenu/enhanced/plugins/developing/), for developers
+- [vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin), a complete working plugin to copy from
+
+A plugin built on these packages is a work based on vMenu, so it carries the same license vMenu does. That means open sourcing it if you hand it to anybody else, free or paid. See [License](#license) below, and the [licensing section of the plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/#license) for what it asks of you in practice.
 
 ---
 

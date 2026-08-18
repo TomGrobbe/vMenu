@@ -67,7 +67,7 @@ public static class MenuRegistry
         MenuText title = MenuText.Key(Loc.MainMenu.Title);
         MenuText subtitle = MenuText.Key(Loc.MainMenu.Subtitle);
 
-        var mainMenu = new Menu(title.Resolve(localizer), subtitle.Resolve(localizer));
+        var mainMenu = new Menu(title.Resolve(localizer), MenuHost.ResolveSubtitle(title, subtitle, localizer));
 
         MenuController.AddMenu(mainMenu);
 
@@ -186,7 +186,7 @@ public static class MenuRegistry
     {
         var localizer = Localizer.Current;
 
-        var menu = new Menu(title.Resolve(localizer), subtitle.Resolve(localizer));
+        var menu = new Menu(title.Resolve(localizer), MenuHost.ResolveSubtitle(title, subtitle, localizer));
 
         MenuController.AddSubmenu(parent.Menu, menu);
 
@@ -291,7 +291,7 @@ public static class MenuRegistry
         var title = definition?.Title ?? submenu.ResolveTitle();
         var subtitle = definition?.Subtitle ?? submenu.MenuSubtitle;
 
-        var childMenu = new Menu(title.Resolve(localizer), subtitle.Resolve(localizer));
+        var childMenu = new Menu(title.Resolve(localizer), MenuHost.ResolveSubtitle(title, subtitle, localizer));
 
         // BindMenuItem calls AddSubmenu itself, so a separate call would be redundant.
         MenuController.BindMenuItem(parent.Menu, childMenu, linkItem);

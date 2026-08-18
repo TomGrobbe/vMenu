@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The client half of the vMenu Enhanced plugin API. A plugin's client script builds its
+    menus through this typed surface, and the package speaks the event protocol with vMenu
+    so the plugin never has to.
+  -->
+  <PropertyGroup>
+    <PackageDescription>Client side plugin API for vMenu Enhanced. Declares plugin menus with a typed builder and speaks the vMenu event protocol for you.</PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.FiveM.Client" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
+  </ItemGroup>
+
+</Project>

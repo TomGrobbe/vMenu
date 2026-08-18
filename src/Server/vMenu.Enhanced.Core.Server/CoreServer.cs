@@ -10,6 +10,7 @@ using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Plugins.Server;
 using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
 
@@ -67,6 +68,9 @@ public class CoreServer : IScript
         PedDeathBroadcast.Register();
         PlayerNoClipState.Register();
         PlayerPresenceBroadcast.Register();
+
+        PluginRegistry.RegisterEventHandlers();
+        PluginRegistry.AnnounceReady();
 
         Log.Debug("vMenu Server side started");
     }
