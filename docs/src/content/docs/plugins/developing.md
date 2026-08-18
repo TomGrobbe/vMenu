@@ -84,6 +84,15 @@ public sealed class Main : IScript
         greet.Description = "Shows a notification, to prove this thing works.";
         greet.Selected += () => plugin.Notify(NotifyStyle.Success, "Hello!");
 
+        // Optional, this is where the permission and the setting from the server half get used.
+        // Same short names on both sides, vMenu does the checking and keeps the row up to date.
+        var enabled = plugin.Settings.Bool("Enabled", true, "Turns my plugin on or off.");
+
+        greet.Gate = PluginGate.Permission("Greet") & PluginGate.Setting(enabled);
+
+        // Optional, a locked row is greyed out with a lock by default. This hides it instead.
+        greet.HideWhenLocked = true;
+
         var result = await plugin.ConnectAsync();
 
         // NOTE!
@@ -118,6 +127,8 @@ public sealed class Main : IScript
     }
 }
 ```
+
+The optional lines in the middle are the whole point of declaring a permission and a setting on the server. Without them the button is always there for everybody, and the server owner's config file does nothing. With them, the button only works for a player who has the `Greet` permission while the `Enabled` setting is on, and it follows along by itself when the owner changes either one. You can also read a setting's value straight out with `enabled.Value` whenever you need the value rather than a gate.
 
 `ConnectAsync` and `RegisterAsync` never throw. A refusal comes back as a result with `Accepted` set to false and a reason in `Errors`, and anything vMenu accepted but was unhappy about is in `Warnings`. Both are logged for you as well.
 
