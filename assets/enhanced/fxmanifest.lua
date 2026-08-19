@@ -17,35 +17,8 @@ files {
     -- A wildcard, so a language an owner adds is picked up without touching this file.
     'language/*.json',
 
-    'client/CitizenFX.Base.dll',
-    'client/CitizenFX.FiveM.Shared.dll',
-    'client/CitizenFX.FiveM.Client.dll',
-
-    'client/MessagePack.dll',
-    'client/MessagePack.Annotations.dll',
-
-    'client/Microsoft.NET.StringTools.dll',
-
-    'client/MenuAPI.dll',
-
-    'client/Newtonsoft.Json.dll',
-
-    'client/vMenu.Enhanced.Actions.dll',
-    'client/vMenu.Enhanced.BrokenNatives.dll',
-    'client/vMenu.Enhanced.Configuration.dll',
-    'client/vMenu.Enhanced.Data.dll',
-    'client/vMenu.Enhanced.Events.dll',
-    'client/vMenu.Enhanced.Logging.dll',
-    'client/vMenu.Enhanced.Permissions.dll',
-    'client/vMenu.Enhanced.Serialization.dll',
-    'client/vMenu.Enhanced.Storage.dll',
-    'client/vMenu.Enhanced.MenuFramework.dll',
-    'client/vMenu.Enhanced.Menus.dll',
-    'client/vMenu.Enhanced.NoClip.dll',
-    'client/vMenu.Enhanced.PluginContracts.dll',
-    'client/vMenu.Enhanced.Plugins.dll',
-    'client/vMenu.Enhanced.Ticks.dll',
-    'client/vMenu.Enhanced.NativeHooks.dll',
+    
+    'client/*.dll',
 }
 
 -- Client assembly

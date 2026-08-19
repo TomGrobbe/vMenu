@@ -61,6 +61,7 @@ export default defineConfig({
         { label: 'Home', link: '/' },
         { label: 'Getting Started', link: '/getting-started/' },
         { label: 'Key Bindings', link: '/key-bindings/' },
+        { label: 'Moving Your Data', link: '/moving-your-data/' },
         {
           label: 'Plugins',
           items: [

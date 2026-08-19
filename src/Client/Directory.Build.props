@@ -8,17 +8,19 @@
 
   <PropertyGroup>
     <!--
-      Client assemblies live in their own subfolder of the resource, mirroring
-      server/ and shared/. Keeping the three apart matters because
-      CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry their own
-      copy of CitizenFX.Base.dll and CitizenFX.FiveM.Shared.dll; sharing one
-      folder means one side wins and the other loads the wrong assemblies.
+      Client assemblies build outside the resource, and src/Bundle.targets merges them into the one
+      that ships. Nothing here lands in build/vMenu.Enhanced/client/ except through that.
+
+      The client and server sides stay in separate folders all the way through, because
+      CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry their own copy of
+      CitizenFX.Base.dll and CitizenFX.FiveM.Shared.dll; sharing one folder means one side wins and
+      the other loads the wrong assemblies.
 
       CopyLocalLockFileAssemblies (inherited from src/Directory.Build.props)
       copies the resolved NuGet graph next to the output, so MenuAPI and the
-      CitizenFX client assemblies land in client/ too.
+      CitizenFX client assemblies land here too.
     -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\client\</OutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\client\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'NativeHooks'">

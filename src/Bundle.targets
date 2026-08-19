@@ -1,0 +1,192 @@
+<Project>
+
+<!--
+!!READ THIS FIRST!!
+
+This file contains a bunch of magic. We need to combine as many DLLs as we possibly can
+and then strip away any DLLs that don't need to be included. If you have more than 1 DLL
+in your resource in FiveM Enhanced, restarting it has a 90% chance of crashing your game
+or server.
+
+So what we do here is we combine (with ilrepack) all possible DLLs into the core client and core 
+server DLLs. Don't ask me how it works because I have no clue. All I know is it reduces the risk 
+of crashing the game or server whenever you reload the resource. Magic <3
+
+All stuff below was hacked together with the help of Stackoverflow and some clanker suggestions.
+Comments below were an attempt at explaining how it works by AI. 
+Do you get it? I think I do... Or maybe not. /shrug
+-->
+	
+	
+  <!--
+    One shipped assembly per side, merged from the many the solution builds.
+
+    The scripting host only scans the assembly named as the client_script. Every other assembly is
+    resolved lazily, by name, the first time something touches a type in it, which means two dozen
+    files is two dozen chances to resolve one at an arbitrary moment. Restarting a resource is the
+    worst of those moments. Merging removes the question rather than answering it.
+
+    Projects build into build/intermediate/<side>/ and this assembles build/vMenu.Enhanced/<side>/
+    from that, so the resource folder only ever holds what actually ships.
+  -->
+  <PropertyGroup>
+    <BundleAssemblies Condition="'$(BundleAssemblies)' == ''">true</BundleAssemblies>
+
+    <!--
+      The native hook generator emits an internal vMenu.Enhanced.Native into every project it runs
+      for, so merging this configuration would collide seventeen ways. It exists to measure native
+      calls, never to ship, so it stays unmerged.
+    -->
+    <BundleAssemblies Condition="'$(Configuration)' == 'NativeHooks'">false</BundleAssemblies>
+
+    <!--
+      The CitizenFX SDK is never merged, and this is not caution, it was tried and it does not work.
+      The host hands a resource its native API pointer through CitizenFX.Host.Script.Initialize and
+      wires it into CitizenFX.Base.NativeApi by assembly name, from outside. With CitizenFX.Base
+      merged away there is no assembly of that name to wire, so nothing is set, and the first native
+      call of the bootstrap dies:
+
+        System.NullReferenceException
+          at CitizenFX.FiveM.Server.Native.IsDuplicityVersion()
+          at CitizenFX.Core.Entrypoint.Initialize(IDictionary`2 parameters)
+          at CitizenFX.Host.Script.Initialize(IntPtr sdkPtr, IntPtr nativeApiPtr)
+
+      These assemblies are addressed by name from outside the resource, so they have to exist by name.
+    -->
+    <BundleKeptAssemblies>CitizenFX.FiveM.Shared;CitizenFX.FiveM.Client;CitizenFX.FiveM.Server</BundleKeptAssemblies>
+
+    <!--
+      Not merged and not shipped either: the runtime already has these, in coreclr/ next to the
+      client and the server binary. Shipping a second copy is worse than pointless, because ours is
+      a different build under the same assembly identity. CitizenFX.Base is 31KB here against the
+      runtime's 41KB, and MessagePack 382KB against 392KB, both claiming the same version. Which one
+      a resource ends up bound to is not something to leave to chance, and a mismatch there is the
+      shape of a fault that shows up on a restart rather than on a cold start.
+
+      Only the game specific half above genuinely belongs to the resource. The runtime has no copy
+      of that.
+    -->
+    <BundleRuntimeAssemblies>CitizenFX.Base;CitizenFX.Bootstrap;CitizenFX.Host;MessagePack;MessagePack.Annotations;Microsoft.NET.StringTools</BundleRuntimeAssemblies>
+
+    <BundleResourceDir>$(ResourceRoot)$(BundleSide)\</BundleResourceDir>
+    <BundleStagedFile>$(RepoRoot)build\intermediate\bundle\$(BundleSide)\$(TargetFileName)</BundleStagedFile>
+    <BundleToolStamp>$(RepoRoot)build\intermediate\bundle\tools-restored.stamp</BundleToolStamp>
+  </PropertyGroup>
+
+  <!--
+    Restoring costs a moment and only has to happen once per clone, so it is stamped rather than
+    run on every build. Delete build/intermediate/ if the tool ever goes missing.
+  -->
+  <Target Name="BundleRestoreTool"
+          Condition="'$(IsResourceBundleProject)' == 'true' And '$(BundleAssemblies)' == 'true' And !Exists('$(BundleToolStamp)')">
+
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(RepoRoot)" StandardOutputImportance="low" />
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(BundleToolStamp)'))" />
+    <WriteLinesToFile File="$(BundleToolStamp)" Lines="ok" Overwrite="true" />
+  </Target>
+
+  <Target Name="BundleCollectInputs" Condition="'$(IsResourceBundleProject)' == 'true'">
+
+    <ItemGroup>
+      <BundleCandidate Include="$(OutputPath)*.dll" />
+
+      <!-- Left beside the bundle rather than inside it. -->
+      <BundleKept Include="@(BundleCandidate)"
+                  Condition="$([System.String]::Copy(';$(BundleKeptAssemblies);').Contains(';%(Filename);'))" />
+
+      <!-- Neither merged nor shipped: the runtime brings its own, and its own is the one that counts. -->
+      <BundleFromRuntime Include="@(BundleCandidate)"
+                         Condition="$([System.String]::Copy(';$(BundleRuntimeAssemblies);').Contains(';%(Filename);'))" />
+
+      <!-- The entry assembly is listed first on its own: ILRepack takes the merged identity from it. -->
+      <BundleMerged Include="@(BundleCandidate)" Exclude="@(BundleKept);@(BundleFromRuntime);$(OutputPath)$(TargetFileName)" />
+
+      <BundleInput Include="$(OutputPath)$(TargetFileName)" />
+      <BundleInput Include="@(BundleMerged)" />
+
+      <!-- Directory of every reference, so ILRepack can resolve what the inputs point at. -->
+      <BundleLibDir Include="@(ReferencePath->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+
+    <RemoveDuplicates Inputs="@(BundleLibDir)">
+      <Output TaskParameter="Filtered" ItemName="BundleLibDirUnique" />
+    </RemoveDuplicates>
+  </Target>
+
+  <Target Name="BundleMergeAssemblies"
+          AfterTargets="Build"
+          DependsOnTargets="BundleRestoreTool;BundleCollectInputs"
+          Condition="'$(IsResourceBundleProject)' == 'true' And '$(BundleAssemblies)' == 'true'"
+          Inputs="@(BundleInput)"
+          Outputs="$(BundleStagedFile);$(BundleResourceDir)$(TargetFileName)">
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(BundleStagedFile)'));$(BundleResourceDir)" />
+
+    <Message Importance="high" Text="Bundling @(BundleInput->Count()) $(BundleSide) assemblies into $(TargetFileName)." />
+
+    <!--
+      The trailing dot on every directory is not cosmetic: a path handed to the command line ending
+      in a backslash would escape the quote that closes it.
+    -->
+    <Exec Command="dotnet ilrepack /out:&quot;$(BundleStagedFile)&quot; /lib:&quot;$(OutputPath).&quot; @(BundleLibDirUnique->'/lib:&quot;%(Identity).&quot;', ' ') @(BundleInput->'&quot;%(FullPath)&quot;', ' ')"
+          WorkingDirectory="$(RepoRoot)"
+          StandardOutputImportance="low" />
+
+    <Copy SourceFiles="$(BundleStagedFile)" DestinationFolder="$(BundleResourceDir)" />
+  </Target>
+
+  <!-- Cheap enough to run every build, and it is what puts the side back together after a clean. -->
+  <Target Name="BundleCopyKeptAssemblies"
+          AfterTargets="BundleMergeAssemblies"
+          Condition="'$(IsResourceBundleProject)' == 'true' And '$(BundleAssemblies)' == 'true'">
+
+    <Copy SourceFiles="@(BundleKept)" DestinationFolder="$(BundleResourceDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
+    Without the merge there is nothing to assemble, so the whole intermediate folder is the resource
+    folder's contents. Keeps a NativeHooks build producing something that runs.
+  -->
+  <Target Name="BundleCopyEverything"
+          AfterTargets="Build"
+          Condition="'$(IsResourceBundleProject)' == 'true' And '$(BundleAssemblies)' != 'true'">
+
+    <ItemGroup>
+      <BundleUnmergedCandidate Include="$(OutputPath)*.dll;$(OutputPath)*.xml" />
+
+      <BundleAll Include="@(BundleUnmergedCandidate)"
+                 Condition="!$([System.String]::Copy(';$(BundleRuntimeAssemblies);').Contains(';%(Filename);'))" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(BundleAll)" DestinationFolder="$(BundleResourceDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
+    A file left over from a build with different settings is still downloaded by every client, and
+    an assembly the host can resolve twice is exactly what this is trying to stop. Scoped to the one
+    side's folder, which is regenerated output rather than anything a person edits.
+  -->
+  <Target Name="BundleRemoveStaleAssemblies"
+          AfterTargets="BundleCopyKeptAssemblies;BundleCopyEverything"
+          Condition="'$(IsResourceBundleProject)' == 'true'">
+
+    <ItemGroup>
+      <BundleShipped Include="$(BundleResourceDir)*.dll;$(BundleResourceDir)*.xml" />
+
+      <BundleWanted Include="$(BundleResourceDir)$(TargetFileName)" />
+      <BundleWanted Include="@(BundleKept->'$(BundleResourceDir)%(Filename)%(Extension)')"
+                    Condition="'$(BundleAssemblies)' == 'true'" />
+      <BundleWanted Include="@(BundleAll->'$(BundleResourceDir)%(Filename)%(Extension)')"
+                    Condition="'$(BundleAssemblies)' != 'true'" />
+
+      <BundleStale Include="@(BundleShipped)" Exclude="@(BundleWanted)" />
+    </ItemGroup>
+
+    <Message Importance="high" Text="Removing stale $(BundleSide) file @(BundleStale->'%(Filename)%(Extension)', ', ')."
+             Condition="'@(BundleStale)' != ''" />
+
+    <Delete Files="@(BundleStale)" />
+  </Target>
+
+</Project>

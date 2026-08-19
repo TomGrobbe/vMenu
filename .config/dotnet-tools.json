@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-ilrepack": {
+      "version": "2.0.46",
+      "commands": [
+        "ilrepack"
+      ],
+      "rollForward": false
+    }
+  }
+}

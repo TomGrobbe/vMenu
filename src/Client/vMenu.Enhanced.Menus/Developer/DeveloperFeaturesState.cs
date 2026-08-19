@@ -27,6 +27,11 @@ public static class DeveloperFeaturesState
     /// <summary>Raised only when a value actually moves.</summary>
     public static event Action? Changed;
 
+    /// <summary>Raises <see cref="Changed"/> without a setter having run.</summary>
+    // An import writes the stored values straight into the KvpStore, so none of the setters below
+    // ran and the overlay is still drawing what was there before.
+    public static void Reevaluate() => Changed?.Invoke();
+
     public static bool ShowVehicleDimensions
     {
         get => UserDefaults.DevVehicleDimensions.Value;

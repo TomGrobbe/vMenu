@@ -18,6 +18,8 @@
     <ResourceRoot>$(RepoRoot)build\vMenu.Enhanced\</ResourceRoot>
   </PropertyGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)Bundle.targets" />
+
   <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
     <ResourceRootFile Include="$(RepoRoot)assets\enhanced\fxmanifest.lua" />
     <ResourceRootFile Include="$(RepoRoot)README.md" />
@@ -97,10 +99,14 @@
   <Target Name="GenerateLanguageTemplate"
           AfterTargets="Build;CopyResourceLanguageFiles"
           Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="$(ResourceRoot)client\vMenu.Enhanced.MenuFramework.dll;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
+          Inputs="$(OutputPath)vMenu.Enhanced.MenuFramework.dll;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
           Outputs="$(ResourceRoot)language\example.json;$(TranslationCoverageFile)">
 
-    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)client&quot; &quot;$(ResourceRoot)language\example.json&quot; &quot;$(TranslationCoverageFile)&quot;"
+    <!--
+      Reads the unmerged assemblies rather than the shipped one. The English table is the same in
+      both, and the unmerged folder is the one whose layout does not change with bundling settings.
+    -->
+    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(OutputPath).&quot; &quot;$(ResourceRoot)language\example.json&quot; &quot;$(TranslationCoverageFile)&quot;"
           WorkingDirectory="$(RepoRoot)"
           StandardOutputImportance="normal" />
   </Target>

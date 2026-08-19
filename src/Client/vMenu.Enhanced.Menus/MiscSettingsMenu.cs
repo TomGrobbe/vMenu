@@ -152,6 +152,8 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Behaviour = GateBehaviour.Hide,
             OnSelectedAsync = _ => StaffAlerts.RaiseAsync(),
         });
+
+        menu.Entries.Add(SubmenuEntry.For(new DataTransferMenu()));
     }
 
     private static MenuText NativeLanguageName(LanguageId language) =>

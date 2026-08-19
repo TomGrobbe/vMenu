@@ -1,5 +1,4 @@
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
@@ -12,13 +11,6 @@ using vMenu.Enhanced.Serialization;
 namespace vMenu.Enhanced.MenuFramework;
 
 /// <summary>Free text typed by the player.</summary>
-// Raw NUI callbacks, because an ordinary one is dispatched as an event whose source is
-// "nui:<resource>", which this runtime parses as a player id and throws on. Three things about raw
-// ones are not negotiable: the reference must come from the core's own registry or the host answers
-// "Invalid function", only the request may be declared because the second argument is a function
-// reference that will not deserialize, and the page must post JSON because the body is parsed before
-// anything is dispatched.
-// Bug report: https://github.com/citizenfx/rfc/discussions/257
 public static class UserInput
 {
     private const string SubmitCallback = "vMenuPromptSubmit";
@@ -165,37 +157,20 @@ public static class UserInput
 
         _callbacksRegistered = true;
 
-        Register(SubmitCallback, value => _pending?.TrySetResult(value));
-        Register(CancelCallback, _ => _pending?.TrySetResult(null));
+        NuiCallbacks.Register(SubmitCallback, body => _pending?.TrySetResult(Text(body)));
+        NuiCallbacks.Register(CancelCallback, _ => _pending?.TrySetResult(null));
 
-        Register(ReadyCallback, _ =>
+        NuiCallbacks.Register(ReadyCallback, _ =>
         {
             _handshaken = true;
             _ready?.TrySetResult(true);
         });
     }
 
-    private static void Register(string callback, Action<string> handler)
-    {
-        // To be fixed when https://github.com/citizenfx/rfc/discussions/257 and https://github.com/citizenfx/rfc/discussions/350 are solved
-#pragma warning disable FIVEM001 // The only registry the host invokes from.
-        var reference = SharedAPI.GetCore().FuncRefManager.Register(new Action<object>(request => handler(BodyOf(request))));
-#pragma warning restore FIVEM001
-
-        Native.RegisterRawNuiCallback(callback, (int)reference);
-    }
-
-    private static string BodyOf(object? request) => request switch
-    {
-        IDictionary<object, object> map when map.TryGetValue("body", out var body) => Text(body),
-        IDictionary<string, object> map when map.TryGetValue("body", out var body) => Text(body),
-        _ => Unreadable(request),
-    };
-
     /// <summary>The page posts what was typed as a JSON string, so the body arrives quoted and escaped.</summary>
-    private static string Text(object? body)
+    private static string Text(string raw)
     {
-        if (body is not string raw || raw.Length == 0)
+        if (raw.Length == 0)
         {
             return string.Empty;
         }
@@ -206,13 +181,6 @@ public static class UserInput
         }
 
         Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
-
-        return string.Empty;
-    }
-
-    private static string Unreadable(object? request)
-    {
-        Log.Error($"[Input] A callback arrived as {request?.GetType().FullName ?? "null"}, which has no body this can read.");
 
         return string.Empty;
     }

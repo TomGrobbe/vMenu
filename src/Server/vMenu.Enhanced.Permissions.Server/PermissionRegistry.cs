@@ -207,12 +207,28 @@ public static class PermissionRegistry
         }
     }
 
+    private static Type[] TypesIn(Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException failure)
+        {
+            Log.Warning(
+                $"[Permissions] {failure.LoaderExceptions.Length} type(s) in {assembly.GetName().Name} could "
+                + "not be loaded and were skipped while looking for permissions.");
+
+            return failure.Types.Where(type => type is not null).ToArray()!;
+        }
+    }
+
     private static List<(string Name, string[] ExtraParents, bool IsStaffOnly)> Discover(Assembly assembly)
     {
         var discovered = new List<(string Name, string[] ExtraParents, bool IsStaffOnly)>();
         var owners = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var type in assembly.GetTypes())
+        foreach (var type in TypesIn(assembly))
         {
             var category = type.GetCustomAttribute<PermissionCategoryAttribute>();
 

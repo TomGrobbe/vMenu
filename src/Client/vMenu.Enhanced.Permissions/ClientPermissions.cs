@@ -80,6 +80,9 @@ public static class ClientPermissions
         return allowed;
     }
 
+    // Called whenever a kvp import is triggered to refresh permission checks after settings are restored
+    public static void Reevaluate() => PermissionsChanged?.Invoke();
+
     /// <summary>Puts the client back into its pre-sync state.</summary>
     public static void Clear()
     {

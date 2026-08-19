@@ -12,6 +12,8 @@ public static class KvpStore
 {
     public const int InitialVersion = 1;
 
+    public const string Prefix = "vmenu_";
+
     private static readonly Dictionary<string, Cached> Cache = new(StringComparer.Ordinal);
 
     private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);
@@ -36,7 +38,7 @@ public static class KvpStore
         storedVersion = knownVersion;
         value = default;
 
-        var raw = Native.GetResourceKvpString(key);
+        var raw = ReadRaw(key);
 
         if (string.IsNullOrEmpty(raw))
         {
@@ -76,7 +78,7 @@ public static class KvpStore
     /// <returns><see langword="false"/> when the write was refused. Nothing was changed.</returns>
     public static bool TryWrite<T>(string key, string type, int version, T value)
     {
-        if (StoredVersion(key) is { } stored && stored > version)
+        if (VersionOf(key) is { } stored && stored > version)
         {
             Log.Warning(
                 $"[Storage] '{key}' was saved by a newer version of vMenu (version {stored}, this "
@@ -108,6 +110,41 @@ public static class KvpStore
 
         Cache.Remove(key);
         Reported.Remove(key);
+    }
+
+    // Gets the raw data without parsing it into another class
+    public static string? ReadRaw(string key) => Native.GetResourceKvpString(key);
+
+    // Puts the raw data back, no matter what was there.
+    public static void WriteRaw(string key, string envelope)
+    {
+        Native.SetResourceKvp(key, envelope);
+
+        Cache.Remove(key);
+        Reported.Remove(key);
+    }
+
+    /// <summary>Identifies an envelope without deserializing whatever it holds.</summary>
+    /// <returns><see langword="false"/> when it is not a vMenu envelope at all.</returns>
+    public static bool TryReadHeader(string? envelope, out string key, out string type, out int version)
+    {
+        key = string.Empty;
+        type = string.Empty;
+        version = 0;
+
+        if (string.IsNullOrEmpty(envelope)
+            || !ClientJson.TryDeserialize<KvpHeader>(envelope, out var header)
+            || header is null
+            || header.Key.Length == 0)
+        {
+            return false;
+        }
+
+        key = header.Key;
+        type = header.Type;
+        version = header.Version;
+
+        return true;
     }
 
     /// <summary>Every key starting with <paramref name="prefix"/>.</summary>
@@ -142,7 +179,7 @@ public static class KvpStore
     {
         foreach (var key in Keys(prefix))
         {
-            var raw = Native.GetResourceKvpString(key);
+            var raw = ReadRaw(key);
 
             yield return string.IsNullOrEmpty(raw) ? $"{key} = <empty>" : $"{key} = {raw}";
         }
@@ -154,24 +191,16 @@ public static class KvpStore
         Reported.Clear();
     }
 
+    /// <summary>What the key holds now, or <see langword="null"/> when it holds nothing readable.</summary>
     // Header only, so a payload whose shape this build does not know is never guessed at.
-    private static int? StoredVersion(string key)
+    public static int? VersionOf(string key)
     {
         if (Cache.TryGetValue(key, out var cached))
         {
             return cached.Version;
         }
 
-        var raw = Native.GetResourceKvpString(key);
-
-        if (string.IsNullOrEmpty(raw))
-        {
-            return null;
-        }
-
-        return ClientJson.TryDeserialize<KvpHeader>(raw, out var header) && header is not null
-            ? header.Version
-            : null;
+        return TryReadHeader(ReadRaw(key), out _, out _, out var version) ? version : null;
     }
 
     private static void Complain(string key, string problem)

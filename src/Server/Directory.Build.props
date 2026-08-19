@@ -8,9 +8,9 @@
 
   <PropertyGroup>
     <!--
-      Server assemblies live in their own subfolder of the resource,
-	  because if we put them in the same folder as the client assemblies,
-	  the server crashes on resource load.
+      Server assemblies build outside the resource, and src/Bundle.targets merges them into the one
+      that ships. They stay in a folder of their own the whole way, because putting them next to the
+	  client assemblies crashes the server on resource load.
 
       Doing it this way, it isolates the assemblies both sides ship: 
 	  CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry CitizenFX.Base.dll and
@@ -20,7 +20,7 @@
       copies the resolved NuGet graph next to the output, so the server's
       dependencies land in server/ too.
     -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\vMenu.Enhanced\server\</OutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\server\</OutputPath>
   </PropertyGroup>
 
 </Project>
