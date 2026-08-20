@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Logging;
@@ -62,6 +64,15 @@ public static class KvpStore
             Complain(key, $"names itself '{envelope.Key}', which is not the key it is stored under");
         }
 
+        if (envelope.MergedBy is { } mergedBy && mergedBy < knownVersion)
+        {
+            Complain(
+                key,
+                $"was last saved by an older vMenu (version {mergedBy}, this build understands "
+                + $"{knownVersion}). Anything added after version {mergedBy} was kept through that "
+                + "save but not written by it, so it may not agree with the rest");
+        }
+
         storedVersion = envelope.Version;
         value = envelope.Value;
 
@@ -80,10 +91,21 @@ public static class KvpStore
     {
         if (VersionOf(key) is { } stored && stored > version)
         {
+            // A newer build wrote this. Rather than refuse outright, carry forward the fields this
+            // build does not know about, so the write keeps them. The overwrite goes ahead only when
+            // every one of them survives the merge; anything that cannot be kept still refuses.
+            if (TryWritePreservingNewer(key, type, version, stored, value))
+            {
+                Cache[key] = new Cached(value, stored);
+                Reported.Remove(key);
+
+                return true;
+            }
+
             Log.Warning(
                 $"[Storage] '{key}' was saved by a newer version of vMenu (version {stored}, this "
-                + $"build understands {version}). Refusing to overwrite it, because doing so would "
-                + "discard whatever that version added.");
+                + $"build understands {version}), and it holds data this build could not carry through "
+                + "the save. Refusing to overwrite it, because doing so would discard that data.");
 
             return false;
         }
@@ -102,6 +124,73 @@ public static class KvpStore
         Reported.Remove(key);
 
         return true;
+    }
+
+    /// <summary>
+    /// Writes <paramref name="value"/> over a save a newer build made, merging in the fields that
+    /// build wrote which this one does not know about so they are not lost.
+    /// </summary>
+    /// <returns>
+    /// <see langword="false"/> when the newer data could not be fully preserved, or the JSON tools
+    /// were unavailable, in which case nothing was written.
+    /// </returns>
+    /// <param name="version">What this build understands, which is what the result is marked with.</param>
+    private static bool TryWritePreservingNewer<T>(string key, string type, int version, int storedVersion, T value)
+    {
+        try
+        {
+            var storedRaw = ReadRaw(key);
+
+            if (string.IsNullOrEmpty(storedRaw))
+            {
+                return false;
+            }
+
+            using var storedDoc = JsonDocument.Parse(storedRaw);
+
+            if (!storedDoc.RootElement.TryGetProperty("value", out var storedValue))
+            {
+                return false;
+            }
+
+            var storedValueJson = storedValue.GetRawText();
+            var newValueJson = ClientJson.Serialize(value);
+
+            var mergedValueJson = JsonMerge.Merge(newValueJson, storedValueJson);
+
+            // The merge keeps object fields the newer build added, but it cannot safely reconcile an
+            // array or a shape this build restructured. When anything the stored payload had is missing
+            // from the merge, preserving it is not possible, so the caller falls back to refusing.
+            if (!JsonMerge.IsSupersetOf(mergedValueJson, storedValueJson))
+            {
+                return false;
+            }
+
+            using var mergedDoc = JsonDocument.Parse(mergedValueJson);
+
+            // Written with the stored version, because the payload still holds that version's fields.
+            // MergedBy says who actually wrote it, so the newer build can tell that the fields only
+            // it knows about were carried through untouched rather than saved by something that
+            // understood them.
+            var envelope = new KvpEnvelope<JsonElement>
+            {
+                Key = key,
+                Value = mergedDoc.RootElement,
+                Type = type,
+                Version = storedVersion,
+                MergedBy = version,
+            };
+
+            Native.SetResourceKvp(key, ClientJson.Serialize(envelope));
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[Storage] Could not preserve the newer data on '{key}', so the save was refused: {exception}");
+
+            return false;
+        }
     }
 
     public static void Delete(string key)
