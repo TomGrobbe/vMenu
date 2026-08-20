@@ -79,7 +79,12 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private IReadOnlyList<MenuEntry> RootRows()
     {
-        var categories = SavedVehicleStore.Categories();
+        var vehicles = SavedVehicleStore.All();
+        var groups = GroupNames(vehicles);
+
+        // Every category the player can see, whether they made it with Create Category or a saved car
+        // simply names one, so all of them can be renamed and deleted, not only the declared ones.
+        var categories = ManageableCategories(groups);
 
         var rows = new List<MenuEntry>
         {
@@ -106,9 +111,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             rows.Add(EditCategoryRow(categories));
             rows.Add(DeleteCategoryRow(categories));
         }
-
-        var vehicles = SavedVehicleStore.All();
-        var groups = GroupNames(vehicles);
 
         if (groups.Count == 0)
         {
@@ -623,6 +625,18 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         Notifications.Success(MenuText.Key(Loc.SavedVehicles.Deleted));
 
         RebuildEverything();
+
+        // The vehicle this page was about is gone, so its detail menu now has nothing and no title.
+        // Step back to the list it came from rather than leave the player on an empty page.
+        _detailMenu?.Menu.GoBack();
+
+        // If that was the last vehicle in the category, the list behind this one is now empty. Step
+        // back once more rather than drop the player onto a blank page. An undeclared category has
+        // also just disappeared from the root menu, so there would be nothing to come back to.
+        if (Count(SavedVehicleStore.All(), _category) == 0)
+        {
+            _vehicleMenu?.Menu.GoBack();
+        }
     }
 
     private async Task CreateCategoryAsync()
@@ -763,6 +777,42 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private string CategoryTitle() =>
         _category.Length == 0 ? Localizer.Current.Get(Loc.SavedVehicles.Uncategorised) : _category;
+
+    /// <summary>
+    /// Every named category the player can act on, from the same groups the menu shows. A declared
+    /// one keeps its description; a category a saved car merely names gets an empty one, and editing
+    /// or deleting it works all the same, since neither reads a stored category to do its job.
+    /// </summary>
+    // Uncategorised is left out: it is the absence of a category, not one to rename or remove.
+    private static List<SavedVehicleCategory> ManageableCategories(List<string> groups)
+    {
+        var declared = SavedVehicleStore.Categories();
+        var result = new List<SavedVehicleCategory>();
+
+        foreach (var name in groups)
+        {
+            if (name.Length == 0)
+            {
+                continue;
+            }
+
+            var description = string.Empty;
+
+            foreach (var category in declared)
+            {
+                if (string.Equals(category.Name, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    description = category.Description;
+
+                    break;
+                }
+            }
+
+            result.Add(new SavedVehicleCategory { Name = name, Description = description });
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Every group with something in it, plus every category that was declared, so a vehicle naming
