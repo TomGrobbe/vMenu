@@ -97,7 +97,7 @@ public static class VehicleDeletion
         // Ref<T> is a ref struct and cannot live across an await. The out overload of this native
         // pushes a literal 0 and can only ever delete entity 0.
         var handle = entity;
-        Native.DeleteVehicle(new Ref<int>(ref handle));
+        Native.DeleteVehicle(ref handle);
 
         return !Native.DoesEntityExist(entity);
     }

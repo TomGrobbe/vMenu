@@ -1,12 +1,12 @@
 using System.Globalization;
+using System.Text;
+
+using System.Text.Json.Serialization;
 
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
-using Newtonsoft.Json;
-
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Teleport;
 using vMenu.Enhanced.Logging;
@@ -208,13 +208,13 @@ public static class TeleportActions
         return ActionResponse.Ok();
     }
 
-    // Through NativeFixer, because the generated SaveResourceFile only takes a byte[] and the sandbox
-    // refuses Encoding.UTF8.GetBytes. The native takes a string, so pushing one straight to it works.
     private static bool Write(string json)
     {
         try
         {
-            if (NativeFixer.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, json))
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            if (Native.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, bytes))
             {
                 return true;
             }
@@ -383,7 +383,7 @@ public static class TeleportActions
         public Position? Position { get; set; }
 
         /// <summary>Optional. Left out of the file entirely when nobody set one.</summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float? Heading { get; set; }
     }
 

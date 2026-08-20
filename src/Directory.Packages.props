@@ -4,13 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- CitizenFX runtime. -->
-    <PackageVersion Include="CitizenFX.FiveM.Client" Version="0.0.3-alpha" />
-    <PackageVersion Include="CitizenFX.FiveM.Server" Version="0.0.3-alpha" />
+    <PackageVersion Include="CitizenFX.FiveM.Client" Version="0.0.4-alpha" />
+    <PackageVersion Include="CitizenFX.FiveM.Server" Version="0.0.4-alpha" />
     <!-- The half both sides share, referenced on its own by the shared logging assembly. -->
-    <PackageVersion Include="CitizenFX.FiveM.Shared" Version="0.0.3-alpha" />
+    <PackageVersion Include="CitizenFX.FiveM.Shared" Version="0.0.4-alpha" />
     <!-- Menu rendering for the client-side menus. -->
-    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="1.0.8" />
-    <!-- Client side JSON. Pinned exactly: ClientJson reaches into a private field of this version. -->
-    <PackageVersion Include="Newtonsoft.Json" Version="[13.0.4]" />
+    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="1.0.9" />
   </ItemGroup>
 </Project>

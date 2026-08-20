@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Server" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>

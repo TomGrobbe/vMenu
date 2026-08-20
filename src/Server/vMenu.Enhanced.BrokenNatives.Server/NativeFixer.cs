@@ -13,17 +13,6 @@ public static class NativeFixer
 {
     internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
 
-    public static bool SaveResourceFile(string resource, string file, string buffer)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(resource);
-        nativeApi.PushArg(file);
-        nativeApi.PushArg(buffer);
-        nativeApi.PushArg(-1);
-        nativeApi.Invoke(2694741627uL, "SaveResourceFile");
-        return nativeApi.GetResBool(0);
-    }
-
     /// <summary>
     /// Replacement call for <c>API.EmitLocal</c>, whose answer cannot be read back once anything
     /// has re-entered this resource. Use it for every event another resource may listen to.

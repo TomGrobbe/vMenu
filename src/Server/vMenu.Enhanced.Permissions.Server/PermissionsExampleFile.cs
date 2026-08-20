@@ -1,6 +1,7 @@
+using System.Text;
+
 using CitizenFX.FiveM.Server;
 
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Logging;
 
@@ -28,7 +29,9 @@ public static class PermissionsExampleFile
                 entry.Node.IsStaffOnly,
                 entry.Node.ExtraParents));
 
-        if (NativeFixer.SaveResourceFile(resource, path, PermissionsExample.Render(entries)))
+        var bytes = Encoding.UTF8.GetBytes(PermissionsExample.Render(entries));
+
+        if (Native.SaveResourceFile(resource, path, bytes))
         {
             Log.Debug($"[Permissions] Wrote {path}, describing {PermissionRegistry.Count} permission(s).");
             return;

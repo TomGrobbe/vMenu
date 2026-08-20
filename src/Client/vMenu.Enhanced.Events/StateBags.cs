@@ -20,10 +20,12 @@ namespace vMenu.Enhanced.Events;
 /// problem.
 ///
 /// <para>
-/// Everything here is hand written because the runtime offers nothing above the raw natives: there
-/// is no <c>StateBag</c> type in the CitizenFX packages, and no <c>State</c> property on a player,
-/// a ped or a vehicle. Two of the three natives involved also come out of the binding generator in
-/// a shape C# cannot call, which is why <see cref="NativeFixer" /> sits underneath this.
+/// 0.0.4 added a managed <c>StateBag</c> type, reached through <c>Player.State</c>, an entity's
+/// <c>State</c>, or <c>StateBag.GetForEntity</c>. None of those fit here: the whole point of this
+/// layer is to read another player's bag by server id, and the managed API can only reach a
+/// <c>Player</c> it can resolve locally, which a streamed out player is not. Addressing the bag by
+/// name works whether or not the player is around, so this stays name based, with
+/// <see cref="NativeFixer" /> underneath for the one native the generator still shapes wrong.
 /// </para>
 /// </remarks>
 public static class StateBags
@@ -64,7 +66,7 @@ public static class StateBags
         {
             var data = MessagePackSerializer.Serialize(value, Options);
 
-            return Native.SetStateBagValue(bagName, key, data, data.Length, replicated);
+            return Native.SetStateBagValue(bagName, key, data, replicated);
         }
         catch (Exception exception)
         {

@@ -27,8 +27,8 @@ public static class DataTransfer
             return;
         }
 
-        // Serialized a frame later, so the hitch a large profile costs on Newtonsoft's late bound
-        // path lands while the screen is coming up rather than while the menu is still being drawn.
+        // Serialized a frame later, so the hitch a large profile costs on System.Text.Json's
+        // reflection path lands while the screen is coming up rather than while the menu is still being drawn.
         await API.Delay(0);
 
         await DataTransferScreen.ShowAsync(Prompt(exporting: true, replacing: false), ClientJson.Serialize(bundle));

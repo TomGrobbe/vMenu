@@ -1,8 +1,8 @@
 using CitizenFX.FiveM.Client;
 
-using MenuAPI;
+using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
+using MenuAPI;
 
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -88,7 +88,7 @@ public static class UserInput
         {
             _open = false;
 
-            Native.SetNuiFocus(hasFocus: false, hasCursor: false);
+            Native.SetNuiFocus(false, false);
             Native.SendNuiMessage(CloseMessage);
 
             if (buttonsWereEnabled)
@@ -114,7 +114,7 @@ public static class UserInput
                 prompt.InitialValue,
                 prompt.Suggestions));
 
-            Native.SetNuiFocus(hasFocus: true, hasCursor: true);
+            Native.SetNuiFocus(true, true);
 
             var timeout = _handshaken ? ReadyTimeoutMs : FirstReadyTimeoutMs;
 
@@ -237,16 +237,16 @@ public static class UserInput
     /// <summary>Single letter keys: a spawner sends thousands of these in one message.</summary>
     private sealed class SuggestionRow
     {
-        [JsonProperty("v")]
+        [JsonPropertyName("v")]
         public required string Value { get; init; }
 
-        [JsonProperty("l")]
+        [JsonPropertyName("l")]
         public required string Label { get; init; }
 
-        [JsonProperty("i")]
+        [JsonPropertyName("i")]
         public required string Icon { get; init; }
 
-        [JsonProperty("d")]
+        [JsonPropertyName("d")]
         public required string Detail { get; init; }
     }
 }

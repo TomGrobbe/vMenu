@@ -144,8 +144,7 @@ internal static class GroundHeight
 
         for (var frame = 0; frame < MaxResultFrames; frame++)
         {
-            // Through the fixer: both generated overloads push a Vector3, which the native API throws on.
-            var status = NativeFixer.GetShapeTestResult(test, out var hit, out var end, out _, out _);
+            var status = Native.GetShapeTestResult(test, out var hit, out var end, out _, out _);
 
             if (status == ShapeTestNotReady)
             {

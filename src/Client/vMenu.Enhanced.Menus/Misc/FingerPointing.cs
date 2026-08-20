@@ -3,7 +3,6 @@ using CitizenFX.FiveM.Shared;
 
 using MenuAPI;
 
-using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
@@ -451,7 +450,7 @@ public static class FingerPointing
     {
         if (_probe != 0)
         {
-            var status = NativeFixer.GetShapeTestResult(_probe, out var hit, out _, out _, out _);
+            var status = Native.GetShapeTestResult(_probe, out var hit, out _, out _, out _);
 
             if (status != ShapeTestNotReady)
             {

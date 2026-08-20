@@ -52,7 +52,6 @@ files {
     'client/MessagePack.dll',
     'client/MessagePack.Annotations.dll',
     'client/Microsoft.NET.StringTools.dll',
-    'client/Newtonsoft.Json.dll',
     'client/vMenu.Enhanced.PluginContracts.dll',
     'client/vMenu.Enhanced.ClientAPI.dll',
 }

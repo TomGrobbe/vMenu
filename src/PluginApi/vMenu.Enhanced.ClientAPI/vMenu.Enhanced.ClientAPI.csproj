@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>

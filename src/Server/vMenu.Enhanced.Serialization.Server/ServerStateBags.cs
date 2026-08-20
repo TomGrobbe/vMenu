@@ -48,7 +48,7 @@ public static class ServerStateBags
         {
             var data = MessagePackSerializer.Serialize(value, Options);
 
-            return Native.SetStateBagValue(bagName, key, data, data.Length, replicated);
+            return Native.SetStateBagValue(bagName, key, data, replicated);
         }
         catch (Exception exception)
         {

@@ -1,59 +1,45 @@
-using System.Reflection;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Serialization.Server;
 
-/// <summary>JSON on the server, which takes one piece of setup before it works at all.</summary>
-// Settings are kept in step with ClientJson: what this writes is what that reads.
-// Not System.Text.Json. JsonDocument is fine, but JsonSerializer builds accessors through
-// Reflection.Emit and stamps their cache with DateTime.UtcNow, which this runtime does not have, so
-// the first serialize dies in NtQuerySystemInformation. Newtonsoft uses emit too, but picks it by
-// asking the runtime, so Prepare can tell it not to.
-// LINQ to JSON (JObject, JArray, JToken) never works and no setting fixes it. Deserialize to a type.
+/// <summary>JSON on the server. System.Text.Json, which works as of API 0.0.4.</summary>
+// Settings are kept in step with ClientJson: what this writes is what that reads. The old reason to
+// avoid JsonSerializer is gone. It used to build accessors with Reflection.Emit and stamp their cache
+// with DateTime.UtcNow, which the server runtime lacked, so the first serialize died. 0.0.4 fixed the
+// clock, and the runtime reports dynamic code unsupported, so STJ stays on its plain reflection path.
 public static class ServerJson
 {
-    private const string ReflectorTypeName = "Newtonsoft.Json.Serialization.JsonTypeReflector";
+    // Declared before Options: ApplyReadableEncoder writes it from that field's initializer.
+    private static string _encoderName = "the default encoder";
 
-    private const string FlagFieldName = "_dynamicCodeGeneration";
+    private static readonly JsonSerializerOptions Options = CreateOptions();
 
-    private const string FactoryPropertyName = "ReflectionDelegateFactory";
-
-    private const string LateBoundFactoryName = "LateBoundReflectionDelegateFactory";
-
-    private const BindingFlags Hidden =
-        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-    // A plain resolver, not CamelCasePropertyNamesContractResolver, whose strategy also rewrites
-    // dictionary keys and overrides explicit names.
-    private static readonly JsonSerializerSettings Settings = new()
+    private static readonly JsonSerializerOptions IndentedOptions = new(Options)
     {
-        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
-
-        // Keeps date-shaped strings read into object as strings. Typed DateTime members are unaffected.
-        DateParseHandling = DateParseHandling.None,
+        WriteIndented = true,
     };
 
     /// <summary>Why the server cannot serialize, or <see langword="null"/> when it can.</summary>
-    private static readonly string? Failure = Prepare();
+    private static readonly string? Failure = SelfTest();
 
-    public static string Serialize(object? value) => JsonConvert.SerializeObject(value, Settings);
+    public static string Serialize(object? value) => JsonSerializer.Serialize(value, Options);
 
     /// <summary>For a file a server owner is expected to open and read.</summary>
-    public static string SerializeIndented(object? value) =>
-        JsonConvert.SerializeObject(value, Formatting.Indented, Settings);
+    public static string SerializeIndented(object? value) => Unescape(JsonSerializer.Serialize(value, IndentedOptions));
 
     /// <summary>For JSON from somewhere that can send nonsense, such as a config file an owner edits.</summary>
     /// <param name="error">What was wrong with the document, or <see langword="null"/> when it read.</param>
-    // A sandbox refusal still throws, because that is a broken build rather than a bad document.
     public static bool TryDeserialize<T>(string json, out T? value, out string? error)
     {
         try
         {
-            value = JsonConvert.DeserializeObject<T>(json, Settings);
+            value = JsonSerializer.Deserialize<T>(json, Options);
             error = null;
 
             return true;
@@ -67,56 +53,169 @@ public static class ServerJson
         }
     }
 
-    /// <summary>Says on the startup path whether the setup took.</summary>
-    // It depends on a private field of a pinned package, and an upgrade renaming that field would
-    // otherwise surface as a config file quietly failing to load.
+    /// <summary>Says on the startup path whether JSON works at all.</summary>
     public static void Verify()
     {
         if (Failure is null)
         {
-            Log.Debug("[Json] Newtonsoft.Json is on the late bound path.");
+            Log.Debug($"[Json] System.Text.Json is working, escaping with {_encoderName}.");
 
             return;
         }
 
         Log.Error(
-            $"[Json] Newtonsoft.Json could not be moved off Reflection.Emit ({Failure}). Every "
-            + "server side serialize will now fail. Check whether the pinned Newtonsoft.Json "
-            + "version changed.");
+            $"[Json] System.Text.Json failed its start-up self test ({Failure}). Every server side "
+            + "serialize will now fail.");
     }
 
-    private static string? Prepare()
+    private static JsonSerializerOptions CreateOptions()
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+
+            // Newtonsoft matched property names loosely; keep that so anything an older build wrote still reads.
+            PropertyNameCaseInsensitive = true,
+
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+
+            // Newtonsoft wrote a NaN or an infinity as a bare token; this throws on one instead, which
+            // would take a whole save down rather than write one bad number.
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+        };
+
+        ApplyReadableEncoder(options);
+
+        return options;
+    }
+
+    // The sandbox refuses both the encoder property and the Encoder setter, and this runs from a static
+    // initializer where a throw would kill the type. A refusal is taken as an answer.
+    private static void ApplyReadableEncoder(JsonSerializerOptions options)
     {
         try
         {
-            var reflector = typeof(JsonConvert).Assembly.GetType(ReflectorTypeName);
+            options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            _encoderName = "UnsafeRelaxedJsonEscaping";
 
-            if (reflector is null)
+            return;
+        }
+        catch (Exception)
+        {
+        }
+
+        try
+        {
+            options.Encoder = JavaScriptEncoder.Create(UnicodeRanges.All);
+            _encoderName = "Create(UnicodeRanges.All)";
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    // Stands in for the encoder the sandbox will not let us set, so a file an owner edits is not full
+    // of \uXXXX. Indented output only: compact output feeds NUI and stored values.
+    // Delete once citizenfx/rfc#440 lands.
+    private static string Unescape(string json)
+    {
+        if (json.IndexOf("\\u", StringComparison.Ordinal) < 0)
+        {
+            return json;
+        }
+
+        var builder = new StringBuilder(json.Length);
+        var index = 0;
+
+        while (index < json.Length)
+        {
+            var current = json[index];
+
+            // Copied whole, so a literal \\ cannot turn the u behind it into an escape.
+            if (current == '\\' && index + 1 < json.Length && json[index + 1] != 'u')
             {
-                return ReflectorTypeName + " is missing";
+                builder.Append(current);
+                builder.Append(json[index + 1]);
+                index += 2;
+
+                continue;
             }
 
-            var flag = reflector.GetField(FlagFieldName, Hidden);
-
-            if (flag is null)
+            if (current != '\\'
+                || index + 5 >= json.Length
+                || !TryReadHex(json, index + 2, out var value)
+                || !CanUnescape(value))
             {
-                return ReflectorTypeName + "." + FlagFieldName + " is missing";
+                builder.Append(current);
+                index++;
+
+                continue;
             }
 
-            flag.SetValue(null, false);
+            builder.Append((char)value);
+            index += 6;
+        }
 
-            // The field is the mechanism, but the factory it selects is what has to be true.
-            var factory = reflector.GetProperty(FactoryPropertyName, Hidden)?.GetValue(null);
-            var selected = factory?.GetType().Name;
+        return builder.ToString();
+    }
 
-            return selected == LateBoundFactoryName
-                ? null
-                : "the delegate factory is " + (selected ?? "unreadable") + ", not " + LateBoundFactoryName;
+    // Unescaping these would break the document. Surrogates stay escaped, as under the relaxed encoder.
+    private static bool CanUnescape(int value) =>
+        value >= 0x20 && value != 0x22 && value != 0x5C && value != 0x7F && (value < 0xD800 || value > 0xDFFF);
+
+    // Not int.Parse: its ReadOnlySpan<char> overload wins resolution and the sandbox refuses it.
+    private static bool TryReadHex(string json, int start, out int value)
+    {
+        value = 0;
+
+        for (var offset = 0; offset < 4; offset++)
+        {
+            var digit = json[start + offset];
+            int part;
+
+            if (digit >= '0' && digit <= '9')
+            {
+                part = digit - '0';
+            }
+            else if (digit >= 'a' && digit <= 'f')
+            {
+                part = digit - 'a' + 10;
+            }
+            else if (digit >= 'A' && digit <= 'F')
+            {
+                part = digit - 'A' + 10;
+            }
+            else
+            {
+                return false;
+            }
+
+            value = (value * 16) + part;
+        }
+
+        return true;
+    }
+
+    // A round trip on the startup path, so a runtime that ever refuses STJ says so loudly here rather
+    // than failing quietly at the first real call.
+    private static string? SelfTest()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(new SelfTestModel { Value = 1 }, Options);
+            var read = JsonSerializer.Deserialize<SelfTestModel>(json, Options);
+
+            return read?.Value == 1 ? null : "the round trip did not return the value";
         }
         catch (Exception exception)
         {
-            // A throw here would take down every resource that touches JSON.
             return exception.Message;
         }
+    }
+
+    private sealed class SelfTestModel
+    {
+        public int Value { get; set; }
     }
 }

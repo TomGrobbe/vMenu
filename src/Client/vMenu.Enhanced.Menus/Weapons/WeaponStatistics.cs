@@ -11,9 +11,9 @@ namespace vMenu.Enhanced.Menus.Weapons;
 /// </summary>
 internal static class WeaponStatistics
 {
-    private static readonly Bars Weapons = new(NativeFixer.GetWeaponHudStats);
+    private static readonly Bars Weapons = new(Native.GetWeaponHudStats);
 
-    private static readonly Bars Components = new(NativeFixer.GetWeaponComponentHudStats);
+    private static readonly Bars Components = new(Native.GetWeaponComponentHudStats);
 
     /// <inheritdoc cref="Bars.Request" />
     internal static void Request(uint weaponHash) => Weapons.Request(weaponHash);
@@ -87,8 +87,8 @@ internal static class WeaponStatistics
                 return null;
             }
 
-            // NativeFixer.GetWeaponHudStats explains the delay. Reading during the frame the request
-            // was made would see the untouched buffer and keep those zeroes for good.
+            // WeaponHudStatsData explains the delay. Reading during the frame the request was made
+            // would see the untouched buffer and keep those zeroes for good.
             if (Native.GetFrameCount() == pending.Frame)
             {
                 return null;

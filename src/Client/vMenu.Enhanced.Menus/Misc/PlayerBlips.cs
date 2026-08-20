@@ -2,7 +2,6 @@ using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Menus.Players;
@@ -402,13 +401,11 @@ public static class PlayerBlips
         Destroy(blip.Handle);
     }
 
-    // Through the fixer, because the generated RemoveBlip only takes an out parameter and hands the
-    // game an empty slot instead of the handle, so it cannot delete anything.
     private static void Destroy(int handle)
     {
         if (Native.DoesBlipExist(handle))
         {
-            NativeFixer.RemoveBlip(handle);
+            Native.RemoveBlip(handle);
         }
     }
 

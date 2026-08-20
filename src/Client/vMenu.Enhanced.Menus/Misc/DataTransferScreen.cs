@@ -82,7 +82,7 @@ public static class DataTransferScreen
         try
         {
             Native.SendNuiMessage(BuildOpenMessage(prompt, payload is not null, token, chunks.Count));
-            Native.SetNuiFocus(hasFocus: true, hasCursor: true);
+            Native.SetNuiFocus(true, true);
 
             var timeout = _handshaken ? ReadyTimeoutMs : FirstReadyTimeoutMs;
 
@@ -109,7 +109,7 @@ public static class DataTransferScreen
             _finished = null;
             _incoming = [];
 
-            Native.SetNuiFocus(hasFocus: false, hasCursor: false);
+            Native.SetNuiFocus(false, false);
             Native.SendNuiMessage(CloseMessage);
 
             if (buttonsWereEnabled)

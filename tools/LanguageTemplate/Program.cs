@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Runtime.Loader;
-
-using Newtonsoft.Json;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 
 // Writes language/example.json from the English table compiled into the menu framework, so the
 // template a translator copies always lists every key the build actually has.
@@ -92,9 +92,19 @@ try
         }
     }
 
-    var body = JsonConvert.SerializeObject(
-        new { nativeName, strings },
-        Formatting.Indented);
+    // camelCase to keep the field names the file has always had. It only renames properties, so the
+    // localization keys inside strings, being dictionary keys, are left exactly as they are.
+    var writeOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+
+        // The least escaping available, matching ClientJson. The default encoder turns every
+        // apostrophe, arrow and accent in here into an escape a translator cannot read.
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    var body = JsonSerializer.Serialize(new { nativeName, strings }, writeOptions);
 
     var languageFolder = Path.GetDirectoryName(outputPath)!;
 
@@ -125,7 +135,25 @@ static void WriteCoverage(string languageFolder, string templatePath, IEnumerabl
 {
     var keys = englishKeys.ToArray();
     var lines = new List<string>();
-    var report = new List<object>();
+    var report = new List<CoverageRow>();
+
+    var writeOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+
+        // The least escaping available, so a native name such as Français survives into the report.
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
+    // Case insensitive and comment tolerant, because every one of these files opens with a comment
+    // and was written with camelCase field names.
+    var readOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+    };
 
     var files = Directory.EnumerateFiles(languageFolder, "*.json")
         .Where(file => !string.Equals(Path.GetFullPath(file), Path.GetFullPath(templatePath), StringComparison.OrdinalIgnoreCase))
@@ -139,13 +167,12 @@ static void WriteCoverage(string languageFolder, string templatePath, IEnumerabl
 
         try
         {
-            // Newtonsoft accepts // comments, which every one of these files opens with.
-            read = JsonConvert.DeserializeObject<LanguageFile>(File.ReadAllText(file));
+            read = JsonSerializer.Deserialize<LanguageFile>(File.ReadAllText(file), readOptions);
         }
         catch (JsonException exception)
         {
             lines.Add($"{code}: could not be read, {exception.Message}");
-            report.Add(new { code, nativeName = code, translated = 0, missing = keys.Length, orphans = 0, unreadable = true });
+            report.Add(new CoverageRow { Code = code, NativeName = code, Translated = 0, Missing = keys.Length, Orphans = 0, Unreadable = true });
             continue;
         }
 
@@ -157,7 +184,7 @@ static void WriteCoverage(string languageFolder, string templatePath, IEnumerabl
         var orphanNote = orphans > 0 ? $", {orphans} key(s) no longer in English" : string.Empty;
 
         lines.Add($"{code} ({native}): {keys.Length - missing}/{keys.Length} translated, {missing} missing{orphanNote}");
-        report.Add(new { code, nativeName = native, translated = keys.Length - missing, missing, orphans, unreadable = false });
+        report.Add(new CoverageRow { Code = code, NativeName = native, Translated = keys.Length - missing, Missing = missing, Orphans = orphans, Unreadable = false });
     }
 
     foreach (var line in lines)
@@ -170,12 +197,32 @@ static void WriteCoverage(string languageFolder, string templatePath, IEnumerabl
 
     File.WriteAllText(
         Path.ChangeExtension(coveragePath, ".json"),
-        JsonConvert.SerializeObject(new { totalKeys = keys.Length, languages = report }, Formatting.Indented));
+        JsonSerializer.Serialize(new { totalKeys = keys.Length, languages = report }, writeOptions));
 }
 
 internal sealed class LanguageFile
 {
     public string NativeName { get; init; } = string.Empty;
 
+    // Populate, or System.Text.Json leaves this get-only dictionary empty and every language reads as
+    // 0% translated. See the same note on the runtime LanguageFile.
+    [System.Text.Json.Serialization.JsonObjectCreationHandling(System.Text.Json.Serialization.JsonObjectCreationHandling.Populate)]
     public Dictionary<string, string> Strings { get; } = new(StringComparer.Ordinal);
+}
+
+// A concrete type rather than an anonymous one: System.Text.Json serializes a List<object> by each
+// element's declared type, which for object is nothing, so anonymous rows would come out empty.
+internal sealed class CoverageRow
+{
+    public string Code { get; init; } = string.Empty;
+
+    public string NativeName { get; init; } = string.Empty;
+
+    public int Translated { get; init; }
+
+    public int Missing { get; init; }
+
+    public int Orphans { get; init; }
+
+    public bool Unreadable { get; init; }
 }

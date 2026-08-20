@@ -25,23 +25,6 @@ public static class ServerClock
 
     private const int PublishIntervalMs = 1000;
 
-    /// <summary>Handled by server/host_clock.lua, which writes the convar named in the argument.</summary>
-    // DateTime.UtcNow throws in the C# server runtime, which has no implementation for the Windows
-    // call .NET uses to detect leap second support, so the write has to happen in Lua.
-    private const string PublishEvent = "vMenu.Enhanced:Clock:Publish";
-
-    // The tick publishes once from onStarted and again on its first iteration with nothing in
-    // between, so the same second legitimately comes back twice while the server is coming up.
-    private const int StaleChecksBeforeWarning = 5;
-
-    private static bool _emitted;
-
-    private static long _lastPublished;
-
-    private static int _staleChecks;
-
-    private static bool _stalled;
-
     public static void Initialize()
     {
         // onStarted rather than here, so nothing is published while both sync features are off.
@@ -50,8 +33,7 @@ public static class ServerClock
             Publish,
             TickRate.Every(PublishIntervalMs),
             condition: IsNeeded,
-            onStarted: Publish,
-            onStopped: Reset);
+            onStarted: Publish);
 
         ServerConfig.AddEventListenerFor(
             [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
@@ -169,70 +151,11 @@ public static class ServerClock
     private static bool TryPublishedUnixSeconds(out long unixSeconds) =>
         WorldStateConvars.TryParseUnix(Native.GetConvar(WorldStateConvars.Utc, string.Empty), out unixSeconds);
 
-    private static void Publish()
-    {
-        VerifyPreviousPublish();
-
-        API.EmitLocal(PublishEvent, WorldStateConvars.Utc);
-
-        _emitted = true;
-    }
-
-    // The event is fire and forget, so the convar moving on is the only sign the handler ran. Checked
-    // one publish late on purpose: the handler may not have run by the time the emit call returns.
-    private static void VerifyPreviousPublish()
-    {
-        if (!_emitted)
-        {
-            return;
-        }
-
-        if (TryPublishedUnixSeconds(out var published) && published > _lastPublished)
-        {
-            _lastPublished = published;
-            _staleChecks = 0;
-
-            if (_stalled)
-            {
-                _stalled = false;
-
-                Log.Info("[Clock] The server clock is being published again.");
-            }
-
-            return;
-        }
-
-        if (++_staleChecks >= StaleChecksBeforeWarning)
-        {
-            ReportStalled(published);
-        }
-    }
-
-    // Once per outage rather than once per second, so a broken clock does not bury the console.
-    private static void ReportStalled(long published)
-    {
-        if (_stalled)
-        {
-            return;
-        }
-
-        _stalled = true;
-
-        Log.Error(
-            "[Clock] The world time is not being published, so weather and time are not synced: " +
-            (published > 0L
-                ? $"{WorldStateConvars.Utc} has been stuck at {published} for {_staleChecks} seconds."
-                : $"{WorldStateConvars.Utc} has never been set."));
-        Log.Error(
-            $"[Clock] Nothing is handling '{PublishEvent}'. Check that server/host_clock.lua exists in " +
-            "the resource and is listed in fxmanifest.lua.");
-    }
-
-    // Otherwise a restart would compare against a value from before the stop and read as stuck.
-    private static void Reset()
-    {
-        _emitted = false;
-        _lastPublished = 0L;
-        _staleChecks = 0;
-    }
+    // os.time()'s replacement now that the runtime's clock works: UTC seconds since the Unix epoch,
+    // the same number in every timezone, which is what the client reads back. SetConvarReplicated
+    // carries it to every client.
+    private static void Publish() =>
+        Native.SetConvarReplicated(
+            WorldStateConvars.Utc,
+            DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
 }

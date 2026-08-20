@@ -1,6 +1,7 @@
+using System.Text;
+
 using CitizenFX.FiveM.Server;
 
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
 
@@ -16,8 +17,9 @@ public static class ConfigurationExampleFile
     {
         var resource = Native.GetCurrentResourceName();
         var path = ConfigurationExample.ResourcePath;
+        var bytes = Encoding.UTF8.GetBytes(ConfigurationExample.Render());
 
-        if (NativeFixer.SaveResourceFile(resource, path, ConfigurationExample.Render()))
+        if (Native.SaveResourceFile(resource, path, bytes))
         {
             Log.Debug($"[Config] Wrote {path}.");
             return;

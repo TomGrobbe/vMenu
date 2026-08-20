@@ -83,8 +83,7 @@ public static class VehicleTargeting
 
         for (var frame = 0; frame < MaxResultFrames; frame++)
         {
-            // Through the fixer: both generated overloads push a Vector3, which the native API throws on.
-            var status = BrokenNatives.NativeFixer.GetShapeTestResult(test, out var hit, out _, out _, out var entity);
+            var status = Native.GetShapeTestResult(test, out var hit, out _, out _, out var entity);
 
             if (status == ShapeTestNotReady)
             {

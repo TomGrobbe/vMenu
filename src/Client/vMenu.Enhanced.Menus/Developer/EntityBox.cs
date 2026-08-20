@@ -2,8 +2,6 @@ using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.BrokenNatives;
-
 namespace vMenu.Enhanced.Menus.Developer;
 
 /// <summary>
@@ -100,7 +98,7 @@ internal static class EntityBox
             return bounds;
         }
 
-        NativeFixer.GetModelDimensions(model, out var min, out var max);
+        Native.GetModelDimensions(model, out var min, out var max);
 
         bounds = (min, max);
         BoundsByModel[model] = bounds;

@@ -159,7 +159,7 @@ public static class NoClip
             return;
         }
 
-        Native.SetScaleformMovieAsNoLongerNeeded(new CitizenFX.FiveM.Shared.Data.Ref<int>(ref _instructionalButtonsScaleformId));
+        Native.SetScaleformMovieAsNoLongerNeeded(ref _instructionalButtonsScaleformId);
 
         _instructionalButtonsScaleformId = -1;
         _rebuildInstructionalButtons = true;

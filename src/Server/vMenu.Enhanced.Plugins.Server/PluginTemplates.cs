@@ -1,6 +1,7 @@
+using System.Text;
+
 using CitizenFX.FiveM.Server;
 
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Data.Permissions;
@@ -55,8 +56,9 @@ public static class PluginTemplates
     private static void Save(string path, string contents)
     {
         var resource = Native.GetCurrentResourceName();
+        var bytes = Encoding.UTF8.GetBytes(contents);
 
-        if (NativeFixer.SaveResourceFile(resource, path, contents))
+        if (Native.SaveResourceFile(resource, path, bytes))
         {
             Log.Debug($"[Plugins] Wrote {path}.");
             return;

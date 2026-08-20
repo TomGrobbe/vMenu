@@ -6,7 +6,6 @@ using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
 using CitizenFX.FiveM.Shared.Data;
 
-using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -130,7 +129,7 @@ public static class VehicleSpawning
             return ped.Position;
         }
 
-        NativeFixer.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
+        Native.GetModelDimensions(hash, out var spawnedMin, out var spawnedMax);
 
         var clearance = (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
 
@@ -139,7 +138,7 @@ public static class VehicleSpawning
             return Native.GetOffsetFromEntityInWorldCoords(ped.Handle, 0f, clearance + 2f, 0f);
         }
 
-        NativeFixer.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
+        Native.GetModelDimensions(currentVehicle.Model, out var currentMin, out var currentMax);
 
         clearance += Math.Abs((currentMin - currentMax).Y) / 2;
 
@@ -159,7 +158,7 @@ public static class VehicleSpawning
             else if (!ClientConfig.Value(VehicleSpawnerSettings.KeepSpawnedVehiclesPersistent))
             {
                 var handle = _previousVehicle;
-                Native.SetEntityAsNoLongerNeeded(new Ref<int>(ref handle));
+                Native.SetEntityAsNoLongerNeeded(ref handle);
             }
 
             _previousVehicle = 0;

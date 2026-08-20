@@ -1,5 +1,3 @@
-using System.Numerics;
-
 using CitizenFX.Base;
 using CitizenFX.Base.Data;
 using CitizenFX.FiveM.Client;
@@ -16,67 +14,23 @@ public static class NativeFixer
     internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
 
     /// <summary>
-    /// Replacement call for <see cref="Native.GetAllVehicleModels()" /> because that return type is <em>byte[]</em>.
+    /// Replacement call for <see cref="Native.GetAllVehicleModels()" /> because that return type is
+    /// still a raw <em>byte[]</em> with no typed API over it.
     /// </summary>
-    /// <returns></returns>
-    public static string[] GetAllVehicleModels()
-    {
-        nativeApi.ResetContext();
-        nativeApi.Invoke(3612546629uL, "GetAllVehicleModels");
-        return nativeApi.GetResObject(0).DeserializeTo<string[]>();
-    }
+    // Standard options match how StateBags and EmitLocal talk to the runtime, which speaks plain
+    // MessagePack for primitive arrays like this one.
+    public static string[] GetAllVehicleModels() =>
+        MessagePackSerializer.Deserialize<string[]>(
+            Native.GetAllVehicleModels(), MessagePackSerializerOptions.Standard);
 
     /// <summary>
-    /// Replacement call for <see cref="Native.GetGamePool(string)" /> because that return type is <em>byte[]</em>.
-    /// The only working way to enumerate the world.
+    /// Replacement call for <see cref="Native.GetGamePool(string)" /> because that return type is
+    /// still a raw <em>byte[]</em>. The only working way to enumerate the world.
     /// </summary>
     /// <param name="poolName"><em>CVehicle</em>, <em>CPed</em>, <em>CObject</em> or <em>CPickup</em>.</param>
-    public static int[] GetGamePool(string poolName)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(poolName);
-        nativeApi.Invoke(731729744uL, "GetGamePool");
-        return nativeApi.GetResObject(0).DeserializeTo<int[]>();
-    }
-
-    /// <summary>
-    /// Replacement call for <see cref="Native.GetModelDimensions(uint, out Vector3, out Vector3)" /> because <em>nativeApi.PushArg(default(Vector3))</em> is not supported.
-    /// </summary>
-    /// <param name="p0"></param>
-    /// <param name="p1"></param>
-    /// <param name="p2"></param>
-    public static void GetModelDimensions(uint p0, out Vector3 p1, out Vector3 p2)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(p0);
-        nativeApi.PushArg(default(ObjectArg));
-        nativeApi.PushArg(default(ObjectArg));
-        nativeApi.Invoke(14500376258260264975uL, "GetModelDimensions");
-        p1 = nativeApi.GetResVector(1).ToVector();
-        p2 = nativeApi.GetResVector(2).ToVector();
-    }
-
-    /// <summary>
-    /// Replacement call for <see cref="Native.GetShapeTestResult(int, out int, out Vector3, out Vector3, out int)" />
-    /// because <em>nativeApi.PushArg(default(Vector3))</em> is not supported. The <em>Ref&lt;Vector3&gt;</em>
-    /// overload pushes a Vector3 too, so neither generated form is usable.
-    /// </summary>
-    /// <returns>0 when the handle is not a shape test, 1 while the result is not ready, 2 once it is.</returns>
-    public static int GetShapeTestResult(int shapeTestHandle, out int hit, out Vector3 endCoords, out Vector3 surfaceNormal, out int entityHit)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(shapeTestHandle);
-        nativeApi.PushArg(0);
-        nativeApi.PushArg(default(ObjectArg));
-        nativeApi.PushArg(default(ObjectArg));
-        nativeApi.PushArg(0);
-        nativeApi.Invoke(1044221499265592803uL, "GetShapeTestResult");
-        hit = nativeApi.GetResInt(1);
-        endCoords = nativeApi.GetResVector(2).ToVector();
-        surfaceNormal = nativeApi.GetResVector(3).ToVector();
-        entityHit = nativeApi.GetResInt(4);
-        return nativeApi.GetResInt(0);
-    }
+    public static int[] GetGamePool(string poolName) =>
+        MessagePackSerializer.Deserialize<int[]>(
+            Native.GetGamePool(poolName), MessagePackSerializerOptions.Standard);
 
     /// <summary>
     /// Replacement call for <see cref="Native.TestVerticalProbeAgainstAllWater(float, float, float, int, out float)" />
@@ -103,47 +57,6 @@ public static class NativeFixer
         height = result == 0 ? default : nativeApi.GetResFloat(1);
 
         return result;
-    }
-
-    /// <summary>
-    /// Replacement call for <see cref="Native.GetWeaponHudStats(uint, int)" />, whose second
-    /// parameter is the forty byte struct the game writes into, generated as a raw <em>int</em>
-    /// with no way to produce one.
-    /// </summary>
-    /// <param name="stats">Not filled in by the time this returns. See the remarks.</param>
-    /// <returns>False when the game has no stats for this weapon.</returns>
-    /// <remarks>
-    /// An int argument reserves a single value slot, so the game's forty byte write runs off the end
-    /// of it and takes the client down. <see cref="INativeStruct" /> is the only push that reserves
-    /// the real size: the runtime allocates a buffer of <em>Marshal.SizeOf</em>, hands the game that,
-    /// and copies it back into <paramref name="stats"/> at the start of its next tick. So the values
-    /// are readable from the following frame onwards, not from this call.
-    /// </remarks>
-    public static bool GetWeaponHudStats(uint weaponHash, WeaponHudStatsData stats)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(weaponHash);
-        nativeApi.PushArg(stats);
-        nativeApi.Invoke(8675070465420327855uL, "GetWeaponHudStats");
-
-        return nativeApi.GetResBool(0);
-    }
-
-    /// <summary>
-    /// Replacement call for <see cref="Native.GetWeaponComponentHudStats(uint, int)" />, broken and
-    /// fixed the same way <see cref="GetWeaponHudStats" /> is, down to the delayed
-    /// <paramref name="stats"/>.
-    /// </summary>
-    /// <param name="stats">How much this component moves each bar, positive or negative.</param>
-    /// <returns>False when the game has no stats for this component.</returns>
-    public static bool GetWeaponComponentHudStats(uint componentHash, WeaponHudStatsData stats)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(componentHash);
-        nativeApi.PushArg(stats);
-        nativeApi.Invoke(17640523594652482560uL, "GetWeaponComponentHudStats");
-
-        return nativeApi.GetResBool(0);
     }
 
     /// <summary>
@@ -218,35 +131,14 @@ public static class NativeFixer
     }
 
     /// <summary>
-    /// Replacement call for <c>Native.RemoveBlip</c>, which is generated only as
-    /// <em>RemoveBlip(out int)</em> and <em>RemoveBlip(Ref&lt;int&gt;)</em>.
-    /// </summary>
-    /// <remarks>
-    /// Both generated forms reserve an empty slot and hand the game that instead of the handle being
-    /// removed, so neither can delete a blip. Without this, nothing vMenu creates can ever be taken
-    /// off the map again.
-    /// </remarks>
-    public static void RemoveBlip(int blip)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(blip);
-        nativeApi.Invoke(18326475465518923026uL, "RemoveBlip");
-    }
-
-    /// <summary>
     /// Replacement call for <see cref="Native.GetStateBagValue(string, string)" /> because that
-    /// return type is <em>byte[]</em>.
+    /// return type is still a raw <em>byte[]</em>.
     /// </summary>
     /// <returns>The stored value, or <see langword="default"/> when the key has never been written.</returns>
-    public static T? GetStateBagValue<T>(string bagName, string keyName)
-    {
-        nativeApi.ResetContext();
-        nativeApi.PushArg(bagName);
-        nativeApi.PushArg(keyName);
-        nativeApi.Invoke(1669287029uL, "GetStateBagValue");
-
-        return nativeApi.GetResObject(0).DeserializeTo<T?>();
-    }
+    // Standard options are the matching pair to StateBags.Set, which writes with the same ones.
+    public static T? GetStateBagValue<T>(string bagName, string keyName) =>
+        MessagePackSerializer.Deserialize<T?>(
+            Native.GetStateBagValue(bagName, keyName), MessagePackSerializerOptions.Standard);
 
     /// <summary>
     /// Replacement call for <see cref="Native.AddStateBagChangeHandler(string, string, int)" />,

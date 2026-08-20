@@ -24,8 +24,5 @@ files {
 -- Client assembly
 client_script 'client/vMenu.Enhanced.Core.dll'
 
--- Server assembly. The Lua file is listed first because the assembly calls its export.
-server_scripts {
-    'server/host_clock.lua',
-    'server/vMenu.Enhanced.Core.Server.dll',
-}
+-- Server assembly.
+server_script 'server/vMenu.Enhanced.Core.Server.dll'
