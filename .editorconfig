@@ -1,6 +1,27 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+# Everything in the repository, whatever the language. The .cs section below only ever tightened
+# these for C# files, which left JSON, Lua, JavaScript, MSBuild and Markdown with no rule at all and
+# each editor free to invent its own. These are the project's answer for all of them.
+# CRLF here matches the eol=crlf in .gitattributes; the two have to agree or every save fights git.
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Web and data files, where two spaces is the convention everywhere else in the world.
+[*.{json,js,mjs,ts,css,html,astro,yml,yaml}]
+indent_size = 2
+
+# Markdown keeps its trailing spaces: two of them at the end of a line is a hard line break.
+[*.md]
+trim_trailing_whitespace = false
+
 # C# files
 [*.cs]
 
@@ -13,7 +34,7 @@ tab_width = 4
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline = true
 
 #### .NET Coding Conventions ####
 

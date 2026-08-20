@@ -1,7 +1,16 @@
 ###############################################################################
-# Set default behavior to automatically normalize line endings.
+# Line endings.
+#
+# text=auto lets git decide which files are text and stores every one of them
+# with LF inside the repository, which is what keeps diffs clean.
+#
+# eol=crlf is what everybody actually gets in their working copy. Without it the
+# checked out endings depend on each person's core.autocrlf setting, so the same
+# file arrives as LF on one machine and CRLF on another, and a save from an
+# editor that keeps what it found turns a one line change into a whole file.
+# This project is Windows first, so CRLF it is, for everyone.
 ###############################################################################
-* text=auto
+* text=auto eol=crlf
 
 ###############################################################################
 # Set default behavior for command prompt diff.
@@ -38,11 +47,19 @@
 ###############################################################################
 # behavior for image files
 #
-# image files are treated as binary by default.
+# Spelled out rather than left to detection, because eol=crlf above would wreck
+# any of these that content sniffing ever guessed wrong about.
 ###############################################################################
-#*.jpg   binary
-#*.png   binary
-#*.gif   binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
 
 ###############################################################################
 # diff behavior for common document formats

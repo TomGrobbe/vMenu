@@ -1,4 +1,4 @@
-﻿namespace vMenu.Enhanced.Data.VehicleData;
+namespace vMenu.Enhanced.Data.VehicleData;
 
 public static class VehicleDrivingStyles
 {

@@ -32,7 +32,7 @@
           Inputs="@(ResourceRootFile)"
           Outputs="@(ResourceRootFile -> '$(ResourceRoot)%(Filename)%(Extension)')">
     
-	  <Copy SourceFiles="@(ResourceRootFile)"
+      <Copy SourceFiles="@(ResourceRootFile)"
           DestinationFolder="$(ResourceRoot)"
           SkipUnchangedFiles="true" />
   </Target>

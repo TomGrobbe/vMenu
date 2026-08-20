@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsResourceRootProject>true</IsResourceRootProject>
     <IsResourceBundleProject>true</IsResourceBundleProject>
