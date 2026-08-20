@@ -850,6 +850,8 @@ internal static class EnglishStrings
             [Loc.DataTransfer.NothingInside] = "There is nothing in that code to bring back.",
             [Loc.DataTransfer.Failed] = "Something went wrong part way through. Press F8 for the details.",
 
+            [Loc.Updates.Available] = "A newer version of vMenu Enhanced is available: ~b~v{version}~s~.",
+
             [Loc.StaffAlerts.Title] = "Staff Alerts",
             [Loc.StaffAlerts.Subtitle] = "{count} waiting",
             [Loc.StaffAlerts.LinkDescription] = "The players who have asked for a staff member and are still waiting for one.",

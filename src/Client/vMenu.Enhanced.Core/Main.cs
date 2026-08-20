@@ -139,6 +139,8 @@ public sealed class Main : IScript
 
         DeathNotifications.Initialize();
 
+        UpdateNotice.Initialize();
+
         WorldSync.Initialize();
 
         while (!ClientPermissions.HasReceivedPermissions)
@@ -153,6 +155,8 @@ public sealed class Main : IScript
         WeaponSync.Request();
 
         WalkingStyleSync.Request();
+
+        UpdateNotice.Request();
 
         UserPreferences.Restore();
 

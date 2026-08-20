@@ -1,6 +1,7 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
+using UpdateSettings = vMenu.Enhanced.Data.Configuration.Settings.Updates;
 
 namespace vMenu.Enhanced.Data.Configuration;
 
@@ -26,6 +27,7 @@ public static class ConfigCatalog
     [
         new("Languages", [Localization.Languages]),
         new("About", [About.DocumentationUrl, About.DiscordUrl]),
+        new("Updates", [UpdateSettings.CheckMode]),
         new("Key Bindings",
         [
             KeyBindings.MenuToggleKey,

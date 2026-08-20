@@ -13,6 +13,7 @@ using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Plugins.Server;
 using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
+using vMenu.Enhanced.Updates.Server;
 
 namespace vMenu.Enhanced.Core.Server;
 
@@ -46,6 +47,7 @@ public class CoreServer : IScript
 
         ServerClock.Initialize();
         ServerState.Initialize();
+        UpdateChecker.Initialize();
 
         ConfigurationExampleFile.Write();
         PermissionsExampleFile.Write();
