@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsResourceBundleProject>true</IsResourceBundleProject>
     <BundleSide>server</BundleSide>
@@ -12,6 +12,7 @@
     <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives.Server\vMenu.Enhanced.BrokenNatives.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration.Server\vMenu.Enhanced.Configuration.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions.Server\vMenu.Enhanced.Permissions.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Players.Server\vMenu.Enhanced.Players.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Plugins.Server\vMenu.Enhanced.Plugins.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks.Server\vMenu.Enhanced.Ticks.Server.csproj" />
   </ItemGroup>

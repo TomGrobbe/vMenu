@@ -2,19 +2,19 @@ using System.Globalization;
 
 using CitizenFX.FiveM.Server;
 
-namespace vMenu.Enhanced.Actions.Server;
+namespace vMenu.Enhanced.Players.Server;
 
 /// <summary>One connected player, as the server sees them.</summary>
 // A plain class rather than a record, matching the rest of this codebase: the generated equality
 // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
-internal sealed class ConnectedPlayer(int serverId, string name)
+public sealed class ConnectedPlayer(int serverId, string name)
 {
     public int ServerId { get; } = serverId;
 
     public string Name { get; } = name;
 }
 
-internal static class ConnectedPlayers
+public static class ConnectedPlayers
 {
     /// <summary>
     /// Everybody actually connected right now.

@@ -10,6 +10,7 @@ using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 
 using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;

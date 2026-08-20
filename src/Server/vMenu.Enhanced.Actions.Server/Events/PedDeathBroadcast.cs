@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Deaths;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Players.Server;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 

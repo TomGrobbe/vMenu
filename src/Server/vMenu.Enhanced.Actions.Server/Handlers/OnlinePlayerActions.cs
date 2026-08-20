@@ -8,6 +8,7 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
