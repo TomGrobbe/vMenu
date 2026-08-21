@@ -21,6 +21,9 @@ public static class MiscSettings
     public const string ShowCoordinates = "vMenu.Enhanced.Menus.MiscSettings.ShowCoordinates";
 
     [StaffOnly]
+    public const string ClearArea = "vMenu.Enhanced.Menus.MiscSettings.ClearArea";
+
+    [StaffOnly]
     public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers";
 
     [StaffOnly]

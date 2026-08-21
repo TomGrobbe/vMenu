@@ -79,6 +79,11 @@ public static class ActionIds
         public const string GetStatus = "OnlinePlayers.GetStatus";
     }
 
+    public static class MiscSettings
+    {
+        public const string ClearArea = "MiscSettings.ClearArea";
+    }
+
     public static class StaffAlerts
     {
         public const string Raise = "StaffAlerts.Raise";

@@ -43,6 +43,7 @@ public static class ConfigCatalog
             MenuAppearance.HeaderGlare,
         ]),
         new("Gameplay", [Gameplay.PvpMode]),
+        new("Misc Settings", [MiscSettings.ClearAreaRadius]),
         new("Staff Alerts",
         [
             StaffAlertSettings.Enabled,

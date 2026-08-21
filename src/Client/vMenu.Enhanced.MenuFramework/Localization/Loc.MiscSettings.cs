@@ -151,5 +151,19 @@ public static partial class Loc
         public const string AlertDismissed = "miscsettings.alertdismiss.done";
 
         public const string AlertDismissNothing = "miscsettings.alertdismiss.nothing";
+
+        public const string ClearArea = "miscsettings.cleararea";
+
+        public const string ClearAreaDescription = "miscsettings.cleararea.desc";
+
+        public const string ClearAreaConfirm = "miscsettings.cleararea.confirm";
+
+        public const string ClearAreaDone = "miscsettings.cleararea.done";
+
+        public const string ClearAreaTooFast = "miscsettings.cleararea.toofast";
+
+        public const string ClearAreaDenied = "miscsettings.cleararea.denied";
+
+        public const string ClearAreaFailed = "miscsettings.cleararea.failed";
     }
 }

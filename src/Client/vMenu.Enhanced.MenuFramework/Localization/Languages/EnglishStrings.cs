@@ -951,6 +951,13 @@ internal static class EnglishStrings
             [Loc.MiscSettings.AlertStaffExpired] = "~r~Nobody~s~ answered ~y~{player}~s~'s help request (~y~#{id}~s~).",
             [Loc.MiscSettings.AlertDismissed] = "Cleared ~y~{count}~s~ alert(s) from your screen. Everybody else still has theirs.",
             [Loc.MiscSettings.AlertDismissNothing] = "There are no alerts on your screen to clear.",
+            [Loc.MiscSettings.ClearArea] = "Clear Area",
+            [Loc.MiscSettings.ClearAreaDescription] = "Tidy the world up around you. Wrecks, dropped props, wandering people, scorch marks, dirt and broken street lights all go back to how they started. This is not only for you: everybody standing near you has the same patch of world cleaned up at the same moment.",
+            [Loc.MiscSettings.ClearAreaConfirm] = "~r~Are you sure?~s~ This clears the world for everybody near you, not only for you. Press again to go ahead.",
+            [Loc.MiscSettings.ClearAreaDone] = "The area around you has been cleared.",
+            [Loc.MiscSettings.ClearAreaTooFast] = "You are clearing the area too often. Give it a moment.",
+            [Loc.MiscSettings.ClearAreaDenied] = "You are not allowed to clear the area.",
+            [Loc.MiscSettings.ClearAreaFailed] = "The area could not be cleared.",
 
             [Loc.DataTransfer.Title] = "Import & Export",
             [Loc.DataTransfer.Subtitle] = "Move Your Saved Data",
