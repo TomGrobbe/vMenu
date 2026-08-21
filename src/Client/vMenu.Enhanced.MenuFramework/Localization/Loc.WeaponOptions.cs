@@ -60,6 +60,9 @@ public static partial class Loc
 
         public const string CategorySubtitle = "weaponoptions.category.subtitle";
 
+        public const string GroupCategories = "weaponoptions.group.categories";
+
+        public const string GroupCategoriesDescription = "weaponoptions.group.categories.desc";
 
         public const string Empty = "weaponoptions.empty";
 

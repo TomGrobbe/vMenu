@@ -76,6 +76,15 @@ public sealed class WeaponOptionsMenu : MenuDefinition
 
         _weaponMenu.Builder.OnClosed = _ => _watch?.Stop();
 
+        if (_categories.Length > 0)
+        {
+            menu.Entries.Add(new SeparatorEntry
+            {
+                Text = MenuText.Key(Loc.WeaponOptions.GroupCategories),
+                Description = MenuText.Key(Loc.WeaponOptions.GroupCategoriesDescription),
+            });
+        }
+
         foreach (var category in _categories)
         {
             var current = category;

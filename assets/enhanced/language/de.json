@@ -919,6 +919,8 @@
     "weaponoptions.getall": "Alle Waffen nehmen",
     "weaponoptions.getall.desc": "Nimm jede Waffe, die du haben darfst, jede davon voll geladen.",
     "weaponoptions.getall.done": "Du hast ~g~{count}~s~ Waffe(n) bekommen.",
+    "weaponoptions.group.categories": "Waffenkategorien",
+    "weaponoptions.group.categories.desc": "Alles unterhalb dieser Linie ist eine Gruppe von Waffen, die du herausholen kannst.",
     "weaponoptions.link.desc": "Waffen nehmen, verändern und Munitionsoptionen einstellen.",
     "weaponoptions.noreload": "Kein Nachladen",
     "weaponoptions.noreload.desc": "Nie wieder nachladen müssen.",

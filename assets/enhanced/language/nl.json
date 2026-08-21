@@ -919,6 +919,8 @@
     "weaponoptions.getall": "Alle wapens pakken",
     "weaponoptions.getall.desc": "Pak elk wapen dat je mag hebben, allemaal helemaal vol.",
     "weaponoptions.getall.done": "Je hebt ~g~{count}~s~ wapen(s) gekregen.",
+    "weaponoptions.group.categories": "Wapencategorieën",
+    "weaponoptions.group.categories.desc": "Alles onder deze lijn is een groep wapens die je kunt pakken.",
     "weaponoptions.link.desc": "Wapens pakken, aanpassen en munitie-opties instellen.",
     "weaponoptions.noreload": "Niet herladen",
     "weaponoptions.noreload.desc": "Nooit meer hoeven herladen.",

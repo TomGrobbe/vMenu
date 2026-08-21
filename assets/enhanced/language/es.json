@@ -919,6 +919,8 @@
     "weaponoptions.getall": "Conseguir todas las armas",
     "weaponoptions.getall.desc": "Consigue todas las armas a las que tienes derecho, cada una llena.",
     "weaponoptions.getall.done": "Has recibido ~g~{count}~s~ arma(s).",
+    "weaponoptions.group.categories": "Categorías de armas",
+    "weaponoptions.group.categories.desc": "Todo lo que hay debajo de esta línea es un grupo de armas que puedes sacar.",
     "weaponoptions.link.desc": "Conseguir armas, modificarlas y ajustar las opciones de munición.",
     "weaponoptions.noreload": "Sin recarga",
     "weaponoptions.noreload.desc": "No tener que recargar nunca.",

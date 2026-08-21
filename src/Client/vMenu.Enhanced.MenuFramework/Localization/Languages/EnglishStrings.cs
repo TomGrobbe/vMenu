@@ -89,6 +89,8 @@ internal static class EnglishStrings
             [Loc.WeaponOptions.SpawnByNameDenied] = "You do not have permission to take out ~y~{weapon}~s~.",
             [Loc.WeaponOptions.CategoryDescription] = "Weapons from the ~y~{category}~s~ group.",
             [Loc.WeaponOptions.CategorySubtitle] = "Weapon Options Menu",
+            [Loc.WeaponOptions.GroupCategories] = "Weapon Categories",
+            [Loc.WeaponOptions.GroupCategoriesDescription] = "Everything below this point is a group of weapons you can take out.",
             [Loc.WeaponOptions.Empty] = "No weapons",
             [Loc.WeaponOptions.EmptyDescription] = "The server owner has not put any weapons in config/weapons.json, so there is nothing to pick from.",
             [Loc.WeaponOptions.WeaponDescription] = "Open the options for ~y~{weapon}~s~.",
