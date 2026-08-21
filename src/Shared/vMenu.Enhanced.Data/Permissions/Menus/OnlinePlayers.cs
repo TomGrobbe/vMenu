@@ -37,6 +37,9 @@ public static class OnlinePlayers
     public const string DeleteVehicle = "vMenu.Enhanced.Menus.OnlinePlayers.DeleteVehicle";
 
     [StaffOnly]
+    public const string CheckStatus = "vMenu.Enhanced.Menus.OnlinePlayers.CheckStatus";
+
+    [StaffOnly]
     public const string Identifiers = "vMenu.Enhanced.Menus.OnlinePlayers.Identifiers";
 
     [StaffOnly]

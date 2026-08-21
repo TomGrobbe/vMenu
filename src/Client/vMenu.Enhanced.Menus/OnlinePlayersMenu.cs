@@ -49,6 +49,10 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string PassengerOnly = "2";
 
+    private const string StatusOn = "1";
+
+    private const string StatusOff = "0";
+
     private readonly List<OnlinePlayer> _players = [];
 
     private MenuBuilder? _menu;
@@ -327,6 +331,14 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         actions.Entries.Add(new ButtonEntry
         {
+            Text = MenuText.Key(Loc.OnlinePlayers.CheckStatus),
+            Description = MenuText.Key(Loc.OnlinePlayers.CheckStatusDescription),
+            Gate = OnlinePlayersPermissions.CheckStatus,
+            OnSelectedAsync = _ => CheckStatusAsync(),
+        });
+
+        actions.Entries.Add(new ButtonEntry
+        {
             Text = MenuText.Key(Loc.OnlinePlayers.Waypoint),
             Description = MenuText.Key(Loc.OnlinePlayers.WaypointDescription),
             Gate = OnlinePlayersPermissions.Waypoint,
@@ -415,6 +427,38 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 break;
         }
     }
+
+    private async Task CheckStatusAsync()
+    {
+        if (Target(allowSelf: true) is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.GetStatus, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 2)
+        {
+            Report(result, name);
+
+            return;
+        }
+
+        Notifications.Info(MenuText.Key(
+            Loc.OnlinePlayers.CheckStatusResult,
+            ("player", name),
+            ("player_god", StatusText(result.Data[0])),
+            ("vehicle_god", StatusText(result.Data[1]))));
+    }
+
+    private static MenuText StatusText(string flag) => flag switch
+    {
+        StatusOn => MenuText.Key(Loc.OnlinePlayers.StatusOn),
+        StatusOff => MenuText.Key(Loc.OnlinePlayers.StatusOff),
+        _ => MenuText.Key(Loc.OnlinePlayers.StatusUnknown),
+    };
 
     private static bool TxAdminRunning() =>
         string.Equals(Native.GetResourceState("txadmin"), "started", StringComparison.OrdinalIgnoreCase);

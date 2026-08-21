@@ -8,11 +8,14 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
+using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
@@ -58,17 +61,27 @@ public static class OnlinePlayerActions
 
     private const string NotDriving = "2";
 
+    private const string StatusOn = "1";
+
+    private const string StatusOff = "0";
+
+    private const string StatusUnknown = "?";
+
     private static readonly HashSet<int> Connected = [];
 
     private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
 
     private static readonly Dictionary<int, PendingWanted> UnansweredWanted = [];
 
+    private static readonly Dictionary<int, PendingStatus> UnansweredStatus = [];
+
     private static int _revision;
 
     private static int _lastMessageId;
 
     private static int _lastWantedId;
+
+    private static int _lastStatusId;
 
     private static readonly ActionRateLimit Limit = new(
         "online players",
@@ -79,6 +92,7 @@ public static class OnlinePlayerActions
     {
         API.OnNetEvent(PlayerEvents.MessageAck, new Action<Player, string>(OnMessageAcknowledged), false);
         API.OnNetEvent(PlayerEvents.WantedLevelAck, new Action<Player, string, string>(OnWantedLevelAcknowledged), false);
+        API.OnNetEvent(PlayerEvents.GodModeAck, new Action<Player, string, bool, bool>(OnGodModeAcknowledged), false);
 
         ActionRegistry.Register(ActionIds.OnlinePlayers.GetList, OnlinePlayersPermissions.Menu, GetList);
 
@@ -126,6 +140,12 @@ public static class OnlinePlayerActions
             ActionIds.OnlinePlayers.DeleteVehicle,
             OnlinePlayersPermissions.DeleteVehicle,
             DeleteVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetStatus,
+            OnlinePlayersPermissions.CheckStatus,
+            GetStatus,
             Limit);
 
         PublishRevision();
@@ -600,6 +620,84 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok(Deleted);
     }
 
+    private static async Task<ActionResponse> GetStatus(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var requestId = ++_lastStatusId;
+        var answered = new TaskCompletionSource<(bool Player, bool Vehicle)>();
+
+        UnansweredStatus[requestId] = new PendingStatus(target, answered);
+
+        API.EmitClient(target, PlayerEvents.GetGodMode, requestId.ToString(CultureInfo.InvariantCulture));
+
+        (bool Player, bool Vehicle) reported;
+        var answerable = true;
+
+        try
+        {
+            var timeout = API.Delay(AckTimeoutMs);
+
+            answerable = await Task.WhenAny(answered.Task, timeout) != timeout;
+
+            reported = answerable ? answered.Task.Result : default;
+        }
+        finally
+        {
+            UnansweredStatus.Remove(requestId);
+
+            await API.Delay(0);
+        }
+
+        if (!answerable)
+        {
+            Log.Info(
+                $"[OnlinePlayers] {source.Name} checked the god mode of "
+                + $"{Native.GetPlayerName(target.ToString())}, which was never answered.");
+
+            return ActionResponse.Ok(StatusUnknown, StatusUnknown);
+        }
+
+        var handle = target.ToString(CultureInfo.InvariantCulture);
+
+        var playerGod = reported.Player && ServerPermissions.IsPlayerAllowed(handle, PlayerOptionsPermissions.Godmode);
+        var vehicleGod = reported.Vehicle && ServerPermissions.IsPlayerAllowed(handle, VehicleOptionsPermissions.God);
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} checked the god mode of {Native.GetPlayerName(handle)}: "
+            + $"player {(playerGod ? "on" : "off")}, vehicle {(vehicleGod ? "on" : "off")}.");
+
+        return ActionResponse.Ok(
+            playerGod ? StatusOn : StatusOff,
+            vehicleGod ? StatusOn : StatusOff);
+    }
+
+    private static void OnGodModeAcknowledged([FromSource] Player source, string requestId, bool playerGod, bool vehicleGod)
+    {
+        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !UnansweredStatus.TryGetValue(id, out var pending))
+        {
+            return;
+        }
+
+        if (pending.Target != source.Handle)
+        {
+            Log.Warning($"[OnlinePlayers] {source.Name} answered god mode request {id}, which was not theirs. Ignored.");
+
+            return;
+        }
+
+        pending.Answered.TrySetResult((playerGod, vehicleGod));
+    }
+
     /// <summary>
     /// A player's character, or null when they have not got one yet.
     /// </summary>
@@ -624,6 +722,13 @@ public static class OnlinePlayerActions
         public int Target { get; } = target;
 
         public TaskCompletionSource<int> Answered { get; } = answered;
+    }
+
+    private sealed class PendingStatus(int target, TaskCompletionSource<(bool Player, bool Vehicle)> answered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<(bool Player, bool Vehicle)> Answered { get; } = answered;
     }
 
     /// <summary>Reads a server id out of the arguments and checks that player is still here.</summary>

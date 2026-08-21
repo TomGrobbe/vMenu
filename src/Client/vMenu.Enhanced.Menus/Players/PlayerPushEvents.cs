@@ -7,6 +7,7 @@ using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Vehicles;
 
 namespace vMenu.Enhanced.Menus.Players;
 
@@ -41,7 +42,11 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.Message, new Action<string, string, string>(OnMessage), false);
         API.OnNetEvent(PlayerEvents.Teleport, new Action<string, string, string, string>(OnSummoned), false);
         API.OnNetEvent(PlayerEvents.SetWantedLevel, new Action<string, string>(OnWantedLevelRequested), false);
+        API.OnNetEvent(PlayerEvents.GetGodMode, new Action<string>(OnGodModeRequested), false);
     }
+
+    private static void OnGodModeRequested(string requestId) =>
+        API.EmitServer(PlayerEvents.GodModeAck, requestId, PlayerGodMode.Enabled, VehicleGodMode.Enabled);
 
     private static async void OnWantedLevelRequested(string requestId, string stars)
     {

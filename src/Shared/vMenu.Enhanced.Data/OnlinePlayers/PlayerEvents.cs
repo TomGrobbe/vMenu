@@ -14,5 +14,9 @@ public static class PlayerEvents
 
     public const string WantedLevelAck = "vMenu.Enhanced:OnlinePlayers:WantedLevelAck";
 
+    public const string GetGodMode = "vMenu.Enhanced:OnlinePlayers:GetGodMode";
+
+    public const string GodModeAck = "vMenu.Enhanced:OnlinePlayers:GodModeAck";
+
     public const string RevisionConvar = "vMenu.Enhanced.State.PlayersRevision";
 }
