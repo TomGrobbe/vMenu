@@ -883,6 +883,7 @@
     "vehiclespawner.spawninside.desc": "Als dit aan staat, spawn je in het voertuig zelf. Zet het uit, dan wordt de auto voor je neergezet.",
     "vehiclespawner.subtitle": "Voertuigspawnermenu",
     "vehiclespawner.title": "Voertuigspawner",
+    "vehiclespawner.toomanyspawns": "Je spawnt te snel voertuigen. Probeer het over ~y~{seconds}~s~ seconde(n) opnieuw.",
     "weaponloadouts.clone": "Uitrusting klonen",
     "weaponloadouts.clone.desc": "Maak een tweede kopie van deze uitrusting onder een nieuwe naam.",
     "weaponloadouts.clone.prompt": "Voer een naam in voor de kopie",

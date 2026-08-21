@@ -883,6 +883,7 @@
     "vehiclespawner.spawninside.desc": "Wenn das an ist, wirst du direkt im Fahrzeug gespawnt. Schalte es aus, dann wird das Auto stattdessen vor dir gespawnt.",
     "vehiclespawner.subtitle": "Fahrzeug-Spawner-Menü",
     "vehiclespawner.title": "Fahrzeug-Spawner",
+    "vehiclespawner.toomanyspawns": "Du spawnst Fahrzeuge zu schnell. Versuche es in ~y~{seconds}~s~ Sekunde(n) erneut.",
     "weaponloadouts.clone": "Ausrüstung klonen",
     "weaponloadouts.clone.desc": "Erstelle eine zweite Kopie dieser Ausrüstung unter einem neuen Namen.",
     "weaponloadouts.clone.prompt": "Gib einen Namen für die Kopie ein",

@@ -43,5 +43,7 @@ public static partial class Loc
         public const string ReplacePreviousLocked = "vehiclespawner.replaceprevious.locked";
 
         public const string OldVehicleRemoved = "vehiclespawner.oldvehicleremoved";
+
+        public const string TooManySpawns = "vehiclespawner.toomanyspawns";
     }
 }

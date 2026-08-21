@@ -64,7 +64,14 @@ public static class ConfigCatalog
             VehicleOptions.WashVehicleCommand,
             VehicleOptions.ClearGodModeOnExit,
         ]),
-        new("Vehicle Spawner", [VehicleSpawner.KeepSpawnedVehiclesPersistent]),
+        new("Vehicle Spawner",
+        [
+            VehicleSpawner.KeepSpawnedVehiclesPersistent,
+            VehicleSpawner.SpawnLimitSeconds,
+            VehicleSpawner.SpawnLimitTier1,
+            VehicleSpawner.SpawnLimitTier2,
+            VehicleSpawner.SpawnLimitTier3,
+        ]),
         new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds]),
         new("Time Options",
         [

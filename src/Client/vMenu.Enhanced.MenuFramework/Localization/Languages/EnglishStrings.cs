@@ -238,6 +238,7 @@ internal static class EnglishStrings
             [Loc.VehicleSpawner.ReplacePreviousDescription] = "Delete the vehicle you spawned last when you spawn a new one, or the one you are driving.",
             [Loc.VehicleSpawner.ReplacePreviousLocked] = "This server always replaces your previous vehicle, so this cannot be turned off.",
             [Loc.VehicleSpawner.OldVehicleRemoved] = "Your old vehicle was removed. Turn off ~y~Replace Previous Vehicle~s~ if you want to keep it next time.",
+            [Loc.VehicleSpawner.TooManySpawns] = "You are spawning vehicles too quickly. Try again in ~y~{seconds}~s~ second(s).",
 
             [Loc.OnlinePlayers.Title] = "Online Players",
             [Loc.OnlinePlayers.LinkDescription] = "See who is online and act on them.",

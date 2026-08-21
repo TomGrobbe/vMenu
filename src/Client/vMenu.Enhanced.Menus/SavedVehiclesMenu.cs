@@ -511,6 +511,11 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             return;
         }
 
+        if (!VehicleSpawnLimit.TryTakeOrWarn())
+        {
+            return;
+        }
+
         if (await VehicleSpawning.SpawnAsync(appearance.ModelHash) is not { } spawned)
         {
             Notifications.Error(MenuText.Key(Loc.SavedVehicles.SpawnModelMissing, ("model", model)));

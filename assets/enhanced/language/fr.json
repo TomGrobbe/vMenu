@@ -883,6 +883,7 @@
     "vehiclespawner.spawninside.desc": "Quand c'est activé, vous apparaissez à l'intérieur du véhicule. Désactivez-le et la voiture apparaîtra devant vous à la place.",
     "vehiclespawner.subtitle": "Menu du générateur de véhicules",
     "vehiclespawner.title": "Générateur de véhicules",
+    "vehiclespawner.toomanyspawns": "Tu fais apparaître des véhicules trop vite. Réessaie dans ~y~{seconds}~s~ seconde(s).",
     "weaponloadouts.clone": "Cloner l'équipement",
     "weaponloadouts.clone.desc": "Crée une deuxième copie de cet équipement sous un nouveau nom.",
     "weaponloadouts.clone.prompt": "Entre un nom pour la copie",

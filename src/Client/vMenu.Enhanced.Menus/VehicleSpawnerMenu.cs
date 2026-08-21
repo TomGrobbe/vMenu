@@ -304,6 +304,11 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             return;
         }
 
+        if (!VehicleSpawnLimit.TryTakeOrWarn())
+        {
+            return;
+        }
+
         if (await VehicleSpawning.SpawnAsync(modelName) is null)
         {
             return;
