@@ -53,7 +53,7 @@ public static class VehicleOptions
     /// <summary>Setting how dirty the vehicle looks, which is not the same as washing it clean.</summary>
     public const string Dirt = "vMenu.Enhanced.Menus.VehicleOptions.Dirt";
 
-    /// <summary>The god mode toggle and every one of the six damage types it can turn off.</summary>
+    /// <summary>The god mode toggle and every one of the seven damage types it can turn off.</summary>
     // One permission for the lot, for the same reason Modify is one: a server that does not want
     // invincible cars does not want unbreakable wheels either.
     public const string God = "vMenu.Enhanced.Menus.VehicleOptions.God";

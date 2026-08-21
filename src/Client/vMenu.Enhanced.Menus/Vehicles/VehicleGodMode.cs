@@ -33,6 +33,10 @@ public static class VehicleGodMode
     /// <summary>The vehicle the flags are written on, so leaving it can take them back off.</summary>
     private static int _written;
 
+    private static int _tyresRemembered;
+
+    private static bool _tyresCouldBurst;
+
     public static bool Enabled => UserDefaults.VehicleGodMode.Value && IsAllowed;
 
     // The stored values rather than the resolved ones: these are what the sub option checkboxes show,
@@ -44,6 +48,8 @@ public static class VehicleGodMode
     public static bool PreventVisualDamage => UserDefaults.VehicleGodVisual.Value;
 
     public static bool StrongWheels => UserDefaults.VehicleGodStrongWheels.Value;
+
+    public static bool BulletproofTyres => UserDefaults.VehicleGodBulletproofTyres.Value;
 
     public static bool PreventRampDamage => UserDefaults.VehicleGodRamp.Value;
 
@@ -78,6 +84,8 @@ public static class VehicleGodMode
 
     public static void SetStrongWheels(bool on) => Set(UserDefaults.VehicleGodStrongWheels, on);
 
+    public static void SetBulletproofTyres(bool on) => Set(UserDefaults.VehicleGodBulletproofTyres, on);
+
     public static void SetPreventRampDamage(bool on) => Set(UserDefaults.VehicleGodRamp, on);
 
     public static void SetAutoRepair(bool on) => Set(UserDefaults.VehicleGodAutoRepair, on);
@@ -88,6 +96,7 @@ public static class VehicleGodMode
     public static void Reapply()
     {
         _written = 0;
+        _tyresRemembered = 0;
 
         Apply();
     }
@@ -106,6 +115,11 @@ public static class VehicleGodMode
         Protection.Set(on, Protections);
 
         Watch(on);
+
+        if (_tyresRemembered != 0 && !Native.DoesEntityExist(_tyresRemembered))
+        {
+            _tyresRemembered = 0;
+        }
 
         var vehicle = OwnVehicle.Driven();
 
@@ -142,6 +156,11 @@ public static class VehicleGodMode
         // Handles are recycled, so one recorded before a delete can name something else entirely.
         if (!Native.DoesEntityExist(vehicle) || !Native.IsEntityAVehicle(vehicle))
         {
+            if (_tyresRemembered == vehicle)
+            {
+                _tyresRemembered = 0;
+            }
+
             return;
         }
 
@@ -177,6 +196,8 @@ public static class VehicleGodMode
         Native.SetVehicleHasStrongAxles(vehicle, wheels);
         Native.SetRampVehicleReceivesRampDamage(vehicle, !ramp);
 
+        WriteTyres(vehicle, on && BulletproofTyres);
+
         if (!on)
         {
             return;
@@ -192,6 +213,31 @@ public static class VehicleGodMode
         {
             Native.RemoveDecalsFromVehicle(vehicle);
         }
+    }
+
+    private static void WriteTyres(int vehicle, bool bulletproof)
+    {
+        if (bulletproof)
+        {
+            if (_tyresRemembered != vehicle)
+            {
+                _tyresRemembered = vehicle;
+                _tyresCouldBurst = Native.GetVehicleTyresCanBurst(vehicle);
+            }
+
+            Native.SetVehicleTyresCanBurst(vehicle, false);
+
+            return;
+        }
+
+        if (_tyresRemembered != vehicle)
+        {
+            return;
+        }
+
+        _tyresRemembered = 0;
+
+        Native.SetVehicleTyresCanBurst(vehicle, _tyresCouldBurst);
     }
 
     /// <summary>Silent, unlike the repair option. A notification per collision would be intolerable.</summary>

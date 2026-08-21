@@ -217,6 +217,8 @@ public static partial class Loc
 
         public const string BulletproofTyresDescription = "vehicleoptions.wheels.bulletproof.desc";
 
+        public const string BulletproofTyresLocked = "vehicleoptions.wheels.bulletproof.locked";
+
         public const string DriftTyres = "vehicleoptions.wheels.drift";
 
         public const string DriftTyresDescription = "vehicleoptions.wheels.drift.desc";
@@ -528,6 +530,10 @@ public static partial class Loc
         public const string GodStrongWheels = "vehicleoptions.god.strongwheels";
 
         public const string GodStrongWheelsDescription = "vehicleoptions.god.strongwheels.desc";
+
+        public const string GodBulletproofTyres = "vehicleoptions.god.bulletprooftyres";
+
+        public const string GodBulletproofTyresDescription = "vehicleoptions.god.bulletprooftyres.desc";
 
         public const string GodRamp = "vehicleoptions.god.ramp";
 

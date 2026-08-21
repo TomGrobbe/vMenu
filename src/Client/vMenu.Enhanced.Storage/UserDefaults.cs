@@ -127,7 +127,7 @@ public static class UserDefaults
 
     public static BoolDefault VehicleGodMode { get; } = new("vehicleGodMode") { Default = false };
 
-    // The six below answer to the master toggle above, which is why five of them start on: switching
+    // The seven below answer to the master toggle above, which is why six of them start on: switching
     // god mode on and getting nothing would read as broken.
     public static BoolDefault VehicleGodInvincible { get; } = new("vehicleGodInvincible") { Default = true };
 
@@ -136,6 +136,8 @@ public static class UserDefaults
     public static BoolDefault VehicleGodVisual { get; } = new("vehicleGodVisual") { Default = true };
 
     public static BoolDefault VehicleGodStrongWheels { get; } = new("vehicleGodStrongWheels") { Default = true };
+
+    public static BoolDefault VehicleGodBulletproofTyres { get; } = new("vehicleGodBulletproofTyres") { Default = true };
 
     public static BoolDefault VehicleGodRamp { get; } = new("vehicleGodRamp") { Default = true };
 
@@ -289,6 +291,7 @@ public static class UserDefaults
         VehicleGodEngine,
         VehicleGodVisual,
         VehicleGodStrongWheels,
+        VehicleGodBulletproofTyres,
         VehicleGodRamp,
         VehicleGodAutoRepair,
         VehicleKeepClean,

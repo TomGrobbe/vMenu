@@ -12,6 +12,8 @@ internal static class WheelsSection
     /// <summary>Low grip tyres arrived in this game build.</summary>
     private const int DriftTyresBuild = 2372;
 
+    private static bool GodModeHoldsTyres => VehicleGodMode.Enabled && VehicleGodMode.BulletproofTyres;
+
     public static void Build(MenuBuilder menu)
     {
         menu.AddRange(Rows());
@@ -64,7 +66,11 @@ internal static class WheelsSection
         rows.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.VehicleOptions.BulletproofTyres),
-            Description = MenuText.Key(Loc.VehicleOptions.BulletproofTyresDescription),
+            Description = MenuText.From(() => Localizer.Current.Get(
+                GodModeHoldsTyres
+                    ? Loc.VehicleOptions.BulletproofTyresLocked
+                    : Loc.VehicleOptions.BulletproofTyresDescription)),
+            ReadEnabled = () => !GodModeHoldsTyres,
             ReadState = () => SectionRows.Driven() is { } current && !Native.GetVehicleTyresCanBurst(current),
             OnChanged = changed =>
             {

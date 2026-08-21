@@ -39,6 +39,12 @@ internal static class GodModeSection
             VehicleGodMode.SetStrongWheels));
 
         menu.Entries.Add(Row(
+            Loc.VehicleOptions.GodBulletproofTyres,
+            Loc.VehicleOptions.GodBulletproofTyresDescription,
+            static () => VehicleGodMode.BulletproofTyres,
+            VehicleGodMode.SetBulletproofTyres));
+
+        menu.Entries.Add(Row(
             Loc.VehicleOptions.GodRamp,
             Loc.VehicleOptions.GodRampDescription,
             static () => VehicleGodMode.PreventRampDamage,
