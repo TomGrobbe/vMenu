@@ -300,6 +300,8 @@ internal static class EnglishStrings
             [Loc.OnlinePlayers.NotFound] = "~y~{player}~s~ is no longer on the server, or still joining.",
             [Loc.OnlinePlayers.NotYourself] = "You cannot do that to yourself.",
             [Loc.OnlinePlayers.StillJoining] = "~y~{player}~s~ is still joining the server, so that has to wait a moment.",
+            [Loc.OnlinePlayers.TooManyActions] =
+                "You are doing that too quickly. Try again in ~y~{seconds}~s~ second(s).",
             [Loc.OnlinePlayers.Failed] = "That did not work. Try again in a moment.",
 
             [Loc.VehicleOptions.Title] = "Vehicle Options",

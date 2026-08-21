@@ -159,7 +159,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
             if (result.Status != ActionStatus.Ok)
             {
-                Report(result.Status, MenuText.Empty);
+                Report(result, MenuText.Empty);
 
                 return;
             }
@@ -378,7 +378,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (result.Status != ActionStatus.Ok)
         {
-            Report(result.Status, MenuText.Literal(player.Name));
+            Report(result, MenuText.Literal(player.Name));
 
             return;
         }
@@ -493,7 +493,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (result.Status != ActionStatus.Ok || result.Data.Length < 5)
         {
-            Report(result.Status, name);
+            Report(result, name);
 
             return;
         }
@@ -545,7 +545,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
         {
-            Report(result.Status, name);
+            Report(result, name);
 
             return;
         }
@@ -614,7 +614,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (result.Status != ActionStatus.Ok || result.Data.Length < 3)
         {
-            Report(result.Status, MenuText.Literal(player.Name));
+            Report(result, MenuText.Literal(player.Name));
 
             return null;
         }
@@ -650,7 +650,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (result.Status != ActionStatus.Ok)
         {
-            Report(result.Status, name);
+            Report(result, name);
 
             return;
         }
@@ -806,6 +806,20 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         // and uppercasing ~r~ produces a token the game does not know. The HUD colour names are
         // already uppercase, so they come through whatever it does to the string.
         return $"~HUD_COLOUR_FREEMODE~{text} ~HUD_COLOUR_RED~{localizer.Get(Loc.OnlinePlayers.SubtitleOutdated)}";
+    }
+
+    private static void Report(ActionResult result, MenuText player)
+    {
+        if (result.Status == ActionStatus.RateLimited && result.Data.Length > 0)
+        {
+            Notifications.Warning(MenuText.Key(
+                Loc.OnlinePlayers.TooManyActions,
+                ("seconds", MenuText.Literal(result.Data[0]))));
+
+            return;
+        }
+
+        Report(result.Status, player);
     }
 
     private static void Report(ActionStatus status, MenuText player)

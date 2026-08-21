@@ -210,6 +210,7 @@
     "onlineplayers.teleportvehicle.full": "Alle stoelen in het voertuig van ~y~{player}~s~ zijn bezet, dus je staat er nu naast.",
     "onlineplayers.teleportvehicle.onfoot": "~y~{player}~s~ zit niet in een voertuig, dus je bent naar hem of haar toe verplaatst.",
     "onlineplayers.title": "Online spelers",
+    "onlineplayers.toomanyactions": "Je doet dat te snel. Probeer het over ~y~{seconds}~s~ seconde(n) opnieuw.",
     "onlineplayers.txadmin": "Openen in txAdmin",
     "onlineplayers.txadmin.desc": "Opent de pagina van deze speler in het txAdmin-paneel.~n~Let op, als je een foutmelding krijgt dat de speler niet bestaat, is dat een bug in txAdmin die hopelijk snel wordt opgelost.",
     "onlineplayers.wanted": "Wanted level instellen",

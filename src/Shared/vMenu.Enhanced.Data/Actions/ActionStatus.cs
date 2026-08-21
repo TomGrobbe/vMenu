@@ -37,4 +37,10 @@ public enum ActionStatus
 
     /// <summary>Never sent. Produced client side when no reply arrives.</summary>
     Timeout = 7,
+
+    /// <summary>
+    /// Allowed, but asked for too many times in a row. Carries the seconds left before the next one
+    /// is let through.
+    /// </summary>
+    RateLimited = 10,
 }

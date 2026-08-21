@@ -210,6 +210,7 @@
     "onlineplayers.teleportvehicle.full": "Alle Plätze im Fahrzeug von ~y~{player}~s~ sind belegt, also stehst du jetzt daneben.",
     "onlineplayers.teleportvehicle.onfoot": "~y~{player}~s~ ist in keinem Fahrzeug, also wurdest du stattdessen dorthin gebracht.",
     "onlineplayers.title": "Online-Spieler",
+    "onlineplayers.toomanyactions": "Du machst das zu schnell. Versuch es in ~y~{seconds}~s~ Sekunde(n) erneut.",
     "onlineplayers.txadmin": "In txAdmin öffnen",
     "onlineplayers.txadmin.desc": "Öffnet die Seite dieses Spielers im txAdmin-Panel.~n~Hinweis, wenn du eine Fehlermeldung bekommst, dass es den Spieler nicht gibt, ist das ein Fehler in txAdmin, der hoffentlich bald behoben wird.",
     "onlineplayers.wanted": "Fahndungslevel setzen",

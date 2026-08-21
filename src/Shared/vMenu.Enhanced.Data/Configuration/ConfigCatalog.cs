@@ -1,6 +1,7 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
+using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 using UpdateSettings = vMenu.Enhanced.Data.Configuration.Settings.Updates;
 
@@ -48,6 +49,11 @@ public static class ConfigCatalog
             StaffAlertSettings.CooldownSeconds,
             StaffAlertSettings.ExpireSeconds,
             StaffAlertSettings.DisplaySeconds,
+        ]),
+        new("Online Players",
+        [
+            OnlinePlayerSettings.ActionLimit,
+            OnlinePlayerSettings.ActionLimitSeconds,
         ]),
         new("Join and Leave", [JoinLeaveSettings.LogToConsole]),
         new("Vehicle Options",

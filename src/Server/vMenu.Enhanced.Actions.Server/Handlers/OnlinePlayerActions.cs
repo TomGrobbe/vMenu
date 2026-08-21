@@ -11,6 +11,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 
+using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
@@ -59,6 +60,11 @@ public static class OnlinePlayerActions
 
     private static int _lastWantedId;
 
+    private static readonly ActionRateLimit Limit = new(
+        "online players",
+        OnlinePlayerSettings.ActionLimit,
+        OnlinePlayerSettings.ActionLimitSeconds);
+
     public static void Register()
     {
         API.OnNetEvent(PlayerEvents.MessageAck, new Action<Player, string>(OnMessageAcknowledged), false);
@@ -66,24 +72,45 @@ public static class OnlinePlayerActions
 
         ActionRegistry.Register(ActionIds.OnlinePlayers.GetList, OnlinePlayersPermissions.Menu, GetList);
 
-        ActionRegistry.Register(ActionIds.OnlinePlayers.GetCoordsForTeleport, OnlinePlayersPermissions.TeleportTo, GetCoords);
-        ActionRegistry.Register(ActionIds.OnlinePlayers.GetCoordsForWaypoint, OnlinePlayersPermissions.Waypoint, GetCoords);
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetCoordsForTeleport,
+            OnlinePlayersPermissions.TeleportTo,
+            GetCoords,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetCoordsForWaypoint,
+            OnlinePlayersPermissions.Waypoint,
+            GetCoords,
+            Limit);
 
         ActionRegistry.Register(
             ActionIds.OnlinePlayers.GetVehicleForTeleport,
             OnlinePlayersPermissions.TeleportIntoVehicle,
-            GetVehicle);
+            GetVehicle,
+            Limit);
 
         ActionRegistry.Register(
             ActionIds.OnlinePlayers.SetWantedLevel,
             OnlinePlayersPermissions.SetWantedLevel,
-            SetWantedLevel);
+            SetWantedLevel,
+            Limit);
 
-        ActionRegistry.Register(ActionIds.OnlinePlayers.Kick, OnlinePlayersPermissions.Kick, Kick);
-        ActionRegistry.Register(ActionIds.OnlinePlayers.Kill, OnlinePlayersPermissions.Kill, Kill);
-        ActionRegistry.Register(ActionIds.OnlinePlayers.Summon, OnlinePlayersPermissions.Summon, Summon);
-        ActionRegistry.Register(ActionIds.OnlinePlayers.SendMessage, OnlinePlayersPermissions.SendMessage, SendMessage);
-        ActionRegistry.Register(ActionIds.OnlinePlayers.GetIdentifiers, OnlinePlayersPermissions.Identifiers, GetIdentifiers);
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Kick, OnlinePlayersPermissions.Kick, Kick, Limit);
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Kill, OnlinePlayersPermissions.Kill, Kill, Limit);
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Summon, OnlinePlayersPermissions.Summon, Summon, Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SendMessage,
+            OnlinePlayersPermissions.SendMessage,
+            SendMessage,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetIdentifiers,
+            OnlinePlayersPermissions.Identifiers,
+            GetIdentifiers,
+            Limit);
 
         PublishRevision();
 

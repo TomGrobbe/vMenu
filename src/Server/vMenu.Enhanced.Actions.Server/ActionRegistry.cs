@@ -13,14 +13,11 @@ namespace vMenu.Enhanced.Actions.Server;
 /// <summary>
 /// Server side of the action layer: one net event for every client requested action.
 /// </summary>
-/// <remarks>
-/// The permission check lives here rather than in the handlers, so a new action cannot forget it.
-/// Handlers are registered imperatively because attribute discovery only scans the assembly named as
-/// the <c>server_script</c>, and this one is a project reference.
-/// </remarks>
 public static class ActionRegistry
 {
     private const string Ungated = "<ungated>";
+
+    private const string DroppedEvent = "playerDropped";
 
     private static readonly Dictionary<string, RegisteredAction> Actions = new(StringComparer.Ordinal);
 
@@ -29,22 +26,33 @@ public static class ActionRegistry
     public static void Register(
         string actionId,
         string permission,
-        Func<Player, string[], Task<ActionResponse>> handler)
+        Func<Player, string[], Task<ActionResponse>> handler,
+        ActionRateLimit? rateLimit = null)
     {
-        if (!Actions.TryAdd(actionId, new RegisteredAction(permission, handler)))
+        if (!Actions.TryAdd(actionId, new RegisteredAction(permission, handler, rateLimit)))
         {
             Log.Error($"[Actions] '{actionId}' is registered twice. The second registration is ignored.");
         }
     }
 
-    public static void Register(string actionId, string permission, Func<Player, string[], ActionResponse> handler) =>
-        Register(actionId, permission, (source, args) => Task.FromResult(handler(source, args)));
+    public static void Register(
+        string actionId,
+        string permission,
+        Func<Player, string[], ActionResponse> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, permission, (source, args) => Task.FromResult(handler(source, args)), rateLimit);
 
-    public static void RegisterUngated(string actionId, Func<Player, string[], Task<ActionResponse>> handler) =>
-        Register(actionId, Ungated, handler);
+    public static void RegisterUngated(
+        string actionId,
+        Func<Player, string[], Task<ActionResponse>> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, Ungated, handler, rateLimit);
 
-    public static void RegisterUngated(string actionId, Func<Player, string[], ActionResponse> handler) =>
-        Register(actionId, Ungated, handler);
+    public static void RegisterUngated(
+        string actionId,
+        Func<Player, string[], ActionResponse> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, Ungated, handler, rateLimit);
 
     public static void RegisterEventHandlers()
     {
@@ -56,6 +64,8 @@ public static class ActionRegistry
         _registered = true;
 
         API.OnNetEvent(ActionEvents.Invoke, new Action<Player, string, int, string[]>(OnInvoke), false);
+
+        API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
 
         Log.Debug($"[Actions] Listening with {Actions.Count} action(s) registered.");
     }
@@ -102,6 +112,17 @@ public static class ActionRegistry
                 return;
             }
 
+            if (action.RateLimit is { } rateLimit && !rateLimit.TryTake(source, out var retryAfter))
+            {
+                Reply(
+                    source,
+                    requestId,
+                    ActionStatus.RateLimited,
+                    [retryAfter.ToString(CultureInfo.InvariantCulture)]);
+
+                return;
+            }
+
             ActionResponse response;
 
             try
@@ -125,6 +146,19 @@ public static class ActionRegistry
         }
     }
 
+    private static void OnPlayerDropped([FromSource] int source, string? reason = null)
+    {
+        if (source <= 0)
+        {
+            return;
+        }
+
+        foreach (var action in Actions.Values)
+        {
+            action.RateLimit?.Forget(source);
+        }
+    }
+
     /// <summary>
     /// A handler that awaited can outlive the player it was answering, and the emit asserts a
     /// handle that is still connected.
@@ -141,5 +175,8 @@ public static class ActionRegistry
         API.EmitClient(source.Handle, ActionEvents.Result, requestId, (int)status, data);
     }
 
-    private sealed record RegisteredAction(string Permission, Func<Player, string[], Task<ActionResponse>> Handler);
+    private sealed record RegisteredAction(
+        string Permission,
+        Func<Player, string[], Task<ActionResponse>> Handler,
+        ActionRateLimit? RateLimit);
 }

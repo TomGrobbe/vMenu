@@ -210,6 +210,7 @@
     "onlineplayers.teleportvehicle.full": "Tous les sièges du véhicule de ~y~{player}~s~ sont pris, vous êtes donc resté à côté.",
     "onlineplayers.teleportvehicle.onfoot": "~y~{player}~s~ n'est pas dans un véhicule, vous avez donc été téléporté jusqu'à lui.",
     "onlineplayers.title": "Joueurs en ligne",
+    "onlineplayers.toomanyactions": "Vous faites cela trop vite. Réessayez dans ~y~{seconds}~s~ seconde(s).",
     "onlineplayers.txadmin": "Ouvrir dans txAdmin",
     "onlineplayers.txadmin.desc": "Ouvre la page de ce joueur dans le panneau txAdmin.~n~À noter, si vous obtenez une erreur disant que le joueur n'existe pas, c'est un bug de txAdmin qui sera, on l'espère, corrigé bientôt.",
     "onlineplayers.wanted": "Définir le niveau de recherche",

@@ -130,6 +130,8 @@ public static partial class Loc
 
         public const string StillJoining = "onlineplayers.stilljoining";
 
+        public const string TooManyActions = "onlineplayers.toomanyactions";
+
         public const string Failed = "onlineplayers.failed";
     }
 }
