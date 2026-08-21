@@ -299,11 +299,6 @@ public static class OnlinePlayerActions
             return ActionResponse.NotFound();
         }
 
-        if (target == source.Handle)
-        {
-            return ActionResponse.Refused();
-        }
-
         if (args.Length < 2
             || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var stars)
             || stars < 0
@@ -392,11 +387,6 @@ public static class OnlinePlayerActions
             return ActionResponse.NotFound();
         }
 
-        if (target == source.Handle)
-        {
-            return ActionResponse.Refused();
-        }
-
         var reason = args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]) ? args[1].Trim() : DefaultKickReason;
 
         Log.Info($"[OnlinePlayers] {source.Name} kicked {Native.GetPlayerName(target.ToString())}: {reason}");
@@ -411,11 +401,6 @@ public static class OnlinePlayerActions
         if (!TryResolveTarget(args, out var target))
         {
             return ActionResponse.NotFound();
-        }
-
-        if (target == source.Handle)
-        {
-            return ActionResponse.Refused();
         }
 
         if (PedOf(target) is null)
@@ -497,9 +482,9 @@ public static class OnlinePlayerActions
             return ActionResponse.NotFound();
         }
 
-        if (target == source.Handle || args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+        if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
         {
-            return ActionResponse.Refused();
+            return ActionResponse.InvalidRequest();
         }
 
         if (PedOf(target) is null)

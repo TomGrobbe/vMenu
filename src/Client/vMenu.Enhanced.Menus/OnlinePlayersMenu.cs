@@ -282,7 +282,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Text = MenuText.Key(Loc.OnlinePlayers.Summon),
             Description = MenuText.Key(Loc.OnlinePlayers.SummonDescription),
             Gate = OnlinePlayersPermissions.Summon,
-            OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Summon, Loc.OnlinePlayers.SummonDone),
+            OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Summon, Loc.OnlinePlayers.SummonDone, allowSelf: false),
         });
 
         actions.Entries.Add(new ListEntry
@@ -299,7 +299,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Text = MenuText.Key(Loc.OnlinePlayers.Kill),
             Description = MenuText.Key(Loc.OnlinePlayers.KillDescription),
             Gate = OnlinePlayersPermissions.Kill,
-            OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Kill, Loc.OnlinePlayers.KillDone),
+            OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Kill, Loc.OnlinePlayers.KillDone, allowSelf: true),
         });
 
         actions.Entries.Add(new ButtonEntry
@@ -431,7 +431,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private async Task SendMessageAsync()
     {
-        if (Target() is not { } player)
+        if (Target(allowSelf: true) is not { } player)
         {
             return;
         }
@@ -445,12 +445,12 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             return;
         }
 
-        await SendAsync(ActionIds.OnlinePlayers.SendMessage, Loc.OnlinePlayers.SendMessageDelivered, typed.Trim());
+        await SendAsync(ActionIds.OnlinePlayers.SendMessage, Loc.OnlinePlayers.SendMessageDelivered, allowSelf: true, typed.Trim());
     }
 
     private async Task KickAsync()
     {
-        if (Target() is not { } player)
+        if (Target(allowSelf: true) is not { } player)
         {
             return;
         }
@@ -465,7 +465,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             return;
         }
 
-        await SendAsync(ActionIds.OnlinePlayers.Kick, Loc.OnlinePlayers.KickDone, typed.Trim());
+        await SendAsync(ActionIds.OnlinePlayers.Kick, Loc.OnlinePlayers.KickDone, allowSelf: true, typed.Trim());
     }
 
     private async Task TeleportToAsync()
@@ -531,7 +531,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private async Task SetWantedLevelAsync(int stars)
     {
-        if (Target() is not { } player)
+        if (Target(allowSelf: true) is not { } player)
         {
             return;
         }
@@ -629,9 +629,9 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         return (player, new Vector3(x, y, z));
     }
 
-    private async Task SendAsync(string action, string successKey, params string[] extraArguments)
+    private async Task SendAsync(string action, string successKey, bool allowSelf, params string[] extraArguments)
     {
-        if (Target() is not { } player)
+        if (Target(allowSelf) is not { } player)
         {
             return;
         }
@@ -663,14 +663,14 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     /// </summary>
     // The server refuses these on itself anyway. Checking here only turns a generic refusal into a
     // sentence that says what actually happened.
-    private OnlinePlayer? Target()
+    private OnlinePlayer? Target(bool allowSelf = false)
     {
         if (_selected is not { } player)
         {
             return null;
         }
 
-        if (player.ServerId == Native.GetPlayerServerId(Native.PlayerId()))
+        if (!allowSelf && player.ServerId == Native.GetPlayerServerId(Native.PlayerId()))
         {
             Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.NotYourself));
 
