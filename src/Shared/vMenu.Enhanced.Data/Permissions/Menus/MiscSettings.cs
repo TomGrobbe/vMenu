@@ -20,4 +20,7 @@ public static class MiscSettings
 
     [StaffOnly]
     public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers";
+
+    [StaffOnly]
+    public const string SeeLeaveReasons = "vMenu.Enhanced.Menus.MiscSettings.SeeLeaveReasons";
 }

@@ -30,6 +30,9 @@ public static class UserDefaults
     public static BoolDefault MiscDeathNotifications { get; } =
         new("miscDeathNotifications") { Default = true };
 
+    public static BoolDefault MiscJoinLeaveNotifications { get; } =
+        new("miscJoinLeaveNotifications") { Default = true };
+
     public static IntDefault MiscMinimapAction { get; } =
         new("miscMinimapAction") { Default = 0 };
 
@@ -216,6 +219,7 @@ public static class UserDefaults
         MiscDisableIdleCamera,
         MiscDisableVehicleIdleCamera,
         MiscDeathNotifications,
+        MiscJoinLeaveNotifications,
         MiscMinimapAction,
         MiscMinimapZoom,
         MiscMinimapAlwaysOn,

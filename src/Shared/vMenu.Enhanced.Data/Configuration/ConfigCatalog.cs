@@ -1,5 +1,6 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
+using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 using UpdateSettings = vMenu.Enhanced.Data.Configuration.Settings.Updates;
 
@@ -48,6 +49,7 @@ public static class ConfigCatalog
             StaffAlertSettings.ExpireSeconds,
             StaffAlertSettings.DisplaySeconds,
         ]),
+        new("Join and Leave", [JoinLeaveSettings.LogToConsole]),
         new("Vehicle Options",
         [
             VehicleOptions.DeleteVehicleDistance,

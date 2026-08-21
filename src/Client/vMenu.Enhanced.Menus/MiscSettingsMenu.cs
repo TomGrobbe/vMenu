@@ -44,6 +44,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
 
         menu.Entries.Add(new CheckboxEntry
         {
+            Text = MenuText.Key(Loc.MiscSettings.JoinLeaveNotifications),
+            Description = MenuText.Key(Loc.MiscSettings.JoinLeaveNotificationsDescription),
+            ReadState = () => UserPreferences.AreJoinLeaveNotificationsEnabled,
+            OnChanged = changed => UserPreferences.SetJoinLeaveNotificationsEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
             Text = MenuText.Key(Loc.MiscSettings.DisableIdleCamera),
             Description = MenuText.Key(Loc.MiscSettings.DisableIdleCameraDescription),
             ReadState = () => UserPreferences.IsIdleCameraDisabled,

@@ -52,6 +52,11 @@ public static class UserPreferences
     public static void SetDeathNotificationsEnabled(bool enabled) =>
         UserDefaults.MiscDeathNotifications.Value = enabled;
 
+    public static bool AreJoinLeaveNotificationsEnabled => UserDefaults.MiscJoinLeaveNotifications.Value;
+
+    public static void SetJoinLeaveNotificationsEnabled(bool enabled) =>
+        UserDefaults.MiscJoinLeaveNotifications.Value = enabled;
+
     // Both natives are plain flags the game remembers, so they are set when the value moves rather
     // than held down by a tick.
     public static void SetIdleCameraDisabled(bool disabled)

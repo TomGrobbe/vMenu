@@ -70,6 +70,7 @@ public class CoreServer : IScript
         PedDeathBroadcast.Register();
         PlayerNoClipState.Register();
         PlayerPresenceBroadcast.Register();
+        JoinLeaveBroadcast.Register();
 
         PluginRegistry.RegisterEventHandlers();
         PluginRegistry.AnnounceReady();

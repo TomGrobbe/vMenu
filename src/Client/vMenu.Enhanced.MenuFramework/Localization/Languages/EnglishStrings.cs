@@ -766,6 +766,8 @@ internal static class EnglishStrings
             [Loc.MiscSettings.DisableIdleCameraDescription] = "Stops the camera drifting around on its own when you stop touching the controls on foot.",
             [Loc.MiscSettings.DeathNotifications] = "Death Notifications",
             [Loc.MiscSettings.DeathNotificationsDescription] = "Show a message whenever a player on this server dies, and who killed them.",
+            [Loc.MiscSettings.JoinLeaveNotifications] = "Join / Leave Notifications",
+            [Loc.MiscSettings.JoinLeaveNotificationsDescription] = "Show a message whenever somebody arrives on this server or leaves it.",
             [Loc.MiscSettings.DisableVehicleIdleCamera] = "Disable Vehicle Idle Camera",
             [Loc.MiscSettings.DisableVehicleIdleCameraDescription] = "Stops the camera drifting around on its own while you sit in a vehicle. ~y~Note:~s~ this also stops you turning the cinematic camera on yourself.",
             [Loc.MiscSettings.MinimapAction] = "Minimap Key",
@@ -899,6 +901,10 @@ internal static class EnglishStrings
             [Loc.DeathNotifications.Exhausted] = "collapsed from exhaustion",
             [Loc.DeathNotifications.Beaten] = "was beaten to death",
             [Loc.DeathNotifications.BeatenBy] = "was beaten to death by ~y~{killer}~s~",
+
+            [Loc.JoinLeaveNotifications.Joined] = "~g~{player}~s~ joined the server.",
+            [Loc.JoinLeaveNotifications.Left] = "~r~{player}~s~ left the server.",
+            [Loc.JoinLeaveNotifications.LeftWithReason] = "~r~{player}~s~ left the server. ~c~({reason})",
 
             [Loc.NoClip.ToggleDenied] = "You are not allowed to toggle noclip.",
 

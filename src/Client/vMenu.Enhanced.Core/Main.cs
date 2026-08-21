@@ -138,6 +138,7 @@ public sealed class Main : IScript
         StaffAlertsFeature.Initialize();
 
         DeathNotifications.Initialize();
+        JoinLeaveNotifications.Initialize();
 
         UpdateNotice.Initialize();
 
