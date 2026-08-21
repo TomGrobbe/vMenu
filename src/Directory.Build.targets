@@ -89,6 +89,9 @@
     differs, so an older translation restored over a newer one still counts as a change here, which
     watching the originals by timestamp alone would miss.
 
+    The tool's own source is an input as well, since the header it writes into the template is part
+    of the output and changing that wording otherwise leaves a stale file behind.
+
     Runs only when one of those is newer than what it produced, which on a normal rebuild is never.
     Starting this tool costs well over a second, which is far too much to pay on every build.
   -->
@@ -99,7 +102,7 @@
   <Target Name="GenerateLanguageTemplate"
           AfterTargets="Build;CopyResourceLanguageFiles"
           Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="$(OutputPath)vMenu.Enhanced.MenuFramework.dll;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
+          Inputs="$(OutputPath)vMenu.Enhanced.MenuFramework.dll;$(RepoRoot)tools\LanguageTemplate\Program.cs;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
           Outputs="$(ResourceRoot)language\example.json;$(TranslationCoverageFile)">
 
     <!--

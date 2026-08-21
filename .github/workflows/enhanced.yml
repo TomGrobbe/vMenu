@@ -168,11 +168,55 @@ jobs:
             $lines += "| $name | $($language.translated)/$total | $mark | $($language.orphans) |"
           }
 
+          # The names, not just the counts, so a translator can act on this
+          # without checking the repo out. Run `dotnet run --project
+          # tools/LanguageTemplate -- check` locally for the same thing.
+          $shown = 25
+
+          foreach ($language in $behind) {
+            if ($language.unreadable) { continue }
+
+            $missing = @($language.missingKeys)
+            $orphans = @($language.orphanKeys)
+
+            if ($missing.Count -eq 0 -and $orphans.Count -eq 0) { continue }
+
+            $lines += ""
+            $lines += "<details><summary>$($language.nativeName) (``$($language.code)``)</summary>"
+            $lines += ""
+
+            foreach ($set in @(
+              @{ Label = 'Missing'; Keys = $missing },
+              @{ Label = 'No longer in English'; Keys = $orphans })) {
+
+              if ($set.Keys.Count -eq 0) { continue }
+
+              $lines += "$($set.Label) ($($set.Keys.Count)):"
+              $lines += ""
+              $lines += '```'
+              $lines += $set.Keys | Select-Object -First $shown
+
+              if ($set.Keys.Count -gt $shown) {
+                $lines += "... and $($set.Keys.Count - $shown) more"
+              }
+
+              $lines += '```'
+              $lines += ""
+            }
+
+            $lines += "</details>"
+          }
+
           $lines += ""
           $lines += "_Missing keys fall back to English, so nothing is broken by a gap here._"
 
           $summary = $lines -join "`n"
           $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+          # Kept for the comment step below, so the PR conversation and the check
+          # summary cannot drift into saying different things.
+          $summary | Out-File -FilePath 'build/intermediate/translation-coverage.md' -Encoding utf8
+
           Write-Host $summary
 
       # Posted as a comment as well, so it shows up in the PR conversation
@@ -185,32 +229,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          $path = 'build/intermediate/translation-coverage.json'
+          $path = 'build/intermediate/translation-coverage.md'
 
           if (-not (Test-Path $path)) {
             exit 0
           }
 
-          $report = Get-Content $path -Raw | ConvertFrom-Json
-          $total = $report.totalKeys
-
           # A marker so each run edits its own comment instead of adding another.
           $marker = '<!-- vmenu-translation-coverage -->'
-          $body = @($marker, '## Translation coverage', '',
-                    '| Language | Translated | Missing | Stale keys |',
-                    '| --- | ---: | ---: | ---: |')
-
-          foreach ($language in $report.languages) {
-            $name = "$($language.nativeName) (``$($language.code)``)"
-            $mark = if ($language.missing -eq 0) { '0' } else { "**$($language.missing)**" }
-            $body += "| $name | $($language.translated)/$total | $mark | $($language.orphans) |"
-          }
-
-          $body += ''
-          $body += '_Missing keys fall back to English, so nothing is broken by a gap here._'
+          $body = $marker + "`n" + (Get-Content $path -Raw)
 
           $file = New-TemporaryFile
-          ($body -join "`n") | Out-File -FilePath $file -Encoding utf8
+          $body | Out-File -FilePath $file -Encoding utf8
 
           $existing = gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" --paginate |
             ConvertFrom-Json |
