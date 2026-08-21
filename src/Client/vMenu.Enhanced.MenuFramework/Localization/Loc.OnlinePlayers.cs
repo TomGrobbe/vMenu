@@ -98,6 +98,18 @@ public static partial class Loc
 
         public const string KickDone = "onlineplayers.kick.done";
 
+        public const string DeleteVehicle = "onlineplayers.deletevehicle";
+
+        public const string DeleteVehicleDescription = "onlineplayers.deletevehicle.desc";
+
+        public const string DeleteVehicleConfirm = "onlineplayers.deletevehicle.confirm";
+
+        public const string DeleteVehicleDone = "onlineplayers.deletevehicle.done";
+
+        public const string DeleteVehicleOnFoot = "onlineplayers.deletevehicle.onfoot";
+
+        public const string DeleteVehicleNotDriving = "onlineplayers.deletevehicle.notdriving";
+
         public const string Waypoint = "onlineplayers.waypoint";
 
         public const string WaypointDescription = "onlineplayers.waypoint.desc";

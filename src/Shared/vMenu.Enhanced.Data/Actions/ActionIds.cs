@@ -44,6 +44,8 @@ public static class ActionIds
         public const string SendMessage = "OnlinePlayers.SendMessage";
 
         public const string GetIdentifiers = "OnlinePlayers.GetIdentifiers";
+
+        public const string DeleteVehicle = "OnlinePlayers.DeleteVehicle";
     }
 
     public static class StaffAlerts

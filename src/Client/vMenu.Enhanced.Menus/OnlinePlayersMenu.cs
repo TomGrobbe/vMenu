@@ -45,6 +45,10 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     /// <summary>How much of the search term the subtitle repeats back.</summary>
     private const int QueryDisplayLength = 16;
 
+    private const string DeletedVehicle = "1";
+
+    private const string PassengerOnly = "2";
+
     private readonly List<OnlinePlayer> _players = [];
 
     private MenuBuilder? _menu;
@@ -310,6 +314,17 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnSelectedAsync = _ => KickAsync(),
         });
 
+        actions.Entries.Add(new ConfirmButtonEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.DeleteVehicle),
+            Description = MenuText.Key(Loc.OnlinePlayers.DeleteVehicleDescription),
+            ConfirmationDescription = MenuText.From(() => MenuText
+                .Key(Loc.OnlinePlayers.DeleteVehicleConfirm, ("player", MenuText.Literal(_selected?.Name ?? string.Empty)))
+                .Resolve(Localizer.Current)),
+            Gate = OnlinePlayersPermissions.DeleteVehicle,
+            OnConfirmedAsync = _ => DeleteVehicleAsync(),
+        });
+
         actions.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.OnlinePlayers.Waypoint),
@@ -362,6 +377,43 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 builder,
                 () => _selected is { } player ? (player.ServerId, player.Name) : ((int, string)?)null),
         });
+    }
+
+    private async Task DeleteVehicleAsync()
+    {
+        if (Target(allowSelf: true) is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.DeleteVehicle, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            Report(result, name);
+
+            return;
+        }
+
+        switch (result.Data[0])
+        {
+            case DeletedVehicle:
+                Notifications.Success(MenuText.Key(Loc.OnlinePlayers.DeleteVehicleDone, ("player", name)));
+
+                break;
+
+            case PassengerOnly:
+                Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.DeleteVehicleNotDriving, ("player", name)));
+
+                break;
+
+            default:
+                Notifications.Info(MenuText.Key(Loc.OnlinePlayers.DeleteVehicleOnFoot, ("player", name)));
+
+                break;
+        }
     }
 
     private static bool TxAdminRunning() =>

@@ -34,6 +34,9 @@ public static class OnlinePlayers
     public const string Waypoint = "vMenu.Enhanced.Menus.OnlinePlayers.Waypoint";
 
     [StaffOnly]
+    public const string DeleteVehicle = "vMenu.Enhanced.Menus.OnlinePlayers.DeleteVehicle";
+
+    [StaffOnly]
     public const string Identifiers = "vMenu.Enhanced.Menus.OnlinePlayers.Identifiers";
 
     [StaffOnly]

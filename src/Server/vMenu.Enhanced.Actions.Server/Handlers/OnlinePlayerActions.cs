@@ -48,6 +48,16 @@ public static class OnlinePlayerActions
 
     private const int MaxWantedLevel = 5;
 
+    private const int VehicleEntityType = 2;
+
+    private const int DriverSeat = -1;
+
+    private const string Deleted = "1";
+
+    private const string OnFoot = "0";
+
+    private const string NotDriving = "2";
+
     private static readonly HashSet<int> Connected = [];
 
     private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
@@ -110,6 +120,12 @@ public static class OnlinePlayerActions
             ActionIds.OnlinePlayers.GetIdentifiers,
             OnlinePlayersPermissions.Identifiers,
             GetIdentifiers,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.DeleteVehicle,
+            OnlinePlayersPermissions.DeleteVehicle,
+            DeleteVehicle,
             Limit);
 
         PublishRevision();
@@ -551,6 +567,37 @@ public static class OnlinePlayerActions
         }
 
         pending.Delivered.TrySetResult(true);
+    }
+
+    private static ActionResponse DeleteVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
+        {
+            return ActionResponse.Ok(OnFoot);
+        }
+
+        if (Native.GetPedInVehicleSeat(vehicle, DriverSeat) != ped)
+        {
+            return ActionResponse.Ok(NotDriving);
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} deleted the vehicle {Native.GetPlayerName(target.ToString())} was driving.");
+
+        Native.DeleteEntity(vehicle);
+
+        return ActionResponse.Ok(Deleted);
     }
 
     /// <summary>
