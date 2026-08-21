@@ -57,6 +57,12 @@ public static class UserDefaults
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
 
+    public static IntDefault MiscSpeedometer { get; } =
+        new("miscSpeedometer") { Default = 0 };
+
+    public static IntDefault MiscSpeedometerPosition { get; } =
+        new("miscSpeedometerPosition") { Default = 0 };
+
     #endregion
 
     #region Player Options
@@ -228,6 +234,8 @@ public static class UserDefaults
         MiscShowOverheadNames,
         MiscSeeNoClipPlayers,
         MiscHideStaffAlerts,
+        MiscSpeedometer,
+        MiscSpeedometerPosition,
 
         PlayerGodMode,
         PlayerSuperJump,

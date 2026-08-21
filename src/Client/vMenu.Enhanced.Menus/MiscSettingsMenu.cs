@@ -68,6 +68,41 @@ public sealed class MiscSettingsMenu : MenuDefinition
 
         menu.Entries.Add(new ListEntry
         {
+            Text = MenuText.Key(Loc.MiscSettings.Speedometer),
+            Description = MenuText.Key(Loc.MiscSettings.SpeedometerDescription),
+            Options =
+            [
+                MenuText.Key(Loc.MiscSettings.SpeedometerOff),
+                MenuText.Key(Loc.MiscSettings.SpeedometerKmh),
+                MenuText.Key(Loc.MiscSettings.SpeedometerMph),
+                MenuText.Key(Loc.MiscSettings.SpeedometerBoth),
+            ],
+            ReadSelectedIndex = () => Speedometer.Mode,
+            OnIndexChanged = changed =>
+            {
+                Speedometer.Mode = changed.NewIndex;
+
+                MenuRegistry.Refresh(changed.Menu);
+            },
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.SpeedometerPosition),
+            Description = MenuText.Key(Loc.MiscSettings.SpeedometerPositionDescription),
+            LockedDescription = MenuText.Key(Loc.MiscSettings.SpeedometerPositionLocked),
+            Gate = MenuGate.When(() => Speedometer.Mode != Speedometer.Off),
+            Options =
+            [
+                MenuText.Key(Loc.MiscSettings.SpeedometerPositionRight),
+                MenuText.Key(Loc.MiscSettings.SpeedometerPositionCenter),
+            ],
+            ReadSelectedIndex = () => Speedometer.Position,
+            OnIndexChanged = changed => Speedometer.Position = changed.NewIndex,
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
             Text = MenuText.Key(Loc.MiscSettings.MinimapAction),
             Description = MenuText.Key(Loc.MiscSettings.MinimapActionDescription),
             Options =

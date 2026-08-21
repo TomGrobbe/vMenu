@@ -131,6 +131,7 @@ public sealed class Main : IScript
         VisorKeyBinding.Initialize();
         MinimapControls.Initialize();
         FingerPointing.Initialize();
+        Speedometer.Initialize();
         PlayerPresence.Initialize();
         PlayerBlipsDebugCommands.Initialize();
 

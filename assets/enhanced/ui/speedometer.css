@@ -1,0 +1,85 @@
+:root {
+    --speedo-accent: rgba(138, 190, 255, 0.9);
+}
+
+#speedometer {
+    position: fixed;
+    right: 2.5%;
+    bottom: 2.5%;
+    min-width: 9.5rem;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    padding: 0.55rem 0.9rem 0.5rem;
+    border-radius: 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(12, 14, 19, 0.34);
+    box-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.85);
+    transition: bottom 0.3s ease;
+}
+
+#speedometer.center {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#speedometer.shown {
+    display: flex;
+}
+
+#speedometer .readout {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    line-height: 1;
+}
+
+#speedometer .readout + .readout {
+    opacity: 0.6;
+}
+
+#speedometer .readout + .readout .value {
+    font-size: 1.45rem;
+}
+
+#speedometer .value {
+    flex: 1 1 auto;
+    text-align: right;
+    font-size: 2.3rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+#speedometer .unit {
+    flex: 0 0 auto;
+    min-width: 3.6em;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--speedo-accent);
+}
+
+#speedometer .rail {
+    height: 0.12rem;
+    border-radius: 0.12rem;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+#speedometer .rail > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--speedo-accent), #ffffff);
+    transition: width 0.12s linear;
+}

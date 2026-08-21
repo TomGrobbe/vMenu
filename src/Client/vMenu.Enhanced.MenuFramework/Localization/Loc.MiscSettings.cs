@@ -38,6 +38,28 @@ public static partial class Loc
 
         public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";
 
+        public const string Speedometer = "miscsettings.speedometer";
+
+        public const string SpeedometerDescription = "miscsettings.speedometer.desc";
+
+        public const string SpeedometerOff = "miscsettings.speedometer.off";
+
+        public const string SpeedometerKmh = "miscsettings.speedometer.kmh";
+
+        public const string SpeedometerMph = "miscsettings.speedometer.mph";
+
+        public const string SpeedometerBoth = "miscsettings.speedometer.both";
+
+        public const string SpeedometerPosition = "miscsettings.speedometer.position";
+
+        public const string SpeedometerPositionDescription = "miscsettings.speedometer.position.desc";
+
+        public const string SpeedometerPositionLocked = "miscsettings.speedometer.position.locked";
+
+        public const string SpeedometerPositionRight = "miscsettings.speedometer.position.right";
+
+        public const string SpeedometerPositionCenter = "miscsettings.speedometer.position.center";
+
         public const string MinimapAction = "miscsettings.minimap.action";
 
         public const string MinimapActionDescription = "miscsettings.minimap.action.desc";

@@ -33,6 +33,8 @@ public static class UserPreferences
 
         // After the alignment, which decides the side the panel sits on.
         TickOverlay.Restore();
+
+        Speedometer.Restore();
     }
 
     /// <summary>Whether the menu is currently right aligned. The live value, not the stored one.</summary>
