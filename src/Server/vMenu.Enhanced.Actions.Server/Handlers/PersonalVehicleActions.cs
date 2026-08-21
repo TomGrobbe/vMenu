@@ -27,8 +27,6 @@ public static class PersonalVehicleActions
 
     public static void Register()
     {
-        API.OnNetEvent(PersonalVehicleEvents.Spawned, new Action<Player, int>(OnSpawned), false);
-
         API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
 
         ActionRegistry.Register(ActionIds.PersonalVehicle.Set, PersonalVehiclePermissions.Menu, Set, Limit);
@@ -80,9 +78,6 @@ public static class PersonalVehicleActions
         return entity;
     }
 
-    private static void OnSpawned([FromSource] Player source, int networkId) =>
-        PersonalVehicleRegistry.RecordSpawn(source.Handle, networkId);
-
     private static void OnPlayerDropped([FromSource] int source, string? reason = null)
     {
         if (source > 0)
@@ -99,9 +94,9 @@ public static class PersonalVehicleActions
             return ActionResponse.InvalidRequest();
         }
 
-        PersonalVehicleRegistry.PruneSpawned(source.Handle, StillAVehicle);
+        SpawnedVehicleRegistry.PruneSpawned(source.Handle, StillAVehicle);
 
-        if (!PersonalVehicleRegistry.WasSpawnedBy(source.Handle, networkId))
+        if (!SpawnedVehicleRegistry.WasSpawnedBy(source.Handle, networkId))
         {
             Log.Info($"[PersonalVehicle] {source.Name} tried to claim a vehicle they did not spawn. Refused.");
 

@@ -83,6 +83,7 @@ public static class ConfigCatalog
         ]),
         new("Vehicle Spawner",
         [
+            VehicleSpawner.OrphanMode,
             VehicleSpawner.KeepSpawnedVehiclesPersistent,
             VehicleSpawner.SpawnLimitSeconds,
             VehicleSpawner.SpawnLimitTier1,

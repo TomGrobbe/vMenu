@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Personal;
@@ -71,7 +72,11 @@ public static class VehicleSpawning
 
         RemovePrevious(ped.Handle, currentVehicle?.Handle ?? 0);
 
-        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)heading, true, true, true);
+        var orphanMode = VehicleSpawnerSettings.NormaliseOrphanMode(ClientConfig.Value(VehicleSpawnerSettings.OrphanMode));
+
+        var scriptHost = orphanMode != VehicleSpawnerSettings.DeleteWhenNotRelevant;
+
+        var newVehicle = await API.Vehicles.RequestAndCreate(hash, position, (int)heading, true, scriptHost, true);
 
         Native.SetModelAsNoLongerNeeded(hash);
 
@@ -82,7 +87,7 @@ public static class VehicleSpawning
 
         _previousVehicle = newVehicle.Handle;
 
-        PersonalVehicle.ReportSpawned(newVehicle.Handle);
+        ReportSpawn(newVehicle.Handle);
 
         if (!spawnInside)
         {
@@ -122,6 +127,16 @@ public static class VehicleSpawning
         ped.SetPedIntoVehicle(newVehicle.Handle, DriverSeat);
 
         return newVehicle;
+    }
+
+    private static void ReportSpawn(int entity)
+    {
+        if (entity == 0 || !Native.NetworkGetEntityIsNetworked(entity))
+        {
+            return;
+        }
+
+        API.EmitServer(VehicleEvents.Spawned, Native.NetworkGetNetworkIdFromEntity(entity));
     }
 
     private static Vector3 SpawnPosition(Ped ped, Vehicle? currentVehicle, uint hash, bool spawnInside)

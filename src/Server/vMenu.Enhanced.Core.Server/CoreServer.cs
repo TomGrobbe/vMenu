@@ -61,6 +61,7 @@ public class CoreServer : IScript
         WalkingStyles.RegisterEventHandlers();
 
         VehicleActions.Register();
+        VehicleSpawnActions.Register();
         PersonalVehicleActions.Register();
         TeleportActions.Register();
         WorldActions.Register();

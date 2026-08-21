@@ -2,6 +2,28 @@ namespace vMenu.Enhanced.Data.Configuration.Settings;
 
 public static class VehicleSpawner
 {
+    public const int DeleteWhenNotRelevant = 0;
+
+    public const int DeleteOnOwnerDisconnect = 1;
+
+    public const int KeepEntity = 2;
+
+    public static readonly IntSetting OrphanMode =
+        new("vMenu.Enhanced.VehicleSpawner.OrphanMode")
+        {
+            Description =
+                "What the server does with a vehicle a player spawned once that player is gone. " +
+                "Set it to 0 and the server throws the vehicle away as soon as it decides nobody " +
+                "needs it any more, which is what the game does with its own traffic; vMenu also " +
+                "stops claiming the vehicle for itself, so nothing stands in the way of that " +
+                "cleanup. Set it to 1, the default, and the vehicle is removed the moment the " +
+                "player who spawned it disconnects, which is what keeps a busy server from filling " +
+                "up with vehicles nobody is coming back for. Set it to 2 and the server never " +
+                "removes it: that is what vMenu used to do, and it means abandoned vehicles pile up " +
+                "until somebody deletes them by hand. Anything else falls back to 1.",
+            Default = DeleteOnOwnerDisconnect,
+        };
+
     public static readonly BoolSetting KeepSpawnedVehiclesPersistent =
         new("vMenu.Enhanced.VehicleSpawner.KeepSpawnedVehiclesPersistent")
         {
@@ -50,4 +72,10 @@ public static class VehicleSpawner
                 "three permission is how you exempt somebody you trust.",
             Default = 0,
         };
+
+    public static bool IsKnownOrphanMode(int mode) =>
+        mode is DeleteWhenNotRelevant or DeleteOnOwnerDisconnect or KeepEntity;
+
+    public static int NormaliseOrphanMode(int mode) =>
+        IsKnownOrphanMode(mode) ? mode : OrphanMode.Default;
 }

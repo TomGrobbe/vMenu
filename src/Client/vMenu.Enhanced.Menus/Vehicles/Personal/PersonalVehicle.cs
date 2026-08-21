@@ -65,16 +65,6 @@ public static class PersonalVehicle
         ResourceShutdown.Stopping += PersonalVehicleBlip.RemoveAll;
     }
 
-    public static void ReportSpawned(int entity)
-    {
-        if (entity == 0 || !Native.NetworkGetEntityIsNetworked(entity))
-        {
-            return;
-        }
-
-        API.EmitServer(PersonalVehicleEvents.Spawned, Native.NetworkGetNetworkIdFromEntity(entity));
-    }
-
     public static bool Owns(int entity) =>
         NetworkId != 0
         && entity != 0
