@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
+using PersonalVehiclePermissions = vMenu.Enhanced.Data.Permissions.Menus.PersonalVehicle;
 using SavedVehiclesPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedVehicles;
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;
@@ -19,6 +20,7 @@ public sealed class VehiclesMenu : MenuDefinition
     // the vehicle menus they already allow came back.
     public override MenuGate Gate { get; } =
         MenuGate.Permission(VehicleOptionsPermissions.Menu)
+        | MenuGate.Permission(PersonalVehiclePermissions.Menu)
         | MenuGate.Permission(VehicleSpawnerPermissions.Menu)
         | MenuGate.Permission(SavedVehiclesPermissions.Menu);
 
@@ -27,5 +29,6 @@ public sealed class VehiclesMenu : MenuDefinition
         menu.Entries.Add(SubmenuEntry.For(new VehicleOptionsMenu()));
         menu.Entries.Add(SubmenuEntry.For(new VehicleSpawnerMenu()));
         menu.Entries.Add(SubmenuEntry.For(new SavedVehiclesMenu()));
+        menu.Entries.Add(SubmenuEntry.For(new PersonalVehicleMenu()));
     }
 }

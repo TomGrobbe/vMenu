@@ -61,6 +61,7 @@ public class CoreServer : IScript
         WalkingStyles.RegisterEventHandlers();
 
         VehicleActions.Register();
+        PersonalVehicleActions.Register();
         TeleportActions.Register();
         WorldActions.Register();
         OnlinePlayerActions.Register();
@@ -70,6 +71,7 @@ public class CoreServer : IScript
         PedDeathBroadcast.Register();
         PlayerNoClipState.Register();
         PlayerPresenceBroadcast.Register();
+        PersonalVehicleBroadcast.Register();
         JoinLeaveBroadcast.Register();
 
         PluginRegistry.RegisterEventHandlers();

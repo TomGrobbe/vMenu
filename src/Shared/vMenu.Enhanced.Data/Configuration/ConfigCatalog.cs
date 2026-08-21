@@ -74,6 +74,11 @@ public static class ConfigCatalog
             VehicleOptions.WashVehicleCommand,
             VehicleOptions.ClearGodModeOnExit,
         ]),
+        new("Personal Vehicle",
+        [
+            PersonalVehicle.ActionLimit,
+            PersonalVehicle.ActionLimitSeconds,
+        ]),
         new("Vehicle Spawner",
         [
             VehicleSpawner.KeepSpawnedVehiclesPersistent,

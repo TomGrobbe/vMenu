@@ -30,6 +30,10 @@ public static class VehicleBlipSprites
 
     public const int BoatSprite = 427;
 
+    public const int PersonalVehicleCarSprite = 225;
+
+    public const int PersonalVehicleBikeSprite = 226;
+
     /// <summary>The two sprites the game already turns to face the right way by itself.</summary>
     // Setting a rotation on these fights the engine and makes them jitter.
     public const int SubmarineSprite = 760;

@@ -146,6 +146,8 @@ public static class UserDefaults
 
     public static BoolDefault VehicleKeepClean { get; } = new("vehicleKeepClean") { Default = false };
 
+    public static BoolDefault PersonalVehicleBlip { get; } = new("personalVehicleBlip") { Default = true };
+
     #endregion
 
     #region Vehicle Spawner
@@ -295,6 +297,7 @@ public static class UserDefaults
         VehicleGodRamp,
         VehicleGodAutoRepair,
         VehicleKeepClean,
+        PersonalVehicleBlip,
 
         VehicleSpawnerSpawnInside,
         VehicleSpawnerReplacePrevious,

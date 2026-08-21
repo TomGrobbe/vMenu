@@ -9,6 +9,7 @@ using CitizenFX.FiveM.Shared.Data;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Vehicles.Personal;
 
 using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleSpawner;
 
@@ -81,6 +82,8 @@ public static class VehicleSpawning
         }
 
         _previousVehicle = newVehicle.Handle;
+
+        PersonalVehicle.ReportSpawned(newVehicle.Handle);
 
         if (!spawnInside)
         {
@@ -169,6 +172,11 @@ public static class VehicleSpawning
             return;
         }
 
+        if (PersonalVehicle.Owns(currentVehicle))
+        {
+            return;
+        }
+
         if (Native.GetPedInVehicleSeat(currentVehicle, DriverSeat, false) != ped)
         {
             return;
@@ -184,6 +192,11 @@ public static class VehicleSpawning
     private static bool MayRemove(int vehicle, int ped)
     {
         if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || !Native.IsEntityAVehicle(vehicle))
+        {
+            return false;
+        }
+
+        if (PersonalVehicle.Owns(vehicle))
         {
             return false;
         }

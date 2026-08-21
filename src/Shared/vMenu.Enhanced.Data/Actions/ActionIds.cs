@@ -18,6 +18,17 @@ public static class ActionIds
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";
     }
 
+    public static class PersonalVehicle
+    {
+        public const string Set = "PersonalVehicle.Set";
+
+        public const string Forget = "PersonalVehicle.Forget";
+
+        public const string Delete = "PersonalVehicle.Delete";
+
+        public const string KickOccupants = "PersonalVehicle.KickOccupants";
+    }
+
     public static class WeatherOptions
     {
         public const string SetWeather = "WeatherOptions.SetWeather";

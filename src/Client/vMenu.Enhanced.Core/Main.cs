@@ -28,6 +28,7 @@ using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
+using PersonalVehicleFeature = vMenu.Enhanced.Menus.Vehicles.Personal.PersonalVehicle;
 using StaffAlertsFeature = vMenu.Enhanced.Menus.Misc.StaffAlerts;
 
 namespace vMenu.Enhanced.Core;
@@ -113,6 +114,7 @@ public sealed class Main : IScript
         PedIlluminatedClothing.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
+        PersonalVehicleFeature.Initialize();
 
         WeaponUnlimitedAmmo.Initialize();
         WeaponNoReload.Initialize();
